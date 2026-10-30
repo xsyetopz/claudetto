@@ -1,0 +1,18 @@
+SKILL: propose
+SET: ours
+DOES: Plans a change in `openspec/changes/<name>/` with a preset (`task`, `story`, or `epic`), one artifact at a time. Use when the user wants a plan in files before the code.
+SOURCE: `archive/plugins/claudetto/skills/propose/SKILL.md:3`
+LISTING COST: 182 bytes (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: no  (`disable-model-invocation: true` at `archive/plugins/claudetto/skills/propose/SKILL.md:4`)
+CLAUDETTO NEEDS IT FOR: `/claudetto:apply` and `/claudetto:update` point to it as the step that writes the artifacts (`archive/plugins/claudetto/skills/apply/SKILL.md:13`, `archive/plugins/claudetto/skills/update/SKILL.md:10`), and `/claudetto:explore` points to it (`archive/plugins/claudetto/skills/explore/SKILL.md:43`). No hook names it. `docs/window-weights.md:20` lists it at 8% of skill usage.
+PROS:
+- The one step that writes the artifacts of a change in files before the code.
+- Stays out of the model's choice, so no tokens go to a wrong auto-call.
+CONS:
+- Its `description:` line is 182 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+- Whether a skill with `disable-model-invocation: true` still has a listing line is not measured here. Route `extend/skills-and-commands/frontmatter` says only that the key stops Claude from loading the skill by itself.
+RECOMMENDATION: name-only
+WHY: The user types `/claudetto:propose`, and `disable-model-invocation: true` is at `archive/plugins/claudetto/skills/propose/SKILL.md:4`, so the model never needs to choose it. Caveat: the doc row for `skillOverrides` says plugin skills are not affected, so the saving of `name-only` for a plugin skill is not measured.
+USER DECISION: drop (the user, 2026-10-27)
+DECISION WHY: replaced by the opt-in OpenSpec integration

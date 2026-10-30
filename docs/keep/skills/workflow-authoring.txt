@@ -1,0 +1,14 @@
+SKILL: workflow-authoring
+SET: bundled
+DOES: A reference for writing a Workflow tool script. It does not authorize running one.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row group, and route `prompts/built-in-skills`, section `workflow-authoring`
+LISTING COST: `84` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: `enableWorkflows: false` at `archive/plugins/claudetto/modules/setup/prompts.ts:150` means nothing needs it.
+PROS:
+- Reference for a feature that is on only when `enableWorkflows` is true.
+CONS:
+- Alone, the removal of bundled skills made the request larger (`docs/surfaces.md:33`, route `how-it-works/context-budget`).
+- Needs dynamic workflows (row group).
+RECOMMENDATION: drop
+WHY: Setup sets `enableWorkflows: false` (`archive/plugins/claudetto/modules/setup/prompts.ts:150`), so there is no `Workflow` to author for. Note `docs/surfaces.md:33`: `disableBundledSkills` alone grew the `Workflow` tool definition from 5,355 to 22,310 characters, and the pair with the `Workflow` removal is the saving.

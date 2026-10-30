@@ -1,0 +1,15 @@
+PLUGIN: cc-plugin-telemetry@builtin
+DOES: Doc page: "Sends the analytics records that Claude Code and its built-in mods log." Plugin description in the program: "Telemetry: a plugin logs an analytics event through $.telemetry.log or marks a feature's use through $.telemetry.mark, sent as first-party rows in batches".
+SOURCE: cc-docs routes `extend/mod-api/nouns-and-gates` (section "Built-in Mods") and `extend/mod-api/telemetry`, and the program file `/Users/krystian/.local/share/claude/versions/2.1.311` (manifest at byte offset 256796600, `registerPlugin` at 256792676 area, the constant at 256804178).
+WHAT IT ADDS TO A SESSION: Nothing the model sees. No skills, commands, agents, or MCP servers found. Hooks: `telemetry.*`, `telemetry.log`, `telemetry.mark`, `session.start`, `session.end`, `engine.create`. Manifest `calls` include `http.fetch` and `process.run`. It reads many environment variables, among them `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`.
+COST: Chunk is about 30094 bytes in the program (offset span between chunk markers, counted with a script). Batches hold up to 100 rows (`Ye=100`) and flush on a 5000 ms window (`$e=5000`) at offset 256804406.
+SENDS TELEMETRY: yes. It is the sender. The constant `We="https://api.anthropic.com/api/event_logging/v2/batch"` is at offset 256804178. The doc page says records go either to `anthropic` (first-party) or to the collector the operator configured.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `telemetry`.
+PROS:
+- None found for claudetto's use. The doc says it carries the records that Claude Code and the built-in mods log.
+CONS:
+- Posts analytics batches to `api.anthropic.com` (offset 256804178).
+- The doc page "Built-in Mods" says "The settings and flags that stop installed mods do not stop them", so whether `enabledPlugins` set to `false` stops this plugin is not found.
+- It gathers a long list of environment signals (offset 256797288 area).
+RECOMMENDATION: keep off
+WHY: It is the sender of the telemetry that the user does not want (`extend/mod-api/telemetry` and offset 256804178). Whether the setting really stops it is an open question, see OPEN QUESTIONS in `you-should-know-rebuild.txt` for the same gap.

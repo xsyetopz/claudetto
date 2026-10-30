@@ -1,0 +1,18 @@
+SKILL: debug
+SET: bundled
+DOES: Turns on debug logging and investigates the issue the user describes.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/debug`
+LISTING COST: not measured  (a bundled skill has no file that we can read, route `extend/skills-and-commands/bundled-skills`)
+MODEL CAN CALL IT: no  (row `/debug`: `disableModelInvocation`)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Allowed tools are only `Read`, `Grep`, `Glob` (row `/debug`).
+- Model cannot call it, so no wrong auto-call.
+CONS:
+- Removing it loses the debug-log helper.
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: name-only
+WHY: The user types `/debug` and the model never chooses it (row `/debug`). A name-only line keeps it findable. Whether `skillOverrides` applies to a bundled skill is stated for `doctor` only (row `/doctor`), and `disableBundledSkills` removes it anyway, so the cost of keeping it is not measured.
+USER DECISION: drop (the user, 2026-10-27)
+DECISION WHY: `cc-inspect` and `cc-docs` can do it

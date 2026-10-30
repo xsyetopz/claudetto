@@ -13,9 +13,7 @@
 		"openspec/**",
 		// A skill, agent, or output style file has the format of a Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
 		"plugins/**",
-		// `wiki/` is generated from `src/wiki/`.
-		"wiki/**",
-		// Task 11.4 of change `0-3-0` rewrites `src/wiki/`.
-		"src/wiki/**"
+		// The archive is read-only evidence of the replaced tree, which nothing builds, so a lint fix there would edit a file that is kept for reading.
+		"archive/**"
 	]
 }

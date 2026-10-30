@@ -1,10 +1,10 @@
 {
-	"$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-marketplace.json",
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-marketplace.json",
 	"name": "claudetto",
 	"owner": {
 		"name": "xsyetopz"
 	},
-	"description": "Lists the claudetto plugin and its optional browser and docs plugins.",
+	"description": "Lists the claudetto plugins.",
 	"metadata": {
 		"version": "0.4.0-alpha.2"
 	},
@@ -12,13 +12,13 @@
 		{
 			"name": "claudetto",
 			"source": "./plugins/claudetto",
-			"description": "Adds a lean output style, a main agent with a roster of six agents, and a permission gate that answers each permission prompt. Adds a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`. Adds a handover to a fresh session in place of the compaction summary, and a `goal` check. Adds a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer. A Haiku 5.5 classifier settles each ask of the gate that Jev does not settle.",
+			"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, skills, and an output style. It patches nothing. The tree is a rebuild in progress, and each capability lands with the measurement that decided its values. The one decided default is the compaction path, which stays the built-in compaction of Claude Code until a measured probe result beats it.",
 			"category": "productivity"
 		},
 		{
-			"name": "claudetto-browser",
-			"source": "./plugins/claudetto-browser",
-			"description": "Drives a real browser with `agent-browser` for pages that need JavaScript, a login, or clicks, and for checks of a UI change. `WebFetch` and `WebSearch` stay the tools for reading and search, because they cost fewer tokens.",
+			"name": "claudetto-you-should-know",
+			"source": "./plugins/claudetto-you-should-know",
+			"description": "Shows one short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. Once on, it makes one small bounded request every sixth step, sends nothing else out, and keeps no telemetry.",
 			"category": "productivity"
 		}
 	]

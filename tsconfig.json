@@ -1,11 +1,9 @@
 {
 	"extends": "./plugins/claudetto/tsconfig.json",
 	"compilerOptions": {
-		"allowImportingTsExtensions": true,
 		"allowJs": true,
 		"checkJs": true,
 		"erasableSyntaxOnly": true,
-		"noEmit": true,
 		"verbatimModuleSyntax": true,
 		"typeRoots": [
 			"./node_modules",
@@ -24,7 +22,7 @@
 	"include": [
 		"plugins/**/*.ts",
 		"tests/**/*.ts",
-		"tools/**/*.ts",
-		"dev/**/*.ts"
+		"claudekit/**/*.ts",
+		"tools/**/*.ts"
 	]
 }

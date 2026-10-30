@@ -2,19 +2,19 @@
 
 ## Set Up
 
-1. Install Bun 1.4.3 (the `packageManager` field of `package.json`), `just`, and Claude Code 2.1.311.
+1. Install Bun 1.4.4 (the `packageManager` field of `package.json`), `just`, and Claude Code 2.1.312.
 2. Run `bun install` in the repository root.
 3. Run `just check`.
-   It runs the lint, the type check, the check of the generated files, the tests, the plugin validation, and the hook lab.
+   It runs the lint, the type check, the tests, the plugin validation, and the hook lab.
    It must pass before you open a pull request.
 
 ## Layout
 
-- `plugins/claudetto/` has the kernel in `kernel/`, one folder for each module in `modules/`, and the one hooks module `hooks/register.ts`.
-  The [Architecture](https://github.com/xsyetopz/claudetto/wiki/Architecture) page names each module and its job.
-- `tools/` holds the scripts of `just check`, and `dev/` holds the paid and manual tools.
-- `tests/claudetto/<module>/` holds the unit tests of each module, and `tests/repo/` holds the tests of the rules of the repository.
-- [`.claude/rules/`](.claude/rules/) has the rules of each part.
+- `plugins/claudetto/src/` holds the shared files and one folder for each slice, and `hooks/hooks.json` names the one hooks module `src/register.ts`.
+- `tools/` holds the scripts of `just check`, and `claudekit/` holds the paid and manual tools.
+- `tests/claudetto/` holds the unit tests of the core plugin, `tests/repo/` holds the tests of the rules of the repository, and a `__tests__/` folder beside a source counts as well.
+- `plugins/*/tests/` holds the hook labs, which only `claude plugin test` runs, because `bun test` skips them (`bunfig.toml:11`).
+- [`AGENTS.md`](AGENTS.md) has every rule of the repository, which `CLAUDE.md` imports.
 
 ## Rules
 
@@ -37,12 +37,8 @@ Tests give commands to the guards as strings and never run a guarded command.
 ## Changelog
 
 Add an entry under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md).
-Change versions only with `just bump`.
-
-## Docs
-
-Write the public docs in `src/wiki/`, and run `just generate` to write `wiki/`.
-See the [Development](https://github.com/xsyetopz/claudetto/wiki/Development) page for more.
+Set the same version in `package.json`, `plugins/claudetto/.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json`.
+The merge into `main` is the release, and no tag is cut.
 
 ## Conduct and Security
 

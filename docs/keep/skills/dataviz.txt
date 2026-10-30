@@ -1,0 +1,15 @@
+SKILL: dataviz
+SET: bundled
+DOES: Guides Claude when it makes a chart, graph, plot, dashboard, or other visualization.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/dataviz`, and route `prompts/built-in-skills`, section `dataviz`
+LISTING COST: `482` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Consistent, accessible charts when the user makes some.
+CONS:
+- Long listing text on every turn if kept (section `dataviz`).
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: drop
+WHY: Its default listing text is the longest of the 13 in route `prompts/built-in-skills` (a long trigger list). Nothing found depends on it, and the repo is a CLI tool (`docs/surfaces.md:3`).

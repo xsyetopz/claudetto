@@ -1,0 +1,34 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
+	"name": "claudetto-you-should-know",
+	"version": "0.4.0-alpha.2",
+	"description": "Shows one short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. Once on, it makes one small bounded request every sixth step, sends nothing else out, and keeps no telemetry.",
+	"author": {
+		"name": "xsyetopz"
+	},
+	"repository": "https://github.com/xsyetopz/claudetto",
+	"homepage": "https://github.com/xsyetopz/claudetto",
+	"license": "MIT",
+	"keywords": ["notes", "coding", "cost"],
+	"userConfig": {
+		"enabled": {
+			"type": "boolean",
+			"title": "Turn On",
+			"description": "Use `true` to turn the side check on. Left at `false`, every hook of this plugin passes straight through and nothing is requested, so an installed copy costs nothing until it is turned on.",
+			"default": false
+		},
+		"model": {
+			"type": "string",
+			"title": "Model",
+			"description": "The model that answers each check. The default is the small model that `docs/models.md` assigns to a handoff or a summary.",
+			"default": "claude-haiku-5-5"
+		},
+		"effort": {
+			"type": "string",
+			"title": "Effort",
+			"description": "How hard the model thinks about each check.",
+			"default": "medium",
+			"options": ["low", "medium", "high", "xhigh", "max"]
+		}
+	}
+}

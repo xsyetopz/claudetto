@@ -1,0 +1,18 @@
+TOOL: ListAgents
+DOES: Docs: "Lists agents that `SendMessage` can reach." Gated: cross-session messaging must be on. Alias `ListPeers`. Not kept in background subagents.
+DOC SOURCE: reference/tools/agents-and-tasks
+REQUEST COST: 1,151 characters (docs/surfaces.md:41, first row of the probe)
+CLAUDETTO USES IT FOR: No use found as a call. Our prompt tells the model not to loop on it, "A `ListAgents` loop or an "are you done?" message adds nothing" (archive/plugins/claudetto/modules/session/prompt/prompts.ts:136). It is in `DESCRIBED` (archive/plugins/claudetto/hooks/register.ts:189), but `TOOL_TEXTS` has no text for it (archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:22-33). Counted as 3 of 292 sessions (archive/plugins/claudetto/modules/session/prompt/limits.ts:18), so `DEFERRED_TOOLS` defers it (tools.ts:36-44). No agent file lists it.
+PROS:
+- It shows which peers `SendMessage` can reach.
+CONS:
+- 1,151 resident characters in the probe request (docs/surfaces.md:41).
+- 3 of 292 sessions use it (limits.ts:18) and our own prompt calls its loop useless (prompts.ts:136).
+- docs/surfaces.md:26 measured a deny of `ListAgents` with `Agent`, which saved 6,001 characters together (docs/surfaces.md:35).
+RECOMMENDATION: keep, deferred
+WHY: No use found in code, agents or skills, and it costs 1,151 request characters (docs/surfaces.md:41). Its deny alone is not measured apart from `Agent`, and our deferral may already keep it out of the request, which a probe with the plugin loaded would show.
+Set by the user on 2026-10-27. "same as ListSkills. have to test it out."
+Measured facts, from `docs/surfaces.md`. It is loaded by default. It costs `1,151` characters in a captured request. The official docs measure its removal at `345` tokens.
+USER DECISION: keep, deferred (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `SendMessage` is resident and used in 112 of 292 sessions (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`, `:28`), and `ListAgents` is the directory of the peers it can reach, so a deny would leave a used tool guessing, while `DEFERRED_TOOLS` already keeps its `1,151` characters off the base prompt (`archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:36-44`, `docs/surfaces.md:41`).
+AMENDED 2026-10-30: the line above about `TOOL_TEXTS` holding no text for it is no longer true, and the restart tree has no `DEFERRED_TOOLS`, so the tool is sent upfront. The user asked for more trimming, and `TOOL_TEXTS` now holds a 695-character text against a stock 777 (plugins/claudetto/src/tools/texts.ts). Measured: the definition falls from 1,151 characters to 1,070 in the isolating capture of that day (docs/surfaces.md, "Tool Text Sizes"). The recommendation is unchanged, keep, because the trim is 82 characters and the tool stays reachable; what changed is that the 1,151 is now paid upfront rather than deferred, which is what makes the trim worth taking at all.

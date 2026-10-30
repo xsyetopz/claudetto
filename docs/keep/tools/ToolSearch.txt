@@ -1,0 +1,15 @@
+TOOL: ToolSearch
+DOES: Docs: "Loads the full schema of deferred tools." Parameters `query` and `max_results` (default 5). Works in the main session and in subagents, not deferred.
+DOC SOURCE: reference/tools
+REQUEST COST: 1,440 characters (docs/surfaces.md:40, the resident tools after the trim)
+CLAUDETTO USES IT FOR: Our deferral design rests on it. Tools used by under 10 percent of sessions go behind it (archive/plugins/claudetto/modules/session/prompt/limits.ts:6, archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:35-44, archive/plugins/claudetto/modules/session/prompt/adapters/mod.ts:117-119). It is in `NEVER_DEFERRED` because it cannot be deferred (limits.ts:26-28). Our shorter text `TOOL_TOOL_SEARCH` (archive/plugins/claudetto/modules/session/prompt/prompts.ts:111) and the usage example (prompts.ts:117). `DESCRIBED` (archive/plugins/claudetto/hooks/register.ts:189). 84 of 292 counted sessions use it (limits.ts:18).
+PROS:
+- Without it every deferred tool would be unreachable, and docs/surfaces.md:36 credits the deferral for the small resident set of 12.
+- Our deferral of rarely used tools saves request characters through it.
+CONS:
+- 1,440 resident characters (docs/surfaces.md:40).
+RECOMMENDATION: KEEP, TRIMMED, set by the user
+WHY: Our `DEFERRED_TOOLS` design (tools.ts:36-44) cannot work without it, and docs/surfaces.md:36 says the deferral is what keeps the resident set small.
+Set by the user on 2026-10-27.
+USER DECISION: keep (the user, 2026-10-27)
+DECISION WHY: `archive/plugins/claudetto/modules/session/prompt/limits.ts:26` says `ToolSearch` cannot be deferred, and `NEVER_DEFERRED` holds it (`limits.ts:28`)

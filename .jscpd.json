@@ -31,5 +31,5 @@
 	"similarity": 0.8,
 	"baseline": ".jscpd-baseline.json",
 	"failOnNewClones": 0,
-	"path": ["plugins", "tests", "tools", "dev"]
+	"path": ["plugins", "tests", "tools", "claudekit"]
 }

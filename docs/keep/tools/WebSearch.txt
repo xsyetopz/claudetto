@@ -1,0 +1,13 @@
+TOOL: WebSearch
+DOES: "Searches the web." Takes `query`, `allowed_domains`, `blocked_domains`. Gated: "off for the gateway provider, Vertex depends on the model". Main session and subagents.
+DOC SOURCE: `reference/tools/shell-and-web`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: `archive/plugins/claudetto/agents/Hermes.md:6` (`tools: WebSearch, WebFetch, Read`), `archive/plugins/claudetto/modules/session/prompt/limits.ts:28` (in `NEVER_DEFERRED`). Not denied in `prompts.ts`.
+PROS:
+- `Hermes` needs it to find a source for a web question.
+CONS:
+- Availability depends on the provider, so it may be absent where the agent runs.
+RECOMMENDATION: keep
+WHY: `archive/plugins/claudetto/agents/Hermes.md:6` lists it and `limits.ts:28` keeps it on the base prompt.
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `WebSearch` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 4 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

@@ -1,6 +1,0 @@
-{
-	"$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
-	"name": "padded-sample",
-	"version": "0.0.0",
-	"description": "A test plugin with no parts. Its evals show that the judge `plain-reply` fails a padded reply and passes a plain one."
-}

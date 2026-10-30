@@ -1,22 +1,20 @@
-# claudetto
+# `claudetto`
 
 claudetto changes Claude Code through its official extension points: settings, hooks, skills, and an output style.
 It does not patch the Claude Code binary.
 Its goal is the highest quality for the lowest token cost.
 
-The [wiki](https://github.com/xsyetopz/claudetto/wiki) explains each part and the reason for it.
-Start with the [Home](https://github.com/xsyetopz/claudetto/wiki/Home) page, or read the [Install](https://github.com/xsyetopz/claudetto/wiki/Install) page for the full setup.
-The docs of Claude Code itself are on the [Claude Code docs](https://xsyetopz.github.io/claude-code-docs/) site, with an optional MCP server and a skill (`bunx skills add xsyetopz/claude-code-docs-skills`).
+The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), which ships the plugins `clawdipedia-docs` and `cc-inspect`, each with a skill and an MCP server.
 
 ## Plugins
 
 claudetto is a marketplace with one core plugin and one add-on plugin.
-The add-on works without the core plugin.
+The tree is a rebuild in progress, so the core plugin ships less than the older releases did.
 
 | Plugin | What it gives |
 | --- | --- |
-| `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard` and `ground` hooks, the tailored prompt, and the Jev pick of `AskUserQuestion`. |
-| `claudetto-browser` | The `browse` skill, which drives a real browser with `agent-browser`. |
+| `claudetto` | The core: the hooks of `plugins/claudetto/src/register.ts`, the output style `claudetto:Concise`, the agent `claudetto:main`, the skill `dedupe`, the settings snippet of `just setup`, and the Jev decision tool. |
+| `claudetto-you-should-know` | One short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. |
 
 ## Install
 
@@ -30,81 +28,75 @@ claude plugin install claudetto@claudetto
 /plugin install claudetto@claudetto
 ```
 
-Then run `/claudetto:setup`, and restart Claude Code.
-The setup skill shows each change to your settings file, and it writes the change after you confirm.
+Then merge the settings snippet from a checkout of this repository, and restart Claude Code:
+
+```bash
+just setup
+```
+
+`just setup` runs `bun plugins/claudetto/src/tiers/setup.ts`.
+It merges the snippet of your plan tier into `~/.claude/settings.json` and keeps each value you set.
+Pass `--settings PATH` to aim at another file, and `--dry-run` to print the report and write nothing.
 
 Requirements:
 
-- Claude Code `2.1.311` or later.
-  claudetto is tested only on `2.1.311`.
+- Claude Code `2.1.312` or later.
+  claudetto is tested on `2.1.312` and `2.1.314`.
 - `git`.
-- [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the Jev pick of `AskUserQuestion`.
-- [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
+- [Bun](https://bun.sh) on `PATH`, for `just setup`.
 
 A plugin cannot set permissions, environment variables, or models.
-So the core plugin gives these settings as a [settings snippet](https://github.com/xsyetopz/claudetto/wiki/Settings-Snippet).
-The setup skill applies the snippet for you.
+So the core plugin gives these settings as a settings snippet, which `just setup` applies.
 You can also copy the keys that you want into your own `settings.json`.
 
 ## What the Core Plugin Changes
 
 | Part | Effect |
 | --- | --- |
-| Compaction | The `session` module hands over at three triggers: a handoff file, `/clear`, and a resume. The compaction of Claude Code stays as the safety net. `autoCompactWindow` is `300000`. The `compaction` option `built-in` starts no handover. |
-| Memory | `autoMemoryEnabled` is `false`. |
-| Prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, and the `session` module gives one tailored text for the short prompt. |
-| Output style | `outputStyle` is `claudetto:Concise`. Your own `outputStyle` setting can change it. |
-| Permissions | Reads of secret files and destructive commands such as `rm -rf /` are denied. A force push asks. |
-| Sandbox | Bash runs in the sandbox. Its network reaches GitHub and the package registries only. |
-| Guard | Asks before a `git push` that deletes a remote branch, and before a `docker` command that runs or creates a container. |
-| Ground | Denies a `Write` or `Edit` of a plan file that cites a `file:line` or a convention that the source does not hold. |
-| Status line | The folder, git, model, effort, context against the window, cost, and the limits. The percent turns yellow at `75%` and red at `90%`. |
-| Handoff | `/handoff` writes the handoff, clears the chat, and starts the next session from it. |
+| Settings snippet | `just setup` writes `permissions.deny`, `agent`, `outputStyle`, `autoMode`, `sandbox`, `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, `CLAUDE_CODE_SUBAGENT_MODEL`, `autoCompactWindow`, `idleCompaction`, `modelSettings`, `model`, `effortLevel`, and the keys that turn off the bundled skills and most built-in plugins of Claude Code. Together they take the first request of a session from 42,879 characters to 31,861, read with `just capture --shipped`. |
+| Handoff | A handoff file is written on a typed `/clear` and before a compaction. The next session reads it back. See "Handoff" below. |
+| Compaction | The compaction of Claude Code stays. The `compaction` option `built-in` and `auto` keep it, and `code` is an experimental compaction that code builds with no model request. The option `cheapSummary` set to `on` answers a compaction with one bounded call on `claude-haiku-5-5`. |
+| Output style | The plugin ships `claudetto:Concise`, which `just setup` selects. Without setup, set `outputStyle` to `claudetto:Concise` yourself. |
+| Permission gate | Stops only a call that loses bytes for good, tampers with the system, or reads a secret. It asks before a `git push` that forces, deletes, or mirrors. |
+| Sandbox | `just setup` writes `sandbox.enabled` with `allowUnsandboxedCommands` set to `false`, so a `Bash` command runs inside the sandbox, and `sandbox.filesystem.denyRead` keeps it out of `~/.ssh`, `~/.gnupg`, `~/.aws/credentials`, `~/.netrc`, and `~/.docker/config.json`. It costs 7,254 characters of the first request and repays them: a sandboxed command is auto-allowed before the auto-mode classifier runs, and one classifier call is 140,718 characters. |
+| Run limits | Caps the subagents at once and the subagent starts per period, refuses an identical retry after repeated failures, and holds tool calls at heavy context. The plugin options `subagentCap`, `startCap`, `windowSeconds`, `callCap`, `heavyTokens`, and `failLimit` set them. |
+| Tool descriptions | A shorter description for a few tools. |
+
+## Handoff
+
+The handoff is written by hooks, with no command to run.
+
+- `classic.SessionEnd` with the reason `clear` writes a handoff when you type `/clear`.
+- `classic.PreCompact` writes a handoff before a compaction.
+- `classic.SessionStart` reads the newest handoff back into the next session after a `clear` or a `resume`, once.
+  A handoff older than seven days is named in one line and not injected.
+- A context block on `prompt.context` tells the session to write its own handoff, and where.
+  When the session wrote one, the hooks write no file beside it.
+
+The files are in `.claude/claudetto/handoffs`.
 
 ## Model and Skills
 
-The main session uses `claude-opus-5-5`, from the settings snippet.
-`CLAUDE_CODE_SUBAGENT_MODEL` is `claude-sonnet-5-5`.
+`just setup` writes `claude-opus-5-5` as the main model, and `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5`.
 
-The core plugin has the skill `/claudetto:setup`, and the command `/handoff`.
+The core plugin has the skill `dedupe`, which finds duplicate code with `jscpd` and decides which clones to merge.
 Use openspec for specs: `claudetto` has no spec store.
 
 ## Long Work without Compaction
 
 Each model call reads the whole context again, so the size of the context sets the cost of each turn.
-Run `/handoff` to start a fresh session from a handoff.
+Type `/clear` to start a fresh session from the handoff.
 A model change rebuilds the prompt cache.
 An effort change keeps the prompt cache.
 
-See [Handoff](https://github.com/xsyetopz/claudetto/wiki/Handoff).
-
 ## Jev Pick
 
-With the option `decide` set to `jev`, the core plugin asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence on each `AskUserQuestion` question that facts settle.
-Export `TYPESAFE_API_KEY` before Claude Code starts.
+With the option `decide` set to `jev`, the core plugin registers the tool `mcp__claudetto__decide`, which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence.
+Claude calls it for a decision that is its own, which is the one way to get a second judgment in an autonomous run.
+Export `TYPESAFE_API_KEY` before Claude Code starts, or set it as the plugin option.
 Each pick sends the question and the options to the TypeSafe API.
-When Jev gives no pick, the question stays as Claude asked it.
-See [Decide](https://github.com/xsyetopz/claudetto/wiki/Decide).
-
-## Add-on Plugins
-
-Install each add-on that you need.
-
-```bash
-# --- CLI -----------------------------
-claude plugin install claudetto-browser@claudetto
-
-# --- TUI -----------------------------
-/plugin install claudetto-browser@claudetto
-```
-
-- `claudetto-browser` uses `agent-browser`.
-  Install it with `bun add -g agent-browser`.
-  See [Browser](https://github.com/xsyetopz/claudetto/wiki/Browser).
-- The skill `claudetto:find-docs` is in the core plugin and needs no key.
-  A Context7 key in the env var `CONTEXT7_API_KEY`, set before Claude Code starts, raises the quota.
-  If you installed `claudetto-docs`, run `claude plugin uninstall claudetto-docs@claudetto`.
-  See [Library docs](https://github.com/xsyetopz/claudetto/wiki/Library-Docs).
+Without a key no tool is registered and nothing leaves the machine.
+An `AskUserQuestion` dialog always reaches the user, whatever the option.
 
 ## Update
 
@@ -114,8 +106,7 @@ claude plugin update claudetto@claudetto
 ```
 
 Run the `claude plugin update` line again for each add-on that you installed, with its name in place of `claudetto`.
-Then restart Claude Code, read the [changelog](CHANGELOG.md), and run `/claudetto:setup` again.
-The status line commands hold the path of the plugin version, so each update needs the new setup run.
+Then restart Claude Code, and read the [changelog](CHANGELOG.md).
 
 To try an unreleased checkout, run:
 
@@ -125,12 +116,7 @@ claude --plugin-dir /path/to/claudetto/plugins/claudetto
 
 ## Development
 
-Edit the source in `src/`, and run `just generate`.
-Do not edit `plugins/` by hand.
-`just check` runs the lint, the type check, the check of the generated files, the tests, the validation, and the hook labs.
-`just sandbox` runs Claude Code with this checkout in a separate config.
-See [Development](https://github.com/xsyetopz/claudetto/wiki/Development)
-and [Sandbox](https://github.com/xsyetopz/claudetto/wiki/Sandbox).
+`just check` runs the lint, the type check, the tests, the validation, and the hook labs.
 
 ## License
 

@@ -1,0 +1,16 @@
+TOOL: AskUserQuestion
+DOES: Docs: "Asks the user 1 to 4 multiple-choice questions." Removed from every subagent, main session only, read-only.
+DOC SOURCE: reference/tools/agents-and-tasks
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: The main agent asks every decision through it (plugins/claudetto/agents/main.md:56, :73, :106) and the output style says the same (plugins/claudetto/output-styles/Concise.md:17). Skills: archive/plugins/claudetto/skills/apply/SKILL.md:19, archive/plugins/claudetto/skills/setup/SKILL.md:21, :48, :68, :82 (with `multiSelect`). The Jev feature hooks it at call time and at describe time (archive/plugins/claudetto/hooks/register.ts:141, :173, archive/plugins/claudetto/modules/jev/adapters/mod.ts:25, :60). 96 of 292 counted sessions use it (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+PROS:
+- Three skills and the main agent rely on it for decisions and for `setup` choices.
+- 96 of 292 counted sessions call it.
+CONS:
+- When a key is set we append `TOOL_ASK` to its description, lengthening it (archive/plugins/claudetto/modules/jev/adapters/mod.ts:65, archive/plugins/claudetto/modules/jev/prompts.ts:92-98).
+- Not available in `claude -p`, so skills carry a fallback (archive/plugins/claudetto/skills/setup/SKILL.md:21).
+RECOMMENDATION: KEEP, TRIMMED, set by the user
+WHY: We use it in main.md, three skills and the Jev hooks, but jev/adapters/mod.ts:65 adds seven lines of our own text (jev/prompts.ts:92-98) to its description.
+Set by the user on 2026-10-27.
+USER DECISION: deferred (the user, 2026-10-27)
+DECISION WHY: it is not in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`), so it can be deferred, and 96 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

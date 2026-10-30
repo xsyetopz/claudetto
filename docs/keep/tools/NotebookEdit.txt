@@ -1,0 +1,15 @@
+TOOL: NotebookEdit
+DOES: "Edits a cell of a Jupyter notebook." Main session and subagents, kept in background subagents.
+DOC SOURCE: `reference/tools/files`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no use as a tool to call. Claudetto only recognises the name as a writer: `archive/plugins/claudetto/modules/gate/adapters/env-scan.ts:21`, `archive/plugins/claudetto/modules/gate/domain/file-findings.ts:21`, `archive/plugins/claudetto/modules/session/handoff/cold.ts:10`. No agent in `plugins/claudetto/agents/*.md` lists it. Not denied in `prompts.ts`.
+PROS:
+- Only way to edit a notebook cell structurally.
+- The gate already handles its calls, so keeping it needs no new code.
+CONS:
+- No claudetto file or agent asks for notebook work.
+RECOMMENDATION: deny
+WHY: No use found but no measured cost either. `docs/surfaces.md` line 36 says built-in tools are deferred in the probe request, so a deny may save nothing. A probe with a deny of this name on the real login would settle it.
+Set by the user on 2026-10-27.
+USER DECISION: deny (the user, 2026-10-27)
+DECISION WHY: the user wrote DROP on this page (`docs/keep/tools/NotebookEdit.txt:11`), and a decision the user made stands until the user changes it, so the later "set every deferrable tool to deferred" instruction does not reopen it

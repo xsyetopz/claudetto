@@ -1,0 +1,17 @@
+SKILL: update-config
+SET: bundled
+DOES: Edits `settings.json`: hooks, permissions, env vars. The default text tells the model to use it for any automated behavior such as "from now on when X".
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/update-config`, and route `prompts/built-in-skills`, section `update-config`
+LISTING COST: `236` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Handles a hook or permission edit by request.
+CONS:
+- Its trigger phrases overlap with the work of `/claudetto:setup`.
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: undecided
+WHY: Claudetto writes settings with its own `claudetto-setup` (`archive/plugins/claudetto/skills/setup/SKILL.md:6`), so nothing found depends on it. Its default text is a model trigger on common phrases, so keeping it may route settings edits around claudetto. That is not measured.
+USER DECISION: drop (the user, 2026-10-27)
+DECISION WHY: no reason given

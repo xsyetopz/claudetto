@@ -1,0 +1,16 @@
+TOOL: Glob
+DOES: Docs: "Finds files by glob pattern." Read-only and parallel. Docs say a subagent can get `Glob` and `Grep` when the main session lacks them (macOS, Linux, WSL).
+DOC SOURCE: reference/tools/files
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: Listed in `tools:` of Apollo, Athena, Artemis, Hephaestus and Zeus (archive/plugins/claudetto/agents/Apollo.md:6, Athena.md:6, Artemis.md:6, Hephaestus.md:6, Zeus.md:6). Hook (archive/plugins/claudetto/hooks/register.ts:155). Notes adapter (archive/plugins/claudetto/modules/work/notes/adapters/mod.ts:39). A native-build check treats `Grep` and `Glob` as off (archive/plugins/claudetto/modules/session/prompt/domain/facts.ts:75-79). Kept resident by `NEVER_DEFERRED` (archive/plugins/claudetto/modules/session/prompt/limits.ts:28). 2 of 292 counted sessions use it (limits.ts:18).
+PROS:
+- Five agents list it, so a subagent search by name pattern depends on it.
+- Read-only, so no permission prompt.
+CONS:
+- Only 2 of 292 counted sessions call it (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+- On a native build the tool can be off, and the agents then fall back to `grep` in `Bash` (plugins/claudetto/agents/Artemis.md:12).
+RECOMMENDATION: KEEP, set by the user
+WHY: Five agent files name it (see above) but main-session use is 2 of 292 and its request cost is not measured. A probe of the request on the real login (docs/surfaces.md:14, task 14.2) would settle it.
+Set by the user on 2026-10-27.
+USER DECISION: keep (the user, 2026-10-27)
+DECISION WHY: `Glob` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 2 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

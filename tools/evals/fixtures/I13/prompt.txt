@@ -1,0 +1,1 @@
+Add a `--json` flag to `report.ts` and ship it.

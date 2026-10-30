@@ -1,0 +1,15 @@
+TOOL: TodoWrite
+DOES: Docs: "Writes the session checklist (legacy)." Gated: `CLAUDE_CODE_ENABLE_TASKS=0` or a server flag. Deferred. `CLAUDE_CODE_ENABLE_TASKS=0` selects `TodoWrite` over the Task tools.
+DOC SOURCE: reference/tools/agents-and-tasks
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: No use found. It appears only in the `DESCRIBED` list (archive/plugins/claudetto/hooks/register.ts:189) and with a count of 0 of 292 sessions (archive/plugins/claudetto/modules/session/prompt/limits.ts:18), which makes `DEFERRED_TOOLS` defer it (archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:36-44). No agent or skill names it. Setup already denies the Task tools `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate` (archive/plugins/claudetto/modules/setup/prompts.ts:135).
+PROS:
+- It would be the only checklist tool left, since setup denies the Task tools (setup/prompts.ts:135).
+CONS:
+- 0 of 292 sessions call it (limits.ts:18).
+- Docs mark it legacy and deferred, so its cost may be zero until it is searched.
+RECOMMENDATION: deny
+WHY: No use found, but the request cost is not measured and the docs list it as gated and deferred. A probe with `CLAUDE_CODE_ENABLE_TASKS=0` on the real login would show whether it enters the request.
+Set by the user on 2026-10-27.
+USER DECISION: deny (the user, 2026-10-27)
+DECISION WHY: the user wrote DROP on this page (`docs/keep/tools/TodoWrite.txt:11`), and 0 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

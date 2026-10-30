@@ -1,0 +1,15 @@
+TOOL: Write
+DOES: Docs: "Creates or overwrites a file." Parameters `file_path` (absolute) and `content`. Not read-only, not deferred.
+DOC SOURCE: reference/tools/files
+REQUEST COST: 639 characters (docs/surfaces.md:40, the resident tools after the trim)
+CLAUDETTO USES IT FOR: Only Hephaestus lists it in `tools:` (archive/plugins/claudetto/agents/Hephaestus.md:6). Hooks: ledger (archive/plugins/claudetto/hooks/register.ts:81, :83), protect rules (register.ts:143, :145), notes check (register.ts:155), `DESCRIBED` (register.ts:189). Our shorter text `TOOL_WRITE` (archive/plugins/claudetto/modules/session/prompt/prompts.ts:121). Counted among the tools that can make a file (archive/plugins/claudetto/modules/gate/adapters/env-scan.ts:19-21). 126 of 292 counted sessions use it (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+PROS:
+- Needed to create new files, which `Edit` cannot do.
+- Smallest resident definition, 639 characters (docs/surfaces.md:40).
+- Used in 126 of 292 counted sessions (limits.ts:18).
+CONS:
+- Overwrites whole files, so the protect hooks must watch it (register.ts:143-145).
+RECOMMENDATION: keep
+WHY: New files cannot be made without it, Hephaestus lists it (Hephaestus.md:6), and it costs the least of all resident tools, 639 characters (docs/surfaces.md:40).
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `Write` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 126 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

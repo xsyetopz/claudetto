@@ -4,150 +4,81 @@ set positional-arguments
 default:
     @just --list
 
-# Run the test suite with `bun test`; a file argument runs that file in place of all of them, and an option goes to bun test (-t RE). A test reads the generated pages, so run `just generate` first after a change of `src/wiki/`. A test run is not a Claude Code session, so the session id does not reach the commit hook of the session
+# Run the test suite with `bun test`. A file argument runs that file in place of all of them, and an option goes to bun test (-t RE). A test run is not a Claude Code session, so the session id does not reach the commit hook of the session
 test *args:
     env -u CLAUDE_CODE_SESSION_ID bun test "$@"
 
-# Lint the code (Biome) and the Markdown (markdownlint-cli2)
+# Lint the code (Biome), the Markdown (markdownlint-cli2), and the file lengths (at most 300 lines of source and 500 of a test)
 lint:
     bun run lint
     bun run lint:md
+    bun tools/file-lines.ts
+    bun tools/no-narration.ts
 
-# Type-check each `.ts` file and the core hooks module (`bun check`, erasable syntax only); a linked worktree first gets the Claude Code types of the main worktree
+# Type-check each `.ts` file of the tree against the vendored Claude Code types (`bun check`, erasable syntax only)
 typecheck:
-    bun tools/types.ts
-    bun run typecheck
+    bun check
 
-# Validate the plugin manifest, skills, and agents
+# Check that every surface a tier row names has a decision page under `docs/keep/`, check that no sibling files form a cluster that should be a folder, check that every exported declaration carries a JSDoc block that adds a fact, check that a `path:line` citation in a page the repo owns points at a line that exists, check that no text is written as a `join("\n")` over an array literal or as an escaped `\n` between its words where a multiline template literal would show its shape, check that the generated Gitleaks rules still match the vendored config, then validate the plugin manifest and the marketplace that lists it. `--strict` makes a manifest warning a failure, such as an unrecognized field. The plugin-directory checks it prints, such as the missing listing icon, count only under `--profile directory`, which stays off because this change submits nothing to the catalog
 validate:
-    bun run validate
+    bun tools/keep-pages.ts
+    bun tools/agent-tools.ts
+    bun tools/clusters.ts
+    bun tools/jsdoc.ts
+    bun tools/citations.ts
+    bun tools/literals.ts
+    bun tools/gitleaks/run.ts --check
+    bun tools/rebuild/constants.ts
+    bun tools/rebuild/own.ts
+    bun tools/rebuild/silent.ts
+    claude plugin validate --strict plugins/claudetto
+    claude plugin validate --strict plugins/claudetto-you-should-know
+    claude plugin validate --strict .claude-plugin/marketplace.json
 
-# Fail on a clone that `.jscpd-baseline.json` does not hold (`bunx jscpd --update-baseline` accepts the clones of the run)
-dry:
-    bunx jscpd --no-tips
+# Print the Claude Code version and key count of the vendored settings schemas, which are what the checks read a settings key against. `--fetch` downloads both again from `clawdipedia.cc`, and `--upstream` compares the vendored copies with the published ones. Neither is in `just check`, because both reach the network
+settings-schema *args:
+    bun tools/settings-schema.ts "$@"
 
-# Run the hook lab: the tests of each plugin hooks module, with stubbed Claude Code events
+# Regenerate `plugins/claudetto/src/secrets/gitleaks/rules.ts` from the vendored Gitleaks config. `--fetch` downloads the config and its licence at the pinned ref first, `--fetch --ref TAG` at another, and `--upstream` compares the digest of the vendored copy with the original and names the newest release
+gitleaks-rules *args:
+    bun tools/gitleaks/run.ts "$@"
+
+# Run the hook lab: the tests of each plugin's mod, with stubbed Claude Code events and no model call
 lab:
-    bun tools/lab.ts
+    claude plugin test plugins/claudetto
+    claude plugin test plugins/claudetto-you-should-know
 
-# Run a recipe (default: check) in an OrbStack or Docker container with `DOCKER_CPUS` of `tools/limits.ts`; the repository is mounted, and `node_modules` is a volume of the container
-docker *args:
-    bun tools/lock.ts --name check bun dev/docker.ts "$@"
+# The full local gate: lint, the type check, the tests, plugin validation, and the hook lab. Sequenced here, with no runner script and no lock, until a need for either shows
+check: lint typecheck test validate lab
 
-# The full local gate of `tools/check.ts` under the lock of the run: lint, the type check, the generated wiki, tests, plugin validation, the hook lab, and `dry`
-check:
-    bun tools/lock.ts --name check bun tools/check.ts
+# Merge the settings snippet of this login's plan tier into `~/.claude/settings.json`, keeping each value you set. Extra arguments go to `plugins/claudetto/src/tiers/setup.ts` (--settings PATH aims at another file, --dry-run prints the report and writes nothing)
+setup *args:
+    bun plugins/claudetto/src/tiers/setup.ts "$@"
 
-# Run Claude Code with the plugins of this checkout, in a sandbox config apart from yours; extra arguments go to claude
-sandbox *args:
-    bun dev/sandbox/run.ts "$@"
-
-# Run Claude Code with only the plugin folder PLUGIN, in a new sandbox config with no settings, apart from `just sandbox`; extra arguments go to claude (-p "prompt")
-sandbox-alone plugin *args:
-    bun dev/sandbox/main.ts --dir /tmp/claudetto-sandbox-alone --clean
-    bun dev/sandbox/main.ts --dir /tmp/claudetto-sandbox-alone --plugin-dir "$@"
-
-# Install plugins of this checkout (default: claudetto) into a new sandbox config with `claude plugin install`, as a user installs them, then run Claude Code there
-sandbox-install *plugins:
-    bun dev/sandbox/install.ts "$@"
-
-# Run Claude Code again in the sandbox config of `just sandbox-install`, with no new install; extra arguments go to claude (--continue)
-sandbox-installed *args:
-    bun dev/sandbox/main.ts --dir /tmp/claudetto-sandbox-install "$@"
-
-# Run one live session of Claude Code in a Linux container, to check that the seccomp helper blocks a Unix socket in a sandboxed `Bash` call; the login of the host goes to the container on stdin, and the session costs money
-sandbox-linux:
-    bun dev/sandbox/linux/run.ts
-
-# Remove the sandbox config and project
-sandbox-clean:
-    bun dev/sandbox/main.ts --clean
-
-# Log the requests of Claude Code through a local proxy and size each part of the first one; extra arguments go to the proxy (--port N, --out DIR, --no-count)
+# Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --settings FILE, --tools N)
 capture *args:
-    bun dev/capture/main.ts "$@"
+    bun tools/capture/run.ts "$@"
 
-# Publish wiki/ to the GitHub wiki; the wiki repository exists only after its first page is made in the web UI
-wiki:
-    bun tools/wiki.ts
+# Check each recorded total of the prompt-size inventory against a reading taken now, free and with no model call. It is not in `just check` because it spawns `claude` once per row, so run it by hand after a change to a shipped prompt surface: an agent file, the output style, the deny list, the main agent body, or a tool description. It exits 1 naming each row that moved by more than the 12-character run-to-run variance of the instrument
+inventory:
+    bun tools/capture/inventory.ts
 
-# Refresh the claudetto marketplace, then update each plugin under plugins/ that you installed; restart Claude Code after
-update:
-    bun tools/update.ts
+# Price the compaction threshold against this login's own transcripts, free and with no model call; extra arguments go to `claudekit/compaction-cost/main.ts` (--sweep FROM,TO,STEP, --charge TURNS, --summary MODE, --thresholds LIST, --seed N, --root DIR)
+compaction-cost *args:
+    bun claudekit/compaction-cost/main.ts "$@"
 
-# Bump the version (major, minor, patch, or X.Y.Z) in both manifests and the CHANGELOG; add --dry-run to preview
-bump level *flags:
-    bun tools/bump-version.ts "$@"
+# Plan the paid compaction-threshold probe, free and with no model call unless `--run` is among the arguments; extra arguments go to `claudekit/probe/main.ts` (--run makes the paid calls, --report reads the forks a past round saved under --dir and reports them for free, --runs N forks per arm and 11 by default, the citable floor of 10 and one spare, so a fork lost to a transient API failure does not cost the round its citability and a second loss in the same arm is run again, --model M, --alt-threshold T the candidate against the shipped 140000, --sizes A,B base sizes in tokens, --max-total-usd U the cap on the round, --dir D)
+compaction-probe *args:
+    bun claudekit/probe/main.ts "$@"
 
-# Fail while a row of findings.md of an openspec change (a change folder name or a findings.md path, required) has no passed check (D38). Run it before the merge of a release into `main`, and not in `check`.
-release-check change:
-    bun tools/findings-check.ts "{{change}}"
+# Price one compaction in window points and dollars from the recorder's own rows, free and with no model call unless `--run` is among the arguments; extra arguments go to `claudekit/compaction-price/main.ts` (--run makes the paid calls, --steps N, --threshold T the tokens a step compacts at and with no --threshold the run calibrates it from one extra step, --model M, --dir D, --cheap-summary turns the plugin's own summarizer handler on so two runs price it against the engine's compaction)
+compaction-price *args:
+    bun claudekit/compaction-price/main.ts "$@"
 
-# Write the settings schemas of the installed Claude Code to schemas/ and format them with Biome; extra arguments go to `dev/schema/main.ts` (--bundle FILE, --version X.Y.Z)
-schema *args:
-    bun dev/schema/main.ts --out schemas "$@"
-    bunx biome format --write schemas
+# Measure what the agent status-line summarizer costs and whether either workaround stops it, free and with no model call unless `--run` is among the arguments; each arm needs a pty, because a summary needs an interactive session; extra arguments go to `claudekit/summary-cost/main.ts` (--run makes the paid calls, --runs N per arm, --dir D)
+summary-cost *args:
+    bun claudekit/summary-cost/main.ts "$@"
 
-# Write the inventory of the built-in parts of Claude Code from the local folder `external/cc-<version>/` to `.claude/claudetto/builtins/`; extra arguments go to `dev/builtins.ts` (--check, --strict, --dir D, --out D)
-builtins *args:
-    bun dev/builtins.ts "$@"
-
-# Write the default text of each prompt surface of Claude Code to the fixture of `tests/claudetto/session/prompt/`; extra arguments go to `dev/text-defaults.ts` (DOCS_DIR, BINARY)
-text-defaults *args:
-    bun dev/text-defaults.ts "$@"
-
-# Write wiki/ from its source in src/wiki/; add --check to name each page that differs from its source
-generate *flags:
-    bun tools/generate/index.ts "$@"
-
-# Run the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested; extra arguments go to the eval (--case NAME). The run costs money, so --max-cost-usd bounds it, and a lock stops a second run while one is in progress. --keep-temp is always on, so each run keeps its sandbox and trace.jsonl (the eval prints "kept temp: /private/tmp/e-XXXX") to find the cause of a failed run. --model is required, because without it the eval uses the model of the session, which can cost many times more. --judge-model is required, because the `llm` graders have no model key, and the default alias `haiku` moves to a new model with no notice
-eval *args:
-    @case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac
-    @case " $* " in *" --judge-model "*|*" --judge-model="*) ;; *) echo 'Pass `--judge-model` with a full model ID, such as `--judge-model claude-haiku-5-5`, so that the judge of each run is known.' >&2; exit 1 ;; esac
-    bun dev/unsandboxed.ts
-    bun tools/lock.ts claude plugin eval plugins/claudetto --no-publish --scaffold --allow-tools Bash,Write,Edit --max-cost-usd 5 --keep-temp "$@"
-
-# Run `just eval` once for each eval case that is not tagged split:held-out, for prompt work (D17); extra arguments go to each run, and --model is required
-# Each case has its own --max-cost-usd, so the total cap is that bound times the case count
-# Every case runs even when one fails, and the recipe exits 1 at the end if any failed
-eval-tune *args:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac
-    cases=$(bun dev/tuning-cases.ts)
-    [ -n "$cases" ] || { echo 'No tuning cases found.' >&2; exit 1; }
-    failed=0
-    for c in $cases; do just eval --case "$c" "$@" || failed=1; done
-    exit $failed
-
-# Check the budget tags of the cases against the kept traces named by tracePath in each aggregate-result.json (a file, or a folder that holds them); the with arm is checked and the without arm is only reported
-eval-budget *args:
-    bun dev/run-budget.ts "$@"
-
-# Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement, and the paired difference of the arms with a clustered standard error and the cases a power check needs); add --json, --seed N, --gap G, or --pick oldest
-eval-stats *args:
-    bun dev/stats/main.ts "$@"
-
-# Replay the deterministic stage of the permission gate on benign calls from your session logs (--limit N, --projects A,B), InjecAgent attacks (--injecagent DIR of a local clone), and synthetic in-project file edits; prints counts, rates with Wilson 95% intervals, and the ids of false positives, and makes no model call (--with-classifier prints the paid command only)
-classifier-replay *args:
-    bun dev/classifier-replay/main.ts "$@"
-
-# List the 18 forks of the code-compaction probe with `--dry-run` (no call), or run them with `--run [--dir D] [--runs N]` (3 runs of each arm and size by default), which is a paid run that needs the approval of the user (openspec change `code-compaction`, task 3.1)
-probe *args:
-    bun dev/probe/main.ts "$@"
-
-# Plant a constraint, a fact, a file, a decision, and the next task in seeded sessions, build the handoff with code, and score survival with Wilson intervals (no model call); add --sessions [--limit N] to replay real transcripts (read only, counts only), or --with-compact to print the command of the paid comparison against `/compact`
-handoff-probe *args:
-    bun dev/handoff-probe/main.ts "$@"
-
-# Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model and --judge-model are required as for `eval`
-eval-variant ref *args:
-    @case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac
-    @case " $* " in *" --judge-model "*|*" --judge-model="*) ;; *) echo 'Pass `--judge-model` with a full model ID, such as `--judge-model claude-haiku-5-5`, so that the judge of each run is known.' >&2; exit 1 ;; esac
-    bun dev/unsandboxed.ts
-    bun tools/lock.ts bun dev/eval-variant.ts "$@"
-
-# Run one headless sandbox session with a debug log, and fail when the log names an unknown frontmatter field
-debug-agents:
-    bun dev/sandbox/run.ts --check-frontmatter
-
+# Run the local proxy that answers the agent status-line summarizer itself, so a session that forks subagents pays nothing for its status labels; it prints the `ANTHROPIC_BASE_URL` to run `claude` with, and it forwards every other request to the API unchanged; extra arguments go to `claudekit/summary-cost/proxy.ts` (a path writes the JSONL log there, --pass only counts and pays)
+summary-proxy *args:
+    bun claudekit/summary-cost/proxy.ts "$@"

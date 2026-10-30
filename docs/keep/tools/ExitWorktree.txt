@@ -1,0 +1,14 @@
+TOOL: ExitWorktree
+DOES: "Leaves the worktree." Takes `action` (`keep` or `remove`) and `discard_changes`. Refused from a subagent with a cwd override. Main session and subagents.
+DOC SOURCE: `reference/tools/agents-and-tasks`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: claudetto replaces its description with a shorter text: `archive/plugins/claudetto/modules/session/prompt/prompts.ts:151` (`TOOL_EXIT_WORKTREE`), `archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:29`. Also `archive/plugins/claudetto/hooks/register.ts:196` and `archive/plugins/claudetto/tests/tool.test.ts:93`. `archive/plugins/claudetto/skills/setup/SKILL.md:81` recommends it off. Not denied.
+PROS:
+- Pairs with `EnterWorktree`, which the project uses (user statement in the task).
+- Without it a session that entered a worktree has no tool to leave it.
+CONS:
+- Same conflict as `EnterWorktree` with `archive/plugins/claudetto/skills/setup/SKILL.md:81`.
+RECOMMENDATION: keep
+WHY: It has to follow `EnterWorktree`, which the user's worktree workflow needs, and claudetto already trims its text at `tools.ts:27`.
+USER DECISION: deferred (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: it is not in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`), so it can be deferred, and 0 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

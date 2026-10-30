@@ -1,0 +1,15 @@
+PLUGIN: cc-plugin-responsive-mode@builtin
+DOES: Plugin description in the program: "Responsive mode: Claude replies to you in a sentence before thinking or using tools, on every prompt".
+SOURCE: Program file `/Users/krystian/.local/share/claude/versions/2.1.312`, module `chunk-535bwx0f.js` for the texts and `chunk-f5991pc6.js:1007-1062` for the listing and the gate. Re-read on 2026-10-28 for task 14.12, after the install moved from `2.1.311`. Docs: not found, `cc-docs search "cc-plugin-responsive-mode"` returned no page that describes it, and the `extend/mod-api/nouns-and-gates` table does not list it.
+WHAT IT ADDS TO A SESSION: Two texts, not one. `REMINDER`, a `<responsive-mode>` block of 391 characters, goes into the prompt context through `prompt.submit` on each prompt the person typed. `SECTION`, 2247 characters, goes into the system prompt through `prompt.section` named `focus_mode` when the harness's own text for that section is null. It also adds the hint text "enter to interrupt and send · ctrl+x then enter to queue" through `ui.render`, and its `prompt.submit` hook calls `$.turn.abort` when `cutsTheTurn` holds. No skills, commands, agents, or MCP servers found.
+COST: zero today. The two sizes are the distances between the offsets of each template literal, 391 and 2247 characters, and neither text reaches a request while the plugin is unavailable. An earlier reading on this page said 396 for the reminder and was 5 too high: the same offset arithmetic gives 391 in `2.1.311` as well, so it was a counting error and not a change of the program.
+SENDS TELEMETRY: no. Its manifest scan lists only the call `turn.abort`.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `responsive-mode`. The entry is insurance rather than a saving, because the plugin is off and unavailable by default.
+PROS:
+- A fast acknowledgement before long work (description).
+- Declares no telemetry.
+CONS:
+- Would add 391 characters to every prompt the person types, and 2247 to the system prompt, if it were ever on.
+- Pulls against a concise output style (`outputStyle: "claudetto:Concise"`, `archive/plugins/claudetto/modules/setup/prompts.ts:167`).
+RECOMMENDATION: keep off
+WHY: Three conditions must hold together before it costs anything: `defaultEnabled:!1`, so a person must turn it on, the GrowthBook gate `tengu_quiet_ember` whose local default is false, and an interactive session, since `H$()` is false for a `CLAUDE_CODE_SESSION_KIND` of `bg`, `daemon`, or `daemon-worker` (`chunk-4t3x8zky.js:6990`). Keeping it off costs nothing and removes the conflict with the concise style for good. Not read: what `Yxt()` tests in `var qho=()=>H$()&&!Yxt()&&An("tengu_quiet_ember",Kho())`.

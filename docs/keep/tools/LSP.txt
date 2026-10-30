@@ -1,0 +1,15 @@
+TOOL: LSP
+DOES: "Code intelligence: definitions, references, symbols, hover, call hierarchy." Takes `operation`, `filePath`, `line`, `character`. Main session and subagents, and background subagents since `2.1.280`.
+DOC SOURCE: `reference/tools/files`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no agent lists it in `plugins/claudetto/agents/*.md`. The name appears in `archive/plugins/claudetto/hooks/register.ts:196` (the `DESCRIBED` list) and `archive/plugins/claudetto/modules/session/prompt/limits.ts:18` (a count string with `LSP:0`). `archive/plugins/claudetto/skills/setup/SKILL.md:77` says to recommend an LSP plugin off when the project has no file for it. Not denied.
+PROS:
+- Precise symbol navigation when a language server is installed.
+CONS:
+- Needs an LSP plugin to do anything, and no use of it is found in claudetto.
+- The `LSP:0` in `limits.ts:18` suggests that it is rarely called, but I did not read what that string measures.
+RECOMMENDATION: KEEP, "claude plugins can contain lsp servers, and swift-lsp etc exist!"
+WHY: No use found, but no cost measured and its value depends on whether the user has an LSP plugin. Listing the enabled plugins of the user's setup for an `lsp` entry would settle it.
+Set by the user on 2026-10-27. "claude plugins can contain lsp servers, and swift-lsp etc exist!"
+USER DECISION: deferred (the user, 2026-10-27)
+DECISION WHY: it is not in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`), so it can be deferred, and 0 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

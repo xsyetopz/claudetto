@@ -1,0 +1,16 @@
+TOOL: Agent
+DOES: Docs: "Starts a subagent (alias `Task`)." Main session and subagents until the depth limit. Read-only and parallel flags set, not deferred.
+DOC SOURCE: reference/tools/agents-and-tasks
+REQUEST COST: 4,850 characters (docs/surfaces.md:41, first row of the probe)
+CLAUDETTO USES IT FOR: The main agent starts the six roster agents with it (plugins/claudetto/agents/main.md:127, :135). Hooks: default type for a call with no `subagent_type` (archive/plugins/claudetto/modules/agents/adapters/mod.ts:3, :19, archive/plugins/claudetto/hooks/register.ts:139), usage gate at red (archive/plugins/claudetto/modules/gate/domain/usage.ts:30-44), handoff of background launches (archive/plugins/claudetto/modules/session/handoff/sections.ts:108-143). Built-in agent types are denied by `Agent(general-purpose)` and the like (archive/plugins/claudetto/modules/setup/prompts.ts:134). Setup notes `isolation: "worktree"` of `Agent` (archive/plugins/claudetto/skills/setup/SKILL.md:81). Our shorter text `TOOL_AGENT` (archive/plugins/claudetto/modules/session/prompt/prompts.ts:58). In `NEVER_DEFERRED` (archive/plugins/claudetto/modules/session/prompt/limits.ts:28). 196 of 292 counted sessions use it (limits.ts:18).
+PROS:
+- The whole roster design runs on it, and 196 of 292 sessions call it.
+- Our shorter text replaces the harness text only when it is shorter (archive/plugins/claudetto/modules/session/prompt/adapters/mod.ts:108-116).
+CONS:
+- The largest resident definition, 4,850 characters (docs/surfaces.md:41).
+- docs/surfaces.md:35 says denying it with `ListAgents` removes subagents, a capability loss.
+RECOMMENDATION: KEEP, TRIMMED, the user wants the description cut
+WHY: main.md:127 and the roster of six agents depend on it, and docs/surfaces.md:35 names its deny as a loss of subagents.
+Set by the user on 2026-10-27. "trim it hard"
+USER DECISION: keep (the user, 2026-10-27)
+DECISION WHY: `Agent` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 196 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

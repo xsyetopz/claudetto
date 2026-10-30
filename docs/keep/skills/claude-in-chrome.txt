@@ -1,0 +1,15 @@
+SKILL: claude-in-chrome
+SET: bundled
+DOES: Browser automation through the Chrome extension.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/claude-in-chrome`
+LISTING COST: not measured  (a bundled skill has no file that we can read, route `extend/skills-and-commands/bundled-skills`)
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Nothing for a CLI-only setup.
+CONS:
+- Gated or off in our setup (row).
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: drop
+WHY: Claudetto is CLI and TUI only (`docs/surfaces.md:3`), and it ships its own `claudetto-browser` plugin (`CHANGELOG.md:462`).

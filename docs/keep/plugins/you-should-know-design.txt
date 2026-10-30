@@ -1,0 +1,188 @@
+DESIGN DOSSIER: cc-plugin-you-should-know@builtin (rebuild design, facts from the module only)
+MODULE: `/Users/krystian/.cache/cc-inspect/2.1.311/clean/readable/chunk-mf7ejead.js` (4130 lines, all read), Claude Code version `2.1.311`. The minified twin `modules/chunk-mf7ejead.js` was not opened, the readable view lost nothing needed. Line numbers below are lines of the readable file. Prose lengths are JS string lengths (UTF-16 units) measured by a script on the exact source lines.
+  Plugin name `PLUGIN_NAME` is the import `jve` (line 100), its value is not in this module, see UNREAD. Manifest scan (lines 120-173) lists hooks `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach`, `session.end`, runCommands `plugin`, env reads `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` and `USER_TYPE`, state key `aboutOpen` of plugin `cc-plugin-you-should-know`, and calls `clock.after`, `env.get`, `model.fork`, `prompt.fill`, `prompt.read`, `prompt.submit`, `session.id`, `session.surfaces`, `session.version`, `state.get`, `state.set`, `store.get`, `store.set`, `telemetry.log`, `telemetry.mark`, `ui.invalidate`, `ui.resolve`, `ui.toast`.
+  Registration: `registerPlugin` (line 4102) with `defaultEnabled: false` (4105). Listing `PLUGIN_LISTING` (4096) has `isAvailable` (4090-4095) = `x$e()` truthy, and not `Bs("hipaa")`, `Bs("zdr")`, `Bs("ldr")`, and `k(availabilityFlag(), isOnByDefault)`. `availabilityFlag()` returns `tengu_jolly_dewdrop` (637), `isOnByDefault = false` (4089).
+
+CONSTANTS:
+  CHECK_EVERY = 6  (line 1306)
+  SEEN_MAX = 50  (line 1466)
+  SESSIONS_MAX = 32  (line 2363)
+  CHECKS_KEPT = 3  (line 1222)
+  CLEAR_AFTER_PROMPTS = 2  (line 1307)
+  LOOKS_TO_SKIP_MAX = 16  (line 3257)
+  TYPED_PAST_FREE = 2  (line 3258)
+  ASKED_MS = 20000  (line 1548)
+  SHOWN_KEEP_MS = 259200000  (line 2364)
+  CARD_WIDTH = 60  (line 669)
+  CARD_INSET = 2  (line 2077)
+  MAX_CARDS = 4  (line 1309)
+  MAX_LINE_WIDTH = 240  (line 1344)
+  MAX_TITLE_WIDTH = 120  (line 1312)
+  MAX_CAPTION_LENGTH = 4000  (line 1308)
+  MAX_SKETCH_LINES = 12  (line 1310)
+  MAX_SKETCH_WIDTH = 120  (line 1311)
+  CHOICE_GAP = 3  (line 785)
+  OFFER_MARGIN_ROWS = 1  (line 825)
+  WRAP_RESERVE_CELLS = 1  (line 793)
+  STAR_CELLS = 2  (line 826)
+  WIDE_FROM = 4352  (line 787)
+  NARROW_BOUNDS = { hangulJamo: 4352, punctuation: {first: 8208, last: 8286}, arrows: {first: 8592, last: 8703}, shapes: {first: 9472, last: 9727}, mediumSmallSquares: {white: 9725, black: 9726} }  (lines 2079-2097)
+  FALLBACK_COLUMNS = 80  (line 2078)
+  CLOCK_LENGTH = 8  (line 1213)
+  SLUG_MAX = 48  (line 3225)
+  MS_PER_SECOND = 1000  (line 1091)
+  KEY_TEXT = "0: "  (line 786)
+  FIRST_EXPLANATION_LENGTH = a 62-char budget text, at most 100 words  (line 2560)
+  EXPLANATION_LENGTHS = { first, simpler_words, less_detail, more_detail }  (lines 2562-2570), see EXPLAIN PATH
+  EXPLAIN_DIRECTIONS = ["first", "simpler_words", "less_detail", "more_detail"]  (line 962)
+  EXPLAINED_OUTCOMES = ["shown", "fork", "empty"]  (line 968)
+  DEFAULT_TAG = "You should know"  (line 1395)
+  HEADS_UP = /^\W*heads[\s-]*up\W*$/i  (line 1396)
+  TAG_LABEL = case-insensitive regex for a line that starts with the word tag, allowing leading quote, star, underscore or angle marks, then a colon or a dash  (lines 1397-1400)
+  TAG_OPENERS = { "You should know": "you_should_know", "Heads up": "heads_up" }  (lines 1050-1053)
+  OPENERS = ["understand", "review", "learn", "see"]  (line 970)
+  QUESTION_WORDS = ["why", "how", "what"]  (line 971)
+  CLOSERS = the closing marks of WRAPPING_QUOTES joined: double quote, single quote, right double curly, right single curly, backtick  (line 1337, WRAPPING_QUOTES at 1317-1323)
+  ANSWERS = ["helpful", "yes_explain", "yes_page", "not_relevant", "not_understood", "hard_to_read", "know_it", "not_now", "ignored_submit", "ignored_timeout", "got_it", "chat", "respond", "simpler_words", "less_detail", "more_detail", "not_helpful", "dismiss", "explained_helpful", "explained_not_understood", "page_helpful", "page_not_helpful", "page_unread", "left_open", "turn_off", "off_failed", "off_confirmed", "off_abandoned"]  (lines 927-956)
+  OFF_VIA = ["row", "offer", "typed"]  (line 995)
+  PROMPT_ORIGINS = ["composer", "bridge", "other"]  (line 1020)
+  PROPOSED_OUTCOMES = ["shown", "none", "parse_failed", "deduped", "stale", "aborted", "api_error", "error"]  (lines 1040-1049)
+  PROPOSED_KINDS = { shown: ok, none: ok, parse_failed: sad, deduped: ok, stale: ok, aborted: null, api_error: bad, error: bad }  (lines 1021-1030)
+  UNANSWERED_OUTCOMES = { "nothing-to-fork": "none", "api-error": "api_error", "empty-reply": "none", aborted: "aborted" }  (lines 1060-1065)
+  PAGE_KINDS = { ready: ok, reset: null, fork: bad, empty: bad, publish: bad, blocked: sad, timeout: bad }  (lines 996-1004)
+  PAGE_OUTCOMES = ["ready", "reset", "fork", "empty", "publish", "blocked", "timeout"]  (lines 1011-1019)
+  PAGE_FONTS = a `link` stylesheet tag to the Google Fonts css2 host, families Fredoka (500, 600) and Atkinson Hyperlegible (400, 700), display swap  (lines 2622-2623)
+  DEBUG_ON_WORDS = ["1", "true", "yes", "on"]  (line 1243)
+  OFF_COMMAND = `/plugin disable ${jve}@builtin`  (line 714, final text depends on unread `jve`)
+  EARLIER_NAMES = ["suggest-learning", "you-should-know"]  (line 2458)
+  RELEASE_BASE = /^(\d+)\.(\d+)\.(\d+)(-dev)?$/  (line 1092)
+  SPAN_LOOKS = { bold: {bold: true}, code: {color: "permission"} }  (lines 638-645)
+  ACCENT_LEAD_INK = { star: {color: "suggestion"}, tag: {dimColor: true} }  (lines 1519-1526)
+  MUTED_LEAD_INK = { star: {color: "subtle"}, tag: {color: "subtle"} }  (lines 1527-1534)
+  LEAD_INK = { terminal: ACCENT, desktop: MUTED, mobile: ACCENT, vscode: ACCENT }  (lines 1535-1540)
+  Other exported constants found:
+  OWN_COMPOSER = { terminal: false, desktop: true, mobile: true, vscode: true }  (lines 1469-1474)
+  CLEARED_BY = ["prompt", "session_end"]  (line 961)
+  LEFT_BY = ["session_end", "pushed_out"]  (line 969)
+  ASKED_WAYS = { simpler_words: "in simpler words", less_detail: "with less detail", more_detail: "in more detail" }  (lines 2546-2550)
+  ABOUT_CLOSED = { isOpen: false, surface: "terminal", copy: TERMINAL_COPY, budget: "scrolls" }  (lines 778-784)
+  isOnByDefault = false  (line 4089)
+  Regexes: FENCE_LINE = /^```/ (1260), TITLE_LINE = /^(?:\*\*([^*]+)\*\*|#+\s*(.+))$/ (1305), LEARN_LABEL = /^learn\s*:\s*/i (1313), EXPLAIN_LABEL = /^explain:\s*/i (1340), INLINE_TAG (1341-1342), ENDS_A_SENTENCE (1338), ENDS_WITH_QUESTION (1339), HARD_BREAK = two spaces plus newline (1830), LIST_MARKER (1832), LEADING_NUMBER (1833), STRUCTURAL (1836), MARKUP (1834-1835, exported as `MARKUP`).
+  Imported, value not read: `PLUGIN_NAME` (jve) and `SPINNER_TIP` (oCr), line 100.
+
+TRIGGER:
+  Hooks (all inside `register`, 3265-4088): `prompt.submit` (3278), `command.run` for command `plugin` (3302-3316), `turn.step` (3317), `ui.render` for component `AbovePrompt` (3565-3569), `session.detach` (4044), `session.end` (4048).
+  The check lives in `turn.step`. A step with `agentId` set (a sub-agent step) passes straight through (3318-3320). Otherwise the hook asks `session.surfaces()` and, if the list is non-empty and `drawsBand` is true (a surface is "terminal" or has rendered `AbovePrompt`, 1467-1468), runs the per-session routine on the session id (3552-3562, routine 3329-3551). The hook never blocks the step, it always continues with `yield* b3(b2)` (3563).
+  Skip condition (3375-3379): skip when NOT (`index > 0` and `index % CHECK_EVERY === 0`), or `offeredTurn === turnId`, or a view is already stored, or the band is not watched. `isBandWatched` (2329-2331) drops the "terminal" surface for a session that took a "bridge" prompt.
+  Step index 0 is a different branch (3380-3433): it resolves the prompts typed since the offer and returns, no check at index 0.
+  After the skip test: return if a check is already in flight for the session (3441-3443). If the stored `looksToSkip` is above 0, decrement it and return (3444-3447, value capped by `LOOKS_TO_SKIP_MAX` at 3437-3440). Else mark `askedTurn = turnId` (3490-3492) and run one `model.fork` (3502), stored in-flight map (3544-3550).
+  Offer is accepted only when `askedTurn === turnId` and the session has not ended (`isOfferDue`, 2332, used 3464-3470). Otherwise the outcome is `stale`.
+  Debug (3495-3496, 3519-3535): when env `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` is one of `DEBUG_ON_WORDS` (trimmed, lowercased, 1243-1245), each check appends a record to the session row (number, step, outcome, latencyMs, at), kept to `CHECKS_KEPT` (1222-1242), and the render hook draws them above the offer. Line format at 1214-1221: `debug · check N · step N · outcome · S.Ss · HH:MM:SS` (clock slice of `CLOCK_LENGTH` = 8, seconds with one decimal).
+  Prompt tracking (`prompt.submit`, 3278-3301): for a person's prompt (origin composer or bridge, `isPersonsPrompt` 3250) it clears an "off" line (3281-3283), and, if surfaces exist, counts the prompt per session with its origin (3285-3291), tracking bridge sessions in a set (3292-3296).
+  `command.run` (3302-3316): a person typing the plugin disable command (`isOffCommand`, 2460-2468, accepts own name, the earlier names, with or without `@builtin`) runs `ranOffCommand` (2469-2497).
+
+KEY BAR:
+  Offer row (`offerRow`, 2159-2219), choice order left to right, each button is `{hotkey, label}` rendered by `choice` (1549-1567) with `plain` and `dimColor` from `isDim`:
+  1. hotkey `1`, "Learn more", not dim (2165-2169). Answer `yes_explain`.
+  2. hotkey `2`, "Knew this already", not dim (2170-2174). Answer `know_it`.
+  3. hotkey `3`, "What is this" (closed) or "Return to topic" (open), DIM (697-702, `isDim: true`). Only shown when the note copy fits (`aboutFit`, 850-883).
+  4. hotkey `4`, "Disable" or "Press again to disable" (armed), DIM (2146-2158). Only when an `off` handler exists.
+  5. hotkey `0`, "Dismiss", not dim, role `dismiss` (2178-2183). Answer `not_now`.
+  So the on-screen order is 1, 2, 3, 4, 0 (2217: before, about, after).
+  The `off` handler is withheld when the surface has its own composer or when env `USER_TYPE` equals `external` (`isOptIn`, 2498, used 3988 and 4004).
+  Asked row after Dismiss (`askedRow`, 1728-1762): 1 "That was helpful", 2 "Not relevant", 3 "Couldn’t understand", 4 "Turn off suggestions" (only when `off` exists, 1731-1739), 0 "Dismiss". Prefixed by a dim "Dismissed." text (1691, 1721). None marked dim.
+  Asked row after an explanation (`explainedAskedRow`, 1763-1779): 1 "That was helpful", 2 "Didn’t understand", 0 "Dismiss".
+  Explained row (1986-2005): 1 "Understood", 2 "Chat in main session", 0 "Dismiss". Not drawn when the survey flag `hasSurvey` is set (3968-3970).
+  Ready row (2250-2266): 1 "Helpful", 2 "Not helpful", 3 "Didn’t read". Failed row: 0 "OK" (2070-2074).
+  Row geometry: `choicesRow` is a `Box` with `marginLeft: 2` and `flexWrap: "wrap"` (1780-1790). Each button sits in a `Box` with `marginRight: CHOICE_GAP` (1553).
+  Wrap model for sizing (`choicesRows`, 809-824): start at 1 row, each label measured as `KEY_TEXT` + label plus `CHOICE_GAP`. A label that does not fit on the current line starts a new row. A label wider than the whole width is wrapped with `wrapRows` at width minus `CHOICE_GAP`. Width is `max(columns, 1)`.
+  `wrapRows` (794-808): usable width is `max(width - WRAP_RESERVE_CELLS, 1)`, words split on single spaces, a long word spans `ceil(cells / width)` rows.
+  Cell width at `WIDE_FROM`: `cellsAtMost` (788-792) counts one cell per code point below 4352 and two at 4352 or above. This is the measure for layout rows.
+  Cell width at `NARROW_BOUNDS`: `glyphCellsAtMost` (2098-2113) counts one cell below 4352, in 8208-8286, in 8592-8703, in 9472-9727 except 9725 and 9726, and two cells for all else. It is used by `fitLine` (2121-2135) for card titles and sketch lines, not for the key bar.
+  Surface layout: `rowsTable` (2269-2285). A surface with its own composer (`hasOwnComposer`, 1475-1476, unknown surface names count as true) gets buttons without `hotkey` and `plain` and no star column (`hasStarColumn: false`). Terminal gets a star column.
+
+CARD LAYOUT:
+  Offer above the prompt (`offerRow`, 2204-2218): column `Box` with `marginTop: 1` (one blank row, `OFFER_MARGIN_ROWS`), then the head, then the choices row.
+  Terminal head: `starred` (1620-1653): row with a `STAR_CELLS` (2) wide, non-shrinking box holding the star glyph, then wrapped text of the tag, a middle dot, and the line (tag styled by lead ink).
+  Other surfaces: `offerHead` (740-777). Desktop: a row where the lead (star, tag, dot) is in a non-shrinking box and the body is wrapped text beside it, plus the hover "about" card. Mobile and vscode: a single wrapped `Text` with lead then body. Lead (`$8bc599`, 1568-1593) is the star glyph, then a space, or the tag between spaces and a dot.
+  Row budget (`headedRows`, 828-834): `OFFER_MARGIN_ROWS` + `wrapRows(text, columns - STAR_CELLS)` + `choicesRows` at `columns - 2`. `closedOfferRows` (835-836) uses `taggedLeadText` = tag + " · " + line (827).
+  About note: terminal copy is `TERMINAL_COPY`, app copy `APP_COPY` (737-738), chosen by `aboutFrame` (884-895). In terminal it must fit in `maxRows` and `bodyColumns` or it is cut line by line from the end (`fittedCopy`, 838-849) and, if the closed row does not fit either, the "What is this" button is dropped. On own-composer surfaces the budget is "scrolls" (no cut). Open state is stored per session in state key `aboutOpen` and toggled with a version check (898-926). Key is `shownAt` + line (896-897). Opt-in users get empty copy (`aboutFrame` third argument, 887).
+  Hover card (`aboutCard`, 670-696): absolute, `bottom: 1`, `left: 0`, hidden until hover, round dim border, `paddingX: 1`, width `CARD_WIDTH`.
+  Explanation cards (`explainedRow`, 1944-2007): column, `marginTop: 1`. Header starred row with the tag and the topic (`noteTopic`, 2617-2621, one line cut to `MAX_LINE_WIDTH`), `marginBottom: 1`. Each card is a column with `marginBottom: 1` and `marginLeft: 2`: lead markdown under a bold title, an optional `Code` block (language text, wrap truncate-end, empty lines become one space), then caption markdown. Then the choices row.
+  Card parse (`parseExplanation`, 1345-1394): fence lines toggle a sketch block, sketch lines capped at `MAX_SKETCH_LINES` and each cut to `MAX_SKETCH_WIDTH`, a bold line or a hash heading starts a new card with a title cut to `MAX_TITLE_WIDTH`, text before any sketch is lead, text after is caption, lead and caption cut at word boundary to `MAX_CAPTION_LENGTH`, at most `MAX_CARDS` cards.
+  Fit to width (`fitCards`, 2136-2143): width is `bodyColumns` when finite, else `FALLBACK_COLUMNS`. Titles and sketch lines are cut to `max(width - CARD_INSET, 1)` cells with an ellipsis.
+  Markdown shaping (`proseMarkdown` 1909-1934, `lineShape` 1853-1887, `literal` 1837-1852) escapes structural characters and keeps bullets and ordered items.
+  Other rows: `stillRow` (2008-2032) star plus dim truncated text, `explainingRow` shows a short wait text, `makingRow` (2144) a longer wait text, `failedRow` (2034-2076) one of five messages by reason (publish, blocked, explain, turn_off, else), `readyRow` (2220-2268) a title, the url dimmed, and the choices, `debugRows` (1791-1829) dim check lines.
+
+STATE MACHINE:
+  View kinds (`viewOf`, 2286-2304): `offer`, `explaining`, `explained`, `asked`, `making`, `ready`, `failed`, `off`. Stored per session in store key `sessions` as rows `{id, view, tag, offeredTurn, askedTurn, checked, checks}` (`isRow`, 2305-2313). Other store keys: `seen`, `known`, `typedPastInARow`, `looksToSkip`.
+  proposed -> shown: `parseProposedLine` (1407-1465) and `c9` (3448-3488). Outcome `none` for a declined line, `parse_failed` otherwise, `deduped` when `lineKey` (lowercase, no final period, 3256) matches any line in `seen` or `known` (3457-3463), `stale` when the check is no longer due (3464-3470). On success: `seen` gets the line, trimmed to the last `SEEN_MAX` (3471), the session row gets view `offer` with `line`, `explanation`, `shownAt` plus `offeredTurn` and `tag` (3472-3481), pending prompt counts are forgotten (3482), and the UI is invalidated.
+  Line rules in the parser: accepted line at most `MAX_LINE_WIDTH` (1453), a missing final period is added (1451), a wrapping quote pair is removed (`unquoted`, 1324-1336), an inline tag suffix is read (1341-1342, 1449-1452).
+  shown -> answered (offer buttons, 3989-4035): "Learn more" -> `explaining` or straight to `explained`. "Knew this already" -> line added to `known` (trimmed to `SEEN_MAX`, 3606-3611), view cleared (3616-3618). "Dismiss" -> `asked`. "Disable" press 1 sets `isOffArmed` (3677-3702), press 2 runs `b22` (3703-3735).
+  Disable path (`b22`): refuse if the prompt box has text (toast `OFF_BOX_BUSY`, 3707, `keepsDraft` 3239-3246), set view `off`, fill the prompt box with `OFF_COMMAND` in replace mode (3725-3729), on failure record `off_failed` and show a `failed` row of reason `turn_off` (3731-3734). The typed command is then caught by `command.run` and `prompt.submit` (`takeDown`, 2401-2433, answers `off_confirmed` or `off_abandoned`, `clearedBy: "prompt"`).
+  asked: entered from "Dismiss" on an offer (3677 `b17`) or on an explanation. It starts a timer with `clock.after(ASKED_MS)` (3627-3631). Timer expiry and the row's own Dismiss both run `b18` (3634-3646, 3872, 3891), which clears the view and records `ignored_timeout`. The three feedback buttons record one answer once (3848-3856), then clear. "That was helpful" also adds the line to `known` (3867, 3870, 3876).
+  explaining -> explained: `b24` (3747-3795). Marks the session in an in-flight set, sets view `explaining` with iteration, forks, then shows `explained` with the text, or falls back to the previous text (follow-up) or to a `failed` row (reason `explain`) when none exists (3774-3790). `explained` keeps `shownAt` and `iteration` (3736-3746).
+  explained -> closed: "Understood" records `got_it` and adds the line to `known`. "Chat in main session" (`d3`, 3918-3963) builds a quoted draft with `respondDraft` (3180-3197), refuses if the box has text (`RESPOND_BOX_BUSY`), fills the box in replace mode, records `respond`, adds to `known`. If the composer refuses with `no_composer` it records the answer and calls `prompt.submit` with the draft (3947-3959), if refused for a dialog it toasts `RESPOND_BLOCKED`, otherwise `RESPOND_NOT_FILLED` (3948-3951). "Dismiss" records `dismiss` and goes to `asked` with the iteration.
+  Draft cleaning (`cleanForDraft`, 2542-2545): drop invisible characters, fold at-mentions to a full-width at sign, fold paste/image placeholders, split ultra-keywords with a hyphen (2513-2541).
+  cleared / dismissed by typing: at step index 0, an open view (`offer` or `explained`) with prompts typed since (3389-3433) gets `promptsSurvived += count`. An `explained` view always survives. An `offer` survives while `promptsSurvived < CLEAR_AFTER_PROMPTS`, and `keptPastPrompt` (1506-1518) disarms its off confirmation. When it reaches 2, the view is cleared, `ignored_submit` is recorded, and the back-off counters move. A stored `asked` view is cancelled and cleared at step 0 (3381-3388).
+  Back-off: `typedPastInARow` is incremented on each ignored offer (3415-3416) and `looksToSkip = looksToSkipAfter(n)` (3417). `looksToSkipAfter` (3259-3264): 0 when n <= `TYPED_PAST_FREE`, else `min(LOOKS_TO_SKIP_MAX, 2 ** (n - 2 - 1))`. Each later eligible check decrements `looksToSkip` instead of forking (3444-3447). Any answer other than `ignored_timeout` resets both counters to 0 (3654-3662).
+  Eviction: `withRow` (2365-2380) puts the row first, caps the list at `SESSIONS_MAX`, evicting closed rows first and then oldest, and keeps open rows shown within `SHOWN_KEEP_MS` (three days) for last. An evicted open row records `left_open` with `leftBy: "pushed_out"` (3346-3354, 3596-3604). `session.end` clears an open view and records `left_open` with `leftBy: "session_end"`, and clears an `off` view as `off_abandoned` (4048-4087). The ended session id is remembered so a pending check turns `stale` (4054).
+  Unattended in-flight: an `explaining` or `making` view with no running task is cleared on step and on render (`isUnattendedInFlight` 2333-2334, 3356-3374, 3796-3811).
+  Survey guard: when `hasSurvey` is true and the view is not `explained`, the hook defers to the next handler (3812-3814).
+  De-duplication: against `seen` (50 shown lines) and `known` (50 lines the person knew or was helped by), case-insensitive without a final period (3457-3463, 3256). Both lists are also passed into the propose prompt.
+
+EXPLAIN PATH:
+  "Learn more" (3993-4002): if the offer carries an inline explanation from the same reply and `parseExplanation` yields at least one card, it opens as `explained` at iteration 1 with NO model call (3994-3999). Otherwise one `model.fork` with `explainPrompt(line, undefined)` (4001, 3757-3761). So a check that includes `explain:` makes learn-more free, and the cost of one answer is 0 or 1 calls.
+  Failure: if the fork is unanswered or throws, outcome `fork`. An answered reply with no cards is `empty`. Both show a `failed` row of reason `explain` when no earlier text exists (3763-3790).
+  Directions (`EXPLAIN_DIRECTIONS`, 962) and word budgets (`EXPLANATION_LENGTHS`, 2562-2570): `first` at most 100 words (fewer if the thing needs no intro), `simpler_words` at most 100 words with everyday words and no technical terms, `less_detail` at most 45 words, one point, one consequence, no sketch, `more_detail` at most 160 words with real names in backticks, one edge case, a sketch allowed. Each follow-up would cost one fork and rewrite the previous text (`explainPrompt`, 2585-2609, wraps the previous text in triple quotes).
+  Finding: in this module no button calls `b24` with a direction. Only the "Learn more" call site (4001) exists, so the three follow-up directions and answers `simpler_words`, `less_detail`, `more_detail`, `chat`, `hard_to_read`, `not_helpful` (each appears only in `ANSWERS`, lines 933-944) are defined but unreachable here. The propose prompt asks for explainer text of at most 120 words (line 2771) and the explain format caps a sketch at 60 columns by 6 rows (2557) while the parser allows 120 by 12.
+
+LEARN PAGE:
+  Only helpers exist in this module, no builder and no publisher was found.
+  `pageHtml` (3208-3224): finds the first `<title`, returns null if missing, drops a trailing code fence, requires `</title>` else null, then inserts `PAGE_FONTS` right after the closing title tag.
+  `slugOf` (3226-3231): lowercase, non-alphanumeric runs to a hyphen, trim hyphens, cut to `SLUG_MAX` (48), fallback "page".
+  `urlOf` (3232-3238): reads the `url` field of a result object.
+  `pressConsentOf` (2624-2625): consent text naming a press of "2" to make an artifact, quotes in the topic turned to double quotes. `SESSION_NOTE` (3198-3199): footnote for the page.
+  Kinds: `PAGE_KINDS` (996-1004), outcomes: `PAGE_OUTCOMES` (1011-1019), fonts: `PAGE_FONTS` (2622-2623). Views `making` and `ready` are rendered (3820-3840, rows 2144 and 2220) and `failed` has reasons `publish` and `blocked` (2036-2059), but nothing in this module ever sets a `making` or `ready` view or answers `yes_page`. No offer button maps to it (see KEY BAR). The `page` telemetry builder (1177-1188) is never called here.
+
+MODEL CALLS:
+  `$.model.fork` is called twice and both pass only `{prompt}` (no model choice, no tools, no max tokens):
+  Line 3502, inside the check (`c10`, 3489-3543): `prompt: proposePrompt(seen, known)`. Result `usage` read by `forkUsage` (1066-1071). An answered reply goes to `c9`, an unanswered one maps its `reason` through `UNANSWERED_OUTCOMES`, a throw is outcome `error`.
+  Lines 3757-3761, inside `b24`: `prompt: explainPrompt(line, direction-info)` with `.catch(() => {})`.
+  `$.model.complete`: none (searched, 0 hits). `$.model.classify`: none (0 hits).
+  Other platform calls, for the port: `clock.after` (3629), `env.get` (3496, 3583, 3585), `prompt.read` (3707, 3928), `prompt.fill` (3725, 3936), `prompt.submit` (3956), `session.id` (2436, 3286, 3577), `session.surfaces` (3285, 3554, 4045), `session.version` (2483, 3718), `state.get`/`state.set` (902-920), `ui.toast` (3242, 3949), `ui.resolve` (3571), `ui.invalidate` (many).
+
+TELEMETRY CALL SITES:
+  Rebuild drops all of these. Direct calls: `a2.log(a1.entry)` at line 1205 and `a2.mark(a1.mark)` at line 1207, both inside `send` (1203-1212, exported as `send`, 4125).
+  Closures `log: x.telemetry.log(...)` and `mark: x.telemetry.mark(...)` passed to `send`: lines 2429-2430 (`takeDown`), 2492-2493 (`ranOffCommand`), 3323-3324 (turn.step), 3574-3575 (ui.render), 4051-4052 (session.end). Manifest names at 145-146.
+  Event names: `you_should_know_answered` (1131), `you_should_know_explained` (1163), `learn_page` (1179), `you_should_know_proposed` (1191). Mark features: `you_should_know` (1037), `learn_explain` (1172), `learn_page` (1008).
+  Builders: `answered` (1129-1160), `explained` (1161-1176), `page` (1177-1188), `proposed` (1189-1202), plus `cleared` (2391-2400), `leftOpen` (2335-2346), `versionProps` (1115-1128), `usageProps` (1086-1090), `lineKind` (972-981), `tagOpener` (1054-1059), `msSince`, `msToAnswerProp`, `versionMarkOf` (1093-1114), `markOf` (982-994), `pageMark`, `proposedMark`.
+  WARNING for the port: the function that sends the answered event (`b20`, 3654-3676) ALSO resets `typedPastInARow` and `looksToSkip` (3655-3662), `takeDown` (2401-2433) also clears the off line and `ranOffCommand` (2469-2497) clears the off line first, `proposed(...)` at 3536 is how `c10` returns, and `leftOpen` / `cleared` calls carry the state moves. Keep those, drop only the log and mark.
+
+PROSE TEXT:
+  `LEARN` (line 705), 57 chars: one bold phrase and a plain tail that tells the person that choosing it gives a deeper explanation and a chat.
+  `WATCHING` (727), 54 chars: a side agent is looking out for the person while Claude works.
+  `WHEN` (732), 90 chars: the plugin flags things worth knowing that the person might miss.
+  `PLUGIN_OFF` (715) and `TERMINAL_COPY` / `APP_COPY` / `ABOUT_THIS` (737-739): not read for length, they embed `OFF_COMMAND` and `jve`. They join the three lines above, the terminal one adds a how-to-disable line.
+  `PLUGIN_LISTING.description` (4099), 174 chars: one sentence of what the feature is and where it appears.
+  `SIDE_REQUEST_FRAME` (2571), 985 chars: a system-reminder saying this is a separate light side agent with no tools, answering once from the shared context, not an interruption, and never reproducing secrets or personal data.
+  `explainFormat` (2551), 1344 chars before the length text is inserted: write for a smart, context-switching reader, one idea, a title of two to six plain words in bold, first say what the thing is with a tiny example, then before/after lines, an optional small ASCII sketch of at most 60 by 6, then the consequence and the choice. No invented terms, code names only in backticks after plain words, no headings or bullets.
+  `FIRST_EXPLANATION_LENGTH` (2560), 62 chars: at most 100 words. `EXPLANATION_LENGTHS.simpler_words` (2564), 145 chars: same content plainer, 100 words. `.less_detail` (2566), 167 chars: only the main point, 45 words. `.more_detail` (2568), 327 chars: name the real parts and one edge case, 160 words.
+  `explainPrompt` (2585), 2699 chars in the first-pass form with an empty line text: the frame, a do-not-think-or-use-tools instruction, the line the person said yes to, an optional block of the previous text to rewrite in a direction, the format, and the language rule (follow the session language, else the user's language).
+  `proposePrompt` (2626-3179), 33015 chars with both lists empty (each prints a 13-char placeholder): the observer prompt. It sets an observer role that mostly says nothing, with a sample card, an output form of `learn: none` or `learn:`, `tag:`, `explain:` with a bold title, how to pick a topic (consequence, user level, not already discussed, confidence, default none, 20-word line ending in a period), the two tags, title rules (3 to 7 words, no teasers), explainer rules (plain, up to 120 words, bullets 3 to 6), user psychology, where the card sits in the product, language rule, then many good/bad examples and a closing reminder. Lists `seen` and `known` are inserted via `listed` (2610-2616).
+  `pressConsentOf` (2624), 228 chars with an empty topic: tells that pressing 2 asked for a learning page published as a private artifact.
+  `SESSION_NOTE` (3198), 110 chars: the page was made from the conversation and is a one-off, not maintained.
+  `OFF_BOX_BUSY` (3200), 91 chars: the prompt box has text, send or clear it, then press again to disable.
+  `RESPOND_BLOCKED` (3202), 57 chars: a dialog has the keyboard, answer it and press 2 again.
+  `RESPOND_BOX_BUSY` (3204), 69 chars: the prompt box has text, send or clear it, then press 2 again.
+  `RESPOND_NOT_FILLED` (3206), 58 chars: the box did not take the note, press 2 to retry.
+  `respondDraft` header (3194): a 39-char lead-in "a note offered by a side agent", then the tag, topic and cards quoted line by line with a `>` prefix.
+  Labels and row texts (short, paraphrase only): "Dismissed." (1691), a one-moment wait text (2033), a making-page wait text (2145), five failure messages (2052-2059), "Learning page ready" (2234). All button labels are in KEY BAR.
+
+UNREAD:
+  The value of `jve` (the plugin name), imported at line 100, so the final text of `OFF_COMMAND`, `PLUGIN_OFF`, `TERMINAL_COPY` and `ABOUT_THIS` is not read. `oCr` (`SPINNER_TIP`) at line 100: not read.
+  The meaning of `x$e()` (imported at line 71), `Bs` (71), `k` (line 1), `S_` and `r$` (line 97), so the exact availability gate beyond the names is not read.
+  The JSX helper `h` is used from line 660 on with no import in the module header, its definition is not read.
+  Who sets the `making` and `ready` views, who builds and publishes the learn page, and who emits `yes_page`: no code in lines 1-4130 does this, so the flow is not read.
+  The minified file `modules/chunk-mf7ejead.js` was not opened, nothing needed it.
+  I stopped at line 4130, the end of the module. Lines 1-4130 were all read.

@@ -1,0 +1,17 @@
+PLUGIN: cc-plugin-diff@builtin
+DOES: Doc page: "Takes over `/diff` and draws its pane." Plugin description in the program: "The diff panel as a plugin pane: /diff, the changed files and their hunks beside the transcript, refreshed as Claude edits".
+SOURCE: cc-docs route `extend/mod-api/nouns-and-gates` (section "Built-in Mods"), and the program file `/Users/krystian/.local/share/claude/versions/2.1.311` (description at byte offset 256662528, manifest at 256604439).
+WHAT IT ADDS TO A SESSION: A pane and the command `diff` (manifest `runCommands` lists `clear`, `diff`, `resume`). No skills, agents, or MCP servers found in its `registerPlugin` call at offset 256662767. Hooks: `session.start`, `ui.render`, `command.run`, `ui.close`, `ui.focus`, `ui.scroll`, `tool.call`, `prompt.submit`. It runs `process.run` and reads files (manifest `calls`: `fs.list`, `fs.read`, `fs.stat`, `process.run`).
+COST: Chunk is about 65483 bytes in the program (offset span between chunk markers, counted with a script). Per-session token cost not measured.
+SENDS TELEMETRY: yes. Its manifest scan lists `telemetry.log` and `telemetry.mark` (offset 256604439). The payload was not read.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `diff`.
+PROS:
+- Gives a live panel of changed files and hunks beside the transcript (description).
+- Registered only under the gate `e` in the registration code, so it does not exist on every surface.
+CONS:
+- Declares telemetry calls.
+- Runs processes and file reads on every refresh (manifest calls, frequency not measured).
+- What `/diff` does when this plugin is off was not found in the docs I read.
+RECOMMENDATION: DROP, set by the user
+WHY: The evidence says what it adds (a pane and `/diff`) but not what the user gets from `/diff` without it, which the docs search did not answer. The user decides if the panel is wanted.
+Set by the user on 2026-10-27.

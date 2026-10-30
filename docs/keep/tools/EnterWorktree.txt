@@ -1,0 +1,14 @@
+TOOL: EnterWorktree
+DOES: "Creates a git worktree and switches into it." Takes `name` or `path`, not both. Refused from a subagent with a cwd override. Main session and subagents.
+DOC SOURCE: `reference/tools/agents-and-tasks`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: claudetto replaces its description with a shorter text: `archive/plugins/claudetto/modules/session/prompt/prompts.ts:140` (`TOOL_ENTER_WORKTREE`), `archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:28`. Also `archive/plugins/claudetto/hooks/register.ts:196` and `archive/plugins/claudetto/tests/tool.test.ts:93`. `archive/plugins/claudetto/skills/setup/SKILL.md:81` recommends it off. `archive/plugins/claudetto/modules/setup/prompts.ts:146` sets `worktree: { baseRef: "head" }`. Not denied.
+PROS:
+- The project uses worktrees (user statement in the task).
+- Claudetto already ships a trimmed description for it.
+CONS:
+- `archive/plugins/claudetto/skills/setup/SKILL.md:81` says `isolation: "worktree"` of `Agent` works without it, so the setup skill and the user's decision disagree.
+RECOMMENDATION: keep
+WHY: The user settled that the project uses worktrees, and `tools.ts:26` already trims its text. The conflicting line `SKILL.md:81` is a setup recommendation to ask the user, not a project rule.
+USER DECISION: deferred (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: it is not in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`), so it can be deferred, and 0 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

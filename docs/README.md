@@ -1,3 +1,3 @@
 # `claudetto` Documentation
 
-The documentation is in the [claudetto wiki](https://github.com/xsyetopz/claudetto/wiki).
+The documentation is in the files of this folder.

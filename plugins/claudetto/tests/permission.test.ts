@@ -1,74 +1,206 @@
-// Lab tests of the `guard` hooks on each tool (spec `permission-gate`, "Allow by Default", D1).
-// Probe of task 2.5: in the lab, `$.tool.call` with a stubbed `tool.call` skips each permission check, and with no stub it has no tool to run,
-// so these tests query `tool.check` and `classic.PermissionRequest` directly, and the `just sandbox` session of task 11.4 checks the prompt path.
-// The file is self-contained, because the lab runs it from `tests/` of the plugin, where it cannot import a relative file.
+// The dialog path of the gate: `classic.PermissionRequest`. A request whose input holds no key the
+// gate reads is passed on with no `allow`, so the person is asked (`specs/permission-policy/spec.md`,
+// "Fail Closed"). The three inputs below are the kinds that carry no gated key, and none of them carries a
+// gated key: `WebFetch` takes `url` and `prompt`, an MCP tool takes whatever its server declares,
+// and `Skill` takes `skill` and `args`, read from the tool's own schema.
 
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+import { GATED_KEYS } from "../src/gate/gate.ts";
 
-/** An engine that asks for each call, as for a path outside the project, with no `git` repository. */
-const stub = (on: On, below: object = {}) => {
-	on("tool.check", () => ({ decision: "ask" }));
-	on("classic.PermissionRequest", () => below);
-	on("session.cwd", () => ({ value: "/p" }));
-	mock.env(on, { HOME: "/u", TMPDIR: "/t" });
+/** What the hook answered, which is `undefined` for an answer that carries no decision at all. */
+type Behavior = string | undefined;
+
+/** The engine's own answer to the request, which carries no decision until a hook adds one. */
+const lab = (on: On): void => {
+	on("classic.PermissionRequest", () => ({}));
 };
 
-const both = async ($: Engine, tool: string, input: object) => ({
-	check: (await $.tool.check({ tool, input })).decision,
-	request: (
-		await $.classic.PermissionRequest({
-			tool_name: tool,
-			tool_input: input,
-			agent_id: "a1",
-			agent_type: "claudetto:Hephaestus",
-		})
-	).decision,
+const asked = async (
+	$: Engine,
+	tool: string,
+	input: Record<string, unknown>,
+): Promise<Behavior> => {
+	const answer = await $.classic.PermissionRequest({
+		tool_name: tool,
+		tool_input: input,
+	});
+	return answer.decision?.behavior;
+};
+
+test("a WebFetch request is passed on with no allow", async ($: Engine, on: On) => {
+	lab(on);
+
+	const behavior = await asked($, "WebFetch", {
+		url: "https://example.com/page",
+		prompt: "What does it say?",
+	});
+
+	expect(behavior).toBeUndefined();
 });
 
-const ALLOWED = [
-	["Monitor", { command: "tail -f /tmp/a.log | grep --line-buffered FAIL" }],
-	["mcp__plugin_cc-inspect_cc-inspect__search_binary", { q: "x" }],
-	["WebFetch", { url: "https://example.com", prompt: "x" }],
-	["Read", { file_path: "/private/tmp/a.log" }],
-	["Bash", { command: 'ls "$TMPDIR" && echo $HOME' }],
-	["Skill", { skill: "claudetto:dedupe" }],
-	// The `dedupe` skill: the env prefix moves the cache of Bun to the temp folder of the sandbox.
-	[
-		"Bash",
-		{
-			command:
-				'BUN_TMPDIR="$TMPDIR" BUN_INSTALL="$TMPDIR/bun" bunx jscpd -c "/c/skills/dedupe/jscpd.json" src',
+test("a request for an MCP tool is passed on with no allow", async ($: Engine, on: On) => {
+	lab(on);
+
+	const behavior = await asked($, "mcp__notes__search", { query: "handoff" });
+
+	expect(behavior).toBeUndefined();
+});
+
+test("a Skill request is passed on with no allow", async ($: Engine, on: On) => {
+	lab(on);
+
+	const behavior = await asked($, "Skill", {
+		skill: "claudetto:apply",
+		args: "claudetto-restart",
+	});
+
+	expect(behavior).toBeUndefined();
+});
+
+/**
+ * The gated half: the facts of the session, so that the rules can run over a real command. Nothing
+ * here is read for the three cases above, because an ungated request never reaches the facts.
+ */
+const withFacts = (on: On, failing = false): void => {
+	mock.clock(on, { now: 0 });
+	mock.store(on);
+	on("session.cwd", () => {
+		if (failing) {
+			throw new Error("the session could not be read");
+		}
+		return { value: "/repo" };
+	});
+	on("session.root", () => ({ value: "/repo" }));
+	on("env.get", () => ({ value: undefined }));
+	on("process.run", () => ({
+		value: {
+			exitCode: 1,
+			stdout: "",
+			stderr: "",
+			isStdoutTruncated: false,
+			isStderrTruncated: false,
 		},
-	],
+	}));
+	on("fs.exists", () => ({ value: false }));
+	on("fs.read", () => ({ value: "" }));
+	on("classic.PermissionRequest", () => ({}));
+};
+
+// The other half of the rule: the gate answers a request whose input it did read. A `Bash` call
+// carries `command`, which is a gated key, and `rm -rf /` is one of the forms the port measured as a
+// `deny` (`design.md:79`).
+test("a Bash request whose command loses the root folder is denied", async ($: Engine, on: On) => {
+	withFacts(on);
+
+	const answer = await $.classic.PermissionRequest({
+		tool_name: "Bash",
+		tool_input: { command: "rm -rf /" },
+	});
+
+	expect(answer.decision?.behavior).toBe("deny");
+});
+
+// No allow path for a call that nothing settles (`W5-13`): no classifier is in this tree,
+// and an `ask` of our own rules is passed on untouched, so nothing of claudetto's can turn a call it
+// could not decide into an approval. The command is one of the forms the rules measure as an `ask`.
+test("a request the rules only ask about gets no allow", async ($: Engine, on: On) => {
+	withFacts(on);
+
+	const answer = await $.classic.PermissionRequest({
+		tool_name: "Bash",
+		tool_input: { command: "git push --force" },
+	});
+
+	expect(answer.decision).toBeUndefined();
+});
+
+// `tool.check` is the path that carries the gate, because `classic.PermissionRequest` does not fire
+// in `claude -p` and fires in auto mode only on the fallback to a dialog (`design.md:96`). The same
+// command that the dialog path denies is denied here.
+test("the gate denies the same command at tool.check", async ($: Engine, on: On) => {
+	withFacts(on);
+	on("tool.check", () => ({ decision: "allow" }));
+
+	const verdict = await $.tool.check({
+		tool: "Bash",
+		input: { command: "rm -rf /" },
+	});
+
+	expect(verdict.decision).toBe("deny");
+});
+
+// Our gate only ever tightens. A `tool.check` hook may answer in either direction and the last word
+// up the chain stands, so an `allow` of ours over a `deny` beneath would undo a deny rule or a mode
+// the user set. The command is one the rules find nothing against.
+test("a verdict of the engine is not loosened by the gate", async ($: Engine, on: On) => {
+	withFacts(on);
+	on("tool.check", () => ({
+		decision: "deny",
+		reason: "Denied by a permission rule",
+	}));
+
+	const verdict = await $.tool.check({
+		tool: "Bash",
+		input: { command: "bun test" },
+	});
+
+	expect(verdict.decision).toBe("deny");
+	expect(verdict.reason).toBe("Denied by a permission rule");
+});
+
+// A write to a file that runs code or sets a permission is held by the hook and not left
+// to the classifier, which an independent evaluation found does not cover in-project file edits. The
+// engine's answer beneath is `allow`, which is what `acceptEdits` and an auto mode allow rule both
+// give for a file write, so the ask is ours and holds whatever the mode would have done. Each case
+// reads the path back out of the reason, so that the hold cannot be the `.catch` of a failed gate.
+const PROTECTED = [
+	{ tool: "Write", path: "/repo/.github/workflows/ci.yml", key: "content" },
+	{ tool: "Edit", path: "/repo/.git/hooks/pre-commit", key: "new_string" },
+	{ tool: "Write", path: "/repo/.claude/settings.json", key: "content" },
 ] as const;
 
-test("Allow by Default: Monitor on a Temp Log, MCP Call, Web Fetch, Read Outside the Project, and a shell variable in a subagent allow, with no saved rule", async ($: Engine, on: On) => {
-	stub(on);
-	await Array.fromAsync(ALLOWED, async ([tool, input]) => {
-		expect([tool, await both($, tool, input)]).toStrictEqual([
+for (const { tool, path, key } of PROTECTED) {
+	test(`${tool} of ${path} is held at tool.check`, async ($: Engine, on: On) => {
+		withFacts(on);
+		on("tool.check", () => ({ decision: "allow" }));
+
+		const verdict = await $.tool.check({
 			tool,
-			{ check: "allow", request: { behavior: "allow" } },
-		]);
+			input: { file_path: path, [key]: "echo hi" },
+		});
+
+		expect(verdict.decision).toBe("ask");
+		expect(verdict.reason).toContain(path);
 	});
+}
+
+// The other half of that rule: a gate that cannot run holds the call instead of letting it by. The
+// facts throw here, which is what a failed `$` read does, and the answer is the `.catch` of the
+// registration: without one a failed hook is simply absent and the engine's `allow` beneath would
+// stand. An `ask` a hook made is a person's by the contract of `ToolCheckResult`, so no classifier
+// allow settles it, and where nobody can be asked it is a deny.
+test("a gate that fails holds the call for a person", async ($: Engine, on: On) => {
+	withFacts(on, true);
+	on("tool.check", () => ({ decision: "allow" }));
+
+	const verdict = await $.tool.check({
+		tool: "Bash",
+		input: { command: "bun test" },
+	});
+
+	expect(verdict.decision).toBe("ask");
 });
 
-test("Gate Matches: an `ask` of claudetto stays a prompt, and `classic.PermissionRequest` gives no decision", async ($: Engine, on: On) => {
-	stub(on);
-	await Array.fromAsync(
-		[{ command: "terraform destroy" }, { command: "git push --force" }],
-		async (input) => {
-			expect(await both($, "Monitor", input)).toStrictEqual({
-				check: "ask",
-				request: undefined,
-			});
-		},
-	);
-});
-
-test("a decision of a hook below stays", async ($: Engine, on: On) => {
-	stub(on, { decision: { behavior: "deny", message: "user hook" } });
-	expect(
-		(await both($, "Read", { file_path: "/tmp/x" })).request,
-	).toStrictEqual({ behavior: "deny", message: "user hook" });
+// The keys are a list and not a set of literals inside a condition, so that this case can read them:
+// a new key would gate a tool that no rule of ours reads, which is the open gate the spec forbids.
+test("the gated keys are the six the gate reads and no more", () => {
+	expect([...GATED_KEYS]).toEqual([
+		"command",
+		"file_path",
+		"notebook_path",
+		"path",
+		"pattern",
+		"glob",
+	]);
 });

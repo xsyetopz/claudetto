@@ -1,0 +1,14 @@
+TOOL: ScheduleWakeup
+DOES: "Schedules the next turn of a dynamic `/loop`." Gated by dynamic `/loop`, main session only.
+DOC SOURCE: `reference/tools/agents-and-tasks`
+REQUEST COST: 4,631 characters in the first row of `docs/surfaces.md` (Resident Tools section).
+CLAUDETTO USES IT FOR: no use found in `plugins/claudetto/`, `tools/`, `dev/`, or `plugins/claudetto/agents/*.md`. Already denied at `archive/plugins/claudetto/modules/setup/prompts.ts:135`.
+PROS:
+- Lets a dynamic `/loop` pace itself.
+CONS:
+- 4,631 characters of every request for a loop feature that no claudetto file uses.
+- Cron is already disabled by `CLAUDE_CODE_DISABLE_CRON` (`archive/plugins/claudetto/modules/setup/prompts.ts:113`).
+RECOMMENDATION: deny
+WHY: No use found and it costs 4,631 characters (`docs/surfaces.md` line 41). The deny is already in `prompts.ts:135`, and `docs/surfaces.md` line 32 shows that a deny removes the whole definition.
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `ScheduleWakeup` is already in the deny list (`archive/plugins/claudetto/modules/setup/prompts.ts:135`)

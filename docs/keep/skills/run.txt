@@ -1,0 +1,15 @@
+SKILL: run
+SET: bundled
+DOES: Launches and drives the project's app to see a change work. It reads a recorded `run-<name>` skill first.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/run`, and route `prompts/built-in-skills`, section `run`
+LISTING COST: `123` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Confirms a change in the real app, not only in tests (default text).
+CONS:
+- Its description names run, start, and screenshot, so it can fire on common prompts.
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: drop
+WHY: Claudetto is for the CLI and TUI (`docs/surfaces.md:3`), and `/claudetto:verify` checks code against tasks, specs, and design with no app launch (`archive/plugins/claudetto/skills/verify/SKILL.md:3`). Nothing found calls `/run`.

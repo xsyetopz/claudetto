@@ -1,0 +1,15 @@
+SKILL: commit-push-pr
+SET: bundled
+DOES: Commits, pushes, and opens a pull request.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/commit-push-pr`
+LISTING COST: not measured  (a bundled skill has no file that we can read, route `extend/skills-and-commands/bundled-skills`)
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. `CHANGELOG.md:653` shows a `pre-push` hook that it would meet.
+PROS:
+- One step from change to PR.
+CONS:
+- Pushes without a pause for review.
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: drop
+WHY: Setup adds a `pre-push` hook that checks a push of Claude (`CHANGELOG.md:653`), so a one-step push command works against that guard. Nothing found depends on it.

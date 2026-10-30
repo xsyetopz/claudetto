@@ -1,0 +1,16 @@
+TOOL: ExitPlanMode
+DOES: "Presents the plan and leaves plan mode." Parameter `allowedPrompts` is deprecated and unused. Gated by an internal enable check. "A subagent keeps it only when its `permissionMode` is `plan`."
+DOC SOURCE: `reference/tools/agents-and-tasks`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no call found. `archive/plugins/claudetto/modules/setup/prompts.ts:135` denies it. `archive/plugins/claudetto/tests/off.test.ts:29` and `:40` test that the plan text naming it is removed. `model: "opusplan"` at `archive/plugins/claudetto/modules/setup/prompts.ts:142` runs plan mode.
+PROS:
+- It is the tool by which the model hands a plan to the user in plan mode.
+CONS:
+- Already denied, so in plan mode the model has no tool to present a plan. Whether that traps plan mode is not shown by any source I read.
+RECOMMENDATION: DROP, OpenSpec does the same job, and the deny already exists
+WHY: `ExitPlanMode` is the tool `c8` declared at offset `234816030` of `2.1.311`, and `EnterPlanMode` is enabled by `c8.isEnabled()`, so the two are enabled together. The shared body is `if(pS().length>0&&_e())return!1`, then `if(_e()&&!Dde(Ok()))return!1`, then `return!0`, where `_e()` means not interactive. Plan mode is on for an interactive CLI session and off for a headless one with no permission-prompt tool.
+Plan mode costs `4,879` characters. `cc-docs read prompts/mode-plan` gives `20,600` characters in all with 12 tools, against `15,721` for the lean default, and the text is 58 lines injected into `messages[1]`. OpenSpec already plans in `openspec/changes/<name>/` through `proposal.md`, `design.md`, and `tasks.md`, driven by `/claudetto:propose`. The deny already stands at `archive/plugins/claudetto/modules/setup/prompts.ts:135`.
+Consequence: `model: "opusplan"` at `archive/plugins/claudetto/modules/setup/prompts.ts:142` picks a mode the user can never reach once both plan tools are denied. Task `14.8` covers it.
+Set by the user on 2026-10-27. "if we use openspec + auto-mode, do we need plan mode at all?"
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `ExitPlanMode` is already in the deny list (`archive/plugins/claudetto/modules/setup/prompts.ts:135`)

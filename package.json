@@ -6,7 +6,6 @@
 	"type": "module",
 	"scripts": {
 		"test": "bun test",
-		"validate": "bun tools/validate.ts",
 		"typecheck": "bun check",
 		"lint": "bunx biome check --error-on-warnings && bun run lint:suppressions",
 		"lint:md": "bunx markdownlint-cli2",

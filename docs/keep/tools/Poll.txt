@@ -1,0 +1,13 @@
+TOOL: Poll
+DOES: "Waits for and receives queued harness events." No parameters. Gated by a hidden server-side flag.
+DOC SOURCE: `reference/tools/gated-and-other`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no use found in `plugins/claudetto/`, `tools/`, `dev/`, or `plugins/claudetto/agents/*.md`. Not in the deny list at `archive/plugins/claudetto/modules/setup/prompts.ts:124-138`, and it has no count in the 292-session tally (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`).
+PROS:
+- None found for the CLI.
+CONS:
+- Hidden server-side gate, so its presence is not under our control.
+RECOMMENDATION: deny
+WHY: No use is found, it is not in the setup deny list, it has no count in the 292-session tally, and a hidden server-side gate decides whether it is present at all. An earlier reading of this page cited `docs/surfaces.md` line 73 and line 75 for a deny list and for an absence from the probe requests, which those lines do not hold.
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: no use found in the repository, no count in the 292-session tally (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`), and queued harness events are not coding work, so the deny costs nothing and closes the path if the server-side gate ever opens

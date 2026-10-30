@@ -1,0 +1,16 @@
+TOOL: Read
+DOES: Docs: "Reads files, images, PDFs, and notebooks." Available in the main session and subagents, kept in background subagents, read-only, parallel, not deferred.
+DOC SOURCE: reference/tools/files
+REQUEST COST: 1,919 characters (docs/surfaces.md:40, the resident tools after the trim)
+CLAUDETTO USES IT FOR: Listed in `tools:` of Apollo, Athena, Artemis, Hermes, Hephaestus and Zeus (archive/plugins/claudetto/agents/Apollo.md:6, Athena.md:6, Artemis.md:6, Hermes.md:6, Hephaestus.md:6, Zeus.md:6). Agents are told to read with `offset` and `limit` (plugins/claudetto/agents/Artemis.md:12, Athena.md:18, Hephaestus.md:18, Apollo.md:13). Hooks at archive/plugins/claudetto/hooks/register.ts:155 and the `DESCRIBED` list (register.ts:189). Our shorter text `TOOL_READ` (archive/plugins/claudetto/modules/session/prompt/prompts.ts:89). Deny rules for secret paths (archive/plugins/claudetto/modules/setup/prompts.ts:128). 124 of 292 counted sessions use it (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+PROS:
+- Every roster agent has it, and it is the only tool for images, PDFs and notebooks (reference/tools/files).
+- Read-only, so it adds no permission prompt.
+- Our shorter text replaces the harness text only when it is shorter (archive/plugins/claudetto/modules/session/prompt/adapters/mod.ts:108-116).
+CONS:
+- 1,919 resident characters (docs/surfaces.md:40).
+- A hook denies `cat`, `head` and `tail` in `Bash`, so no other tool can stand in for it.
+RECOMMENDATION: keep
+WHY: All six agent definitions list it in `tools:` and it is a resident tool at 1,919 characters (docs/surfaces.md:40).
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `Read` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 124 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

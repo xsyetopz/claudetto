@@ -1,0 +1,17 @@
+PLUGIN: cc-plugin-agents-md@builtin
+DOES: Plugin description in the program: "AGENTS.md as project instructions: by default loaded where the project has no CLAUDE.md, by its instructionFiles option, loaded beside CLAUDE.md, left out, or with the project instructions dropped". The doc page says: "Loads `AGENTS.md` as project instructions."
+SOURCE: cc-docs route `extend/mod-api/nouns-and-gates` (section "Built-in Mods"), and the program file `/Users/krystian/.local/share/claude/versions/2.1.311` (embedded chunk, byte offsets 256783911 for the manifest and 256792676 for the `registerPlugin` call). Also cc-docs route `configure/memory-and-rules` came up in search and was not read.
+WHAT IT ADDS TO A SESSION: No skills, commands, agents, or MCP servers found in its `registerPlugin` call (it passes `name`, `description`, `isAvailable`, `hooksModule`, `userConfig`). Hooks declared in its manifest scan: `session.start`, `prompt.context`, `command.run`, `session.compact`, `prompt.submit`, `turn.start`, `turn.complete`, `agent.spawn`, `tool.call`, `prompt.mention`. One option, `instructionFiles`, named in its description.
+COST: Chunk in the program is about 14354 bytes (offset span between chunk markers, counted with a script, includes import headers). Per-session token cost of the `AGENTS.md` it injects is not measured.
+SENDS TELEMETRY: yes. Its manifest scan lists the calls `telemetry.log` and `telemetry.mark` (offset 256783911). The destination and payload were not read.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `agents-md`, mapped to `cc-plugin-agents-md@builtin` at line 165 with `false`.
+PROS:
+- Lets a project that keeps only an `AGENTS.md` get its instructions loaded (description text).
+- Option `instructionFiles` can load it beside `CLAUDE.md` (description text).
+CONS:
+- Declares telemetry calls in its manifest.
+- Reads the environment variable `CLAUDE_CODE_AGENTS_MD_ROWS_EVERY_PROCESS` and others (manifest scan), purpose not read.
+- It hooks `prompt.submit` and `tool.call`, so it runs in the hot path.
+RECOMMENDATION: DROP, set by the user
+WHY: Whether claudetto projects rely on `AGENTS.md` was not checked here, and the evidence is the description at offset 256783911 plus the doc row. The user decides whether `AGENTS.md` should load.
+Set by the user on 2026-10-27.

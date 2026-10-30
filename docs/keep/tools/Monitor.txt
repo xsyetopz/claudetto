@@ -1,0 +1,15 @@
+TOOL: MonitorTool (no tool by this name exists in the docs or the repo, the real name is `Monitor`, and this file covers `Monitor`)
+DOES: Docs: "Streams the output of a background command or a WebSocket as notifications." Main session and subagents, kept in background subagents, deferred, parallel.
+DOC SOURCE: reference/tools/shell-and-web
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: Apollo and Hephaestus list `Monitor` in `tools:` (archive/plugins/claudetto/agents/Apollo.md:6, archive/plugins/claudetto/agents/Hephaestus.md:6). A gate refuses a second `Monitor` with the command of a running one (archive/plugins/claudetto/hooks/register.ts:147, archive/plugins/claudetto/modules/gate/adapters/mod.ts:170-177, archive/plugins/claudetto/modules/gate/prompts.ts:98). Its tasks are shared state (archive/plugins/claudetto/modules/gate/adapters/mod.ts:92, archive/plugins/claudetto/modules/gate/adapters/watches.ts:1). The long-wait refusal points to it (archive/plugins/claudetto/modules/gate/prompts.ts:106). docs/surfaces.md:66 keeps `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` off because the plugin uses `Monitor`. In `NEVER_DEFERRED` (archive/plugins/claudetto/modules/session/prompt/limits.ts:28). 26 of 292 counted sessions use it (limits.ts:18).
+PROS:
+- It keeps foreground `Bash` calls short in subagents, which the prompt cache needs (archive/plugins/claudetto/modules/gate/prompts.ts:106).
+- Our gate code and two agents depend on it.
+CONS:
+- Request cost not measured.
+- Needs a duplicate-watch gate of our own (archive/plugins/claudetto/modules/gate/adapters/mod.ts:176).
+RECOMMENDATION: keep
+WHY: Apollo.md:6, Hephaestus.md:6 and the gate in gate/adapters/mod.ts:170-195 are built on it, and docs/surfaces.md:66 names it as a reason to leave background tasks on.
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `Monitor` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 26 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

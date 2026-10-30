@@ -1,0 +1,18 @@
+SKILL: find-docs
+SET: ours
+DOES: Gets current docs of a library or framework from Context7. Use when a task needs the API of a library version that the project leaves unclear.
+SOURCE: `archive/plugins/claudetto/skills/find-docs/SKILL.md:3`
+LISTING COST: 155 bytes (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: yes  (no `disable-model-invocation:` key in the frontmatter of `archive/plugins/claudetto/skills/find-docs/SKILL.md`, lines 1 to 8)
+CLAUDETTO NEEDS IT FOR: The permission rule `Skill(claudetto:find-docs)` and the two `ctx7` `Bash` rules (`archive/plugins/claudetto/snippets.ts:4`, `:5`, `:6`), and the README note (`README.md:104`).
+PROS:
+- Gets current library docs from Context7 with no key (`README.md:104`).
+- Pre-allowed in the snippet, so no permission prompt (`archive/plugins/claudetto/snippets.ts:4`).
+CONS:
+- Its `description:` line is 155 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+RECOMMENDATION: DROP, set by the user
+WHY: The model can call it, and its description is the trigger for a library API that the project leaves unclear. The snippet pre-allows it and its `ctx7` commands (`archive/plugins/claudetto/snippets.ts:4`), so a drop breaks the snippet.
+Set by the user on 2026-10-27.
+Ours, so dropping it deletes the skill folder.
+Dropping it leaves the permission rule for it at `archive/plugins/claudetto/snippets.ts:4` (`Skill(claudetto:find-docs)`), without a user.

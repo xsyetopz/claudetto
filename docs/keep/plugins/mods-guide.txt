@@ -1,0 +1,15 @@
+PLUGIN: cc-plugin-mods-guide@builtin
+DOES: Plugin description in the program: "How mods work: asked how hot reloading works, the question card gets a small panel over it with Clawd cooking, gone once the card is answered".
+SOURCE: Program file `/Users/krystian/.local/share/claude/versions/2.1.311` (manifest at byte offset 256877635, `registerPlugin` call at 256894742, description at 256879166). Docs: not found, `cc-docs search "cc-plugin-mods-guide"` returned no page that describes it, and the `extend/mod-api/nouns-and-gates` table does not list it.
+WHAT IT ADDS TO A SESSION: A small animated panel (Clawd cooking) over a question card, hook `ui.render` only. Manifest `calls`: `clock.every`, `clock.now`, `env.get`, `settings.read`, `ui.blit`, `ui.resolve`. Reads `FORCE_COLOR`, `NO_COLOR`, `TERM`. No skills, commands, agents, or MCP servers found.
+COST: Chunk is about 22538 bytes in the program (offset span between chunk markers, counted with a script). Per-session token cost: none found.
+SENDS TELEMETRY: no. Its manifest scan `calls` has no `telemetry.log` or `telemetry.mark`.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `mods-guide`.
+PROS:
+- Declares no telemetry and no network call in its manifest.
+- Costs no model tokens (it only draws).
+CONS:
+- Decoration only, ties to the flag `tengu_linen_acorn`.
+- Runs a timer (`clock.every`) while shown.
+RECOMMENDATION: keep off
+WHY: The description names a cosmetic panel for one question, and no behavior in the manifest at offset 256877635 serves claudetto's goals.

@@ -1,0 +1,17 @@
+SKILL: archive
+SET: ours
+DOES: Merges the delta specs of a finished change into `openspec/specs/`, and moves the change to `openspec/changes/archive/`. Use after `/claudetto:verify` shows no gap.
+SOURCE: `archive/plugins/claudetto/skills/archive/SKILL.md:3`
+LISTING COST: 177 bytes (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: no  (`disable-model-invocation: true` at `archive/plugins/claudetto/skills/archive/SKILL.md:4`)
+CLAUDETTO NEEDS IT FOR: `/claudetto:verify`, `/claudetto:sync`, and `/claudetto:update` end with a pointer to it (`archive/plugins/claudetto/skills/verify/SKILL.md:19`, `archive/plugins/claudetto/skills/sync/SKILL.md:28`, `archive/plugins/claudetto/skills/update/SKILL.md:45`). No hook names it.
+PROS:
+- Moves a finished change out of the active folder and merges its specs.
+CONS:
+- Its `description:` line is 177 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+- Whether a skill with `disable-model-invocation: true` still has a listing line is not measured here. Route `extend/skills-and-commands/frontmatter` says only that the key stops Claude from loading the skill by itself.
+RECOMMENDATION: name-only
+WHY: The user types `/claudetto:archive`, and `disable-model-invocation: true` is at `archive/plugins/claudetto/skills/archive/SKILL.md:4`. Caveat: the `skillOverrides` row says plugin skills are not affected, so the saving is not measured.
+USER DECISION: drop (the user, 2026-10-27)
+DECISION WHY: replaced by the opt-in OpenSpec integration

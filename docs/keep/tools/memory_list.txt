@@ -1,0 +1,14 @@
+TOOL: memory_list
+DOES: "Lists memory stores and their documents." Takes `store`, `path_prefix`, `cursor`, all optional. Undocumented, gated by a hidden server-side flag, and present only when auto memory is on and the memory mode is `tools`.
+DOC SOURCE: `reference/tools/files`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no use found in `plugins/claudetto/`, `tools/`, `dev/`, or `plugins/claudetto/agents/*.md`. Setup sets `autoMemoryEnabled: false` (`docs/surfaces.md` line 47). Not in the deny list at `archive/plugins/claudetto/modules/setup/prompts.ts:124-138`, and it has no count in the 292-session tally (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`).
+PROS:
+- None found, since claudetto turns auto memory off.
+CONS:
+- Hidden server-side gate.
+- The organization-memory path stays open, since `CLAUDE_CODE_DISABLE_ORG_MEMORY` is listed as a candidate not yet set (`docs/surfaces.md` line 59).
+RECOMMENDATION: deny
+WHY: No use is found, it is not in the setup deny list, it has no count in the 292-session tally, and a hidden server-side gate decides whether it is present at all. It goes with `memory_read` and `memory_write`. An earlier reading of this page cited `docs/surfaces.md` line 73 for a list of non-CLI tools to deny, which that line does not hold.
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: claudetto keeps its notes in files, so a remote memory store does not help coding, and the deny closes the organization-memory path that `autoMemoryEnabled: false` leaves open while `CLAUDE_CODE_DISABLE_ORG_MEMORY` is unset (`docs/surfaces.md:47`, `:59`)

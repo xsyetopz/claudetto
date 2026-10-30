@@ -1,0 +1,17 @@
+TOOL: EnterPlanMode
+DOES: "Switches to plan mode." No parameters. Gated by an internal enable check, "Removed from subagents", main session only.
+DOC SOURCE: `reference/tools/agents-and-tasks`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no use found as a call. `archive/plugins/claudetto/modules/setup/prompts.ts:135` denies it. `archive/plugins/claudetto/tests/off.test.ts:26-40` tests plan-text removal. The setting `model: "opusplan"` at `archive/plugins/claudetto/modules/setup/prompts.ts:142` uses plan mode, but the user can enter it with the key, not through this tool.
+PROS:
+- Lets the model ask to switch into plan mode.
+CONS:
+- Lets the model change the mode on its own.
+- Claudetto already carries the plan work in its own skills and agents (no file needs this tool).
+RECOMMENDATION: DROP, OpenSpec does the same job, and the deny already exists
+WHY: `EnterPlanMode` is gated by `isEnabled(){return c8.isEnabled()}`, and `c8` is the `ExitPlanMode` tool itself, declared at offset `234816030` of `2.1.311`. So the two are enabled together. The shared body is `if(pS().length>0&&_e())return!1`, then `if(_e()&&!Dde(Ok()))return!1`, then `return!0`, where `_e()` means not interactive. Plan mode is on for an interactive CLI session and off for a headless one with no permission-prompt tool, which is why neither tool is in any of the seven captured requests, all headless.
+Plan mode costs `4,879` characters. `cc-docs read prompts/mode-plan` gives `20,600` characters in all with 12 tools, against `15,721` for the lean default. The text is 58 lines injected into `messages[1]`, holding the read-only rules, plan file instructions, and a multi-phase workflow that tells the model to use `Explore` subagents and to write a plan file under `<config-dir>/plans/`. OpenSpec already does that job in `openspec/changes/<name>/` through `proposal.md`, `design.md`, and `tasks.md`, driven by `/claudetto:propose`. The deny already stands at `archive/plugins/claudetto/modules/setup/prompts.ts:135`. The user can still enter plan mode by hand.
+Consequence: `archive/plugins/claudetto/modules/setup/prompts.ts:142` sets `model: "opusplan"`, which picks Opus for plan mode and a cheaper model otherwise. With both plan tools denied, plan mode cannot be entered, so that model choice selects a mode the user can never reach. Task `14.8` covers this contradiction. The resolution is to set an explicit model rather than `opusplan`, and task `14.8` decides which model.
+Set by the user on 2026-10-27. "if we use openspec + auto-mode, do we need plan mode at all?"
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `EnterPlanMode` is already in the deny list (`archive/plugins/claudetto/modules/setup/prompts.ts:135`)

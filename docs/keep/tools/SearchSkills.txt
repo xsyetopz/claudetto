@@ -1,0 +1,17 @@
+TOOL: SearchSkills
+DOES: "Searches skills by keyword." Takes `keywords` (1 to 8 strings, required). Undocumented, "Gate not confirmed."
+DOC SOURCE: `reference/tools/gated-and-other`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no use found in `plugins/claudetto/`, `tools/`, `dev/`, or `plugins/claudetto/agents/*.md`. Not denied in `archive/plugins/claudetto/modules/setup/prompts.ts`. Bundled skills are off at `prompts.ts:145`.
+PROS:
+- Could help find a skill in a large set.
+CONS:
+- Undocumented with an unconfirmed gate.
+- Claudetto ships a fixed small skill set and `Skill` already loads them by name.
+RECOMMENDATION: DROP, unreachable on a local CLI login, so no setting is needed
+WHY: The factory sets `isEnabled:$Xe` on the List, Search, and Suggest tools, at offsets `243143002`, `243154684`, `243150311`, and `243152425` of `2.1.311`. `$Xe` (`chunk-n4qjzmdc.js`) reads `WR("allow_plugin_skill_search")` and returns false for `org_denied`, `latched`, `unregistered`, or a `hipaa` taint. Otherwise it returns true when `i0e()` is true (`CLAUDE_CODE_REMOTE` with a first-party provider), and failing that `kp()&&Un()&&o.read()` (entrypoint `claude-desktop`, `claude-desktop-3p`, or `local-agent`, and not a child session). So a normal local CLI login never receives the tool. Read on 2026-10-27. The earlier reading of no gate was wrong, because the gate sits on the shared factory and not on the registry row.
+The user's `DROP` ruling stands, and it costs nothing to honour, because the tool never arrives.
+Set by the user on 2026-10-27.
+USER DECISION: deny (the user, 2026-10-27)
+DECISION WHY: a normal local CLI login never receives the tool, so this build cannot run it (`docs/keep/tools/SearchSkills.txt:12`)
+DECISION NOTE: this reverses the user's leaning on this page, "chances are it needs to be kept", on the program reading in the `WHY` line above, that the shared tool factory's gate never passes on a local CLI login. The user confirmed the reversal on 2026-10-27 with "approved", so the `deny` is the user's own decision and no longer claudetto's reading of a rule.

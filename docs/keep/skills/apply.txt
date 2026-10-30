@@ -1,0 +1,18 @@
+SKILL: apply
+SET: ours
+DOES: Does the open tasks of a change in `openspec/changes/<name>/tasks.md`, and ticks each one when its check passes. Use after `/claudetto:propose` finishes the artifacts of the change.
+SOURCE: `archive/plugins/claudetto/skills/apply/SKILL.md:3`
+LISTING COST: 194 bytes (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: no  (`disable-model-invocation: true` at `archive/plugins/claudetto/skills/apply/SKILL.md:4`)
+CLAUDETTO NEEDS IT FOR: The `finish` module counts a session as an apply session from the command tag or a `Skill` call of `claudetto:apply` (`archive/plugins/claudetto/modules/work/finish/domain/record.ts:54`, `:56`, `:63`), and the `Stop` block runs only in such a session (`archive/plugins/claudetto/modules/work/finish/adapters/mod.ts:3`, `CHANGELOG.md:323`).
+PROS:
+- Its run is the signal that arms the `Stop` block and the box hook (`CHANGELOG.md:323`).
+- Ticks a task only after its check passes (its own description).
+CONS:
+- Its `description:` line is 194 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+- Whether a skill with `disable-model-invocation: true` still has a listing line is not measured here. Route `extend/skills-and-commands/frontmatter` says only that the key stops Claude from loading the skill by itself.
+RECOMMENDATION: name-only
+WHY: The user types `/claudetto:apply`, and `disable-model-invocation: true` is at `archive/plugins/claudetto/skills/apply/SKILL.md:4`. The `finish` hooks need the skill to exist and to run, not to have a description in the listing (`archive/plugins/claudetto/modules/work/finish/domain/record.ts:54`). Caveat: the `skillOverrides` row says plugin skills are not affected, so the saving is not measured.
+USER DECISION: drop (the user, 2026-10-27)
+DECISION WHY: replaced by the opt-in OpenSpec integration

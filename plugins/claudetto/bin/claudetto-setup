@@ -1,5 +1,0 @@
-#!/usr/bin/env -S bun --no-env-file
-
-import { main } from "../modules/setup/adapters/cli.ts";
-
-process.exitCode = await main(process.argv.slice(2));

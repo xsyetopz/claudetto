@@ -1,0 +1,17 @@
+SKILL: code-review
+SET: bundled
+DOES: Reviews the current diff, a PR, a branch, or a path for correctness bugs at an effort level. Flags `--comment`, `--fix`, `--max-findings`. Alias `/review`.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/code-review`, and route `prompts/built-in-skills`, section `code-review`
+LISTING COST: `331` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Effort levels and a `--fix` mode (default text).
+- A maximum level that the docs say needs an explicit ask.
+CONS:
+- Starts many subagents at its costliest level (default text).
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: DROP, set by the user
+WHY: No claudetto file names it. Its listing text grew in `2.1.311` (route `start/what-changed`, section Version 2.1.311), so it costs listing bytes if kept. Whether the user wants a review command is the user's choice. The snippet already removes it from the model view, because `disableBundledSkills: true` (`archive/plugins/claudetto/modules/setup/prompts.ts:145`) forces every built-in skill to `user-invocable-only` in `DCe()` (`chunk-2ht8z368.js:947185` of `2.1.311`), which hides it from the model and keeps `/name` for the user. A `skillOverrides` entry of `off` would additionally drop `/name`, and would save no model tokens. This skill is worth `331` tokens of the `2,210` tokens of the whole built-in listing.
+Set by the user on 2026-10-27.

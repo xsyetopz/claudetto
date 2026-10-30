@@ -1,0 +1,16 @@
+SKILL: batch
+SET: bundled
+DOES: Plans a large change and runs 5 to 30 worktree agents that open pull requests.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/batch`
+LISTING COST: not measured  (a bundled skill has no file that we can read, route `extend/skills-and-commands/bundled-skills`)
+MODEL CAN CALL IT: no  (row `/batch`: `disableModelInvocation`)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- User-only, so no auto-call (row `/batch`).
+- Scales a large mechanical change.
+CONS:
+- Spawns 5 to 30 agents, a large spend of the plan.
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: drop
+WHY: Claudetto sets `worktree.baseRef` to `head` (`archive/plugins/claudetto/modules/setup/prompts.ts:146`) and works one change at a time through openspec skills. Nothing found calls `/batch`. It opens up to 30 pull requests, which the user must want on purpose.

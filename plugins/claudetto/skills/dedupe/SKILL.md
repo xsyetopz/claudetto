@@ -1,6 +1,6 @@
 ---
 name: dedupe
-description: Finds duplicate code with jscpd and decides which clones to merge. Use after a change that adds or copies code, or when the user asks about duplication or DRY.
+description: Finds duplicate code with `jscpd` and decides which clones to merge. Use after a change that copies code, or when asked about duplication.
 ---
 
 Duplicate code costs the same fix in two places.
@@ -8,7 +8,7 @@ Find the clones. Merge only those that must change together.
 
 ## Find Clones
 
-Run jscpd in these cases:
+Run `jscpd` in these cases:
 
 - A change copies a block of code.
 - You are about to finish a change that adds many lines.
@@ -17,15 +17,11 @@ Run jscpd in these cases:
 Run this command, with the paths to scan as arguments:
 
 ```sh
-BUN_TMPDIR="$TMPDIR" BUN_INSTALL="$TMPDIR/bun" bunx jscpd -c <config> <path>...
+bunx jscpd --no-tips <path>...
 ```
 
-The env prefix moves the temp files and the cache of Bun to `TMPDIR`, because the sandbox allows writes there.
-`<config>` is the `.jscpd.json` of the project when it exists.
-Otherwise it is `${CLAUDE_SKILL_DIR}/jscpd.json`, the shipped base.
-A project can copy the base to `.jscpd.json` to set its own rules.
-The base has no `semantic`, because it needs a large model download.
-Add `--semantic` only when the user asks for it.
+`jscpd` reads the `.jscpd.json` at the root of the project. Name the paths yourself, because the `path` list of a config can name a folder the project no longer has, and `jscpd` stops on it.
+A project without `.jscpd.json` runs on the defaults of `jscpd`.
 
 When `.jscpd-baseline.json` exists, add `--baseline .jscpd-baseline.json --fail-on-new-clones 0`. Then only a new clone fails the run.
 On the first run there is no baseline, so the run scans and reports each clone.

@@ -1,0 +1,15 @@
+SKILL: plugin-authoring
+SET: bundled
+DOES: Helps to make a mod or plugin: a panel, status line, toast, slash command, or hook on tool calls.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/plugin-authoring`, and route `prompts/built-in-skills`, section `plugin-authoring`
+LISTING COST: `89` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: `archive/plugins/claudetto/modules/setup/prompts.ts:144` lists it in `skillOverrides`, and `:164` turns its built-in plugin off. No workflow needs it.
+PROS:
+- Helps with a mod or plugin when the user builds one.
+CONS:
+- Redundant override line in the setup snippet.
+- Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
+- `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
+RECOMMENDATION: drop
+WHY: Setup already carries two traces: `skillOverrides: { "plugin-authoring": "name-only" }` (`archive/plugins/claudetto/modules/setup/prompts.ts:144`) and `cc-plugin-plugin-authoring@builtin` set false (`archive/plugins/claudetto/modules/setup/prompts.ts:164`). With `disableBundledSkills: true` at line 145, the override at line 144 has no skill to act on, which is not measured.

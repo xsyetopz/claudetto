@@ -1,0 +1,16 @@
+TOOL: Bash
+DOES: Docs: "Runs a shell command." Available in the main session and subagents, kept in background subagents, not deferred.
+DOC SOURCE: reference/tools/shell-and-web
+REQUEST COST: 3,041 characters (docs/surfaces.md:40, the resident tools after the trim)
+CLAUDETTO USES IT FOR: Agents Apollo, Athena and Hephaestus list it in `tools:` (archive/plugins/claudetto/agents/Apollo.md:6, plugins/claudetto/agents/Athena.md:6, archive/plugins/claudetto/agents/Hephaestus.md:6). Skills run commands through `allowed-tools: Bash(minispec *)` (archive/plugins/claudetto/skills/apply/SKILL.md:6, explore, archive, propose, sync, update, verify at line 6), `Bash(claudetto-setup *)` (archive/plugins/claudetto/skills/setup/SKILL.md:6) and `ctx7` (archive/plugins/claudetto/skills/find-docs/SKILL.md:4). Hooks: `archive/plugins/claudetto/hooks/register.ts:85`, `:149`, `:151` (long-wait gate, archive/plugins/claudetto/modules/gate/adapters/mod.ts:246), `:155`. Our shorter text `TOOL_BASH` (archive/plugins/claudetto/modules/session/prompt/prompts.ts:70). Deny rules for dangerous commands (archive/plugins/claudetto/modules/setup/prompts.ts:129). `Bash` is in `NEVER_DEFERRED` (archive/plugins/claudetto/modules/session/prompt/limits.ts:28) and 262 of 292 counted sessions use it (limits.ts:18).
+PROS:
+- The only way to run `just check`, tests and `minispec`, which every skill and agent needs.
+- Used in 262 of 292 counted sessions (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+- Our shorter text replaces the harness text only when it is shorter (archive/plugins/claudetto/modules/session/prompt/adapters/mod.ts:108-116).
+CONS:
+- Largest resident definition after `Agent` among kept tools, 3,041 characters (docs/surfaces.md:40).
+- Needs a deny list and long-wait gate to stay safe (archive/plugins/claudetto/modules/setup/prompts.ts:129, archive/plugins/claudetto/modules/gate/adapters/mod.ts:246).
+RECOMMENDATION: keep
+WHY: Every skill's `allowed-tools` and three agents depend on it (see the paths above), and 262 of 292 sessions call it (limits.ts:18).
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `Bash` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 262 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

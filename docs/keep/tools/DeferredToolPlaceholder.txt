@@ -1,0 +1,13 @@
+TOOL: DeferredToolPlaceholder
+DOES: It keeps deferred tool loading switched on. The docs describe it at route `prompts/tools` as "Reserved placeholder that keeps deferred tool loading active; never call this tool." It is in the default tool list (`prompts/tools-per-variant`), and the all-upfront variant "removes `ToolSearch`, `DeferredToolPlaceholder`" (`prompts/tools-upfront`), which fits: with every tool sent upfront there is nothing left to defer.
+DOC SOURCE: `prompts/tools` for the sentence, found with `cc-docs search DeferredToolPlaceholder` on 2026-10-27. Also `prompts/tools-per-variant` and `prompts/tools-upfront`. An earlier read of this page missed the sentence and recorded it as undocumented, which was wrong.
+REQUEST COST: 204 characters (`docs/surfaces.md` line 40).
+CLAUDETTO USES IT FOR: no use found in `plugins/claudetto/`, `tools/`, `dev/`, or `plugins/claudetto/agents/*.md`. Not in the deny list at `archive/plugins/claudetto/modules/setup/prompts.ts:124-138`.
+PROS:
+- Only 204 characters.
+- It appears to belong to the deferral that keeps the resident set at 12 tools (`docs/surfaces.md` line 36).
+CONS:
+- None found. The only risk is denying it, which switches off the deferral it holds open.
+RECOMMENDATION: KEEP, denying it would switch off deferred tool loading
+WHY: The docs describe it at route `prompts/tools` as "Reserved placeholder that keeps deferred tool loading active, never call this tool". Denying it would switch off deferred tool loading. The docs measure deferred loading as worth `15,898` tokens, since removing `ToolSearch` takes an empty session from `12,524` to `28,422` tokens.
+Set by the user on 2026-10-27.

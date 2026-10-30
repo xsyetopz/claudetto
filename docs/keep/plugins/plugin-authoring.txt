@@ -1,0 +1,16 @@
+PLUGIN: cc-plugin-plugin-authoring@builtin
+DOES: Doc page: "Gives Claude the `plugin-authoring` skill for writing mods. It holds no mod code." Plugin description in the program: "Plugin authoring: Claude knows how a plugin of function hooks is written, typed and debugged against this build".
+SOURCE: cc-docs route `extend/mod-api/nouns-and-gates` (section "Built-in Mods"), and the program file `/Users/krystian/.local/share/claude/versions/2.1.311` (manifest at byte offset 256842510, `registerPlugin` call at 256871629).
+WHAT IT ADDS TO A SESSION: One skill, `plugin-authoring` (`skills:[ze]` in its `registerPlugin` call). Hooks: `skill.prompt`, `tool.check`, `tool.call`. Manifest `calls`: `tool.check`, `tool.list`, `tool.register`, `ui.ask`. No agents or MCP servers found.
+COST: Chunk is about 47748 bytes in the program (offset span between chunk markers, counted with a script, includes the skill text and the types file name). Per-session cost: claudetto's setting `skillOverrides: { "plugin-authoring": "name-only" }` at `prompts.ts:144` suggests the skill listing is already trimmed, the byte cost is not measured.
+SENDS TELEMETRY: no. Its manifest scan `calls` has no `telemetry.log` or `telemetry.mark`.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `plugin-authoring`. Note: line 144 also sets a `skillOverrides` entry for the same name.
+PROS:
+- Gives Claude a skill for writing and debugging mods against this exact build (description).
+- Declares no telemetry.
+CONS:
+- Only useful when writing mods, and claudetto builds a plugin, not a mod (not verified here, the repo was not searched).
+- The skill is gated by a flag named `tengu_woven_parcel` or `tengu_spicy_pearl` (both appear in the chunk, which one gates it was not read).
+RECOMMENDATION: DROP, set by the user
+WHY: Claudetto sets a `name-only` override for the skill at `prompts.ts:144` while also disabling the plugin at line 164, so the user's intent for it is unclear from the code.
+Set by the user on 2026-10-27.

@@ -1,0 +1,111 @@
+> Saved from `wiki/claudetto/evidence/Sandbox-Run-0.2.0.md` at `HEAD`. The wiki is gone.
+
+# Sandbox Run 0.2.0
+
+This page gives the results of the live sandbox runs of 0.2.0 on Claude Code `2.1.304`.
+It shows which slices worked in an interactive session, which faults the runs found, and how the fixes were checked.
+The runs belong to task `12.4` of the openspec change `release-0-2-0`.
+It is for a maintainer who checks the 0.2.0 release.
+
+## Result in Brief
+
+- In run 1, each slice in the list below worked.
+- The runs found 11 faults.
+  Commit `74eb3d0d` holds the fixes.
+- After the fixes, the skill `dry` (named `dedupe` since 0.3.0) ran `jscpd-config --run` with no prompt.
+  A rescan found `0` clones.
+- Run 1 cost about $0.65 as a sandbox session.
+  The `advise` call and the Jev calls cost more, and this page does not give their cost.
+- This page records the state at commit `74eb3d0d`.
+  Task `13.18` is in progress, and it changes the behavior of `decide` again.
+
+## Method
+
+| Item | Value |
+| --- | --- |
+| Date | 2026-10-20 |
+| Claude Code | `2.1.304` |
+| Code | Commit `74eb3d0d`, which holds the fixes listed below |
+| Model | `claude-sonnet-5-5` in run 1. The settings snippet sets the `model` key to `claude-opus-5-5`, but the user chose Sonnet. The `advise` call used `opus`. |
+| Settings | Plugin options in `pluginConfigs["claudetto@inline"].options`: `advisor` set to `claudetto`, and `decide` set to `jev`. `allowUnsandboxedCommands` set to `false`, the user's choice. |
+| Run 1 | An interactive session in `tmux`, with `just sandbox --dir $TMPDIR/claudetto-sandbox-124` on a fresh config. One task for each slice, and `/compact` for `handoff`. |
+| Runs 2 to 4 | Headless `just sandbox --dir <dir> -p` on fresh configs. Each config was made by `claudetto-setup --scope user --apply`. |
+| Budget | `--max-budget-usd 1` on Sonnet. A Haiku diagnostic run of `diag.sh` used `0.3`. |
+| Secret | `TYPESAFE_API_KEY`, read from the repository `.env`. |
+
+## Slices That Worked in Run 1
+
+- `setup`: 68 changes were applied.
+  A second run changed nothing.
+- `guard`: A `cat notes.txt` call got the message `This command only prints a file.`
+- `sembr`: Two sentences that shared one line were written on two lines.
+- `ground`: A made-up `2500` was denied with the message `This text has claims with no source`.
+  The `404` in the user prompt passed, because a user message is a source.
+- `advise`: The answer came from `opus`.
+- `patch`: A subagent edit wrote `.claudetto/patches/<agentId>/changes.patch`.
+  `/claudetto:patch land` applied the patch.
+- `goal`: `/goal openspec/changes/demo/tasks.md` ran the step, and the status line showed `demo 2/2 ✓`.
+- `handoff`: `/compact` wrote `.claudetto/handoffs/handoff-<time>.md`, with 1758 bytes.
+- `statusline`: The slice worked.
+- `reply`: The `[ Reply ]` button worked.
+- `styles`: The `claudetto:Concise` style worked.
+- `claudetto-codegraph-check`: It exited with `0`.
+  The output said that `codegraph` 1.6.2 is on `PATH`.
+
+## Faults Found and Fixed
+
+The runs found 11 faults.
+Commit `74eb3d0d` holds all 11 fixes.
+Each item names the task in `tasks.md`, the fault, and the fix where this page records one.
+
+- Task `13.7`: With the option not set, the skill text held the literal `${user_config.advisor}`.
+  The model passed `--advisor claudetto` itself.
+  The fix is that `claudetto-setup` reads the option, in `src/kernel/plugin-option.ts`.
+- Task `13.8`: The setup skill gave only the count of changes before it asked.
+- Task `13.9`: Jev picked `CommonJS` for an ESM `math.js` at confidence `0.76`.
+  The hook sends only the question and the option texts.
+  With two options, the bound `0.5` blocked nothing.
+  The fix adds a margin, `MIN_MARGIN`, with the value `0.15`.
+- Task `13.10`: The ask rule `Bash(rm -*R*)` matched `rm -f $TMPDIR/m.mjs`, because of the `R` in `$TMPDIR`.
+- Task `13.11`: `bunx jscpd` failed in the sandbox with `EPERM`.
+  The diagnostic set `TMPDIR` to `/tmp/claude-501`.
+  `BUN_INSTALL` pointed to the real home, and the sandbox did not let Bun write its install cache.
+  `BUN_TMPDIR` alone still failed.
+  `BUN_TMPDIR` with `BUN_INSTALL` in `TMPDIR` printed `jscpd 5.4.1`.
+  The fix is that `jscpd-config --run` sets `BUN_TMPDIR` and `BUN_INSTALL`, and it probes the cache.
+- Task `13.12`: A first scan stopped, because the config needed a baseline file.
+- Task `13.13`: the skill `spec` (replaced by `propose`, `apply`, `verify`, and `archive` in 0.3.0) skipped `openspec init` when an `openspec/` folder existed.
+- Task `13.14`: The goal message read `The goal has 1 steps`.
+- Task `13.15`: With `allowUnsandboxedCommands` set to `true`, the model ran `bunx` again with `dangerouslyDisableSandbox` twice, with no prompt.
+  The snippet now sets `allowUnsandboxedCommands` to `false`, the user's choice.
+- Task `13.16`: Claude Code rejected `BUN_TMPDIR="$TMPDIR" bunx jscpd` and printed `Quoted text in this command can't be checked before it runs`.
+  The unquoted form needed approval.
+- Task `13.17`: Claude Code warned that `Bash(git push* :*)` is a literal prefix.
+  The rule is now `Bash(git push* :* *)`.
+
+## Headless Runs After the Fixes
+
+Runs 2 to 4 ran headless on fresh configs, after the fixes.
+They checked the skill `dry` (named `dedupe` since 0.3.0) and `git push origin :x`.
+The confirm run gave these results:
+
+- the skill `dry` (named `dedupe` since 0.3.0) ran `jscpd-config --run` with no prompt.
+  It found 1 clone and merged it.
+  A rescan found `0` clones.
+- Each of the 3 `Bash` calls ran in the sandbox.
+- `git push origin :x` got the message `This command requires approval`.
+
+## Limits
+
+- Each check ran in one session, so this page gives no rate.
+- This page gives no cost for runs 2 to 4.
+- The sandbox `HOME` differs from the real home, which caused part of task `13.11`.
+- Claude Code still prints an info line for the rule `Bash(git push* :* *)` at each start.
+- Task `13.18` is in progress.
+  It changes the behavior of `decide` again, so the results of the `decide` option may differ in later code.
+
+## Related Pages
+
+- [Sandbox](Sandbox)
+- [Sandbox Sessions](Sandbox-Sessions)
+- [Evidence](Evidence)

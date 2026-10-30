@@ -1,0 +1,20 @@
+SKILL: dedupe
+SET: ours
+DOES: Finds duplicate code with `jscpd` and decides which clones to merge. Use after a change that copies code, or when asked about duplication.
+SOURCE: `plugins/claudetto/skills/dedupe/SKILL.md:3`
+LISTING COST: 151 characters (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: yes  (no `disable-model-invocation:` key in the frontmatter of `plugins/claudetto/skills/dedupe/SKILL.md`, lines 1 to 4)
+CLAUDETTO NEEDS IT FOR: nothing found. `.jscpd.json` is the project config the skill runs `jscpd` with, and `CHANGELOG.md:276` says the skill runs `jscpd` with the project config.
+PROS:
+- Uses `jscpd` with the project config to decide which clones to merge.
+- The model can reach it after a change that copies code.
+CONS:
+- Its `description:` line is 151 characters in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+RECOMMENDATION: DROP, set by the user
+WHY: The model can call it (no `disable-model-invocation` key), and the description tells it when (after a change that adds code). Nothing found depends on it, and no run measures how often the model picks it, so the choice between `keep` and `name-only` is the user's.
+Set by the user on 2026-10-27.
+Ours, so dropping it deletes the skill folder.
+USER DECISION: keep (the user, 2026-10-30)
+DECISION WHY: the restart dropped it by omission and no document recorded the drop
+AMENDED 2026-10-30: the drop of 2026-10-27 above was never carried out on purpose. The restart shipped no `skills/` folder, and the documents that record the removed skills name the seven `minispec` skills (`openspec/changes/claudetto-restart/proposal.md:11`) and the `setup` skill (`openspec/changes/claudetto-restart/architecture.md:15`), and none of them names `dedupe`. The user decided on 2026-10-30 that `dedupe` ships as a skill. It is now at `plugins/claudetto/skills/dedupe/SKILL.md`, with a `description:` line of 151 characters and no `disable-model-invocation:` key, and it has a row in the table "The Skills and Their Flags" of `docs/prompt/footprint.md`. The line `USER DECISION: keep` is the field that `tools/skill-flags.ts` reads to know a skill of ours ships. The recommendation line is left as written, because the user decision outranks it.

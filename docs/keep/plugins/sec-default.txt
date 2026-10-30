@@ -1,0 +1,15 @@
+PLUGIN: cc-plugin-sec-default@builtin
+DOES: Plugin description in the program: "Security default: seated outermost on a machine with managed settings and for Team and Enterprise organizations unless managed prependPlugins is set, in which case the organization lists cc-plugin-sec-default@builtin there or not; keeps the organization's classic hooks, prompt content, settings and tool policy out of reach of the plugins a person installs, and adds no policy of its own".
+SOURCE: Program file `/Users/krystian/.local/share/claude/versions/2.1.312`, module `chunk-1w6yw902.js`, the listing at offset 16983 and `var b=()=>mK().outermost.includes(GZ)` at 8881. Registered unconditionally with the other built-ins at `chunk-cq1tyg5c.js:910`. Read on 2026-10-28 for task 14.11. The `prependPlugins` setting describes the same seating at `chunk-ce589w22.js:159326`.
+WHAT IT ADDS TO A SESSION: No prompt text, no skill, no command, no agent, no MCP server. It is a guard that sits outermost in the hook chain and keeps an organization's classic hooks, prompt content, settings, and tool policy out of reach of a person's plugins. Its own exports name what it does: `admissionPolicy`, `decidesClassicEvent`, `isSeated`, `policyAnswer`, `seat`. Its options are read from one path only, `["pluginConfigs", "cc-plugin-sec-default@builtin", "options"]` at `chunk-1w6yw902.js:11322`, with `allowModsToOverrideDenyRules` and `allowManagedModsOnly` among them.
+COST: zero on this machine. `isAvailable` is `isSeated`, which is true only when the seating plan's `outermost` list holds this plugin's id, which the description ties to managed settings or a Team or Enterprise organization.
+SENDS TELEMETRY: not found. Its export list holds no send, and its reads are of policy and trusted settings.
+CLAUDETTO ALREADY TURNS IT OFF: no, and it cannot. Its listing carries `enabledFromTrustedSettingsOnly:!0` and `enabledFromPolicyOnly:!0`, so an `enabledPlugins` entry in user settings does not reach it. It is the only built-in of the installed version that `enabledPlugins` cannot switch off.
+PROS:
+- It is the mechanism that keeps a person's plugin, claudetto included, from overriding an organization's policy. On a managed machine that is a protection, not a cost.
+- It adds no policy of its own, by its own description, so it changes nothing where no organization policy exists.
+CONS:
+- It cannot be turned off from user settings, so it is not a lever either way.
+- On a managed machine it can refuse a hook of ours. That is its purpose, and `allowModsToOverrideDenyRules` is the organization's switch, not ours.
+RECOMMENDATION: leave alone
+WHY: It costs nothing here, it cannot be switched off from user settings, and switching it off is not wanted: it is a security default. Task 14.11's own reading, that this is not a defect of the off-list, is confirmed. Not read: what `mK()` builds the seating plan from, so the exact condition under which it seats itself on this machine is unconfirmed beyond its description.

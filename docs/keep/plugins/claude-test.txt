@@ -1,0 +1,16 @@
+PLUGIN: cc-plugin-claude-test@builtin
+DOES: Plugin description in the program: "Claude Test, local (runs on this machine, not the claude.ai Claude Test connector): runs the plain-language specs in .claude-test/specs/ against your local dev server in a browser on this computer and reports PASS or FAIL per spec, with a screenshot".
+SOURCE: Program file `/Users/krystian/.local/share/claude/versions/2.1.311` (embedded chunk, manifest at byte offset 256413771, description at 256512846, `registerPlugin` call at 256528600). The registration list is at offset 236097668. Docs: not found, `cc-docs search "cc-plugin-claude-test"` returned no page that describes it, and the `extend/mod-api/nouns-and-gates` table does not list it.
+WHAT IT ADDS TO A SESSION: Three skills from `Zo` at offset 256512846+: `run` (user invocable), `execute` (forked to agent `claude-test:runner`), `draft` (forked to agent `claude-test:author`). Three agents in its files: `agents/author.md`, `agents/explorer.md`, `agents/runner.md`. An MCP server named `browser` (tool names start `mcp__plugin_claude-test_browser__claude_test_`, for example `claude_test_write`, `claude_test_app_up`). A command `claude-test` (manifest `runCommands`). Hooks: `command.run`, `skill.prompt`, `classic.SubagentStop`, `tool.call`, `ui.render`.
+COST: Chunk is about 137133 bytes in the program (offset span between chunk markers, counted with a script). Per-session token cost not measured.
+SENDS TELEMETRY: no telemetry call found. Its manifest scan `calls` list has no `telemetry.log` or `telemetry.mark`. This does not cover what its browser or MCP server fetches, which was not read.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `claude-test`.
+PROS:
+- Runs plain-language specs from `.claude-test/specs/` against a local dev server and reports PASS or FAIL with a screenshot (description).
+- Declares no telemetry call in its manifest.
+CONS:
+- Largest chunk of the eleven by bytes (137133).
+- Adds three agents, three skills, an MCP server, and a command to a session.
+- Registered only under a gate the registration code calls `e` (offset 236097668), whose meaning (`oEe()`) was not identified.
+RECOMMENDATION: keep off
+WHY: Claudetto has no `.claude-test/specs/` use that I found (not searched in the repo), and the weight in the program is the largest of the set (chunk 137133 bytes, MCP server and three agents). The user can switch to `turn on` if browser spec testing is wanted.

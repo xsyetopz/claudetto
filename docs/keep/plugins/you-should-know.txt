@@ -1,0 +1,16 @@
+PLUGIN: cc-plugin-you-should-know@builtin
+DOES: Doc page: "Shows a note above the prompt when a side agent finds something you might have missed. Off until you turn it on." Plugin description in the program: "You should know: a side agent watches your back while Claude works on longer tasks. It looks for things worth knowing that you might miss, and surfaces them above the prompt."
+SOURCE: cc-docs route `extend/mod-api/nouns-and-gates` (section "Built-in Mods"), and the program file `/Users/krystian/.local/share/claude/versions/2.1.311` (manifest at byte offset 256669626, description and `defaultEnabled:!1` at 256750450). Full facts are in `docs/keep/plugins/you-should-know-rebuild.txt`.
+WHAT IT ADDS TO A SESSION: A note above the prompt with answer keys (learn more, know this already, dismiss) and an optional "learn page" published as a private artifact. A side model call per check (`model.fork`). Hooks: `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach`, `session.end`. No skills, agents, or MCP servers found in its `registerPlugin` call.
+COST: Chunk is about 90692 bytes in the program (offset span between chunk markers, counted with a script). The shared side-request header text is 995 characters (counted), and the observer prompt `un()` is built at offset 256705205 and its full length was not counted. Each check costs one forked model request, tokens not measured.
+SENDS TELEMETRY: yes. Its manifest scan lists `telemetry.log` and `telemetry.mark`. Events named in its code are `you_should_know_proposed`, `you_should_know_answered`, `you_should_know_explained`, and `learn_page` (offsets 256684776 to 256685689). The doc page for `$.telemetry.mark` says a mark "always means `anthropic`".
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `you-should-know`.
+PROS:
+- Surfaces consequences the user may not have understood (description).
+- Off by default in the program and needs no skill, MCP server, or agent file.
+- The user decided to rebuild it (see the rebuild note).
+CONS:
+- Sends first-party telemetry rows per check and per answer.
+- Spends a forked model request about every sixth step (`f.index%Tr===0` with `Tr=6`, offset 256739900).
+RECOMMENDATION: recreate
+WHY: The user wrote on 2026-10-27 that it gets recreated "no telemetry, lighterweight, and fully extensible", and the original sends telemetry rows (offset 256684776).

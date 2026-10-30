@@ -1,0 +1,17 @@
+SKILL: sync
+SET: ours
+DOES: Merges the delta specs of a change into `openspec/specs/` and leaves the change in place. Use when the main specs must show a change before its archive.
+SOURCE: `archive/plugins/claudetto/skills/sync/SKILL.md:3`
+LISTING COST: 165 bytes (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: no  (`disable-model-invocation: true` at `archive/plugins/claudetto/skills/sync/SKILL.md:4`)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook and no other skill names `/claudetto:sync`.
+PROS:
+- Shows a change in the main specs before its archive, and leaves the change active.
+CONS:
+- Its `description:` line is 165 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+- Whether a skill with `disable-model-invocation: true` still has a listing line is not measured here. Route `extend/skills-and-commands/frontmatter` says only that the key stops Claude from loading the skill by itself.
+RECOMMENDATION: name-only
+WHY: The user types `/claudetto:sync`, and `disable-model-invocation: true` is at `archive/plugins/claudetto/skills/sync/SKILL.md:4`. Nothing found depends on it, so `drop` is open if the user never syncs before an archive. Caveat: the `skillOverrides` row says plugin skills are not affected.
+USER DECISION: drop (the user, 2026-10-27)
+DECISION WHY: replaced by the opt-in OpenSpec integration

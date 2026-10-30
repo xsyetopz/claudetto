@@ -1,0 +1,15 @@
+TOOL: Grep
+DOES: Docs: "Searches file contents with ripgrep." Read-only and parallel. Same availability as `Glob`.
+DOC SOURCE: reference/tools/files
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: Listed in `tools:` of Apollo, Athena, Artemis, Hephaestus and Zeus (archive/plugins/claudetto/agents/Apollo.md:6, Athena.md:6, Artemis.md:6, Hephaestus.md:6, Zeus.md:6). Four agent bodies say to find a place with `Grep` first (plugins/claudetto/agents/Artemis.md:12, Athena.md:18, Hephaestus.md:18, Apollo.md:13). Gate reads its `glob` input (archive/plugins/claudetto/modules/gate/domain/file-findings.ts:30). Hook (archive/plugins/claudetto/hooks/register.ts:155). Notes adapter (archive/plugins/claudetto/modules/work/notes/adapters/mod.ts:40). Kept resident by `NEVER_DEFERRED` (archive/plugins/claudetto/modules/session/prompt/limits.ts:28). 11 of 292 counted sessions use it (limits.ts:18).
+PROS:
+- The agent bodies name it as the first search step in four files.
+- Read-only, so no permission prompt.
+CONS:
+- Only 11 of 292 counted sessions call it (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+- Agents already carry the fallback of `grep` in `Bash` for builds without it (plugins/claudetto/agents/Artemis.md:12).
+RECOMMENDATION: keep
+WHY: Four agent bodies instruct its use (Artemis.md:12, Athena.md:18, Hephaestus.md:18, Apollo.md:13) and five list it in `tools:`. Its request cost is not measured, so no saving is shown for a deny.
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `Grep` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 11 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

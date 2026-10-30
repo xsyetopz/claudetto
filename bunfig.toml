@@ -5,8 +5,10 @@ env = false
 linker = "isolated"
 
 [test]
-# The tests of the repository; `plugins/*/tests/` holds the hook labs, which `claude plugin test` runs.
-root = "tests"
+# `bun test` collects every test file under the repository, so a `__tests__/` folder beside a source counts.
+# `plugins/*/tests/` holds the hook labs, which import `claude-code/testing` and only `claude plugin test` runs.
+# `archive/` holds the retired code of the same labs, and `external/` holds the checkouts of others.
+pathIgnorePatterns = ["plugins/*/tests/**", "archive/**", "external/**"]
 # Each temporary folder of the tests goes under one folder that the run removes at exit.
 preload = ["./tests/support/tmp-root.ts"]
 timeout = 5000

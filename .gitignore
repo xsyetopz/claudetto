@@ -33,3 +33,10 @@ node_modules/
 
 # Personal notes of the user for this project.
 /CLAUDE.local.md
+
+# Local state, cache, and scratch files of claudetto, not for the public repository.
+/.jscpd.json
+/openspec/
+
+# Read-only reference for old Claudetto (broken) implementation.
+/archive/

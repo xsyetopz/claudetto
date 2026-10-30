@@ -1,0 +1,16 @@
+TOOL: Skill
+DOES: Docs: "Runs a skill or slash command." Parameters `skill` (required) and `args`. Main session and subagents, kept in background subagents, not deferred.
+DOC SOURCE: reference/tools/agents-and-tasks
+REQUEST COST: 1,803 characters (docs/surfaces.md:40, the resident tools after the trim)
+CLAUDETTO USES IT FOR: The plugin ships ten skills (plugins/claudetto/skills/*/SKILL.md) that the model starts through this tool. Allowed without a prompt through `Skill(claudetto:find-docs)` (archive/plugins/claudetto/snippets.ts:4). The finish rule reads a `Skill` call of `claudetto:apply` (archive/plugins/claudetto/modules/work/finish/domain/record.ts:56, :63). Our shorter text `TOOL_SKILL` (archive/plugins/claudetto/modules/session/prompt/prompts.ts:98) and the prompt rule about listed skills (prompts.ts:109). `DESCRIBED` (archive/plugins/claudetto/hooks/register.ts:189). 23 of 292 counted sessions use it (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+PROS:
+- It is the model's only route to the plugin skills, and the finish rule depends on it (record.ts:63).
+- Our shorter text replaces the harness text only when it is shorter (archive/plugins/claudetto/modules/session/prompt/adapters/mod.ts:108-116).
+CONS:
+- 1,803 resident characters (docs/surfaces.md:40) for 23 of 292 sessions (limits.ts:18).
+- A user can start a skill by `/name` without it.
+RECOMMENDATION: KEEP, TRIMMED, set by the user
+WHY: record.ts:63 and snippets.ts:4 are code that needs the tool. The 23 of 292 session use is low, but a deny would cut the model off from the plugin skills.
+Set by the user on 2026-10-27.
+USER DECISION: deferred (the user, 2026-10-27)
+DECISION WHY: it is not in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`), so it can be deferred, and 23 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

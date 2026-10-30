@@ -1,0 +1,18 @@
+SKILL: setup
+SET: ours
+DOES: Shows what loads in each session, and applies the claudetto settings snippet with a merge or a replace. Use after an install or update of the plugin `claudetto`.
+SOURCE: `archive/plugins/claudetto/skills/setup/SKILL.md:3`
+LISTING COST: 174 bytes (the whole `description:` line, key included, without the newline)
+MODEL CAN CALL IT: no  (`disable-model-invocation: true` at `archive/plugins/claudetto/skills/setup/SKILL.md:4`)
+CLAUDETTO NEEDS IT FOR: The install flow of the README (`README.md:33`, `README.md:117`) and the settings snippet of the plugin. `allowed-tools: Bash(claudetto-setup *)` is at `archive/plugins/claudetto/skills/setup/SKILL.md:6`. `docs/window-weights.md:20` lists it at 3% of skill usage.
+PROS:
+- Shows what loads in each session and applies the settings snippet with a merge or a replace.
+- The README names it as the step after an install (`README.md:33`).
+CONS:
+- Its `description:` line is 174 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.
+- The `skillOverrides` row of route `extend/skills-and-commands` says plugin skills are not affected, so the effect of `name-only` on this plugin skill is not measured.
+- Whether a skill with `disable-model-invocation: true` still has a listing line is not measured here. Route `extend/skills-and-commands/frontmatter` says only that the key stops Claude from loading the skill by itself.
+RECOMMENDATION: name-only
+WHY: The user types `/claudetto:setup` after an install (`README.md:33`), and `disable-model-invocation: true` is at `archive/plugins/claudetto/skills/setup/SKILL.md:4`. Caveat: the `skillOverrides` row says plugin skills are not affected.
+USER DECISION: drop as a skill (the user, 2026-10-30)
+DECISION WHY: The capability ships, the skill does not. Setup is a CLI at `plugins/claudetto/src/tiers/setup.ts`, run as `just setup`, because a CLI costs zero prompt characters while this page's own CONS row prices the skill's listing line at 174 bytes of every session (`openspec/changes/claudetto-restart/architecture.md:15`). So the 174 bytes are saved and nothing the skill did is lost, which is why the row above reads `name-only` and this decision goes further.

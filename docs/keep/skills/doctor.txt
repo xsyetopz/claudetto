@@ -1,0 +1,15 @@
+SKILL: doctor
+SET: bundled
+DOES: Checks the setup: install, unused extensions, `CLAUDE.md`, hooks, permissions. `/doctor prompt-audit` audits instructions.
+SOURCE: route `extend/skills-and-commands/bundled-skills`, row `/doctor`
+LISTING COST: not measured  (a bundled skill has no file that we can read, route `extend/skills-and-commands/bundled-skills`)
+MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Stays with `disableBundledSkills` (section Controls).
+- Can audit the instructions with `prompt-audit`.
+CONS:
+- Needs a workspace and is interactive (row `/doctor`).
+- Can be hidden with `skillOverrides` `"doctor": "off"` or `DISABLE_DOCTOR_COMMAND` (same row).
+RECOMMENDATION: keep
+WHY: Route `extend/skills-and-commands/bundled-skills`, section Controls, says `/doctor` stays available with `disableBundledSkills`, so removal costs nothing and there is nothing to decide.

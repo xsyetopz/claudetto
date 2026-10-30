@@ -1,0 +1,14 @@
+TOOL: PowerShell
+DOES: "Runs a Windows PowerShell command." Same parameters as `Bash`. Gated by `CLAUDE_CODE_USE_POWERSHELL_TOOL`. Main session and subagents.
+DOC SOURCE: `reference/tools/shell-and-web`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: no use found in `plugins/claudetto/`, `tools/`, `dev/`, or `plugins/claudetto/agents/*.md`. Not in the deny list at `archive/plugins/claudetto/modules/setup/prompts.ts:124-138`.
+PROS:
+- Needed on Windows, where `Bash` may be missing.
+CONS:
+- Off unless `CLAUDE_CODE_USE_POWERSHELL_TOOL` is set, and nothing in the repo sets it (no match in the grep).
+- The project shell here is zsh on macOS.
+RECOMMENDATION: deny
+WHY: No use found, it is a Windows shell and the project runs on macOS. A deny of an absent name costs nothing (`docs/surfaces.md` line 75), so it is safe.
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: it runs a Windows PowerShell command (`docs/keep/tools/PowerShell.txt:2`) and the project shell here is zsh on macOS (`docs/keep/tools/PowerShell.txt:10`)

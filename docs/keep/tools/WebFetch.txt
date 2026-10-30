@@ -1,0 +1,14 @@
+TOOL: WebFetch
+DOES: "Fetches a URL and applies a prompt to the page text." Gated: `CLAUDE_CODE_DISABLE_WEB_FETCH=1` turns it off (needs `2.1.285` or later). Main session and subagents.
+DOC SOURCE: `reference/tools/shell-and-web`
+REQUEST COST: not measured
+CLAUDETTO USES IT FOR: `archive/plugins/claudetto/agents/Hermes.md:6` (`tools: WebSearch, WebFetch, Read`), `archive/plugins/claudetto/modules/session/prompt/limits.ts:28` (in `NEVER_DEFERRED`), `archive/plugins/claudetto/hooks/register.ts:163` (tool list of a hook), `archive/plugins/claudetto/modules/work/notes/adapters/mod.ts:42`, `plugins/claudetto/tests/permission.test.ts:32`, `archive/plugins/claudetto/tests/tool.test.ts:78`. Not denied in `prompts.ts`.
+PROS:
+- The `Hermes` web-research agent needs it to read a source.
+- Several claudetto modules and tests already depend on the name.
+CONS:
+- Page text is untrusted data, so every call is a prompt-injection surface (`archive/plugins/claudetto/agents/Hermes.md` line 11 handles this).
+RECOMMENDATION: keep
+WHY: `archive/plugins/claudetto/agents/Hermes.md:6` lists it, and `limits.ts:28` pins it to the base prompt.
+USER DECISION: keep (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `WebFetch` is in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`) and 14 of 292 sessions used it (`archive/plugins/claudetto/modules/session/prompt/limits.ts:18`)

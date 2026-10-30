@@ -1,0 +1,16 @@
+TOOL: Workflow
+DOES: "Runs a JavaScript workflow that orchestrates subagents." Gated off with `CLAUDE_CODE_DISABLE_WORKFLOWS=1`, main session only, removed from subagents, alias `RunWorkflow`.
+DOC SOURCE: `reference/tools/agents-and-tasks`
+REQUEST COST: 5,355 characters in the first row of `docs/surfaces.md` (Resident Tools section). With `disableBundledSkills: true` alone it grew to 22,310 characters (`docs/surfaces.md` line 33).
+CLAUDETTO USES IT FOR: no use found as a tool to call. It appears only as handling code and tests: `archive/plugins/claudetto/modules/setup/prompts.ts:135` (deny), `archive/plugins/claudetto/modules/setup/prompts.ts:150` (`enableWorkflows: false`), `archive/plugins/claudetto/hooks/register.ts:196` (name in the `DESCRIBED` list), `archive/plugins/claudetto/tests/tool.test.ts:62` and `:74` (tests that it is deferred). No agent in `plugins/claudetto/agents/*.md` lists it. Already denied.
+PROS:
+- Runs scripted multi-agent orchestration, which no other tool does.
+CONS:
+- Serves Dynamic Workflows, which the user calls token-hungry.
+- The largest single definition in the measured request (5,355 characters).
+- The project uses worktrees and not workflows (user statement in the task).
+- Keeping it leaves `archive/plugins/claudetto/tests/tool.test.ts:62` testing a deferral of a tool that is denied, so those tests are the only users.
+RECOMMENDATION: deny
+WHY: The user settled that the project uses worktrees and not workflows and that Dynamic Workflows are token-hungry. `docs/surfaces.md` line 24 shows that a deny of `Workflow`, `ScheduleWakeup`, and `ReportFindings` cut the request from 42,676 to 30,510 characters, and `prompts.ts:135` already denies it.
+USER DECISION: deny (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: `Workflow` is already in the deny list (`archive/plugins/claudetto/modules/setup/prompts.ts:135`)

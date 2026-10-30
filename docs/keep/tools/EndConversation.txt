@@ -1,0 +1,15 @@
+TOOL: EndConversation
+DOES: Docs: "Ends the conversation (abuse, or on request)." Gated: hidden server-side flag. No parameters. Removed from subagents. Read-only, deferred.
+DOC SOURCE: reference/tools/gated-and-other
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: no use found (no hit in plugins/claudetto or tools, the `dev/` folder does not exist). It is not in `TOOL_SESSION_USE` (archive/plugins/claudetto/modules/session/prompt/limits.ts:18) and not in the deny list (archive/plugins/claudetto/modules/setup/prompts.ts:134-135). docs/surfaces.md does not list it in the 89-tool listing section (docs/surfaces.md:73).
+PROS:
+- None shown by the repo. Docs say it ends a conversation on abuse or on request.
+CONS:
+- Gated by a hidden server flag, so it may be absent on any given login.
+- A model call would end the session, which is a hazard for an automated run.
+RECOMMENDATION: deny
+WHY: No use found and no cost measured. A deny of an absent name saves nothing (docs/surfaces.md:75), so a probe of the request on the real login (docs/surfaces.md:14, task 14.2) must show whether it is present before a deny is worth writing.
+Set by the user on 2026-10-27.
+USER DECISION: deny (the user, 2026-10-27)
+DECISION WHY: the user wrote DROP on this page (`docs/keep/tools/EndConversation.txt:11`), and a call would end the session (`docs/keep/tools/EndConversation.txt:10`)

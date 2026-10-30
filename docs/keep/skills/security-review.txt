@@ -1,0 +1,16 @@
+SKILL: security-review
+SET: bundled
+DOES: Completes a security review of the pending changes on the current branch.
+SOURCE: route `prompts/built-in-skills`, section `security-review`, and route `extend/skills-and-commands/bundled-skills`, row `/security-review`
+LISTING COST: `30` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
+MODEL CAN CALL IT: yes  (row `/security-review`: Claude can also call it through the `Skill` tool)
+CLAUDETTO NEEDS IT FOR: nothing found. No hook, skill, or snippet of the repo names it in the files that I read.
+PROS:
+- Stays after `disableBundledSkills`.
+- Reviews the branch diff for security risks.
+CONS:
+- The model can call it, so its one-line description is in the listing of a git repo.
+RECOMMENDATION: DROP, set by the user
+WHY: `disableBundledSkills` does not remove it, because route `extend/skills-and-commands` says built-in commands stay. The snippet's `disableBundledSkills: true` (`archive/plugins/claudetto/modules/setup/prompts.ts:145`) does remove it from the model view. `DCe()` (`chunk-2ht8z368.js:947185` of `2.1.311`) forces every built-in `prompt` skill to `user-invocable-only` under that switch, so the `30` tokens this skill takes of the `2,210` tokens of the listing are already gone, and `/security-review` stays typable. A `skillOverrides` entry of `off` would reach it, because it is of type `prompt` (`chunk-2ht8z368.js:1738046`), and it would only drop the slash command from the user's menu. Read on 2026-10-27.
+The job itself stays available, because claudetto reviews a diff with its own `Athena` agent, and the repo's own checks run in `just check`.
+Set by the user on 2026-10-27.

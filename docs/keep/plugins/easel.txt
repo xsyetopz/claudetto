@@ -1,0 +1,16 @@
+PLUGIN: cc-plugin-easel@builtin
+DOES: Plugin description in the program: "Draws charts in the transcript: a chart tool for Claude, and automatic charts for MCP results that are metrics over time".
+SOURCE: Program file `/Users/krystian/.local/share/claude/versions/2.1.311` (manifest at byte offset 256537575, `registerPlugin` call at 256538568). Docs: not found, `cc-docs search "cc-plugin-easel"` returned no page that describes it, and the `extend/mod-api/nouns-and-gates` table does not list it.
+WHAT IT ADDS TO A SESSION: A chart tool for Claude (manifest `calls` include `tool.register`). Two options in `userConfig`: `autoCharts` (default true) and `autoChartSkip` (MCP servers to skip). Hooks: `session.start`, `session.attach`, `prompt.section`, `tool.call`, `ui.render`. No skills, agents, or MCP servers found in its `registerPlugin` call.
+COST: Chunk is about 6931 bytes in the program (offset span between chunk markers, counted with a script, the supplemental module is a separate chunk and was not counted). Per-session token cost not measured.
+SENDS TELEMETRY: yes. Its manifest scan lists `telemetry.log` and `telemetry.mark` (offset 256537575). The payload was not read.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `easel`.
+PROS:
+- Charts in the transcript for metrics results (description).
+- Option `autoCharts` can be turned off so that only charts Claude asks for are drawn.
+CONS:
+- Adds a tool and a `prompt.section` to the session (manifest).
+- Declares telemetry calls.
+- The program gates it by the flag `tengu_joyful_otter`, default off (`isOnByDefault` is `!1`), on `linux` and `macos` only, and not under the `hipaa` or `zdr` states (offset 256537575+).
+RECOMMENDATION: keep off
+WHY: The program already ships it off by default (`isOnByDefault` is `!1` at offset 256537575+), it adds a tool plus a prompt section, and it declares telemetry calls.

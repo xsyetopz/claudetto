@@ -1,48 +1,79 @@
 {
-	"$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto",
 	"version": "0.4.0-alpha.2",
-	"description": "Adds a lean output style, a main agent with a roster of six agents, and a permission gate that answers each permission prompt. Adds a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`. Adds a handover to a fresh session in place of the compaction summary, and a `goal` check. Adds a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer. A Haiku 5.5 classifier settles each ask of the gate that Jev does not settle.",
+	"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, skills, and an output style. It patches nothing. The tree is a rebuild in progress, and each capability lands with the measurement that decided its values. The one decided default is the compaction path, which stays the built-in compaction of Claude Code until a measured probe result beats it.",
 	"author": {
 		"name": "xsyetopz"
 	},
 	"repository": "https://github.com/xsyetopz/claudetto",
+	"homepage": "https://github.com/xsyetopz/claudetto",
 	"license": "MIT",
-	"types": "./types/index.d.ts",
+	"types": "./types/claudetto.d.ts",
+	"keywords": ["hooks", "coding", "cost"],
 	"userConfig": {
 		"decide": {
 			"type": "string",
 			"title": "Second Opinion",
-			"description": "Use `off` for no pick, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the questions go to the TypeSafe API). With `jev` and the key, Jev answers each `AskUserQuestion` call and the dialog does not show, unless Jev is not sure about a question. Jev also gets each ask of the permission gate, with the call and the newest 3 requests of the user.",
+			"description": "Use `off` for no decision tool. Use `jev` for Jev, which needs `TYPESAFE_API_KEY` and sends the questions to the TypeSafe API. With `jev` and a key, the tool `mcp__claudetto__decide` is registered and Claude calls it for a decision that is its own. An `AskUserQuestion` dialog always reaches the user either way. The default is `jev` because the key is the switch: without one no tool is registered and nothing leaves the machine.",
 			"default": "jev",
 			"options": ["off", "jev"]
-		},
-		"classifier": {
-			"type": "string",
-			"title": "Classifier",
-			"description": "Use `haiku` to let Haiku 5.5 settle each ask of the permission gate that Jev is not sure about: it allows a routine call or a call that the user asked for, and blocks the rest with a reason. A failure goes to the dialog. Use `off` to send each such ask to the dialog.",
-			"default": "haiku",
-			"options": ["haiku", "off"]
-		},
-		"compaction": {
-			"type": "string",
-			"title": "Compaction",
-			"description": "Use `auto` to pick a handover or a compaction for each case from the table, `handover` to hand over at each trigger, `built-in` for the compaction of Claude Code, or `code` for a compaction that code builds with no model request.",
-			"default": "auto",
-			"options": ["auto", "handover", "built-in", "code"]
-		},
-		"plan": {
-			"type": "string",
-			"title": "Plan",
-			"description": "The plan tier of the login, such as `default_claude_max_20x`. `claudetto-setup` writes it from `~/.claude.json`. Keep it empty for an API key or an unknown tier."
 		},
 		"TYPESAFE_API_KEY": {
 			"type": "string",
 			"title": "TypeSafe API Key",
 			"description": "The key of Jev for the `decide` option. Claude Code keeps it in secure storage, not in a settings file.",
 			"sensitive": true
+		},
+		"compaction": {
+			"type": "string",
+			"title": "Compaction",
+			"description": "Use `auto` or `built-in` for the compaction of Claude Code, with a handoff written before it. Use `code` for a compaction that code builds with no model request, which is experimental. `auto` is `built-in` today, because every probe round of `docs/evidence/code-compaction-probe.md` reported no winner.",
+			"default": "auto",
+			"options": ["auto", "built-in", "code"]
+		},
+		"cheapSummary": {
+			"type": "string",
+			"title": "Cheap Compaction Summary",
+			"description": "Use `on` to have claudetto answer a compaction with one bounded call on `claude-haiku-5-5` instead of letting Claude Code summarize on the model the session runs. It is `off` because no measured rows price it yet, and every failure of the call falls back to the compaction of Claude Code.",
+			"default": "off",
+			"options": ["off", "on"]
+		},
+		"subagentCap": {
+			"type": "number",
+			"title": "Subagents at Once",
+			"description": "The most subagents that run at the same time. Left unset, the cap is the one of the plan of this login, and a login with no plan row has none. A start past the cap is refused.",
+			"min": 1
+		},
+		"startCap": {
+			"type": "number",
+			"title": "Subagent Starts per Period",
+			"description": "The most subagent starts inside the period of `windowSeconds`. Left unset, it is 12.",
+			"min": 1
+		},
+		"windowSeconds": {
+			"type": "number",
+			"title": "Period in Seconds",
+			"description": "The length of the period that `startCap`, `callCap`, and `failLimit` count in. Left unset, it is 600.",
+			"min": 1
+		},
+		"callCap": {
+			"type": "number",
+			"title": "Tool Calls per Period at Heavy Context",
+			"description": "The most tool calls inside the period while the context is heavy. A call past the cap is held. Left unset, it is 20.",
+			"min": 1
+		},
+		"heavyTokens": {
+			"type": "number",
+			"title": "Heavy Context in Tokens",
+			"description": "The input tokens of the last response from which the context counts as heavy. Left unset, it is 400000.",
+			"min": 1
+		},
+		"failLimit": {
+			"type": "number",
+			"title": "Identical Failures Before a Refusal",
+			"description": "How many times the same call fails with the same error before an identical retry is refused. Left unset, it is 3.",
+			"min": 1
 		}
-	},
-	"homepage": "https://github.com/xsyetopz/claudetto/wiki/Architecture",
-	"keywords": ["output-style", "hooks", "statusline"]
+	}
 }

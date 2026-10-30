@@ -1,26 +1,33 @@
 {
-	"extends": "./.claude-plugin/types/tsconfig.json",
 	"compilerOptions": {
 		"allowArbitraryExtensions": true,
 		"allowImportingTsExtensions": true,
-		"allowSyntheticDefaultImports": true,
-		"allowUmdGlobalAccess": true,
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
-		"checkJs": false,
 		"esModuleInterop": true,
 		"exactOptionalPropertyTypes": true,
 		"forceConsistentCasingInFileNames": true,
 		"isolatedModules": true,
+		"lib": ["es2023"],
+		"module": "esnext",
 		"moduleDetection": "force",
+		"moduleResolution": "bundler",
+		"noEmit": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitOverride": true,
 		"noImplicitReturns": true,
 		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
 		"noUncheckedSideEffectImports": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "es2023",
+		"typeRoots": ["./.claude-plugin/types"],
+		"types": ["claude-code", "claude-code-mcp", "claude-code-tools"],
 		"useDefineForClassFields": true
-	}
+	},
+	"include": ["src/**/*.ts", "tests/**/*.ts"]
 }

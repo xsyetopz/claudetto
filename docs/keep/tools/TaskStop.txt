@@ -1,0 +1,15 @@
+TOOL: TaskStop
+DOES: Docs: "Stops a running background task." Parameters `task_id` (also takes a teammate or named background agent) and `shell_id` (deprecated). Main session and subagents, deferred.
+DOC SOURCE: reference/tools/shell-and-web
+REQUEST COST: not measured (not among the 12 tools of the probe request, docs/surfaces.md:36-41)
+CLAUDETTO USES IT FOR: The gate hooks it with `Monitor` (archive/plugins/claudetto/hooks/register.ts:147, archive/plugins/claudetto/modules/gate/adapters/mod.ts:172, :191) and removes the stopped task from the shared watch set (mod.ts:194). The refusal text for a duplicate `Monitor` tells the model to stop the task with `TaskStop` (archive/plugins/claudetto/modules/gate/prompts.ts:98). No agent lists it in `tools:`. Not counted in `TOOL_SESSION_USE` (archive/plugins/claudetto/modules/session/prompt/limits.ts:18).
+PROS:
+- Our duplicate-watch refusal sends the model to it, so that path would dead-end without it (gate/prompts.ts:98).
+- Deferred by the harness, so it adds little to the request.
+CONS:
+- Neither Apollo nor Hephaestus lists it, so a subagent with a restricted `tools:` list may not reach it.
+- Request cost and session use not measured.
+RECOMMENDATION: keep
+WHY: gate/adapters/mod.ts:191-194 and gate/prompts.ts:98 depend on it. Its docs row marks it deferred (reference/tools/shell-and-web), so a deny would save little.
+USER DECISION: deferred (claudetto, by the user's rule of 2026-10-27)
+DECISION WHY: it is not in `NEVER_DEFERRED` (`archive/plugins/claudetto/modules/session/prompt/limits.ts:28`), so it can be deferred, and the page marks it deferred by the harness with no session count (`docs/keep/tools/TaskStop.txt:8`, `:5`)

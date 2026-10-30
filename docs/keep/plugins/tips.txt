@@ -1,0 +1,15 @@
+PLUGIN: cc-plugin-tips@builtin
+DOES: Plugin description in the program: "Spinner tips as a plugin: the tip line under the spinner while Claude works, picked once a turn from the tips that fit the session".
+SOURCE: Program file `/Users/krystian/.local/share/claude/versions/2.1.311` (manifest at byte offset 256551732, description at 256553912, `registerPlugin` call at 256556140). Docs: not found, `cc-docs search "cc-plugin-tips"` returned no page that describes it, and the `extend/mod-api/nouns-and-gates` table does not list it.
+WHAT IT ADDS TO A SESSION: A tip line under the spinner. Hook `session.start` only. Manifest `calls`: `env.get`, `settings.read`. It reads `CLAUDE_CODE_FORCE_TIP_ID` and `USER_TYPE`. No skills, commands, agents, or MCP servers found.
+COST: Chunk is about 10084 bytes in the program (offset span between chunk markers, counted with a script). Per-session token cost: none found.
+SENDS TELEMETRY: no. Its manifest scan `calls` has no `telemetry.log` or `telemetry.mark`.
+CLAUDETTO ALREADY TURNS IT OFF: yes, `archive/plugins/claudetto/modules/setup/prompts.ts:164` lists `tips`. Line 169 also sets `spinnerTipsEnabled: false`.
+PROS:
+- Surfaces features the user might not know (description).
+- Declares no telemetry.
+CONS:
+- Screen noise during work.
+- The program gates it by the flag `tengu_tips_mod`, default off (`isOnByDefault` is `!1`).
+RECOMMENDATION: keep off
+WHY: `spinnerTipsEnabled: false` at `prompts.ts:169` already says the user does not want spinner tips, and the plugin is the spinner-tip plugin (offset 256553912).
