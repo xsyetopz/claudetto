@@ -41,7 +41,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 ## 7. Agents and Docs Lookup (`research-agent`, `docs-lookup`)
 
 - [x] 7.1 Write `agents/Hermes.md`. Verify: `bun tools/agent-tools.ts`, and `just inventory` for its line. `bun tools/agent-tools.ts` exits 0. `Hephaestus.md` shipped beside it. `just inventory` reads the `shipped` arm at 31,968 and 31,475 with both files moved aside, so their listing costs 493, and the other 119 are the longer roster of the `Agent` text. `SHIPPED_TOTAL`, the `agent listing` and `tool texts` rows of `src/cuts.ts`, and `docs/surfaces.md` carry the reading, and every row holds within the slack.
-- [ ] 7.2 Read the standing size of the Context7 MCP server and of our own registered tool with `just capture`, and record both in `decisions.md`. Verify: the two readings.
+- [x] 7.2 Read the standing size of the Context7 MCP server and of the Context7 CLI route (D35, in place of our own registered tool) with `just capture`, and record both in `decisions.md`. Verify: the two readings. `just capture` gained `--mcp-config FILE` (with `--strict-mcp-config`), `--plugin-dir DIR`, and `--help`; two cases of `tools/capture/__tests__/capture.spec.ts` failed before and pass. `--arm plain` reads `46,105` bare, `47,012` with the hosted Context7 server, and `46,172` with a probe skill that names the CLI, so the server stands at `907` and the CLI route at `67`. D35 records the readings and what the 907 characters hold.
 - [ ] 7.3 Build the lighter option. Verify: a lookup test, and `just capture` matching 7.2.
 
 ## 8. Classifier Trim (`low-hitl`)

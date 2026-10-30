@@ -37,6 +37,7 @@ const runArm = async (options: {
 	plugin: boolean;
 	settings: string | undefined;
 	prompt: string;
+	extra: readonly string[];
 }): Promise<{ code: number; stderr: string; work: string }> => {
 	const root = await mkdtemp(TEMP_PREFIX);
 	const config = join(root, "config");
@@ -52,6 +53,7 @@ const runArm = async (options: {
 	if (options.plugin) {
 		args.push("--plugin-dir", join(cwd(), PLUGIN));
 	}
+	args.push(...options.extra);
 	const child = spawn(["claude", ...args], {
 		cwd: work,
 		env: {
@@ -80,6 +82,7 @@ export const capture = async (
 	settings: string | undefined,
 	dump?: string,
 	prompt: string = PROMPT,
+	extra: readonly string[] = [],
 ): Promise<Reading> => {
 	const api = startFakeApi();
 	try {
@@ -88,6 +91,7 @@ export const capture = async (
 			plugin: arm === "plugin",
 			settings,
 			prompt,
+			extra,
 		});
 		const first = api.bodies[0];
 		if (dump !== undefined && first !== undefined) {

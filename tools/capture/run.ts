@@ -13,6 +13,19 @@ const argOf = (args: readonly string[], name: string): string | undefined => {
 	return at >= 0 ? args[at + 1] : undefined;
 };
 
+/** `--strict-mcp-config` keeps the login's own servers out of the reading. */
+export const extraArgs = (args: readonly string[]): string[] => {
+	const mcp = argOf(args, "mcp-config");
+	const plugin = argOf(args, "plugin-dir");
+	return [
+		...(mcp === undefined ? [] : ["--mcp-config", mcp, "--strict-mcp-config"]),
+		...(plugin === undefined ? [] : ["--plugin-dir", plugin]),
+	];
+};
+
+const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
+  [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]`;
+
 const settingsOf = async (options: {
 	file: string | undefined;
 	deny: string | undefined;
@@ -37,6 +50,10 @@ const row = (arm: Arm, score: Score): void => {
 
 const main = async (): Promise<void> => {
 	const args = argv.slice(2);
+	if (args.includes("--help")) {
+		console.info(USAGE);
+		return;
+	}
 	const only = argOf(args, "arm");
 	const file = argOf(args, "settings");
 	const deny = argOf(args, "deny");
@@ -62,7 +79,7 @@ const main = async (): Promise<void> => {
 		await mkdir(dump, { recursive: true });
 	}
 	const readings = await Promise.all(
-		arms.map((arm) => capture(arm, settings, dump, prompt)),
+		arms.map((arm) => capture(arm, settings, dump, prompt, extraArgs(args))),
 	);
 	console.info("\nThe characters of the first request:");
 	for (const reading of readings) {

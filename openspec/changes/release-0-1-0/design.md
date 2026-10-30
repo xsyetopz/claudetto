@@ -27,7 +27,7 @@
 ### Agents and Docs Lookup
 
 - `agents/Hermes.md` is rewritten from the archive with web and read tools only, and no `model:` line (restart `architecture.md` D10).
-- Docs lookup: read the standing size of each candidate with `just capture` and pick the smallest. The candidates are the Context7 MCP server, and our own tool registered through `$.tool.register` that calls the Context7 HTTP API with one short definition. The sizes and the pick go to `decisions.md`. Why: D15.
+- Docs lookup: a skill runs the Context7 CLI `ctx7` through `bunx`, with the optional `CONTEXT7_API_KEY` user option in its env. `just capture` reads the Context7 MCP server at 907 standing characters and the skill at 67, and the sizes go to `decisions.md`. Why: D15, D35.
 
 ### Auto Mode
 
