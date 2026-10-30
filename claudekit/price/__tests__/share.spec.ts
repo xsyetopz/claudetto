@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { costLine, expectedUsd } from "../cost.ts";
 import { shareText, USD_PER_WEEKLY_PERCENT, weeklyShare } from "../share.ts";
 
 describe("USD_PER_WEEKLY_PERCENT", () => {
@@ -40,12 +39,8 @@ describe("weeklyShare", () => {
 	});
 });
 
-describe("costLine", () => {
-	test("takes its weekly share and band from the function", () => {
-		const share = shareText(weeklyShare(expectedUsd(20, 2)));
-
-		const line = costLine(20, 2);
-
-		expect(line).toContain(share);
+describe("shareText", () => {
+	test("prints the middle and the band at one decimal", () => {
+		expect(shareText(weeklyShare(210))).toBe("7.1% (4.7% to 9.4%)");
 	});
 });

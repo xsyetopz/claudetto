@@ -1,7 +1,24 @@
+import {
+	agent,
+	allowedTools,
+	claudeArgv,
+	maxBudget,
+	model,
+	NO_SESSION_PERSISTENCE,
+	outputFormat,
+	permissionMode,
+	pluginDir,
+	print,
+	settingSources,
+} from "../../claudekit/session/argv.ts";
+import type {
+	CommandResult,
+	CommandRunner,
+} from "../../claudekit/session/command.ts";
 import { MAIN_AGENT } from "../../plugins/claudetto/src/prompts.ts";
-import type { CommandResult, CommandRunner } from "./command.ts";
 import type { Arm } from "./plan.ts";
 
+/** The plugin folder of the tree, relative to its root, loaded for the session only with `--plugin-dir`. */
 export const PLUGIN_DIR = "plugins/claudetto";
 
 export const SESSION_MS = 600_000;
@@ -20,37 +37,20 @@ export interface SessionOptions {
 export const sessionArgv = (
 	arm: Arm,
 	options: SessionOptions,
-): readonly string[] => {
-	const argv = [
-		"claude",
-		"-p",
-		options.prompt,
-		"--output-format",
-		"stream-json",
-		"--verbose",
-		"--no-session-persistence",
-		"--setting-sources",
-		"project,local",
-		"--permission-mode",
-		"acceptEdits",
-		"--permission-prompts",
-		"none",
-		"--allowedTools",
-		ALLOWED_TOOLS,
-		"--plugin-dir",
-		options.pluginDir,
-	];
-	if (arm === "main.md") {
-		argv.push("--agent", MAIN_AGENT);
-	}
-	if (options.model !== undefined) {
-		argv.push("--model", options.model);
-	}
-	if (options.maxBudgetUsd !== undefined) {
-		argv.push("--max-budget-usd", String(options.maxBudgetUsd));
-	}
-	return argv;
-};
+): readonly string[] =>
+	claudeArgv(
+		print(options.prompt),
+		outputFormat("stream-json"),
+		NO_SESSION_PERSISTENCE,
+		settingSources("project", "local"),
+		permissionMode("acceptEdits"),
+		["--permission-prompts", "none"],
+		allowedTools(ALLOWED_TOOLS),
+		pluginDir(options.pluginDir),
+		arm === "main.md" ? agent(MAIN_AGENT) : [],
+		options.model === undefined ? [] : model(options.model),
+		options.maxBudgetUsd === undefined ? [] : maxBudget(options.maxBudgetUsd),
+	);
 
 /** Runs one session in `cwd` through `run`. This is the only call that can reach a model. */
 export const runSession = (

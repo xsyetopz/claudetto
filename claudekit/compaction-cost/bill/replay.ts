@@ -1,4 +1,5 @@
-import { mean, money, OPUS } from "../price.ts";
+import { money } from "../../price/cost.ts";
+import { mean, OPUS } from "../price.ts";
 import { type Session, sizeOf } from "../transcripts/transcripts.ts";
 import { type Kept, keptOf, summaryOf } from "./fit.ts";
 

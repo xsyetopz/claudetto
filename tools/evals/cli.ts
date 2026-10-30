@@ -4,7 +4,10 @@
 import { dirname, join, resolve } from "node:path";
 import { argv, cwd } from "node:process";
 import { fileURLToPath } from "node:url";
-import { type CommandRunner, spawnCommand } from "./command.ts";
+import {
+	type CommandRunner,
+	spawnCommand,
+} from "../../claudekit/session/command.ts";
 import { type Deps, executeSession, type Outcome } from "./execute.ts";
 import { seededKeys } from "./fixture.ts";
 import { RULE_CASES, type RuleCase } from "./main-rules.ts";

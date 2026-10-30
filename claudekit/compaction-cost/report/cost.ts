@@ -1,7 +1,8 @@
+import { money } from "../../price/cost.ts";
 import type { Derived, Step } from "../bill/derive.ts";
 import { type Cell, type Kept, keptOf } from "../bill/fit.ts";
 import type { Charged, Row } from "../bill/replay.ts";
-import { type Mix, money, OPUS } from "../price.ts";
+import { type Mix, OPUS } from "../price.ts";
 import type { BoundaryStats } from "../transcripts/stats.ts";
 import { head, line, pad, pct, usd, whole } from "./format.ts";
 

@@ -2,7 +2,7 @@
 
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { CommandRunner } from "./command.ts";
+import type { CommandRunner } from "../../claudekit/session/command.ts";
 import { seedFixture } from "./fixture.ts";
 import type { Session } from "./plan.ts";
 import { type Score, scoreTree } from "./score.ts";

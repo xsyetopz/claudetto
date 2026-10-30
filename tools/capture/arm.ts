@@ -1,15 +1,16 @@
 // Each arm gets an empty working folder, config folder, and fake API, so no two arms mix.
 
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { cwd, env } from "node:process";
-import { spawn } from "bun";
+import { cwd } from "node:process";
 import type { ToolCall } from "../../claudekit/api/answer.ts";
 import { type FakeApi, startFakeApi } from "../../claudekit/api/fake.ts";
 import { isClassifier } from "../../claudekit/api/match.ts";
+import { claudeArgv, pluginDir, print } from "../../claudekit/session/argv.ts";
+import { spawnCommand } from "../../claudekit/session/command.ts";
+import { fakeApiEnv } from "../../claudekit/session/env.ts";
+import { makeFolders } from "../../claudekit/session/folders.ts";
 import { type Score, scoreOf } from "./score.ts";
-
-const PLUGIN = "plugins/claudetto";
 
 /** One word, so the message part is as small as a session allows. */
 export const PROMPT = "hi";
@@ -24,6 +25,8 @@ const CLASSIFIED_CALL: ToolCall = {
 	name: "Bash",
 	input: { command: "git push origin main", description: "Push the branch" },
 };
+
+const PLUGIN = "plugins/claudetto";
 
 /** `/tmp`, not `tmpdir()`: the folder path is in the request, so its length must be fixed. */
 const TEMP_PREFIX = "/tmp/claudetto-capture-";
@@ -50,41 +53,21 @@ const runArm = async (options: {
 	prompt: string;
 	extra: readonly string[];
 }): Promise<{ code: number; stderr: string; work: string }> => {
-	const root = await mkdtemp(TEMP_PREFIX);
-	const config = join(root, "config");
-	const work = join(root, "work");
-	await Promise.all([
-		mkdir(config, { recursive: true }),
-		mkdir(work, { recursive: true }),
-	]);
-	if (options.settings !== undefined) {
-		await writeFile(join(config, "settings.json"), options.settings);
-	}
-	const args = ["-p", options.prompt];
-	if (options.plugin) {
-		args.push("--plugin-dir", join(cwd(), PLUGIN));
-	}
-	args.push(...options.extra);
-	const child = spawn(["claude", ...args], {
-		cwd: work,
-		env: {
-			...env,
-			ANTHROPIC_BASE_URL: options.api.url,
-			ANTHROPIC_API_KEY: "sk-ant-fake",
-			CLAUDE_CONFIG_DIR: config,
-			DISABLE_TELEMETRY: "1",
-			DISABLE_ERROR_REPORTING: "1",
-			DISABLE_AUTOUPDATER: "1",
+	const { config, work } = await makeFolders(TEMP_PREFIX, options.settings);
+	const ran = await spawnCommand(
+		claudeArgv(
+			print(options.prompt),
+			options.plugin ? pluginDir(join(cwd(), PLUGIN)) : [],
+			options.extra,
+		),
+		{
+			cwd: work,
+			env: fakeApiEnv(options.api.url, config),
+			timeoutMs: RUN_MS,
 		},
-		stdin: "ignore",
-		stdout: "pipe",
-		stderr: "pipe",
-	});
-	// A run that hangs is killed, and the kill makes `exited` resolve, so there is no race to lose.
-	const timer = setTimeout(() => child.kill(), RUN_MS);
-	const code = await child.exited;
-	clearTimeout(timer);
-	return { code, stderr: await new Response(child.stderr).text(), work };
+	);
+	// A run that was killed or never started has no status; the report needs a number that is not 0.
+	return { code: ran.code ?? 1, stderr: ran.stderr, work };
 };
 
 export interface CaptureOptions {

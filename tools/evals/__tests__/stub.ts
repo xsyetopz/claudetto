@@ -2,7 +2,7 @@ import type {
 	CommandOptions,
 	CommandResult,
 	CommandRunner,
-} from "../command.ts";
+} from "../../../claudekit/session/command.ts";
 
 export interface Call {
 	readonly argv: readonly string[];

@@ -1,6 +1,6 @@
 // A command that could not run says nothing about the case, so it is kept apart from a fail.
 
-import type { CommandResult } from "./command.ts";
+import type { CommandResult } from "../../claudekit/session/command.ts";
 
 export type Verdict = "pass" | "fail" | "error";
 
