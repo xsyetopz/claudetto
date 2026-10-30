@@ -25,7 +25,7 @@ Setup MUST NOT drop `$defaults` from an `autoMode` list as a size trim unless th
 
 ### Requirement: Choose the Classifier Model by Measurement
 
-The classifier model and claudetto's own auto mode (Jev first, then Haiku 5.5 at `high`) SHALL be chosen by a paid A/B on the `just eval` cases against the built-in classifier run locally with `CLAUDE_CODE_AUTO_MODE_SERVER=0` (D17, D19). `CLAUDE_CODE_AUTO_MODE_MODEL` needs `2.1.302` or later, and a server-configured model wins, so the A/B SHALL record which model answered.
+The classifier model and claudetto's own auto mode (Jev first, then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, D36) SHALL be chosen by a paid A/B on the `just eval` cases against the built-in classifier run locally with `CLAUDE_CODE_AUTO_MODE_SERVER=0` (D17, D19). `CLAUDE_CODE_AUTO_MODE_MODEL` needs `2.1.302` or later, and a server-configured model wins, so the A/B SHALL record which model answered.
 
 #### Scenario: No Evidence
 

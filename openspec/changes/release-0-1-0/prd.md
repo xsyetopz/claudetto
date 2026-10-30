@@ -30,7 +30,7 @@ The owner of this repository, who installs claudetto from the `claudetto` market
 - G5. Version `0.1.0` in every manifest, and a floor of Claude Code `2.1.314`. Answered by D13 of `decisions.md`.
 - G6. A fresh session costs less than the measured 13.8k tokens of context, with the share of each part read by `just capture` before and after.
 - G7. Nothing is removed, renamed, or turned off unless the user approved it by name in this change.
-- G8. Auto mode asks Jev first and falls back to Haiku 5.5 at `high` effort (D16 of `decisions.md`).
+- G8. Auto mode asks Jev first and falls back to `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, the one the A/B picks (D16 and D36 of `decisions.md`).
 
 ## Non-Goals
 

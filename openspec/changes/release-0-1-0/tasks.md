@@ -52,8 +52,8 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 9. Auto Mode A/B (`low-hitl`)
 
-- [ ] 9.1 Build arm C, the `PreToolUse` hook with Jev then Haiku 5.5 at `high`, failing closed, off by default. Verify: hook lab cases for allow, deny, unsure, and error.
-- [ ] 9.2 Add arms A, C, and the smallest B rungs to `tools/evals/`, and print the plan and the price with `just eval`. Verify: the plan output.
+- [ ] 9.1 Build arm C, the `PreToolUse` hook with Jev then a model call, in the two variants of D36, `claude-haiku-5-5` at `high` and `claude-sonnet-5-5` at `medium`, failing closed, off by default. Verify: hook lab cases for allow, deny, unsure, and error, for each variant.
+- [ ] 9.2 Add arm A, arm C in each variant of D36, and the smallest B rungs to `tools/evals/`, and print the plan and the price with `just eval`. Verify: the plan output.
 - [ ] 9.3 Ask the user to approve the paid run, with its share of the weekly limit. Run it on approval, record the rows, and write the pick to `decisions.md`.
 - [ ] 9.4 Setup writes the picked rung and model, and `src/automode/faults.ts` guards the pick. Verify: setup and fault tests.
 
