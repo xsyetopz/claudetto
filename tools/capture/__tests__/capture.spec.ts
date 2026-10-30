@@ -29,9 +29,8 @@ describe("the settings of one run", () => {
 		expect(shippedSettings()).toContain('"sandbox"');
 	});
 
-	test("the shipped arm carries no `autoMode`, because the figures describe an install", () => {
-		// `/claudetto:setup` writes no `autoMode`: its facts are readings of this repository (`UNSHIPPED_KEYS`).
-		expect(shippedSettings()).not.toContain('"autoMode"');
+	test("the shipped arm carries the `autoMode` suite, because `/claudetto:setup` writes it", () => {
+		expect(shippedSettings()).toContain('"autoMode"');
 	});
 });
 

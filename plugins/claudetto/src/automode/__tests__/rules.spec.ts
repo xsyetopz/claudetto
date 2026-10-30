@@ -176,9 +176,7 @@ describe("the suite snippet", () => {
 		).toEqual([]);
 	});
 
-	test("is not what setup writes, so the fault check still names each list", () => {
-		expect(autoModeFaults(suiteSnippet()).map((fault) => fault.where)).toEqual([
-			...AUTO_MODE_LISTS,
-		]);
+	test("passes the fault check, which lets it replace the built-in lists", () => {
+		expect(autoModeFaults(suiteSnippet())).toEqual([]);
 	});
 });

@@ -499,7 +499,7 @@ the 192 characters, and then the 3,226 of drift above.
 | The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −1,155 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/handoff.ts` | −820 | None exists yet. A placebo run would price the prompt text |
 | `output-styles/Concise.md` under the `outputStyle` key | −1,693 | None exists yet. A placebo run would price the prompt text |
-| The `autoMode` lists | 0 | None exists yet. The classifier reads them, so the classifier call is where they are paid |
+| The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
 | The `sandbox` block | −7,254 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
 | The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
 

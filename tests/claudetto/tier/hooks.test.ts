@@ -11,7 +11,6 @@ import {
 	KEY_GROUPS,
 	keptSnippet,
 	keyPaths,
-	UNSHIPPED_KEYS,
 } from "../../../plugins/claudetto/src/tiers/groups.ts";
 import { refusedPaths } from "../../../plugins/claudetto/src/tiers/keys.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
@@ -41,12 +40,10 @@ describe("the groups the dialog offers", () => {
 		expect(KEY_GROUPS.length).toBeLessThanOrEqual(4);
 	});
 
-	test("every key of the snippet sits in exactly one group or is unshipped", () => {
+	test("every key of the snippet sits in exactly one group", () => {
 		const keys = [...keyPaths(snippet())].sort(byName);
 
-		expect([...groupedKeys(), ...UNSHIPPED_KEYS].sort(byName)).toStrictEqual(
-			keys,
-		);
+		expect([...groupedKeys()].sort(byName)).toStrictEqual(keys);
 	});
 
 	test("no key is carried by two groups", () => {
@@ -55,24 +52,10 @@ describe("the groups the dialog offers", () => {
 		expect(new Set(keys).size).toBe(keys.length);
 	});
 
-	test("no group offers an unshipped key, so no answer can write one", () => {
-		const offered = groupedKeys();
-
-		expect(UNSHIPPED_KEYS.filter((key) => offered.includes(key))).toStrictEqual(
-			[],
-		);
-	});
-
-	test("`autoMode` is unshipped, because its environment facts are readings of this repository", () => {
-		expect(UNSHIPPED_KEYS).toContain("autoMode");
-	});
-
-	test("keeping every group leaves out every unshipped key", () => {
-		const kept = keptSnippet(snippet(), groupLabels());
-
+	test("`autoMode` is offered with the sandbox, now that it holds no fact of this repository", () => {
 		expect(
-			UNSHIPPED_KEYS.filter((key) => keyPaths(kept).includes(key)),
-		).toStrictEqual([]);
+			KEY_GROUPS.find((group) => group.keys.includes("autoMode"))?.label,
+		).toBe("Sandbox and auto mode");
 	});
 
 	test("keeping every group keeps every key that is offered", () => {
@@ -139,12 +122,12 @@ describe("the platform the command composes for", () => {
 	test("an unknown platform writes no `sandbox.enabled`, so no key claims a sandbox that is not there", () => {
 		const kept = keptSnippet(
 			{ ...tierSnippet(SNIPPET_ROW, UNKNOWN_PLATFORM) },
-			["Sandbox"],
+			["Sandbox and auto mode"],
 		);
 
 		const sandbox = kept["sandbox"];
 		if (!isObject(sandbox)) {
-			throw new Error("the Sandbox group keeps a `sandbox` object");
+			throw new Error("the sandbox group keeps a `sandbox` object");
 		}
 		expect(sandbox["enabled"]).toBeUndefined();
 		expect(sandbox["allowUnsandboxedCommands"]).toBe(false);
@@ -175,7 +158,7 @@ describe("what the command writes", () => {
 	});
 
 	test("a discarded group leaves the settings without its keys", () => {
-		const kept = keptSnippet(snippet(), ["Sandbox"]);
+		const kept = keptSnippet(snippet(), ["Sandbox and auto mode"]);
 
 		const applied = applyTier({}, kept, refusedPaths(kept));
 
@@ -194,23 +177,23 @@ describe("the report the command returns", () => {
 
 	// A hooks module cannot reach `.claude.json`, so the command reads no plan and composes from `SNIPPET_ROW`.
 	test("it names no tier, because the command reads no plan", () => {
-		for (const labels of [[], ["Sandbox"], groupLabels()]) {
+		for (const labels of [[], ["Sandbox and auto mode"], groupLabels()]) {
 			expect(reportFor(labels)).not.toContain("Tier:");
 		}
 	});
 
 	test("the row's own tier is printed by no choice of groups", () => {
-		for (const labels of [[], ["Sandbox"], groupLabels()]) {
+		for (const labels of [[], ["Sandbox and auto mode"], groupLabels()]) {
 			expect(reportFor(labels)).not.toContain(SNIPPET_ROW.tier);
 		}
 	});
 
 	// `why` is the only place a user reads what a group does: the dialog shows labels, not descriptions.
 	test("a discarded group is named with what keeping it would have done", () => {
-		const report = reportFor(["Sandbox"]);
+		const report = reportFor(["Sandbox and auto mode"]);
 
 		for (const group of KEY_GROUPS.filter(
-			(entry) => entry.label !== "Sandbox",
+			(entry) => entry.label !== "Sandbox and auto mode",
 		)) {
 			expect(report).toContain(`Discarded ${group.label}`);
 			expect(report).toContain(group.why);
@@ -218,7 +201,9 @@ describe("the report the command returns", () => {
 	});
 
 	test("a kept group is named in no discarded line", () => {
-		expect(reportFor(["Sandbox"])).not.toContain("Discarded Sandbox");
+		expect(reportFor(["Sandbox and auto mode"])).not.toContain(
+			"Discarded Sandbox",
+		);
 		expect(reportFor(groupLabels())).not.toContain("Discarded");
 	});
 });

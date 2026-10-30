@@ -1,6 +1,7 @@
 // A fault is reported, never repaired, so the writer cannot hide a loss by fixing it quietly.
 
 import { AUTO_MODE_LISTS, type AutoModeSnippet, DEFAULTS } from "./automode.ts";
+import { suiteSnippet } from "./rules.ts";
 
 export type FaultRule =
 	| "defaults-dropped"
@@ -41,14 +42,24 @@ export const isBroadAllow = (rule: string): boolean => {
 	return INTERPRETER.test(program);
 };
 
+const sameList = (a: readonly string[], b: readonly string[]): boolean =>
+	a.length === b.length && a.every((entry, i) => entry === b[i]);
+
+/** A list may replace the built-ins only with the suite the classifier A/B measured. */
 export const listsWithoutDefaults = (
 	snippet: AutoModeSnippet,
-): readonly string[] =>
-	AUTO_MODE_LISTS.filter((name) => {
+): readonly string[] => {
+	const measured = suiteSnippet().autoMode;
+	return AUTO_MODE_LISTS.filter((name) => {
 		const list = snippet.autoMode[name];
 		// An empty list counts as unset, and `$defaults` keeps the built-ins wherever it sits.
-		return list.length > 0 && !list.includes(DEFAULTS);
+		return (
+			list.length > 0 &&
+			!list.includes(DEFAULTS) &&
+			!sameList(list, measured[name])
+		);
 	});
+};
 
 export const broadAllowRules = (snippet: AutoModeSnippet): readonly string[] =>
 	snippet.autoMode.allow.filter(isBroadAllow);

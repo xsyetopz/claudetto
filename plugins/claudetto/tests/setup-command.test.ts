@@ -149,11 +149,11 @@ test("an answer naming no offered group writes nothing", async ($: Engine, on: O
 });
 
 test("the dialog offers the groups the report then speaks of", async ($: Engine, on: On) => {
-	const { asked } = answered(on, ["Sandbox"]);
+	const { asked } = answered(on, ["Sandbox and auto mode"]);
 
 	await run($);
 
-	expect(asked[0]?.labels ?? []).toContain("Sandbox");
+	expect(asked[0]?.labels ?? []).toContain("Sandbox and auto mode");
 	expect((asked[0]?.labels ?? []).length).toBeGreaterThanOrEqual(2);
 });
 
