@@ -10,6 +10,7 @@ import { attachGate, gateBlock } from "./gate/block.ts";
 import { attachHandoff, handoff } from "./handoff/block.ts";
 import { attachHygiene, hygiene } from "./hygiene/block.ts";
 import { attachInitInterview, initInterview } from "./init-interview/block.ts";
+import { attachPlanMode, planMode } from "./plan-mode/block.ts";
 import { attachRunLimits, runLimits } from "./run-limits/block.ts";
 import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
 import { attachToolDescribe, toolDescribe } from "./tool-describe/block.ts";
@@ -33,6 +34,7 @@ export const CATALOG: readonly Block[] = [
 	finish,
 	context7,
 	classifyBlock,
+	planMode,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -53,4 +55,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachFinish(on, context);
 	attachContext7(on, context);
 	attachClassify(on, context);
+	attachPlanMode(on, context);
 };
