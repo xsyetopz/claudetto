@@ -131,14 +131,29 @@ After each update, do the steps in the "Update" section of the README.
   40 is a quarter above the largest count, the method the other three bounds use, and that 33 is itself a capped count, so 40 is a floor.
 - `Artemis.md` no longer tells the agent to fall back to `grep` in `Bash`, which its type does not have (task 13.3).
   One run reported "Bash is not available in this session" as a block, although nothing blocked it.
-- The `compaction` option no longer describes `auto` as a pick "from the table", because no table exists.
-  `pathOf` gives the code path only for an explicit `code`, so `auto`, an absent option, and an unoffered value all give the built-in path (`plugins/claudetto/src/compaction/compaction.ts:33`), and the description in `plugins/claudetto/.claude-plugin/plugin.json:31` now says `auto` is `built-in` today, with the probe that leaves it there.
-- Six claims in this file named code that the restart had already removed, found by checking every path and identifier the `[0.0.0]` section asserts still exists.
+- Seven claims in this file named code that the restart had already removed, found by checking every path and identifier the `[0.0.0]` section asserts still exists.
   `HEADING_NOTE` and `gate.gh-title` are in no file of the tree, and `Chicago` is in none under `plugins/`, so the deleted heading rewriter has no replacement.
   `tools/thin-claims.ts` is gone and `just validate` does not run it, the nine-heading detection is `wroteOwn` and not a read of the file, `auto` resolves to `built-in` and not to `handover`, and `OPTION_DESCRIPTION` does not exist.
   The slice tree carries no dotted rule names at all, so `jev.ask`, `jev.decide`, and `jev.decide-register` named a registry of the old module tree, and the live names are cited instead.
-  Four entries are removed with the code they described: the two on the heading title-caser, the one on the Table A total of `docs/prompt/footprint.md`, which that page no longer carries, and the one on the lab cases of `plugins/claudetto/tests/tool.test.ts`, which lives only under `archive/`.
+  Five entries are removed with the code they described: the two on the heading title-caser, the one on the Table A total of `docs/prompt/footprint.md`, which that page no longer carries, the one on the lab cases of `plugins/claudetto/tests/tool.test.ts`, which lives only under `archive/`, and the one on the wording of the `compaction` option, which named `plugins/claudetto/src/compaction/compaction.ts:33` in a deleted file and `plugin.json:31`, a line that is now the `cheapSummary` description, while the Removed section already records that the whole option is gone.
   No check reads a backticked identifier, so `tools/citations.ts` reported none of these: it resolves a `path:line` span only.
+- The report of `/claudetto:setup` no longer opens with a plan tier, which was always the wrong one.
+  It printed `Tier: claude_pro.` to every user, because a hooks module cannot reach `.claude.json` to read the login and the command composes from `SNIPPET_ROW`, whichever row that constant names.
+  `tierReport` now takes the tier as `string | undefined` and prints no line for `undefined`, which is what the hook passes; `just setup` reads the login itself and still prints its own tier.
+- Setup now says what a discarded group would have done, which nothing read before.
+  `KeyGroup.why` held one line for each of the three groups and no caller used it: the dialog of `$.ui.ask` shows labels with no descriptions, and a kept group is spelled out by the `Wrote` line of each of its keys, so a person who declined a group was told only its name.
+  Each discarded line now carries it, and it costs no tokens, because the hook answers with `text` and no `context`.
+- Three gaps in the checks are closed, each of which let a shipped behavior change without a failure.
+  `tests/claudetto/tiers.test.ts` now holds the guard that `tiers.ts:117` claimed was there and was not: every row of `TIERS` must give the snippet of `SNIPPET_ROW`, which is what makes the `command.run` hook safe to compose from one row while it cannot read the plan.
+  `plugins/claudetto/tests/setup-command.test.ts` now answers the dialog instead of testing only the "nobody to ask" path, through a `tool.call` stub on `AskUserQuestion` keyed on the question the engine passed, and asserts the written path and the written keys.
+  `plugins/claudetto-you-should-know/tests/call.test.ts` now covers the `none` reply, which opens no offer, and holds the plugin to `$.model.complete`: an answer is put beneath `model.fork` so that a fork would be recorded, rather than left out, because a missing answer throws and the check's own catch would swallow it.
+- `docs/types.md` claimed the vendored types came from the version in `MIN_CLAUDE_CODE_VERSION`, which stopped being true when the minimum moved to `2.1.314`.
+  The types on this machine were written by `2.1.312` and the engine rewrites that folder itself, so the two numbers are allowed to differ and the page now says so with the reason: `2.1.314` adds only the call `$.ui.place` and the event `ui.place` to the surface, and nothing here calls either.
+  The page is not in the table of `tools/claude-version.ts`, which is why it drifted unchecked, and it stays out of it, because the version that wrote the declarations is not the version this project supports.
+- `BARS` of `claudekit/probe/round/verdict.ts` scored two bars that the page defining the bars did not list, which that page asks never to happen ("so that a page of `docs/` and the requirement \"Decision Rule\" of `specs/compaction-path/spec.md` name the same list").
+  `skipped` and `turns` were scored in code and absent from the table of `docs/evidence/code-compaction-probe.md`, "The Bars"; both rows are added there.
+  The file's own header said it "reads them from there", which no code did, so it now says the list is transcribed and why nothing parses the Markdown at run time: a probe round must decide with no `docs/` read.
+  Two cases in `claudekit/probe/round/__tests__/verdict.spec.ts` hold the two lists against each other in both directions, so the next bar added to either side fails the gate.
 
 ### Removed
 

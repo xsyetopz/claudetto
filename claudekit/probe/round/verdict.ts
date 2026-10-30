@@ -1,6 +1,10 @@
 // The decision rule of the `compaction-path` spec, "Decision Rule": the alternative wins only on a lower mean cost
 // per fork than the reference at each size, no worse result on each bar, and no cache problem.
-// The bars are defined in `docs/evidence/code-compaction-probe.md`, section "The Bars", and this file reads them from there.
+// The bars are defined in `docs/evidence/code-compaction-probe.md`, section "The Bars". `BARS` below is
+// transcribed from that table, row for row, and nothing reads the Markdown at run time: a probe round must
+// decide with no `docs/` read, and a table a program parses is a table a person stops editing.
+// So the page is the definition and this file is the copy, and the two drifted once: `skipped` and `turns`
+// were bars here and absent from the table until 2026-10-30, when both rows were added to the page.
 // A bar that tests nothing is a gap and not a pass.
 
 import { FORK_NOTES } from "../fixture/fixture.ts";
@@ -101,16 +105,17 @@ const share = (rs: Result[], arm: Arm, size: number, i: number): number =>
 const writeRate = (rs: Result[], arm: Arm, size: number): number =>
 	mean(validAt(rs, arm, size).map((r) => r.firstWrite / r.firstPost));
 
-/** The bars: a measure of `alt` against the same measure of `ref`, where a NaN fails. */
-const BARS: [Measure, (alt: number, ref: number) => boolean, string][] = [
-	["broken", (a, r) => a <= r, "alt breaks more constraints"],
-	["skipped", (a, r) => a <= r, "alt skips more note tasks"],
-	["rereads", (a, r) => a <= r, "alt reads more files again"],
-	["redone", (a, r) => a <= r, "alt does more work again"],
-	["next", (a, r) => a >= r, "alt does the next task less often"],
-	["turns", (a, r) => a <= r, "alt needs more turns to completion"],
-	["cost", (a, r) => a < r, "alt costs no less per fork"],
-];
+/** The bars: a measure of `alt` against the same measure of `ref`, where a NaN fails. Exported so that one test can hold this list against the table of the page it is transcribed from. */
+export const BARS: [Measure, (alt: number, ref: number) => boolean, string][] =
+	[
+		["broken", (a, r) => a <= r, "alt breaks more constraints"],
+		["skipped", (a, r) => a <= r, "alt skips more note tasks"],
+		["rereads", (a, r) => a <= r, "alt reads more files again"],
+		["redone", (a, r) => a <= r, "alt does more work again"],
+		["next", (a, r) => a >= r, "alt does the next task less often"],
+		["turns", (a, r) => a <= r, "alt needs more turns to completion"],
+		["cost", (a, r) => a < r, "alt costs no less per fork"],
+	];
 
 /** The misses of `alt` at `size`: each bar, then the cache problems. */
 const missesAt = (rs: Result[], size: number): string[] => {

@@ -75,6 +75,43 @@ test(
 	},
 );
 
+test(
+	"a reply of none opens no offer, so the band has nothing to draw",
+	{ options: TURNED_ON },
+	async ($: Engine, on: On) => {
+		const l = lab(on);
+		l.reply("learn: none");
+
+		await steps($, l, "t1", { from: 1, to: 6 });
+
+		expect(l.asked).toHaveLength(1);
+		expect(l.store.get("sessions")).toMatchObject([{ view: null }]);
+	},
+);
+
+// The original forks the session to ask, which copies the whole conversation into the request and
+// costs the window; the rebuild asks with `$.model.complete` and a digest instead
+// (`src/constants.ts:53`). An answer is put beneath `model.fork` here rather than left out, because
+// a missing answer throws and a throw inside the check is swallowed by its own catch: the ban then
+// reads as a pass whether the call was made or not.
+test(
+	"a check never forks the session, so the conversation is not copied into the request",
+	{ options: TURNED_ON },
+	async ($: Engine, on: On) => {
+		const l = lab(on);
+		const forks: unknown[] = [];
+		on("model.fork", (_$, e) => {
+			forks.push(e);
+			return { deny: "this plugin does not fork the session" };
+		});
+
+		await steps($, l, "t1", { from: 1, to: 6 });
+
+		expect(l.asked).toHaveLength(1);
+		expect(forks).toEqual([]);
+	},
+);
+
 test("a plugin left off makes no request and touches no store key", async ($: Engine, on: On) => {
 	const l = lab(on);
 	await typed($, "build the export");

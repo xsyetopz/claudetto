@@ -17,10 +17,21 @@ const skippedLine = (skip: Skipped): string => {
 	return `Skipped ${skip.path}: ${SKIP_REASON[skip.why]}${kept}. The row has ${shown(skip.wanted)}.`;
 };
 
-/** One line for each key written and one for each key skipped, under the tier that was read. */
-export const tierReport = (tier: string, applied: Applied): string =>
+/**
+ * One line for each key written and one for each key skipped, under the tier that was read.
+ *
+ * `tier` is `undefined` for a caller that read no plan, and then no tier line is printed. The
+ * `command.run` hook is such a caller: a hooks module cannot reach `.claude.json`, which is not
+ * settings, so it composes from `SNIPPET_ROW` and knows nothing of the login's plan
+ * (`./tiers.ts:110`). Printing that row's own tier there would tell every user they are on the plan
+ * of whichever row the constant happens to name, which is a fact about this code and not about them.
+ */
+export const tierReport = (
+	tier: string | undefined,
+	applied: Applied,
+): string =>
 	[
-		`Tier: ${tier}.`,
+		...(tier === undefined ? [] : [`Tier: ${tier}.`]),
 		...applied.written.map(
 			(entry) => `Wrote ${entry.path} = ${shown(entry.value)}.`,
 		),

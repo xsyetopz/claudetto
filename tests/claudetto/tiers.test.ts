@@ -17,6 +17,7 @@ import {
 	HAIKU_PRICE_STEP,
 	PLAN_CAPS,
 	rowFor,
+	SNIPPET_ROW,
 	TIERS,
 } from "../../plugins/claudetto/src/tiers/tiers.ts";
 import { describedTools } from "../../plugins/claudetto/src/tools/tools.ts";
@@ -123,6 +124,18 @@ describe("the tier table", () => {
 			expect(snippet).toHaveProperty("outputStyle");
 			expect(snippet).toHaveProperty("autoMode");
 			expect(snippet).toHaveProperty("sandbox");
+		}
+	});
+
+	// `SNIPPET_ROW` is the row the `command.run` hook composes from, because a hooks module cannot read
+	// the login's plan. That is only safe while every row gives the same snippet, which `tiers.ts:117`
+	// claimed was checked here and nothing checked. A later row that splits a written key by plan now
+	// fails here, in place of serving one plan's values to every other plan.
+	test("every row gives the snippet of the row the command composes from", () => {
+		for (const row of TIERS) {
+			expect(tierSnippet(row, PLATFORM)).toEqual(
+				tierSnippet(SNIPPET_ROW, PLATFORM),
+			);
 		}
 	});
 

@@ -66,11 +66,18 @@ export const chosenGroups = (answer: string): readonly string[] => {
 const isObject = (value: unknown): value is Json =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
-/** One line for each group that was offered and not kept, so the output says what it did not write. */
+/**
+ * One line for each group that was offered and not kept, so the output says what it did not write.
+ *
+ * The line carries the group's `why`, which is the one place a user reads what a group does: the
+ * dialog of `$.ui.ask` shows labels and no descriptions, and a kept group is already spelled out by
+ * the `Wrote` line of each of its keys, where a discarded group leaves no line of its own. The text
+ * costs no tokens, because the hook returns it as `text` with no `context`.
+ */
 const discardedLines = (kept: readonly string[]): readonly string[] =>
 	KEY_GROUPS.filter((group) => !kept.includes(group.label)).map(
 		(group) =>
-			`Discarded ${group.label}: no key of it was written, and a key you already have stays.`,
+			`Discarded ${group.label}: no key of it was written, and a key you already have stays. What it would have done: ${group.why}`,
 	);
 
 /**
@@ -83,7 +90,7 @@ export const setupReport = (
 	applied: Parameters<typeof tierReport>[1],
 ): string =>
 	[
-		tierReport(SNIPPET_ROW.tier, applied),
+		tierReport(undefined, applied),
 		...discardedLines(kept),
 		`Wrote ${file}. Restart Claude Code: the keys are read when it starts.`,
 	].join("\n");

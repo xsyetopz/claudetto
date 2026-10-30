@@ -19,9 +19,11 @@ The arm wins only when every bar passes at every size.
 | Bar | Measure | Passes when | Why |
 | --- | --- | --- | --- |
 | Constraints broken | `broken`, the planted constraints the files break, 0 to 3 | the arm breaks no more than B | a cheaper summary that loses a constraint is not cheaper |
+| Note tasks skipped | `skipped`, the note tasks whose module is missing or carries the wrong code, so the tick was not the work | the arm skips no more than B | a tick is no evidence that the work was done |
 | Files re-read | `rereads`, the `Read` calls of files already read | the arm reads no more again than B | a lost fact comes back as a read, which is the cost the summary saved |
 | Work redone | `redone`, the `Edit` and `Write` calls on files the earlier tasks changed | the arm redoes no more than B | the same, in writes |
 | Next task done | `next`, 1 when the next task is done after the follow-ups | the arm does it at least as often as B | the work must still finish |
+| Turns to completion | `turns`, the `num_turns` of the fork's result | the arm needs no more than B | a summary that costs less per turn and needs more turns saves nothing |
 | Cost | `cost`, the compaction step and the 2 follow-ups in the units of `total_cost_usd` | the arm costs strictly less than B | the whole reason to switch |
 | First cache write | `firstWrite` over `firstPost`, the `cache_creation_input_tokens` of the first request after the compaction per token of context the compaction left | the arm writes no more per token kept than B | a new prefix is paid for once, and a larger one is a hidden cost |
 | Read share, follow-up 1 and 2 | `shares[0]` and `shares[1]`, the cache read share of each follow-up turn, over the forks that saved one | the arm reads a share at least as high as B | a lower share means the follow-ups pay full input price |
