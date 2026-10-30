@@ -14,7 +14,6 @@ import {
 	summaryRequest,
 } from "../../plugins/claudetto/src/blocks/compaction/summary.ts";
 import {
-	HAIKU_MODEL,
 	TIERS,
 	type TierRow,
 } from "../../plugins/claudetto/src/tiers/tiers.ts";
@@ -64,7 +63,7 @@ describe("the rows leave the cheap summarizer off", () => {
 	test("a row with the field off and no option asks for no call", () => {
 		for (const row of TIERS) {
 			expect(
-				summaryRequest(row, COMPACT, isCheapSummaryOn(row, {})),
+				summaryRequest(COMPACT, isCheapSummaryOn(row, {})),
 			).toBeUndefined();
 		}
 	});
@@ -90,23 +89,19 @@ describe("the switch of the cheap summarizer", () => {
 			isCheapSummaryOn(base, {}),
 		]).toEqual([false, false, false]);
 	});
-
-	test("the option on with no readable row still makes no call", () => {
-		expect(summaryRequest(undefined, COMPACT, true)).toBeUndefined();
-	});
 });
 
 describe("the request of a row that has it on", () => {
-	test("it names the cheap model, the effort of the row and a cap", () => {
-		const request = summaryRequest(ON, COMPACT, true);
+	test("it names `claude-haiku-5-5`, effort `high`, and a cap", () => {
+		const request = summaryRequest(COMPACT, true);
 
-		expect(request?.model).toBe(HAIKU_MODEL);
-		expect(request?.effort).toBe("medium");
+		expect(request?.model).toBe("claude-haiku-5-5");
+		expect(request?.effort).toBe("high");
 		expect(request?.maxTokens).toBe(SUMMARY_MAX_TOKENS);
 	});
 
 	test("the fixed instructions ride a cached block and the transcript does not", () => {
-		const request = summaryRequest(ON, COMPACT, true);
+		const request = summaryRequest(COMPACT, true);
 
 		const blocks = Array.isArray(request?.prompt) ? request.prompt : [];
 		expect(blocks.map((block) => block.cache === true)).toEqual([true, false]);
@@ -114,17 +109,9 @@ describe("the request of a row that has it on", () => {
 	});
 
 	test("a subagent compaction and a precompute ask for no call", () => {
+		expect(summaryRequest({ ...COMPACT, agentId: "a1" }, true)).toBeUndefined();
 		expect(
-			summaryRequest(ON, { ...COMPACT, agentId: "a1" }, true),
-		).toBeUndefined();
-		expect(
-			summaryRequest(ON, { ...COMPACT, trigger: "precompute" }, true),
-		).toBeUndefined();
-	});
-
-	test("a row with no usable effort asks for no call", () => {
-		expect(
-			summaryRequest({ ...ON, effort: "turbo" }, COMPACT, true),
+			summaryRequest({ ...COMPACT, trigger: "precompute" }, true),
 		).toBeUndefined();
 	});
 });
@@ -137,7 +124,7 @@ describe("the answer to a compaction", () => {
 			usage: USAGE,
 		}));
 
-		const out = await summarize(ON, COMPACT, ask, true);
+		const out = await summarize(COMPACT, ask, true);
 
 		expect(seen.requests).toHaveLength(1);
 		expect(out?.messages.map((message) => message.text)).toEqual([
@@ -151,7 +138,7 @@ describe("the answer to a compaction", () => {
 			throw new Error("the provider is down");
 		});
 
-		const out = await summarize(ON, COMPACT, ask, true);
+		const out = await summarize(COMPACT, ask, true);
 
 		expect(out).toBeUndefined();
 		expect(seen.lines).toHaveLength(1);
@@ -169,8 +156,8 @@ describe("the answer to a compaction", () => {
 			usage: USAGE,
 		}));
 
-		const first = await summarize(ON, COMPACT, empty.ask, true);
-		const second = await summarize(ON, COMPACT, blank.ask, true);
+		const first = await summarize(COMPACT, empty.ask, true);
+		const second = await summarize(COMPACT, blank.ask, true);
 
 		expect([first, second]).toEqual([undefined, undefined]);
 		expect(empty.seen.lines).toHaveLength(1);
@@ -190,7 +177,7 @@ describe("the answer to a compaction", () => {
 			usage: USAGE,
 		}));
 
-		const text = (await summarize(ON, COMPACT, ask, true))?.messages[0]?.text;
+		const text = (await summarize(COMPACT, ask, true))?.messages[0]?.text;
 
 		expect(text?.length).toBeLessThanOrEqual(SUMMARY_MAX_CHARS);
 		expect(text?.endsWith("x")).toBe(true);
@@ -203,7 +190,7 @@ describe("the answer to a compaction", () => {
 			throw new Error("must not be called");
 		});
 
-		const out = await summarize(base, COMPACT, ask, isCheapSummaryOn(base, {}));
+		const out = await summarize(COMPACT, ask, isCheapSummaryOn(base, {}));
 
 		expect(out).toBeUndefined();
 		expect(seen.requests).toEqual([]);

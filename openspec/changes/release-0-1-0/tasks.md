@@ -18,7 +18,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 3. Haiku Summary (`tier-profiles`)
 
-- [ ] 3.1 `src/summary.ts` sends effort `high` on the Haiku call. Verify: the summary test reads `claude-haiku-5-5` and `high` from the call.
+- [x] 3.1 `src/summary.ts` sends effort `high` on the Haiku call. Verify: the summary test reads `claude-haiku-5-5` and `high` from the call. The file is `src/blocks/compaction/summary.ts`, and `SUMMARY_EFFORT` is `high` apart from the row, so `summaryRequest` and `summarize` take no row. `tests/claudetto/summary.test.ts` reads `claude-haiku-5-5` and `high` from the request and failed before the change; setting the constant to `medium` fails it again. The lab case of `tests/compaction/summary.test.ts` reads `high`. Two cases that refused a call on a missing or unusable row effort went with the row.
 
 ## 4. Version Floor (`version-floor`)
 

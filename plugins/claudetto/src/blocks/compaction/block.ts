@@ -28,7 +28,6 @@ export const onCompact: WithOptions<HookFor<"session.compact">> = (
 	asCompaction(async () => {
 		const row = await loginRow($);
 		const answer = await summarize(
-			row,
 			e,
 			{
 				complete: (request) => $.model.complete(request),

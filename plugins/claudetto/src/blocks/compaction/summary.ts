@@ -35,32 +35,24 @@ export const SUMMARY_INSTRUCTIONS =
 	"Name a file, commit, or plan by its path in place of restating what it holds, because the next turn can read it. " +
 	"Reply with the summary only.";
 
-const EFFORTS: readonly string[] = ["low", "medium", "high", "xhigh", "max"];
-
-const isEffort = (value: string | undefined): value is ModelEffort =>
-	value !== undefined && EFFORTS.includes(value);
+/** Not the row's `effort`, which is the main session's `effortLevel`. */
+export const SUMMARY_EFFORT: ModelEffort = "high";
 
 const transcriptOf = (e: SessionCompactInput): string =>
 	e.messages.map((message) => `${message.role}: ${message.text}`).join("\n\n");
 
 /** The model and effort are explicit, so the call never inherits the session's. */
 export const summaryRequest = (
-	row: TierRow | undefined,
 	e: SessionCompactInput,
 	isOn: boolean,
 ): ModelCompleteRequest | undefined => {
-	if (
-		!isOn ||
-		e.agentId !== undefined ||
-		e.trigger === "precompute" ||
-		!isEffort(row?.effort)
-	) {
+	if (!isOn || e.agentId !== undefined || e.trigger === "precompute") {
 		return undefined;
 	}
 	const stress = e.instructions === undefined ? "" : `${e.instructions}\n\n`;
 	return {
 		model: HAIKU_MODEL,
-		effort: row.effort,
+		effort: SUMMARY_EFFORT,
 		maxTokens: SUMMARY_MAX_TOKENS,
 		timeoutMs: SUMMARY_TIMEOUT_MS,
 		prompt: [
@@ -92,12 +84,11 @@ export interface Ask {
 }
 
 export const summarize = async (
-	row: TierRow | undefined,
 	e: SessionCompactInput,
 	ask: Ask,
 	isOn: boolean,
 ): Promise<SessionCompacted | undefined> => {
-	const request = summaryRequest(row, e, isOn);
+	const request = summaryRequest(e, isOn);
 	if (request === undefined) {
 		return undefined;
 	}
