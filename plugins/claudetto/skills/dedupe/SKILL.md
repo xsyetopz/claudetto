@@ -50,5 +50,4 @@ A merge is good when the behavior and the effects stay the same, and the code ge
 
 - Keep the shared part in one function that both sites call.
 - Run the tests before and after the merge. Expect the same result.
-- Put a clone that you keep on purpose in the baseline: run the command again with `--baseline .jscpd-baseline.json --update-baseline`.
-  Say why in your reply.
+- Put a clone that you keep on purpose in the baseline: run the command again with `--baseline .jscpd-baseline.json --update-baseline`. Say why in your reply.
