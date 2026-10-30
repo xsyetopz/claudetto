@@ -39,13 +39,15 @@ const streamOf = (
 		sse("message_stop", { type: "message_stop" }),
 	].join("");
 
-const ANSWER = streamOf(
+/** A streamed answer of `ok` that ends the turn. */
+export const ANSWER = streamOf(
 	{ type: "text", text: "" },
 	{ type: "text_delta", text: "ok" },
 	"end_turn",
 );
 
-const JSON_ANSWER = JSON.stringify({
+/** The same answer for a request that does not stream. */
+export const JSON_ANSWER = JSON.stringify({
 	...MESSAGE,
 	content: [{ type: "text", text: "ok" }],
 	stop_reason: "end_turn",
@@ -56,9 +58,10 @@ export interface ToolCall {
 	readonly input: Record<string, unknown>;
 }
 
-const toolAnswer = (call: ToolCall): string =>
+/** A streamed answer that makes `call` under the tool use id `id`. */
+export const toolAnswer = (call: ToolCall, id = "toolu_fake"): string =>
 	streamOf(
-		{ type: "tool_use", id: "toolu_fake", name: call.name, input: {} },
+		{ type: "tool_use", id, name: call.name, input: {} },
 		{ type: "input_json_delta", partial_json: JSON.stringify(call.input) },
 		"tool_use",
 	);
