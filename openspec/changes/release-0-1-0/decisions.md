@@ -114,3 +114,9 @@ The user asked that each open choice be settled with the least problematic optio
   - Worktrees: `EnterWorktree` and `ExitWorktree` carry no gate in `2.1.314` (clawdipedia `reference/tools/agents-and-tasks`), and setup denies neither. The `worktree` setting holds only layout keys (`symlinkDirectories`, `sparsePaths`, `baseRef`, `bgIsolation`, `location`), none of which turns worktrees on or off, so setup leaves it unset.
   - Fast mode: setup writes `CLAUDE_CODE_DISABLE_FAST_MODE=1`. Claude Code allows fast mode only while that flag is off, and `/fast` is gated on it (clawdipedia `configure/env-vars/models-and-effort`, `extend/skills-and-commands/slash-commands`), so `fastMode` and `fastModePerSessionOptIn` have no effect and stay unwritten.
   - A test in `src/tiers/__tests__/snippet.spec.ts` holds both for every tier. It fails when setup denies `EnterWorktree` or drops the fast mode flag.
+
+## Answers of the User, 2026-10-30, Tenth Round: IDE Auto-Install, `$defaults`, Hygiene
+
+- D30 is approved (user, 2026-10-30, message: "we disable these, yes").
+- D32. The `$defaults` check of `src/automode/faults.ts` is kept, changed, or removed by Claude on a measurement (user, 2026-10-30, message: "measure it, then decide on your own").
+- D33. Hygiene is a garbage collector for what Claude Code leaves behind (user, 2026-10-30, message). Its list holds only paths that Claude Code's own `cleanupPeriodDays` sweep skips: leftover `fswatch-probe-*` folders and session folders in the temp root `claude-<uid>`, and claudetto's old handoffs.

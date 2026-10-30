@@ -33,7 +33,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 6. Hygiene and Finish (`session-hygiene`, `finish-loop`)
 
-- [ ] 6.1 Read `~/.claude/` on this machine and the docs for generated paths, and write the path list with a source per row. Verify: the list file and the readings.
+- [x] 6.1 Read `~/.claude/` on this machine and the docs for generated paths, and write the path list with a source per row. Verify: the list file and the readings. The list is `STALE_PATHS` in `src/blocks/hygiene/paths.ts`: `fswatch-probe-*` in the temp root past 60 minutes, `<project>/<session-id>` in the temp root past `cleanupPeriodDays`, and old claudetto handoffs, keeping the newest. Readings of `/private/tmp/claude-501`: 130 probe folders, 120 older than an hour; 6,777 session folders, 15 MB. clawdipedia `how-it-works/sessions-and-storage` shows that Claude Code's own sweep covers every other generated path under `~/.claude/` except `sessions/`, `history.jsonl`, the caches, and the user's own files, which hygiene leaves. Worktrees stay out, because they hold work.
 - [ ] 6.2 Build hygiene as `just hygiene` with `--dry-run` and a non-blocking `SessionStart` run. Verify: tests on a temp home, and a dry run on this machine.
 - [ ] 6.3 Build `/goal <cmd>` and the `tasks.md` Stop loop with its bound. Verify: hook lab cases for fail, pass, open task, and no progress.
 
