@@ -44,10 +44,11 @@ prefix is a path of the live tree, and a path of the tree before the `0.0.0` res
 
 ## `docs/keep/`
 
-Verbatim records of Claude Code text (tool descriptions, bundled skills, plugin prompts, built-in commands, settings schemas, and the vendored Gitleaks config) that other pages cite and that are kept as read.
+Verbatim records of Claude Code text (tool descriptions, bundled skills, plugin prompts, built-in commands, settings schemas, and the vendored Gitleaks config) that other pages cite and that are kept as read, and the third-party sources that the shipped files are built from, with each licence.
 
 - [keep/commands/](keep/commands/): the built-in command list.
 - [keep/gitleaks/](keep/gitleaks/): the vendored Gitleaks config and its licence.
+- [keep/lucide/](keep/lucide/README.md): the ISC licence of Lucide and the SVG sources of the two plugin icons.
 - [keep/plugins/](keep/plugins/): 16 records of plugin prompt text.
 - [keep/settings/](keep/settings/): the vendored JSON schemas of the settings and managed settings.
 - [keep/skills/](keep/skills/): one record for each of 46 bundled skills.

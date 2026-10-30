@@ -83,6 +83,12 @@ After each update, do the steps in the "Update" section of the README.
 - `just validate` fails when the four manifests that declare the version of this project disagree, through `tools/manifests.ts`.
   Nothing compared them: `tests/repo/manifests.test.ts` tests the `userConfig` options and the source paths, and `claude plugin validate` checks the shape of each file and not the value inside it, so the prose of `CONTRIBUTING.md` was the only rule and it named three of the four.
   `package.json` is the reference, the marketplace version is read from under `metadata`, and a manifest with no string `version` is a fault on its own.
+- Each plugin ships a listing icon, so `claude plugin validate --profile directory` now passes both with no warning at all (the user, 2026-10-30: "if you want to give it an icon, fetch a royalty-free svg somewhere that fits the plugin's idea").
+  They are 1024 by 1024 PNG files at `plugins/claudetto/.claude-plugin/icon.png` and `plugins/claudetto-you-should-know/.claude-plugin/icon.png`, because that check takes a square PNG or JPEG of 512 to 2048 px under 2 MB and accepts neither SVG nor WebP.
+  The glyphs are Lucide `gauge` for the core plugin, whose thesis is that every value ships with its measurement, and Lucide `lightbulb` for the add-on, which raises one note.
+  Lucide is ISC-licensed, which asks that the notice travel with the copies, so `docs/keep/lucide/` vendors the licence, the two glyphs as downloaded, the two composed sources, and the `rsvg-convert` commands that render them.
+  Nothing of either drawing is redrawn: the composed file adds a `#17181a` square, a `#f2f2f2` stroke in place of `currentColor`, and a transform that centres the glyph at 640 px with a 192 px margin.
+  Replacing either file later changes nothing in a catalogue: the same check states that the file "may become the listing icon only once: the first time the plugin is saved or submitted in the developer portal".
 
 ### Fixed
 
