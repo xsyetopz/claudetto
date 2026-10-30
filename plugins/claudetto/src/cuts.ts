@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_356;
+export const SHIPPED_TOTAL = 31_968;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -28,7 +28,7 @@ export const CLASSIFIER_CALL_CHARS = 140_718;
 export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "deny list", chars: BASELINE_TOTAL - DENIED_TOGETHER_TOTAL },
 	// The residual: hiding our tool texts hides the plugin itself, and it holds request text no row names.
-	{ name: "tool texts", chars: 7154 },
+	{ name: "tool texts", chars: 7035 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "dedupe skill", chars: -160 },
@@ -43,8 +43,8 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "main agent body", chars: 259 },
 	// The plugin's presence lengthens the default third system block.
 	{ name: "plugin system text", chars: -38 },
-	// `Artemis` and `Athena` are delegation targets, so the harness lists them in the first message.
-	{ name: "agent listing", chars: -662 },
+	// The four agents are delegation targets, so the harness lists them in the first message.
+	{ name: "agent listing", chars: -1155 },
 	{ name: "handoff context", chars: -820 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
 	{ name: "output style", chars: -1693 },

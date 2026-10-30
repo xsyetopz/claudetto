@@ -371,12 +371,12 @@ body of `agents/main.md` where the default body stood, and `messages` is 11,284 
 of the tool-text reading above because they carry `outputStyle`, the `sandbox` block, and the `dedupe`
 skill, and the two switches take 5,590 out. Each of those has its own row under "Shipped Cuts" below. That is the point
 of reading the keys in the combination rather than alone: they are bill levers and not request levers,
-and adding them to the snippet costs the prompt nothing. The `plugin` arm is 14,749 characters under
-the 46,105 baseline of the `plain` arm, which is the sum of the inventory below.
+and adding them to the snippet costs the prompt nothing. The `plugin` arm was 14,749 characters under
+the 46,105 baseline of the `plain` arm at this reading, and is 14,137 under it, the sum of the inventory below, since `Hephaestus` and `Hermes` shipped.
 This table is the whole shipped combination: `agents/main.md` under the `agent` key, the output style,
 the handoff context block, the two agent files, and the skill are all in it, which is why `system` and
 `messages` moved. The arm read 30,462 on 2026-10-29 and 30,450 on the morning of 2026-10-30, and 31,959 on `2.1.312`
-at the end of that day, and reads 31,356 on `2.1.314`. The
+at the end of that day, and read 31,356 on `2.1.314` with two agent files and reads 31,968 with four. The
 section below on shipped cuts holds the reading per piece, and `just inventory` is what re-reads these
 three totals against the figures the tree records.
 
@@ -479,7 +479,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,105 baseline less every cut in it has to equal the 31,356 the shipped arm reads, so a cut that
+46,105 baseline less every cut in it has to equal the 31,968 the shipped arm reads, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -488,21 +488,21 @@ the 192 characters, and then the 3,226 of drift above.
 | Shipped cut | Characters off the first request | Cost reading |
 | --- | --- | --- |
 | Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
-| The residual of the eight upfront tool texts and the pieces no row names (`tool texts`) | 7,154 | None exists yet |
+| The residual of the eight upfront tool texts and the pieces no row names (`tool texts`) | 7,035 | None exists yet |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `dedupe` skill | −160 | None needed. It is the one skill the tree ships, and the model may call it |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
 | `agents/main.md` under the `agent` key (`main agent body`) | 259 | None exists yet. A placebo run would price the prompt text |
 | The plugin's own text in the third system block (`plugin system text`) | −38 | None needed. It is the host's, not ours |
-| The agent listing of `Artemis` and `Athena` | −662 | None needed. It is a listing the harness builds from each file's `description` and tools |
+| The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −1,155 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/handoff.ts` | −820 | None exists yet. A placebo run would price the prompt text |
 | `output-styles/Concise.md` under the `outputStyle` key | −1,693 | None exists yet. A placebo run would price the prompt text |
 | The `autoMode` lists | 0 | None exists yet. The classifier reads them, so the classifier call is where they are paid |
 | The `sandbox` block | −7,254 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
 | The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
 
-The rows sum to 14,749, which is 46,105 less the 31,356 of the shipped arm. A negative row is a piece
+The rows sum to 14,137, which is 46,105 less the 31,968 of the shipped arm. A negative row is a piece
 the tree adds.
 
 Every figure above is a whole-request reading of one capture set of 2026-10-30 on `2.1.314`, so the
@@ -513,12 +513,14 @@ moved aside, 31,308 with `commands/setup.md` moved aside, 31,196 with `skills/de
 24,102 without the `sandbox` block. The additivity is read and not assumed, since 662 plus 1,693 is the
 2,355 that separates the full arm from the both-aside arm. Two of these rows moved when `just inventory`
 was run on `2.1.314`, `agent listing` and `dedupe skill`, and the section above on the baseline says
-why.
+why. Adding `Hephaestus` and `Hermes` later that day moved the arm to 31,968. It reads 31,475 with the
+two files moved aside, so their listing costs 493, and the other 119 are the longer roster of the
+`Agent` text, which falls in the `tool texts` residual.
 
 The tool-text row is the one figure here that no isolating capture reaches, because hiding our tool
 texts means hiding the plugin itself, so it is the residual of the shipped reading once every other
-piece is measured, and it is a plug and not a measurement. On `2.1.314` it is 7,154 and no longer
-the tool texts alone. The direct reading of the `tools` array puts the tool texts at 4,241, 17,091 in
+piece is measured, and it is a plug and not a measurement. On `2.1.314` it was 7,154 and no longer
+the tool texts alone, and it is 7,035 since the roster grew. The split below is of the 7,154. The direct reading of the `tools` array puts the tool texts at 4,241, 17,091 in
 the deny arm against 12,850 in the shipped arm without the `sandbox` block, which was 3,171 on
 `2.1.312`. The other 2,913 are request text that no row of the table names: 646 in `messages` that the
 keys of `tierSnippet` outside the table, such as `env` and `enableWorkflows`, cut once the deny list is
@@ -542,9 +544,10 @@ string and ours escapes characters the default text does not. The row was 67 aga
 so the same file replaces 284 raw characters instead of 94 and earns 259 on the wire instead of 67.
 The 5,856 is the plugin's default and the 5,818 of the `plain` arm is the host's, and the 38 between
 them is the row above for the plugin's own system text. The agent listing is a cost rather than a free row:
-`plugins/claudetto/src/register.ts` refuses the `agent.offer` for `claudetto:main`, a type no session
-delegates to, but `Artemis` and `Athena` are delegation targets, so the harness lists both with their
-descriptions and their tools, which reads 662 characters. That row was 480 on `2.1.312` and 0 while `main` was the only
+`plugins/claudetto/src/blocks/agent-offer/block.ts` refuses the `agent.offer` for `claudetto:main`, a type no session
+delegates to, but `Artemis`, `Athena`, `Hephaestus`, and `Hermes` are delegation targets, so the harness lists
+all four with their descriptions and their tools, which reads 1,155 characters: 662 for the first two and 493 for
+the other two. That row was 480 on `2.1.312` and 0 while `main` was the only
 agent file in the tree. `docs/prompt/footprint.md` holds the readings and the `agent.offer` lever.
 
 The style row is a cost and not a cut: the file's body of 1,526 characters enters `messages` under a
@@ -553,7 +556,7 @@ against 31,356, so the three together cost 1,693. The same pair read 1,705 on 20
 stood 12 higher in `tools`, which is the fall of 12 the section above accounts for.
 
 One of the fourteen shipped rows is priced, and it is the one that moves no request text. The eleven
-that move text come to 14,749 characters off the baseline, and they are unpriced: a shorter request and
+that move text come to 14,137 characters off the baseline, and they are unpriced: a shorter request and
 not a saving until a task-set run prices them. The deny list is also
 a capability cut, which the section on the deny list states per name, and a tool description is behavior, so
 for both of them the next evidence is a finished-task run and not a character count.

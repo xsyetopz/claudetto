@@ -39,7 +39,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 7. Agents and Docs Lookup (`research-agent`, `docs-lookup`)
 
-- [ ] 7.1 Write `agents/Hermes.md`. Verify: `bun tools/agent-tools.ts`, and `just inventory` for its line.
+- [x] 7.1 Write `agents/Hermes.md`. Verify: `bun tools/agent-tools.ts`, and `just inventory` for its line. `bun tools/agent-tools.ts` exits 0. `Hephaestus.md` shipped beside it. `just inventory` reads the `shipped` arm at 31,968 and 31,475 with both files moved aside, so their listing costs 493, and the other 119 are the longer roster of the `Agent` text. `SHIPPED_TOTAL`, the `agent listing` and `tool texts` rows of `src/cuts.ts`, and `docs/surfaces.md` carry the reading, and every row holds within the slack.
 - [ ] 7.2 Read the standing size of the Context7 MCP server and of our own registered tool with `just capture`, and record both in `decisions.md`. Verify: the two readings.
 - [ ] 7.3 Build the lighter option. Verify: a lookup test, and `just capture` matching 7.2.
 
