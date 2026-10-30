@@ -3,6 +3,7 @@ import { agentOffer, attachAgentOffer } from "./agent-offer/block.ts";
 import type { Block, BlockContext } from "./block.ts";
 import { attachCompaction, compaction } from "./compaction/block.ts";
 import { attachDecide, decide } from "./decide/block.ts";
+import { attachFinish, finish } from "./finish/block.ts";
 import { attachGate, gateBlock } from "./gate/block.ts";
 import { attachHandoff, handoff } from "./handoff/block.ts";
 import { attachHygiene, hygiene } from "./hygiene/block.ts";
@@ -27,6 +28,7 @@ export const CATALOG: readonly Block[] = [
 	compaction,
 	versionFloor,
 	hygiene,
+	finish,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -44,4 +46,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachCompaction(on, context);
 	attachVersionFloor(on, context);
 	attachHygiene(on, context);
+	attachFinish(on, context);
 };
