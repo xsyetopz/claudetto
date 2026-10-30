@@ -38,6 +38,12 @@ const lab = (on: On): void => {
 	on("turn.complete", () => ({ text: "" }));
 };
 
+/** A lab with the turn `t1` started. */
+const begin = async ($: Engine, on: On): Promise<void> => {
+	lab(on);
+	await $.turn.start({ text: "go", turnId: "t1" });
+};
+
 const rowsOf = () => kept.get(ROWS_KEY);
 
 const turnsOf = () => kept.get(TURNS_KEY);
@@ -50,8 +56,7 @@ const done = {
 } as const;
 
 test("a point the window moved leaves one row with the points and the token counts", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 	await $.session.measure(measure(10, 40_000, 0.1));
 
 	await $.session.measure(measure(11, 52_000, 0.25));
@@ -62,8 +67,7 @@ test("a point the window moved leaves one row with the points and the token coun
 });
 
 test("the first reading only sets the baseline", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 
 	await $.session.measure(measure(10, 40_000, 0.1));
 
@@ -71,8 +75,7 @@ test("the first reading only sets the baseline", async ($: Engine, on: On) => {
 });
 
 test("a subagent turn is tagged subagent and a main turn after it is tagged main", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 	await $.session.measure(measure(10, 40_000, 0.1));
 	await $.turn.start({ text: "dig", turnId: "t2", agentId: "a1" });
 	await $.session.measure(measure(12, 50_000, 0.2));
@@ -94,8 +97,7 @@ test("a subagent turn is tagged subagent and a main turn after it is tagged main
 });
 
 test("a login with no rate-limit windows writes no row and keeps the cost in dollars", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 
 	await $.session.measure({
 		context: { tokens: 30_000, window: WINDOW },
@@ -109,8 +111,7 @@ test("a login with no rate-limit windows writes no row and keeps the cost in dol
 });
 
 test("a window that reset between two readings leaves no row", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 	await $.session.measure(measure(90, 40_000, 0.1));
 
 	await $.session.measure({
@@ -124,8 +125,7 @@ test("a window that reset between two readings leaves no row", async ($: Engine,
 });
 
 test("the four counts and the model of a completed turn reach the store with the tag", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 
 	await $.turn.complete({
 		...done,
@@ -154,9 +154,8 @@ test("the four counts and the model of a completed turn reach the store with the
 });
 
 test("the first row after a compaction is marked and the rows before it are not", async ($: Engine, on: On) => {
-	lab(on);
 	on("session.compact", () => ({ skip: "core ran" }));
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 	await $.session.measure(measure(10, 140_000, 0.1));
 	await $.session.measure(measure(11, 150_000, 0.2));
 
@@ -177,9 +176,8 @@ test("the first row after a compaction is marked and the rows before it are not"
 });
 
 test("a measurement that spans a window reset keeps the mark for the next row", async ($: Engine, on: On) => {
-	lab(on);
 	on("session.compact", () => ({ skip: "core ran" }));
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 	await $.session.measure(measure(90, 140_000, 0.1));
 
 	await $.session.compact({ trigger: "auto", messages: [...TO_COMPACT] });
@@ -201,8 +199,7 @@ test("a measurement that spans a window reset keeps the mark for the next row", 
 });
 
 test("a turn whose usage is absent writes no turn row", async ($: Engine, on: On) => {
-	lab(on);
-	await $.turn.start({ text: "go", turnId: "t1" });
+	await begin($, on);
 
 	await $.turn.complete({ ...done, turnId: "t1", isAborted: true });
 

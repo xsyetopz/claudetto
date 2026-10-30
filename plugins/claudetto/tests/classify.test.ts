@@ -4,7 +4,8 @@ import type {
 	OpEventResult,
 	SessionMessage,
 } from "claude-code";
-import { type Engine, expect, mock, test } from "claude-code/testing";
+import { type Engine, expect, test } from "claude-code/testing";
+import { bareRepo } from "./gate/facts.ts";
 
 const USAGE = {
 	input_tokens: 1,
@@ -59,21 +60,8 @@ const stub = (
 ): Stub => {
 	const state: Stub = { asked: [], fetches: [], ran: [] };
 	// The gate block reads these on every `Bash` call; the engine's own check allows.
-	mock.clock(on, { now: 0 });
-	mock.store(on);
+	bareRepo(on);
 	on("session.cwd", () => ({ value: "/repo" }));
-	on("session.root", () => ({ value: "/repo" }));
-	on("process.run", () => ({
-		value: {
-			exitCode: 1,
-			stdout: "",
-			stderr: "",
-			isStdoutTruncated: false,
-			isStderrTruncated: false,
-		},
-	}));
-	on("fs.exists", () => ({ value: false }));
-	on("fs.read", () => ({ value: "" }));
 	on("tool.check", () => ({ decision: "allow" }));
 	on("env.get", (_$, e) =>
 		e.name === "TYPESAFE_API_KEY" ? { value: key } : { value: undefined },
@@ -117,6 +105,15 @@ const says = (text: string) => (): OpEventResult<"model.complete"> => ({
 });
 
 const PUSH = { tool: "Bash", command: "git push origin main" } as const;
+
+const called = async (
+	$: Engine,
+	on: On,
+	model: (n: number) => OpEventResult<"model.complete">,
+) => {
+	const state = stub(on, model);
+	return { state, out: await $.tool.call(PUSH) };
+};
 
 for (const variant of VARIANTS) {
 	const options = { options: { classifier: variant.option } };
@@ -209,9 +206,9 @@ for (const variant of VARIANTS) {
 		`${variant.option}: a failed model call denies the call`,
 		options,
 		async ($: Engine, on: On) => {
-			const state = stub(on, () => ({ deny: "overloaded" }));
-
-			const out = await $.tool.call(PUSH);
+			const { state, out } = await called($, on, () => ({
+				deny: "overloaded",
+			}));
 
 			expect(out.isError).toBe(true);
 			expect(state.ran).toEqual([]);
@@ -222,9 +219,11 @@ for (const variant of VARIANTS) {
 		`${variant.option}: a reply with no verdict denies the call`,
 		options,
 		async ($: Engine, on: On) => {
-			const state = stub(on, says("I cannot help with that."));
-
-			const out = await $.tool.call(PUSH);
+			const { state, out } = await called(
+				$,
+				on,
+				says("I cannot help with that."),
+			);
 
 			expect(out.isError).toBe(true);
 			expect(state.ran).toEqual([]);

@@ -22,6 +22,11 @@ const failed = ($: Engine, input: Record<string, unknown>, error = ERROR) =>
 		error,
 	});
 
+const failedTwice = async ($: Engine, input: Record<string, unknown>) => {
+	await failed($, input);
+	await failed($, input);
+};
+
 const retried = ($: Engine, input: Record<string, unknown>) =>
 	$.tool.check({ tool: "WebFetch", input });
 
@@ -34,8 +39,7 @@ test(
 	options({ failLimit: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on);
-		await failed($, SAME);
-		await failed($, SAME);
+		await failedTwice($, SAME);
 
 		const out = await retried($, SAME);
 
@@ -63,8 +67,7 @@ test(
 	options({ failLimit: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on);
-		await failed($, SAME);
-		await failed($, SAME);
+		await failedTwice($, SAME);
 
 		const out = await retried($, OTHER);
 
@@ -91,8 +94,7 @@ test(
 	options({ failLimit: 2, windowSeconds: 60 }),
 	async ($: Engine, on: On) => {
 		const clock = lab(on);
-		await failed($, SAME);
-		await failed($, SAME);
+		await failedTwice($, SAME);
 		await clock.advance(61_000);
 
 		const out = await retried($, SAME);
