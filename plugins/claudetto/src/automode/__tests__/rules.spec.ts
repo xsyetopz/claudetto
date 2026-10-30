@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { AUTO_MODE_LISTS, DEFAULTS } from "../automode.ts";
+import { environmentEntries } from "../environment.ts";
 import { autoModeFaults } from "../faults.ts";
 import {
 	ALLOW_RULES,
@@ -165,6 +166,14 @@ describe("the suite snippet", () => {
 			expect(suiteSnippet().autoMode[name]).not.toContain(DEFAULTS);
 			expect(suiteSnippet().autoMode[name].length).toBeGreaterThan(0);
 		}
+	});
+
+	test("holds no environment fact of this repository, since `autoMode` is read in every repository", () => {
+		const { environment } = suiteSnippet().autoMode;
+
+		expect(
+			environmentEntries().filter((entry) => environment.includes(entry)),
+		).toEqual([]);
 	});
 
 	test("is not what setup writes, so the fault check still names each list", () => {
