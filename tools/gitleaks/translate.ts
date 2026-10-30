@@ -5,9 +5,12 @@ import type { Pattern } from "../../plugins/claudetto/src/shared/secrets/gitleak
 /** A flag setter carries no colon, which separates it from a modifier group. */
 const SETTER = /\(\?([a-z-]+)\)/g;
 
-/** An escape pair and a character class are stepped over: a bracket inside either closes nothing. */
-const groupEnd = (source: string, from: number): number => {
-	let depth = 0;
+/** An escape pair and a character class are stepped over: a bracket inside either closes nothing. The first value `visit` returns, given the index after a parenthesis, ends the walk. */
+export const walkParens = <T>(
+	source: string,
+	from: number,
+	visit: (paren: "(" | ")", after: number) => T | undefined,
+): T | undefined => {
 	let inClass = false;
 	let at = from;
 	while (at < source.length) {
@@ -15,28 +18,29 @@ const groupEnd = (source: string, from: number): number => {
 		at += 1;
 		if (char === "\\") {
 			at += 1;
-			continue;
-		}
-		if (inClass) {
+		} else if (inClass) {
 			inClass = char !== "]";
-			continue;
-		}
-		switch (char) {
-			case "[":
-				inClass = true;
-				break;
-			case "(":
-				depth += 1;
-				break;
-			case ")":
-				if (depth === 0) {
-					return at - 1;
-				}
-				depth -= 1;
-				break;
+		} else if (char === "[") {
+			inClass = true;
+		} else if (char === "(" || char === ")") {
+			const found = visit(char, at);
+			if (found !== undefined) {
+				return found;
+			}
 		}
 	}
-	return source.length;
+	return undefined;
+};
+
+/** The index of the `)` that closes the group enclosing `from`, or the length of `source`. */
+const groupEnd = (source: string, from: number): number => {
+	let depth = 0;
+	return (
+		walkParens(source, from, (paren, after) => {
+			depth += paren === "(" ? 1 : -1;
+			return depth < 0 ? after - 1 : undefined;
+		}) ?? source.length
+	);
 };
 
 /** The compiled pattern's `source` is read because an object thrown away unread is a lint error. */

@@ -2,6 +2,7 @@
 // Usage: bun tools/rebuild/silent.ts
 
 import { join } from "node:path";
+import { reportFaults } from "../../claudekit/output.ts";
 import { lex, type Shipped, shippedSources } from "../source-text.ts";
 
 export const TELEMETRY_NOUNS =
@@ -41,12 +42,7 @@ const main = async (): Promise<void> => {
 	const faults = (await shippedSources(root)).flatMap((file) =>
 		silentFaults(file),
 	);
-	for (const line of faults) {
-		console.error(line);
-	}
-	if (faults.length > 0) {
-		process.exitCode = 1;
-	}
+	reportFaults(faults);
 };
 
 if (import.meta.main) {

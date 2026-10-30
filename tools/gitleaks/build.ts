@@ -7,7 +7,7 @@ import type {
 	Rule,
 	Rules,
 } from "../../plugins/claudetto/src/shared/secrets/gitleaks/data.ts";
-import { translate } from "./translate.ts";
+import { translate, walkParens } from "./translate.ts";
 
 type Drop = readonly [string, string];
 
@@ -91,38 +91,20 @@ const allowsOf = (
 /** A repeating group captures a shape, not the secret, so the rule is masked whole. */
 const repeats = (source: string): boolean => {
 	const capturing: boolean[] = [];
-	let inClass = false;
-	let at = 0;
-	while (at < source.length) {
-		const char = source[at];
-		at += 1;
-		if (char === "\\") {
-			at += 1;
-			continue;
-		}
-		if (inClass) {
-			inClass = char !== "]";
-			continue;
-		}
-		switch (char) {
-			case "[":
-				inClass = true;
-				break;
-			case "(":
-				capturing.push(source[at] !== "?");
-				break;
-			case ")": {
-				const held = capturing.pop();
-				const next = source[at];
-				// `next` is tested for a value first, because every string holds the empty string.
-				if (held === true && next !== undefined && "*+{".includes(next)) {
-					return true;
-				}
-				break;
+	return (
+		walkParens(source, 0, (paren, after) => {
+			if (paren === "(") {
+				capturing.push(source[after] !== "?");
+				return;
 			}
-		}
-	}
-	return false;
+			const held = capturing.pop();
+			const next = source[after];
+			// `next` is tested for a value first, because every string holds the empty string.
+			return held === true && next !== undefined && "*+{".includes(next)
+				? true
+				: undefined;
+		}) === true
+	);
 };
 
 const ruleOf = (raw: Map<string, unknown>, drops: Drop[]): Rule | undefined => {

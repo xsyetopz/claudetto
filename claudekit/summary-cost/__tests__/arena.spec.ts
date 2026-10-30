@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { spawn } from "node:child_process";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
+import { output } from "../../output.ts";
 import { commandOf, forkOf, modeOf, PROMPT } from "../arena.ts";
 import { armsOf, main } from "../main.ts";
 
@@ -121,11 +122,6 @@ describe("pty.py", () => {
 		expect(out.capture).toContain("up");
 	}, 30_000);
 });
-
-const output = (): { write: (s: string) => void; text: () => string } => {
-	const chunks: string[] = [];
-	return { write: (s) => chunks.push(s), text: () => chunks.join("") };
-};
 
 describe("armsOf", () => {
 	test("runs every arm when no arm is named", () => {

@@ -118,25 +118,19 @@ export const toolMessage = (
 		),
 	);
 
+const answerOf =
+	(type: string) =>
+	(body: string, headers: Record<string, string> = {}): Response =>
+		new Response(body, {
+			status: 200,
+			headers: { ...headers, "content-type": type },
+		});
+
 /** A `text/event-stream` answer; `headers` are added to the content type. */
-export const streamResponse = (
-	body: string,
-	headers: Record<string, string> = {},
-): Response =>
-	new Response(body, {
-		status: 200,
-		headers: { ...headers, "content-type": "text/event-stream" },
-	});
+export const streamResponse = answerOf("text/event-stream");
 
 /** An `application/json` answer; `headers` are added to the content type. */
-export const jsonResponse = (
-	body: string,
-	headers: Record<string, string> = {},
-): Response =>
-	new Response(body, {
-		status: 200,
-		headers: { ...headers, "content-type": "application/json" },
-	});
+export const jsonResponse = answerOf("application/json");
 
 /** How an empty answer names itself, and the model it falls back on when the request names none. */
 export interface EmptyReply {

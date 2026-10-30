@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { parsed } from "../../session/result.ts";
 import { ARMS, type Result } from "./result.ts";
 
 export const RESULTS_FILE = "results.jsonl";
@@ -52,14 +53,6 @@ const isResult = (row: unknown): row is Result => {
 		NUMBERS.every((key) => isNumber(row, key)) &&
 		AFTER.every((key) => isNumberOrUnknown(row, key))
 	);
-};
-
-const parsed = (line: string): unknown => {
-	try {
-		return JSON.parse(line);
-	} catch {
-		return null;
-	}
 };
 
 export const resultsOf = (text: string): Result[] =>

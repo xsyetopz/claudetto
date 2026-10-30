@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { output } from "../../output.ts";
 import { main } from "../main.ts";
 import { expectedUsd } from "../plan/cost.ts";
 import {
@@ -47,11 +48,6 @@ const dear = (): Runners => {
 		fork: async (f, dir, start) =>
 			result({ ...(await runners.fork(f, dir, start)), cost: 3 }),
 	};
-};
-
-const output = (): { write: (s: string) => void; text: () => string } => {
-	const chunks: string[] = [];
-	return { write: (s) => chunks.push(s), text: () => chunks.join("") };
 };
 
 let root = "";

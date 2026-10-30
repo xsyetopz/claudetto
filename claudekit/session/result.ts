@@ -50,7 +50,8 @@ const resultOf = (value: Record<string, unknown>): RunResult => ({
 		: [],
 });
 
-const parsed = (text: string): unknown => {
+/** The JSON in `text`, or `undefined` when it is not JSON. */
+export const parsed = (text: string): unknown => {
 	try {
 		return JSON.parse(text);
 	} catch {

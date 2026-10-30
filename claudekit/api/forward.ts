@@ -60,14 +60,17 @@ export const usageIn = (text: string): Usage | undefined => {
 	);
 };
 
-/** The request headers to send on, the bearer kept; `accept-encoding` goes so the body that comes back is plain. */
-export const forwardedHeaders = (request: Request): Headers => {
-	const headers = new Headers(request.headers);
-	for (const name of ["host", "content-length", "accept-encoding"]) {
-		headers.delete(name);
+const without = (source: Headers, names: readonly string[]): Headers => {
+	const out = new Headers(source);
+	for (const name of names) {
+		out.delete(name);
 	}
-	return headers;
+	return out;
 };
+
+/** The request headers to send on, the bearer kept; `accept-encoding` goes so the body that comes back is plain. */
+export const forwardedHeaders = (request: Request): Headers =>
+	without(request.headers, ["host", "content-length", "accept-encoding"]);
 
 /** Sends `request` with `body` to `upstream`; it throws when the host cannot be reached. */
 export const sendOn = (
@@ -85,10 +88,5 @@ export const sendOn = (
 };
 
 /** The headers of an upstream answer that still hold once the body is handed on decoded. */
-export const answerHeaders = (response: Response): Headers => {
-	const out = new Headers(response.headers);
-	for (const name of ["content-encoding", "content-length"]) {
-		out.delete(name);
-	}
-	return out;
-};
+export const answerHeaders = (response: Response): Headers =>
+	without(response.headers, ["content-encoding", "content-length"]);
