@@ -27,7 +27,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 5. Status Line (`status-line`)
 
-- [ ] 5.1 Read the `2.1.314` status line stdin fields from the docs, and make D1 to D4 and D7 of `/tmp/ccx/report-statusline.md` failing fixtures. Verify: the tests fail for the stated reason.
+- [x] 5.1 Read the `2.1.314` status line stdin fields from the docs, and make D1 to D4 and D7 of `/tmp/ccx/report-statusline.md` failing fixtures. Verify: the tests fail for the stated reason. The `claude-code-status-line` schema for `2.1.314` lists 24 top-level fields and holds every key `src/statusline/` reads, among them `cost.total_cost_usd`, `rate_limits.five_hour`, `seven_day`, `spend_limit`, `thinking.enabled`, and `fast_mode`. The fixtures are in `src/statusline/__tests__/defects.spec.ts`. Each defect was put back into the current code alone, and `bun test` on that file failed for its own reason: D1 padding after `⌂ claudetto` (6 fail), D2 `" ·  ·"` in place of `$1.00` (7 fail), D3 `$3.21` shown with a `5h` or `7d` window (3 fail), D4 a bare `✦` (1 fail), D7 a `Bun.write` per render (1 fail).
 - [x] 5.2 Build `src/statusline/` and `bin/claudetto-statusline`, stdin only. Verify: the fixtures pass, and a test shows no file, network, or process call.
 - [x] 5.3 Setup writes `statusLine` and `subagentStatusLine` and keeps a user value. Verify: merge tests.
 
