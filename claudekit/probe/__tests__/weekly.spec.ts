@@ -5,7 +5,6 @@ import path from "node:path";
 import { main } from "../main.ts";
 import type { Runners } from "../round/round.ts";
 
-/** Runners that fail the test when reached, so a refusal is shown to make no call. */
 const calls: string[] = [];
 const runners: Runners = {
 	base: () => {

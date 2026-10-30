@@ -1,33 +1,13 @@
-// A local HTTP proxy that stops the agent status-line summarizer of Claude Code without touching
-// the binary or its package. The session reaches it through `ANTHROPIC_BASE_URL`, it forwards every
-// request to the real API unchanged, and it answers the summarizer's own request itself, so that
-// request never reaches the API and costs nothing.
-//
-// Why the HTTP layer and not a `fetch` wrapper: the native binary's API client does not call
-// `globalThis.fetch`, so a `BUN_OPTIONS=--preload` wrapper saw 3 requests in a session of about 90
-// model turns and none of the 4 summaries. The proxy sees every request, which is also what finally
-// prices a summary: `Mu` sends it with `skipCacheWrite: !0`, so the charge is in
-// `cache_read_input_tokens` of the answer and in no transcript.
-//
-// A plain `http://` base URL is enough, measured on `2.1.312` with a subscription login: the
-// session sent each `/v1/messages` POST there with its bearer token and no `content-encoding`. So
-// nothing is terminated and no certificate is needed. The cost is that the host is no longer
-// first party, which drops the `prompt-caching-scope` beta and changes the attribution header, so
-// every arm of a round runs through the proxy and only the mode differs.
-
 import { appendFile } from "node:fs/promises";
 import { serve } from "bun";
 import { objectOf } from "./json.ts";
 import type { Usage } from "./log.ts";
 import { answer, isSummary } from "./stub.ts";
 
-/** `pass` forwards the summarizer's requests and only counts them. `off` answers them here. */
 export type Mode = "pass" | "off";
 
-/** The real API host that the proxy forwards to when no other upstream is given. */
 export const UPSTREAM = "https://api.anthropic.com";
 
-/** The upstream URL of an incoming request: the same path and query on the real API host. */
 export const targetOf = (url: string, upstream: string): string => {
 	const incoming = new URL(url);
 	const to = new URL(upstream);
@@ -43,7 +23,6 @@ const TOKEN_KEYS = [
 	"cache_read_input_tokens",
 ] as const;
 
-/** The tokens of a value that should be a `usage` object, or nothing when it reports none. */
 const tokensOf = (value: unknown): Usage | undefined => {
 	const held = objectOf(value);
 	const usage: Usage = {};
@@ -58,7 +37,6 @@ const tokensOf = (value: unknown): Usage | undefined => {
 	return any ? usage : undefined;
 };
 
-/** The tokens an answer reports, from a streamed `message_start` event or from a whole JSON body. */
 export const usageIn = (text: string): Usage | undefined => {
 	const line = text
 		.split("\n")
@@ -81,13 +59,7 @@ interface Note {
 	done: () => Promise<void>;
 }
 
-/**
- * One line of JSON per request, so a round reads the requests and not a running total. The writes
- * are chained, because two appends in flight could interleave and leave an unparsable row.
- *
- * No header is ever recorded. The session's bearer token travels through this proxy, and a log is a
- * file that outlives the round.
- */
+/** The writes are chained, because two appends in flight could interleave into an unparsable row. */
 const writer = (logFile: string, mode: Mode): Note => {
 	let writing = Promise.resolve();
 	const note = (row: Record<string, unknown>): void => {
@@ -126,8 +98,7 @@ const record = async (
 
 const forwarded = (request: Request): Headers => {
 	const headers = new Headers(request.headers);
-	// `host` and the length belong to this hop. `accept-encoding` goes so the answer arrives as text
-	// and the body that reaches the session is the body that arrived here.
+	// `accept-encoding` goes so the body that reaches the session is the body that arrived here.
 	for (const name of ["host", "content-length", "accept-encoding"]) {
 		headers.delete(name);
 	}
@@ -145,8 +116,7 @@ const handle = async (request: Request, ctx: Context): Promise<Response> => {
 	const body = hasBody ? await request.text() : "";
 	const encoding = request.headers.get("content-encoding");
 	if (encoding !== null) {
-		// Measured as absent behind a custom base URL. Recorded, because a compressed body cannot be
-		// matched and would read as "the summarizer never ran".
+		// Recorded, because a compressed body cannot be matched and would read as "the summarizer never ran".
 		ctx.note({ event: "opaque", encoding });
 	}
 	const summary = encoding === null && isSummary(body);
@@ -187,14 +157,11 @@ const handle = async (request: Request, ctx: Context): Promise<Response> => {
 	return new Response(upstream.body, { status: upstream.status, headers: out });
 };
 
-/** A started local proxy: the base URL to point a session at, and a way to stop it. */
 export interface Proxy {
-	/** The value to put in `ANTHROPIC_BASE_URL`. */
 	url: string;
 	stop: () => Promise<void>;
 }
 
-/** Starts the proxy on a free local port in the given mode, logging to `logFile`; `upstream` defaults to the real API host. */
 export const start = (
 	mode: Mode,
 	logFile: string,

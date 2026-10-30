@@ -1,22 +1,12 @@
-// Replay the real turn sequence against another compaction threshold.
-//
-// The growth each request added is measured, so the replay holds those growths and
-// moves only the threshold. Three assumptions, stated in the page this builds:
-// growth does not depend on the threshold, the kept share is the measured one, and
-// the cache-write line is taken from the measurement rather than modelled, because
-// the engine rewrites whole blocks and a model of it reads far too low.
-
 import { mean, money, OPUS } from "../price.ts";
 import { type Session, sizeOf } from "../transcripts/transcripts.ts";
 import { type Kept, keptOf, summaryOf } from "./fit.ts";
 
-/** One session as the replay sees it: a first prompt and what each turn added. */
 export interface Track {
 	readonly first: number;
 	readonly growths: readonly number[];
 }
 
-/** The measured growth sequence of each session, with each compaction drop removed. */
 export const tracksOf = (sessions: readonly Session[]): Track[] => {
 	const tracks: Track[] = [];
 	for (const items of sessions) {
@@ -45,7 +35,6 @@ export const tracksOf = (sessions: readonly Session[]): Track[] => {
 	return tracks;
 };
 
-/** One threshold replayed: its compaction count, the mean prompt in tokens, and the dollars of each billed line, with `billed` their sum. */
 export interface Row {
 	readonly threshold: number;
 	readonly compactions: number;
@@ -57,17 +46,12 @@ export interface Row {
 	readonly billed: number;
 }
 
-/** The two bill lines the replay takes from the measurement instead of modelling, in dollars, and the kept model. */
 export interface Fixed {
-	/** The measured cache-write line, held at its measured value. */
 	readonly writes: number;
-	/** The measured output line, which the threshold does not touch. */
 	readonly out: number;
-	/** What a compaction leaves behind, fitted over the real boundaries. */
 	readonly kept: Kept;
 }
 
-/** What these sessions would have been billed with the threshold at `threshold`. */
 export const replay = (
 	tracks: readonly Track[],
 	threshold: number,
@@ -82,8 +66,6 @@ export const replay = (
 		for (const growth of track.growths) {
 			if (size + growth > threshold) {
 				compactions += 1;
-				// The compacting turn reads the whole context and writes out the
-				// summary, which is the part of what it leaves that is new.
 				compacting +=
 					money(size, OPUS.read) + money(summaryOf(fixed.kept, size), OPUS.out);
 				size = keptOf(fixed.kept, size);
@@ -108,21 +90,14 @@ export const replay = (
 	};
 };
 
-/** A replayed row with the lost-work charge in dollars; `against` is the percent change of the total versus the base row. */
 export interface Charged {
 	readonly row: Row;
 	readonly wasted: number;
 	readonly together: number;
 	readonly against: number;
-	/** Turns of lost work per compaction at which the base threshold would win. */
 	readonly breakEven: number;
 }
 
-/**
- * The same rows with the measured lost-work charge applied: `turns` turns of work
- * per compaction, each worth `perTurn`. `base` is the threshold that actually ran,
- * so every row is read against it.
- */
 export const withCharge = (
 	rows: readonly Row[],
 	options: { turns: number; perTurn: number; base: number },

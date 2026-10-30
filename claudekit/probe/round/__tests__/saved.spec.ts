@@ -35,8 +35,6 @@ describe("resultsOf", () => {
 	});
 
 	test("keeps a fork that did not compact, whose after-compaction measures are null", () => {
-		// `JSON.stringify` writes a NaN as `null`, and dropping such a fork would move the mean of its arm:
-		// the smoke round of 2026-10-29 reported `ref` at 0.59 over 3 forks live and 0.84 over 1 on replay.
 		const still = result({
 			compactions: 0,
 			firstWrite: Number.NaN,

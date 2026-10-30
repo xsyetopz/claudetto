@@ -1,13 +1,5 @@
 #!/usr/bin/env -S bun --no-env-file
-// The probe of the compaction threshold: two arms that differ only in the threshold, forked from one prepared base session,
-// and scored on turns to completion beside the bars of `docs/evidence/code-compaction-probe.md`, section "The Bars".
-//
-//   bun claudekit/probe/main.ts                  a dry run: prints the plan, the arms, the fork count, the floor line, and the expected cost. It makes no call
-//   bun claudekit/probe/main.ts --run [...]      the paid run, which starts only with this flag. Run it only after the cost is approved
-//
-// The only code that starts `claude` is `claude.ts`, which `session.ts` calls, and this file hands `session.ts` to a round only under `--run`.
-// A step is a `claude -p` run, and the cost of a fork is its `total_cost_usd` less the total of its base, because a fork starts with the cost of its base.
-// The measures come from the stream-json events and the files, with no judge model.
+// Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--dir D]
 
 import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -29,13 +21,11 @@ const SHELL_SAFE = /^[\w@%+=:,./$-]+$/;
 const quote = (s: string): string =>
 	SHELL_SAFE.test(s) ? s : `'${s.replaceAll("'", "'\\''")}'`;
 
-/** The line naming the seven-day figure that the round is held against, or nothing when there is no reading. */
 const weeklyLine = (used: number | undefined): string =>
 	used === undefined
 		? ""
 		: `The seven-day limit is ${used.toFixed(1)}% used, and a round priced at the dearest end of the band over the ${Math.max(0, 100 - used).toFixed(1)}% left is refused.\n`;
 
-/** Prints the plan and the expected cost, and makes no call. */
 const dryRun = (
 	c: Config,
 	write: (s: string) => void,
@@ -62,10 +52,7 @@ const dryRun = (
 	);
 };
 
-/**
- * The report of the forks `results` holds: the cost of each, the floor the round really reached, and the
- * verdict. The sizes come from the forks themselves, so a size that no fork reached claims nothing.
- */
+/** The sizes come from the forks themselves, so a size no fork reached claims nothing. */
 const roundReport = (results: Result[], write: (s: string) => void): void => {
 	write(`${costLines(results).join("\n")}\n`);
 	// After the round, because a cap stop makes the floor line printed before it a plan and not a result.
@@ -73,7 +60,6 @@ const roundReport = (results: Result[], write: (s: string) => void): void => {
 	write(`${report(verdict(results))}\n`);
 };
 
-/** Reports the forks that `--dir` already holds, free and with no call, and gives the exit code. */
 const replay = async (
 	c: Config,
 	write: (s: string) => void,
@@ -90,7 +76,6 @@ const replay = async (
 	return 0;
 };
 
-/** Runs the paid round and writes the report, and gives the exit code. */
 const paidRun = async (
 	c: Config,
 	run: Runners,
@@ -114,7 +99,6 @@ const paidRun = async (
 			weeklyUsed,
 		});
 		if (c.baseOnly) {
-			// The base prints its own context and cost as it ends, which is the whole result of this run.
 			write(
 				"Base sessions only, so no fork ran and no verdict is reached. The context above decides whether --sizes carries a round.\n",
 			);
@@ -132,10 +116,7 @@ const paidRun = async (
 	}
 };
 
-/**
- * Runs the command line `args` and gives the exit code. `run` is reached only under `--run`. `weekly` reads the
- * seven-day used percent; it gives `undefined` for no reading and a read that fails is the same, so the dollar cap alone applies.
- */
+/** `weekly` gives `undefined` for no reading or a failed read, so the dollar cap alone applies. */
 export const main = async (
 	args: string[],
 	run: Runners,

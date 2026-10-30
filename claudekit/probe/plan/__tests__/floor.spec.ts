@@ -32,8 +32,6 @@ describe("floorOf", () => {
 	});
 
 	test("the planned count still meets the floor after an arm loses a fork", () => {
-		// The point of the spare: a transient failure takes one fork of an arm and the round is still
-		// citable, where a round planned at the floor is paid for in full and may not be cited.
 		expect(floorOf(DEFAULT_RUNS - SPARE_RUNS)).toBe("citable");
 	});
 });
@@ -51,8 +49,6 @@ describe("floorLine", () => {
 	});
 
 	test("a count exactly at the floor says it carries no spare", () => {
-		// The round of 2026-10-30 was planned at the floor and this line did not say so, so nothing
-		// warned that one transient failure would waste it.
 		expect(floorLine(CITABLE_MIN_RUNS)).toContain("no spare");
 	});
 

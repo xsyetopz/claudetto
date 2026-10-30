@@ -1,8 +1,3 @@
-// The fixture has to let a fork cross a compaction threshold. The round of 2026-10-29 measured that it
-// did not: a fork peaked at 80,949 tokens from a base of 76,546, about 250 tokens a turn of its own
-// growth, against the 100,000 of the lower arm. So the growth now comes from notes the base never
-// reads, one per fork task, and the planted constraints come after them.
-
 import { beforeAll, describe, expect, test } from "bun:test";
 import { mkdtemp, readdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -18,10 +13,8 @@ import {
 	TASKS_FILE,
 } from "../fixture.ts";
 
-/** The least characters of a note that is meant to be about 12,850 tokens, at 1.9 characters a token. */
 const NOTE_CHARS = 20_000;
 
-/** An open task line of the list, which carries its number. */
 const OPEN_TASK = /^- \[ ] (1\.\d+)/;
 
 let dir = "";
@@ -38,10 +31,6 @@ const noteFile = (i: number): string =>
 	`${LATER}/part-${String(i).padStart(2, "0")}.md`;
 
 describe("notesFor", () => {
-	// The two bases that have been paid for, which the note count is fitted to. A count that misses them
-	// is a base of the wrong context, and one base over the lower threshold refuses a whole round: the
-	// 42,000 target of 2026-10-29 was read as note bytes, gave 7 files and a context of 104,385, and cost
-	// 0.50 for a round that ran no fork.
 	test("gives the file count that each measured base context came from", () => {
 		expect(notesFor(78_687)).toBe(5);
 		expect(notesFor(104_385)).toBe(7);
@@ -82,7 +71,6 @@ describe("buildFixture", () => {
 		const lastNote = lines.findLastIndex((line) => line.includes(`${LATER}/`));
 		const pinAt = lines.findIndex((line) => line.includes("left-pad"));
 
-		// A constraint met before the compaction tests nothing that the summary had to keep.
 		expect(pinAt).toBeGreaterThan(lastNote);
 	});
 
@@ -91,8 +79,6 @@ describe("buildFixture", () => {
 	});
 });
 
-// A fork of the round of 2026-10-29 ticked all 21 boxes in 4 turns, so a tick is no evidence that the
-// work was done. The code of each note is the evidence: it is in the note and nowhere else.
 describe("skipped", () => {
 	test("counts every note task as skipped when the fork wrote nothing", async () => {
 		const found = await brokenIn(dir);

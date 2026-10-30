@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 import { objectOf } from "../json.ts";
 import { answer, isSummary } from "../stub.ts";
 
-/** A request body of the summarizer in `full` mode, which carries the prompt that `Li` builds. */
 const full = JSON.stringify({
 	model: "claude-haiku-5-5",
 	stream: true,
@@ -15,7 +14,6 @@ const full = JSON.stringify({
 	],
 });
 
-/** A `short` mode body, which carries the other prompt and asks for no stream. */
 const short = JSON.stringify({
 	model: "claude-haiku-5-5",
 	stream: false,
@@ -23,7 +21,6 @@ const short = JSON.stringify({
 		"You write a 3-5 word progress label for a background agent, from short notes about what it is doing.",
 });
 
-/** A body of the session itself, which must reach the API untouched. */
 const ordinary = JSON.stringify({
 	model: "claude-haiku-5-5",
 	stream: true,

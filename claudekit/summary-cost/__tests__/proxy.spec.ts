@@ -1,6 +1,3 @@
-// The proxy is what the session talks to through `ANTHROPIC_BASE_URL`, so each test here runs a
-// fake API of its own and drives the proxy over real HTTP. Nothing reaches the network.
-
 import { afterEach, describe, expect, test } from "bun:test";
 import { readFile, rm } from "node:fs/promises";
 import { serve } from "bun";
@@ -27,7 +24,6 @@ const ordinaryBody = JSON.stringify({
 
 const TOKEN = "Bearer sk-fake-token-of-the-test";
 
-/** The answer of the fake API: a stream whose `message_start` carries the tokens it charged. */
 const streamed = (cacheRead: number, input: number): string =>
 	`event: message_start\ndata: ${JSON.stringify({
 		type: "message_start",
@@ -53,7 +49,6 @@ afterEach(async () => {
 	await Promise.all(logs.splice(0).map((f) => rm(f, { force: true })));
 });
 
-/** A fake API that records each call and answers with the tokens given. */
 const fakeApi = (calls: Call[], cacheRead = 1000, input = 10): string => {
 	const server = serve({
 		hostname: "127.0.0.1",

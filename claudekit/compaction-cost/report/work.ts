@@ -1,11 +1,8 @@
-// Printing only: the tables about the work a compaction costs, which the bill does not show.
-
 import type { Gaps } from "../transcripts/stats.ts";
 import type { Bucket, Charge } from "../work/charge.ts";
 import type { Rereads } from "../work/rereads.ts";
 import { head, line, pad, usd, whole } from "./format.ts";
 
-/** Prints the mean explore and edit tool calls per request in each band of distance from the last compaction. */
 export const orientTable = (buckets: readonly Bucket[]): void => {
 	head("The explore/edit mix by distance from the last compaction");
 	line([
@@ -33,7 +30,6 @@ export const orientTable = (buckets: readonly Bucket[]): void => {
 	}
 };
 
-/** Prints the edit rates early and steady, the edits missing per compaction, and that loss in turns and dollars at `perTurn`. */
 export const chargeBlock = (
 	charge: Charge,
 	perTurn: number,
@@ -53,14 +49,12 @@ export const chargeBlock = (
 	line(["which costs", usd(charge.turns * perTurn)]);
 };
 
-/** One row of the re-read table: a lookback in turns, or none for all history, whether the points are random controls, and the measure there. */
 export interface Draw {
 	readonly depth: number | undefined;
 	readonly controls: boolean;
 	readonly got: Rereads;
 }
 
-/** Prints the share in percent of reads after a compaction point that were already read, against the control points. */
 export const rereadTable = (draws: readonly Draw[]): void => {
 	head("Re-reading after a compaction, against a control");
 	line([
@@ -81,7 +75,6 @@ export const rereadTable = (draws: readonly Draw[]): void => {
 	}
 };
 
-/** Prints the median and 90th percentile of the idle gaps in seconds, and how many exceed 5 minutes, 30 minutes, and 1 hour. */
 export const gapsBlock = (gaps: Gaps): void => {
 	head("Idle gaps between requests, the sleep-compaction bar");
 	line(["gaps", whole(gaps.count)]);

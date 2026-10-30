@@ -1,7 +1,3 @@
-// Two descriptive readings of the loaded sessions, both straight from the transcripts:
-// the idle gaps between requests, which is the sleep-compaction bar, and what each real
-// compaction moved, which is the reproduction check of `docs/evidence/compaction/boundaries.md`.
-
 import { mean } from "../price.ts";
 import {
 	type Boundary,
@@ -10,7 +6,6 @@ import {
 	type Session,
 } from "./transcripts.ts";
 
-/** The idle gaps between consecutive requests: their count, the median and 90th percentile in seconds, and how many exceed 5 minutes, 30 minutes, and 1 hour. */
 export interface Gaps {
 	readonly count: number;
 	readonly median: number;
@@ -20,7 +15,6 @@ export interface Gaps {
 	readonly over5m: number;
 }
 
-/** The idle gaps between consecutive requests, in seconds. The idle-compaction bar. */
 export const gapsOf = (sessions: readonly Session[]): Gaps => {
 	const gaps: number[] = [];
 	for (const items of sessions) {
@@ -45,7 +39,6 @@ export const gapsOf = (sessions: readonly Session[]): Gaps => {
 	};
 };
 
-/** The means over the real compactions: pre and post context in tokens, the kept share in percent with its low and high, and the duration in seconds. */
 export interface BoundaryStats {
 	readonly count: number;
 	readonly auto: number;
@@ -57,7 +50,6 @@ export interface BoundaryStats {
 	readonly seconds: number;
 }
 
-/** The pre, post, kept share, and duration of each real compaction. */
 export const boundaryStats = (sessions: readonly Session[]): BoundaryStats => {
 	const all: Boundary[] = boundariesOf(sessions);
 	const kept = all

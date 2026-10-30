@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 import type { Item, Request, Session } from "../../transcripts/transcripts.ts";
 import { rereads } from "../rereads.ts";
 
-/** Request `index` reads a file in a pattern that varies with its position. */
 const requestAt = (index: number): Request => ({
 	kind: "request",
 	fresh: 0,
@@ -15,7 +14,6 @@ const requestAt = (index: number): Request => ({
 	paths: index % 3 === 0 ? [] : [`/f${(index * index) % 17}.ts`],
 });
 
-/** 50 requests, one boundary, 70 requests: 120 plain requests with a mark at 50. */
 const session = (): Session => {
 	const items: Item[] = [];
 	for (let index = 0; index < 120; index += 1) {

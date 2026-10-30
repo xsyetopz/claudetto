@@ -14,7 +14,6 @@ import { DEFAULT_SIZES } from "../plan/plan.ts";
 import type { Runners } from "../round/round.ts";
 import { forksOf, result } from "./stub.ts";
 
-/** Runners that record each call, so a test sees whether a provider would be reached. */
 const recording = (): { runners: Runners; log: string[] } => {
 	const log: string[] = [];
 	const runners: Runners = {
@@ -41,7 +40,6 @@ const recording = (): { runners: Runners; log: string[] } => {
 	return { runners, log };
 };
 
-/** Runners whose forks cost enough that the cap stops the round before every planned fork has run. */
 const dear = (): Runners => {
 	const { runners } = recording();
 	return {
@@ -308,7 +306,6 @@ describe("main, paid only when asked", () => {
 			out.write,
 		);
 
-		// The line before the round plans the citable floor, so only the line after it can be true.
 		expect(out.text()).toContain(floorLine(CITABLE_MIN_RUNS));
 		expect(out.text()).toContain(ranLine(1));
 	});

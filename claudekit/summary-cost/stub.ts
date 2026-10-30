@@ -1,31 +1,11 @@
-// The answer the proxy gives in place of the API when it holds a summarizer request back, and the
-// test that tells such a request apart from the session's own.
-//
-// `2.1.312` builds the summary request in `Mu`, which calls the API with
-// `querySource: "agent_summary"` and `cacheSafeParams.forkContextMessages` set to the agent's whole
-// context, so the request carries that context at the cache-read price every `refreshSeconds` (30
-// by default, `chunk-1wgxyh0t.js:122662`). `skipTranscript: !0` keeps it out of
-// `~/.claude/projects/*/*.jsonl`, so no transcript-derived figure can see it, and the request body
-// is the one surface that both modes of the summarizer share.
-
 import { objectOf, parsedOf } from "./json.ts";
 
-/** The prompts of the two summarizer modes, each in the body of its own request. */
 export const MARKERS = [
-	// `full` mode, the user message that `Li(previousSummary)` builds.
 	"3-5 words using present tense",
-	// `short` mode, the system prompt `Su` that `vu` sends.
 	"3-5 word progress label for a background agent",
 ] as const;
 
-/**
- * Whether `body` is a request of the summarizer and not of the session or an agent.
- *
- * This matches on text, which the user accepted, so a reworded prompt silently lets the summarizer
- * through again. The `sent` and `stopped` counts of a round are what show whether it still matches:
- * when both stay 0 in a session whose debug log has `Forking for summary`, the markers need
- * checking against the installed version.
- */
+/** Matches on text, so a reworded prompt silently lets the summarizer through again. */
 export const isSummary = (body: string): boolean =>
 	MARKERS.some((marker) => body.includes(marker));
 
@@ -108,7 +88,6 @@ const asksStream = (body: string): boolean => {
 	}
 };
 
-/** The answer in place of the API, streaming or not, in the shape the request asked for. */
 export const answer = (body: string): Response => {
 	const model = modelOf(body);
 	const headers = { "anthropic-request-id": "req_claudetto_summary_stub" };
