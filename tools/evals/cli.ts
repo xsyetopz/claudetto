@@ -64,21 +64,23 @@ export const parseArgs = (
 	options: Options = { run: false, request: {} },
 ): Options | { readonly error: string } => {
 	const [flag, ...rest] = args;
-	if (flag === undefined) {
-		return options;
+	switch (flag) {
+		case undefined:
+			return options;
+		case "--run":
+			return parseArgs(rest, { ...options, run: true });
+		default: {
+			const patch = VALUE_FLAGS.get(flag);
+			const [value, ...after] = rest;
+			if (patch === undefined || value === undefined) {
+				return { error: `${flag} is not a flag, or it has no value` };
+			}
+			const next = patch(options, value);
+			return next === undefined
+				? { error: `${value} is not a value of ${flag}` }
+				: parseArgs(after, next);
+		}
 	}
-	if (flag === "--run") {
-		return parseArgs(rest, { ...options, run: true });
-	}
-	const patch = VALUE_FLAGS.get(flag);
-	const [value, ...after] = rest;
-	if (patch === undefined || value === undefined) {
-		return { error: `${flag} is not a flag, or it has no value` };
-	}
-	const next = patch(options, value);
-	return next === undefined
-		? { error: `${value} is not a value of ${flag}` }
-		: parseArgs(after, next);
 };
 
 export const planLines = (plan: Plan): readonly string[] => [

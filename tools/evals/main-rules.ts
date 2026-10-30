@@ -220,16 +220,24 @@ const graderFaults = (row: RuleCase, name: string): readonly string[] => {
 	}
 	const faults: string[] = [];
 	for (const grader of row.graders) {
-		if (grader.kind === "tree" && grader.check.trim() === "") {
-			faults.push(`${name}: a tree grader names no check`);
-		}
-		if (grader.kind === "reply" && grader.reads.trim() === "") {
-			faults.push(`${name}: a reply grader does not say what it reads`);
-		}
-		if (grader.kind === "reply" && grader.whyNotTree.trim() === "") {
-			faults.push(
-				`${name}: a reply grader does not say why no command over the tree can decide the case`,
-			);
+		switch (grader.kind) {
+			case "tree":
+				if (grader.check.trim() === "") {
+					faults.push(`${name}: a tree grader names no check`);
+				}
+				break;
+			case "reply":
+				if (grader.reads.trim() === "") {
+					faults.push(`${name}: a reply grader does not say what it reads`);
+				}
+				if (grader.whyNotTree.trim() === "") {
+					faults.push(
+						`${name}: a reply grader does not say why no command over the tree can decide the case`,
+					);
+				}
+				break;
+			default:
+				break;
 		}
 	}
 	return faults;

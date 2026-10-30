@@ -32,13 +32,16 @@ const literalEnd = (source: string, at: number): number => {
 	const quote = source[at];
 	const close = (from: number): number => {
 		const ch = source[from];
-		if (ch === undefined) {
-			return source.length;
+		switch (ch) {
+			case undefined:
+				return source.length;
+			case "\\":
+				return close(from + 2);
+			case quote:
+				return from + 1;
+			default:
+				return close(from + 1);
 		}
-		if (ch === "\\") {
-			return close(from + 2);
-		}
-		return ch === quote ? from + 1 : close(from + 1);
 	};
 	return close(at + 1);
 };

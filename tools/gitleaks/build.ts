@@ -98,18 +98,27 @@ const repeats = (source: string): boolean => {
 		at += 1;
 		if (char === "\\") {
 			at += 1;
-		} else if (inClass) {
+			continue;
+		}
+		if (inClass) {
 			inClass = char !== "]";
-		} else if (char === "[") {
-			inClass = true;
-		} else if (char === "(") {
-			capturing.push(source[at] !== "?");
-		} else if (char === ")") {
-			const held = capturing.pop();
-			const next = source[at];
-			// `next` is tested for a value first, because every string holds the empty string.
-			if (held === true && next !== undefined && "*+{".includes(next)) {
-				return true;
+			continue;
+		}
+		switch (char) {
+			case "[":
+				inClass = true;
+				break;
+			case "(":
+				capturing.push(source[at] !== "?");
+				break;
+			case ")": {
+				const held = capturing.pop();
+				const next = source[at];
+				// `next` is tested for a value first, because every string holds the empty string.
+				if (held === true && next !== undefined && "*+{".includes(next)) {
+					return true;
+				}
+				break;
 			}
 		}
 	}

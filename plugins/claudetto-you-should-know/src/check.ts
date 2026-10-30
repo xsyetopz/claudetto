@@ -26,23 +26,26 @@ const closed = (row: Row): Row => ({ ...row, view: null });
 export const settleTyped = async (p: Ports, id: string): Promise<void> => {
 	const row = await loadRow(p, id);
 	const kind = row.view?.kind;
-	if (kind === undefined) {
-		typedPast.delete(id);
-		return;
+	switch (kind) {
+		case undefined:
+			typedPast.delete(id);
+			return;
+		case "explained":
+			return;
+		case "offer": {
+			const passed = typedPast.get(id) ?? 0;
+			if (passed < BORROWED.CLEAR_AFTER_PROMPTS) {
+				return;
+			}
+			typedPast.delete(id);
+			await saveRow(p, closed(row));
+			await saveCounters(p, afterIgnored(await loadCount(p, KEYS.TYPED_PAST)));
+			p.refresh();
+			return;
+		}
+		default:
+			return;
 	}
-	if (kind === "explained") {
-		return;
-	}
-	const passed = typedPast.get(id) ?? 0;
-	if (kind === "offer" && passed < BORROWED.CLEAR_AFTER_PROMPTS) {
-		return;
-	}
-	typedPast.delete(id);
-	await saveRow(p, closed(row));
-	if (kind === "offer") {
-		await saveCounters(p, afterIgnored(await loadCount(p, KEYS.TYPED_PAST)));
-	}
-	p.refresh();
 };
 
 const showReply = async (p: Ports, at: At, text: string): Promise<void> => {
