@@ -12,9 +12,9 @@ After each update, do the steps in the "Update" section of the README.
 
 - `/claudetto:setup` and `just setup` write `$schema`, the feature `env` flags, the five `/config` items (`workflowSizeGuideline`, `workflowKeywordTriggerEnabled`, `enableWorkflows`, `enableArtifact`, `remoteControlAtStartup`), and a deny of the six built-in agents, in the group "Features off" and the group "Smaller prompt".
   IDE auto-install is off through `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`, so setup never writes `~/.claude.json`.
-- `just setup` runs `openspec init --tools claude --profile core` when the `openspec` CLI is on `PATH` and the project has no `openspec/`, and otherwise prints `bun add -g @fission-ai/openspec`.
+- `just setup` runs `openspec init --tools claude --profile core` when the `openspec` CLI is on `PATH` and the project has no `openspec/`. It prints `bun add -g @fission-ai/openspec` when the CLI is not on `PATH`, and skips when `openspec/` exists.
 - Setup writes `statusLine` and `subagentStatusLine`, a launcher of `bin/claudetto-statusline` that picks the newest installed plugin version.
-  The line shows the folder, the branch, the review state of the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown, in up to four rows; a status line you already set is kept.
+  The line shows the folder, the branch of a worktree session, the review state of the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown, in up to four rows; a status line you already set is kept.
 - `/init` runs an interview in place of the built-in text: it reads the repository and the memory files, asks with `AskUserQuestion` only what they do not show, and writes after a yes to the draft of each file. A skill of your own named `init` keeps its text.
 - The agents `claudetto:Hephaestus`, which makes one edit and runs its check, and `claudetto:Hermes`, which answers a question from the web with its sources, each at `medium` effort.
 - The `docs` skill looks up library docs through the Context7 CLI: `bunx ctx7 library`, then `bunx ctx7 docs`.
@@ -38,7 +38,7 @@ After each update, do the steps in the "Update" section of the README.
 - The compaction summary of the `cheapSummary` option runs on `claude-haiku-5-5` at effort `high`, and is held to 4,000 characters.
   The prompt used to set no length, so the reply ran to the token cap and ended mid-sentence; a longer reply is now cut at a line break.
 - The side check of `claudetto-you-should-know` defaults to `high` effort, in place of `medium`.
-- The first request shrinks by about 2,300 characters: `just capture --arm plugin --shipped` on `2.1.314` reads 31,237 against 33,515 for `0.0.0`, which was read from a folder path 22 characters shorter. The session prompt, the `Concise` output style, five tool texts, the handoff reminder, and the agent and skill listings are shorter.
+- The first request shrinks by about 2,300 characters: `just capture --arm plugin --shipped` on `2.1.314` reads 31,237 against 33,515 for `0.0.0`, read from a shorter folder path, which lowers that reading. The session prompt, the `Concise` output style, five tool texts, the handoff reminder, and the agent and skill listings are shorter.
 - Setup turns fast mode off with `CLAUDE_CODE_DISABLE_FAST_MODE=1` and leaves `EnterWorktree` and `ExitWorktree` allowed, so worktrees stay on.
 - `/claudetto:setup` and `just setup` write claudetto's `autoMode` rule suite in place of the four built-in lists, in the dialog group now named "Sandbox and auto mode".
   The classifier A/B of `just eval --classifier --run` scored the suite 120 of 120 against 120 of 120 for the built-in lists, at about half the measured price per call, and 72 of 72 on the final text.
