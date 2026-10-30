@@ -81,9 +81,7 @@ describe("the entries the snippet writes", () => {
 		expect(environment.slice(1)).toEqual([...environmentEntries()]);
 	});
 
-	// An entry of ours is added beside the built-in entry for the same field rather than replacing it
-	// (`docs/auto-mode.md`, "The Facts of `autoMode.environment`"), so each one has to carry its own
-	// field label in the shape the built-in entries use, or the classifier reads it as loose prose.
+	// An entry is added beside the built-in one, so it must carry its own `**Field**:` label.
 	test("every written entry names its field", () => {
 		const { environment } = autoModeSnippet().autoMode;
 

@@ -1,5 +1,4 @@
-// A settings key is checked against the vendored settings schema and an `env` name against the
-// installed program, because the schema enumerates no environment variable.
+// An `env` name is checked against the installed program because the schema enumerates none.
 
 import { describe, expect, test } from "bun:test";
 import {
@@ -14,17 +13,15 @@ import { TIERS } from "../../../plugins/claudetto/src/tiers/tiers.ts";
 import { installedProgram, stringsMissing } from "../../../tools/installed.ts";
 import { schemaOf } from "../../../tools/settings-schema.ts";
 
-// The program `claude` resolves to, or an empty path on a machine with no CLI, where the cases that
-// read it skip.
+// An empty path on a machine with no CLI, where the cases that read it skip.
 const PROGRAM = (await installedProgram()) ?? "";
 
 const PLANTED = "CLAUDETTO_NOT_A_CLAUDE_KEY";
 
-// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+// The snippet needs a platform named; `"darwin"` carries its `sandbox` block.
 const PLATFORM = "darwin";
 
-// Every row with both model fields filled, so the keys a row sets only when it names a model are
-// checked too.
+// Rows with both model fields filled, so keys set only when a model is named are checked too.
 const SNIPPETS = TIERS.map((row) =>
 	tierSnippet(
 		{
@@ -40,7 +37,6 @@ const namesOf = (
 	pick: (snippet: TierSnippet) => readonly string[],
 ): readonly string[] => [...new Set(SNIPPETS.flatMap(pick))];
 
-/** The names of `names` the schema does not hold, which is what each case below asserts on. */
 const unknownIn = (
 	keys: readonly string[],
 	names: readonly string[],

@@ -11,9 +11,7 @@ import { HANDOFF_TRIGGER_TOKENS } from "../../plugins/claudetto/src/threshold.ts
 import { installedProgram, stringsMissing } from "../../tools/installed.ts";
 import { keysMissing } from "../../tools/settings-schema.ts";
 
-// The program `claude` resolves to, or an empty path on a machine with no CLI, where the case that
-// reads it skips. A settings key goes to the schema instead, which says what Claude Code reads
-// rather than what bytes the build happens to hold.
+// An empty path on a machine with no CLI, where the cases that read it skip.
 const PROGRAM = (await installedProgram()) ?? "";
 
 describe("every compaction key is one Claude Code reads", () => {

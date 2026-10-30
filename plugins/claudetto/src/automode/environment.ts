@@ -1,14 +1,6 @@
-// The `autoMode.environment` facts of this project. Each one names what was read for it, because a
-// fact the classifier is given that nobody can re-read is a rule invented for it
-// (`specs/low-hitl/spec.md`, "Environment Facts Come from the Project"). `environmentFaults()`
-// refuses a fact with no reading and a fact for a field the program does not have. `docs/auto-mode.md`
-// records which session each reading was made in; a date belongs there and not in a value the
-// classifier reads.
+// Each fact names a reading, since a fact nobody can re-read is a rule invented for the classifier.
 
-/**
- * The field labels of `autoMode.environment`, as `claude auto-mode defaults` prints them for
- * `2.1.312`. A fact for any other label would fill a field that is not there.
- */
+/** A fact for a label the program lacks would fill a field that is not there. */
 export const ENVIRONMENT_FIELDS: readonly string[] = [
 	"Organization",
 	"Primary use of Claude Code",
@@ -33,17 +25,13 @@ export const ENVIRONMENT_FIELDS: readonly string[] = [
 	"Protected IaC scopes",
 ];
 
-/** A fact given to the classifier: the field it fills, its text, and the reading it rests on. */
 export interface EnvironmentFact {
-	/** The field it fills, which must be one of `ENVIRONMENT_FIELDS`. */
 	readonly field: string;
-	/** The fact, as the classifier reads it. */
 	readonly text: string;
-	/** What was read for it: a file, a command, or a page, durable enough to read again. */
+	/** A file, command, or page durable enough to read again. */
 	readonly source: string;
 }
 
-/** The facts of this project that `autoModeSnippet` adds to the `environment` list after `DEFAULTS`; `environmentFaults` refuses one with no source or with a field outside `ENVIRONMENT_FIELDS`. */
 export const ENVIRONMENT_FACTS: readonly EnvironmentFact[] = [
 	{
 		field: "Primary use of Claude Code",
@@ -71,9 +59,7 @@ export const ENVIRONMENT_FACTS: readonly EnvironmentFact[] = [
 	},
 	{
 		field: "Repository visibility",
-		// The built-in text for this field is a conditional, "assume private unless ... a visibility
-		// check in the transcript shows public", and both entries reach the classifier, so this one
-		// carries the check itself rather than the conclusion alone.
+		// The built-in text is a conditional, so this entry carries the visibility check itself.
 		text: "Public. The one remote is `https://github.com/xsyetopz/claudetto.git`, and an unauthenticated read of `https://api.github.com/repos/xsyetopz/claudetto` answered `200`, which only a public repository does.",
 		source:
 			"`git remote -v`, and an unauthenticated `GET https://api.github.com/repos/xsyetopz/claudetto`, which answers `200` only for a public repository",
@@ -127,20 +113,14 @@ export const ENVIRONMENT_FACTS: readonly EnvironmentFact[] = [
 	},
 ];
 
-/** One entry of `autoMode.environment`, in the `**Field**: text` shape the built-in entries use. */
 export const environmentEntry = (fact: EnvironmentFact): string =>
 	`**${fact.field}**: ${fact.text}`;
 
-/** The entries the snippet writes after `$defaults`, in the order the facts are listed. */
 export const environmentEntries = (
 	facts: readonly EnvironmentFact[] = ENVIRONMENT_FACTS,
 ): readonly string[] => facts.map(environmentEntry);
 
-/**
- * The faults of the fact list, one line each, empty when it may ship. A fact with no reading is one
- * nobody can check, and a fact for a field the program does not have is one the classifier never
- * reads.
- */
+/** A fact for a field the program lacks is never read by the classifier. */
 export const environmentFaults = (
 	facts: readonly EnvironmentFact[] = ENVIRONMENT_FACTS,
 	fields: readonly string[] = ENVIRONMENT_FIELDS,

@@ -1,7 +1,3 @@
-// The lexer behind the two checks of the rebuilt observer. A check that reads a comment as code, or
-// a quoted URL as a comment, would pass a plugin it should fail or fail one it should pass, so the
-// split is held on its own.
-
 import { describe, expect, test } from "bun:test";
 import {
 	jsonStrings,

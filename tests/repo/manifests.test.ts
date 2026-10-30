@@ -1,8 +1,3 @@
-// The two manifests of the new tree, checked against the code and the disk: the option the plugin
-// offers is the value list the resolver knows, so a new value cannot be declared without a code
-// path for it, and every plugin the marketplace lists is a folder that exists with a manifest of
-// its own.
-
 import { describe, expect, test } from "bun:test";
 import { stat } from "node:fs/promises";
 import { join } from "node:path";
@@ -16,11 +11,9 @@ import {
 
 const MANIFEST = join(".claude-plugin", "plugin.json");
 
-/** The names of the options each plugin declares in its manifest. */
 const declaredOptions = (manifest: { userConfig: object }): readonly string[] =>
 	Object.keys(manifest.userConfig);
 
-/** Whether the path is a file that can be read, with a missing path answering false. */
 const isFile = async (path: string): Promise<boolean> => {
 	try {
 		return (await stat(path)).isFile();
@@ -29,14 +22,7 @@ const isFile = async (path: string): Promise<boolean> => {
 	}
 };
 
-// An option in the dialog that no hook reads is worse than no option: the person sets it and nothing
-// happens. `compaction` was such an option, offering `auto`, `built-in`, and `code` while its `pathOf`
-// was imported by nothing but its own spec file.
-//
-// The list is pinned rather than derived. Searching the source for the name proves nothing, because a
-// folder and its comments carry the word `compaction` with no hook reading the option; and no check
-// here can show that a hook reads a value. So adding an option means changing this list, and whoever
-// changes it has to name the hook that reads it.
+// The list is pinned, not derived: searching the source for a name proves no hook reads it.
 const OPTIONS: readonly string[] = [
 	"decide",
 	"TYPESAFE_API_KEY",
@@ -55,10 +41,7 @@ describe("the options the manifest offers", () => {
 	});
 });
 
-// A `default` in the manifest reaches the hook as the option's value, so the code fallback fires only
-// where the manifest declares none. Where both exist and disagree, the manifest decides and the code
-// constant describes a default nobody gets, which is how `effort` came to say `medium` in the
-// manifest and `high` in the code while both cited the same row of `docs/models.md`.
+// A manifest `default` reaches the hook as the value, so the code fallback fires only without one.
 describe("the add-on manifest against its own constants", () => {
 	test("the declared effort default is the constant the code falls back to", () => {
 		const declared = observer.userConfig["effort"].default;

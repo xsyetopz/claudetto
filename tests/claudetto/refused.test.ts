@@ -70,8 +70,7 @@ describe("the snippet claudetto writes holds no refused key", () => {
 });
 
 describe("every refused key is a real key", () => {
-	// Two of them, `disableSideloadFlags` and `disableCommandPluginSources`, are `x-managed-only`, so
-	// the union of the two schemas is the list and the user schema alone would reject them.
+	// Two of them are `x-managed-only`, so the user schema alone would reject them.
 	test("a vendored schema holds every refused settings key", async () => {
 		const names = REFUSED_KEYS.filter((row) => row.kind !== "env").map(
 			(row) => row.name,
