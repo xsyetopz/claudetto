@@ -107,3 +107,10 @@ The user asked that each open choice be settled with the least problematic optio
   - A status line merges as one value: a user's own line is kept whole and reported once, and claudetto adds no key to it.
   - The two keys sit in the dialog group "Models and windows", because `$.ui.ask` takes at most four options and the four groups are in use. The line shows the model, the effort, the context window, and the limit windows that this group sets.
 - D30. The IDE auto-install is turned off by the env twin `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL=1` in `settings.json`, not by `autoInstallIdeExtension: false` in `~/.claude.json`. `l2r` of `chunk-sq7yspzm.js` (offset `3244316`) in `2.1.314` skips the install when either one is set, so the effect is the same. `~/.claude.json` is rewritten by a running Claude Code, and setup writes only `settings.json`.
+
+## Answer of the User, 2026-10-30, Ninth Round: Worktrees On, Fast Mode Off
+
+- D31. Worktrees stay on, and fast mode and its settings stay off, because quality on a budget outranks speed (user, 2026-10-30, message: "worktrees are to be enabled if not already but fast mode and its stuff go disabled. quality for cheap > speed"). Setup already meets both, so it writes no new key.
+  - Worktrees: `EnterWorktree` and `ExitWorktree` carry no gate in `2.1.314` (clawdipedia `reference/tools/agents-and-tasks`), and setup denies neither. The `worktree` setting holds only layout keys (`symlinkDirectories`, `sparsePaths`, `baseRef`, `bgIsolation`, `location`), none of which turns worktrees on or off, so setup leaves it unset.
+  - Fast mode: setup writes `CLAUDE_CODE_DISABLE_FAST_MODE=1`. Claude Code allows fast mode only while that flag is off, and `/fast` is gated on it (clawdipedia `configure/env-vars/models-and-effort`, `extend/skills-and-commands/slash-commands`), so `fastMode` and `fastModePerSessionOptIn` have no effect and stay unwritten.
+  - A test in `src/tiers/__tests__/snippet.spec.ts` holds both for every tier. It fails when setup denies `EnterWorktree` or drops the fast mode flag.
