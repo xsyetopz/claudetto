@@ -19,13 +19,14 @@ lint:
 typecheck:
     bun check
 
-# Check that every surface a tier row names has a decision page under `docs/keep/`, check that no sibling files form a cluster that should be a folder, check that every exported declaration carries a JSDoc block that adds a fact, check that a `path:line` citation in a page the repo owns points at a line that exists, check that no text is written as a `join("\n")` over an array literal or as an escaped `\n` between its words where a multiline template literal would show its shape, check that the generated Gitleaks rules still match the vendored config, then validate the plugin manifest and the marketplace that lists it. `--strict` makes a manifest warning a failure, such as an unrecognized field. The plugin-directory checks it prints, such as the missing listing icon, count only under `--profile directory`, which stays off because this change submits nothing to the catalog
+# Check that every surface a tier row names has a decision page under `docs/keep/`, check that no sibling files form a cluster that should be a folder, check that every exported declaration carries a JSDoc block that adds a fact, check that a `path:line` citation in a page the repo owns points at a line that exists, check that a backticked `just <recipe>` in such a page is a recipe this `justfile` defines, check that no text is written as a `join("\n")` over an array literal or as an escaped `\n` between its words where a multiline template literal would show its shape, check that the generated Gitleaks rules still match the vendored config, then validate the plugin manifest and the marketplace that lists it. `--strict` makes a manifest warning a failure, such as an unrecognized field. The plugin-directory checks it prints, such as the missing listing icon, count only under `--profile directory`, which stays off because this change submits nothing to the catalog
 validate:
     bun tools/keep-pages.ts
     bun tools/agent-tools.ts
     bun tools/clusters.ts
     bun tools/jsdoc.ts
     bun tools/citations.ts
+    bun tools/recipes.ts
     bun tools/literals.ts
     bun tools/gitleaks/run.ts --check
     bun tools/rebuild/constants.ts
@@ -58,6 +59,10 @@ setup *args:
 # Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --settings FILE, --tools N)
 capture *args:
     bun tools/capture/run.ts "$@"
+
+# Score the rule cases of the main agent body against their fixtures, free and with no model call unless `--run` is among the arguments; plan mode is the default and prints the sessions it would start; extra arguments go to `tools/evals/cli.ts` (--run makes the paid calls, --case KEY one case, --arm ARM one arm, --runs N runs per arm, --model NAME, --budget USD the cap on the round)
+eval *args:
+    bun tools/evals/cli.ts "$@"
 
 # Check each recorded total of the prompt-size inventory against a reading taken now, free and with no model call. It is not in `just check` because it spawns `claude` once per row, so run it by hand after a change to a shipped prompt surface: an agent file, the output style, the deny list, the main agent body, or a tool description. It exits 1 naming each row that moved by more than the 12-character run-to-run variance of the instrument
 inventory:

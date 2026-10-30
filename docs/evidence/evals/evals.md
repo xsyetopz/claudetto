@@ -1,4 +1,8 @@
 > Saved from `wiki/claudetto/evidence/Evals.md` at `HEAD`. The wiki is gone.
+>
+> This page is the record of the `claude plugin eval` harness, measured on 2026-10-10.
+> That harness and its recipes are removed. `just eval` now runs `tools/evals/cli.ts`, which takes
+> `--run`, `--case`, `--arm`, `--runs`, `--model`, and `--budget`, and no command below runs as written.
 
 # Evals
 

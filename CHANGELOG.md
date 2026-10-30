@@ -34,6 +34,12 @@ After each update, do the steps in the "Update" section of the README.
 - A call that auto mode denied twice is denied at `tool.check`, before the classifier, with the reason of the earlier denial and the rule that would allow it (task 10.4).
   `classic.PermissionDenied` counts each denial per call signature in one `$.state` value, so the main loop and each subagent count the same call together, and the hook answers `retry: true` only while the count is under the bound.
   The event cannot send text to the model, so the text reaches it in the deny: it says to stop and report, and it names `"Bash(<command>)"` or the bare tool name for `permissions.allow`, with no hint to work around the denial.
+- `just validate` fails a page that tells a reader to run a recipe the `justfile` does not define, through `tools/recipes.ts`.
+  Nothing compared a documented command against the `justfile`, which is how `CONTRIBUTING.md` kept naming `just bump` after that recipe and `tools/bump-version.ts` were removed.
+  A name is read from a backticked span only, at the start of a command, because `just` inside a sentence is the English adverb and reading those spans reported 25 recipes that no page asks a reader to run.
+  `RECORD_PAGES` holds `CHANGELOG.md`, `docs/test-diet.md`, and the 12 `docs/evidence/` pages that measured a removed harness, so a page that names a live recipe stays under the check.
+- `just eval` runs the rule cases of the main agent body against their fixtures, through `tools/evals/cli.ts`.
+  Plan mode is the default and costs nothing, and `--run` makes the paid calls, so the recipe matches the other paid tools.
 
 ### Fixed
 
@@ -43,6 +49,7 @@ After each update, do the steps in the "Update" section of the README.
 - About 20 pages under `docs/keep/` cited the pre-slice tree without the `archive/` prefix that their own other lines use, such as the `TOOL_BASH` source in `docs/keep/tools/Bash.txt`, which now reads `archive/plugins/claudetto/modules/session/prompt/prompts.ts:70`.
   78 distinct paths are prefixed, each one checked to be absent from the tree and present under `archive/` at the cited line.
   `tools/citations.ts` reads a backticked span only, and these sat in bare parentheses, so no check reported them.
+- `docs/evidence/evals/evals.md` opens with the note that its harness is removed, because `just eval` exists again and the commands on the page take `--judge-model`, which `tools/evals/cli.ts` answers with exit 2.
 - The `[Unreleased]` entry on the gated keys cited `modules/gate/domain/gate.ts:40`, and `GATED_KEYS` is at `plugins/claudetto/src/gate/gate.ts:55`.
   `tools/citations.ts` skips a path whose first segment is not an entry of the repo root, so a repo path written without its prefix was never resolved.
 - A `head` or `tail` of two files, and any reader of a glob, are no longer denied as the wrong tool (task 13.2).
