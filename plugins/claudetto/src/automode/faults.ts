@@ -44,7 +44,11 @@ export const isBroadAllow = (rule: string): boolean => {
 export const listsWithoutDefaults = (
 	snippet: AutoModeSnippet,
 ): readonly string[] =>
-	AUTO_MODE_LISTS.filter((name) => snippet.autoMode[name][0] !== DEFAULTS);
+	AUTO_MODE_LISTS.filter((name) => {
+		const list = snippet.autoMode[name];
+		// An empty list counts as unset, and `$defaults` keeps the built-ins wherever it sits.
+		return list.length > 0 && !list.includes(DEFAULTS);
+	});
 
 export const broadAllowRules = (snippet: AutoModeSnippet): readonly string[] =>
 	snippet.autoMode.allow.filter(isBroadAllow);
