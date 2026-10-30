@@ -6,6 +6,9 @@ const ROOT = join(import.meta.dir, "..", "..");
 
 const SHIPPED: readonly string[] = [
 	"answer.ts",
+	"blocks/block.ts",
+	"blocks/catalog.ts",
+	"blocks/you-should-know/block.ts",
 	"cadence.ts",
 	"cards.ts",
 	"check.ts",
