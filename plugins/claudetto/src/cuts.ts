@@ -49,7 +49,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "handoff context", chars: -748 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
 	{ name: "output style", chars: -1644 },
-	// Setup does not ship the key; the classifier call pays for the lists.
+	// Setup writes the suite, but only the classifier call carries the lists.
 	{ name: "autoMode lists", chars: 0 },
 	// Repays its text: sandbox auto-allow precedes the classifier, so a sandboxed `Bash` call pays none.
 	{ name: "sandbox block", chars: -SANDBOX_CHARS },
