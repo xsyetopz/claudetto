@@ -14,6 +14,9 @@ if (ROW === undefined) {
 }
 const PCT = "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE";
 
+// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+const PLATFORM = "darwin";
+
 /** The `env` names of a snippet, or none where it carries no `env` block. */
 const envNames = (env: unknown): string[] =>
 	typeof env === "object" && env !== null ? Object.keys(env) : [];
@@ -21,7 +24,7 @@ const envNames = (env: unknown): string[] =>
 describe("keys a default already covers are left out", () => {
 	test("the snippet of each row carries none of them", () => {
 		for (const row of TIERS) {
-			const snippet = tierSnippet(row);
+			const snippet = tierSnippet(row, PLATFORM);
 			const env = snippet["env"];
 
 			for (const dropped of DROPPED_KEYS) {
@@ -31,7 +34,7 @@ describe("keys a default already covers are left out", () => {
 	});
 
 	test("merging into empty settings writes none of them", () => {
-		const applied = applyTier({}, tierSnippet(ROW));
+		const applied = applyTier({}, tierSnippet(ROW, PLATFORM));
 
 		for (const dropped of DROPPED_KEYS) {
 			expect(JSON.stringify(applied.settings)).not.toContain(dropped.name);
@@ -50,7 +53,7 @@ describe("a value the user set stays", () => {
 	test("a different value survives and is listed as skipped", () => {
 		const current = { autoCompactWindow: 500_000, env: { OTHER: "1" } };
 
-		const applied = applyTier(current, tierSnippet(ROW));
+		const applied = applyTier(current, tierSnippet(ROW, PLATFORM));
 
 		expect(applied.settings["autoCompactWindow"]).toBe(500_000);
 		expect(applied.skipped).toEqual([
@@ -69,7 +72,7 @@ describe("a value the user set stays", () => {
 	test("the keys around it are still written and the user's other keys stay", () => {
 		const current = { autoCompactWindow: 500_000, env: { OTHER: "1" } };
 
-		const applied = applyTier(current, tierSnippet(ROW));
+		const applied = applyTier(current, tierSnippet(ROW, PLATFORM));
 
 		expect(applied.settings["env"]).toEqual({
 			OTHER: "1",
@@ -81,7 +84,7 @@ describe("a value the user set stays", () => {
 	test("a value that already equals the row is not reported", () => {
 		const current = { autoCompactWindow: ROW.contextCap };
 
-		const applied = applyTier(current, tierSnippet(ROW));
+		const applied = applyTier(current, tierSnippet(ROW, PLATFORM));
 
 		expect(applied.skipped).toEqual([]);
 		expect(applied.written.map((entry) => entry.path)).not.toContain(
@@ -92,7 +95,7 @@ describe("a value the user set stays", () => {
 
 describe("an option the user rejected stays rejected", () => {
 	test("the rejected path is not written and is listed as skipped", () => {
-		const applied = applyTier({}, tierSnippet(ROW), [`env.${PCT}`]);
+		const applied = applyTier({}, tierSnippet(ROW, PLATFORM), [`env.${PCT}`]);
 
 		expect(applied.settings["env"]).not.toHaveProperty(PCT);
 		expect(applied.skipped).toEqual([
@@ -103,7 +106,10 @@ describe("an option the user rejected stays rejected", () => {
 
 describe("the report of what setup wrote", () => {
 	test("it names each key and value written and each key skipped", () => {
-		const applied = applyTier({ autoCompactWindow: 500_000 }, tierSnippet(ROW));
+		const applied = applyTier(
+			{ autoCompactWindow: 500_000 },
+			tierSnippet(ROW, PLATFORM),
+		);
 
 		const report = tierReport(ROW.tier, applied);
 
@@ -117,16 +123,21 @@ describe("the report of what setup wrote", () => {
 
 	test("it states no share of a plan limit", () => {
 		for (const row of TIERS) {
-			const applied = applyTier({ autoCompactWindow: 1 }, tierSnippet(row), [
-				`env.${PCT}`,
-			]);
+			const applied = applyTier(
+				{ autoCompactWindow: 1 },
+				tierSnippet(row, PLATFORM),
+				[`env.${PCT}`],
+			);
 
 			expect(shareClaims(tierReport(row.tier, applied))).toEqual([]);
 		}
 	});
 
 	test("it says so when nothing was written", () => {
-		const applied = applyTier(tierSnippet(ROW), tierSnippet(ROW));
+		const applied = applyTier(
+			tierSnippet(ROW, PLATFORM),
+			tierSnippet(ROW, PLATFORM),
+		);
 
 		expect(tierReport(ROW.tier, applied)).toContain("Wrote no key.");
 	});

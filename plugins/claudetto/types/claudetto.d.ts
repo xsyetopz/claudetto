@@ -11,6 +11,8 @@ declare module "claude-code" {
 			starts: readonly number[];
 			/** The times of the tool calls inside the period, counted only while the context is heavy. */
 			calls: readonly number[];
+			/** The budget band the `prompt.submit` hook last sent a line for, so a turn inside the same band sends none. */
+			band: string;
 			/** The failures of a call by its key: how many in a row with the same error, the newest error, and when. */
 			failures: Readonly<
 				Record<

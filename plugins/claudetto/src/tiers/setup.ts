@@ -4,13 +4,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-import { refusedNames } from "../refused.ts";
-import { applyTier, type Json } from "./merge.ts";
+import { refusedPaths } from "./keys.ts";
+import { applyTier, type Json, settingsText } from "./merge.ts";
 import { readTier, unknownTierLine } from "./read.ts";
 import { tierReport } from "./report.ts";
-import { type TierSnippet, tierSnippet } from "./snippet.ts";
-
-const ENV_PREFIX = /^env\./;
+import { tierSnippet } from "./snippet.ts";
 
 const isRecord = (value: unknown): value is Json =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -52,31 +50,23 @@ export const parseArgs = (argv: readonly string[]): SetupArgs => {
 	return { dryRun, ...(settings === undefined ? {} : { settings }) };
 };
 
-/** The paths of `snippet`, written with dots, that name a refused key at the top level or inside `env`. */
-export const refusedPaths = (snippet: TierSnippet): readonly string[] => {
-	const env = snippet["env"];
-	const inEnv = isRecord(env)
-		? Object.keys(env).map((key) => `env.${key}`)
-		: [];
-	return [...Object.keys(snippet), ...inEnv].filter((path) =>
-		refusedNames().includes(path.replace(ENV_PREFIX, "")),
-	);
-};
-
-/** The plan for the parsed `.claude.json` in `state` against the settings in `current`. A tier with no row plans no write. */
-export const planSetup = (state: unknown, current: Json): SetupPlan => {
+/**
+ * The plan for the parsed `.claude.json` in `state` against the settings in `current`, composed for
+ * `platform` as `process.platform` spells it. A tier with no row plans no write.
+ */
+export const planSetup = (
+	state: unknown,
+	current: Json,
+	platform: string,
+): SetupPlan => {
 	const { row, read } = readTier(state);
 	if (row === undefined) {
 		return { report: unknownTierLine(read) };
 	}
-	const snippet = tierSnippet(row);
+	const snippet = tierSnippet(row, platform);
 	const applied = applyTier(current, snippet, refusedPaths(snippet));
 	return { report: tierReport(row.tier, applied), write: applied.settings };
 };
-
-/** The settings file text: 2-space indentation and a final newline. */
-export const settingsText = (settings: Json): string =>
-	`${JSON.stringify(settings, undefined, 2)}\n`;
 
 const readJson = async (path: string, missing: Json): Promise<unknown> => {
 	let text: string;
@@ -99,7 +89,7 @@ const main = async (): Promise<void> => {
 	if (!isRecord(current)) {
 		throw new Error(`${target} is not a JSON object`);
 	}
-	const plan = planSetup(state, current);
+	const plan = planSetup(state, current, process.platform);
 	console.info(plan.report);
 	if (plan.write !== undefined && !args.dryRun) {
 		await mkdir(dirname(target), { recursive: true });

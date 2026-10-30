@@ -44,15 +44,27 @@ const faultLine = (
 ): string => `${block}: ${fault.rule} at ${fault.where}`;
 
 /**
+ * A platform that the composer could not name. `sandboxSupported` refuses it, so `sandbox.enabled`
+ * is left out and `offFaults` of `../sandbox/faults.ts` reports nothing: a snippet composed where
+ * the platform is unknown claims no sandbox rather than claiming one that may not be there. The
+ * `settings.read` hook passes it when its one `uname` call fails, and the plugin test environment,
+ * which has no process at all, is such a place.
+ */
+export const UNKNOWN_PLATFORM = "unknown";
+
+/**
  * The findings of the checks that guard the two blocks setup composes from another folder, as one
  * line each. A block with a finding is left out of `tierSnippet` and named here, because a fault of
  * these two is reported and never repaired (`../automode/faults.ts`, `../sandbox/faults.ts`).
+ *
+ * `platform` is named by the caller, as `process.platform` spells it, because a hooks module has no
+ * `process` to read it from.
  */
-export const snippetFaults = (): readonly string[] => [
+export const snippetFaults = (platform: string): readonly string[] => [
 	...autoModeFaults(autoModeSnippet()).map((fault) =>
 		faultLine("autoMode", fault),
 	),
-	...sandboxFaults(sandboxSnippet(), process.platform).map((fault) =>
+	...sandboxFaults(sandboxSnippet(platform), platform).map((fault) =>
 		faultLine("sandbox", fault),
 	),
 ];
@@ -65,10 +77,10 @@ const autoModeBlock = (): TierSnippet => {
 		: {};
 };
 
-/** The `sandbox` block for the running platform, or no key at all when a check of `../sandbox/faults.ts` finds a fault in it. */
-const sandboxBlock = (): TierSnippet => {
-	const snippet = sandboxSnippet();
-	return sandboxFaults(snippet, process.platform).length === 0
+/** The `sandbox` block for `platform`, or no key at all when a check of `../sandbox/faults.ts` finds a fault in it. */
+const sandboxBlock = (platform: string): TierSnippet => {
+	const snippet = sandboxSnippet(platform);
+	return sandboxFaults(snippet, platform).length === 0
 		? { sandbox: snippet.sandbox }
 		: {};
 };
@@ -81,15 +93,20 @@ const sandboxBlock = (): TierSnippet => {
  * `disableBundledSkills` alone is a loss, because it moves the workflow text into the `Workflow`
  * definition while that tool is still offered. The two switches alone read 52,254 characters against
  * 42,879 for a stock run; with the deny list, 31,861 (`../cuts.ts`).
+ *
+ * `platform` is the caller's to name, as `process.platform` spells it, because the two callers read
+ * it from different places: `setup.ts` runs under Bun and has `process`, while the `settings.read`
+ * hook of `hooks.ts` runs in a hooks module, which has none, and asks the system instead.
+ * `UNKNOWN_PLATFORM` leaves `sandbox.enabled` out.
  */
-export const tierSnippet = (row: TierRow): TierSnippet => ({
+export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 	...builtinSnippet(),
 	...compactionSnippet().settings,
 	permissions: { deny: [...denyList()] },
 	agent: MAIN_AGENT,
 	outputStyle: STYLE,
 	...autoModeBlock(),
-	...sandboxBlock(),
+	...sandboxBlock(platform),
 	env: {
 		CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: pctFor(
 			row.contextCap,

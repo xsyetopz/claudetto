@@ -38,6 +38,10 @@ validate:
 settings-schema *args:
     bun tools/settings-schema.ts "$@"
 
+# Print the supported Claude Code version and every line that declares it. A version argument moves all of them to it (`just claude-version 2.1.315`). The readings in the comments, such as "read against `2.1.312`", are left as they were taken, because each backs the line above it
+claude-version *args:
+    bun tools/claude-version.ts "$@"
+
 # Regenerate `plugins/claudetto/src/secrets/gitleaks/rules.ts` from the vendored Gitleaks config. `--fetch` downloads the config and its licence at the pinned ref first, `--fetch --ref TAG` at another, and `--upstream` compares the digest of the vendored copy with the original and names the newest release
 gitleaks-rules *args:
     bun tools/gitleaks/run.ts "$@"

@@ -4,8 +4,8 @@
 // from the page the spec cites, `permission-modes` on `code.claude.com`: broad allow rules are
 // dropped on entry to auto mode. `faults.ts` carries that quote.
 
-import { join } from "node:path";
 import { ENV, type Kind, SETTING } from "../keys.ts";
+import { settingsFileIn } from "../settings-file.ts";
 import { environmentEntries } from "./environment.ts";
 
 /**
@@ -16,12 +16,9 @@ import { environmentEntries } from "./environment.ts";
  */
 export const AUTO_MODE_TARGET = "user";
 
-/** The file name of the user settings inside the config directory. */
-const SETTINGS_FILE = "settings.json";
-
 /** The path of the target file under `configDir`, which is `~/.claude` on a default login. */
 export const autoModeTargetFile = (configDir: string): string =>
-	join(configDir, SETTINGS_FILE);
+	settingsFileIn(configDir);
 
 /** The marker that keeps the built-in rules of a list in its own position. */
 export const DEFAULTS = "$defaults";

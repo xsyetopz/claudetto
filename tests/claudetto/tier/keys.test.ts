@@ -20,14 +20,20 @@ const PROGRAM = (await installedProgram()) ?? "";
 
 const PLANTED = "CLAUDETTO_NOT_A_CLAUDE_KEY";
 
+// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+const PLATFORM = "darwin";
+
 // Every row with both model fields filled, so the keys a row sets only when it names a model are
 // checked too.
 const SNIPPETS = TIERS.map((row) =>
-	tierSnippet({
-		...row,
-		subagentModel: "claude-haiku-5-5",
-		mainModel: "claude-haiku-5-5",
-	}),
+	tierSnippet(
+		{
+			...row,
+			subagentModel: "claude-haiku-5-5",
+			mainModel: "claude-haiku-5-5",
+		},
+		PLATFORM,
+	),
 );
 
 const namesOf = (

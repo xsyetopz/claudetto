@@ -57,9 +57,15 @@ describe("the settings of one run", () => {
 			outputStyle: "claudetto:Concise",
 			...builtinSnippet(),
 		});
-		// The two blocks a fault check can drop, so their presence is the thing worth asserting.
+		// The block a fault check can drop, so its presence is the thing worth asserting.
 		expect(shippedSettings()).toContain('"sandbox"');
-		expect(shippedSettings()).toContain('"autoMode"');
+	});
+
+	test("the shipped arm carries no `autoMode`, because the figures describe an install", () => {
+		// `/claudetto:setup` writes no `autoMode`: its environment facts are readings of this
+		// repository, so an install never holds them (`UNSHIPPED_KEYS` of `tiers/groups.ts`). `just
+		// setup` does write it, and these figures are quoted to the reader of `README.md`.
+		expect(shippedSettings()).not.toContain('"autoMode"');
 	});
 });
 

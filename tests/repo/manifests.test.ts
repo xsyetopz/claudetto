@@ -13,6 +13,11 @@ import {
 	COMPACTION_OPTION,
 	COMPACTION_VALUES,
 } from "../../plugins/claudetto/src/compaction/compaction.ts";
+import observer from "../../plugins/claudetto-you-should-know/.claude-plugin/plugin.json";
+import {
+	DEFAULT_EFFORT,
+	DEFAULT_MODEL,
+} from "../../plugins/claudetto-you-should-know/src/options.ts";
 
 const MANIFEST = join(".claude-plugin", "plugin.json");
 
@@ -36,6 +41,30 @@ describe("the plugin manifest against the resolver", () => {
 		const fallback = plugin.userConfig[COMPACTION_OPTION].default;
 
 		expect(fallback).toBe(AUTO);
+	});
+});
+
+// A `default` in the manifest reaches the hook as the option's value, so the code fallback fires only
+// where the manifest declares none. Where both exist and disagree, the manifest decides and the code
+// constant describes a default nobody gets, which is how `effort` came to say `medium` in the
+// manifest and `high` in the code while both cited the same row of `docs/models.md`.
+describe("the add-on manifest against its own constants", () => {
+	test("the declared effort default is the constant the code falls back to", () => {
+		const declared = observer.userConfig["effort"].default;
+
+		expect(declared).toBe(DEFAULT_EFFORT);
+	});
+
+	test("the declared model default is the constant the code falls back to", () => {
+		const declared = observer.userConfig["model"].default;
+
+		expect(declared).toBe(DEFAULT_MODEL);
+	});
+
+	test("the declared effort list is the five levels the code accepts", () => {
+		const declared = observer.userConfig["effort"].options;
+
+		expect(declared).toEqual(["low", "medium", "high", "xhigh", "max"]);
 	});
 });
 

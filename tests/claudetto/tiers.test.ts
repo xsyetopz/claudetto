@@ -21,6 +21,9 @@ import {
 } from "../../plugins/claudetto/src/tiers/tiers.ts";
 import { describedTools } from "../../plugins/claudetto/src/tools/tools.ts";
 
+// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+const PLATFORM = "darwin";
+
 const envOf = (snippet: TierSnippet): Record<string, Node> => {
 	const env = snippet["env"];
 	return typeof env === "object" ? { ...env } : {};
@@ -75,7 +78,7 @@ describe("the tier table", () => {
 
 	test("a row writes its models and its effort to the keys they belong to", () => {
 		for (const row of TIERS) {
-			const snippet = tierSnippet(row);
+			const snippet = tierSnippet(row, PLATFORM);
 
 			expect(envOf(snippet)).toHaveProperty(
 				"CLAUDE_CODE_SUBAGENT_MODEL",
@@ -92,13 +95,16 @@ describe("the tier table", () => {
 			throw new Error("the table has no row");
 		}
 
-		const snippet = tierSnippet({
-			tier: base.tier,
-			subagentCap: base.subagentCap,
-			contextCap: base.contextCap,
-			handoffTokens: base.handoffTokens,
-			haiku: base.haiku,
-		});
+		const snippet = tierSnippet(
+			{
+				tier: base.tier,
+				subagentCap: base.subagentCap,
+				contextCap: base.contextCap,
+				handoffTokens: base.handoffTokens,
+				haiku: base.haiku,
+			},
+			PLATFORM,
+		);
 
 		expect(envOf(snippet)).not.toHaveProperty("CLAUDE_CODE_SUBAGENT_MODEL");
 		expect(snippet).not.toHaveProperty("model");
@@ -110,7 +116,7 @@ describe("the tier table", () => {
 	// stock run, and no case noticed.
 	test("every row writes the deny list, the two prompt surfaces, and the two guarded blocks", () => {
 		for (const row of TIERS) {
-			const snippet = tierSnippet(row);
+			const snippet = tierSnippet(row, PLATFORM);
 
 			expect(snippet).toHaveProperty("permissions");
 			expect(snippet).toHaveProperty("agent");
@@ -123,8 +129,8 @@ describe("the tier table", () => {
 	// The two guarded blocks are dropped when a fault check finds a fault, and the sandbox check reads
 	// the platform, so without this case their coverage would differ by machine.
 	test("the two guarded blocks are clean on every platform, so a row writes them anywhere", () => {
-		expect(snippetFaults()).toEqual([]);
 		for (const platform of ["darwin", "linux", "win32"]) {
+			expect(snippetFaults(platform)).toEqual([]);
 			expect(sandboxFaults(sandboxSnippet(), platform)).toEqual([]);
 		}
 	});
@@ -135,7 +141,10 @@ describe("the tier table", () => {
 			throw new Error("the table has no row");
 		}
 
-		const snippet = tierSnippet({ ...base, subagentModel: "claude-haiku-5-5" });
+		const snippet = tierSnippet(
+			{ ...base, subagentModel: "claude-haiku-5-5" },
+			PLATFORM,
+		);
 
 		expect(envOf(snippet)).toHaveProperty(
 			"CLAUDE_CODE_SUBAGENT_MODEL",
@@ -178,7 +187,7 @@ describe("a Haiku session stays under the price step", () => {
 	test("the trigger of each row fires below the step, with the margin it leaves", () => {
 		for (const row of TIERS) {
 			const pct = Number(
-				envOf(tierSnippet(row))["CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"],
+				envOf(tierSnippet(row, PLATFORM))["CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"],
 			);
 
 			const fires = compactAt(row.haiku.contextCap, pct);
@@ -195,7 +204,7 @@ describe("a Haiku session stays under the price step", () => {
 			throw new Error("the table has no row");
 		}
 
-		const snippet = tierSnippet(row);
+		const snippet = tierSnippet(row, PLATFORM);
 
 		expect(snippet["modelSettings"]).toEqual({
 			[HAIKU_MODEL]: { autoCompactWindow: row.haiku.contextCap },

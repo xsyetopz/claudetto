@@ -6,9 +6,14 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { file, spawn } from "bun";
-import { parseArgs, planSetup, refusedPaths, settingsText } from "../setup.ts";
+import { refusedPaths } from "../keys.ts";
+import { settingsText } from "../merge.ts";
+import { parseArgs, planSetup } from "../setup.ts";
 import { tierSnippet } from "../snippet.ts";
 import { TIERS } from "../tiers.ts";
+
+// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+const PLATFORM = "darwin";
 
 const MAX_20X = {
 	oauthAccount: { organizationRateLimitTier: "default_claude_max_20x" },
@@ -49,7 +54,7 @@ describe("planSetup", () => {
 	test("a tier with no row plans no write", () => {
 		const state = { oauthAccount: { organizationType: "claude_team" } };
 
-		const plan = planSetup(state, {});
+		const plan = planSetup(state, {}, PLATFORM);
 
 		expect(plan.write).toBeUndefined();
 	});
@@ -57,7 +62,7 @@ describe("planSetup", () => {
 	test("a tier with no row says so", () => {
 		const state = {};
 
-		const plan = planSetup(state, {});
+		const plan = planSetup(state, {}, PLATFORM);
 
 		expect(plan.report).toContain("none");
 	});
@@ -65,7 +70,7 @@ describe("planSetup", () => {
 	test("a value the user set stays in the merged settings", () => {
 		const current = { autoCompactWindow: 123 };
 
-		const plan = planSetup(MAX_20X, current);
+		const plan = planSetup(MAX_20X, current, PLATFORM);
 
 		expect(plan.write?.["autoCompactWindow"]).toBe(123);
 	});
@@ -73,7 +78,7 @@ describe("planSetup", () => {
 	test("a value the user set is reported as skipped", () => {
 		const current = { autoCompactWindow: 123 };
 
-		const plan = planSetup(MAX_20X, current);
+		const plan = planSetup(MAX_20X, current, PLATFORM);
 
 		expect(plan.report).toContain("Skipped autoCompactWindow");
 	});
@@ -89,7 +94,7 @@ describe("refusedPaths", () => {
 	});
 
 	test("no tier row writes a refused key", () => {
-		const snippets = TIERS.map(tierSnippet);
+		const snippets = TIERS.map((row) => tierSnippet(row, PLATFORM));
 
 		const paths = snippets.flatMap(refusedPaths);
 

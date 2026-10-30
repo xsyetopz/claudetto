@@ -18,6 +18,13 @@ After each update, do the steps in the "Update" section of the README.
   Before, `onPermission` answered `allow` for every such input, which approved each `WebFetch`, each MCP call, and each `Skill` call that reached the prompt, none of which any rule of ours had read.
   The gated keys are `command`, `file_path`, `notebook_path`, `path`, `pattern`, and `glob` (`plugins/claudetto/src/gate/gate.ts:55`), so a `Bash`, `Read`, `Edit`, `Write`, `Glob`, `Grep`, or `Monitor` call still gets the verdict of the gate.
   `tool.check` is unchanged, so allow-by-default still holds for a call that no rule of ours matches.
+- The supported Claude Code version is `2.1.314`, up from `2.1.312` (the user, 2026-10-30: "if using 2.1.314 items, bump to minimum 2.1.314 for the plugin").
+  `/claudetto:setup` rests on readings taken from the `2.1.314` docs: that a `command.run` hook answering `{ text }` answers in place of the command and that omitting `context` leaves the model nothing to read, and that `$.fs.write` writes "to a file, creating it and its directories as needed", so the command needs no `mkdir` where `setup.ts` does.
+  `MIN_CLAUDE_CODE_VERSION`, the `ci` workflow, `README.md`, and `CONTRIBUTING.md` all declare it, and `just claude-version` moves them together.
+- `README.md` is rewritten for the `0.0.0` tree, in the conventional order: Features, Requirements, Install, Setup, What the Core Plugin Changes, Plugins, Configuration, Handoff, Update, Development, License (the user, 2026-10-30: "conventional README.md").
+  The requirements are now Claude Code and `git` alone, because setup runs inside Claude Code, and `bun` and `just` are named as development tools.
+  A `settings.read` hook that would answer the settings in place of a file was built and dropped on a measurement: `just capture --arm plugin` read 61,353 characters and 12 tool schemas with the hook and no settings file, against 31,861 and 9 with the file, and the engine logged `an answer without deniedMcpServers: unset for the reader`, so the readers that build the first request do not take its answer.
+  A plugin's own `settings` key reaches only `agent` and `subagentStatusLine`, so a real settings file is the one measured way to deliver permissions, environment variables, and models.
 - A handoff that Claude wrote itself is kept, and the code-built file steps aside (task 2.3a).
   `classic.SessionEnd` and `classic.PreCompact` now skip the code-built write when a writing tool in the session's own transcript wrote a path under `.claude/claudetto/handoffs` (`wroteOwn`, `plugins/claudetto/src/handoff.ts:198`).
   The headings of the file are not read, so any write under that folder counts as Claude's own.
@@ -31,6 +38,22 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Added
 
+- `/claudetto:setup` writes the settings from inside Claude Code, so setup needs no checkout of this repository, no `bun`, and no `just` (the user, 2026-10-30: "it will ask what to keep, meaning the rest get discarded, upon lightweight setup command").
+  It asks which of the three groups of `plugins/claudetto/src/tiers/groups.ts` to keep, through one `$.ui.ask` dialog, and writes only those keys: a group discarded writes none of its keys, and a value already set keeps the user's value.
+  The keys are grouped because `$.ui.ask` takes two to four option labels and the snippet sets 13 top-level keys; `permissions.deny` sits with the two `builtinSnippet` switches in one group because `snippet.ts` ships it only with them.
+  The command writes no `autoMode`, whatever the answer, because `autoMode.environment` is the readings of this repository (`plugins/claudetto/src/automode/environment.ts:1`, "the `autoMode.environment` facts of this project"): the `xsyetopz` remote, `plugins/claudetto/` as the product, and one macOS workstation.
+  The auto-mode classifier reads those as the environment of whoever holds the settings file and decides from them whether a command runs without asking, so writing them into a stranger's settings would feed a permission decision facts that are false for that machine.
+  Nothing measured is lost: the `allow`, `soft_deny`, and `hard_deny` lists are `$defaults` alone, and keeping all three groups reads the same 31,909 characters as the full snippet, because the classifier reads the key later and not in the first request.
+  `just setup` still writes it, because it runs inside this checkout, and `tools/capture/settings.ts` now measures what the command writes rather than what `just setup` writes, since the figures are quoted in `README.md`.
+  A `command.run` hook answers the command in code and returns `text` with no `context`, so the person reads the report and the model reads nothing of it: running it costs the session no tokens.
+  What it does cost is its row in the command listing. `just capture --arm plugin --shipped` read 31,909 characters against 31,861 with no command, so the row is 48 characters, all in `messages`, and the description in `commands/setup.md` is one short sentence because the first wording of it read 31,961.
+  A hook that throws is skipped, which would send the body of `commands/setup.md` to the model as a prompt, so a failed read or write is reported in `text` instead.
+  `just setup` is unchanged and still does the same work from a checkout.
+- `tests/repo/prompt-budget.test.ts` holds the one byte budget that `specs/prompt-footprint/spec.md` fixes a number for, which nothing checked before: the body of `agents/main.md` against the 5,627 characters of the default body it replaces, failing with the piece, its size, and its budget as the spec asks.
+  The budget is of the body after the frontmatter, because the frontmatter does not reach the prompt: the body is 5,574 characters where the whole file is 5,648, and `just capture --arm plugin --shipped` reads `system[2]` as 5,572 against 5,818 for `--arm plain`, so the replacement is a net 246 characters.
+  No budget is invented for the other three pieces, since the spec records that no value is derived for them yet.
+- `just claude-version` prints the supported Claude Code version with every line that declares it, and a version argument moves all of them (`just claude-version 2.1.315`).
+  `tools/claude-version.ts` holds a fixed table of the four declaring sites and fails when a row does not match exactly once, rather than searching the tree, because the version also appears in readings such as "read against `2.1.312`" and rewriting one of those would claim a reading nobody took.
 - A handoff holds no secret: a key, a token, or a value after a sensitive name is written as `[REDACTED]` (task 2.10).
   `redact` runs over the text of each user message, so the list of the user's values is clean, and over the whole assembled file, so a secret in a tool call or its result goes as well. The code-compacted head takes the same pass, because it stays in the context of each later resume.
   Each pattern is transcribed from the detector table of Claude Code `2.1.312` in `chunk-45pm9m17.js`: 41 key formats, the private key block, the 4 loose formats, and the 2 assignment entries. None is written from memory.
@@ -50,6 +73,17 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- The budget line no longer rides every prompt.
+  `onSubmitBudget` added `Budget: context 62% left, five-hour 23.5% used, seven-day 41% used` to the `context` of every `prompt.submit` whenever the engine had usage to read, and the context figure moves every turn, so the line was paid for on every turn of every session.
+  `specs/prompt-footprint/spec.md` forbids exactly that ("No Per-Message Injection": "The system MUST NOT add text on every user message"), and its Quiet Turn scenario asks for no text while the bands have not changed, so `budgetBand` now cuts each of the three readings to a step of 10 percent and the hook speaks only when that band differs from the one it last spoke for.
+  The band is kept in `$.state` through `changeLedger`, as the other counts of `run-limits/` are, so two prompts submitted together cannot both read the old band and both speak.
+  The exact percentages stay in the text: the band decides whether to speak, not what to say.
+- `DEFAULT_EFFORT` of `claudetto-you-should-know` was `high` while the manifest declared `medium`, and both cited the same row of `docs/models.md:15`, which says `medium`.
+  A `default` in the manifest reaches the hook as the option's value, so the code fallback never fired and the constant described a default nobody got.
+  The constant is `medium` now, and `tests/repo/manifests.test.ts` pins the declared default, the declared model, and the declared effort list against the code, because nothing compared them before.
+- `src/automode/automode.ts` and `src/sandbox/sandbox.ts` each imported `node:path`, which a hooks module has not got, so the first hook file to reach either of them stopped the whole module from loading: 125 of the 133 lab tests failed at once with `cannot import "node:path"`.
+  Both held a byte-identical `join(configDir, "settings.json")`, and that one function now lives in `plugins/claudetto/src/settings-file.ts` as plain string work.
+  Nothing caught this before, because no file the hooks module loaded had imported them yet.
 - The Layout and Changelog sections of `CONTRIBUTING.md` described a tree that the slices replaced.
   They named the kernel in `kernel/`, one folder per module in `modules/`, the hooks module `hooks/register.ts`, and `tests/claudetto/<module>/`, and they told a contributor to change a version with `just bump`, whose recipe and `tools/bump-version.ts` are both gone.
   The four manifests that carry the version are named instead, and the merge into `main` is the release (commit `c74e4dc6`).

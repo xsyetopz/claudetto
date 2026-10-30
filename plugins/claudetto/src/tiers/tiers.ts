@@ -86,9 +86,15 @@ const SHARED = {
 	describeSet: describedTools(),
 };
 
+const PRO: TierRow = {
+	tier: "claude_pro",
+	subagentCap: PLAN_CAPS.claude_pro,
+	...SHARED,
+};
+
 /** The rows for Pro, Max 5x, and Max 20x. They differ only in `subagentCap`, because the rest is `SHARED`. */
 export const TIERS: readonly TierRow[] = [
-	{ tier: "claude_pro", subagentCap: PLAN_CAPS.claude_pro, ...SHARED },
+	PRO,
 	{
 		tier: "default_claude_max_5x",
 		subagentCap: PLAN_CAPS.default_claude_max_5x,
@@ -100,6 +106,18 @@ export const TIERS: readonly TierRow[] = [
 		...SHARED,
 	},
 ];
+
+/**
+ * The row the `command.run` hook of `hooks.ts` composes its snippet from. Any row would do: every
+ * field `tierSnippet` reads comes from `SHARED`, and `subagentCap`, the one field the rows tell
+ * apart, is written to no key and enforced by the `agent.spawn` hook of `run-limits/` instead. So
+ * the hook needs no plan reading, and the plan of the login cannot be read from a hooks module
+ * anyway: `.claude.json` is not settings and no call of a hooks module reaches it.
+ *
+ * `tests/claudetto/tiers.test.ts` checks that every row gives this row's snippet, so a later row
+ * that splits a written key by plan fails there rather than serving the wrong plan from here.
+ */
+export const SNIPPET_ROW: TierRow = PRO;
 
 /** The row of `tier`, or none when the table has no such row. */
 export const rowFor = (tier: string): TierRow | undefined =>

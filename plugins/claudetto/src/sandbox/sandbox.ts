@@ -2,8 +2,8 @@
 // key names are checked against the installed program by `src/sandbox/__tests__/sandbox.spec.ts`. The
 // faults of a snippet are in `faults.ts`.
 
-import { join } from "node:path";
 import { type Kind, SETTING } from "../keys.ts";
+import { settingsFileIn } from "../settings-file.ts";
 
 /**
  * Where setup writes `sandbox`: the user settings file, which is the one scope setup owns for this
@@ -13,12 +13,9 @@ import { type Kind, SETTING } from "../keys.ts";
  */
 export const SANDBOX_TARGET = "user";
 
-/** The file name of the user settings inside the config directory. */
-const SETTINGS_FILE = "settings.json";
-
 /** The path of the target file under `configDir`, which is `~/.claude` on a default login. */
 export const sandboxTargetFile = (configDir: string): string =>
-	join(configDir, SETTINGS_FILE);
+	settingsFileIn(configDir);
 
 const ROUTE = "configure/permissions/sandbox";
 

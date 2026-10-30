@@ -1,10 +1,14 @@
 // The budget line at `prompt.submit`: the context left and the share of each rate-limit window used,
 // as one line in the `context` of the prompt. A reading the login does not supply is left out of the line.
+//
+// The line enters only when the band of the usage changed, which is the Quiet Turn scenario of
+// `specs/prompt-footprint/spec.md`. Each run below starts with a fresh state, so the first prompt of
+// a test is always a change and speaks.
 
 import type { On, SessionUsage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { BUDGET_LINE_MAX_CHARS } from "../../src/cuts.ts";
-import { budgetLine } from "../../src/run-limits/budget.ts";
+import { budgetBand, budgetLine } from "../../src/run-limits/budget.ts";
 
 const ALL: Pick<SessionUsage, "context" | "rateLimits"> = {
 	context: { tokens: 76_000, window: 200_000, percent: 38 },
@@ -67,6 +71,58 @@ test("the line stays one short line however many windows the engine reports", ()
 	expect(line?.includes("\n")).toBe(false);
 	expect(line?.length).toBeLessThanOrEqual(80);
 	expect(line).not.toContain("spend");
+});
+
+test("a second prompt inside the same band adds no line", async ($: Engine, on: On) => {
+	lab(on, ALL);
+
+	await $.prompt.submit(PROMPT);
+	const second = await $.prompt.submit(PROMPT);
+
+	expect(second.context ?? []).toEqual([]);
+});
+
+test("a prompt that crossed a band speaks again", async ($: Engine, on: On) => {
+	let usage = ALL;
+	on("prompt.submit", (_$, e) => e);
+	on("session.usage", () => ({ value: { startedAt: 0, ...usage } }));
+
+	await $.prompt.submit(PROMPT);
+	usage = {
+		...ALL,
+		context: { tokens: 150_000, window: 200_000, percent: 75 },
+	};
+	const after = await $.prompt.submit(PROMPT);
+
+	expect(after.context ?? []).toEqual([
+		"Budget: context 25% left, five-hour 23.5% used, seven-day 41% used",
+	]);
+});
+
+test("a reading that moved inside its own band is the same band", () => {
+	const band = budgetBand(ALL);
+	const moved = budgetBand({
+		...ALL,
+		context: { tokens: 78_000, window: 200_000, percent: 39 },
+	});
+
+	expect(moved).toBe(band);
+});
+
+test("a reading that crossed a step is another band", () => {
+	const band = budgetBand(ALL);
+	const crossed = budgetBand({
+		...ALL,
+		context: { tokens: 58_000, window: 200_000, percent: 29 },
+	});
+
+	expect(crossed).not.toBe(band);
+});
+
+test("a reading the login does not supply is one band and not a number", () => {
+	const band = budgetBand({ context: { window: 200_000 }, rateLimits: [] });
+
+	expect(band).toBe("-/-/-");
 });
 
 test("the widest line is the character cost recorded with the cuts", () => {

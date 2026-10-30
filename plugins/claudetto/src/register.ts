@@ -31,6 +31,7 @@ import {
 	onStop,
 	onSubmitBudget,
 } from "./run-limits/hooks.ts";
+import { onSetupCommand, SETUP_COMMAND } from "./tiers/hooks.ts";
 import { describedTools, shorterText } from "./tools/tools.ts";
 import { onMeasure, onTurnComplete, onTurnStart } from "./window/hooks.ts";
 
@@ -197,6 +198,10 @@ export const register = (on: On, options: PluginOptions): void => {
 	// `session.start` declares `mcp__claudetto__decide` and `tool.call` serves it. The filter keeps
 	// every other call, `AskUserQuestion` among them, out of the hook, so that dialog reaches the user.
 	keepOptions(options);
+	// Setup, with no checkout and no `bun`: the command asks which groups of keys to keep and writes
+	// them to the user settings file. It answers `{ text }` and leaves `context` out, so the person
+	// reads the report and the model reads nothing of it, which costs the session no tokens.
+	on("command.run", { command: SETUP_COMMAND }, onSetupCommand);
 	on("session.start", onSessionStart);
 	on("tool.call", DECIDE_MATCH, onDecide);
 	// A shorter description for a few tools, and only while it is shorter. The chain runs

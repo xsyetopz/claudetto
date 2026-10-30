@@ -5,7 +5,7 @@ import type { EngineInterface, HookFor } from "claude-code";
 import { keptOptions } from "../jev/options.ts";
 import { readTier } from "../tiers/read.ts";
 import { tasksText } from "./background.ts";
-import { budgetLine } from "./budget.ts";
+import { budgetBand, budgetLine } from "./budget.ts";
 import { withFailure } from "./failures.ts";
 import { changeLedger } from "./ledger.ts";
 import { type Limits, limitsOf } from "./settings.ts";
@@ -109,10 +109,16 @@ export const onFailed: HookFor<"classic.PostToolUseFailure"> = async (
 
 // The hooks that report the background tasks still in flight and the budget left.
 
-/** The budget line of the live session, or none when the engine has no usage to read. */
-const budgetOf = async ($: EngineInterface): Promise<string | undefined> => {
+const bandRef = { plugin: "claudetto", key: "band" } as const;
+
+/** The usage of the live session, or none when the engine has none to read. */
+const usageOf = async (
+	$: EngineInterface,
+): Promise<
+	Awaited<ReturnType<EngineInterface["session"]["usage"]>> | undefined
+> => {
 	try {
-		return budgetLine(await $.session.usage());
+		return await $.session.usage();
 	} catch {
 		return undefined;
 	}
@@ -139,12 +145,34 @@ export const onStop: HookFor<"classic.Stop"> = async (_$, e, next) => {
 
 /**
  * `prompt.submit`: puts the line of the budget left (`budget.ts`) beside the prompt, so it rides the
- * request the prompt already costs and is read anew for each prompt. It adds nothing when the engine
- * has no usage to read.
+ * request the prompt already costs.
+ *
+ * It adds nothing when the engine has no usage to read, and nothing while the band of that usage is
+ * the one a line was last sent for, because `specs/prompt-footprint/spec.md`, "No Per-Message
+ * Injection", forbids text on every user message and its Quiet Turn scenario asks for silence while
+ * the bands have not changed. Before this, the line carried exact percentages and the context figure
+ * moves every turn, so the hook spoke on every prompt of every session.
+ *
+ * The band is kept in `$.state` through `changeLedger`, as the other counts of this folder are, so
+ * two prompts submitted together cannot both read the old band and both speak. A state fault leaves
+ * the line out rather than sending it, because a line nobody asked for is the cost this guards.
  */
 export const onSubmitBudget: HookFor<"prompt.submit"> = async ($, e, next) => {
-	const line = await budgetOf($);
+	const usage = await usageOf($);
+	const line = usage === undefined ? undefined : budgetLine(usage);
+	if (usage === undefined || line === undefined) {
+		return next(e);
+	}
+	const band = budgetBand(usage);
+	const speak = await changeLedger<string, boolean>(
+		{
+			held: () => $.state.get(bandRef),
+			save: async (next_, version) =>
+				(await $.state.set(bandRef, next_, { ifVersion: version })).isSet,
+		},
+		(held) => ({ next: band, out: held !== band }),
+	);
 	return next(
-		line === undefined ? e : { ...e, context: [...(e.context ?? []), line] },
+		speak === true ? { ...e, context: [...(e.context ?? []), line] } : e,
 	);
 };

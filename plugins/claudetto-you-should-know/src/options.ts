@@ -12,8 +12,14 @@ import type { ModelEffort, PluginOptions } from "claude-code";
  */
 export const DEFAULT_MODEL = "claude-haiku-5-5";
 
-/** The effort of the row of `docs/models.md:15`, and the fallback for an effort that is not a level. */
-export const DEFAULT_EFFORT: ModelEffort = "high";
+/**
+ * The effort of the row of `docs/models.md:15`, which is `medium`, and the fallback for an effort
+ * that is not a level. It must stay the `default` the manifest declares, because that default
+ * reaches the hook as the option's value and the fallback below never fires: this constant said
+ * `high` while the manifest said `medium`, so it described a default nobody got.
+ * `tests/repo/manifests.test.ts` pins the two together.
+ */
+export const DEFAULT_EFFORT: ModelEffort = "medium";
 
 const EFFORTS: readonly ModelEffort[] = [
 	"low",

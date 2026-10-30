@@ -35,6 +35,10 @@ export interface Applied {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+/** The settings file text: 2-space indentation and a final newline. It lives here, with no `node:` import above it, so the setup command of `hooks.ts` can write the same text `setup.ts` writes. */
+export const settingsText = (settings: Json): string =>
+	`${JSON.stringify(settings, undefined, 2)}\n`;
+
 interface Leaf {
 	readonly path: readonly string[];
 	readonly value: unknown;
