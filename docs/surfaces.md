@@ -127,7 +127,7 @@ active instructions ask for it. `ScheduleWakeup` is the one of the three that a 
 it arms the autonomous `/loop` and the session crons that `session_crons` of the `Stop` input
 reports. It is denied anyway, because the archived snippet also set `CLAUDE_CODE_DISABLE_CRON=1`, so
 the two agree, and because claudetto's own goal loop does not call it: a search of the installed
-`claudetto 0.4.0-alpha.2` finds the name only in its own deny list. A user who wants `/loop` drops
+`claudetto` finds the name only in its own deny list. A user who wants `/loop` drops
 this one name and pays 4,632 characters a session for it.
 
 Two names of the archived snippet are dropped here, each on its own reading. `DesignSync` is a
@@ -296,8 +296,8 @@ What the rows settle:
   337 beside the other switch, because `cc-plugin-claude-platform` offers its own `/claude-api` only
   while no bundled skill holds that name (`clawdipedia` route
   `extend/skills-and-commands/bundled-skills`).
-- Plugin skills survive the switch, which is the capability question. The installed claudetto
-  `0.4.0-alpha.2`, which ships ten skills, was run against the fake API with and without the key.
+- Plugin skills survive the switch, which is the capability question. The installed claudetto of
+  2026-10-30, which ships ten skills, was run against the fake API with and without the key.
   `claudetto:dedupe` and `claudetto:find-docs`, the two of the ten the model may call, are listed in
   both arms while every bundled name left, and the request fell 38,707 to 33,131, the same 5,576.
 - The `dedupe` skill costs 229 characters of request, 24,378 against 24,607 read minutes apart.

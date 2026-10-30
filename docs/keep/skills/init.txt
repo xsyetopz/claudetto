@@ -4,7 +4,7 @@ DOES: Initializes a new `CLAUDE.md` file with codebase documentation.
 SOURCE: route `prompts/built-in-skills`, section `init`
 LISTING COST: `22` tokens of the `2,210` tokens of the built-in skills listing (route `how-it-works/context-budget`, the per-skill table under "`Skill` brings the skills listing")
 MODEL CAN CALL IT: not measured  (the page of route `extend/skills-and-commands/bundled-skills` does not state `disable-model-invocation` for it)
-CLAUDETTO NEEDS IT FOR: nothing found. `/claudetto:setup` writes the claudetto part of a `CLAUDE.md` itself (`CHANGELOG.md:644`).
+CLAUDETTO NEEDS IT FOR: nothing found. `/claudetto:setup` merges a settings snippet only (`plugins/claudetto/src/tiers/setup.ts:67`) and writes no `CLAUDE.md`.
 PROS:
 - Stays after `disableBundledSkills`.
 - One-line description in the listing (section `init`).

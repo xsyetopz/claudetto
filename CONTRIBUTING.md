@@ -36,8 +36,9 @@ Tests give commands to the guards as strings and never run a guarded command.
 
 ## Changelog
 
-Add an entry under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md).
-Set the same version in `package.json`, `plugins/claudetto/.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json`.
+Add an entry under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md), opening that section above the newest release when it is absent.
+Set the same version in all four manifests: `package.json`, `.claude-plugin/marketplace.json`, `plugins/claudetto/.claude-plugin/plugin.json`, and `plugins/claudetto-you-should-know/.claude-plugin/plugin.json`.
+`just validate` fails when they disagree, through `tools/manifests.ts`.
 The merge into `main` is the release, and no tag is cut.
 
 ## Conduct and Security

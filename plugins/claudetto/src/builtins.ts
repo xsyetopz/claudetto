@@ -175,7 +175,7 @@ export const BUILTIN_CHARS = 5913;
  * Whether a plugin skill survives the bundled-skill switch, which is the capability question, because
  * claudetto ships its own skills and a switch that took them too would be a loss and not a cut.
  *
- * Measured on 2026-10-30 by running the installed claudetto `0.4.0-alpha.2`, which ships ten skills,
+ * Measured on 2026-10-30 by running the installed claudetto, which ships ten skills,
  * against the fake Messages API with and without the key: `claudetto:dedupe` and `claudetto:find-docs`
  * are listed in both arms, the two of the ten that the model may call, while every bundled name left.
  * The request fell 38,707 to 33,131, the same 5,576 as the other two arms read.

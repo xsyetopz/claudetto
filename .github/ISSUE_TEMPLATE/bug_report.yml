@@ -14,7 +14,7 @@ body:
     id: plugin
     attributes:
       label: Plugin and version
-      description: The plugin name and its version, for example `claudetto` 0.28.0.
+      description: The plugin name and its version, for example `claudetto` 0.0.0.
     validations:
       required: true
   - type: textarea

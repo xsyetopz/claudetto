@@ -12,4 +12,4 @@ CONS:
 - Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
 - `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
 RECOMMENDATION: drop
-WHY: Nothing found depends on it. Claudetto manages `CLAUDE.md` through `/claudetto:setup` (`CHANGELOG.md:644`). Gated by an `isEnabled` check (row).
+WHY: Nothing found depends on it. `/claudetto:setup` merges a settings snippet only (`plugins/claudetto/src/tiers/setup.ts:67`) and manages no `CLAUDE.md`. Gated by an `isEnabled` check (row).

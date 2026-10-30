@@ -4,9 +4,9 @@ DOES: Does the open tasks of a change in `openspec/changes/<name>/tasks.md`, and
 SOURCE: `archive/plugins/claudetto/skills/apply/SKILL.md:3`
 LISTING COST: 194 bytes (the whole `description:` line, key included, without the newline)
 MODEL CAN CALL IT: no  (`disable-model-invocation: true` at `archive/plugins/claudetto/skills/apply/SKILL.md:4`)
-CLAUDETTO NEEDS IT FOR: The `finish` module counts a session as an apply session from the command tag or a `Skill` call of `claudetto:apply` (`archive/plugins/claudetto/modules/work/finish/domain/record.ts:54`, `:56`, `:63`), and the `Stop` block runs only in such a session (`archive/plugins/claudetto/modules/work/finish/adapters/mod.ts:3`, `CHANGELOG.md:323`).
+CLAUDETTO NEEDS IT FOR: The `finish` module counts a session as an apply session from the command tag or a `Skill` call of `claudetto:apply` (`archive/plugins/claudetto/modules/work/finish/domain/record.ts:54`, `:56`, `:63`), and the `Stop` block runs only in such a session (`archive/plugins/claudetto/modules/work/finish/adapters/mod.ts:3`).
 PROS:
-- Its run is the signal that arms the `Stop` block and the box hook (`CHANGELOG.md:323`).
+- Its run is the signal that arms the `Stop` block and the box hook (`archive/plugins/claudetto/modules/work/finish/adapters/mod.ts:3`).
 - Ticks a task only after its check passes (its own description).
 CONS:
 - Its `description:` line is 194 bytes in the listing of every session unless `name-only` applies. Listing rules are in routes `extend/skills-and-commands` and `configure/settings/hooks-and-plugins`.

@@ -4,7 +4,7 @@ DOES: Finds duplicate code with `jscpd` and decides which clones to merge. Use a
 SOURCE: `plugins/claudetto/skills/dedupe/SKILL.md:3`
 LISTING COST: 151 characters (the whole `description:` line, key included, without the newline)
 MODEL CAN CALL IT: yes  (no `disable-model-invocation:` key in the frontmatter of `plugins/claudetto/skills/dedupe/SKILL.md`, lines 1 to 4)
-CLAUDETTO NEEDS IT FOR: nothing found. `.jscpd.json` is the project config the skill runs `jscpd` with, and `CHANGELOG.md:276` says the skill runs `jscpd` with the project config.
+CLAUDETTO NEEDS IT FOR: nothing found. `.jscpd.json` is the project config the skill runs `jscpd` with, and `plugins/claudetto/skills/dedupe/SKILL.md:23` says the claudetto skill reads that config.
 PROS:
 - Uses `jscpd` with the project config to decide which clones to merge.
 - The model can reach it after a change that copies code.
