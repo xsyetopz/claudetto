@@ -5,22 +5,22 @@ export const AGENT_ROSTER =
 	"Use `Artemis` when the product is a list of places across many files, `Athena` when it is a verdict on a diff, `Hephaestus` when it is an edit whose goal, files, and check you can name, and `Hermes` when it is an answer from the web. Every other task is your own work.";
 
 const AGENT = `Start an agent for a multi-step task.
-\`subagent_type\` picks the agent, and the \`<system-reminder>\` list names the types; each type sets its own model, effort, and tools, so pick a type in place of a \`model\`.
+\`subagent_type\` picks the agent, and the \`<system-reminder>\` list names the types; a type sets its own model, effort, and tools, so pick a type, not a \`model\`.
 ${AGENT_ROSTER}
-Use it when the reads would fill your context, or when independent work can run in parallel. Do a small task yourself, and never delegate a check you can run inline.
+Use it when the reads would fill your context or independent work can run in parallel. Do a small task yourself, and never delegate a check you can run inline.
 The brief is the only context the agent gets: give the goal, what you ruled out, the paths to read, the report format, and the scope. Ask for bulk output in a file.
-The user never sees the agent's report, so relay what matters. \`isolation: "worktree"\` gives it its own git worktree. An agent runs in the background and notifies you when it ends, so report its result only after that notification, and say that it still runs when the user asks first.`;
+The user never sees the agent's report, so relay what matters. \`isolation: "worktree"\` gives it its own git worktree. An agent runs in the background and notifies you when it ends: report its result only then, and say it still runs if the user asks first.`;
 
 const BASH = `Runs a bash command and returns its output.
 - Use \`Read\`, \`Edit\`, \`Write\`, and the search tools in place of \`cat\`, \`head\`, \`tail\`, \`sed\`, \`awk\`, and \`echo\`, unless the user asks for the command.
 - \`cd\` carries to the next call only in the main session, and only when the command succeeds inside the working directories, so prefer an absolute path. Env vars and shell functions do not carry.
-- The output reaches you and not reliably the user.
+- The output reaches you, not reliably the user.
 - \`timeout\` is in milliseconds: 120000 by default and 600000 at most in the foreground.
 - \`run_in_background: true\` detaches the command and calls you back when it exits, with \`timeout\` up to 7200000. No \`&\` is needed, and a foreground \`sleep\` is blocked.
 - An interactive flag such as \`git rebase -i\` does not work here. Use \`gh\` for GitHub.
 - Commit or push only when the user asks, and branch first on the default branch.
-- A bare \`@name\` in a pull request or an issue notifies that login, so put a role or a package in backticks.
-- End a commit message or a pull request body with the attribution lines of the system reminder when it has them.`;
+- A bare \`@name\` in a pull request or an issue notifies that login: put a role or a package in backticks.
+- End a commit message or a pull request body with the attribution lines of the system reminder, when it has them.`;
 
 const EDIT = `Replaces an exact string in a file.
 - \`Read\` the file in this conversation first, or the call fails.
@@ -30,8 +30,8 @@ const EDIT = `Replaces an exact string in a file.
 const WRITE = `Writes a file, overwriting one that is already there.
 Use it for a new file, or to replace one you have \`Read\` whole. Overwriting a file you have not \`Read\` fails. For a partial change use \`Edit\`.`;
 
-const LIST_AGENTS = `Lists each agent \`SendMessage\` can reach, one row each and labeled by kind: a subagent you spawned in process, a teammate, another Claude session on this machine, a cloud session of yours when this session has cloud access, and, when Remote Control is connected here, your account's other sessions, on other machines and in the cloud. A cloud session takes your message and cannot send one back yet, so read its answer in its own transcript rather than asking it to reply.
-A row's name is the address, copied exactly as printed: \`SendMessage({to: "<name>", message: "..."})\`. Add its \` [ref]\` only when the bare name is not enough, because two rows share it or an error asks you to disambiguate.`;
+const LIST_AGENTS = `Lists each agent \`SendMessage\` can reach, one row each, labeled by kind: a subagent you spawned, a teammate, another Claude session on this machine, a cloud session of yours, and, with Remote Control connected, your account's other sessions on other machines and in the cloud. A cloud session takes your message but cannot reply yet, so read its answer in its own transcript.
+A row's name is the address, copied exactly as printed: \`SendMessage({to: "<name>", message: "..."})\`. Add its \` [ref]\` only when two rows share the name or an error asks you to disambiguate.`;
 
 const READ = `Reads a file.
 - \`file_path\` is an absolute path.
@@ -42,13 +42,13 @@ const READ = `Reads a file.
 - Do not re-read a file you just edited: \`Edit\` and \`Write\` fail when the change fails.`;
 
 const SKILL = `Invokes a skill, which is a set of instructions that the user or the project wrote for a kind of task.
-The listing in a \`<system-reminder>\` names each available skill in one line. When a listed skill covers the task, call it first and follow its instructions in place of your own approach. Some skills run in a subagent and return the finished result; one that runs in the background returns the agent name alone and its result arrives later as a task notification, so do not wait on it and do not call it again.
+The listing in a \`<system-reminder>\` names each available skill in one line. When a listed skill covers the task, call it first and follow its instructions in place of your own approach. A skill that runs in a subagent returns the finished result; one in the background returns the agent name alone and its result arrives later as a task notification, so do not wait or call it again.
 - \`skill\` is the exact name of the listing with no leading slash. A plugin skill is \`plugin:skill\`. A directory-scoped skill carries its path, as \`apps/web:deploy\`, and of two names the one whose folder holds your files wins.
 - \`args\` passes arguments through.
-A name that is not in the listing and that the user did not type is not valid, and a built-in command such as \`/help\` is not a skill. When a \`<command-name>\` block is already in this turn, the skill is loaded, so follow it in place of calling again.`;
+A name not in the listing and not typed by the user is not valid, and a built-in command such as \`/help\` is not a skill. When a \`<command-name>\` block is already in this turn, the skill is loaded: follow it, do not call again.`;
 
 const TOOL_SEARCH = `Gets the full schema of a deferred tool, so that you can call it.
-A deferred tool appears by name in a \`<system-reminder>\`; until you fetch it there is no parameter schema and a call fails. This tool matches a query against the deferred list and returns each match as one \`<function>{"description": "...", "name": "...", "parameters": {...}}</function>\` line in a \`<functions>\` block, which is the encoding of the tool list of this prompt. A tool whose schema is in that result is callable like any other.
+A deferred tool appears by name in a \`<system-reminder>\`; until you fetch it there is no parameter schema and a call fails. It matches a query against the deferred list and returns each match as one \`<function>{"description": "...", "name": "...", "parameters": {...}}</function>\` line in a \`<functions>\` block; a tool whose schema is there is callable like any other.
 Query forms:
 - \`select:Read,Edit,Grep\` gets these tools by name.
 - \`notebook jupyter\` searches by words, for at most \`max_results\` tools.

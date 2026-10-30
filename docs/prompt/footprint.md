@@ -207,11 +207,11 @@ that ships, and for a tool to agree with the stock reading it cites, and nothing
 | --- | --- | --- | --- | --- |
 | `agents/main.md` | file | 5,680 | `request JSON` | The default body as the request carries it: 5,628 characters in the `system` blocks of the no-agent-file arm above, plus the 52 characters it escapes, both from the dumped request of 2026-10-29 |
 | `output-styles/Concise.md` | file | 1,540 | `characters` | The built-in `Concise` style it stands in for, 1,540 in `messages[1]` (`docs/prompt/overrides.md`) |
-| `Agent` | tool text | 2,906 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/tools/tools.ts:32`) |
-| `Bash` | tool text | 1,267 | `characters` | The stock description it replaces, the smaller of docs 1,934 and capture 1,267 |
-| `Read` | tool text | 790 | `characters` | The stock description it replaces, docs and capture both 790 |
-| `Skill` | tool text | 1,417 | `characters` | The stock description it replaces, docs and capture both 1,417 |
-| `ToolSearch` | tool text | 953 | `characters` | The stock description it replaces, docs and capture both 953 |
+| `Agent` | tool text | 1,047 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/tools/tools.ts:32`) |
+| `Bash` | tool text | 1,085 | `characters` | The stock description it replaces, the smaller of docs 1,934 and capture 1,267 |
+| `Read` | tool text | 538 | `characters` | The stock description it replaces, docs and capture both 790 |
+| `Skill` | tool text | 975 | `characters` | The stock description it replaces, docs and capture both 1,417 |
+| `ToolSearch` | tool text | 656 | `characters` | The stock description it replaces, docs and capture both 953 |
 
 `agents/main.md` is the one row bounded on the request and not on the file, because it is the one
 piece whose budget is "no larger than the text it replaces". A newline and a quote each cost one
@@ -372,7 +372,7 @@ piece that ships, a row for each piece that ships, and no row whose behavior and
 | `Agent` | tool text | 973 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
 | `Bash` | tool text | 1,090 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Edit` | tool text | 328 | Reads a file in this conversation before editing it, and strips the `Read` line prefix from `old_string` so an edit does not fail on a line number | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `ListAgents` | tool text | 695 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `ListAgents` | tool text | 567 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Read` | tool text | 538 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `SendMessage` | tool text | 3,008 | Addresses a peer by the name its `ListAgents` row prints rather than looking for an address syntax, reads a successful send as delivery and not as agreement, waits for a reply on other work instead of looping on `ListAgents`, and refuses to hand a peer work this session denied | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Skill` | tool text | 1,023 | Starts a skill by name instead of restating its steps | `plugins/claudetto/tests/tool-describe.test.ts` |
@@ -381,13 +381,13 @@ piece that ships, a row for each piece that ships, and no row whose behavior and
 
 The eleven `agents/main.md` rows come to 5,283 characters and the file sends 5,303, the difference
 being the blank line between sections. The four `Concise.md` rows come to 1,471 against 1,477. The
-eight upfront tool texts come to 5,570 against a stock sum of 8,710, a cut of 3,140.
+eight upfront tool texts come to 5,392 against a stock sum of 8,710, a cut of 3,318.
 
 One row of the table is not always loaded, and it is in the table because the check that reads this
 table reads every text of `TOOL_TEXTS` and not only the upfront ones. `SendMessage` is 3,008
 characters against a stock 4,259, so it cuts 1,251, and the harness defers the tool
 (`plugins/claudetto/src/tools/tools.ts:54`), so that cut is paid once at the `ToolSearch` call that
-loads the schema rather than on every request. `alwaysLoadedChars` leaves it out of the 5,570 for
+loads the schema rather than on every request. `alwaysLoadedChars` leaves it out of the 5,392 for
 that reason.
 
 The `Edit`, `ListAgents`, and `Write` rows were written on 2026-10-30, when the user asked for more
@@ -486,6 +486,7 @@ One surface at a time, each read with `just capture --shipped` against the readi
 | --- | --- | --- | --- | --- |
 | Session prompt, `agents/main.md` | 32,039 | 31,770 | 269 | Reasons that only restate their rule, and wordier phrasings, cut; every rule kept. Body 5,572 to 5,303 |
 | Output style, `Concise.md` | 31,770 | 31,721 | 49 | Shorter phrasings; every rule kept. File 1,646 to 1,597 |
+| Tool texts, `blocks/tool-describe/texts.ts` | 31,721 | 31,424 | 297 | `Agent` 1,092 to 1,047, `Bash` 1,090 to 1,085, `ListAgents` 695 to 567, `Skill` 1,023 to 975, `ToolSearch` 727 to 656 |
 
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
