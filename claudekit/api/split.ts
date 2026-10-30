@@ -2,6 +2,7 @@
 
 import { serve } from "bun";
 import { answerHeaders, sendOn, type Usage, usageIn } from "./forward.ts";
+import { fieldOf } from "./json.ts";
 
 /** One request that went upstream, with what came back; the bearer is never kept. */
 export interface Forwarded {
@@ -29,11 +30,6 @@ export interface SplitApi {
 	readonly local: () => number;
 	readonly stop: () => Promise<void>;
 }
-
-const fieldOf = (body: unknown, key: string): unknown =>
-	typeof body === "object" && body !== null
-		? Reflect.get(body, key)
-		: undefined;
 
 const forward = async (
 	request: Request,

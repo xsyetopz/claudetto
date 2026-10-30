@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { objectOf } from "../json.ts";
-import { answer, isSummary } from "../stub.ts";
+import { isSummary, summaryAnswer } from "../summary.ts";
 
 const full = JSON.stringify({
 	model: "claude-haiku-5-5",
@@ -38,9 +38,9 @@ describe("isSummary", () => {
 	});
 });
 
-describe("answer", () => {
+describe("summaryAnswer", () => {
 	test("gives a stream when the request asked to stream, with no text to show", async () => {
-		const reply = answer(full);
+		const reply = summaryAnswer(full);
 
 		expect(reply.status).toBe(200);
 		expect(reply.headers.get("content-type")).toBe("text/event-stream");
@@ -50,7 +50,7 @@ describe("answer", () => {
 	});
 
 	test("gives one message when the request asked for no stream", async () => {
-		const reply = answer(short);
+		const reply = summaryAnswer(short);
 
 		expect(reply.headers.get("content-type")).toBe("application/json");
 		const body = objectOf(await reply.json());
@@ -60,7 +60,7 @@ describe("answer", () => {
 	});
 
 	test("keeps the model the request asked for, so the session reads back what it sent", async () => {
-		const reply = answer(JSON.stringify({ model: "claude-opus-5-5" }));
+		const reply = summaryAnswer(JSON.stringify({ model: "claude-opus-5-5" }));
 
 		expect(objectOf(await reply.json())["model"]).toBe("claude-opus-5-5");
 	});

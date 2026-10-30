@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { mkdir, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
+import { start } from "../api/proxy.ts";
 import { mapInOrder } from "../probe/fixture/ordered.ts";
 import {
 	ARMS,
@@ -12,7 +13,6 @@ import {
 	RUN_MS,
 } from "./arena.ts";
 import { type Lines, linesOf, rowsOf, type Seen, seenIn } from "./log.ts";
-import { start } from "./proxy.ts";
 import { configPath, trust, untrust } from "./trust.ts";
 
 export interface Run {

@@ -1,7 +1,7 @@
 import { appendFile } from "node:fs/promises";
 import { serve } from "bun";
-import { answerHeaders, sendOn, UPSTREAM, usageIn } from "../forward.ts";
-import { answer, isSummary } from "./stub.ts";
+import { answerHeaders, sendOn, UPSTREAM, usageIn } from "./forward.ts";
+import { isSummary, summaryAnswer } from "./summary.ts";
 
 export type Mode = "pass" | "off";
 
@@ -68,7 +68,7 @@ const handle = async (request: Request, ctx: Context): Promise<Response> => {
 
 	if (summary && ctx.mode === "off") {
 		ctx.note({ event: "stopped", bodyChars: body.length });
-		return answer(body);
+		return summaryAnswer(body);
 	}
 	if (summary) {
 		ctx.note({ event: "sent", bodyChars: body.length });
