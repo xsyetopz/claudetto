@@ -78,6 +78,6 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 13. Release
 
-- [ ] 13.1 Move the four manifests to `0.1.0`. Verify: `just validate`.
+- [x] 13.1 Move the four manifests to `0.1.0`. Verify: `just validate`. `package.json`, `.claude-plugin/marketplace.json`, and both `plugin.json` files read `0.1.0`; `just validate` and `claude plugin validate --strict` on both plugins print "Validation passed".
 - [ ] 13.2 Reinstall from the marketplace, run `/claudetto:setup`, and read `~/.claude/settings.json` with `jq`. Verify: each success measure of `prd.md`.
 - [ ] 13.3 `just check` passes, and `just capture --shipped` reads below the `0.0.0` reading.
