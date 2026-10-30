@@ -487,6 +487,7 @@ One surface at a time, each read with `just capture --shipped` against the readi
 | Session prompt, `agents/main.md` | 32,039 | 31,770 | 269 | Reasons that only restate their rule, and wordier phrasings, cut; every rule kept. Body 5,572 to 5,303 |
 | Output style, `Concise.md` | 31,770 | 31,721 | 49 | Shorter phrasings; every rule kept. File 1,646 to 1,597 |
 | Tool texts, `blocks/tool-describe/texts.ts` | 31,721 | 31,424 | 297 | `Agent` 1,092 to 1,047, `Bash` 1,090 to 1,085, `ListAgents` 695 to 567, `Skill` 1,023 to 975, `ToolSearch` 727 to 656 |
+| Hook output, the `handoff` reminder | 31,424 | 31,352 | 72 | Six lines merged to four; the folder, the nine headings, the path rule, `[REDACTED]`, and the decisions rule kept |
 
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
