@@ -8,6 +8,11 @@ import {
 	redact,
 	redactIds,
 } from "../../plugins/claudetto/src/shared/secrets/redact.ts";
+import {
+	said,
+	tailOf,
+	turn,
+} from "../../plugins/claudetto/tests/handoff/transcript.ts";
 
 const ANTHROPIC = `sk-ant-api03-${"a".repeat(93)}AA`;
 
@@ -22,15 +27,6 @@ const JWT_TOKEN = `eyJ${"a".repeat(12)}.eyJ${"b".repeat(12)}.${"c".repeat(20)}`;
 const KEY_BLOCK = `-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAx7Vn9mKqZ3Qd2sTfLpWbYc8NrGhJvEuDzAiBoXsMlPkRtUwC
 -----END RSA PRIVATE KEY-----`;
-
-const turn = (role: string, content: unknown): string =>
-	JSON.stringify({ type: role, message: { role, content } });
-
-const said = (role: string, text: string): string =>
-	turn(role, [{ type: "text", text }]);
-
-const tailOf = (...lines: readonly string[]): string =>
-	[`e":"text"}]}}`, ...lines].join("\n");
 
 test("an assignment keeps its name and loses its value", () => {
 	expect(redact(`PASSWORD=${PASSWORD}`)).toBe(`PASSWORD=${REDACTED}`);

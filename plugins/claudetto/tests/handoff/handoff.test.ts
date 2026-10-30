@@ -4,20 +4,11 @@ import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { HANDOFF_DIR, parseTail } from "../../src/blocks/handoff/handoff.ts";
 import { sourceLine } from "../../src/blocks/handoff/read-back.ts";
+import { said, tailOf, turn } from "./transcript.ts";
 
 const TRANSCRIPT = "/tmp/transcript.jsonl";
 
 const NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
-
-const turn = (role: string, content: unknown): string =>
-	JSON.stringify({ type: role, message: { role, content } });
-
-const said = (role: string, text: string): string =>
-	turn(role, [{ type: "text", text }]);
-
-/** A tail begins inside a line, so every fixture carries a broken first line. */
-const tailOf = (...lines: readonly string[]): string =>
-	[`e":"text"}]}}`, ...lines].join("\n");
 
 const WITH_WORK = tailOf(
 	said("user", "Rename `fetchUser` to `getUser`."),
