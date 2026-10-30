@@ -25,13 +25,6 @@
 			"description": "The key of Jev for the `decide` option. Claude Code keeps it in secure storage, not in a settings file.",
 			"sensitive": true
 		},
-		"compaction": {
-			"type": "string",
-			"title": "Compaction",
-			"description": "Use `auto` or `built-in` for the compaction of Claude Code, with a handoff written before it. Use `code` for a compaction that code builds with no model request, which is experimental. `auto` is `built-in` today, because every probe round of `docs/evidence/code-compaction-probe.md` reported no winner.",
-			"default": "auto",
-			"options": ["auto", "built-in", "code"]
-		},
 		"cheapSummary": {
 			"type": "string",
 			"title": "Cheap Compaction Summary",

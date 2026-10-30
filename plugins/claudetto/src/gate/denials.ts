@@ -2,7 +2,7 @@
 // calls these with plain values (`design.md`, "Auto Mode", "Denial counting").
 
 import { isRecord } from "./gate.ts";
-import { DENY_REPEATED_CALL } from "./prompts.ts";
+import { DENY_GATED, DENY_REPEATED_CALL } from "./prompts.ts";
 
 /** The denials of one call: how many, and the reason of the newest. */
 export interface Denial {
@@ -40,6 +40,10 @@ export const withDenial = (
 	...held,
 	[key]: { count: (held[key]?.count ?? 0) + 1, reason },
 });
+
+/** The deny text for a call that a rule of the gate denied: the reason of that rule and the order to stop and report. */
+export const stoppedText = (reason: string | undefined): string =>
+	DENY_GATED({ rule: reason ?? "" });
 
 /** The deny text for a call that was already denied `DENIALS_PER_CALL_MAX` times, with the earlier reason, or `undefined` while the call is under the bound. */
 export const repeatedText = (

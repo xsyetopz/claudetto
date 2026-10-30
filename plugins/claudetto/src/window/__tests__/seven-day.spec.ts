@@ -122,6 +122,7 @@ const turn: TurnRow = {
 describe("every reported figure names its window", () => {
 	const both = [row(1, 2), row(1, 2)];
 	const fiveOnly = [row(1), row(1)];
+	const turns = [turn, turn];
 
 	test("a task line from rows with both windows names both", () => {
 		const [figure] = perTask(both);
@@ -142,15 +143,15 @@ describe("every reported figure names its window", () => {
 	});
 
 	test("the weight names both windows, or says the seven-day one is not measured", () => {
-		expect(weightLine(both, [turn])).toContain("of the seven-day window");
-		expect(weightLine(fiveOnly, [turn])).toContain(
+		expect(weightLine(both, turns)).toContain("of the seven-day window");
+		expect(weightLine(fiveOnly, turns)).toContain(
 			`seven-day window: ${NOT_MEASURED}`,
 		);
 	});
 
 	test("the saving names both windows, or says the seven-day one is not measured", () => {
-		expect(savingLine(both, [turn], 1000)).toContain("of the seven-day window");
-		expect(savingLine(fiveOnly, [turn], 1000)).toContain(
+		expect(savingLine(both, turns, 1000)).toContain("of the seven-day window");
+		expect(savingLine(fiveOnly, turns, 1000)).toContain(
 			`seven-day window: ${NOT_MEASURED}`,
 		);
 	});

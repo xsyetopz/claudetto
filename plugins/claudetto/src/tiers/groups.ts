@@ -45,7 +45,7 @@ export interface KeyGroup {
 export const KEY_GROUPS: readonly KeyGroup[] = [
 	{
 		label: "Smaller prompt",
-		why: "Turns off the bundled skills and most built-in plugins, denies three tools, and selects the `claudetto:main` agent body and the `claudetto:Concise` output style. Together they take the first request from 42,879 characters to 31,861, and the tool schemas from 12 tools to 9.",
+		why: "Turns off the bundled skills and most built-in plugins, denies three tools, allows `git status` and the bare `git diff`, `git log`, and `git show`, and selects the `claudetto:main` agent body and the `claudetto:Concise` output style. Together they take the first request from 42,879 characters to 31,909, and the tool schemas from 12 tools to 9.",
 		keys: [
 			"disableBundledSkills",
 			"enabledPlugins",

@@ -2,6 +2,7 @@
 // Each figure is printed only as far as its rows reach, and "not measured" stands where they do not
 // (`design.md`, "Window Budget"). Pure, so a test calls it with plain rows.
 
+import { WEIGHT_MIN_ROWS } from "./limits.ts";
 import { inputOf, type TurnRow, type WindowRow } from "./window.ts";
 
 /** What is printed where a figure has no rows behind it. */
@@ -97,10 +98,9 @@ export const countedTurns = (turns: readonly TurnRow[]): TurnRow[] =>
  * turns really cost. The context fill of a measure row is a whole prompt, counted again at every
  * turn, so it is not the denominator. `field` picks the window, five-hour by default.
  *
- * None where there is nothing to divide, which is no measure row with that window's delta or no turn
- * that reported tokens. There is no minimum beyond that: a figure either has rows behind it or it
- * does not, and how many it has is printed beside it, so a reader weighs it instead of a threshold
- * deciding for them.
+ * None where the rows do not support a weight: fewer than `WEIGHT_MIN_ROWS` measure rows with that
+ * window's delta, or fewer than that many turns that reported tokens. How many turns it has is
+ * printed beside it, so a reader weighs it.
  */
 export const weightOf = (
 	rows: readonly WindowRow[],
@@ -108,8 +108,13 @@ export const weightOf = (
 	field: Field = "points",
 ): number | undefined => {
 	const counted = countedTurns(turns);
+	const measured = rows.filter((row) => row[field] !== undefined);
 	const points = sumOf(rows, field);
-	if (counted.length === 0 || points === undefined) {
+	if (
+		counted.length < WEIGHT_MIN_ROWS ||
+		measured.length < WEIGHT_MIN_ROWS ||
+		points === undefined
+	) {
 		return undefined;
 	}
 	let tokens = 0;
@@ -156,6 +161,18 @@ export const savingLine = (
 		? `Saving: ${NOT_MEASURED}`
 		: `Saving: ${windowsText(five, seven)}`;
 };
+
+/** The whole window report: a line per task, then the weight; with no rows it says so. */
+export const reportText = (
+	rows: readonly WindowRow[],
+	turns: readonly TurnRow[],
+): string =>
+	[
+		...(rows.length === 0
+			? [`Points per task: ${NOT_MEASURED}`]
+			: perTask(rows).map(taskLine)),
+		weightLine(rows, turns),
+	].join("\n");
 
 const SHARE_OF_LIMIT =
 	/\d+(?:\.\d+)?\s*%\s+of\s+(?:your\s+|the\s+)?(?:[\w-]+\s+){0,2}(?:limit|window|quota)/gi;

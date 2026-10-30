@@ -76,6 +76,9 @@ export const ASK_UNKNOWN_PROGRAM =
 /** The question for a `git` call whose config setting can make `git` run a program the gate cannot read. */
 export const ASK_GIT_PROGRAM =
 	"This `git` call sets a config key or a variable. That setting makes `git` run a program, such as a pager, an editor, a hook, or a helper. The gate cannot read that program.";
+/** The denial `stoppedText` in `denials.ts` returns for a call that a rule of the gate denied, with the text of that rule as `rule`. */
+export const DENY_GATED = (v: { rule: string }): string =>
+	`The claudetto gate denied this call by this rule: ${v.rule}\nStop and report this to the user. Give the rule above. Do not send this call again, and do not look for another way to it.`;
 /** The denial `repeatedText` in `denials.ts` returns once the same call was denied the maximum number of times, with the last reason and the `permissions.allow` rule that would admit the call. */
 export const DENY_REPEATED_CALL = (v: {
 	count: number;

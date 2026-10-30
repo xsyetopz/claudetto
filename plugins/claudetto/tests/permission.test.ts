@@ -6,7 +6,9 @@
 
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+import { stoppedText } from "../src/gate/denials.ts";
 import { GATED_KEYS } from "../src/gate/gate.ts";
+import { DENY_ROOT, RUN_HINT } from "../src/gate/prompts.ts";
 
 /** What the hook answered, which is `undefined` for an answer that carries no decision at all. */
 type Behavior = string | undefined;
@@ -128,6 +130,45 @@ test("the gate denies the same command at tool.check", async ($: Engine, on: On)
 	});
 
 	expect(verdict.decision).toBe("deny");
+});
+
+// A denial of the gate itself tells the model to stop and report, with the rule that denied the
+// call (`specs/permission-policy/spec.md`, "Denied Calls Stop"). The answer holds the rule's text
+// and the stop text of `stoppedText`, so it is longer than the rule alone.
+test("a call the gate denies carries the stop text and the rule at tool.check", async ($: Engine, on: On) => {
+	withFacts(on);
+	on("tool.check", () => ({ decision: "allow" }));
+	const command = "rm -rf /";
+	const rule = DENY_ROOT({ target: "/" });
+
+	const verdict = await $.tool.check({
+		tool: "Bash",
+		input: { command },
+	});
+
+	expect(verdict.decision).toBe("deny");
+	expect(verdict.reason).toBe(stoppedText(`${rule}\n${RUN_HINT({ command })}`));
+});
+
+test("a call the gate denies carries the stop text and the rule at the dialog", async ($: Engine, on: On) => {
+	withFacts(on);
+
+	const command = "rm -rf /";
+
+	const answer = await $.classic.PermissionRequest({
+		tool_name: "Bash",
+		tool_input: { command },
+	});
+
+	// `message` is on the deny branch of `PermissionRequestDecision` alone, so the branch is narrowed
+	// rather than asserted: an `allow` answer fails here with what it was instead.
+	const decision = answer.decision;
+	if (decision?.behavior !== "deny") {
+		throw new Error(`the gate denied nothing: ${JSON.stringify(decision)}`);
+	}
+	expect(decision.message).toBe(
+		stoppedText(`${DENY_ROOT({ target: "/" })}\n${RUN_HINT({ command })}`),
+	);
 });
 
 // Our gate only ever tightens. A `tool.check` hook may answer in either direction and the last word

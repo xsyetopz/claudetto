@@ -16,7 +16,7 @@ import { admitCall } from "../run-limits/calls.ts";
 import { failedText } from "../run-limits/failures.ts";
 import { changeLedger } from "../run-limits/ledger.ts";
 import { limitsOf } from "../run-limits/settings.ts";
-import { type Denials, repeatedText } from "./denials.ts";
+import { type Denials, repeatedText, stoppedText } from "./denials.ts";
 import { factsFrom } from "./facts.ts";
 import { type Facts, gate, gated, stricter } from "./gate.ts";
 import { CHECK_FAIL } from "./prompts.ts";
@@ -161,6 +161,9 @@ export const onCheck: HookFor<"tool.check"> = async ($, e, next) => {
 	if (decision === engine.decision) {
 		return engine;
 	}
+	if (decision === "deny") {
+		return { decision, reason: stoppedText(own.reason) };
+	}
 	// The reason is left out rather than passed as `undefined`, which the engine's type refuses.
 	return own.reason === undefined
 		? { decision }
@@ -212,7 +215,10 @@ export const onPermission: HookFor<"classic.PermissionRequest"> = async (
 	return verdict.decision === "deny"
 		? {
 				...answer,
-				decision: { behavior: "deny", message: verdict.reason ?? "" },
+				decision: {
+					behavior: "deny",
+					message: stoppedText(verdict.reason),
+				},
 			}
 		: answer;
 };

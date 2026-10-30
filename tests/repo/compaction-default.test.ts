@@ -1,17 +1,16 @@
-// The gate of the requirement "Default Path" of the spec `compaction-path`: while no probe result
-// under `docs/` is accepted, the shipped path is the built-in one. Each round of the paid probe
-// writes its verdict as one line naming `bar.ts`, so an accepted result is a line of that shape
-// that no longer says "No winner", and this test fails until the code default follows it.
+// The gate of the requirement "Default Path" of the spec `compaction-path`: the compaction of Claude
+// Code is the one path that ships, and it keeps that place while no probe result under `docs/` is
+// accepted. Each round of the paid probe writes its verdict as one line, so an accepted result is a
+// line of that shape that no longer says "No winner", and this test fails when one appears.
+//
+// There is no option to check any more. `compaction` offered `auto`, `built-in`, and `code` in the
+// plugin dialog while the `pathOf` that read it was imported by nothing but its own spec file, so the
+// person could set a value and nothing happened; the option and that module are deleted. A failing
+// verdict line here is the signal to build the code path and offer the option again.
 
 import { describe, expect, test } from "bun:test";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import {
-	AUTO,
-	BUILT_IN,
-	COMPACTION_OPTION,
-	pathOf,
-} from "../../plugins/claudetto/src/compaction/compaction.ts";
 
 const DOCS = "docs";
 
@@ -48,11 +47,15 @@ describe("the compaction default against the accepted results", () => {
 		expect(lines.filter((line) => !NO_WINNER.test(line))).toEqual([]);
 	});
 
-	test("so the shipped option resolves to the built-in path", async () => {
+	test("so no code path is offered, and `session.compact` defers to the engine", async () => {
 		const lines = await verdictLines();
 		const accepted = lines.filter((line) => !NO_WINNER.test(line));
+		const hook = await readFile(
+			join("plugins", "claudetto", "src", "compaction", "hook.ts"),
+			"utf8",
+		);
 
 		expect(accepted).toEqual([]);
-		expect(pathOf({ [COMPACTION_OPTION]: AUTO })).toBe(BUILT_IN);
+		expect(hook).toContain("next(e)");
 	});
 });

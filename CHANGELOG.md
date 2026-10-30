@@ -49,6 +49,18 @@ After each update, do the steps in the "Update" section of the README.
   What it does cost is its row in the command listing. `just capture --arm plugin --shipped` read 31,909 characters against 31,861 with no command, so the row is 48 characters, all in `messages`, and the description in `commands/setup.md` is one short sentence because the first wording of it read 31,961.
   A hook that throws is skipped, which would send the body of `commands/setup.md` to the model as a prompt, so a failed read or write is reported in `text` instead.
   `just setup` is unchanged and still does the same work from a checkout.
+- Setup writes a `permissions.allow` list, which it had never written, so a read-only `git` call runs with no prompt and never reaches the auto-mode classifier (spec `low-hitl`, "Use Narrow Allow Rules" and "Settle Safe Calls before the Classifier").
+  The list is `Bash(git status *)`, `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)` in `plugins/claudetto/src/tiers/allow.ts`, and it costs the first request nothing, because settings are not prompt text: the arm reads 31,909 with the list and without it.
+  Only `git status` takes the wildcard form, which "also matches the bare command" (`configure/permissions/rules`, `2.1.314`). The other three are the bare form, which holds no `*` and matches that text alone, because each takes `--output=<file>` and writes that file: in this checkout `git diff --output=F HEAD~1`, `git log -1 --output=F`, and `git show --output=F HEAD` each exited `0` and left `F` on disk, where `git status --output=F` exited `129` and wrote nothing.
+  A rule cannot exclude a flag, so a wildcard over those three would pre-approve an arbitrary file write, which is not the read-only permission the list claims to grant. The cost is a prompt for a `git diff` that carries arguments.
+  `git branch` is left out because it creates, renames, and deletes branches, and a package manager, an interpreter, and a test runner are left out because each runs code and no such rule is true of every machine.
+  Two checks guard the list and are the "setup refuses a broad one" the spec asks for: `broadRules` catches a bare tool name, content of only wildcards, and a wildcard inside the first word of a `Bash` command, and `flagOpenRules` catches a wildcard over a command that is not known to refuse a file-writing flag. On a fault `tierSnippet` omits the `allow` key and `snippetFaults` names the rule, the way `autoMode` and `sandbox` faults are reported and never repaired.
+  A user who already has an `allow` list keeps it whole and the report lists it as skipped, because `applyTier` never merges into a value the user set.
+- `just window-report` prints the cost per rate-limit window, which `window/report.ts` could compose and no command reached (spec `window-budget`).
+  `tools/window-report.ts` reads the store and prints `reportText`, one line per task and then the weight line.
+  `weightOf` now refuses a number below `WEIGHT_MIN_ROWS` rows and reports "not measured" instead, on each side of the reading, because one row gave a confident-looking figure before.
+  The floor is `2`, in `plugins/claudetto/src/window/limits.ts`, and it is the smallest value above a single reading: no source says how the whole-number lag of the window percentages spreads over rows, so `EVAL_MIN_RUNS_PER_ARM` was not borrowed for a different quantity.
+  The constant sits with the plugin and not in `tools/limits.ts`, because the plugin ships without `tools/`.
 - `tests/repo/prompt-budget.test.ts` holds the one byte budget that `specs/prompt-footprint/spec.md` fixes a number for, which nothing checked before: the body of `agents/main.md` against the 5,627 characters of the default body it replaces, failing with the piece, its size, and its budget as the spec asks.
   The budget is of the body after the frontmatter, because the frontmatter does not reach the prompt: the body is 5,574 characters where the whole file is 5,648, and `just capture --arm plugin --shipped` reads `system[2]` as 5,572 against 5,818 for `--arm plain`, so the replacement is a net 246 characters.
   No budget is invented for the other three pieces, since the spec records that no value is derived for them yet.
@@ -73,6 +85,11 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- A call the permission gate denies now tells the model to stop and report, with the rule that denied it (spec `permission-policy`, "Denied Calls Stop").
+  That text existed only for a repeat auto-mode denial, so a direct gate denial said nothing and the model was free to retry or work around it.
+  `stoppedText` wraps a gate denial in the new `DENY_GATED`, and both hook paths use it, `onCheck` and `onPermission` (`plugins/claudetto/src/gate/hooks.ts`).
+  It names the gate's own rule and not an allow rule to add, because no `permissions.allow` rule lifts a denial of this gate.
+  A denial the engine itself made still carries the engine's reason, since it is not ours to explain.
 - The budget line no longer rides every prompt.
   `onSubmitBudget` added `Budget: context 62% left, five-hour 23.5% used, seven-day 41% used` to the `context` of every `prompt.submit` whenever the engine had usage to read, and the context figure moves every turn, so the line was paid for on every turn of every session.
   `specs/prompt-footprint/spec.md` forbids exactly that ("No Per-Message Injection": "The system MUST NOT add text on every user message"), and its Quiet Turn scenario asks for no text while the bands have not changed, so `budgetBand` now cuts each of the three readings to a step of 10 percent and the hook speaks only when that band differs from the one it last spoke for.
@@ -111,6 +128,11 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Removed
 
+- The `compaction` option is gone, with `plugins/claudetto/src/compaction/compaction.ts` and its spec file (the user, 2026-10-30).
+  It offered `auto`, `built-in`, and `code` in the plugin dialog while the `pathOf` that read it was imported by nothing but its own spec, so a person could set a value and nothing happened: `onCompact` (`compaction/hook.ts:34`) reads `cheapSummary` and never the path.
+  An option in the dialog that no hook reads is worse than no option.
+  The compaction of Claude Code is the one path that ships, which is what every probe round of `docs/evidence/code-compaction-probe.md` left in place by reporting no winner, and `tests/repo/compaction-default.test.ts` still fails when a verdict line stops saying that, which is the signal to build the code path and offer the option again.
+  `tests/repo/manifests.test.ts` now pins the list of options the manifest declares, because no check can show that a hook reads a value: adding an option means changing that list, and whoever changes it has to name the hook that reads it.
 - 15 pages under `docs/evidence/` are deleted, which is every page whose producer the restart removed and that reads nothing of the Claude Code binary (the user, 2026-10-30: "old docs means nothing that 0.0.0 restart and recent claude code binary searches have").
   They are the seven `docs/evidence/evals/` pages, both `docs/evidence/handoff-cost/` pages, `docs/evidence/usage-evidence/part-2.md`, `builtin-comparisons.md`, `jev-images.md`, `prompt-size.md`, and `sandbox-run-0.2.0.md`.
   Their producers are the `claude plugin eval` harness, `just eval-stats`, `just eval-variant`, `just classifier-replay`, `just handoff-probe`, `just sandbox`, `tools/compare-builtins.ts`, and the `claudetto-codegraph` add-on, none of which is in the tree.

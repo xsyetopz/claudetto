@@ -9,6 +9,7 @@ import { MAIN_AGENT, STYLE } from "../prompts.ts";
 import { sandboxFaults } from "../sandbox/faults.ts";
 import { sandboxSnippet } from "../sandbox/sandbox.ts";
 import { pctFor } from "../threshold.ts";
+import { ALLOW_RULES, ruleFaults } from "./allow.ts";
 import { HAIKU_MODEL, type TierRow } from "./tiers.ts";
 
 /** A settings value: a scalar, a list of them, or an object of either. */
@@ -67,7 +68,14 @@ export const snippetFaults = (platform: string): readonly string[] => [
 	...sandboxFaults(sandboxSnippet(platform), platform).map((fault) =>
 		faultLine("sandbox", fault),
 	),
+	...ruleFaults(ALLOW_RULES).map((rule) =>
+		faultLine("permissions", { rule, where: "permissions.allow" }),
+	),
 ];
+
+/** The `allow` list, or no key at all when `ruleFaults` finds a rule setup refuses, as the two blocks below are left out on a fault. */
+const allowBlock = (): TierSnippet =>
+	ruleFaults(ALLOW_RULES).length === 0 ? { allow: [...ALLOW_RULES] } : {};
 
 /** The `autoMode` block, or no key at all when a check of `../automode/faults.ts` finds a fault in it. */
 const autoModeBlock = (): TierSnippet => {
@@ -92,17 +100,18 @@ const sandboxBlock = (platform: string): TierSnippet => {
  * `permissions.deny` ships with the two switches of `builtinSnippet` and never apart from them:
  * `disableBundledSkills` alone is a loss, because it moves the workflow text into the `Workflow`
  * definition while that tool is still offered. The two switches alone read 52,254 characters against
- * 42,879 for a stock run; with the deny list, 31,861 (`../cuts.ts`).
+ * 42,879 for a stock run; with the deny list, 31,861, read before `commands/setup.md` put its own 48
+ * characters in the listing, where the arm now reads 31,909 (`../cuts.ts`).
  *
  * `platform` is the caller's to name, as `process.platform` spells it, because the two callers read
- * it from different places: `setup.ts` runs under Bun and has `process`, while the `settings.read`
- * hook of `hooks.ts` runs in a hooks module, which has none, and asks the system instead.
+ * it from different places: `setup.ts` runs under Bun and has `process`, while `onSetupCommand` of
+ * `hooks.ts` runs in a hooks module, which has none, and asks the system with `uname -s` instead.
  * `UNKNOWN_PLATFORM` leaves `sandbox.enabled` out.
  */
 export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 	...builtinSnippet(),
 	...compactionSnippet().settings,
-	permissions: { deny: [...denyList()] },
+	permissions: { ...allowBlock(), deny: [...denyList()] },
 	agent: MAIN_AGENT,
 	outputStyle: STYLE,
 	...autoModeBlock(),

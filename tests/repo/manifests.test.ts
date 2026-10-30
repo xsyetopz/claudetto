@@ -8,11 +8,6 @@ import { stat } from "node:fs/promises";
 import { join } from "node:path";
 import marketplace from "../../.claude-plugin/marketplace.json";
 import plugin from "../../plugins/claudetto/.claude-plugin/plugin.json";
-import {
-	AUTO,
-	COMPACTION_OPTION,
-	COMPACTION_VALUES,
-} from "../../plugins/claudetto/src/compaction/compaction.ts";
 import observer from "../../plugins/claudetto-you-should-know/.claude-plugin/plugin.json";
 import {
 	DEFAULT_EFFORT,
@@ -20,6 +15,10 @@ import {
 } from "../../plugins/claudetto-you-should-know/src/options.ts";
 
 const MANIFEST = join(".claude-plugin", "plugin.json");
+
+/** The names of the options each plugin declares in its manifest. */
+const declaredOptions = (manifest: { userConfig: object }): readonly string[] =>
+	Object.keys(manifest.userConfig);
 
 /** Whether the path is a file that can be read, with a missing path answering false. */
 const isFile = async (path: string): Promise<boolean> => {
@@ -30,17 +29,29 @@ const isFile = async (path: string): Promise<boolean> => {
 	}
 };
 
-describe("the plugin manifest against the resolver", () => {
-	test("the option offers the resolver's own value list", () => {
-		const declared = plugin.userConfig[COMPACTION_OPTION].options;
+// An option in the dialog that no hook reads is worse than no option: the person sets it and nothing
+// happens. `compaction` was such an option, offering `auto`, `built-in`, and `code` while its `pathOf`
+// was imported by nothing but its own spec file.
+//
+// The list is pinned rather than derived. Searching the source for the name proves nothing, because a
+// folder and its comments carry the word `compaction` with no hook reading the option; and no check
+// here can show that a hook reads a value. So adding an option means changing this list, and whoever
+// changes it has to name the hook that reads it.
+const OPTIONS: readonly string[] = [
+	"decide",
+	"TYPESAFE_API_KEY",
+	"cheapSummary",
+	"subagentCap",
+	"startCap",
+	"windowSeconds",
+	"callCap",
+	"heavyTokens",
+	"failLimit",
+];
 
-		expect(declared).toEqual([...COMPACTION_VALUES]);
-	});
-
-	test("the default is the value that defers to the measurement", () => {
-		const fallback = plugin.userConfig[COMPACTION_OPTION].default;
-
-		expect(fallback).toBe(AUTO);
+describe("the options the manifest offers", () => {
+	test("the manifest declares the pinned list and nothing more", () => {
+		expect(declaredOptions(plugin)).toEqual([...OPTIONS]);
 	});
 });
 

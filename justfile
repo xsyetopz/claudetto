@@ -58,6 +58,10 @@ check: lint typecheck test validate lab
 setup *args:
     bun plugins/claudetto/src/tiers/setup.ts "$@"
 
+# Print the window cost report from the rows this login's sessions recorded: points per task, and the weight of an input token, or "not measured" where too few rows back it. Free, with no model call
+window-report:
+    bun tools/window-report.ts
+
 # Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --settings FILE, --tools N)
 capture *args:
     bun tools/capture/run.ts "$@"

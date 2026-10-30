@@ -3,9 +3,11 @@
 
 import { describe, expect, test } from "bun:test";
 import type { SessionMeasureInput } from "claude-code";
+import { WEIGHT_MIN_ROWS } from "../limits.ts";
 import {
 	NOT_MEASURED,
 	perTask,
+	reportText,
 	savingLine,
 	shareClaims,
 	taskLine,
@@ -156,6 +158,7 @@ describe("points per task", () => {
 
 describe("what waits for rows", () => {
 	const rows = [row("a", 1)];
+	const rows3 = Array.from({ length: WEIGHT_MIN_ROWS }, () => row("a", 1));
 
 	test("the weight is not measured with no turn that reported tokens", () => {
 		expect(weightLine(rows, [])).toContain(NOT_MEASURED);
@@ -166,17 +169,36 @@ describe("what waits for rows", () => {
 		expect(weightLine([], [turn()])).toContain(NOT_MEASURED);
 	});
 
-	test("one turn that reported tokens is enough, and the line says how many", () => {
-		const line = weightLine(rows, [turn()]);
+	test("a count under the floor reports no number, from either side", () => {
+		const under = WEIGHT_MIN_ROWS - 1;
+		const fewRows = Array.from({ length: under }, () => row("a", 1));
+		const fewTurns = Array.from({ length: under }, () => turn());
+		const enough = Array.from({ length: WEIGHT_MIN_ROWS }, () => turn());
 
-		expect(line).not.toContain(`five-hour window: ${NOT_MEASURED}`);
-		expect(line).toContain("over 1 turn");
+		expect(weightOf(fewRows, enough)).toBeUndefined();
+		expect(weightOf(rows3, fewTurns)).toBeUndefined();
 	});
 
-	test("the line names the turns the weight rests on", () => {
-		expect(weightLine(rows, [turn(), turn(), turn()])).toContain(
-			"over 3 turns",
+	test("a count at the floor reports the number, and the line says how many turns", () => {
+		const atFloor = Array.from({ length: WEIGHT_MIN_ROWS }, () => row("a", 1));
+		const turns = Array.from({ length: WEIGHT_MIN_ROWS }, () => turn());
+
+		expect(weightOf(atFloor, turns)).toBeCloseTo(1, 6);
+		expect(weightLine(atFloor, turns)).toContain(
+			`over ${WEIGHT_MIN_ROWS} turns`,
 		);
+	});
+
+	test("the floor counts the rows of the window asked for, not all rows", () => {
+		const fiveOnly = Array.from({ length: WEIGHT_MIN_ROWS }, () => row("a", 1));
+		const turns = Array.from({ length: WEIGHT_MIN_ROWS }, () => turn());
+
+		expect(weightOf(fiveOnly, turns, "sevenPoints")).toBeUndefined();
+	});
+
+	test("the report of no rows says not measured and gives no number", () => {
+		expect(reportText([], [])).toContain(NOT_MEASURED);
+		expect(reportText([], [])).not.toContain("points of");
 	});
 
 	test("a saving is not measured without rows of this login", () => {
@@ -185,7 +207,7 @@ describe("what waits for rows", () => {
 	});
 
 	test("a saving with rows is in points of the window, not a share of a plan limit", () => {
-		const line = savingLine(rows, [turn(), turn()], 50_000);
+		const line = savingLine(rows3, [turn(), turn()], 50_000);
 
 		expect(line).toContain("points");
 		expect(shareClaims(line)).toEqual([]);

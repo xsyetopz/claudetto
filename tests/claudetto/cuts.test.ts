@@ -29,8 +29,9 @@ describe("the inventory accounts for the whole fall", () => {
 			"handoff context",
 			"output style",
 			"sandbox block",
+			"setup command listing",
 		]);
-		expect(shippedChars(moving)).toBe(11_018);
+		expect(shippedChars(moving)).toBe(10_970);
 	});
 
 	test("a row that adds text counts against the fall", () => {
@@ -62,6 +63,7 @@ describe("a cut counts as a saving only with a bill reading", () => {
 			"output style",
 			"autoMode lists",
 			"sandbox block",
+			"setup command listing",
 		]);
 	});
 

@@ -37,9 +37,12 @@ export interface Cut {
  *
  * The 24,607 was a figure of no user's session: `shippedSettings` composed its own list and carried
  * `permissions.deny`, `agent`, and `outputStyle`, which `tierSnippet` did not write. It now derives
- * from `planSetup`, and wiring those keys in moved the reading to 31,861.
+ * from `planSetup`, and wiring those keys in moved the reading to 31,861. Then `commands/setup.md`
+ * shipped and its row in the command listing put 48 back, for 31,909. Every reading of 31,861 in the
+ * rows below is of the arm before that command existed, which leaves each difference between two such
+ * readings sound, because the row is in both arms of each pair.
  */
-export const SHIPPED_TOTAL = 31_861;
+export const SHIPPED_TOTAL = 31_909;
 
 /**
  * The cuts of the shipped `plugin` arm, including the pieces the tree adds, which carry a negative
@@ -144,6 +147,12 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// never pays the 140,718 characters of one classifier call (`docs/prompt/machinery.md`). It stays
 	// unpriced until the `classifier` rows of `window-budget` count the calls avoided.
 	{ name: "sandbox block", chars: -7254 },
+	// `commands/setup.md` puts one row in the command listing of the first message, with its name and
+	// its description, so the model is told the command exists. It is a cost and not a cut: the arm
+	// read 31,909 with the file and 31,861 with it moved aside. Nothing else of the command reaches a
+	// request, because `tiers/hooks.ts` answers it with `text` alone and no `context`. The description
+	// is one short sentence for this reason: the first wording of it read 31,961.
+	{ name: "setup command listing", chars: -48 },
 ];
 
 /**

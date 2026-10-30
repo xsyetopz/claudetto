@@ -54,7 +54,7 @@ Its row in the command listing costs 48 characters of the first request.
 
 | Group | What keeping it writes |
 | --- | --- |
-| Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `agent`, `outputStyle`. Together they take the first request from 42,879 characters to 31,861, and the tool schemas from 12 tools to 9. |
+| Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. Together they take the first request from 42,879 characters to 31,909, and the tool schemas from 12 tools to 9. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
 | Sandbox | `sandbox`, with `allowUnsandboxedCommands` set to `false`. It costs 7,254 characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is 140,718 characters. |
 | Models and windows | `model`, `effortLevel`, `env`, `autoCompactWindow`, `modelSettings`, `idleCompaction`. |
 
@@ -76,14 +76,14 @@ It also writes `autoMode`, which the command does not, because inside this check
 
 | Part | Effect |
 | --- | --- |
-| Settings | `/claudetto:setup` writes the keys of the four groups above. |
+| Settings | `/claudetto:setup` writes the keys of the three groups above. |
 | Handoff | A handoff file is written on a typed `/clear` and before a compaction. The next session reads it back. See [Handoff](#handoff). |
-| Compaction | The compaction of Claude Code stays. The `compaction` option `built-in` and `auto` keep it, and `code` is an experimental compaction that code builds with no model request. The option `cheapSummary` set to `on` answers a compaction with one bounded call on `claude-haiku-5-5`. |
+| Compaction | The compaction of Claude Code stays, with a handoff written before it. The option `cheapSummary` set to `on` answers a compaction with one bounded call on `claude-haiku-5-5`. |
 | Output style | The plugin ships `claudetto:Concise`, which the Smaller prompt group selects. |
 | Permission gate | Stops only a call that loses bytes for good, tampers with the system, or reads a secret. It asks before a `git push` that forces, deletes, or mirrors. |
 | Run limits | Caps the subagents at once and the subagent starts per period, refuses an identical retry after repeated failures, and holds tool calls at heavy context. |
 | Tool descriptions | A shorter description for a few tools. |
-| Agents | `claudetto:main` as the thread's own body, and the named agents it delegates to. |
+| Agents | `claudetto:main` as the thread's own body, plus two subagents: `claudetto:Artemis` searches many files read-only and returns paths and lines, and `claudetto:Athena` reviews a diff in a fresh context and reports each defect. Neither writes a file. |
 | Skills | `dedupe` finds duplicate code with `jscpd` and decides which clones to merge. |
 
 ## Plugins
@@ -103,7 +103,6 @@ The core plugin's options are set in the plugin dialog of Claude Code, and `/con
 | --- | --- |
 | `decide` | `jev` registers the tool `mcp__claudetto__decide`, which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence. `off` registers nothing. |
 | `TYPESAFE_API_KEY` | The key of Jev. Claude Code keeps it in secure storage, not in a settings file. Without a key no tool is registered and nothing leaves the machine. |
-| `compaction` | `auto`, `built-in`, or the experimental `code`. |
 | `cheapSummary` | `on` answers a compaction with one bounded call on `claude-haiku-5-5`. |
 | `subagentCap`, `startCap`, `windowSeconds`, `callCap`, `heavyTokens`, `failLimit` | The run limits. |
 
@@ -150,6 +149,9 @@ claude --plugin-dir /path/to/claudetto/plugins/claudetto
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 `just check` runs the lint, the type check, the tests, the validation, and the hook labs.
+`just capture` reads the first request of a session against a fake API on `127.0.0.1`, with no model call, which is where the character figures above come from.
+`just window-report` prints the cost per rate-limit window from the measured rows, or "not measured" when there are too few.
+`just claude-version` prints the supported Claude Code version, and a version argument moves every line that declares it.
 
 ## License
 
