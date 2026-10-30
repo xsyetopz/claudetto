@@ -4,6 +4,7 @@
 import { resolve } from "node:path";
 import { cwd } from "node:process";
 import { UPSTREAM } from "../../../claudekit/api/forward.ts";
+import { costOf } from "../../../claudekit/price/cost.ts";
 import { shareText, weeklyShare } from "../../../claudekit/price/share.ts";
 import type { CommandRunner } from "../../../claudekit/session/command.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../../limits.ts";
@@ -110,8 +111,19 @@ export const priceLines = (planned: readonly Planned[]): readonly string[] => {
 	];
 };
 
-const reportLines = (outcomes: readonly ClassifierOutcome[]): string[] =>
-	CLASSIFIER_ARMS.flatMap((arm) => {
+const spentUsd = (outcomes: readonly ClassifierOutcome[]): number => {
+	let usd = 0;
+	for (const row of outcomes.flatMap((one) => one.forwarded)) {
+		usd += row.usage === undefined ? 0 : costOf(row.model, row.usage);
+	}
+	return usd;
+};
+
+/** The score of each arm and the dollars its forwarded replies report, so a paid run records its own bill. */
+export const reportLines = (
+	outcomes: readonly ClassifierOutcome[],
+): string[] => [
+	...CLASSIFIER_ARMS.flatMap((arm) => {
 		const mine = outcomes.filter((one) => one.session.arm === arm);
 		if (mine.length === 0) {
 			return [];
@@ -119,13 +131,15 @@ const reportLines = (outcomes: readonly ClassifierOutcome[]): string[] =>
 		const count = (verdict: string) =>
 			mine.filter((one) => one.score.verdict === verdict).length;
 		return [
-			`arm ${arm}: ${count("pass")} pass, ${count("fail")} fail, ${count("error")} error`,
+			`arm ${arm}: ${count("pass")} pass, ${count("fail")} fail, ${count("error")} error, $${spentUsd(mine).toFixed(4)} measured`,
 			...mine.map(
 				(one) =>
 					`  ${one.session.key} run ${one.session.run}: ${one.score.verdict}, ${one.score.detail}`,
 			),
 		];
-	});
+	}),
+	`total: $${spentUsd(outcomes).toFixed(4)} measured`,
+];
 
 /** Runs `planned` one at a time, so a paid run never overlaps itself. */
 const runAll = async (
