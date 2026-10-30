@@ -60,7 +60,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 10. Surfaces (`prompt-footprint`)
 
-- [ ] 10.1 Read every surface of D21 with `just capture` and `just inventory`, and record the baseline. Verify: the readings.
+- [x] 10.1 Read every surface of D21 with `just capture` and `just inventory`, and record the baseline. Verify: the readings. `just inventory` holds 46,105, 33,684, and 32,039. `just capture --shipped --dump DIR` splits the shipped first request into the session prompt (5,715), tool texts (13,801), sandbox text (6,422), output style (1,939), agent listing (1,155), environment (847), skill listing (481), and hook output (819). `just capture --classifier --settings FILE` reads the classifier request at 141,962 built-in and 65,340 with the shipped suite. A `--shipped` classifier run sends no request, because the sandbox runs the played push without the classifier. The table is in `docs/prompt/footprint.md`, "Surface Baseline of `0.1.0`".
 - [ ] 10.2 Cut each surface, one at a time, and read it again. Verify: each reading lower, its tests passing, and `just inventory` passing.
 - [ ] 10.3 Decide `session/prompt` by its reading (D12), and record it. Verify: the reading in `decisions.md`.
 
