@@ -43,6 +43,18 @@ describe("a comment that names the process", () => {
 		expect(narrations("src/a.ts", text)).toHaveLength(1);
 	});
 
+	test("refuses a decision ID", () => {
+		const text = comment("the env flags of D14 and D18");
+
+		expect(narrations("src/a.ts", text)).toHaveLength(1);
+	});
+
+	test("refuses a path into a plan under `openspec/`", () => {
+		const text = comment("see `openspec/changes/release/design.md`");
+
+		expect(narrations("src/a.ts", text)).toHaveLength(1);
+	});
+
 	test("refuses a block comment body", () => {
 		const text = " * The counting half of task 6.7.";
 
@@ -56,11 +68,29 @@ describe("a test name that names the process", () => {
 
 		expect(narrations("tests/a.test.ts", text)).toHaveLength(1);
 	});
+
+	test("refuses a decision ID in a test name", () => {
+		const text = named("D1: the first two rows share no column");
+
+		expect(narrations("tests/a.test.ts", text)).toHaveLength(1);
+	});
 });
 
 describe("what stays", () => {
 	test("allows a string that is data", () => {
 		const text = '\t"archive",';
+
+		expect(narrations("src/a.ts", text)).toStrictEqual([]);
+	});
+
+	test("allows the `openspec/` folder that setup writes, which is the subject", () => {
+		const text = named("an existing `openspec/` is left alone");
+
+		expect(narrations("tests/a.test.ts", text)).toStrictEqual([]);
+	});
+
+	test("allows a hex digit run", () => {
+		const text = comment("the escape is `0xD1`");
 
 		expect(narrations("src/a.ts", text)).toStrictEqual([]);
 	});

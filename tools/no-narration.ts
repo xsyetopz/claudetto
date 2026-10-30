@@ -1,14 +1,8 @@
 #!/usr/bin/env bun
 // Usage: `bun tools/no-narration.ts`. It reads every checked `.ts` file, prints one `file:line: reason: text`
 // per fault, and exits 1 when there is any. A comment says why and never what produced the code, because
-// the name of a task or of a session points at the process and leaves the reason out.
-//
-// It refuses two shapes and no more. A third shape, the words of the port from the old tree, was deleted
-// on 2026-10-30 together with the seven-entry allowlist it needed: run over the whole tree with the
-// allowlist off, the two shapes below matched no line at all and the port shape matched three, every one
-// of them in `plugins/claudetto/src/deny.ts`, where `archived` names the archived deny list that the
-// module's own rows are about. A shape that matches only its own exceptions cannot tell the process from
-// the subject matter, and no check reads that difference from words.
+// the name of a task, a decision, a plan, or a session points at the process and leaves the reason out,
+// and the source is public while the plans are not shipped.
 
 import { join } from "node:path";
 import { file as bunFile, Glob } from "bun";
@@ -24,13 +18,21 @@ export interface Narration {
 
 /**
  * The shapes that point at the process that produced the code, each with the reason it is refused.
- * Neither word can appear in a dated reading, which cites a date and a command, so neither shape needs
- * an exception and the tool carries no allowlist.
+ * No shape can appear in a dated reading, which cites a date and a command, so no shape needs an
+ * exception and the tool carries no allowlist.
  */
 const SHAPES: { pattern: RegExp; reason: string }[] = [
 	{
 		pattern: /\b(?:task|group)\s+\d+(?:\.\d+)?\b/i,
 		reason: "names a task or a group by number",
+	},
+	{
+		pattern: /\bD\d{1,3}\b/,
+		reason: "names a decision by ID",
+	},
+	{
+		pattern: /\bopenspec\/(?:changes|specs)\//,
+		reason: "points into a plan",
 	},
 	{
 		pattern:
