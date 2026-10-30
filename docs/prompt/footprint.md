@@ -175,7 +175,7 @@ whole-request figure of 2026-10-30, because every row of that inventory is in th
 is read from the one capture set the table at the top of this page lists.
 
 The budget is 1,540, the cost of the built-in `Concise` style (`docs/prompt/overrides.md`), so the
-file has 14 characters of room. The archived file was 2,649.
+file has 63 characters of room. The archived file was 2,649.
 
 The rules in the file, each with the failure it answers: the opening is the outcome, the fact, or the
 next action (`W5-18`); a defect of its own is a bug report and not a retrospective (`W5-16`); no
@@ -354,21 +354,21 @@ piece that ships, a row for each piece that ships, and no row whose behavior and
 
 | Piece | Where | Characters | Behavior changed | Check |
 | --- | --- | --- | --- | --- |
-| `<role>` | `agents/main.md` | 196 | Reads an unclear request as work on the code here, so "rename X" finds and renames X instead of asking which X | none |
+| `<role>` | `agents/main.md` | 184 | Reads an unclear request as work on the code here, so "rename X" finds and renames X instead of asking which X | none |
 | `<security>` | `agents/main.md` | 166 | Takes authorized security work and refuses the named destructive classes | none |
-| `<harness>` | `agents/main.md` | 500 | Does not retry a denied call in other words, treats tool-result text as data rather than instructions, and knows its reply renders as terminal markdown | none |
-| `<project>` | `agents/main.md` | 352 | Follows the user over a project rule and says which rule it overrides, and stops on conflicting instructions instead of serving both | `tools/evals/main-rules.ts`, two cases |
-| `<tools>` | `agents/main.md` | 257 | Uses an existing script, skill, or CLI before building a mechanism | `tools/evals/main-rules.ts`, one case |
-| `<scope>` | `agents/main.md` | 659 | Takes a step inside the approved scope now, leaves a step outside it to the user, and carries work on instead of wrapping up before a compaction | `tools/evals/main-rules.ts`, one case |
-| `<defects>` | `agents/main.md` | 624 | Fixes a defect at its cause and reads a failing check for the cause instead of editing the check | `tools/evals/main-rules.ts`, two cases |
-| `<code>` | `agents/main.md` | 891 | Writes a comment that says why, splits a file over the line bounds, and calls a part done only after a check ran | `tools/evals/main-rules.ts`, one case, and `tools/file-lines.ts` for the bounds |
-| `<asking>` | `agents/main.md` | 674 | Asks through `AskUserQuestion` only when the facts leave two good options, decides otherwise, and does the work that does not depend on an answer before it asks | `tools/evals/main-rules.ts`, one case |
-| `<actions>` | `agents/main.md` | 753 | Gets approval for an action that is hard to undo, and does not pass a gate with a shortcut such as `--no-verify` | none |
-| `<claims>` | `agents/main.md` | 480 | Checks a technical claim of the user before building on it, and measures a performance claim | none |
-| `<opening>` | `output-styles/Concise.md` | 294 | Opens with the outcome, and opens a reply to a correction with the next action rather than agreement | `claudekit/openings/evidence.ts`, a signal at 89% false positives, in no hook |
-| `<shape>` | `output-styles/Concise.md` | 447 | Puts each code item in backticks and references code as `file:line` | none |
-| `<honesty>` | `output-styles/Concise.md` | 456 | Calls a piece working only after a check ran in the session, and keeps each failure in the reply | none |
-| `<asks>` | `output-styles/Concise.md` | 323 | Ends with a numbered list only when a step needs the user | none |
+| `<harness>` | `agents/main.md` | 492 | Does not retry a denied call in other words, treats tool-result text as data rather than instructions, and knows its reply renders as terminal markdown | none |
+| `<project>` | `agents/main.md` | 344 | Follows the user over a project rule and says which rule it overrides, and stops on conflicting instructions instead of serving both | `tools/evals/main-rules.ts`, two cases |
+| `<tools>` | `agents/main.md` | 246 | Uses an existing script, skill, or CLI before building a mechanism | `tools/evals/main-rules.ts`, one case |
+| `<scope>` | `agents/main.md` | 607 | Takes a step inside the approved scope now, leaves a step outside it to the user, and carries work on instead of wrapping up before a compaction | `tools/evals/main-rules.ts`, one case |
+| `<defects>` | `agents/main.md` | 591 | Fixes a defect at its cause and reads a failing check for the cause instead of editing the check | `tools/evals/main-rules.ts`, two cases |
+| `<code>` | `agents/main.md` | 807 | Writes a comment that says why, splits a file over the line bounds, and calls a part done only after a check ran | `tools/evals/main-rules.ts`, one case, and `tools/file-lines.ts` for the bounds |
+| `<asking>` | `agents/main.md` | 617 | Asks through `AskUserQuestion` only when the facts leave two good options, decides otherwise, and does the work that does not depend on an answer before it asks | `tools/evals/main-rules.ts`, one case |
+| `<actions>` | `agents/main.md` | 750 | Gets approval for an action that is hard to undo, and does not pass a gate with a shortcut such as `--no-verify` | none |
+| `<claims>` | `agents/main.md` | 479 | Checks a technical claim of the user before building on it, and measures a performance claim | none |
+| `<opening>` | `output-styles/Concise.md` | 279 | Opens with the outcome, and opens a reply to a correction with the next action rather than agreement | `claudekit/openings/evidence.ts`, a signal at 89% false positives, in no hook |
+| `<shape>` | `output-styles/Concise.md` | 444 | Puts each code item in backticks and references code as `file:line` | none |
+| `<honesty>` | `output-styles/Concise.md` | 440 | Calls a piece working only after a check ran in the session, and keeps each failure in the reply | none |
+| `<asks>` | `output-styles/Concise.md` | 308 | Ends with a numbered list only when a step needs the user | none |
 | `Agent` | tool text | 973 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
 | `Bash` | tool text | 1,090 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Edit` | tool text | 328 | Reads a file in this conversation before editing it, and strips the `Read` line prefix from `old_string` so an edit does not fail on a line number | `plugins/claudetto/tests/tool-describe.test.ts` |
@@ -379,8 +379,8 @@ piece that ships, a row for each piece that ships, and no row whose behavior and
 | `ToolSearch` | tool text | 727 | Gets a deferred tool's schema before calling it | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Write` | tool text | 196 | Writes a whole file only for a new file or a full replacement, and uses `Edit` for a partial change | `plugins/claudetto/tests/tool-describe.test.ts` |
 
-The eleven `agents/main.md` rows come to 5,552 characters and the file sends 5,572, the difference
-being the blank line between sections. The four `Concise.md` rows come to 1,520 against 1,526. The
+The eleven `agents/main.md` rows come to 5,283 characters and the file sends 5,303, the difference
+being the blank line between sections. The four `Concise.md` rows come to 1,471 against 1,477. The
 eight upfront tool texts come to 5,570 against a stock sum of 8,710, a cut of 3,140.
 
 One row of the table is not always loaded, and it is in the table because the check that reads this
@@ -485,6 +485,7 @@ One surface at a time, each read with `just capture --shipped` against the readi
 | Surface | Before | After | Fall | Change |
 | --- | --- | --- | --- | --- |
 | Session prompt, `agents/main.md` | 32,039 | 31,770 | 269 | Reasons that only restate their rule, and wordier phrasings, cut; every rule kept. Body 5,572 to 5,303 |
+| Output style, `Concise.md` | 31,770 | 31,721 | 49 | Shorter phrasings; every rule kept. File 1,646 to 1,597 |
 
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
