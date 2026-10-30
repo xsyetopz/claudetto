@@ -224,7 +224,7 @@ const TRUST_ENTRIES = [
 	"**Sensitive remote targets**: Any host, namespace, or environment whose name carries `prod` or `production`.",
 ];
 
-/** A rung for the A/B, not what setup writes: it replaces every built-in list, and its `environment` holds no fact of one repository, because `autoMode` is read in every repository. */
+/** It replaces every built-in list, and its `environment` holds no fact of one repository, because `autoMode` is read in every repository. */
 export const suiteSnippet = (): AutoModeSnippet => ({
 	autoMode: {
 		allow: ALLOW_RULES.map(ruleEntry),
