@@ -1,10 +1,10 @@
 import { serve } from "bun";
 import {
-	ANSWER,
-	JSON_ANSWER,
 	jsonResponse,
 	streamResponse,
 	type ToolCall,
+	textMessage,
+	textStream,
 	toolAnswer,
 } from "./answer.ts";
 import { carriesTools, streams } from "./match.ts";
@@ -18,8 +18,8 @@ export interface FakeApi {
 	stop: () => Promise<void>;
 }
 
-/** With `call`, the first request that carries tools is answered with that tool call, once. */
-export const startFakeApi = (call?: ToolCall): FakeApi => {
+/** With `call`, the first request that carries tools is answered with that tool call, once; every other request gets `text`. */
+export const startFakeApi = (call?: ToolCall, text = "ok"): FakeApi => {
 	const bodies: string[] = [];
 	const others: string[] = [];
 	let pending = call;
@@ -33,14 +33,14 @@ export const startFakeApi = (call?: ToolCall): FakeApi => {
 				bodies.push(raw);
 				const body: unknown = JSON.parse(raw);
 				if (!streams(body)) {
-					return jsonResponse(JSON_ANSWER);
+					return jsonResponse(textMessage(text));
 				}
 				if (pending !== undefined && carriesTools(body)) {
 					const answer = toolAnswer(pending);
 					pending = undefined;
 					return streamResponse(answer);
 				}
-				return streamResponse(ANSWER);
+				return streamResponse(textStream(text));
 			}
 			others.push(`${request.method} ${pathname}`);
 			return jsonResponse("{}");

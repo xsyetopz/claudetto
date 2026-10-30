@@ -20,6 +20,24 @@ describe("the fake Messages API", () => {
 		expect(stream).toContain('"stop_reason":"end_turn"');
 	});
 
+	test("answers with the given text, streamed or not", async () => {
+		const api = startFakeApi(undefined, "<block>yes</block>");
+		const post = async (stream: boolean): Promise<string> =>
+			(
+				await fetch(`${api.url}/v1/messages`, {
+					method: "POST",
+					body: JSON.stringify({ stream }),
+				})
+			).text();
+
+		const streamed = await post(true);
+		const whole = await post(false);
+		await api.stop();
+
+		expect(streamed).toContain(JSON.stringify("<block>yes</block>"));
+		expect(whole).toContain(JSON.stringify("<block>yes</block>"));
+	});
+
 	test("answers the first request that carries tools with the given tool call, and the next one with text", async () => {
 		const api = startFakeApi({ name: "Bash", input: { command: "touch x" } });
 		const body = JSON.stringify({ stream: true, tools: [{ name: "Bash" }] });

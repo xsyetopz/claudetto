@@ -8,6 +8,7 @@ import {
 	type CommandRunner,
 	spawnCommand,
 } from "../../claudekit/session/command.ts";
+import { classifierMain } from "./classifier/main.ts";
 import { type Deps, executeSession, type Outcome } from "./execute.ts";
 import { seededKeys } from "./fixture.ts";
 import { RULE_CASES, type RuleCase } from "./main-rules.ts";
@@ -114,6 +115,9 @@ export const main = async (
 		readonly root?: string;
 	},
 ): Promise<number> => {
+	if (args[0] === "--classifier") {
+		return classifierMain(args.slice(1), io);
+	}
 	const options = parseArgs(args);
 	if ("error" in options) {
 		io.out(options.error);
