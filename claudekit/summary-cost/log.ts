@@ -1,4 +1,4 @@
-import type { Usage } from "../forward.ts";
+import type { Usage } from "../api/forward.ts";
 export interface Lines {
 	fired: number;
 	forked: number;
@@ -24,7 +24,7 @@ export const linesOf = (text: string): Lines => {
 	};
 };
 
-export type { Usage } from "../forward.ts";
+export type { Usage } from "../api/forward.ts";
 
 export interface Row {
 	pid?: number;

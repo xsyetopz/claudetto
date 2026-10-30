@@ -1,6 +1,6 @@
 // Shared by every local stand-in for the Messages API that sends some requests on to the real one.
 
-import { objectOf } from "./summary-cost/json.ts";
+import { objectOf } from "./json.ts";
 
 /** The token counts of one answer, as the API names them. */
 export interface Usage {

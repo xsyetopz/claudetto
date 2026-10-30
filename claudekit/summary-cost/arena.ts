@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import type { Mode } from "./proxy.ts";
+import type { Mode } from "../api/proxy.ts";
 
 export const ARMS = ["base", "fork-off", "proxy"] as const;
 

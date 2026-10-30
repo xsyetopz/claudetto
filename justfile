@@ -96,4 +96,4 @@ summary-cost *args:
 
 # Run the proxy that answers the status-line summarizer locally (LOG_PATH, --pass)
 summary-proxy *args:
-    bun claudekit/summary-cost/proxy.ts "$@"
+    bun claudekit/api/proxy.ts "$@"

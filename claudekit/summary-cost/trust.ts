@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import path from "node:path";
-import { objectOf, parsedOf } from "./json.ts";
+import { objectOf, parsedOf } from "../api/json.ts";
 import { underLock } from "./lock.ts";
 
 export const configPath = (): string => path.join(homedir(), ".claude.json");

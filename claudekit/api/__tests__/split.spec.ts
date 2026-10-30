@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { serve } from "bun";
-import { type SplitApi, startSplitApi } from "../split-api.ts";
+import { type SplitApi, startSplitApi } from "../split.ts";
 
 const stops: (() => unknown)[] = [];
 

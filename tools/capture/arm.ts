@@ -4,8 +4,10 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { cwd, env } from "node:process";
 import { spawn } from "bun";
-import { type FakeApi, startFakeApi, type ToolCall } from "./fake-api.ts";
-import { isClassifier, type Score, scoreOf } from "./score.ts";
+import type { ToolCall } from "../../claudekit/api/answer.ts";
+import { type FakeApi, startFakeApi } from "../../claudekit/api/fake.ts";
+import { isClassifier } from "../../claudekit/api/match.ts";
+import { type Score, scoreOf } from "./score.ts";
 
 const PLUGIN = "plugins/claudetto";
 
