@@ -1,15 +1,4 @@
-// How much the prompt of a Haiku 5.5 response grows from one response to the next in this login's
-// own transcripts, for checking the margin between the Haiku trigger and the price step against
-// the growth one call can add. Free: it reads the transcripts and makes no model call.
-//
-//   bun claudekit/haiku-growth/main.ts [--root DIR]
-//
-// A response counts once, by `message.id`. Its prompt is the three input counts together, cache
-// reads and writes included, because the price step counts them. Growth is taken only between two
-// consecutive responses of one thread. A file interleaves the main thread with sidechains, so the
-// thread of a response is the last link reached by following `parentUuid` through the file's own
-// `uuid` map. A step down (a compaction) starts the series again rather than counting as negative
-// growth.
+// Usage: bun claudekit/haiku-growth/main.ts [--root DIR]
 
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -43,7 +32,6 @@ interface Entry {
 const stringOf = (value: unknown): string | undefined =>
 	typeof value === "string" ? value : undefined;
 
-/** The Haiku 5.5 response in a parsed line, or none. */
 const responseOf = (parsed: Record<string, unknown>): Response | undefined => {
 	const message = parsed["message"];
 	if (!isRecord(message) || message["model"] !== HAIKU_MODEL) {
@@ -64,7 +52,6 @@ const responseOf = (parsed: Record<string, unknown>): Response | undefined => {
 	};
 };
 
-/** The links and the Haiku 5.5 response, if any, on one transcript line. */
 const entryOf = (line: string): Entry | undefined => {
 	let parsed: unknown;
 	try {
@@ -82,7 +69,6 @@ const entryOf = (line: string): Entry | undefined => {
 	};
 };
 
-/** The last link reached by following `parentUuid` through the file's own `uuid` map. */
 const rootOf = (
 	uuid: string,
 	parents: ReadonlyMap<string, string | undefined>,
@@ -99,7 +85,6 @@ const rootOf = (
 	}
 };
 
-/** The prompt-size growth read from the sessions: the response count, the prompt in tokens of each response, the step from each prompt to the next, and the sums of consecutive step pairs. */
 export interface Growth {
 	readonly responses: number;
 	readonly steps: readonly number[];
@@ -107,7 +92,6 @@ export interface Growth {
 	readonly prompts: readonly number[];
 }
 
-/** The growth from each prompt to the next that is not smaller, and each pair of steps in a row. */
 const stepsOf = (
 	prompts: readonly number[],
 ): { steps: number[]; pairs: number[] } => {
@@ -129,7 +113,6 @@ const stepsOf = (
 	return { steps, pairs };
 };
 
-/** The prompts of each thread of one file, in file order, skipping an id already seen. */
 const threadsOf = (
 	text: string,
 	seen: Set<string>,
@@ -157,7 +140,6 @@ const threadsOf = (
 	return threads;
 };
 
-/** The growth between consecutive responses of each thread, after dropping a repeated id. */
 export const growthOf = (transcripts: readonly string[]): Growth => {
 	const seen = new Set<string>();
 	const steps: number[] = [];

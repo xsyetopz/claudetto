@@ -1,10 +1,7 @@
-// The roster that ships is two agents, `Artemis` and `Athena`. Each declares exactly the tools the
-// runtime gives it, no body names a tool its frontmatter withholds.
-
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { spawn } from "bun";
-import { AGENT_ROSTER } from "../../plugins/claudetto/src/tools/texts.ts";
+import { AGENT_ROSTER } from "../../plugins/claudetto/src/blocks/tool-describe/texts.ts";
 import {
 	AGENTS_DIR,
 	agentFaults,
@@ -29,11 +26,30 @@ const AGENTS = new Map(
 const agentsByName = async () => AGENTS;
 
 describe("the shipped agent files", () => {
-	test("are the two kept agents and the main thread", async () => {
+	test("are the four kept agents and the main thread", async () => {
 		expect([...(await agentsByName()).keys()].sort(byName)).toEqual([
 			"Artemis",
 			"Athena",
+			"Hephaestus",
+			"Hermes",
 			"main",
+		]);
+	});
+
+	test("Hephaestus declares the edit tools and `Bash`, so it can run the check of its step", async () => {
+		expect((await agentsByName()).get("Hephaestus")?.tools).toEqual([
+			"Read",
+			"Edit",
+			"Write",
+			"Bash",
+		]);
+	});
+
+	test("Hermes declares only the web tools and `Read`, so it changes no file", async () => {
+		expect((await agentsByName()).get("Hermes")?.tools).toEqual([
+			"WebSearch",
+			"WebFetch",
+			"Read",
 		]);
 	});
 
@@ -130,19 +146,23 @@ describe("the delegation text against the files", () => {
 		expect(rosterNames(AGENT_ROSTER).sort(byName)).toEqual([
 			"Artemis",
 			"Athena",
+			"Hephaestus",
+			"Hermes",
 		]);
 	});
 
 	test("refuses a folded name planted back, because no file ships it", () => {
-		const planted = `${AGENT_ROSTER} Use \`Hephaestus\` for an edit.`;
+		const planted = `${AGENT_ROSTER} Use \`Zeus\` for a plan.`;
 		expect(rosterFaults(planted, shipped)).toEqual([
-			"the delegation text names Hephaestus, and no file of plugins/claudetto/agents/ ships it",
+			"the delegation text names Zeus, and no file of plugins/claudetto/agents/ ships it",
 		]);
 	});
 
 	test("refuses a shipped agent that the text never names", () => {
 		expect(rosterFaults("Two types ship: `Artemis` alone.", shipped)).toEqual([
 			"Athena ships, and the delegation text never names it",
+			"Hephaestus ships, and the delegation text never names it",
+			"Hermes ships, and the delegation text never names it",
 		]);
 	});
 

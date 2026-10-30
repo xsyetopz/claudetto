@@ -1,8 +1,3 @@
-// The observer ships off until a `window-budget` row prices its calls per session. It is
-// its own plugin with its own `userConfig`, so a tier row of `claudetto` cannot reach it the way
-// `cheapSummary` is reached. That makes two things to check, not one: the installed default of the
-// observer is off, and no tier row carries a field that would turn it on or price it.
-
 import { describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import type { PluginOptions } from "claude-code";
@@ -19,7 +14,6 @@ import {
 
 const MANIFEST = "plugins/claudetto-you-should-know/.claude-plugin/plugin.json";
 
-/** The `userConfig` of the shipped manifest, which is what an install reads. */
 const userConfig = async (): Promise<Record<string, PluginOptions>> => {
 	const text = await readFile(MANIFEST, "utf8");
 	return JSON.parse(text).userConfig;
@@ -62,7 +56,7 @@ describe("the installed observer is off", () => {
 /** A row field whose name would reach this plugin's own `enabled` switch. */
 const TURNS_IT_ON = /observer|enabled|shouldKnow/i;
 
-/** A settings value, since `PluginOptions` holds only these (`index.d.ts:7896`). */
+/** A settings value, since `PluginOptions` holds only these. */
 const isScalar = (
 	entry: readonly [string, unknown],
 ): entry is readonly [string, string | number | boolean] =>
@@ -70,10 +64,7 @@ const isScalar = (
 	typeof entry[1] === "number" ||
 	typeof entry[1] === "boolean";
 
-/**
- * A tier row as a settings file could carry it. The nested `haiku` object of the row is dropped,
- * because no `userConfig` value can hold one, which is itself why a row cannot reach this plugin.
- */
+/** The nested `haiku` object is dropped: no `userConfig` value can hold one. */
 const asOptions = (row: TierRow): PluginOptions =>
 	Object.fromEntries(Object.entries(row).filter(isScalar));
 

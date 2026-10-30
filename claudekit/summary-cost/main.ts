@@ -1,10 +1,9 @@
-// Measures what the agent status-line summarizer costs, and whether either workaround stops it.
-// Free and with no model call unless `--run` is given.
-
 import { spawn } from "node:child_process";
 import { mkdir, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
+import { start } from "../api/proxy.ts";
 import { mapInOrder } from "../probe/fixture/ordered.ts";
+import { baseUrlEnv } from "../session/env.ts";
 import {
 	ARMS,
 	type Arm,
@@ -15,10 +14,8 @@ import {
 	RUN_MS,
 } from "./arena.ts";
 import { type Lines, linesOf, rowsOf, type Seen, seenIn } from "./log.ts";
-import { start } from "./proxy.ts";
 import { configPath, trust, untrust } from "./trust.ts";
 
-/** What one run read back from its two logs: `lines` from the session's own `--debug` output and `seen` from the proxy's log. */
 export interface Run {
 	arm: Arm;
 	run: number;
@@ -34,7 +31,6 @@ const read = async (file: string): Promise<string> => {
 	}
 };
 
-/** Runs one arm once and reads its two logs. The session is stopped on the deadline, because a TUI does not exit by itself. */
 export const runArm = async (
 	arm: Arm,
 	run: number,
@@ -58,7 +54,7 @@ export const runArm = async (
 			// The session talks to the pty that `pty.py` opened, so this process needs no stdio of its own.
 			const child = spawn(command ?? "python3", args, {
 				cwd: at,
-				env: { ...process.env, ANTHROPIC_BASE_URL: proxy.url },
+				env: { ...process.env, ...baseUrlEnv(proxy.url) },
 				stdio: ["ignore", "ignore", "inherit"],
 			});
 			// `pty.py` keeps the deadline itself. This is the backstop for a helper that hangs.
@@ -85,7 +81,6 @@ export const runArm = async (
 	};
 };
 
-/** The line a run reports: the requests the summarizer made, and what they were charged. */
 export const lineOf = (r: Run): string =>
 	[
 		`${r.arm} ${r.run}:`,
@@ -101,21 +96,15 @@ export const lineOf = (r: Run): string =>
 		`seen ${r.seen.requests} requests, ${r.seen.unread} unread`,
 	].join(", ");
 
-/** The expected spend of a round, from the cap of each arm. */
 const expectedUsd = (arms: number, runs: number): number => arms * runs * 0.6;
 
-/**
- * The arms of a round. `--only <arm>` runs one of them, which is what a smoke costs: a round of six
- * arms that measures nothing because of one wrong assumption is six arms of spend, and three rounds
- * were lost that way.
- */
+/** `--only <arm>` runs one arm, which is what a smoke costs. */
 export const armsOf = (argv: string[]): Arm[] => {
 	const only = argv[argv.indexOf("--only") + 1];
 	const picked = ARMS.filter((arm) => arm === only);
 	return argv.includes("--only") && picked.length > 0 ? picked : [...ARMS];
 };
 
-/** Plans a round of arms and runs, prints its ceiling cost in USD, and returns the exit code; a paid run needs `--run`. */
 export const main = async (
 	argv: string[],
 	write: (s: string) => void,
@@ -145,8 +134,7 @@ export const main = async (
 		return 2;
 	}
 
-	// One arm at a time: each is a real session, and two at once would share the machine and the
-	// plugin store, so a count could belong to either.
+	// One arm at a time: two sessions at once would share the plugin store, so a count could belong to either.
 	const planned = arms.flatMap((arm) =>
 		Array.from({ length: runs }, (_, i) => ({ arm, run: i + 1 })),
 	);

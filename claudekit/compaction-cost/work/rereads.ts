@@ -1,10 +1,6 @@
-// How much of what a session reads after a point it had already read before it, measured at
-// each compaction boundary and at random control points of the same sessions.
-
 import type { Request, Session } from "../transcripts/transcripts.ts";
 import { countIn } from "./counts.ts";
 
-/** Turns counted after each point when looking for a re-read. */
 const AFTER = 25;
 
 /** A deterministic generator, so the control sample of a seed is reproducible. */
@@ -32,7 +28,6 @@ const sample = <T>(
 	return taken;
 };
 
-/** The re-read measure over a set of points: reads in the 25 turns after each point, those already read, their percent, and the points with any re-read. */
 export interface Rereads {
 	readonly points: number;
 	readonly reads: number;
@@ -41,7 +36,6 @@ export interface Rereads {
 	readonly withAny: number;
 }
 
-/** The plain requests of a session, and the indices into them where a compaction fell. */
 const splitOf = (items: Session): { plain: Request[]; marks: number[] } => {
 	const plain: Request[] = [];
 	const marks: number[] = [];
@@ -76,11 +70,6 @@ const atPoint = (
 	return { reads: after.length, again: countIn(after, seen) };
 };
 
-/**
- * How much of what a session reads after a point it had already read before it.
- * `lookback` of none reaches the whole history. `controls` measures random points
- * of the same sessions instead of the compaction boundaries, as the control arm.
- */
 export const rereads = (
 	sessions: readonly Session[],
 	lookback: number | undefined,

@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { MAIN_AGENT } from "../../plugins/claudetto/src/prompts.ts";
 import type {
 	CommandOptions,
 	CommandResult,
 	CommandRunner,
-} from "../../tools/evals/command.ts";
+} from "../../claudekit/session/command.ts";
+import { MAIN_AGENT } from "../../plugins/claudetto/src/prompts.ts";
 import { scoreTree } from "../../tools/evals/score.ts";
 import { runSession, sessionArgv } from "../../tools/evals/session.ts";
 

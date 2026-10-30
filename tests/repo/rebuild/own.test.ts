@@ -1,6 +1,3 @@
-// The rebuilt observer ships the project's own code. The rules are held by what they report for text
-// passed in, and the last block runs them over the real notes and the real plugin.
-
 import { describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";

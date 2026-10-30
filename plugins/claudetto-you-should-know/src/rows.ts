@@ -1,9 +1,5 @@
-// What the plugin keeps in its store: one row per session, and the lists and counters beside them.
-// Everything here is a plain value, so a test passes rows in and reads rows out.
-
 import { BORROWED } from "./constants.ts";
 
-/** The five store keys, and no others (`docs/keep/plugins/you-should-know-design.txt:118`). */
 export const KEYS = {
 	SESSIONS: "sessions",
 	SEEN: "seen",
@@ -12,10 +8,8 @@ export const KEYS = {
 	LOOKS_TO_SKIP: "looksToSkip",
 } as const;
 
-/** The state of an open view: an `offer` is the first line, `asked` is a dismissed offer waiting for a rating until it expires, `explained` is after `learn` showed the cards. */
 export type ViewKind = "offer" | "asked" | "explained";
 
-/** The line an open view shows, with the explanation that came in the same reply. */
 export interface View {
 	readonly kind: ViewKind;
 	readonly line: string;
@@ -23,7 +17,6 @@ export interface View {
 	readonly shownAt: number;
 }
 
-/** One session: the view it shows (null when closed) and the turns that checked and offered. */
 export interface Row {
 	readonly id: string;
 	readonly view: View | null;
@@ -61,23 +54,19 @@ const isRow = (value: unknown): value is Row =>
 	"askedTurn" in value &&
 	typeof value.askedTurn === "string";
 
-/** The rows a stored value holds; anything that is not a row is dropped. */
 export const sessionsOf = (value: unknown): readonly Row[] =>
 	Array.isArray(value) ? value.filter(isRow) : [];
 
-/** The lines a stored value holds, as strings only. */
 export const listOf = (value: unknown): readonly string[] =>
 	Array.isArray(value)
 		? value.filter((item): item is string => typeof item === "string")
 		: [];
 
-/** A stored counter, or 0 when it holds anything else. */
 export const countOf = (value: unknown): number =>
 	typeof value === "number" && Number.isFinite(value) && value > 0
 		? Math.floor(value)
 		: 0;
 
-/** The row of a session that has not offered anything yet. */
 export const blankRow = (id: string): Row => ({
 	id,
 	view: null,
@@ -86,7 +75,6 @@ export const blankRow = (id: string): Row => ({
 	askedTurn: "",
 });
 
-/** The row of session `id` from `rows`, or a blank row when it has none. */
 export const rowOf = (rows: readonly Row[], id: string): Row =>
 	rows.find((row) => row.id === id) ?? blankRow(id);
 
@@ -98,7 +86,6 @@ const rankOf = (row: Row, now: number): number => {
 	return now - row.view.shownAt > BORROWED.SHOWN_KEEP_MS ? 1 : 2;
 };
 
-/** The list with `row` first, capped at the most sessions kept, the cheapest to lose dropped first. */
 export const withRow = (
 	rows: readonly Row[],
 	row: Row,

@@ -24,7 +24,6 @@ interface Row {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
 
-/** The text of a content part, or none when the part is a tool call, a tool result, or an image. */
 const textOf = (part: unknown): string | undefined =>
 	isRecord(part) && part["type"] === "text" && typeof part["text"] === "string"
 		? part["text"]
@@ -33,7 +32,6 @@ const textOf = (part: unknown): string | undefined =>
 const kindOf = (part: unknown): unknown =>
 	isRecord(part) ? part["type"] : undefined;
 
-/** The content of a message, as the parts of an array or as a plain string. */
 const bodyOf = (content: unknown): Omit<Row, "role"> | undefined => {
 	if (typeof content === "string") {
 		return { text: content.trim(), isToolResult: false };
@@ -50,7 +48,6 @@ const bodyOf = (content: unknown): Omit<Row, "role"> | undefined => {
 	};
 };
 
-/** One transcript line as the reading needs it: who spoke, their text, and whether it is tool output. */
 const rowOf = (line: string): Row | undefined => {
 	let parsed: unknown;
 	try {
@@ -72,11 +69,7 @@ const rowOf = (line: string): Row | undefined => {
 const projectsRoot = (): string =>
 	join(env["CLAUDE_CONFIG_DIR"] ?? join(homedir(), ".claude"), "projects");
 
-/**
- * The final visible text of each turn of one transcript. `turn.complete` carries that text and not
- * every text block of a turn, so the reading keeps the last text of the assistant and emits it when
- * the next prompt of the person arrives. A `tool_result` is not a prompt: it continues the turn.
- */
+/** `turn.complete` carries the final text and not every text block of a turn. */
 export const answersOf = (transcript: string): readonly string[] => {
 	const answers: string[] = [];
 	let last: string | undefined;

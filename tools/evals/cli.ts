@@ -1,11 +1,19 @@
 #!/usr/bin/env bun
-// Plan mode is the default and costs nothing. A session starts only under `--run`, which is a paid
-// call that the user has to approve.
+// Plan mode is the default and costs nothing; a session starts only under `--run`, a paid call.
 
 import { dirname, join, resolve } from "node:path";
 import { argv, cwd } from "node:process";
 import { fileURLToPath } from "node:url";
-import { type CommandRunner, spawnCommand } from "./command.ts";
+import {
+	type CommandRunner,
+	spawnCommand,
+} from "../../claudekit/session/command.ts";
+import {
+	classifierMain,
+	type Patch,
+	POSITIVE_INTEGER,
+	parseFlags,
+} from "./classifier/main.ts";
 import { type Deps, executeSession, type Outcome } from "./execute.ts";
 import { seededKeys } from "./fixture.ts";
 import { RULE_CASES, type RuleCase } from "./main-rules.ts";
@@ -19,13 +27,10 @@ import {
 import { reportLines } from "./report.ts";
 import { PLUGIN_DIR } from "./session.ts";
 
-/** The usage line printed after an argument error, listing every flag the eval command takes. */
 export const USAGE =
 	"usage: bun tools/evals/cli.ts [--run] [--case KEY] [--arm ARM] [--runs N] [--model NAME] [--budget USD]";
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
-
-const POSITIVE_INTEGER = /^[1-9][0-9]*$/;
 
 interface Options {
 	readonly run: boolean;
@@ -34,10 +39,10 @@ interface Options {
 	readonly maxBudgetUsd?: number;
 }
 
-/** What a flag with a value does to the options, or `undefined` when the value is not one it takes. */
-type Patch = (options: Options, value: string) => Options | undefined;
-
-const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
+const VALUE_FLAGS: ReadonlyMap<string, Patch<Options>> = new Map<
+	string,
+	Patch<Options>
+>([
 	["--case", (o, v) => ({ ...o, request: { ...o.request, only: v } })],
 	[
 		"--arm",
@@ -58,30 +63,12 @@ const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
 	],
 ]);
 
-/** The options of `args`, or the reason they cannot be read. */
 export const parseArgs = (
 	args: readonly string[],
 	options: Options = { run: false, request: {} },
-): Options | { readonly error: string } => {
-	const [flag, ...rest] = args;
-	if (flag === undefined) {
-		return options;
-	}
-	if (flag === "--run") {
-		return parseArgs(rest, { ...options, run: true });
-	}
-	const patch = VALUE_FLAGS.get(flag);
-	const [value, ...after] = rest;
-	if (patch === undefined || value === undefined) {
-		return { error: `${flag} is not a flag, or it has no value` };
-	}
-	const next = patch(options, value);
-	return next === undefined
-		? { error: `${value} is not a value of ${flag}` }
-		: parseArgs(after, next);
-};
+): Options | { readonly error: string } =>
+	parseFlags(args, options, VALUE_FLAGS);
 
-/** The lines of plan mode: each session, the cases without a fixture, and the number of model calls. */
 export const planLines = (plan: Plan): readonly string[] => [
 	...plan.sessions.map(
 		(session) => `session ${session.key} | ${session.arm} | run ${session.run}`,
@@ -106,7 +93,6 @@ const runAll = async (
 	return runAll(deps, rest, [...done, outcome]);
 };
 
-/** The CLI as a function: the exit status, with each output line given to `out`. */
 export const main = async (
 	args: readonly string[],
 	io: {
@@ -117,6 +103,9 @@ export const main = async (
 		readonly root?: string;
 	},
 ): Promise<number> => {
+	if (args[0] === "--classifier") {
+		return classifierMain(args.slice(1), io);
+	}
 	const options = parseArgs(args);
 	if ("error" in options) {
 		io.out(options.error);

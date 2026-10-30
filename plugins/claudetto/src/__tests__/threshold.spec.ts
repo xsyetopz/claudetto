@@ -1,6 +1,3 @@
-// The formula under test is the one read in the installed `2.1.312`; 35 measured boundaries fired at
-// 224,999 where this login's own percentage of `80.3571` puts them.
-
 import { describe, expect, test } from "bun:test";
 import {
 	AUTOCOMPACT_PCT,

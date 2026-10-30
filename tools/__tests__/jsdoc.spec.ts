@@ -1,7 +1,3 @@
-// The comment rule, checked on planted sources. Each case plants the shape of a declaration and its
-// comment and asserts what the rule returns, because the decision is the behavior and not the wording
-// of the message.
-
 import { describe, expect, test } from "bun:test";
 import {
 	docAbove,
@@ -11,49 +7,18 @@ import {
 	wordsOfName,
 } from "../jsdoc.ts";
 
-/** The faults of a planted source, which is the whole rule applied end to end. */
 const faultsIn = (text: string): string[] =>
 	exportsOf("planted.ts", text)
 		.flatMap(faultsOf)
 		.map((fault) => `${fault.line}: ${fault.reason}`);
 
 describe("an export with no block above it", () => {
-	test("refuses it and gives its line and its kind", () => {
+	test("is allowed, because a name can be the whole doc", () => {
 		const text = `const hidden = 1;
 export const shown = 2;
 `;
 
-		const faults = faultsIn(text);
-
-		expect(faults).toHaveLength(1);
-		expect(faults[0]).toBe(
-			"2: exported const shown has no JSDoc block directly above it",
-		);
-	});
-
-	test("allows it once a block sits directly above", () => {
-		const text = `/** The count a round stops at. */
-export const shown = 2;
-`;
-
 		expect(faultsIn(text)).toEqual([]);
-	});
-
-	test("refuses a block separated from the declaration by a blank line", () => {
-		const text = `/** The count a round stops at. */
-
-export const shown = 2;
-`;
-
-		expect(faultsIn(text)).toHaveLength(1);
-	});
-
-	test("refuses a `//` comment, because the rule asks for a block", () => {
-		const text = `// The count a round stops at.
-export const shown = 2;
-`;
-
-		expect(faultsIn(text)).toHaveLength(1);
 	});
 
 	test("ignores a re-export, which declares nothing of its own", () => {

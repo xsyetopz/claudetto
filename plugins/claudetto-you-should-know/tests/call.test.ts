@@ -1,22 +1,23 @@
-// The one request of a check. The lab answers it, so the model, the effort, the bound, and the
-// cached block are read off the request the plugin made, and no provider is reached.
-
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { OWN } from "../src/constants.ts";
 import { lab, steps, TURNED_ON, typed } from "./lab-kit.ts";
 
+const runCheck = async ($: Engine, on: On) => {
+	const l = lab(on);
+	await steps($, l, "t1", { from: 1, to: 6 });
+	return l;
+};
+
 test(
 	"a check makes exactly one request, with the model, the effort, and the bound named",
 	{ options: TURNED_ON },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		expect(l.asked).toHaveLength(1);
 		expect(l.asked[0]?.model).toBe("claude-haiku-5-5");
-		expect(l.asked[0]?.effort).toBe("medium");
+		expect(l.asked[0]?.effort).toBe("high");
 		expect(l.asked[0]?.maxTokens).toBe(OWN.MAX_TOKENS);
 	},
 );
@@ -25,9 +26,7 @@ test(
 	"the fixed instructions are the cached block and the digest follows unmarked",
 	{ options: TURNED_ON },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		const blocks = l.asked[0]?.promptBlocks ?? [];
 		expect(blocks).toHaveLength(2);
@@ -40,9 +39,7 @@ test(
 	"the model and the effort come from the options of the plugin",
 	{ options: { enabled: true, model: "claude-sonnet-5-5", effort: "low" } },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		expect(l.asked[0]?.model).toBe("claude-sonnet-5-5");
 		expect(l.asked[0]?.effort).toBe("low");
@@ -53,11 +50,9 @@ test(
 	"an effort outside the five levels falls back to the default",
 	{ options: { enabled: true, effort: "maximum" } },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
+		const l = await runCheck($, on);
 
-		await steps($, l, "t1", { from: 1, to: 6 });
-
-		expect(l.asked[0]?.effort).toBe("medium");
+		expect(l.asked[0]?.effort).toBe("high");
 	},
 );
 
@@ -89,11 +84,7 @@ test(
 	},
 );
 
-// The original forks the session to ask, which copies the whole conversation into the request and
-// costs the window; the rebuild asks with `$.model.complete` and a digest instead
-// (`src/constants.ts:53`). An answer is put beneath `model.fork` here rather than left out, because
-// a missing answer throws and a throw inside the check is swallowed by its own catch: the ban then
-// reads as a pass whether the call was made or not.
+// `model.fork` gets an answer: a missing one throws into the check's catch, so the ban passes vacuously.
 test(
 	"a check never forks the session, so the conversation is not copied into the request",
 	{ options: TURNED_ON },

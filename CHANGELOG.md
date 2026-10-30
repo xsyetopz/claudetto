@@ -6,6 +6,45 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 Before 1.0.0, a release can change or remove behavior.
 After each update, do the steps in the "Update" section of the README.
 
+## [0.1.0] - 2026-10-31
+
+### Added
+
+- `/claudetto:setup` and `just setup` write `$schema`, the feature `env` flags, the five `/config` items (`workflowSizeGuideline`, `workflowKeywordTriggerEnabled`, `enableWorkflows`, `enableArtifact`, `remoteControlAtStartup`), and a deny of the six built-in agents, in the group "Features off" and the group "Smaller prompt".
+  IDE auto-install is off through `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`, so setup never writes `~/.claude.json`.
+- `just setup` runs `openspec init --tools claude --profile core` when the `openspec` CLI is on `PATH` and the project has no `openspec/`. It prints `bun add -g @fission-ai/openspec` when the CLI is not on `PATH`, and skips when `openspec/` exists.
+- Setup writes `statusLine` and `subagentStatusLine`, a launcher of `bin/claudetto-statusline` that picks the newest installed plugin version.
+  The line shows the folder, the branch of a worktree session, the review state of the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown, in up to four rows; a status line you already set is kept.
+- `/init` runs an interview in place of the built-in text: it reads the repository and the memory files, asks with `AskUserQuestion` only what they do not show, and writes after a yes to the draft of each file. A skill of your own named `init` keeps its text.
+- The agents `claudetto:Hephaestus`, which makes one edit and runs its check, and `claudetto:Hermes`, which answers a question from the web with its sources, each at `medium` effort.
+- The `docs` skill looks up library docs through the Context7 CLI: `bunx ctx7 library`, then `bunx ctx7 docs`.
+  Its listing costs 71 characters of the first request, against 907 for the Context7 MCP server.
+- The optional `CONTEXT7_API_KEY` option, kept in secure storage, reaches `ctx7` through the env and never enters the context.
+- `just hygiene` removes the temp folders and old handoffs that Claude Code never removes: probe folders past an hour, ended session folders past `cleanupPeriodDays`, and all but the newest handoff past `cleanupPeriodDays`. It takes `--dry-run`, and the same sweep runs at each startup.
+- `/goal <cmd>` stores a shell command, and a stop is blocked while the command fails. A `tasks.md` of an applied change with an open box blocks a stop in the same way.
+  After 5 blocked stops in a row with no file change the stop goes through, and the goal is marked blocked; `/goal resume` turns it back on, and the agent can pause or block a goal through the `goal` tool.
+- A warning at startup, once, when the running Claude Code is older than `2.1.314`.
+- The `plan-mode` block replaces the full plan mode reminder with a shorter one that names `claudetto:Artemis` for a search over many files.
+  A plan mode first request of `2.1.314` falls from 50,205 to about 46,415 characters (`just capture` with `permissions.defaultMode` set to `plan`). The sparse reminder, and any engine text shorter than ours, is kept.
+- The `classifier` option, `off` by default, judges each tool call that is not read-only with claudetto's own rule suite, from a `classic.PreToolUse` hook in `plugins/claudetto/src/blocks/classify/`.
+  It asks Jev first when `TYPESAFE_API_KEY` is set and lets Jev decide alone only at a block probability of at most 0.05 or at least 0.95. Otherwise one call goes to `claude-haiku-5-5` at `high` (`haiku`) or `claude-sonnet-5-5` at `medium` (`sonnet`), with the rules in one cached system block.
+  The judge reads the user's messages and the earlier tool calls, and no assistant prose or tool output, because the agent can argue for itself in both and an injected instruction reaches it through tool output.
+  A failed call, a reply with no verdict, or a thrown error denies, because an unwatched session cannot answer a prompt.
+  A probe on the fake Messages API showed that a hook answer of `allow`, `deny`, or `ask` sends zero requests to the built-in classifier for that call, so the option replaces the built-in classifier, not adds to it.
+  It is off because every judged call is paid and no measured rows price it or compare it with the built-in classifier yet.
+
+### Changed
+
+- The compaction summary of the `cheapSummary` option runs on `claude-haiku-5-5` at effort `high`, and is held to 4,000 characters.
+  The prompt used to set no length, so the reply ran to the token cap and ended mid-sentence; a longer reply is now cut at a line break.
+- The side check of `claudetto-you-should-know` defaults to `high` effort, in place of `medium`.
+- The first request shrinks by about 2,300 characters: `just capture --arm plugin --shipped` on `2.1.314` reads 31,237 against 33,515 for `0.0.0`, read from a shorter folder path, which lowers that reading. The session prompt, the `Concise` output style, five tool texts, the handoff reminder, and the agent and skill listings are shorter.
+- Setup turns fast mode off with `CLAUDE_CODE_DISABLE_FAST_MODE=1` and leaves `EnterWorktree` and `ExitWorktree` allowed, so worktrees stay on.
+- `/claudetto:setup` and `just setup` write claudetto's `autoMode` rule suite in place of the four built-in lists, in the dialog group now named "Sandbox and auto mode".
+  The classifier A/B of `just eval --classifier --run` scored the suite 120 of 120 against 120 of 120 for the built-in lists, at about half the measured price per call, and 72 of 72 on the final text.
+  The suite holds no fact of this repository, so the command no longer leaves `autoMode` out; `just setup` no longer writes this repository's `environment` facts.
+  The fault check of `plugins/claudetto/src/automode/faults.ts` lets a list drop `$defaults` only when it is the measured suite list.
+
 ## [0.0.0] - 2026-10-30
 
 ### Changed
@@ -46,7 +85,7 @@ After each update, do the steps in the "Update" section of the README.
   Nothing measured is lost: the `allow`, `soft_deny`, and `hard_deny` lists are `$defaults` alone, and keeping all three groups reads the same 31,959 characters as the full snippet, because the classifier reads the key later and not in the first request.
   `just setup` still writes it, because it runs inside this checkout, and `tools/capture/settings.ts` now measures what the command writes rather than what `just setup` writes, since the figures are quoted in `README.md`.
   A `command.run` hook answers the command in code and returns `text` with no `context`, so the person reads the report and the model reads nothing of it: running it costs the session no tokens.
-  That is measured and not reasoned: a `claude -p "/claudetto:setup"` run with `ANTHROPIC_BASE_URL` on the fake Messages API of `tools/capture/fake-api.ts`, a throwaway `CLAUDE_CONFIG_DIR`, and `--plugin-dir` exited `0`, printed `claudetto: Nothing was chosen, so nothing was written.`, and left the fake API with zero requests on the messages route.
+  That is measured and not reasoned: a `claude -p "/claudetto:setup"` run with `ANTHROPIC_BASE_URL` on the fake Messages API of `claudekit/api/fake.ts`, a throwaway `CLAUDE_CONFIG_DIR`, and `--plugin-dir` exited `0`, printed `claudetto: Nothing was chosen, so nothing was written.`, and left the fake API with zero requests on the messages route.
   The same run shows the headless path is safe: `$.ui.ask` rejects where there is no one to ask, and the hook answers that rejection with a line of its own rather than throwing, because a hook that throws is skipped and the body of `commands/setup.md` would go to the model as a prompt.
   What it does cost is its row in the command listing. `just capture --arm plugin --shipped` read 31,909 characters against 31,861 with no command, so the row is 48 characters, all in `messages`, and the description in `commands/setup.md` is one short sentence because the first wording of it read 31,961.
   A hook that throws is skipped, which would send the body of `commands/setup.md` to the model as a prompt, so a failed read or write is reported in `text` instead.

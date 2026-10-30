@@ -1,7 +1,7 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto-you-should-know",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Shows one short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. Once on, it makes one small bounded request every sixth step, sends nothing else out, and keeps no telemetry.",
 	"author": {
 		"name": "xsyetopz"
@@ -27,7 +27,7 @@
 			"type": "string",
 			"title": "Effort",
 			"description": "How hard the model thinks about each check.",
-			"default": "medium",
+			"default": "high",
 			"options": ["low", "medium", "high", "xhigh", "max"]
 		}
 	}

@@ -1,11 +1,9 @@
-// The setup entry point: `bun plugins/claudetto/src/tiers/setup.ts [--settings PATH] [--dry-run]`.
-// The decisions are the exported pure functions, and only the `import.meta.main` block touches a file.
-
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { refusedPaths } from "./keys.ts";
 import { applyTier, type Json, settingsText } from "./merge.ts";
+import { initOpenSpec } from "./openspec.ts";
 import { readTier, unknownTierLine } from "./read.ts";
 import { tierReport } from "./report.ts";
 import { tierSnippet } from "./snippet.ts";
@@ -13,21 +11,16 @@ import { tierSnippet } from "./snippet.ts";
 const isRecord = (value: unknown): value is Json =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
-/** What the command line asked for. */
 export interface SetupArgs {
-	/** The settings file to merge into, or none for `~/.claude/settings.json`. */
 	readonly settings?: string;
-	/** Whether to print the report and write nothing. */
 	readonly dryRun: boolean;
 }
 
-/** What setup decided: the text to print, and the settings to write, or none when nothing is written. */
 export interface SetupPlan {
 	readonly report: string;
 	readonly write?: Json;
 }
 
-/** Reads `--settings PATH` and `--dry-run` from `argv`. Any other argument, or `--settings` with no path, throws. */
 export const parseArgs = (argv: readonly string[]): SetupArgs => {
 	let settings: string | undefined;
 	let dryRun = false;
@@ -50,10 +43,6 @@ export const parseArgs = (argv: readonly string[]): SetupArgs => {
 	return { dryRun, ...(settings === undefined ? {} : { settings }) };
 };
 
-/**
- * The plan for the parsed `.claude.json` in `state` against the settings in `current`, composed for
- * `platform` as `process.platform` spells it. A tier with no row plans no write.
- */
 export const planSetup = (
 	state: unknown,
 	current: Json,
@@ -94,6 +83,11 @@ const main = async (): Promise<void> => {
 	if (plan.write !== undefined && !args.dryRun) {
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, settingsText(plan.write));
+	}
+	const init = await initOpenSpec(process.cwd(), args.dryRun);
+	console.info(init.report);
+	if (init.failed) {
+		process.exitCode = 1;
 	}
 };
 

@@ -9,7 +9,6 @@ import { isSession, ok, stubRunner } from "./stub.ts";
 
 const REAL_FIXTURES = join(import.meta.dir, "../fixtures");
 
-/** A fixtures folder with one fixture `K` holding a `.tpl` file, a plain file, and a prompt. */
 const makeRoot = async (): Promise<string> => {
 	const root = await mkdtemp(join(tmpdir(), "evals-fixture-"));
 	await mkdir(join(root, "K", "repo", "docs"), { recursive: true });

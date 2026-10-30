@@ -24,6 +24,17 @@ declare module "claude-code" {
 					}
 				>
 			>;
+			/** The shell command of `/goal` that must exit 0 before a stop goes through, when it was set, whether it is `active` or stopped by the root agent or the bound, and the reason it stopped, or `null` with no goal. */
+			goal: {
+				readonly check: string;
+				readonly setAt: number;
+				readonly status: "active" | "paused" | "blocked";
+				readonly reason: string;
+			} | null;
+			/** The `/goal` blocks in a row and the progress mark they saw. */
+			goalHeld: { readonly count: number; readonly seen: string };
+			/** The `tasks.md` loop blocks in a row and the progress mark they saw. */
+			loop: { readonly count: number; readonly seen: string };
 		};
 	}
 }

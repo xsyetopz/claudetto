@@ -1,5 +1,4 @@
-// The checks of a `sandbox` snippet that may not ship. A fault is reported, never repaired, so the
-// writer cannot hide a loss by fixing it quietly.
+// A fault is reported, never repaired, so the writer cannot hide a loss by fixing it quietly.
 
 import {
 	isWithin,
@@ -9,7 +8,6 @@ import {
 	sandboxSupported,
 } from "./sandbox.ts";
 
-/** The five ways a `sandbox` snippet loses protection: the sandbox off, unsandboxed commands allowed, `denyRead` missing a secret path, `allowRead` re-opening one, or `excludedCommands` running a program that reads one. */
 export type SandboxFaultRule =
 	| "sandbox-off"
 	| "unsandboxed-allowed"
@@ -17,20 +15,12 @@ export type SandboxFaultRule =
 	| "allow-read-reopens"
 	| "excluded-reopens";
 
-/** One finding of the sandbox checks; it is reported and never repaired. */
 export interface SandboxFault {
 	readonly rule: SandboxFaultRule;
-	/** The key, path, or command the fault is in. */
 	readonly where: string;
 }
 
-/**
- * Programs whose job is to read a secret path, so a command in `excludedCommands` that starts with
- * one runs outside the sandbox and reads it past `denyRead`. The route says `excludedCommands` is
- * "a convenience, not a boundary". The mapping is what each tool is documented to read:
- * `~/.ssh` for the `ssh` family, `~/.gnupg` for `gpg`, `~/.aws/credentials` for `aws`,
- * `~/.docker/config.json` for `docker`, `~/.netrc` for `ftp`.
- */
+/** Programs that read a secret path run from `excludedCommands` outside the sandbox, past `denyRead`. */
 const READERS: Readonly<Record<string, string>> = {
 	ssh: "~/.ssh",
 	scp: "~/.ssh",
@@ -51,14 +41,12 @@ const WHITESPACE = /\s+/;
 
 const WILDCARD_ONLY = /^:?\*$/;
 
-/** The program of a pattern such as `docker:*` or `ssh host`, which is its first word. */
 const programOf = (pattern: string): string => {
 	const first = pattern.trim().split(WHITESPACE)[0] ?? "";
 	const colon = first.indexOf(":");
 	return colon === -1 ? first : first.slice(0, colon);
 };
 
-/** True when the excluded command runs a reader of a secret path or names a secret path. */
 export const reopensSecret = (pattern: string): boolean => {
 	const program = programOf(pattern);
 	if (WILDCARD_ONLY.test(pattern.trim()) || ANY_FILE.has(program)) {
@@ -111,7 +99,6 @@ const excludedFaults = (snippet: SandboxSnippet): readonly SandboxFault[] =>
 		.filter(reopensSecret)
 		.map((where): SandboxFault => ({ rule: "excluded-reopens", where }));
 
-/** Every fault of a snippet. An empty list is a snippet that may be written. */
 export const sandboxFaults = (
 	snippet: SandboxSnippet,
 	platform: string = process.platform,

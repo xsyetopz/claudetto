@@ -1,18 +1,11 @@
-// The request stream of this login's own transcripts, read only. No model call, no
-// network. No message text is kept: only token counts, tool names, and file paths.
-// Sidechain (subagent) requests are kept, because they are billed like any other.
-
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { file as bunFile, Glob } from "bun";
 
-/** Probe forks are not real work, so their transcripts are skipped. */
 const SKIP = "claudetto-probe";
 
-/** Tools whose `file_path` input names a file the session now holds in context. */
 const READERS = new Set(["Read", "Edit", "Write", "NotebookEdit", "MultiEdit"]);
 
-/** Narrows to a plain object; an array and `null` are refused. */
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -21,24 +14,18 @@ const num = (value: unknown): number => (typeof value === "number" ? value : 0);
 const str = (value: unknown): string =>
 	typeof value === "string" ? value : "";
 
-/** One assistant request, with the three billed prompt lines kept apart. */
 export interface Request {
 	readonly kind: "request";
-	/** `input_tokens`: the part of the prompt that no cache served. */
 	readonly fresh: number;
-	/** `cache_read_input_tokens`. */
 	readonly read: number;
-	/** `cache_creation_input_tokens`. */
 	readonly write: number;
 	readonly out: number;
 	readonly model: string;
-	/** Epoch ms of the record, or 0 when it carries no timestamp. */
 	readonly at: number;
 	readonly tools: readonly string[];
 	readonly paths: readonly string[];
 }
 
-/** One `compact_boundary` record, with its `compactMetadata`. */
 export interface Boundary {
 	readonly kind: "boundary";
 	readonly trigger: string;
@@ -47,27 +34,18 @@ export interface Boundary {
 	readonly ms: number;
 }
 
-/** The summary a compaction produced: a `user` message with `isCompactSummary`. */
 export interface Summary {
 	readonly kind: "summary";
 	readonly chars: number;
 }
 
-/** A record of a session that the loader keeps; every other record of the transcript is dropped. */
 export type Item = Request | Boundary | Summary;
 
-/**
- * Tokens per character of the summary. The transcript records no token count for
- * it, because the summarizer request writes no `usage` record, so its size is the
- * character count over this divisor, as `docs/evidence/compaction/boundaries.md`
- * does it.
- */
+/** Tokens per character: the transcript records no `usage` for the summarizer request. */
 export const CHARS_PER_TOKEN = 4;
 
-/** A session: its items in order, kept only when a compaction happened in it. */
 export type Session = readonly Item[];
 
-/** The prompt this request was billed for. */
 export const sizeOf = (request: Request): number =>
 	request.fresh + request.read + request.write;
 
@@ -117,7 +95,6 @@ const requestOf = (
 	};
 };
 
-/** The characters of a `user` message, whichever shape its content has. */
 const charsOf = (message: Record<string, unknown>): number => {
 	const content = message["content"];
 	if (typeof content === "string") {
@@ -132,7 +109,6 @@ const charsOf = (message: Record<string, unknown>): number => {
 	return chars;
 };
 
-/** One transcript line as an item, or none for a line that is neither. */
 const itemOf = (line: string): Item | undefined => {
 	let row: unknown;
 	try {
@@ -169,7 +145,6 @@ const itemsOf = (text: string): Item[] => {
 	return items;
 };
 
-/** Every session under `root` that holds at least one compaction, in path order. */
 export const loadSessions = async (
 	root = join(homedir(), ".claude", "projects"),
 ): Promise<Session[]> => {
@@ -184,10 +159,8 @@ export const loadSessions = async (
 	);
 };
 
-/** Every `Request` of `sessions` in file order, with the boundaries and summaries left out. */
 export const requestsOf = (sessions: readonly Session[]): Request[] =>
 	sessions.flat().filter((item): item is Request => item.kind === "request");
 
-/** Every `Boundary` of `sessions` in file order, with the requests and summaries left out. */
 export const boundariesOf = (sessions: readonly Session[]): Boundary[] =>
 	sessions.flat().filter((item): item is Boundary => item.kind === "boundary");

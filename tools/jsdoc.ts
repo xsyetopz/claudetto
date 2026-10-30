@@ -1,36 +1,18 @@
 #!/usr/bin/env bun
-// The comment rule, held by a command instead of by review. It has two halves, and both read the code
-// rather than judging the writing.
-//
-// First, every exported declaration of a shipped source carries a JSDoc block directly above it. An
-// export is the surface another module calls, so a reader meets it without the file around it, and a
-// name alone does not say what a caller may pass or what it gets back.
-//
-// Second, a JSDoc block whose words are all already in the name below it says nothing the name did not.
-// `/** The window row. */` above `WindowRow` costs a line and a read and adds no fact. The test is a
-// set comparison against the identifier and never a judgement of the prose, and it is deliberately
-// conservative: a block is refused only when every content word of it appears in the name. One word
-// the name does not hold is enough to pass, because the cost of a false refusal here is a session
-// rewording a true comment, which is the fault that `tools/no-narration.ts` shows.
-//
-//   bun tools/jsdoc.ts
-//   bun tools/jsdoc.ts --count        a count per folder instead of one line per fault
+// Usage: bun tools/jsdoc.ts [--count]
 
 import { join } from "node:path";
 import { file as bunFile, Glob } from "bun";
 import { CHECKED_GLOBS, isTestFile } from "./file-lines.ts";
 
-/** An exported declaration, which is the surface the rule is about. A re-export declares nothing. */
 const DECLARATION =
 	/^export\s+(?:declare\s+)?(?:abstract\s+)?(?:async\s+)?(const|let|var|function|class|interface|type|enum)\s+([A-Za-z_$][\w$]*)/;
 
-/** The close and open of a JSDoc block, which is the only comment form the first half accepts. */
 const BLOCK_END = /^\s*\*\/\s*$/;
 const BLOCK_START = /^\s*\/\*\*/;
 const BLOCK_BODY = /^\s*\*?\s?/;
 const ONE_LINE = /^\s*\/\*\*(.*)\*\/\s*$/;
 
-/** Words that carry no fact, so a block made only of these and the name's own words restates it. */
 const EMPTY_WORDS = new Set([
 	"a",
 	"an",
@@ -62,29 +44,24 @@ const EMPTY_WORDS = new Set([
 	"with",
 ]);
 
-/** One exported declaration, with whatever sits directly above it, which is what the rule judges. */
 export interface Export {
 	readonly file: string;
 	readonly line: number;
 	readonly kind: string;
 	readonly name: string;
-	/** The JSDoc block directly above, or null when there is none. */
 	readonly doc: string | null;
 }
 
-/** One broken rule, in the `file:line: reason` form an editor jumps to. */
 export interface Fault {
 	readonly file: string;
 	readonly line: number;
 	readonly reason: string;
 }
 
-/** The seam inside `rowsOf`, and the one inside `HTTPServer`, where a word ends and the next begins. */
 const CAMEL_SEAM = /([a-z0-9])([A-Z])/g;
 const RUN_SEAM = /([A-Z]+)([A-Z][a-z])/g;
 const NAME_BREAK = /[\s_$]+/;
 
-/** The words of an identifier, splitting camel case, `_`, and `$`, lowercased. */
 export const wordsOfName = (name: string): Set<string> =>
 	new Set(
 		name
@@ -95,15 +72,10 @@ export const wordsOfName = (name: string): Set<string> =>
 			.map((word) => word.toLowerCase()),
 	);
 
-/** A backticked span, and anything that is not a word character of the prose. */
 const CODE_SPAN = /`[^`]*`/g;
 const PROSE_BREAK = /[^a-z0-9]+/;
 
-/**
- * The content words of a doc block: its prose, less punctuation and the words that carry no fact. A
- * backticked span is dropped with them, because a code item a block names is almost always the
- * declaration's own name or one of its parameters, and both are already on the line below.
- */
+/** A backticked span is dropped: it names the declaration or a parameter, both on the next line. */
 export const wordsOfDoc = (doc: string): string[] =>
 	doc
 		.split("\n")
@@ -114,11 +86,7 @@ export const wordsOfDoc = (doc: string): string[] =>
 		.split(PROSE_BREAK)
 		.filter((word) => word.length > 0 && !EMPTY_WORDS.has(word));
 
-/**
- * The JSDoc block that ends on the line above `at`, or null when the line above is not a block close.
- * Nothing is skipped on the way up, because a block separated from its declaration by a blank line or
- * by another statement documents neither one clearly.
- */
+/** Nothing is skipped on the way up, since a block split from its declaration documents neither. */
 export const docAbove = (
 	lines: readonly string[],
 	at: number,
@@ -142,7 +110,6 @@ export const docAbove = (
 	return null;
 };
 
-/** Every exported declaration of one file, with the doc block above each. */
 export const exportsOf = (file: string, text: string): Export[] => {
 	const lines = text.split("\n");
 	const found: Export[] = [];
@@ -161,16 +128,9 @@ export const exportsOf = (file: string, text: string): Export[] => {
 	return found;
 };
 
-/** The faults of one export: no block above it, or a block that only says its name again. */
 export const faultsOf = (one: Export): Fault[] => {
 	if (one.doc === null) {
-		return [
-			{
-				file: one.file,
-				line: one.line,
-				reason: `exported ${one.kind} ${one.name} has no JSDoc block directly above it`,
-			},
-		];
+		return [];
 	}
 	const words = wordsOfDoc(one.doc);
 	const inName = wordsOfName(one.name);
@@ -186,7 +146,6 @@ export const faultsOf = (one: Export): Fault[] => {
 	return [];
 };
 
-/** The shipped sources the rule covers: the checked globs, less every test file. */
 export const sourcesIn = async (
 	root: string,
 	globs: readonly string[] = CHECKED_GLOBS,
@@ -205,7 +164,6 @@ export const sourcesIn = async (
 	return [...paths].sort((a, b) => a.localeCompare(b));
 };
 
-/** Every fault under `root`, in path order. */
 export const faultsIn = async (root: string): Promise<Fault[]> => {
 	const files = await sourcesIn(root);
 	const perFile = await Promise.all(
@@ -216,7 +174,6 @@ export const faultsIn = async (root: string): Promise<Fault[]> => {
 	return perFile.flat();
 };
 
-/** A count per top folder, which is how the remaining work of this group is reported. */
 export const countByFolder = (
 	faults: readonly Fault[],
 ): Map<string, number> => {

@@ -1,10 +1,5 @@
-// Reading the reply of a check: a declined line, a refused reply, or one line to offer with its tag
-// and the explanation that came in the same reply. The label patterns are those of
-// `docs/keep/plugins/you-should-know-design.txt:40` and `:70`, and the line rules of `:120`.
-
 import { BORROWED } from "./constants.ts";
 
-/** The read of a check reply: `none` when the model declined, `refused` when the reply broke the form, else the `offer` with its line, tag, and explanation. */
 export type Reply =
 	| { readonly kind: "none" }
 	| { readonly kind: "refused" }
@@ -15,8 +10,6 @@ export type Reply =
 			readonly explanation: string;
 	  };
 
-// The labels of the reply form this plugin's own prompt asks for. They are written here in the
-// plugin's own pattern, and not copied from the original's.
 const LEARN_LABEL = /^learn[ \t]*:[ \t]*/i;
 const EXPLAIN_LABEL = /^explain[ \t]*:[ \t]*/i;
 const TAG_LABEL = /^\W*tag\s*[:\-–—]\s*(.*)$/i;
@@ -24,7 +17,6 @@ const HEADS_UP = /^\W*heads(?:\s|-)*up\W*$/i;
 const DECLINED = /^none\.?$/i;
 const ENDS_A_SENTENCE = /[.!?]$/;
 
-/** Opening and closing marks of a pair that wraps a line, which the reader takes off. */
 const WRAPPING_QUOTES: readonly (readonly [string, string])[] = [
 	['"', '"'],
 	["'", "'"],
@@ -59,7 +51,6 @@ const explanationOf = (lines: readonly string[]): string => {
 	return [first, ...lines.slice(at + 1)].join("\n").trim();
 };
 
-/** Reads the reply of a check. A reply with no `learn:` label, or an empty or overlong line, is refused. */
 export const parseReply = (text: string): Reply => {
 	const lines = text.split("\n");
 	const head = lines.find((line) => LEARN_LABEL.test(line.trim()));

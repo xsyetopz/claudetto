@@ -23,6 +23,7 @@ describe("the inventory accounts for the whole fall", () => {
 			"tool texts",
 			"built-in surface",
 			"dedupe skill",
+			"docs skill",
 			"main agent body",
 			"plugin system text",
 			"agent listing",
@@ -31,7 +32,7 @@ describe("the inventory accounts for the whole fall", () => {
 			"sandbox block",
 			"setup command listing",
 		]);
-		expect(shippedChars(moving)).toBe(10_920);
+		expect(shippedChars(moving)).toBe(BASELINE_TOTAL - SHIPPED_TOTAL);
 	});
 
 	test("a row that adds text counts against the fall", () => {
@@ -55,6 +56,7 @@ describe("a cut counts as a saving only with a bill reading", () => {
 			"tool texts",
 			"built-in surface",
 			"dedupe skill",
+			"docs skill",
 			"idleCompaction off",
 			"main agent body",
 			"plugin system text",
@@ -75,7 +77,6 @@ describe("a cut counts as a saving only with a bill reading", () => {
 	});
 
 	test("a reading where the score falls and the bill rises turns the cut down", () => {
-		// The figures of the study the requirement cites: 38.4% of tokens removed, 6.8% more billed.
 		const cuts: readonly Cut[] = [
 			{
 				name: "tool output trim",

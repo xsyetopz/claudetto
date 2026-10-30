@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { spawn } from "node:child_process";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
+import { output } from "../../output.ts";
 import { commandOf, forkOf, modeOf, PROMPT } from "../arena.ts";
 import { armsOf, main } from "../main.ts";
 
@@ -32,8 +33,7 @@ describe("forkOf", () => {
 });
 
 describe("commandOf", () => {
-	// `Alt` makes a launch non-interactive when `-p` or `--print` is given, or when stdout is not a
-	// TTY, and a non-interactive session can never summarize. So the pty is the measurement.
+	// A non-interactive session never summarizes, so the pty is the measurement.
 	test("runs the session on the pty helper and passes no print flag", () => {
 		const cmd = commandOf("/tmp/session.log", "/tmp/debug.log", "1");
 
@@ -44,16 +44,14 @@ describe("commandOf", () => {
 		expect(cmd).not.toContain("--print");
 	});
 
-	// `--debug` on its own keeps every debug line inside the TUI, so a round that scraped the drawn
-	// screen found none. `--debug-file` is what puts the lines where a reader can count them.
+	// `--debug` keeps the debug lines inside the TUI; `--debug-file` puts them where a reader can count them.
 	test("sends the debug lines to a file, which is where the counts are read", () => {
 		const cmd = commandOf("/tmp/session.log", "/tmp/debug.log", "1");
 
 		expect(cmd[cmd.indexOf("--debug-file") + 1]).toBe("/tmp/debug.log");
 	});
 
-	// `flagSettings` outranks `userSettings`, so this is the only way to reach the gate on a machine
-	// whose own settings file sets it.
+	// `flagSettings` outranks `userSettings`, so only it reaches the gate on a machine that sets it.
 	test("carries the fork gate of the arm in `--settings`", () => {
 		const cmd = commandOf("/tmp/session.log", "/tmp/debug.log", "1");
 
@@ -76,13 +74,9 @@ describe("commandOf", () => {
 	});
 });
 
-// Two earlier rounds measured nothing: the first because a fresh folder asked whether the folder is
-// trusted with `No, exit` preselected, the second because BSD `script` exits 1 when its own stdin is
-// a pipe. The pty is the job of `pty.py`, and the dialog is the job of `trust.ts`.
 describe("pty.py", () => {
 	const HELPER = path.join(import.meta.dir, "../pty.py");
 
-	/** Runs the helper over a fake session and returns what the capture holds and how long it took. */
 	const ran = async (
 		seconds: string,
 		fake: string,
@@ -129,17 +123,11 @@ describe("pty.py", () => {
 	}, 30_000);
 });
 
-const output = (): { write: (s: string) => void; text: () => string } => {
-	const chunks: string[] = [];
-	return { write: (s) => chunks.push(s), text: () => chunks.join("") };
-};
-
 describe("armsOf", () => {
 	test("runs every arm when no arm is named", () => {
 		expect(armsOf([])).toEqual(["base", "fork-off", "proxy"]);
 	});
 
-	// A smoke of one arm is what three lost rounds of six arms each would have cost less than.
 	test("`--only` runs the one arm it names", () => {
 		expect(armsOf(["--only", "base"])).toEqual(["base"]);
 	});

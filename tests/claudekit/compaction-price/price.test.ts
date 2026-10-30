@@ -3,7 +3,7 @@ import {
 	priceLine,
 	priceOf,
 } from "../../../claudekit/compaction-price/price.ts";
-import type { WindowRow } from "../../../plugins/claudetto/src/window/window.ts";
+import type { WindowRow } from "../../../plugins/claudetto/src/blocks/window/window.ts";
 
 /**
  * A row with no `points`, because the field is absent on a login the engine reports no five-hour

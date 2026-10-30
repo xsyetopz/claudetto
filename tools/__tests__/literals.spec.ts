@@ -1,7 +1,4 @@
-// The check refuses a hand-assembled newline where a multiline template literal would read better.
-// Each case plants source text and asserts the faults the check returns, which are the decision, and
-// not the wording of the line that reports them. The planted text sits in a template literal so that
-// this file never holds the shapes it plants.
+// The planted text sits in a template literal so that this file never holds the shapes it plants.
 
 import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
@@ -15,11 +12,9 @@ import {
 	literalFaults,
 } from "../literals.ts";
 
-/** The shapes of the faults in `source`, in line order. */
 const shapes = (source: string): string[] =>
 	faultsIn("a.ts", source).map((fault) => fault.shape);
 
-/** The lines of the faults in `source`. */
 const lines = (source: string): number[] =>
 	faultsIn("a.ts", source).map((fault) => fault.line);
 

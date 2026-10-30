@@ -2,41 +2,10 @@
 
 import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
-import { startFakeApi } from "../fake-api.ts";
+import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
+import { extraArgs } from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
-
-describe("the fake Messages API", () => {
-	test("keeps the body of a messages request and ends the turn", async () => {
-		const api = startFakeApi();
-		const body = JSON.stringify({ model: "m", messages: [] });
-
-		const answer = await fetch(`${api.url}/v1/messages`, {
-			method: "POST",
-			body,
-		});
-		const stream = await answer.text();
-		await api.stop();
-
-		expect(api.url.startsWith("http://127.0.0.1:")).toBe(true);
-		expect(api.bodies).toEqual([body]);
-		expect(api.others).toEqual([]);
-		expect(stream).toContain("event: message_stop");
-		expect(stream).toContain('"stop_reason":"end_turn"');
-	});
-
-	test("answers another route with an empty object and records it apart", async () => {
-		const api = startFakeApi();
-
-		const answer = await fetch(`${api.url}/v1/models`);
-		const text = await answer.text();
-		await api.stop();
-
-		expect(text).toBe("{}");
-		expect(api.bodies).toEqual([]);
-		expect(api.others).toEqual(["GET /v1/models"]);
-	});
-});
 
 describe("the settings of one run", () => {
 	test("a deny arm writes the names under `permissions.deny`", () => {
@@ -50,28 +19,23 @@ describe("the settings of one run", () => {
 	test("the shipped arm carries the deny list, the built-in switches, and the prompt surfaces", () => {
 		const settings: unknown = JSON.parse(shippedSettings());
 
-		// Read from the module rather than copied, so the twelve plugin ids live in one place.
+		// Read from the module rather than copied, so the plugin ids live in one place.
 		expect(settings).toMatchObject({
-			permissions: { deny: ["Workflow", "ScheduleWakeup", "ReportFindings"] },
+			permissions: { deny: [...denyRules()] },
 			agent: "claudetto:main",
 			outputStyle: "claudetto:Concise",
 			...builtinSnippet(),
 		});
-		// The block a fault check can drop, so its presence is the thing worth asserting.
 		expect(shippedSettings()).toContain('"sandbox"');
 	});
 
-	test("the shipped arm carries no `autoMode`, because the figures describe an install", () => {
-		// `/claudetto:setup` writes no `autoMode`: its environment facts are readings of this
-		// repository, so an install never holds them (`UNSHIPPED_KEYS` of `tiers/groups.ts`). `just
-		// setup` does write it, and these figures are quoted to the reader of `README.md`.
-		expect(shippedSettings()).not.toContain('"autoMode"');
+	test("the shipped arm carries the `autoMode` suite, because `/claudetto:setup` writes it", () => {
+		expect(shippedSettings()).toContain('"autoMode"');
 	});
 });
 
 describe("the score of one request", () => {
 	test("splits a request into its system, tools, and messages characters", () => {
-		// `"abc"` is 3 characters of system text and `"de"` is 2, so the system is 5.
 		const body = {
 			system: [
 				{ type: "text", text: "abc" },
@@ -119,5 +83,34 @@ describe("the score of one request", () => {
 			{ name: "B", chars: JSON.stringify(large).length, desc: 12 },
 			{ name: "A", chars: JSON.stringify(small).length, desc: 0 },
 		]);
+	});
+});
+
+describe("the extra flags of each run", () => {
+	test("`--mcp-config` loads only that file's servers, and `--plugin-dir` adds a plugin", () => {
+		const args = [
+			"--arm",
+			"plain",
+			"--mcp-config",
+			"c7.json",
+			"--plugin-dir",
+			"/tmp/probe",
+		];
+
+		expect(extraArgs(args)).toEqual([
+			"--mcp-config",
+			"c7.json",
+			"--strict-mcp-config",
+			"--plugin-dir",
+			"/tmp/probe",
+		]);
+	});
+
+	test("`--classifier` runs in auto mode, so a tool call reaches the classifier", () => {
+		expect(extraArgs(["--classifier"])).toEqual(["--permission-mode", "auto"]);
+	});
+
+	test("a run with neither flag passes nothing extra", () => {
+		expect(extraArgs(["--arm", "plain"])).toEqual([]);
 	});
 });

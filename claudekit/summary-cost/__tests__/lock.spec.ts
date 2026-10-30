@@ -1,6 +1,4 @@
-// `~/.claude.json` is the real file under test here, so every test works on a copy in the temp
-// folder. The round of 2026-10-29 wrote the real one with no lock, and its own arms logged the
-// contention it caused 8 times.
+// Every test works on a copy, because `~/.claude.json` is the real file under test.
 
 import { afterEach, describe, expect, test } from "bun:test";
 import {
@@ -22,7 +20,6 @@ afterEach(async () => {
 	);
 });
 
-/** A folder with a config file in it, so a test never touches the real one. */
 const aConfig = async (text = '{"projects":{}}'): Promise<string> => {
 	const dir = `/tmp/lock-${process.pid}-${Math.random()}`;
 	dirs.push(dir);

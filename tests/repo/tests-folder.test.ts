@@ -1,15 +1,5 @@
-// A test that sits in a `__tests__/` folder beside its source is a test and not a shipped source, so
-// the tools that read shipped code must skip it and the tools that limit file length must give it the
-// test limit. Without this, moving a test next to its source makes `rebuild/silent` scan it for
-// telemetry nouns and network calls and makes `file-lines` hold a helper to the source limit.
-//
-// The second group guards the suffix instead of the folder. `claude plugin test` matches `*.test.ts`
-// and `*.test.tsx` only and reaches every folder under a plugin, with no flag to ignore one, so the
-// `.spec.ts` suffix is the only thing that keeps a plugin-side unit test out of the lab runner. A new
-// file landing as `__tests__/foo.test.ts` would be collected by both runners and would move the lab
-// count with nothing else failing, which is why the glob is asserted empty rather than left to the
-// counts. The limit case uses a path outside any `__tests__/` folder on purpose: inside one the
-// folder rule already answers, so a `.spec` dropped from the suffix pattern would go unnoticed.
+// Only the `.spec.ts` suffix keeps a plugin-side unit test out of the lab runner, so assert it empty.
+// The limit case uses a path outside `__tests__/`, where only the suffix rule can answer.
 
 import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
@@ -20,7 +10,6 @@ import { isTestFile, limitOf } from "../../tools/file-lines.ts";
 import { MAX_TEST_LINES } from "../../tools/limits.ts";
 import { PLUGIN_DIR, shippedSources } from "../../tools/source-text.ts";
 
-/** A tree with one shipped module and one test beside it in a `__tests__/` folder. */
 const treeWithTests = async (): Promise<string> => {
 	const root = await mkdtemp(join(tmpdir(), "claudetto-tests-folder-"));
 	const src = join(root, PLUGIN_DIR, "src");
