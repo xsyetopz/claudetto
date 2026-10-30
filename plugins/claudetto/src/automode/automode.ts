@@ -1,6 +1,6 @@
 import { ENV, type Kind, SETTING } from "../keys.ts";
 import { settingsFileIn } from "../settings-file.ts";
-import { environmentEntries } from "./environment.ts";
+import { suiteSnippet } from "./rules.ts";
 
 /** User settings only: the program reads `autoMode` from user, `--settings`, and managed settings. */
 export const AUTO_MODE_TARGET = "user";
@@ -32,13 +32,13 @@ export const AUTO_MODE_KEYS: readonly AutoModeKey[] = [
 		kind: SETTING,
 		route: "configure/permissions/auto-mode",
 	},
-	// A list without `$defaults` replaces the built-in rules, so each list starts with it.
+	// Each list replaces the built-in rules with claudetto's suite, which the classifier A/B scored as high at about half the price.
 	...AUTO_MODE_LISTS.map(
 		(name): AutoModeKey => ({
 			name: `autoMode.${name}`,
 			kind: SETTING,
 			route: "configure/permissions/auto-mode-rules",
-			value: DEFAULTS,
+			value: "suiteSnippet",
 		}),
 	),
 	// Unset: `false` equals unset, and a managed `true` wins anyway.
@@ -62,13 +62,4 @@ export interface AutoModeSnippet {
 	readonly env: Readonly<Record<string, string>>;
 }
 
-/** The rule lists hold `DEFAULTS` only, since no rule of ours has a source yet. */
-export const autoModeSnippet = (): AutoModeSnippet => ({
-	autoMode: {
-		allow: [DEFAULTS],
-		soft_deny: [DEFAULTS],
-		hard_deny: [DEFAULTS],
-		environment: [DEFAULTS, ...environmentEntries()],
-	},
-	env: {},
-});
+export const autoModeSnippet = (): AutoModeSnippet => suiteSnippet();

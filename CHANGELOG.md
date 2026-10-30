@@ -10,6 +10,10 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Changed
 
+- `/claudetto:setup` and `just setup` write claudetto's `autoMode` rule suite in place of the four built-in lists, in the dialog group now named "Sandbox and auto mode".
+  The classifier A/B of `just eval --classifier --run` scored the suite 120 of 120 against 120 of 120 for the built-in lists, at about half the measured price per call, and 72 of 72 on the final text.
+  The suite holds no fact of this repository, so the command no longer leaves `autoMode` out; `just setup` no longer writes this repository's `environment` facts.
+  The fault check of `plugins/claudetto/src/automode/faults.ts` lets a list drop `$defaults` only when it is the measured suite list.
 - **BREAKING**: every manifest declares `0.0.0`, which restarts the numbering (the user, 2026-10-30).
   The tree is a rebuild on `src` slices with the old tree in `archive/`, the project wiki is deleted, and all 21 release tags are deleted, so the old numbering described a tree that no longer ships.
   The six release sections of that numbering are removed from this file with the `## Older Releases` table, whose 30 links pointed at the deleted wiki.

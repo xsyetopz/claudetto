@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { CryptoHasher } from "bun";
 import {
 	installedProgram,
 	stringsMissing,
@@ -18,6 +19,7 @@ import {
 	CLASSIFIER_MODEL_ENV,
 	isBroadAllow,
 } from "../faults.ts";
+import { suiteSnippet } from "../rules.ts";
 
 const PROGRAM = (await installedProgram()) ?? "";
 
@@ -42,12 +44,38 @@ describe("the shipped snippet", () => {
 	});
 });
 
-describe("every list keeps $defaults", () => {
-	for (const name of AUTO_MODE_LISTS) {
-		test(`the shipped ${name} list starts with it`, () => {
-			expect(autoModeSnippet().autoMode[name][0]).toBe(DEFAULTS);
-		});
+// The digest of the suite text the classifier A/B scored, so an edit to a rule fails here until it is measured again.
+const MEASURED_SUITE =
+	"7a67606db08ca9362bb721b74a56b4ff58128a343d682381453b2b997b026929";
 
+const digestOf = (text: string): string =>
+	new CryptoHasher("sha256").update(text).digest("hex");
+
+describe("the shipped lists are the measured suite", () => {
+	test("setup writes the suite in place of every built-in list", () => {
+		expect(autoModeSnippet()).toEqual(suiteSnippet());
+	});
+
+	test("the suite text is the one the A/B measured", () => {
+		expect(digestOf(JSON.stringify(suiteSnippet().autoMode))).toBe(
+			MEASURED_SUITE,
+		);
+	});
+
+	for (const name of AUTO_MODE_LISTS) {
+		test(`the ${name} list with one suite rule edited is named`, () => {
+			const [first = "", ...rest] = suiteSnippet().autoMode[name];
+			const edited = withAutoMode({ [name]: [`${first} Edited.`, ...rest] });
+
+			expect(autoModeFaults(edited)).toEqual([
+				{ rule: "defaults-dropped", where: name },
+			]);
+		});
+	}
+});
+
+describe("a list that is not the suite keeps $defaults", () => {
+	for (const name of AUTO_MODE_LISTS) {
 		test(`${name} that drops it as a size trim is named`, () => {
 			const trimmed = withAutoMode({ [name]: ["Only: our own short rule"] });
 

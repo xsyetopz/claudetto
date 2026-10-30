@@ -27,8 +27,6 @@ const envPath = (name: string): string => `${ENV}.${name}`;
 const codes = (items: readonly string[]): string =>
 	items.map((item) => `\`${item}\``).join(", ");
 
-export const UNSHIPPED_KEYS: readonly string[] = ["autoMode"];
-
 export interface KeyGroup {
 	readonly label: string;
 	readonly why: string;
@@ -47,9 +45,9 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
 		],
 	},
 	{
-		label: "Sandbox",
-		why: `Runs a \`Bash\` command inside the sandbox with \`allowUnsandboxedCommands\` set to \`false\`, and keeps it out of ${codes(SECRET_PATHS)}. It costs ${count(SANDBOX_CHARS)} characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is ${count(CLASSIFIER_CALL_CHARS)} characters.`,
-		keys: ["sandbox"],
+		label: "Sandbox and auto mode",
+		why: `Runs a \`Bash\` command inside the sandbox with \`allowUnsandboxedCommands\` set to \`false\`, and keeps it out of ${codes(SECRET_PATHS)}. It costs ${count(SANDBOX_CHARS)} characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is ${count(CLASSIFIER_CALL_CHARS)} characters. It also replaces the built-in \`autoMode\` rule lists with claudetto's shorter suite, which judged the scripted classifier cases as well as the built-in lists at about half the price per call.`,
+		keys: ["sandbox", "autoMode"],
 	},
 	{
 		label: "Models and windows",

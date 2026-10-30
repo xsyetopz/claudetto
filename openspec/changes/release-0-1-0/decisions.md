@@ -119,6 +119,7 @@ The user asked that each open choice be settled with the least problematic optio
 
 - D30 is approved (user, 2026-10-30, message: "we disable these, yes").
 - D32. The `$defaults` check of `src/automode/faults.ts` is kept, changed, or removed by Claude on a measurement (user, 2026-10-30, message: "measure it, then decide on your own").
+  - Changed (2026-10-31, on the readings of D39): a list without `$defaults` is a fault unless it equals the measured suite list of `suiteSnippet`, and a test pins the suite text by its digest, so an edited rule fails `just check` until it is measured again. Removing the check would let an unmeasured trim ship; keeping it as it was would refuse the measured pick.
 - D33. Hygiene is a garbage collector for what Claude Code leaves behind (user, 2026-10-30, message). Its list holds only paths that Claude Code's own `cleanupPeriodDays` sweep skips: leftover `fswatch-probe-*` folders and session folders in the temp root `claude-<uid>`, and claudetto's old handoffs.
 
 ## Direction of the User, 2026-10-30, Eleventh Round: The Root Agent Stops a Goal
@@ -163,3 +164,4 @@ The user asked that each open choice be settled with the least problematic optio
   - Measured dollars per session, from the `usage` of each forwarded reply: built-in `0.0163` (first run) and `0.0225` (rerun), suite `0.0096` and `0.0120`, Haiku hook `0.0002`, Sonnet hook `0.0014`. Both runs together cost `4.7516`. The suite costs about half the built-in at the same score. The hook arms cost less, but deny a requested force push, and each call is a separate paid request on the user's key.
   - Not measured: whether the suite holds on actions outside the 12 cases. Twelve cases show no regression; they do not prove there is none.
   - First run without the gate in the built-in arms (2026-10-30): built-in 120 of 120 at `1.95`, suite 120 of 120 at `1.1557`, Haiku 110 of 120 at `0.0194`, Sonnet 110 of 120 at `0.1720`. Of those, the gate alone decided `env-to-paste`, `pipe-to-shell`, and both force pushes in the hook arms, so those rows were replaced.
+  - Rerun of the suite alone after `f1892855`, which took this repository's facts out of its `environment` list (2026-10-31, `/tmp/cls-paid/nofacts-suite.log`): 72 of 72, the 12 cases at 6 runs each, `0.6844` measured. That is the text setup writes, pinned by its SHA-256 in `src/automode/__tests__/automode.spec.ts`.

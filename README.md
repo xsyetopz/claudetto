@@ -56,7 +56,7 @@ Its row in the command listing costs 48 characters of the first request, which i
 | Group | What keeping it writes |
 | --- | --- |
 | Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. The deny list holds the measured tool denies, `DesignSync`, and the six built-in agents. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
-| Sandbox | `sandbox`, with `allowUnsandboxedCommands` set to `false`. It costs characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs. |
+| Sandbox and auto mode | `sandbox`, with `allowUnsandboxedCommands` set to `false`, and `autoMode`. The sandbox costs characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs. `autoMode` replaces the built-in classifier rule lists with claudetto's shorter suite, which judged the scripted classifier cases as well as the built-in lists at about half the price per call. |
 | Models and windows | `model`, `effortLevel`, `autoCompactWindow`, `fallbackModel` (`claude-sonnet-5-5`), `modelSettings` (the Haiku window and the `maxEffortLevel` ceilings `high` for `claude-opus-5-5`, `medium` for `claude-sonnet-5-5`, and `high` for `claude-haiku-5-5`), `idleCompaction`, and the `env` entries `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `CLAUDE_CODE_SUBAGENT_MODEL`. |
 | Features off | `$schema`, the five `/config` switches (`workflowSizeGuideline`, `workflowKeywordTriggerEnabled`, `enableWorkflows`, `enableArtifact`, `remoteControlAtStartup`), the seven claude.ai and notification keys (`disableClaudeAiConnectors`, `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `autoUploadSessions`, `disableRemoteControl`, `inputNeededNotifEnabled`, `agentPushNotifEnabled`), the session features (`autoMemoryEnabled`, `autoDreamEnabled`, `promptSuggestionEnabled`, `awaySummaryEnabled`, `spinnerTipsEnabled`, `feedbackDrafts`, `feedbackSurveyRate`, `todoFeatureEnabled`, `voiceEnabled`), the prompt keys (`includeGitInstructions`, `showThinkingSummaries`, `attribution`), the behaviors (`autoContinueAtUsageLimit`, `switchModelsOnFlag`, `precomputeCompactionEnabled`, `showClearContextOnPlanAccept`, `useAutoModeDuringPlan`, `crossSessionInbound`, `prefersReducedMotion`), `minimumVersion`, and the feature `env` flags of `plugins/claudetto/src/tiers/env.ts`. |
 
@@ -65,9 +65,7 @@ The dialog prints each group's measured figures from `plugins/claudetto/src/cuts
 
 A group you discard writes none of its keys, and a key of that group you already have stays as it is.
 
-The command writes no `autoMode`, whatever you answer.
-Its `environment` facts are readings of this repository, and the auto-mode classifier would read them as facts about your machine and decide from them whether a command runs without asking.
-Keeping all four groups reads the same first request as the full snippet does, so leaving the key out costs nothing measured.
+The `autoMode` suite holds no fact of this repository, so its `environment` list names only how the classifier tells a trusted host from an external one.
 
 A plugin's own settings reach only `agent` and `subagentStatusLine`, so a settings file is the one way claudetto can give you permissions, environment variables, and models.
 A `settings.read` hook that answers them instead was built and dropped: it read 61,353 characters against 31,861 for the file, so the readers that build the first request do not take its answer.
@@ -75,7 +73,6 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 ### Setup from a Checkout
 
 `just setup` does the same work from a checkout of this repository, for every group at once, and takes `--settings PATH` to aim at another file and `--dry-run` to print the report and write nothing.
-It also writes `autoMode`, which the command does not, because inside this checkout the environment facts are true.
 
 ## What the Core Plugin Changes
 
