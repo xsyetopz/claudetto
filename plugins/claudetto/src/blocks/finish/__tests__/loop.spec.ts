@@ -47,6 +47,13 @@ test("the first open box gives its id and text, and a ticked file gives none", (
 	expect(nextOpen("- [x] 1.1 Done.")).toBeUndefined();
 });
 
+test("a box marked `blocked:` is passed over, and a file of only blocked boxes gives none", () => {
+	const text = `- [ ] 2.3 Build it. blocked: needs a login
+- [ ] 2.4 Later.`;
+	expect(nextOpen(text)).toEqual({ id: "2.4", task: "Later." });
+	expect(nextOpen("- [ ] 9.3 Run it. `blocked: no yes`")).toBeUndefined();
+});
+
 test("an apply skill call, then an edit of a `tasks.md`, names that file", () => {
 	expect(appliedTasks([APPLY, call("Edit", { file_path: TASKS })])).toEqual([
 		TASKS,

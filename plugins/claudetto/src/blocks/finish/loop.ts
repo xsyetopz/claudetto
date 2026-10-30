@@ -7,6 +7,7 @@ const APPLY_SKILL = "openspec-apply-change";
 const APPLY_TYPED = `<command-name>/${APPLY_SKILL}</command-name>`;
 const EDIT_TOOLS = new Set(["Edit", "Write", "NotebookEdit"]);
 const OPEN_BOX = /^- \[ \] (\S+)\s+(.*)$/;
+const BLOCKED_MARK = "blocked:";
 
 /** The count of blocks in a row and the progress mark they saw. */
 export interface LoopHeld {
@@ -23,13 +24,17 @@ export const isHeld = (value: unknown): value is LoopHeld =>
 	"seen" in value &&
 	typeof value.seen === "string";
 
-/** The first open box of a `tasks.md` text: its id and its text. */
+/** The first open box of a `tasks.md` text that is not marked `blocked:`: its id and its text. */
 export const nextOpen = (
 	text: string,
 ): { id: string; task: string } | undefined => {
 	for (const line of text.split("\n")) {
 		const open = OPEN_BOX.exec(line);
-		if (open?.[1] !== undefined && open[2] !== undefined) {
+		if (
+			open?.[1] !== undefined &&
+			open[2] !== undefined &&
+			!open[2].includes(BLOCKED_MARK)
+		) {
 			return { id: open[1], task: open[2] };
 		}
 	}

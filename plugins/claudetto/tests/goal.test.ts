@@ -7,6 +7,7 @@ interface Lab {
 	readonly ran: string[][];
 	readonly sent: string[];
 	readonly lines: string[];
+	readonly tools: string[];
 	settle: () => Promise<void>;
 	advance: (ms: number) => Promise<void>;
 }
@@ -19,6 +20,7 @@ const lab = (on: On): Lab => {
 		ran: [],
 		sent: [],
 		lines: [],
+		tools: [],
 		settle: () => clock.settle(),
 		advance: (ms) => clock.advance(ms),
 	};
@@ -49,6 +51,10 @@ const lab = (on: On): Lab => {
 		type: "Text",
 		children: [`${e.props.hint}${e.props.tail ?? ""}`],
 	}));
+	on("tool.register", (_$, e) => {
+		state.tools.push(e.name);
+		return { value: { tool: `mcp__claudetto__${e.name}` } };
+	});
 	on("command.run", () => ({ text: "built-in /goal ran" }));
 	on("classic.Stop", () => ({}));
 	return state;
@@ -61,6 +67,15 @@ const goal = ($: Engine, args: string) =>
 		origin: { kind: "composer" },
 		presentation: { isFullscreen: false, columns: 80 },
 	});
+
+const update = async ($: Engine, status: string, reason: string) => {
+	const answer = await $.tool.call({
+		tool: "mcp__claudetto__goal",
+		status,
+		reason,
+	});
+	return typeof answer.result === "string" ? answer.result : "";
+};
 
 const stop = ($: Engine) => $.classic.Stop({ stop_hook_active: false });
 
@@ -115,17 +130,68 @@ test("a passing goal check lets the stop through and clears the goal", async ($:
 	expect(status.text).toContain("No goal set");
 });
 
-test("five blocks with no file change let the sixth stop through and clear the goal", async ($: Engine, on: On) => {
+test("five blocks with no file change let the sixth stop through and mark the goal blocked", async ($: Engine, on: On) => {
 	const state = lab(on);
 	await goal($, "just check");
 
 	const blocks = await stops($, 6);
 	const after = await stop($);
+	const status = await goal($, "");
 
 	expect(blocks).toEqual([true, true, true, true, true, false]);
 	expect(state.lines).toHaveLength(1);
-	expect(state.lines[0]).toContain("goal is cleared");
+	expect(state.lines[0]).toContain("marked blocked");
 	expect(after.block).toBeUndefined();
+	expect(status.text).toContain("blocked");
+});
+
+test("`/goal` registers the goal tool, so the root agent can stop the goal", async ($: Engine, on: On) => {
+	const state = lab(on);
+
+	await goal($, "just check");
+
+	expect(state.tools).toEqual(["goal"]);
+});
+
+test("a `blocked` call stops the checks, and `/goal` shows the reason", async ($: Engine, on: On) => {
+	const state = lab(on);
+	await goal($, "just check");
+
+	const reply = await update($, "blocked", "needs a login");
+	const out = await stop($);
+	const status = await goal($, "");
+
+	expect(reply).toContain("blocked");
+	expect(out.block).toBeUndefined();
+	expect(state.ran).toEqual([]);
+	expect(status.text).toContain("needs a login");
+});
+
+test("`/goal resume` turns a paused goal back on with a fresh count", async ($: Engine, on: On) => {
+	const state = lab(on);
+	await goal($, "just check");
+	await stops($, 5);
+	await update($, "paused", "the user asked");
+
+	const resumed = await goal($, "resume");
+	const out = await stop($);
+
+	expect(resumed.text).toContain("resumed");
+	expect(out.block).toContain("`just check` fails");
+	expect(state.ran).toHaveLength(6);
+});
+
+test("a goal tool call with no goal or a bad status changes nothing", async ($: Engine, on: On) => {
+	lab(on);
+
+	const none = await update($, "blocked", "r");
+	await goal($, "just check");
+	const bad = await update($, "complete", "r");
+	const out = await stop($);
+
+	expect(none).toContain("No goal set");
+	expect(bad).toContain("`paused` or `blocked`");
+	expect(out.block).toContain("`just check` fails");
 });
 
 test("a file edit between stops starts the goal count again", async ($: Engine, on: On) => {
@@ -195,7 +261,7 @@ test("the `/goal` listing describes a shell command", async ($: Engine, on: On) 
 	expect(out.description).toBe(
 		"Set a shell command that must exit 0 before Claude stops",
 	);
-	expect(out.argumentHint).toBe("[<shell command> | clear]");
+	expect(out.argumentHint).toBe("[<shell command> | clear | resume]");
 });
 
 const HINT = {
@@ -219,6 +285,14 @@ test("an active goal adds the built-in's text to the prompt hint, with its age",
 	await state.advance(37 * 60_000 + 5000);
 
 	expect(await hint($)).toContain("◎ /goal active (37m)");
+});
+
+test("a blocked goal shows as blocked in the prompt hint", async ($: Engine, on: On) => {
+	lab(on);
+	await goal($, "just check");
+	await update($, "blocked", "needs a login");
+
+	expect(await hint($)).toContain("◎ /goal blocked");
 });
 
 test("with no goal the prompt hint has no goal text", async ($: Engine, on: On) => {
