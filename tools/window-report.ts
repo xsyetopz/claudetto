@@ -1,15 +1,14 @@
-// Prints the window cost report from the store of the in-tree plugin: `bun tools/window-report.ts`.
-// The decisions are `reportText` in `plugins/claudetto/src/window/report.ts`; this file reads and prints.
+// Usage: bun tools/window-report.ts
 
 import { homedir } from "node:os";
 import { storedAt, storeFiles } from "../claudekit/store.ts";
-import { reportText } from "../plugins/claudetto/src/window/report.ts";
+import { reportText } from "../plugins/claudetto/src/blocks/window/report.ts";
 import {
 	ROWS_KEY,
 	rowsOf,
 	TURNS_KEY,
 	turnsOf,
-} from "../plugins/claudetto/src/window/window.ts";
+} from "../plugins/claudetto/src/blocks/window/window.ts";
 
 const main = async (): Promise<void> => {
 	const files = await storeFiles(homedir());

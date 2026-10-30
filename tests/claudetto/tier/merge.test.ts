@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { shareClaims } from "../../../plugins/claudetto/src/blocks/window/report.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
 import { tierReport } from "../../../plugins/claudetto/src/tiers/report.ts";
 import {
@@ -6,7 +7,6 @@ import {
 	tierSnippet,
 } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { rowFor, TIERS } from "../../../plugins/claudetto/src/tiers/tiers.ts";
-import { shareClaims } from "../../../plugins/claudetto/src/window/report.ts";
 
 const ROW = rowFor("default_claude_max_20x");
 if (ROW === undefined) {

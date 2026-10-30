@@ -1,8 +1,3 @@
-// The Gitleaks rules reach vendors the table of the installed program does not name, so a handoff
-// loses their tokens too. Each case plants a value of the shape one rule reads, or a value a gate
-// of that rule must keep: the keyword gate, the entropy bound, and the allowlists are the reason
-// 216 vendor patterns can run over a transcript without eating its prose.
-
 import { expect, test } from "bun:test";
 import { join } from "node:path";
 import { file as bunFile, CryptoHasher } from "bun";
@@ -12,20 +7,17 @@ import {
 	gitleaksRedact,
 	gitleaksSkipped,
 	gitleaksSource,
-} from "../../plugins/claudetto/src/secrets/gitleaks/gitleaks.ts";
-import { REDACTED } from "../../plugins/claudetto/src/secrets/mask.ts";
-import { redact } from "../../plugins/claudetto/src/secrets/redact.ts";
+} from "../../plugins/claudetto/src/shared/secrets/gitleaks/gitleaks.ts";
+import { REDACTED } from "../../plugins/claudetto/src/shared/secrets/mask.ts";
+import { redact } from "../../plugins/claudetto/src/shared/secrets/redact.ts";
 import { translate } from "../../tools/gitleaks/translate.ts";
 
 const ROOT = join(import.meta.dir, "..", "..");
 
-/** A body of mixed case and digits, which carries the entropy a rule with a bound asks for. */
 const BODY = "7f3Kq9ZxW2mBvN8cR4tY6uH1jP5sD0gL3aEzQkMnBvCxZaSdFgHjKl";
 
-/** A key of `linear-api-key`: the prefix and 40 of the class. No row of the program reads it. */
 const LINEAR = `lin_api_${BODY.slice(0, 40)}`;
 
-/** A token of `sonar-api-token`, the one rule of the config that names a `secretGroup`. */
 const SONAR = "sqp_7f3kq9zxw2mbvn8cr4ty6uh1jp5sd0gl3ae0";
 
 test("a vendor key the program table does not name is redacted", () => {
@@ -40,9 +32,7 @@ test("a rule that names a secret group masks the group and keeps the name", () =
 	);
 });
 
-// The capture group of `microsoft-teams-webhook` is `([a-z0-9]{4}-){3}`, one chunk of a UUID in a
-// whole webhook URL. Gitleaks reports that chunk as the secret of the finding, which costs it
-// nothing because it only reports. A mask of the chunk alone would leave the URL working.
+// A mask of the UUID chunk alone would leave the webhook URL working.
 test("a rule whose group repeats masks the whole match and leaves no working URL", () => {
 	const url =
 		"https://acme7x2q.webhook.office.com/webhookb2/8f3a9c1d-4b2e-9f7a-8c3d-1e2f3a4b5c6d@7a1b2c3d-9e8f-7a6b-5c4d-3e2f1a0b9c8d/IncomingWebhook/9f8e7d6c5b4a39281706f5e4d3c2b1a0/2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e";

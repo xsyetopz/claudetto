@@ -1,28 +1,21 @@
-// `/claudetto:setup` is answered in code, so the person reads the report and the model reads
-// nothing: the result carries `text` and no `context`, which is what makes the command cost the
-// session no tokens. These runs drive the real registration through the engine's own `$.command.run`.
-//
-// With nothing answering `ui.ask`, this environment has no person to ask, so the call rejects and
-// the command keeps nothing, which is the same path a `claude -p` run takes. A test that answers it
-// drives the other path, where a kept group reaches `$.fs.write`: the pure functions behind the
-// choice are covered by `tests/claudetto/tier/hooks.test.ts`, and what is only testable here is that
-// the engine carries an answer of the dialog through to a written file.
-//
-// Nothing beneath the plugins answers `env.get` here, so each test answers it: the command reads
-// `CLAUDE_CONFIG_DIR` and `HOME` to find the settings file.
+// The result carries `text` and no `context`, so the command costs the session no tokens.
 
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { SETUP_COMMAND } from "../src/tiers/hooks.ts";
+import { SETUP_COMMAND } from "../src/blocks/setup-command/hooks.ts";
 
-/** Answers the two names the command reads: no `CLAUDE_CONFIG_DIR`, so the file is under `HOME`. */
 const environment = (on: On): void => {
 	on("env.get", (_$, e) => ({
 		value: e.name === "HOME" ? "/home/u" : undefined,
 	}));
 };
 
-/** The engine stamps `origin` and `presentation` on a real run; the test `$` is typed on the whole input, so they are given here as a headless main screen. */
+const noSettings = (on: On): void => {
+	environment(on);
+	on("fs.exists", () => ({ value: false }));
+};
+
+/** Fields the engine stamps on a real run, given here as a headless main screen. */
 const run = ($: Engine) =>
 	$.command.run({
 		command: SETUP_COMMAND,
@@ -31,26 +24,17 @@ const run = ($: Engine) =>
 		presentation: { isFullscreen: false, columns: 80 },
 	});
 
-/** One written file, as `$.fs.write` was called with it. */
 interface Written {
 	readonly path: string;
 	readonly text: string;
 }
 
-/** One dialog the engine raised, as it arrived at the tool. */
 interface Dialog {
 	readonly question: string;
 	readonly labels: readonly string[];
 }
 
-/**
- * The question and the offered labels of a dialog the engine raised, taken from the tool input.
- *
- * `$.ui.ask` looks its answer up under this exact question text, after its own shortening of what the
- * plugin passed, so a stub that answers must key on what arrived and not on the text it sent. The
- * labels are read so that a case claiming to answer with an unoffered group can hold that against
- * what the dialog really offered, rather than assume it.
- */
+/** The stub keys on the question as it arrived, not as sent: `$.ui.ask` shortens it first. */
 const dialogOf = (input: object): Dialog => {
 	const questions = "questions" in input ? input.questions : undefined;
 	const first: unknown = Array.isArray(questions) ? questions[0] : undefined;
@@ -71,32 +55,18 @@ const dialogOf = (input: object): Dialog => {
 	return { labels, question };
 };
 
-/** What one answered run did: the files it wrote, and each dialog the stub answered. */
 interface Run {
 	readonly files: readonly Written[];
 	readonly asked: readonly Dialog[];
 }
 
-/**
- * Answers the dialog with `labels` over a settings file holding `{}`, and collects the writes.
- *
- * `$.ui.ask` is a `tool.call` of `AskUserQuestion` through every hook but the calling one, so a test
- * answers the dialog by answering that call with the result the tool would have given.
- *
- * `asked` is collected because the command says "Nothing was chosen" both for an answer that names no
- * group and for a dialog nobody answered, so its own output cannot tell the two apart. A case that
- * means to drive the filter holds the dialog instead: that it was raised once, and that what it
- * answered with is not among the labels the dialog offered. A wrong answer key is caught by the cases
- * that expect a write, where it stops the file from being written at all.
- *
- * `uname -s` is left unanswered, so the platform is unknown and no `sandbox` block is composed, which
- * keeps the written keys the same on any machine running this test.
- */
-const answered = (on: On, labels: readonly string[]): Run => {
+/** `asked` is kept because "Nothing was chosen" reads the same for a bad answer and an unanswered dialog. */
+const answered = (on: On, labels: readonly string[], held = "{}"): Run => {
 	const files: Written[] = [];
 	const asked: Dialog[] = [];
 	environment(on);
-	on("fs.read", () => ({ value: "{}" }));
+	on("fs.exists", () => ({ value: true }));
+	on("fs.read", () => ({ value: held }));
 	on("fs.write", (_$, e) => {
 		files.push({ path: e.path, text: e.text });
 		return { value: undefined };
@@ -110,7 +80,7 @@ const answered = (on: On, labels: readonly string[]): Run => {
 };
 
 test("the command is answered in code, so the model is left nothing to read", async ($: Engine, on: On) => {
-	environment(on);
+	noSettings(on);
 
 	const out = await run($);
 
@@ -118,7 +88,7 @@ test("the command is answered in code, so the model is left nothing to read", as
 });
 
 test("with nobody to ask, the command writes nothing and says so", async ($: Engine, on: On) => {
-	environment(on);
+	noSettings(on);
 
 	const out = await run($);
 
@@ -185,4 +155,13 @@ test("the dialog offers the groups the report then speaks of", async ($: Engine,
 
 	expect(asked[0]?.labels ?? []).toContain("Sandbox");
 	expect((asked[0]?.labels ?? []).length).toBeGreaterThanOrEqual(2);
+});
+
+test("a settings file that is not valid JSON is left as it is", async ($: Engine, on: On) => {
+	const { files } = answered(on, ["Smaller prompt"], '{ "model": "opus",');
+
+	const out = await run($);
+
+	expect(files).toEqual([]);
+	expect(out.text ?? "").toContain("nothing was written");
 });

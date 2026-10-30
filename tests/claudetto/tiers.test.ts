@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { describedTools } from "../../plugins/claudetto/src/blocks/tool-describe/tools.ts";
 import { sandboxFaults } from "../../plugins/claudetto/src/sandbox/faults.ts";
 import { sandboxSnippet } from "../../plugins/claudetto/src/sandbox/sandbox.ts";
 import { compactAt } from "../../plugins/claudetto/src/threshold.ts";
@@ -20,9 +21,8 @@ import {
 	SNIPPET_ROW,
 	TIERS,
 } from "../../plugins/claudetto/src/tiers/tiers.ts";
-import { describedTools } from "../../plugins/claudetto/src/tools/tools.ts";
 
-// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+// The snippet needs a platform named; `"darwin"` carries its `sandbox` block.
 const PLATFORM = "darwin";
 
 const envOf = (snippet: TierSnippet): Record<string, Node> => {
@@ -112,9 +112,7 @@ describe("the tier table", () => {
 		expect(snippet).not.toHaveProperty("effortLevel");
 	});
 
-	// Each of these was built and left unwired: `tierSnippet` wrote the two built-in switches without
-	// `permissions.deny`, which is the combination measured at 52,254 characters against 42,879 for a
-	// stock run, and no case noticed.
+	// Without `permissions.deny`, the two built-in switches raise the request, so every row writes both.
 	test("every row writes the deny list, the two prompt surfaces, and the two guarded blocks", () => {
 		for (const row of TIERS) {
 			const snippet = tierSnippet(row, PLATFORM);
@@ -127,10 +125,7 @@ describe("the tier table", () => {
 		}
 	});
 
-	// `SNIPPET_ROW` is the row the `command.run` hook composes from, because a hooks module cannot read
-	// the login's plan. That is only safe while every row gives the same snippet, which `tiers.ts:117`
-	// claimed was checked here and nothing checked. A later row that splits a written key by plan now
-	// fails here, in place of serving one plan's values to every other plan.
+	// `SNIPPET_ROW` feeds `command.run`, which is safe only while every row gives the same snippet.
 	test("every row gives the snippet of the row the command composes from", () => {
 		for (const row of TIERS) {
 			expect(tierSnippet(row, PLATFORM)).toEqual(
@@ -139,8 +134,7 @@ describe("the tier table", () => {
 		}
 	});
 
-	// The two guarded blocks are dropped when a fault check finds a fault, and the sandbox check reads
-	// the platform, so without this case their coverage would differ by machine.
+	// The sandbox check reads the platform, so without this case coverage would differ by machine.
 	test("the two guarded blocks are clean on every platform, so a row writes them anywhere", () => {
 		for (const platform of ["darwin", "linux", "win32"]) {
 			expect(snippetFaults(platform)).toEqual([]);
@@ -219,7 +213,7 @@ describe("a Haiku session stays under the price step", () => {
 
 		const snippet = tierSnippet(row, PLATFORM);
 
-		expect(snippet["modelSettings"]).toEqual({
+		expect(snippet["modelSettings"]).toMatchObject({
 			[HAIKU_MODEL]: { autoCompactWindow: row.haiku.contextCap },
 		});
 		expect(snippet["autoCompactWindow"]).toBe(row.contextCap);

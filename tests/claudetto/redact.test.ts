@@ -1,28 +1,22 @@
-// A handoff crosses a context boundary as a file on disk, so a secret in the session text must not
-// reach it. The patterns are transcribed from the installed program, and these cases plant one
-// secret of each shape the transcription claims to cover.
-
 import { expect, test } from "bun:test";
-import { handoffText, parseTail } from "../../plugins/claudetto/src/handoff.ts";
-import { REDACTED } from "../../plugins/claudetto/src/secrets/mask.ts";
+import {
+	handoffText,
+	parseTail,
+} from "../../plugins/claudetto/src/blocks/handoff/handoff.ts";
+import { REDACTED } from "../../plugins/claudetto/src/shared/secrets/mask.ts";
 import {
 	redact,
 	redactIds,
-} from "../../plugins/claudetto/src/secrets/redact.ts";
+} from "../../plugins/claudetto/src/shared/secrets/redact.ts";
 
-/** A key of the `anthropic-api-key` entry: the prefix, 93 of the class, and `AA`. */
 const ANTHROPIC = `sk-ant-api03-${"a".repeat(93)}AA`;
 
-/** A token of the `github-pat` entry: the prefix and 36 of the class. */
 const GITHUB = `ghp_${"b".repeat(36)}`;
 
-/** A token of the `gitlab-pat` entry, which the program reaches through `displayRun`. */
 const GITLAB = `glpat-${"c".repeat(20)}`;
 
-/** A value of the `sensitive-assign` entry, whose name `mt` holds `password`. */
 const PASSWORD = "hunter2trustno1";
 
-/** A token of the `loose-jwt` entry: three segments, the first opening `eyJ`. */
 const JWT_TOKEN = `eyJ${"a".repeat(12)}.eyJ${"b".repeat(12)}.${"c".repeat(20)}`;
 
 const KEY_BLOCK = `-----BEGIN RSA PRIVATE KEY-----
@@ -35,7 +29,6 @@ const turn = (role: string, content: unknown): string =>
 const said = (role: string, text: string): string =>
 	turn(role, [{ type: "text", text }]);
 
-/** A tail begins inside a line, so every fixture carries a broken first line like a real one. */
 const tailOf = (...lines: readonly string[]): string =>
 	[`e":"text"}]}}`, ...lines].join("\n");
 
@@ -99,8 +92,7 @@ test("a web token on its own is redacted", () => {
 	);
 });
 
-// The value of `sensitive-assign` takes the scheme word with it, because the program's value part
-// lists `Bearer` and `Basic` as an alternative ahead of the plain run.
+// The program's value part lists `Bearer` and `Basic` ahead of the plain run, so the scheme word is taken.
 test("an authorization header loses its scheme and its token", () => {
 	expect(redact(`Authorization: Bearer ${JWT_TOKEN}`)).toBe(
 		`Authorization: ${REDACTED}`,

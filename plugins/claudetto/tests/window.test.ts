@@ -1,10 +1,3 @@
-// The window recorder: a `session.measure` that moves the five-hour window by a point leaves one row
-// in `$.store`, tagged with the loop that spent it (`design.md`, "Window Budget"). A login with no
-// rate-limit windows leaves no row and still has its cost kept in dollars.
-//
-// The rows are read back through the store, as `/usage` of a later session would read them. The
-// stubs stand for the engine: it raises `session.measure` with `$.session.usage()`'s figures.
-
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 import {
@@ -12,16 +5,15 @@ import {
 	ROWS_KEY,
 	TURNS_KEY,
 	USD_KEY,
-} from "../src/window/window.ts";
+} from "../src/blocks/window/window.ts";
 
 const WINDOW = 200_000;
 
-/** One turn to compact, because the engine skips a `session.compact` whose `messages` is empty. */
+/** The engine skips a `session.compact` whose `messages` is empty. */
 const TO_COMPACT: readonly SessionMessage[] = [
 	{ role: "user", text: "Build the export.", toolUses: [], handle: "h0" },
 ];
 
-/** One measurement as the engine raises it: the fill, the five-hour window, and the dollars so far. */
 const measure = (fiveHour: number, tokens: number, usd: number) => ({
 	context: { tokens, window: WINDOW, percent: (tokens / WINDOW) * 100 },
 	rateLimits: [
@@ -31,10 +23,8 @@ const measure = (fiveHour: number, tokens: number, usd: number) => ({
 	changed: ["rateLimits" as const],
 });
 
-/** What the plugin wrote to its store, which the test reads back as a later session would. */
 const kept = new Map<string, unknown>();
 
-/** The answers beneath the plugin: the engine's own, which the registered hooks wrap. */
 const lab = (on: On): void => {
 	kept.clear();
 	mock.clock(on, { now: 1000 });
@@ -174,7 +164,7 @@ test("the first row after a compaction is marked and the rows before it are not"
 	await $.session.measure(measure(12, 20_000, 0.3));
 	await $.session.measure(measure(13, 24_000, 0.4));
 
-	// The fall from 150,000 to 20,000 is the compaction's, and the mark says which pair to read it from.
+	// The mark says which pair of rows the compaction's fall is read from.
 	expect(rowsOf()).toMatchObject([
 		{ tokens: 150_000 },
 		{ tokens: 20_000, afterCompaction: true },
@@ -206,7 +196,7 @@ test("a measurement that spans a window reset keeps the mark for the next row", 
 		],
 	});
 
-	// The reset gave no row, so the mark is still owed and lands on the first row that is written.
+	// The reset gave no row, so the mark is still owed and lands on the next written row.
 	expect(rowsOf()).toMatchObject([{ tokens: 24_000, afterCompaction: true }]);
 });
 

@@ -1,17 +1,11 @@
-// Lab cases of the decision tool: `mcp__claudetto__decide` is registered at
-// `session.start` only with the option `jev` and a key, and a call of it asks Jev once. The stub of
-// `http.fetch` stands for the TypeSafe API, so no case sends a request. An `AskUserQuestion` call
-// reaches the user whatever the option (`specs/low-hitl/spec.md`, "The Dialog Reaches the User").
-
 import type { On, PluginOptions } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
-import { ATTEMPT_TIMEOUT_MS, BACKOFF_MS } from "../src/jev/limits.ts";
+import { ATTEMPT_TIMEOUT_MS, BACKOFF_MS } from "../src/blocks/decide/limits.ts";
 
 const DECIDE = "mcp__claudetto__decide";
 
 const KEY = "typesafe-key";
 
-/** The answers of the API for the one question, with the confidence of the pick and of the approval. */
 const answers = (confidence: number, approval = 0.05) => ({
 	pick_0: {
 		type: "choice",
@@ -22,7 +16,6 @@ const answers = (confidence: number, approval = 0.05) => ({
 	approval_0: { type: "noul", noul: approval },
 });
 
-/** A reply of the API with `status` and a JSON body. */
 const reply = (status: number, body: unknown = {}) => ({
 	value: {
 		status,
@@ -52,10 +45,6 @@ type Send = (
 	clock: ReturnType<typeof mock.clock>,
 ) => ReturnType<typeof reply> | Promise<ReturnType<typeof reply>>;
 
-/**
- * The bottoms of the tool: the key in the env, a stub for the API that records each request, and a
- * stub for the `AskUserQuestion` tool that records each call the user would get.
- */
 const stub = (
 	on: On,
 	key: string,
@@ -83,13 +72,11 @@ const stub = (
 	return { fetches, asks, clock };
 };
 
-/** Calls the registered tool and gives the text it answered, or `""` when it answered none. */
 const callDecide = async ($: Engine, questions: object[] = [STORE]) => {
 	const answer = await $.tool.call({ tool: DECIDE, questions });
 	return typeof answer.result === "string" ? answer.result : "";
 };
 
-/** The names that `session.start` declared, with the env key set to `key`. */
 const declared = async ($: Engine, on: On, key: string) => {
 	const names: string[] = [];
 	mock.env(on, { TYPESAFE_API_KEY: key });
@@ -136,7 +123,7 @@ test(
 	},
 );
 
-/** The `AskUserQuestion` call that the model sends, which needs a `header` and a `multiSelect`. */
+/** `AskUserQuestion` input needs a `header` and a `multiSelect`. */
 const DIALOG = { ...STORE, header: "Store", multiSelect: false };
 
 test(

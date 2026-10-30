@@ -1,10 +1,7 @@
-// The roster that ships is two agents, `Artemis` and `Athena`. Each declares exactly the tools the
-// runtime gives it, no body names a tool its frontmatter withholds.
-
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { spawn } from "bun";
-import { AGENT_ROSTER } from "../../plugins/claudetto/src/tools/texts.ts";
+import { AGENT_ROSTER } from "../../plugins/claudetto/src/blocks/tool-describe/texts.ts";
 import {
 	AGENTS_DIR,
 	agentFaults,

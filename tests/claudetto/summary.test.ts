@@ -10,7 +10,7 @@ import {
 	SUMMARY_MAX_TOKENS,
 	summarize,
 	summaryRequest,
-} from "../../plugins/claudetto/src/summary.ts";
+} from "../../plugins/claudetto/src/blocks/compaction/summary.ts";
 import {
 	HAIKU_MODEL,
 	TIERS,
@@ -36,7 +36,6 @@ const COMPACT: SessionCompactInput = {
 	messages: [{ role: "user", text: "Build the export.", toolUses: [] }],
 };
 
-/** An `Ask` that records the requests and the lines, and answers with `reply`. */
 const asking = (reply: () => Promise<ModelCompleteResult>) => {
 	const requests: ModelCompleteRequest[] = [];
 	const lines: string[] = [];

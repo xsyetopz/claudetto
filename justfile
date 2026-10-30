@@ -42,7 +42,7 @@ settings-schema *args:
 claude-version *args:
     bun tools/claude-version.ts "$@"
 
-# Regenerate `plugins/claudetto/src/secrets/gitleaks/rules.ts` from the vendored Gitleaks config. `--fetch` downloads the config and its licence at the pinned ref first, `--fetch --ref TAG` at another, and `--upstream` compares the digest of the vendored copy with the original and names the newest release
+# Regenerate `plugins/claudetto/src/shared/secrets/gitleaks/rules.ts` from the vendored Gitleaks config. `--fetch` downloads the config and its licence at the pinned ref first, `--fetch --ref TAG` at another, and `--upstream` compares the digest of the vendored copy with the original and names the newest release
 gitleaks-rules *args:
     bun tools/gitleaks/run.ts "$@"
 
