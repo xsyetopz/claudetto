@@ -1,8 +1,3 @@
-// The offer as the person sees it and answers it. The band is mounted through the loaded plugin and
-// a key is pressed as the person would, so each case reads the state move that the answer leaves.
-// The reset of the two back-off counters is the move that the original made inside the function
-// that also sent its answered event, and it is kept here with the event dropped.
-
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { BORROWED } from "../src/constants.ts";

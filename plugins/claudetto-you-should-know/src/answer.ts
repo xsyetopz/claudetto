@@ -1,12 +1,9 @@
-// What a pressed key does to the stored state: the line joins the known list, the view closes or
-// moves on, and the two back-off counters reset. The reset is the move that the original made inside
-// the function that also sent its answered event (`docs/keep/plugins/you-should-know-design.txt:160`),
-// kept here with the event dropped.
-
 import { RESET } from "./cadence.ts";
+import { parseExplanation } from "./cards.ts";
 import type { ButtonKey } from "./choices.ts";
 import { hasCards } from "./choices.ts";
 import { BORROWED } from "./constants.ts";
+import { draftOf } from "./draft.ts";
 import { remember } from "./lines.ts";
 import { loadRow, type Ports, saveCounters, saveRow } from "./ports.ts";
 import { KEYS, listOf, type Row, type View } from "./rows.ts";
@@ -15,16 +12,12 @@ const closed = (row: Row): Row => ({ ...row, view: null });
 
 const withView = (row: Row, view: View): Row => ({ ...row, view });
 
-/** The known list with the line of the open view added. */
 const learnLine = async (p: Ports, view: View): Promise<void> => {
 	const known = listOf(await p.read(KEYS.KNOWN));
 	await p.write(KEYS.KNOWN, remember(known, view.line));
 };
 
-/**
- * A dismissed offer waits for an answer, then closes. The close is not an answer, so it leaves both
- * counters as they are (`docs/keep/plugins/you-should-know-design.txt:123`).
- */
+/** The close is not an answer, so it leaves both counters as they are. */
 const expire = async (p: Ports, id: string, shownAt: number): Promise<void> => {
 	const row = await loadRow(p, id);
 	if (row.view?.kind !== "asked" || row.view.shownAt !== shownAt) {
@@ -32,6 +25,39 @@ const expire = async (p: Ports, id: string, shownAt: number): Promise<void> => {
 	}
 	await saveRow(p, closed(row));
 	p.refresh();
+};
+
+const BOX_BUSY =
+	"Your prompt box has text in it. Send or clear it, then press 2 again.";
+
+const BLOCKED = "A dialog has the keyboard. Answer it, then press 2 again.";
+
+const NOT_FILLED = "The prompt box didn't take the note. Press 2 to try again.";
+
+const knowAndClose = async (p: Ports, row: Row, view: View): Promise<void> => {
+	await saveCounters(p, RESET);
+	await learnLine(p, view);
+	await saveRow(p, closed(row));
+};
+
+/** Only a note that reached the session is an answer: a refusal leaves the view and the counters as they are. */
+const respond = async (p: Ports, row: Row, view: View): Promise<void> => {
+	if ((await p.box()).trim() !== "") {
+		p.toast(BOX_BUSY);
+		return;
+	}
+	const draft = draftOf(row.tag, view.line, parseExplanation(view.explanation));
+	const filled = await p.fill(`${draft}\n\n`);
+	if (filled.isFilled) {
+		await knowAndClose(p, row, view);
+		return;
+	}
+	if (filled.refusal !== "no_composer") {
+		p.toast(filled.refusal === "dialog" ? BLOCKED : NOT_FILLED);
+		return;
+	}
+	await knowAndClose(p, row, view);
+	await p.submit(draft);
 };
 
 const ask = async (p: Ports, row: Row, view: View): Promise<void> => {
@@ -42,7 +68,6 @@ const ask = async (p: Ports, row: Row, view: View): Promise<void> => {
 	});
 };
 
-/** What the key does to the open view, after the counters were reset. */
 const apply = async (
 	p: Ports,
 	row: Row,
@@ -73,10 +98,7 @@ const apply = async (
 	}
 };
 
-/**
- * The key `key` pressed on the view of session `id`. A press on a view that is no longer open does
- * nothing, because the row may have closed between the draw and the press.
- */
+/** A press on a view no longer open does nothing: the row may have closed between draw and press. */
 export const press = async (
 	p: Ports,
 	id: string,
@@ -89,6 +111,11 @@ export const press = async (
 	}
 	if (key === "dismiss" && view.kind === "asked") {
 		await saveRow(p, closed(row));
+		p.refresh();
+		return;
+	}
+	if (key === "respond") {
+		await respond(p, row, view);
 		p.refresh();
 		return;
 	}

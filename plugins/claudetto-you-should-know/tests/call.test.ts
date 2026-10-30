@@ -1,6 +1,3 @@
-// The one request of a check. The lab answers it, so the model, the effort, the bound, and the
-// cached block are read off the request the plugin made, and no provider is reached.
-
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { OWN } from "../src/constants.ts";
@@ -89,11 +86,7 @@ test(
 	},
 );
 
-// The original forks the session to ask, which copies the whole conversation into the request and
-// costs the window; the rebuild asks with `$.model.complete` and a digest instead
-// (`src/constants.ts:53`). An answer is put beneath `model.fork` here rather than left out, because
-// a missing answer throws and a throw inside the check is swallowed by its own catch: the ban then
-// reads as a pass whether the call was made or not.
+// `model.fork` gets an answer: a missing one throws into the check's catch, so the ban passes vacuously.
 test(
 	"a check never forks the session, so the conversation is not copied into the request",
 	{ options: TURNED_ON },

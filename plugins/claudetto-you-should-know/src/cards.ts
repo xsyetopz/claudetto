@@ -1,9 +1,5 @@
-// Cutting an explanation into cards, each a title, a lead, an optional sketch, and a caption
-// (`docs/keep/plugins/you-should-know-design.txt:112`).
-
 import { BORROWED } from "./constants.ts";
 
-/** One card of an explanation; `sketch` holds the lines of the optional sketch and is empty when the card has none. */
 export interface Card {
 	readonly title: string;
 	readonly lead: string;
@@ -31,7 +27,6 @@ const freshDraft = (title: string): Draft => ({
 	sketched: false,
 });
 
-/** Text cut at a word boundary to at most `max` characters. */
 const clipWords = (text: string, max: number): string => {
 	if (text.length <= max) {
 		return text;
@@ -70,7 +65,6 @@ const finished = (draft: Draft): Card => ({
 	caption: clipWords(draft.caption.join("\n"), BORROWED.MAX_CAPTION_LENGTH),
 });
 
-/** The cards of an explanation, at most the most cards a view shows. */
 export const parseExplanation = (text: string): readonly Card[] => {
 	const drafts: Draft[] = [];
 	let fenced = false;
@@ -88,7 +82,6 @@ export const parseExplanation = (text: string): readonly Card[] => {
 			if (title !== undefined) {
 				drafts.push(freshDraft(title));
 			} else if (line.trim() !== "") {
-				// A blank line opens no card: an explanation of nothing but blanks has none.
 				addText(currentOf(drafts), line);
 			}
 		}

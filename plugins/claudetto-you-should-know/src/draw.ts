@@ -1,9 +1,3 @@
-// The band as a tree: the tag and the line, the cards of an explanation, and the bar of keys. It is
-// pure over the element table it is given, so a test could pass its own. The geometry is the
-// original's: a blank row above, a marker column of two cells on the terminal, a gap of three cells
-// between keys, and cards indented by two (`docs/keep/plugins/you-should-know-design.txt:97` and
-// `:105-111`).
-
 import type {
 	BoxProps,
 	ButtonProps,
@@ -19,7 +13,6 @@ import { type ButtonKey, type Choice, choicesOf } from "./choices.ts";
 import { BORROWED } from "./constants.ts";
 import type { View } from "./rows.ts";
 
-/** The four elements the band draws with, which every surface's table carries. */
 export interface Table {
 	readonly Box: ElementConstructor<BoxProps>;
 	readonly Text: ElementConstructor<TextProps>;
@@ -27,20 +20,14 @@ export interface Table {
 	readonly Code: ElementConstructor<CodeProps>;
 }
 
-/** What the band draws: the `view` of a session on a `surface`, labelled with `tag`. */
 export interface Drawing {
 	readonly surface: RenderSurface;
 	readonly view: View;
 	readonly tag: string;
-	/** Runs when a key is pressed. */
 	readonly press: (key: ButtonKey) => void;
 }
 
-/**
- * The marker of the first column. Which glyph the original draws is not recorded in the design note,
- * which names its color and width only (lines 60 and 106), so this is the rebuild's own: a plain
- * asterisk, which is one cell wide on every terminal, with the second cell of the column left blank.
- */
+/** The rebuild's own glyph: an asterisk is one cell wide on every terminal. */
 const MARKER = "*";
 
 const MIDDLE_DOT = " · ";
@@ -77,7 +64,6 @@ const choicesRow = (t: Table, d: Drawing): RenderElement =>
 		children: choicesOf(d.view).map((choice) => choiceOf(t, d, choice)),
 	});
 
-/** The tag, a dot, and the line, behind the marker column where the surface has one. */
 const headOf = (t: Table, d: Drawing): RenderElement => {
 	const lead = t.Text({
 		dimColor: true,
@@ -103,7 +89,7 @@ const headOf = (t: Table, d: Drawing): RenderElement => {
 	});
 };
 
-/** A drawing inside a card: an empty line is one space, so the block keeps its shape. */
+/** An empty line is one space, so the block keeps its shape. */
 const sketchOf = (t: Table, card: Card): RenderNode | false =>
 	card.sketch.length > 0 &&
 	t.Code({
@@ -124,7 +110,6 @@ const cardOf = (t: Table, card: Card): RenderElement =>
 		],
 	});
 
-/** What sits between the head and the keys, by the kind of the view. */
 const bodyOf = (t: Table, d: Drawing): readonly RenderNode[] => {
 	if (d.view.kind === "asked") {
 		return [
@@ -140,7 +125,6 @@ const bodyOf = (t: Table, d: Drawing): readonly RenderNode[] => {
 	return [];
 };
 
-/** The whole band for one open view. */
 export const drawView = (t: Table, d: Drawing): RenderElement => {
 	const spaced = d.view.kind === "explained" ? { marginBottom: 1 } : {};
 	return t.Box({

@@ -1,13 +1,8 @@
-// The one request of a check: the fixed instructions in a cached block, then the lists and the digest.
-
 import type { ModelCompleteRequest } from "claude-code";
 import { OWN } from "./constants.ts";
 import type { Settings } from "./options.ts";
 
-/**
- * The observer's instructions. They are the same on every check, so they sit alone in the block that
- * is cached, and nothing that changes goes in them.
- */
+/** Identical on every check, so it sits alone in the cached block; nothing that changes goes in it. */
 export const INSTRUCTIONS = `You are a quiet observer beside a person who is working with a coding assistant. You read a short digest of the latest work and decide whether one thing is worth interrupting them for. Most of the time it is not, and the right answer is to say nothing.
 
 Speak only when all of these hold:
@@ -34,7 +29,6 @@ explain: **<a title of three to six plain words>**
 
 Use the tag \`Heads up\` instead of \`You should know\` when the line warns about something that is about to go wrong.`;
 
-/** The lists and the digest: the part of the request that changes with every check. */
 export const bodyOf = (
 	seen: readonly string[],
 	known: readonly string[],
@@ -49,7 +43,6 @@ ${known.length === 0 ? "(none)" : known.map((line) => `- ${line}`).join("\n")}
 Latest work:
 ${digest === "" ? "(nothing yet)" : digest}`;
 
-/** The request of a check, with the model, the effort, and the bound named. */
 export const requestOf = (
 	settings: Settings,
 	body: string,

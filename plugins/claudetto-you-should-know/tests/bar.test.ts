@@ -1,7 +1,3 @@
-// The bar for interrupting, one case per rule. Each case drives steps and prompts through the
-// loaded plugin and counts the requests it made, because a rule that holds is a request that was
-// not made or a line that was not shown.
-
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import {

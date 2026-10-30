@@ -1,8 +1,3 @@
-// The check itself, in the order the original runs it: the first step of a turn settles the prompts
-// typed past an open view, a check step is held back or marked, and the one request goes out apart
-// from the hook, so a step never waits on the model
-// (`docs/keep/plugins/you-should-know-design.txt:73-79` and `:127-128`).
-
 import { afterIgnored, type Counters, holdFor } from "./cadence.ts";
 import { BORROWED } from "./constants.ts";
 import { digestOf } from "./digest.ts";
@@ -20,7 +15,6 @@ import { bodyOf, requestOf } from "./prompt.ts";
 import { parseReply } from "./reply.ts";
 import { KEYS, listOf, type Row } from "./rows.ts";
 
-/** Where a step is: the session, and the turn the step belongs to. */
 export interface At {
 	readonly id: string;
 	readonly turnId: string;
@@ -28,11 +22,7 @@ export interface At {
 
 const closed = (row: Row): Row => ({ ...row, view: null });
 
-/**
- * The first step of a turn. A dismissed question is cancelled, and an offer that two prompts were
- * typed past is cleared and counted as ignored; an explanation always stays
- * (`docs/keep/plugins/you-should-know-design.txt:127`).
- */
+/** An offer two prompts were typed past is cleared and counted as ignored; an explanation stays. */
 export const settleTyped = async (p: Ports, id: string): Promise<void> => {
 	const row = await loadRow(p, id);
 	const kind = row.view?.kind;
@@ -55,7 +45,6 @@ export const settleTyped = async (p: Ports, id: string): Promise<void> => {
 	p.refresh();
 };
 
-/** The reply of a check, shown when it is a new line and the check is still due. */
 const showReply = async (p: Ports, at: At, text: string): Promise<void> => {
 	const row = await loadRow(p, at.id);
 	if (ended.has(at.id) || row.askedTurn !== at.turnId || row.view !== null) {
@@ -86,7 +75,6 @@ const showReply = async (p: Ports, at: At, text: string): Promise<void> => {
 	p.refresh();
 };
 
-/** The one request of a check, and what its answer does. */
 const runCheck = async (
 	p: Ports,
 	settings: Settings,
@@ -105,7 +93,6 @@ const runCheck = async (
 	}
 };
 
-/** The back-off pays for the check it skips: one less to skip, the other counter as it was. */
 const spendSkip = async (p: Ports, skips: number): Promise<void> => {
 	const counters: Counters = {
 		typedPastInARow: await loadCount(p, KEYS.TYPED_PAST),
@@ -114,12 +101,7 @@ const spendSkip = async (p: Ports, skips: number): Promise<void> => {
 	await saveCounters(p, counters);
 };
 
-/**
- * A check step. It is held back for one of the reasons of `holdFor`, or it marks the turn as asked
- * and schedules the request. An error of the request is swallowed: no one awaits it, the original
- * swallows the failure of its own side request the same way (design line 151, `.catch(() => {})`),
- * and the cost of a lost check is one offer not made.
- */
+/** A swallowed error costs one offer not made, and no one awaits the request. */
 export const considerCheck = async (
 	p: Ports,
 	settings: Settings,
