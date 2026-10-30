@@ -117,6 +117,28 @@ Custom rules, route `prompts/auto-classifier-custom`:
 - So the size depends on the lists. Replacing a list shortens the prompt. The page gives no figure for a list that keeps `$defaults` and adds entries. That figure is `not given`.
 - The same `auto_mode` object is also in `safeguards.classifier_context` of the main request.
 
+### Size per Rung
+
+Command: `just capture --classifier --arm plain --settings FILE`, one run per row, against the local fake API, `2.1.314`. "One rule" means the list holds only `"Run tests."` and no `$defaults`. The built-in rule counts come from the bullet lines under each heading of the built-in `system[1]`.
+
+| Rung | `autoMode` and env | `system[1]` | Cut |
+| --- | --- | --- | --- |
+| Built-in | unset | `140,015` | `0` |
+| Empty lists | all four lists `[]` | `140,015` | `0` |
+| `allow` replaced | one rule (drops 17 built-in exceptions) | `132,025` | `7,990` |
+| `soft_deny` replaced | one rule (drops 72 built-in soft blocks) | `75,266` | `64,749` |
+| `hard_deny` replaced | one rule (drops the built-in Data Exfiltration hard block) | `134,747` | `5,268` |
+| `environment` replaced | one rule (drops 21 built-in entries) | `136,482` | `3,533` |
+| All four replaced | one rule each | `58,475` | `81,540` |
+| All four replaced, rule `"x"` | one rule each | `58,439` | `81,576` |
+| Haiku | `CLAUDE_CODE_AUTO_MODE_MODEL=claude-haiku-5-5` | `140,239` | `-224` |
+| Haiku, all four `"x"` | both of the above | `58,663` | `81,352` |
+
+- An empty list counts as unset and keeps the built-in rules.
+- The four cuts add up exactly to the all-four cut, so each list is one block of text with no shared parts.
+- About `58,400` characters is the floor that settings can reach. The rest is the frame (threat model, user intent rule, evaluation rules, process), and no setting or env name of `2.1.314` changes it. A shorter request needs a classifier prompt of our own.
+- Each cut removes block rules, and the default rule is "allowed". A `soft_deny` of one rule lets through every action that the 72 built-in soft blocks stopped, such as `git push --force`, a production deploy, or printing a credential. These readings are sizes only. Whether a rung still blocks what the built-in blocks is unmeasured.
+
 What the page does not say: which model the classifier runs on, whether the call is cached across tool calls, and any setting that skips it. All `not given`. The system block carries a `cache marker` of `{"type":"ephemeral"}`. The page does not say what that saves.
 
 ## Compaction
