@@ -88,7 +88,7 @@ export const ENVIRONMENT_FACTS: readonly EnvironmentFact[] = [
 		field: "CI/CD deploy targets",
 		text: "None. The project deploys nowhere; its only published artifact is this plugin, through its GitHub marketplace entry.",
 		source:
-			"`.github/workflows/ci.yml`, whose jobs are `check`, `commitlint`, and `all-green`, none of which deploys or publishes",
+			"`.github/workflows/ci.yml`, whose jobs are `check` and `commitlint`, neither of which deploys or publishes",
 	},
 	{
 		field: "Cloud provider(s)",

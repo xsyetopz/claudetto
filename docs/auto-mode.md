@@ -276,7 +276,7 @@ at 17 allow, 72 soft deny, and 1 hard deny, so nothing of `$defaults` is lost.
 | `Organization` | `plugins/claudetto/.claude-plugin/plugin.json`, whose `author.name` is `xsyetopz` and which has no organization field | 2026-10-29 |
 | `Repository visibility` | `git remote -v`, and an unauthenticated `GET https://api.github.com/repos/xsyetopz/claudetto`, which answers `200` only for a public repository | 2026-10-29 |
 | `Source control` | `git remote -v`, which lists `origin` for fetch and for push and nothing else | 2026-10-29 |
-| `CI/CD deploy targets` | `.github/workflows/ci.yml`, whose jobs are `check`, `commitlint`, and `all-green`, none of which deploys or publishes | 2026-10-29 |
+| `CI/CD deploy targets` | `.github/workflows/ci.yml`, whose jobs are `check` and `commitlint`, neither of which deploys or publishes | 2026-10-30 |
 | `Cloud provider(s)` | A search of the tree outside `archive/` for a `.tf` file, a `Dockerfile`, and a Kubernetes manifest, which finds none | 2026-10-29 |
 | `Org-specific CLIs` | The `justfile` and the scripts of `package.json` | 2026-10-29 |
 | `Internal package registry` | `package.json`, which lists ten devDependencies and no runtime dependency, and `bunfig.toml`, which sets no registry | 2026-10-29 |

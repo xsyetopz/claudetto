@@ -65,16 +65,3 @@ jobs:
           else
             bunx commitlint --from "$FROM" --to "$TO"
           fi
-
-  # The one check to require in branch protection: it fails unless every
-  # job succeeded, including when one was cancelled or skipped.
-  all-green:
-    if: always()
-    needs: [check, commitlint]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - env:
-          CHECK: ${{ needs.check.result }}
-          COMMITLINT: ${{ needs.commitlint.result }}
-        run: test "$CHECK" = success && test "$COMMITLINT" = success
