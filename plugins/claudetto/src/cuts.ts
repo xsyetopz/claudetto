@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_721;
+export const SHIPPED_TOTAL = 31_424;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -28,7 +28,7 @@ export const CLASSIFIER_CALL_CHARS = 140_718;
 export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "deny list", chars: BASELINE_TOTAL - DENIED_TOGETHER_TOTAL },
 	// The residual: hiding our tool texts hides the plugin itself, and it holds request text no row names.
-	{ name: "tool texts", chars: 7035 },
+	{ name: "tool texts", chars: 7332 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "dedupe skill", chars: -160 },

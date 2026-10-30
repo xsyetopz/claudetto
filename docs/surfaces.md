@@ -488,7 +488,7 @@ the 192 characters, and then the 3,226 of drift above.
 | Shipped cut | Characters off the first request | Cost reading |
 | --- | --- | --- |
 | Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
-| The residual of the eight upfront tool texts and the pieces no row names (`tool texts`) | 7,035 | None exists yet |
+| The residual of the eight upfront tool texts and the pieces no row names (`tool texts`) | 7,332 | None exists yet |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `dedupe` skill | −160 | None needed. The model may call it |
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
