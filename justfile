@@ -11,13 +11,15 @@ check: lint typecheck test validate lab
 test *args:
     env -u CLAUDE_CODE_SESSION_ID bun test "$@"
 
-# Lint code, Markdown, file lengths, comment narration, and clones outside the `jscpd` baseline
+# Lint code, Markdown, file lengths, comment narration, clones outside the `jscpd` baseline, and the branch's commit messages
 lint:
     bun run lint
     bun run lint:md
     bun tools/file-lines.ts
     bun tools/no-narration.ts
     bunx jscpd --no-tips plugins tests tools claudekit
+    # The range the `commitlint` job of CI reads; a clone without `origin/main`, such as the shallow one of the `check` job, skips it.
+    @if git rev-parse -q --verify origin/main >/dev/null; then bunx commitlint --from "$(git merge-base origin/main HEAD)" --to HEAD; fi
 
 # Type-check against the vendored Claude Code types
 typecheck:
