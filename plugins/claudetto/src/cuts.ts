@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 32_039;
+export const SHIPPED_TOTAL = 31_770;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -41,7 +41,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	},
 	{ name: "idleCompaction off", chars: 0 },
 	// Less than the length difference: the JSON string escapes more of our body's characters.
-	{ name: "main agent body", chars: 259 },
+	{ name: "main agent body", chars: 528 },
 	// The plugin's presence lengthens the default third system block.
 	{ name: "plugin system text", chars: -38 },
 	// The four agents are delegation targets, so the harness lists them in the first message.

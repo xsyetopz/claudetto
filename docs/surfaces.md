@@ -494,7 +494,7 @@ the 192 characters, and then the 3,226 of drift above.
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | 259 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | 528 | None exists yet. A placebo run would price the prompt text |
 | The plugin's own text in the third system block (`plugin system text`) | −38 | None needed. It is the host's, not ours |
 | The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −1,155 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/handoff.ts` | −820 | None exists yet. A placebo run would price the prompt text |
