@@ -23,7 +23,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 ## 4. Version Floor (`version-floor`)
 
 - [x] 4.1 Read the source of the running version from the mod API, and record it in `design.md`. Verify: the command and its output. `cc-inspect` `surface` with kind `mod-api`, name `version`, and version `2.1.314` reads `$.session.version  (call)  claude-code.d.ts-e7bdb529.txt.zst:120951` and `session.version  (event)  claude-code.d.ts-e7bdb529.txt.zst:298995`. `design.md` under "Version Floor" records it, with the `SessionVersion` fields.
-- [ ] 4.2 The `SessionStart` rule warns once under `2.1.314`. Verify: hook lab cases for `2.1.311` and `2.1.314`.
+- [x] 4.2 The `SessionStart` rule warns once under `2.1.314`. Verify: hook lab cases for `2.1.311` and `2.1.314`. The `version-floor` block hooks `classic.SessionStart` with the matcher `{ source: "startup" }` and reads `base` from `$.session.version()`. `tests/version-floor.test.ts` passes six lab cases under `claude plugin test`: `2.1.311` adds one line naming `2.1.311` and `2.1.314`; `2.1.314`, `2.1.1000`, a resume, and a version with no `base` add none; `2.1.311-dev` warns. Flipping the comparison fails the `2.1.311` and `2.1.1000` cases.
 
 ## 5. Status Line (`status-line`)
 

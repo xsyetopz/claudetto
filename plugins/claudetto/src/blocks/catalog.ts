@@ -9,6 +9,7 @@ import { attachInitInterview, initInterview } from "./init-interview/block.ts";
 import { attachRunLimits, runLimits } from "./run-limits/block.ts";
 import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
 import { attachToolDescribe, toolDescribe } from "./tool-describe/block.ts";
+import { attachVersionFloor, versionFloor } from "./version-floor/block.ts";
 import { attachWindow, windowBlock } from "./window/block.ts";
 
 /** One row per block, in the order `attachBlocks` calls them, which is the hook chain order. */
@@ -23,6 +24,7 @@ export const CATALOG: readonly Block[] = [
 	runLimits,
 	windowBlock,
 	compaction,
+	versionFloor,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -38,4 +40,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachRunLimits(on, context);
 	attachWindow(on, context);
 	attachCompaction(on, context);
+	attachVersionFloor(on, context);
 };
