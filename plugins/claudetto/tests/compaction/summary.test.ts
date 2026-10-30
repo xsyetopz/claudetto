@@ -67,7 +67,7 @@ test(
 		expect(asked).toHaveLength(1);
 		expect(asked[0]?.model).toBe("claude-haiku-5-5");
 		expect(asked[0]?.effort).toBe("medium");
-		expect(asked[0]?.maxTokens).toBe(4000);
+		expect(asked[0]?.maxTokens).toBe(2000);
 		expect(cachedFlags(asked[0])).toEqual([true, false]);
 		// `usage` is on the compacted half only, and the skipped half declares `messages`, so narrow via `skip`.
 		const compacted = "skip" in out ? undefined : out;

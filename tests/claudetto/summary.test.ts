@@ -7,6 +7,8 @@ import type {
 import {
 	type Ask,
 	isCheapSummaryOn,
+	SUMMARY_INSTRUCTIONS,
+	SUMMARY_MAX_CHARS,
 	SUMMARY_MAX_TOKENS,
 	summarize,
 	summaryRequest,
@@ -173,6 +175,27 @@ describe("the answer to a compaction", () => {
 		expect([first, second]).toEqual([undefined, undefined]);
 		expect(empty.seen.lines).toHaveLength(1);
 		expect(blank.seen.lines).toHaveLength(1);
+	});
+
+	test("the instructions name the character limit, so the model writes to it", () => {
+		expect(SUMMARY_INSTRUCTIONS).toContain(`${SUMMARY_MAX_CHARS} characters`);
+	});
+
+	test("a reply over the limit is cut at its last line break within the limit, with one line", async () => {
+		const line = `${"x".repeat(99)}\n`;
+		const long = line.repeat(Math.ceil(SUMMARY_MAX_CHARS / line.length) + 1);
+		const { ask, seen } = asking(async () => ({
+			isAnswered: true,
+			text: long,
+			usage: USAGE,
+		}));
+
+		const text = (await summarize(ON, COMPACT, ask, true))?.messages[0]?.text;
+
+		expect(text?.length).toBeLessThanOrEqual(SUMMARY_MAX_CHARS);
+		expect(text?.endsWith("x")).toBe(true);
+		expect(long.startsWith(text ?? "?")).toBe(true);
+		expect(seen.lines).toHaveLength(1);
 	});
 
 	test("a row with the field off makes no call", async () => {
