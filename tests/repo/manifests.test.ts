@@ -26,6 +26,7 @@ const isFile = async (path: string): Promise<boolean> => {
 const OPTIONS: readonly string[] = [
 	"decide",
 	"TYPESAFE_API_KEY",
+	"CONTEXT7_API_KEY",
 	"cheapSummary",
 	"subagentCap",
 	"startCap",

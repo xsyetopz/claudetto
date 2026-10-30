@@ -2,6 +2,7 @@ import type { On, PluginOptions } from "claude-code";
 import { agentOffer, attachAgentOffer } from "./agent-offer/block.ts";
 import type { Block, BlockContext } from "./block.ts";
 import { attachCompaction, compaction } from "./compaction/block.ts";
+import { attachContext7, context7 } from "./context7/block.ts";
 import { attachDecide, decide } from "./decide/block.ts";
 import { attachFinish, finish } from "./finish/block.ts";
 import { attachGate, gateBlock } from "./gate/block.ts";
@@ -29,6 +30,7 @@ export const CATALOG: readonly Block[] = [
 	versionFloor,
 	hygiene,
 	finish,
+	context7,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -47,4 +49,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachVersionFloor(on, context);
 	attachHygiene(on, context);
 	attachFinish(on, context);
+	attachContext7(on, context);
 };

@@ -372,11 +372,11 @@ of the tool-text reading above because they carry `outputStyle`, the `sandbox` b
 skill, and the two switches take 5,590 out. Each of those has its own row under "Shipped Cuts" below. That is the point
 of reading the keys in the combination rather than alone: they are bill levers and not request levers,
 and adding them to the snippet costs the prompt nothing. The `plugin` arm was 14,749 characters under
-the 46,105 baseline of the `plain` arm at this reading, and is 14,137 under it, the sum of the inventory below, since `Hephaestus` and `Hermes` shipped.
+the 46,105 baseline of the `plain` arm at this reading, and is 14,066 under it, the sum of the inventory below, since the `docs` skill shipped.
 This table is the whole shipped combination: `agents/main.md` under the `agent` key, the output style,
-the handoff context block, the two agent files, and the skill are all in it, which is why `system` and
+the handoff context block, the agent files, and the skills are all in it, which is why `system` and
 `messages` moved. The arm read 30,462 on 2026-10-29 and 30,450 on the morning of 2026-10-30, and 31,959 on `2.1.312`
-at the end of that day, and read 31,356 on `2.1.314` with two agent files and reads 31,968 with four. The
+at the end of that day, and read 31,356 on `2.1.314` with two agent files, 31,968 with four, and reads 32,039 with the `docs` skill. The
 section below on shipped cuts holds the reading per piece, and `just inventory` is what re-reads these
 three totals against the figures the tree records.
 
@@ -479,7 +479,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,105 baseline less every cut in it has to equal the 31,968 the shipped arm reads, so a cut that
+46,105 baseline less every cut in it has to equal the 32,039 the shipped arm reads, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -490,7 +490,8 @@ the 192 characters, and then the 3,226 of drift above.
 | Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
 | The residual of the eight upfront tool texts and the pieces no row names (`tool texts`) | 7,035 | None exists yet |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
-| The `dedupe` skill | −160 | None needed. It is the one skill the tree ships, and the model may call it |
+| The `dedupe` skill | −160 | None needed. The model may call it |
+| The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
 | `agents/main.md` under the `agent` key (`main agent body`) | 259 | None exists yet. A placebo run would price the prompt text |
@@ -502,7 +503,7 @@ the 192 characters, and then the 3,226 of drift above.
 | The `sandbox` block | −7,254 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
 | The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
 
-The rows sum to 14,137, which is 46,105 less the 31,968 of the shipped arm. A negative row is a piece
+The rows sum to 14,066, which is 46,105 less the 32,039 of the shipped arm. A negative row is a piece
 the tree adds.
 
 Every figure above is a whole-request reading of one capture set of 2026-10-30 on `2.1.314`, so the
@@ -515,7 +516,8 @@ moved aside, 31,308 with `commands/setup.md` moved aside, 31,196 with `skills/de
 was run on `2.1.314`, `agent listing` and `dedupe skill`, and the section above on the baseline says
 why. Adding `Hephaestus` and `Hermes` later that day moved the arm to 31,968. It reads 31,475 with the
 two files moved aside, so their listing costs 493, and the other 119 are the longer roster of the
-`Agent` text, which falls in the `tool texts` residual.
+`Agent` text, which falls in the `tool texts` residual. Adding the `docs` skill moved the arm to 32,039,
+so its listing line costs 71.
 
 The tool-text row is the one figure here that no isolating capture reaches, because hiding our tool
 texts means hiding the plugin itself, so it is the residual of the shipped reading once every other
