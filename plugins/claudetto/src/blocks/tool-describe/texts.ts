@@ -2,7 +2,7 @@
 
 /** Keyed on what a task produces, not its topic: agents can share a topic and a reader picks wrong. */
 export const AGENT_ROSTER =
-	"Use `Artemis` when the product is a list of places across many files, and `Athena` when it is a verdict on a diff. Every other task is your own work.";
+	"Use `Artemis` when the product is a list of places across many files, `Athena` when it is a verdict on a diff, `Hephaestus` when it is an edit whose goal, files, and check you can name, and `Hermes` when it is an answer from the web. Every other task is your own work.";
 
 const AGENT = `Start an agent for a multi-step task.
 \`subagent_type\` picks the agent, and the \`<system-reminder>\` list names the types; each type sets its own model, effort, and tools, so pick a type in place of a \`model\`.
