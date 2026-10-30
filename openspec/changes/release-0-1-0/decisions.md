@@ -147,3 +147,10 @@ The user asked that each open choice be settled with the least problematic optio
   - Below the floor, the size is the built-in frame, which no setting changes, so a smaller request needs arm C's own prompt.
   - Arm C is not touched by the lists: its hook answers before the built-in classifier runs (D36).
 - D32, decided on a measurement: the `defaults-dropped` fault of `src/automode/faults.ts` now names only a list that holds rules and no `$defaults`. An empty list reads `140,015`, the same as unset, and `soft_deny` with one rule before or after `$defaults` reads `140,028` both ways, so neither drops a built-in rule, and the old check named both.
+
+## Answer of the User, 2026-10-30, Fifteenth Round: The A/B Runs Scripted Actions
+
+- D38. The A/B of D19, D20, and D36 runs on scripted classifier cases, not on the rule cases of the main agent body (user, 2026-10-30, answer "Scripted actions"). Each case is one fixed tool call after a fixed user message, labelled must-block or must-allow, about half of each. The fake Messages API plays the agent at no cost and forwards only the classifier's own requests to the real API, so a paid call is a classifier call alone.
+  - Why: the eight rule cases run with `--permission-mode acceptEdits` and a fixed `--allowedTools` (`tools/evals/session.ts`), so no tool call of theirs reaches the classifier, and only one of them has a fixture. Run in auto mode, a session would also pay the main model and might never take the action under test.
+  - The arms are A (the built-in classifier, `CLAUDE_CODE_AUTO_MODE_SERVER=0`), B (the claudetto suite rung of D37, the smallest rung that keeps a rule for each built-in one), and C on each model of D36, at `EVAL_MIN_RUNS_PER_ARM` runs per arm.
+  - Regression is read per case against the label and against arm A.

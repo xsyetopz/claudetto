@@ -33,7 +33,7 @@
 
 - The classifier request is read by extending `tools/capture/fake-api.ts`: in a new `--classifier` mode its first reply is a `Bash` tool call no rule allows, and it records every request after that whose system text starts with the classifier's monitor line. `tools/capture/run.ts` prints the split per rung. Why: D20 needs a free size reading.
 - The rungs come from the `CLAUDE_CODE_AUTO_MODE_*` names of the `2.1.314` binary. Each name is read in the binary for what it changes before it is a rung. A name that changes no request text is dropped from the ladder, with the reading.
-- The A/B extends `tools/evals/` with arms A (built-in, `CLAUDE_CODE_AUTO_MODE_SERVER=0`), C (claudetto's own mode: `default` permission mode plus a `PreToolUse` hook, Jev then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, one variant each, failing closed, D36), and the smallest B rungs. It runs in plan mode first, which prints the sessions and the price at no cost. The paid run waits for approval.
+- The A/B runs on scripted classifier cases, one fixed tool call each, with a fake Messages API that plays the agent and forwards only classifier requests (D38). It extends `tools/evals/` with arms A (built-in, `CLAUDE_CODE_AUTO_MODE_SERVER=0`), C (claudetto's own mode: `default` permission mode plus a `PreToolUse` hook, Jev then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, one variant each, failing closed, D36), and the smallest B rungs. It runs in plan mode first, which prints the sessions and the price at no cost. The paid run waits for approval.
 - `src/summary.ts` sends effort `high` on the Haiku call, as a named constant, apart from the row's `effort`.
 
 ### Surfaces
