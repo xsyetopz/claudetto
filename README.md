@@ -51,19 +51,23 @@ The command is answered in code and tells the model nothing of its output, so ru
 A `claude -p "/claudetto:setup"` run against a fake Messages API on `127.0.0.1` sent that API no request at all, so the measurement is zero and not an estimate.
 Its row in the command listing costs 48 characters of the first request, which is the whole price of having the command.
 
-### The Three Groups
+### The Four Groups
 
 | Group | What keeping it writes |
 | --- | --- |
-| Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. Together they take the first request from 42,879 characters to 31,959, and the tool schemas from 12 tools to 9. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
-| Sandbox | `sandbox`, with `allowUnsandboxedCommands` set to `false`. It costs 7,254 characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is 140,718 characters. |
-| Models and windows | `model`, `effortLevel`, `env`, `autoCompactWindow`, `modelSettings`, `idleCompaction`. |
+| Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. The deny list holds the measured tool denies, `DesignSync`, and the six built-in agents. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
+| Sandbox | `sandbox`, with `allowUnsandboxedCommands` set to `false`. It costs characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs. |
+| Models and windows | `model`, `effortLevel`, `autoCompactWindow`, `fallbackModel` (`claude-sonnet-5-5`), `modelSettings` (the Haiku window and the `maxEffortLevel` ceilings `high` for `claude-opus-5-5`, `medium` for `claude-sonnet-5-5`, and `high` for `claude-haiku-5-5`), `idleCompaction`, and the `env` entries `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `CLAUDE_CODE_SUBAGENT_MODEL`. |
+| Features off | `$schema`, the five `/config` switches (`workflowSizeGuideline`, `workflowKeywordTriggerEnabled`, `enableWorkflows`, `enableArtifact`, `remoteControlAtStartup`), the seven claude.ai and notification keys (`disableClaudeAiConnectors`, `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `autoUploadSessions`, `disableRemoteControl`, `inputNeededNotifEnabled`, `agentPushNotifEnabled`), the session features (`autoMemoryEnabled`, `autoDreamEnabled`, `promptSuggestionEnabled`, `awaySummaryEnabled`, `spinnerTipsEnabled`, `feedbackDrafts`, `feedbackSurveyRate`, `todoFeatureEnabled`, `voiceEnabled`), the prompt keys (`includeGitInstructions`, `showThinkingSummaries`, `attribution`), the behaviors (`autoContinueAtUsageLimit`, `switchModelsOnFlag`, `precomputeCompactionEnabled`, `showClearContextOnPlanAccept`, `useAutoModeDuringPlan`, `crossSessionInbound`, `prefersReducedMotion`), `minimumVersion`, and the feature `env` flags of `plugins/claudetto/src/tiers/env.ts`. |
+
+The dialog prints each group's measured figures from `plugins/claudetto/src/cuts.ts` and `plugins/claudetto/src/deny.ts`, and `just inventory` checks them against a reading taken now.
+`minimumVersion` keeps the updater from moving below the version claudetto is checked on; it does not stop an older Claude Code from starting.
 
 A group you discard writes none of its keys, and a key of that group you already have stays as it is.
 
 The command writes no `autoMode`, whatever you answer.
 Its `environment` facts are readings of this repository, and the auto-mode classifier would read them as facts about your machine and decide from them whether a command runs without asking.
-Keeping all three groups costs the same 31,959 characters as the full snippet does, so leaving the key out costs nothing measured.
+Keeping all four groups reads the same first request as the full snippet does, so leaving the key out costs nothing measured.
 
 A plugin's own settings reach only `agent` and `subagentStatusLine`, so a settings file is the one way claudetto can give you permissions, environment variables, and models.
 A `settings.read` hook that answers them instead was built and dropped: it read 61,353 characters against 31,861 for the file, so the readers that build the first request do not take its answer.
@@ -132,7 +136,8 @@ Each model call reads the whole context again, so the size of the context sets t
 Type `/clear` to start a fresh session from the handoff.
 A model change rebuilds the prompt cache, and an effort change keeps it.
 
-Use openspec for specs: `claudetto` has no spec store.
+Use OpenSpec for specs: `claudetto` has no spec store.
+When `openspec` is on `PATH` and the project has no `openspec/`, `just setup` runs `openspec init --tools claude --profile core`, which writes OpenSpec's six `core` workflow skills. Install the CLI with `bun add -g @fission-ai/openspec`.
 
 ## Update
 

@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { shareClaims } from "../../../plugins/claudetto/src/blocks/window/report.ts";
+import { AUTOCOMPACT_PCT_ENV } from "../../../plugins/claudetto/src/keys.ts";
+import {
+	envFlags,
+	SUBAGENT_MODEL_ENV,
+} from "../../../plugins/claudetto/src/tiers/env.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
 import { tierReport } from "../../../plugins/claudetto/src/tiers/report.ts";
 import {
@@ -12,12 +17,11 @@ const ROW = rowFor("default_claude_max_20x");
 if (ROW === undefined) {
 	throw new Error("the table has no row for default_claude_max_20x");
 }
-const PCT = "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE";
+const PCT = AUTOCOMPACT_PCT_ENV;
 
-// The snippet needs a platform named; `"darwin"` is the development platform, so the snippet carries its `sandbox` block.
+// The snippet needs a platform named; `"darwin"` carries its `sandbox` block.
 const PLATFORM = "darwin";
 
-/** The `env` names of a snippet, or none where it carries no `env` block. */
 const envNames = (env: unknown): string[] =>
 	typeof env === "object" && env !== null ? Object.keys(env) : [];
 
@@ -76,8 +80,9 @@ describe("a value the user set stays", () => {
 
 		expect(applied.settings["env"]).toEqual({
 			OTHER: "1",
+			...envFlags(),
 			[PCT]: "50.0000",
-			CLAUDE_CODE_SUBAGENT_MODEL: ROW.subagentModel,
+			[SUBAGENT_MODEL_ENV]: ROW.subagentModel,
 		});
 	});
 

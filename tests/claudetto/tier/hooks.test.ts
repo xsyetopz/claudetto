@@ -1,21 +1,18 @@
-// `/claudetto:setup` is what makes setup need no checkout, no `bun`, and no `just`. Every decision of
-// the command is a pure function here; the one arrow that touches `$` is covered by the hook lab,
-// which drives it through `$.command.run`.
-
 import { describe, expect, test } from "bun:test";
+import {
+	chosenGroups,
+	platformNamed,
+	setupReport,
+} from "../../../plugins/claudetto/src/blocks/setup-command/hooks.ts";
 import { refusedNames } from "../../../plugins/claudetto/src/refused.ts";
 import {
 	groupedKeys,
 	groupLabels,
 	KEY_GROUPS,
 	keptSnippet,
+	keyPaths,
 	UNSHIPPED_KEYS,
 } from "../../../plugins/claudetto/src/tiers/groups.ts";
-import {
-	chosenGroups,
-	platformNamed,
-	setupReport,
-} from "../../../plugins/claudetto/src/tiers/hooks.ts";
 import { refusedPaths } from "../../../plugins/claudetto/src/tiers/keys.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
 import {
@@ -24,7 +21,7 @@ import {
 } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { SNIPPET_ROW } from "../../../plugins/claudetto/src/tiers/tiers.ts";
 
-/** The snippet needs a platform named, and this is the development platform, so the snippet carries its `sandbox` block. */
+// The snippet needs a platform named; `"darwin"` carries its `sandbox` block.
 const PLATFORM = "darwin";
 
 /** Compares two key names, because a sort with no comparator sorts by UTF-16 code unit. */
@@ -45,7 +42,7 @@ describe("the groups the dialog offers", () => {
 	});
 
 	test("every key of the snippet sits in exactly one group or is unshipped", () => {
-		const keys = Object.keys(snippet()).sort(byName);
+		const keys = [...keyPaths(snippet())].sort(byName);
 
 		expect([...groupedKeys(), ...UNSHIPPED_KEYS].sort(byName)).toStrictEqual(
 			keys,
@@ -73,13 +70,15 @@ describe("the groups the dialog offers", () => {
 	test("keeping every group leaves out every unshipped key", () => {
 		const kept = keptSnippet(snippet(), groupLabels());
 
-		expect(UNSHIPPED_KEYS.filter((key) => key in kept)).toStrictEqual([]);
+		expect(
+			UNSHIPPED_KEYS.filter((key) => keyPaths(kept).includes(key)),
+		).toStrictEqual([]);
 	});
 
 	test("keeping every group keeps every key that is offered", () => {
 		const kept = keptSnippet(snippet(), groupLabels());
 
-		expect(Object.keys(kept).sort(byName)).toStrictEqual(
+		expect([...keyPaths(kept)].sort(byName)).toStrictEqual(
 			[...groupedKeys()].sort(byName),
 		);
 	});
@@ -96,7 +95,7 @@ describe("the groups the dialog offers", () => {
 
 		const kept = keptSnippet(snippet(), [group.label]);
 
-		expect(Object.keys(kept).sort(byName)).toStrictEqual(
+		expect([...keyPaths(kept)].sort(byName)).toStrictEqual(
 			[...group.keys].sort(byName),
 		);
 	});
@@ -193,9 +192,7 @@ describe("the report the command returns", () => {
 		});
 	};
 
-	// A hooks module cannot reach `.claude.json`, so the command composes from `SNIPPET_ROW` and reads
-	// no plan. Printing that row's own tier would tell every user they are on the plan the constant
-	// names, which is a fact about this code and not about them (`src/tiers/report.ts:20-28`).
+	// A hooks module cannot reach `.claude.json`, so the command reads no plan and composes from `SNIPPET_ROW`.
 	test("it names no tier, because the command reads no plan", () => {
 		for (const labels of [[], ["Sandbox"], groupLabels()]) {
 			expect(reportFor(labels)).not.toContain("Tier:");
@@ -208,8 +205,7 @@ describe("the report the command returns", () => {
 		}
 	});
 
-	// `why` is the one place a user reads what a group does: the `$.ui.ask` dialog shows labels and no
-	// descriptions, and a discarded group leaves no `Wrote` line of its own.
+	// `why` is the only place a user reads what a group does: the dialog shows labels, not descriptions.
 	test("a discarded group is named with what keeping it would have done", () => {
 		const report = reportFor(["Sandbox"]);
 

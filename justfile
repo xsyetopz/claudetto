@@ -62,7 +62,7 @@ setup *args:
 window-report:
     bun tools/window-report.ts
 
-# Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --settings FILE, --tools N)
+# Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --settings FILE, --tools N, --dump DIR, --prompt TEXT)
 capture *args:
     bun tools/capture/run.ts "$@"
 

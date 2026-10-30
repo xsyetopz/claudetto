@@ -2,6 +2,7 @@
 
 import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
+import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { startFakeApi } from "../fake-api.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
@@ -50,28 +51,24 @@ describe("the settings of one run", () => {
 	test("the shipped arm carries the deny list, the built-in switches, and the prompt surfaces", () => {
 		const settings: unknown = JSON.parse(shippedSettings());
 
-		// Read from the module rather than copied, so the twelve plugin ids live in one place.
+		// Read from the module rather than copied, so the plugin ids live in one place.
 		expect(settings).toMatchObject({
-			permissions: { deny: ["Workflow", "ScheduleWakeup", "ReportFindings"] },
+			permissions: { deny: [...denyRules()] },
 			agent: "claudetto:main",
 			outputStyle: "claudetto:Concise",
 			...builtinSnippet(),
 		});
-		// The block a fault check can drop, so its presence is the thing worth asserting.
 		expect(shippedSettings()).toContain('"sandbox"');
 	});
 
 	test("the shipped arm carries no `autoMode`, because the figures describe an install", () => {
-		// `/claudetto:setup` writes no `autoMode`: its environment facts are readings of this
-		// repository, so an install never holds them (`UNSHIPPED_KEYS` of `tiers/groups.ts`). `just
-		// setup` does write it, and these figures are quoted to the reader of `README.md`.
+		// `/claudetto:setup` writes no `autoMode`: its facts are readings of this repository (`UNSHIPPED_KEYS`).
 		expect(shippedSettings()).not.toContain('"autoMode"');
 	});
 });
 
 describe("the score of one request", () => {
 	test("splits a request into its system, tools, and messages characters", () => {
-		// `"abc"` is 3 characters of system text and `"de"` is 2, so the system is 5.
 		const body = {
 			system: [
 				{ type: "text", text: "abc" },

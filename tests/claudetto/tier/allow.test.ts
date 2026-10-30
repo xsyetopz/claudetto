@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { denyFaults, denyList } from "../../../plugins/claudetto/src/deny.ts";
+import { denyFaults } from "../../../plugins/claudetto/src/deny.ts";
 import {
 	ALLOW_RULES,
 	broadRules,
@@ -9,6 +9,7 @@ import {
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
 import {
 	cleanBlock,
+	denyRules,
 	snippetFaults,
 	tierSnippet,
 } from "../../../plugins/claudetto/src/tiers/snippet.ts";
@@ -131,8 +132,8 @@ describe("a faulted block is left out of the snippet", () => {
 	test("the shipped deny list is written and reports no fault", () => {
 		const permissions = tierSnippet(row, "darwin")["permissions"];
 
-		expect(denyFaults(denyList())).toEqual([]);
-		expect(keyOf(permissions, "deny")).toEqual([...denyList()]);
+		expect(denyFaults(denyRules())).toEqual([]);
+		expect(keyOf(permissions, "deny")).toEqual([...denyRules()]);
 	});
 });
 

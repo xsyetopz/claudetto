@@ -12,7 +12,6 @@ import {
 	pluginsOff,
 } from "../builtins.ts";
 
-/** The reading of one row of `BUILTIN_CUTS`, by the words its `settings` field carries. */
 const reading = (settings: string) =>
 	BUILTIN_CUTS.find((row) => row.settings === settings);
 
@@ -78,8 +77,8 @@ describe("the readings that decided the switches", () => {
 	test("the deny list leaves the tool definitions untouched by the switch", () => {
 		const denied = reading("`disableBundledSkills` with the deny list");
 
-		// 16,021 is the `tools` reading of the deny list on its own, so the switch moved none of it.
-		expect(denied?.tools).toBe(16_021);
+		// 17,091 is the `tools` reading of the deny list on its own, so the switch moved none of it.
+		expect(denied?.tools).toBe(17_091);
 	});
 
 	test("the shipped cut is the difference the shipped rows read", () => {

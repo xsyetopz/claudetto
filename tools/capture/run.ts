@@ -1,24 +1,18 @@
 #!/usr/bin/env bun
-// The reporting command: it takes a reading of each arm and prints the split, so a size question can
-// be answered by one run. The run itself lives in `arm.ts`, which `inventory.ts` reads as well.
 
 import { mkdir } from "node:fs/promises";
 import { argv } from "node:process";
 import { file as bunFile } from "bun";
-import { ARMS, type Arm, capture } from "./arm.ts";
+import { count } from "../../plugins/claudetto/src/format.ts";
+import { ARMS, type Arm, capture, PROMPT } from "./arm.ts";
 import type { Score } from "./score.ts";
 import { denySettings, shippedSettings } from "./settings.ts";
 
-/** The value of `--name`, or none. */
 const argOf = (args: readonly string[], name: string): string | undefined => {
 	const at = args.indexOf(`--${name}`);
 	return at >= 0 ? args[at + 1] : undefined;
 };
 
-/**
- * The settings text of each run: the shipped combination, a deny of the named tools, the text of a
- * file, or no file at all.
- */
 const settingsOf = async (options: {
 	file: string | undefined;
 	deny: string | undefined;
@@ -34,8 +28,6 @@ const settingsOf = async (options: {
 		? undefined
 		: await bunFile(options.file).text();
 };
-
-const count = (value: number): string => value.toLocaleString("en-US");
 
 const row = (arm: Arm, score: Score): void => {
 	console.info(
@@ -65,11 +57,12 @@ const main = async (): Promise<void> => {
 	);
 	console.info(`Settings of each run: ${settings ?? "the defaults"}`);
 	const dump = argOf(args, "dump");
+	const prompt = argOf(args, "prompt") ?? PROMPT;
 	if (dump !== undefined) {
 		await mkdir(dump, { recursive: true });
 	}
 	const readings = await Promise.all(
-		arms.map((arm) => capture(arm, settings, dump)),
+		arms.map((arm) => capture(arm, settings, dump, prompt)),
 	);
 	console.info("\nThe characters of the first request:");
 	for (const reading of readings) {

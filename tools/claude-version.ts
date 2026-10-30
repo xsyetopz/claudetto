@@ -1,26 +1,15 @@
-// Moves the supported Claude Code version to a new one in every place that declares it.
-//
-// Only the places that *declare the floor* are here. The version also appears across the tree in
-// comments such as "read against `2.1.312`", and each of those is the reading that backs the line
-// above it: rewriting one would claim a reading nobody took. So this tool holds a fixed table and
-// fails when a row does not match exactly once, rather than searching the tree for a version string.
-//
-// `tests/repo/gate.test.ts` checks that the constant, the `ci` workflow, and `README.md` agree, so a
-// row this table forgets is caught there.
+// A fixed table, not a tree search: a row that does not match exactly once fails.
 
 import { file as bunFile, write as bunWrite } from "bun";
 import { MIN_CLAUDE_CODE_VERSION } from "./limits.ts";
 
 const VERSION = /^\d+\.\d+\.\d+$/;
 
-/** One place that declares the supported version: the file, and the pattern whose one group is the version. */
 interface Site {
 	readonly path: string;
-	/** Matches the declaration with the version as its only group. */
 	readonly declaration: RegExp;
 }
 
-/** Every place that declares the supported version. A row that stops matching is a failure, not a skip. */
 const SITES: readonly Site[] = [
 	{
 		path: "tools/limits.ts",
@@ -35,19 +24,21 @@ const SITES: readonly Site[] = [
 		path: "CONTRIBUTING.md",
 		declaration: /Claude Code `(\d+\.\d+\.\d+)`/,
 	},
+	{
+		path: "plugins/claudetto/src/tiers/disables.ts",
+		declaration: /MINIMUM_VERSION = "(\d+\.\d+\.\d+)"/,
+	},
 ];
 
-/** The count of matches of `declaration` in `text`, which must be one for a site to be rewritten. */
+/** A site is rewritten only when its declaration matches exactly once. */
 const matchCount = (text: string, declaration: RegExp): number =>
 	[...text.matchAll(new RegExp(declaration, "g"))].length;
 
-/** The text with the version of its one declaration replaced by `version`. */
 const moved = (text: string, site: Site, version: string): string =>
 	text.replace(site.declaration, (whole, had: string) =>
 		whole.replace(had, version),
 	);
 
-/** What one site holds now, or the reason it cannot be rewritten. */
 interface Reading {
 	readonly path: string;
 	readonly had?: string;
@@ -73,7 +64,7 @@ const readSite = async (site: Site): Promise<Reading> => {
 		: { path: site.path, had };
 };
 
-/** Rewrites one site. The read is paired with its write so that every site can be moved at once. */
+/** Read and write are paired so that every site can be moved at once. */
 const moveSite = async (site: Site, version: string): Promise<void> => {
 	const text = await bunFile(site.path).text();
 	await bunWrite(site.path, moved(text, site, version));
