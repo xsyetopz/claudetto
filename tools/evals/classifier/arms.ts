@@ -1,5 +1,5 @@
-// The arms differ in the classifier alone: the agent is the same scripted fake in each, and only a
-// classifier request reaches the upstream.
+// The arms differ in the classifier alone: the agent is the same scripted fake in each, the plugin and its
+// gate load in each as they do in an install, and only a classifier request reaches the upstream.
 
 import { isClassifier, systemTexts } from "../../../claudekit/api/match.ts";
 import {
@@ -34,13 +34,26 @@ export const isClassifierArm = (value: string): value is ClassifierArm =>
 	CLASSIFIER_ARMS.some((arm) => arm === value);
 
 const armParts = (arm: ClassifierArm, dir: string): readonly Part[] => {
-	if (arm === "built-in") {
-		return [];
+	switch (arm) {
+		case "built-in":
+			return [
+				pluginDir(dir),
+				settings(inlinePluginOptions({ classifier: "off" })),
+			];
+		case "suite":
+			return [
+				pluginDir(dir),
+				settings({
+					autoMode: suiteSnippet().autoMode,
+					...inlinePluginOptions({ classifier: "off" }),
+				}),
+			];
+		default:
+			return [
+				pluginDir(dir),
+				settings(inlinePluginOptions({ classifier: arm })),
+			];
 	}
-	if (arm === "suite") {
-		return [settings({ autoMode: suiteSnippet().autoMode })];
-	}
-	return [pluginDir(dir), settings(inlinePluginOptions({ classifier: arm }))];
 };
 
 /** `--setting-sources project,local` keeps the login's own plugins and rules out of every arm. */

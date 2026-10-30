@@ -3,9 +3,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Forwarded } from "../../../claudekit/api/split.ts";
 import { costOf } from "../../../claudekit/price/cost.ts";
+import { inlinePluginOptions } from "../../../claudekit/session/argv.ts";
 import type { CommandResult } from "../../../claudekit/session/command.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../../limits.ts";
-import { CLASSIFIER_ARMS } from "../classifier/arms.ts";
+import { CLASSIFIER_ARMS, classifierArgv } from "../classifier/arms.ts";
 import { CLASSIFIER_CASES } from "../classifier/cases.ts";
 import { ACTION_ID, gradeSession } from "../classifier/grade.ts";
 import {
@@ -188,5 +189,25 @@ describe("the classifier report", () => {
 			`arm haiku: 1 pass, 0 fail, 1 error, $${spent.toFixed(4)} measured`,
 		);
 		expect(lines.at(-1)).toBe(`total: $${spent.toFixed(4)} measured`);
+	});
+});
+
+describe("the classifier arms", () => {
+	const settingsOf = (argv: readonly string[]): unknown =>
+		JSON.parse(argv[argv.indexOf("--settings") + 1] ?? "{}");
+
+	test("load the plugin in every arm, so its gate is the same in each and only the classifier differs", () => {
+		for (const arm of CLASSIFIER_ARMS) {
+			const argv = classifierArgv(arm, "p", "/plugin");
+			expect(argv.join(" ")).toContain("--plugin-dir /plugin");
+		}
+		const off = inlinePluginOptions({ classifier: "off" });
+		expect(settingsOf(classifierArgv("built-in", "p", "/plugin"))).toEqual(off);
+		expect(settingsOf(classifierArgv("suite", "p", "/plugin"))).toMatchObject(
+			off,
+		);
+		expect(settingsOf(classifierArgv("sonnet", "p", "/plugin"))).toEqual(
+			inlinePluginOptions({ classifier: "sonnet" }),
+		);
 	});
 });
