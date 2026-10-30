@@ -43,7 +43,7 @@ After each update, do the steps in the "Update" section of the README.
 ### Added
 
 - The `plan-mode` block replaces the full plan mode reminder with a shorter one that names `claudetto:Artemis` for a search over many files.
-  A plan mode first request of `2.1.314` falls from 50,205 to 46,455 characters (`just capture` with `permissions.defaultMode` set to `plan`). The sparse reminder, and any engine text shorter than ours, is kept.
+  A plan mode first request of `2.1.314` falls from 50,205 to about 46,415 characters (`just capture` with `permissions.defaultMode` set to `plan`). The sparse reminder, and any engine text shorter than ours, is kept.
 - `/claudetto:setup` writes the settings from inside Claude Code, so setup needs no checkout of this repository, no `bun`, and no `just` (the user, 2026-10-30: "it will ask what to keep, meaning the rest get discarded, upon lightweight setup command").
   It asks which of the three groups of `plugins/claudetto/src/tiers/groups.ts` to keep, through one `$.ui.ask` dialog, and writes only those keys: a group discarded writes none of its keys, and a value already set keeps the user's value.
   The keys are grouped because `$.ui.ask` takes two to four option labels and the snippet sets 13 top-level keys; `permissions.deny` sits with the two `builtinSnippet` switches in one group because `snippet.ts` ships it only with them.
