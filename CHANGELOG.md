@@ -41,7 +41,7 @@ After each update, do the steps in the "Update" section of the README.
 - `just validate` fails a page that tells a reader to run a recipe the `justfile` does not define, through `tools/recipes.ts`.
   Nothing compared a documented command against the `justfile`, which is how `CONTRIBUTING.md` kept naming `just bump` after that recipe and `tools/bump-version.ts` were removed.
   A name is read from a backticked span only, at the start of a command, because `just` inside a sentence is the English adverb and reading those spans reported 25 recipes that no page asks a reader to run.
-  `RECORD_PAGES` holds `CHANGELOG.md`, `docs/test-diet.md`, and the 12 `docs/evidence/` pages that measured a removed harness, so a page that names a live recipe stays under the check.
+  `RECORD_PAGES` holds `CHANGELOG.md`, `docs/test-diet.md`, and `docs/evidence/stop-hook-eval.md`, which names `just sandbox`, so a page that names a live recipe stays under the check.
 - `just eval` runs the rule cases of the main agent body against their fixtures, through `tools/evals/cli.ts`.
   Plan mode is the default and costs nothing, and `--run` makes the paid calls, so the recipe matches the other paid tools.
 - `just validate` fails when the four manifests that declare the version of this project disagree, through `tools/manifests.ts`.
@@ -56,7 +56,6 @@ After each update, do the steps in the "Update" section of the README.
 - About 20 pages under `docs/keep/` cited the pre-slice tree without the `archive/` prefix that their own other lines use, such as the `TOOL_BASH` source in `docs/keep/tools/Bash.txt`, which now reads `archive/plugins/claudetto/modules/session/prompt/prompts.ts:70`.
   78 distinct paths are prefixed, each one checked to be absent from the tree and present under `archive/` at the cited line.
   `tools/citations.ts` reads a backticked span only, and these sat in bare parentheses, so no check reported them.
-- `docs/evidence/evals/evals.md` opens with the note that its harness is removed, because `just eval` exists again and the commands on the page take `--judge-model`, which `tools/evals/cli.ts` answers with exit 2.
 - The `[Unreleased]` entry on the gated keys cited `modules/gate/domain/gate.ts:40`, and `GATED_KEYS` is at `plugins/claudetto/src/gate/gate.ts:55`.
   `tools/citations.ts` skips a path whose first segment is not an entry of the repo root, so a repo path written without its prefix was never resolved.
 - A `head` or `tail` of two files, and any reader of a glob, are no longer denied as the wrong tool (task 13.2).
@@ -85,6 +84,12 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Removed
 
+- 15 pages under `docs/evidence/` are deleted, which is every page whose producer the restart removed and that reads nothing of the Claude Code binary (the user, 2026-10-30: "old docs means nothing that 0.0.0 restart and recent claude code binary searches have").
+  They are the seven `docs/evidence/evals/` pages, both `docs/evidence/handoff-cost/` pages, `docs/evidence/usage-evidence/part-2.md`, `builtin-comparisons.md`, `jev-images.md`, `prompt-size.md`, and `sandbox-run-0.2.0.md`.
+  Their producers are the `claude plugin eval` harness, `just eval-stats`, `just eval-variant`, `just classifier-replay`, `just handoff-probe`, `just sandbox`, `tools/compare-builtins.ts`, and the `claudetto-codegraph` add-on, none of which is in the tree.
+  The 13 pages that stay either have a live producer under `claudekit/` or `tools/`, or read the installed binary, as `redaction.md` reads `2.1.312` and `probes-2.1.301.md` reads `2.1.301`.
+  `RECORD_PAGES` of `tools/recipes.ts` loses eleven entries with them, and `docs/evidence/evidence.md` is rebuilt as an index of what is left, with the six live pages it had never listed.
+  15 links into the deleted pages lost their link and kept their text, and the numbers stay in the git history.
 - The `work.reply-opening` rule is deleted (the user, 2026-10-27: "so these brittle hooks should not exist at all").
   It read the first sentence of every reply and blocked the stop when a judge called it filler, which cost a Jev call and sometimes a `claude-haiku-5-5` call on every reply.
   A transcript of `claude -p "say OK."` shows the model answered `OK.`, this rule blocked the stop, and the forced rewrite produced "Nothing to run, so here is the word you asked for: OK.", so the rule turned a correct reply into a narrated one.

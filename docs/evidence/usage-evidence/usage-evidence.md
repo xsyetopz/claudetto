@@ -84,7 +84,7 @@ The source is git commit `af3071f4` (`wiki/Usage-Evidence.md`, line 22).
 2. Subagent fan-out.
    A fresh subagent writes about 14k tokens to the cache before its first tool call, and its 5-minute cache expires during long builds.
 3. `general-purpose` instead of a purpose-made agent.
-   The snippet denies `Agent(general-purpose)` ([Settings Snippet](Settings-Snippet)), which is a setting and not proof that the habit stopped.
+   The snippet denies `Agent(general-purpose)` (Settings Snippet), which is a setting and not proof that the habit stopped.
 
 ## Delegation Share
 
@@ -124,8 +124,8 @@ The guard must deny only a command that discards work.
 
 ## Related Pages
 
-- [Usage Evidence (Part 2)](Usage-Evidence-2)
-- [Settings Snippet](Settings-Snippet)
-- [Handoff Cost](Handoff-Cost)
-- [Evals](Evals)
-- [Evidence](Evidence)
+- Usage Evidence (Part 2)
+- Settings Snippet
+- Handoff Cost
+- Evals
+- [Evidence](../evidence.md)

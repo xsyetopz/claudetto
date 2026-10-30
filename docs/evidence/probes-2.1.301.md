@@ -31,10 +31,10 @@ On 2026-10-16, a `Bash` call of a subagent ran `cat > <file>` with no input.
 `cat` waited, and the shell ran for more than 2 hours.
 `ListAgents` showed the agent as `completed`, so the agent did not see the shell.
 The sandbox blocked `ps`, so the state was unknown.
-A local session has no time limit on a background `Bash` command ([Engine Facts](Decisions-Engine)).
+A local session has no time limit on a background `Bash` command (Engine Facts).
 
 ## Related Pages
 
-- [Model Guidance](Model-Guidance)
-- [Usage Evidence](Usage-Evidence)
-- [Evidence](Evidence)
+- [Model Guidance](model-guidance.md)
+- [Usage Evidence](usage-evidence/usage-evidence.md)
+- [Evidence](evidence.md)

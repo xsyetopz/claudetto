@@ -20,7 +20,7 @@ The [Sonnet 5.5 prompting guide](https://platform.claude.com/docs/en/build-with-
 
 The [best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) have no guidance on sycophancy.
 For a preamble, they say to "strip [it] in post-processing".
-Claude Code shows the reply before a `Stop` hook runs, so a plugin cannot strip a preamble ([Engine Facts](Decisions-Engine)).
+Claude Code shows the reply before a `Stop` hook runs, so a plugin cannot strip a preamble (Engine Facts).
 
 ## The `claude-api` Skill
 
@@ -98,11 +98,11 @@ These facts come from the program of Claude Code 2.1.310 and the [request and ca
 - No text shows that a word list or regex on the reply is a fix.
   A `claudetto` hook does not match natural-language words, because users write in every language.
 - No text gives a false-block rate for a judge in Claude Code.
-  [Stop Hook Eval](Stop-Hook-Eval) has the only measured false-block counts, for 10 runs of each prompt.
+  [Stop Hook Eval](stop-hook-eval.md) has the only measured false-block counts, for 10 runs of each prompt.
 
 ## Related Pages
 
-- [Prohibition Lists](Prohibition-Lists)
-- [Stop Hook Eval](Stop-Hook-Eval)
-- [Decisions Engine](Decisions-Engine)
-- [Evidence](Evidence)
+- [Prohibition Lists](prohibition-lists.md)
+- [Stop Hook Eval](stop-hook-eval.md)
+- Decisions Engine
+- [Evidence](evidence.md)

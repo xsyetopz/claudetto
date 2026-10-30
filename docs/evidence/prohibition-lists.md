@@ -21,6 +21,6 @@ The two other sentences stay, because each guards a failure the slice saw.
 
 ## Related Pages
 
-- [Model Guidance](Model-Guidance)
-- [Probes 2.1.301](Probes-2.1.301)
-- [Evidence](Evidence)
+- [Model Guidance](model-guidance.md)
+- [Probes 2.1.301](probes-2.1.301.md)
+- [Evidence](evidence.md)

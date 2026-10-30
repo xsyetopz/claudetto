@@ -123,8 +123,8 @@ describe("the record pages", () => {
 		expect(isRecord("CHANGELOG.md")).toBe(true);
 	});
 
-	test("takes the evidence page of the removed eval harness as a record", () => {
-		expect(isRecord("docs/evidence/evals/evals.md")).toBe(true);
+	test("takes the evidence page that names a removed recipe as a record", () => {
+		expect(isRecord("docs/evidence/stop-hook-eval.md")).toBe(true);
 	});
 
 	test("keeps an evidence page that names a live recipe under the check", () => {

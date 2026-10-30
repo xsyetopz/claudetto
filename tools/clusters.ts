@@ -63,9 +63,9 @@ export const stemOf = (name: string): string =>
 	name.replace(DECLARATION, "").replace(SOURCE, "").replace(MARKER, "");
 
 /**
- * A segment of only digits and dots, as `0.2.0` or `2`. It names a release or an ordinal, and neither
- * is a concern: `sandbox-run-0.2.0.md` and `evals-0.2.0.md` share a version and not a subject, and
- * `usage-evidence-2.md` and `handoff-cost-2.md` share a count and not a subject.
+ * A segment of only digits and dots, as `2.1.301` or `2`. It names a release or an ordinal, and
+ * neither is a concern: `probes-2.1.301.md` carries a Claude Code version and not a subject, and the
+ * `part-2.md` pages under `docs/dossier/` carry a count and not a subject.
  */
 const NUMERIC = /^[\d.]+$/;
 

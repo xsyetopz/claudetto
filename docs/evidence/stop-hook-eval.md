@@ -78,7 +78,7 @@ From live tests of `2.1.292` in `just sandbox` with Haiku 4.5.
 
 ## Related Pages
 
-- [Model Guidance](Model-Guidance)
-- [Probes 2.1.301](Probes-2.1.301)
-- [Decisions Engine](Decisions-Engine)
-- [Evidence](Evidence)
+- [Model Guidance](model-guidance.md)
+- [Probes 2.1.301](probes-2.1.301.md)
+- Decisions Engine
+- [Evidence](evidence.md)

@@ -21,25 +21,15 @@ import { pagesOf } from "./citations.ts";
 /**
  * The pages whose `just` commands are a record. `docs/test-diet.md:3` states that every path on it is
  * the path a file had on 2026-10-28. `CHANGELOG.md` records a change, so an entry about a removed
- * recipe has to name it: `CHANGELOG.md:77` names `just release` and `just bump` as removed, and that
- * sentence stays true only while it keeps the old names. Each `docs/evidence/` page listed here
- * measured a run of the `claude plugin eval` harness, the `dev/sandbox` arms, or the `dev/` probes,
- * all of which this tree removed, and `docs/evidence/evidence.md:7` gives the date of each one.
+ * recipe has to name it: `CHANGELOG.md:99` names `just release` and `just bump` as removed, and that
+ * sentence stays true only while it keeps the old names. `docs/evidence/stop-hook-eval.md:51` names
+ * `just sandbox`, the recipe its run of 2026-10-07 used, and that page stays because it is also a
+ * reading of the Claude Code binary. The `0.0.0` restart deleted the eleven other pages that recorded
+ * a removed harness, so they are off this list with the pages themselves.
  */
 export const RECORD_PAGES: readonly string[] = [
 	"CHANGELOG.md",
 	"docs/test-diet.md",
-	"docs/evidence/builtin-comparisons.md",
-	"docs/evidence/evals/0.1.0.md",
-	"docs/evidence/evals/2.1.304.md",
-	"docs/evidence/evals/audit-lines.md",
-	"docs/evidence/evals/evals.md",
-	"docs/evidence/evals/graders.md",
-	"docs/evidence/evals/sources.md",
-	"docs/evidence/handoff-cost/handoff-cost.md",
-	"docs/evidence/handoff-cost/part-2.md",
-	"docs/evidence/jev-images.md",
-	"docs/evidence/sandbox-run-0.2.0.md",
 	"docs/evidence/stop-hook-eval.md",
 ];
 
