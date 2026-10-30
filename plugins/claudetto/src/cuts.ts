@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_770;
+export const SHIPPED_TOTAL = 31_721;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -48,7 +48,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "agent listing", chars: -1155 },
 	{ name: "handoff context", chars: -820 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
-	{ name: "output style", chars: -1693 },
+	{ name: "output style", chars: -1644 },
 	// Setup does not ship the key; the classifier call pays for the lists.
 	{ name: "autoMode lists", chars: 0 },
 	// Repays its text: sandbox auto-allow precedes the classifier, so a sandboxed `Bash` call pays none.
