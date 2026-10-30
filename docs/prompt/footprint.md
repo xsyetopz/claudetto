@@ -6,8 +6,8 @@ model is called and no provider is reached.
 
 ## Main Prompt
 
-`plugins/claudetto/agents/main.md` is 5,648 characters on disk. The harness sends 5,572 of them, which
-the request carries as 5,653, 27 under the budget of 5,680. The budget is the default body the file
+`plugins/claudetto/agents/main.md` is 5,379 characters on disk. The harness sends 5,303 of them, which
+the request carries as 5,386, 294 under the budget of 5,680. The budget is the default body the file
 replaces, measured as the request carries it, since an agent file used as the main thread replaces
 that body instead of adding to it (`docs/prompt/overrides.md`, "What This Means for `main.md` and
 `Concise.md`"). The archived file was 11,135 characters, which is more than twice the body it would
@@ -76,7 +76,7 @@ escaping term, so the residual stays named as the plug and not as a measurement.
   two entries read 492 characters on 2026-10-29. They read 480 from 2026-10-30, the arm with both files
   present at 24,607 against 24,127 with both moved aside, and 480 is the figure the inventory carries.
 
-`plugins/claudetto/src/cuts.ts` holds the rows as `main agent body` at 259 and `agent listing` at
+`plugins/claudetto/src/cuts.ts` holds the rows as `main agent body` at 528 (259 before the cut of 2026-10-31) and `agent listing` at
 -480. The second was 0 while `main` was the only agent file in the tree.
 
 "Byte Budgets" below holds the budget with its reading.
@@ -477,6 +477,16 @@ settings with `sandbox.enabled` set to `false`.
 A `-p` run now writes Claude Code's classifier billing notice to stderr whenever the base URL is not
 `*.anthropic.com`. The remote flag `tengu_velvet_heron` gates the notice. The notice does not
 stop the classifier, so it changes no reading.
+
+### Cuts of `0.1.0`
+
+One surface at a time, each read with `just capture --shipped` against the reading before it.
+
+| Surface | Before | After | Fall | Change |
+| --- | --- | --- | --- | --- |
+| Session prompt, `agents/main.md` | 32,039 | 31,770 | 269 | Reasons that only restate their rule, and wordier phrasings, cut; every rule kept. Body 5,572 to 5,303 |
+
+The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
 ## History
 
