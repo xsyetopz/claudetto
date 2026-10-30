@@ -19,15 +19,15 @@ After each update, do the steps in the "Update" section of the README.
   The gated keys are `command`, `file_path`, `notebook_path`, `path`, `pattern`, and `glob` (`plugins/claudetto/src/gate/gate.ts:55`), so a `Bash`, `Read`, `Edit`, `Write`, `Glob`, `Grep`, or `Monitor` call still gets the verdict of the gate.
   `tool.check` is unchanged, so allow-by-default still holds for a call that no rule of ours matches.
 - A handoff that Claude wrote itself is kept, and the code-built file steps aside (task 2.3a).
-  `classic.SessionEnd` and `classic.PreCompact` now skip the code-built write when the session's own transcript holds a write of `.claude/claudetto/handoffs/handoff-<UTC stamp>.md` and that file holds the nine headings of `written.ts`.
-  The `context_management` text of the handoff state names the folder and the nine headings, which is the only place the model learns them, because neither hook makes a model call.
+  `classic.SessionEnd` and `classic.PreCompact` now skip the code-built write when a writing tool in the session's own transcript wrote a path under `.claude/claudetto/handoffs` (`wroteOwn`, `plugins/claudetto/src/handoff.ts:198`).
+  The headings of the file are not read, so any write under that folder counts as Claude's own.
+  The `context_management` text of the handoff state names the folder and the nine headings of `HANDOFF_SECTIONS` (`plugins/claudetto/src/handoff.ts:255`), which is the only place the model learns them, because neither hook makes a model call.
   The read-back says who wrote the file, so the resume no longer tells the model that code built a file Claude wrote.
-  The always-loaded text grows by 405 bytes (`docs/prompt/footprint.md`, Table A). The stated total afterwards was 18,000 bytes, and task 9.7 then corrected it to 15,643.
 - Jev is a tool the model calls, and it no longer answers an `AskUserQuestion` dialog (the user, 2026-10-27: "Jev's restart becomes a separate agent-accessible decision API, rather than overriding user's needed AskUserQuestion and not letting user choose").
   With the option `decide` set to `jev` and a key set, `session.start` registers `mcp__claudetto__decide`, and the model calls it for a decision that is its own.
   An `AskUserQuestion` dialog now always reaches the user, whatever the option.
   The reply holds one line per question, the pick with its confidence or the line that Jev is not sure, in place of the all-or-nothing answer the dialog needed.
-  The rule `jev.ask` is replaced by `jev.decide` and `jev.decide-register`.
+  `session.start` declares the tool and `tool.call` serves it (`plugins/claudetto/src/register.ts:197`), with the names in `plugins/claudetto/src/jev/prompts.ts:8` and `:11`.
 
 ### Added
 
@@ -66,21 +66,14 @@ After each update, do the steps in the "Update" section of the README.
   40 is a quarter above the largest count, the method the other three bounds use, and that 33 is itself a capped count, so 40 is a floor.
 - `Artemis.md` no longer tells the agent to fall back to `grep` in `Bash`, which its type does not have (task 13.3).
   One run reported "Bash is not available in this session" as a block, although nothing blocked it.
-- The always-loaded total of `docs/prompt/footprint.md` counted 2,357 bytes that no request carried, and it is now 15,643 (task 9.7).
-  `TOOL_WRITE` was 261 characters against a stock `Write` text of 240, and `tool.describe` keeps ours only while it is shorter, so the engine always kept its own text. The export, its entry in `TOOL_TEXTS`, and `Write` in the `DESCRIBED` list are gone.
-  `TOOL_SEND_MESSAGE` moved to Table C, because the engine leaves `SendMessage` off the base prompt by default, so its 2,096 bytes load only through `ToolSearch`.
-  `tests/repo/justification.test.ts` now fails for a Table A row whose export does not exist or whose stated size is not the measured one, which is the check that was missing.
-- The lab cases of `plugins/claudetto/tests/tool.test.ts` compared each tool text against a stub of 4,000 characters, which every text beats, so they passed for a text the engine would never take.
-  The case "Shorter Than Stock" holds the real `Description` length of each tool from the `cc-docs` route `prompts/tools`.
 - The `compaction` option no longer describes `auto` as a pick "from the table", because no table exists.
-  The code treats every value other than `built-in` and `code` as the handover path, so `auto` is `handover` today, and the description now says that.
-  The same text stands in `plugins/claudetto/.claude-plugin/plugin.json` and in `OPTION_DESCRIPTION`.
-- The heading title-caser keeps a lone capital letter, so a heading such as `The Rate, from A to B` stays as typed.
-  It lowercased the `A` as the article, which changed the meaning of the heading it was tidying.
-- The heading title-caser keeps a small word in lower case before a trailing numeral, so `Consequence for 5.3 and 5.5` and `The Instruction of 2026-10-27` stay as typed.
-  It took the last word *with a letter* as the last word of the title, so a numeral at the end handed the capital to the `and` or the `of` before it.
-  The last word is now the last word, whether or not it holds a letter, and the same holds for the first.
-  Found on 2026-10-27, when the caser of the installed `0.4.0-alpha.2` rewrote `### Table A, the Pieces` of `docs/prompt/footprint.md` and broke `tests/repo/justification.test.ts`, which reads that heading.
+  `pathOf` gives the code path only for an explicit `code`, so `auto`, an absent option, and an unoffered value all give the built-in path (`plugins/claudetto/src/compaction/compaction.ts:33`), and the description in `plugins/claudetto/.claude-plugin/plugin.json:31` now says `auto` is `built-in` today, with the probe that leaves it there.
+- Six claims in this file named code that the restart had already removed, found by checking every path and identifier the `[0.0.0]` section asserts still exists.
+  `HEADING_NOTE` and `gate.gh-title` are in no file of the tree, and `Chicago` is in none under `plugins/`, so the deleted heading rewriter has no replacement.
+  `tools/thin-claims.ts` is gone and `just validate` does not run it, the nine-heading detection is `wroteOwn` and not a read of the file, `auto` resolves to `built-in` and not to `handover`, and `OPTION_DESCRIPTION` does not exist.
+  The slice tree carries no dotted rule names at all, so `jev.ask`, `jev.decide`, and `jev.decide-register` named a registry of the old module tree, and the live names are cited instead.
+  Four entries are removed with the code they described: the two on the heading title-caser, the one on the Table A total of `docs/prompt/footprint.md`, which that page no longer carries, and the one on the lab cases of `plugins/claudetto/tests/tool.test.ts`, which lives only under `archive/`.
+  No check reads a backticked identifier, so `tools/citations.ts` reported none of these: it resolves a `path:line` span only.
 
 ### Removed
 
@@ -95,17 +88,17 @@ After each update, do the steps in the "Update" section of the README.
   A transcript of `claude -p "say OK."` shows the model answered `OK.`, this rule blocked the stop, and the forced rewrite produced "Nothing to run, so here is the word you asked for: OK.", so the rule turned a correct reply into a narrated one.
 - The missing-check rule of the `finish` slice is deleted, with `modules/work/finish/domain/verify.ts` (same ruling).
   It demanded a project check after an edit of any file that was not `.md` or `.mdx`, so an edit of a prose `.txt` file demanded `just check`.
-  The unproven-tick note and the `work.box` deny keep the part that matters, that a ticked task box needs a passed check in the session.
+  Nothing replaces it: the tree carries no unproven-tick note and no `work.box` deny, so no hook now asks for a passed check behind a ticked task box.
 - The heading rewriter of the `hygiene` slice is deleted, with `modules/session/hygiene/domain/headings.ts`.
   It rewrote the headings of each edited Markdown file to Chicago Title Case and wrote the file back, so a hook changed a file after the agent's own edit and the agent had to read it again.
-  `HEADING_NOTE` keeps the convention on the reply side, where it writes nothing, and `gate.gh-title` still cases a `gh pr create` title.
+  Nothing replaces it, so the tree now carries no heading-case rule: `Chicago` appears in no file under `plugins/`, and `plugins/claudetto/output-styles/Concise.md` states no heading convention.
 - The repository makes no release tags, and the 21 old `<plugin>--v<version>` tags are deleted, because Claude Code installs and updates a plugin from the default branch and the `version` of its manifest (the user, 2026-10-27).
   The merge into `main` is the release.
   `just release`, `tools/release.ts`, and `tools/preflight.ts` are removed, and `just bump` no longer rewrites a compare link.
 - The project wiki is deleted (the user, 2026-10-27).
   `src/wiki/`, `wiki/`, `tools/generate/`, `tools/wiki.ts`, `just generate`, and `just wiki` are removed, and `just check` no longer runs `generate --check`.
   The evidence pages are saved as `docs/evidence/`.
-  `tools/thin-claims.ts` stays, with its glob moved from `src/wiki/**/*.md` to `docs/**/*.md`, because it is the check that stops a document citing an eval arm of fewer than `EVAL_MIN_RUNS_PER_ARM` runs and `just validate` still reads it.
+  `tools/thin-claims.ts` goes with them, so no check now stops a page citing an eval arm of fewer than `EVAL_MIN_RUNS_PER_ARM` runs; the floor survives as the constant in `tools/limits.ts` and as `CITABLE_MIN_RUNS` (`claudekit/probe/plan/floor.ts:13`), which the paid probe prints.
 - Three places named a version that the restart removes.
   `.github/ISSUE_TEMPLATE/bug_report.yml` asked a reporter for a version "for example `claudetto` 0.28.0", a number from the numbering before the previous restart.
   `docs/surfaces.md` and `plugins/claudetto/src/builtins.ts` named the installed `0.4.0-alpha.2` as what a reading ran against, and the date of the reading is the provenance that stays true, so the version is dropped and the date kept.
@@ -115,4 +108,5 @@ After each update, do the steps in the "Update" section of the README.
   The numbers had drifted as entries were added at the top, and `tools/citations.ts` reads whether a cited line exists and not whether it supports the sentence.
   Four of the eight also carried a claim the tree does not support: `commit.txt` and `commit-push-pr.txt` said setup installs a `commit-msg` hook and a `pre-push` hook of git, `init.txt` and `memory-types.txt` said `/claudetto:setup` writes a `CLAUDE.md`, and `claude-in-chrome.txt` said the repo ships its own browser plugin.
   Setup merges a settings snippet and installs no git hook, and the repo ships `claudetto` and `claudetto-you-should-know`.
-  Each citation now names a file of this tree or of `archive/`, and the `drop` recommendation of the two commit pages rests on their listed cons, because the hook it named is not there.
+  Each citation now names a file of this tree or of `archive/`, and the `drop` recommendation of the two commit pages rests on `docs/surfaces.md:3`, because the hook it named is not there.
+  `docs/keep/skills/init.txt:12` is the same fault once more: it cited `README.md:117`, which is the `## Development` heading, for a claim that contradicted its own line 7. The main agent body does take its conventions from `@CLAUDE.md` (`plugins/claudetto/agents/main.md:23`), which is the real con, so the page now says that.

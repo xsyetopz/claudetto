@@ -8,8 +8,8 @@ CLAUDETTO NEEDS IT FOR: nothing found. Setup merges a settings snippet only (`pl
 PROS:
 - Fast commit with git context.
 CONS:
-- May not match the claudetto commit rules.
+- No rule of ours reads the message it writes, because the plugin ships no commit-message rule, so a project whose CI checks the format, as this one does with its `commitlint` job, can reject it. Not measured.
 - Removal has a per-skill form, which an earlier reading of this page denied. The settings schema of `2.1.311` describes `skillOverrides`, keyed by skill name, as taking `off`, which "hides it from both" the model and `/name`, and `user-invocable-only`, which "hides it from the model but keeps /name" (`chunk-z1xn9dp7.js:145792`).
 - `disableBundledSkills: true` is the all-or-nothing form, and the same schema says bundled skills and workflows "are removed entirely" while "built-in slash commands stay typable but are hidden from the model". So it does not stop a person typing the command. The way back for one skill is a skill of the same name in our own files.
 RECOMMENDATION: drop
-WHY: A bundled commit prompt could write messages that do not follow the commit rules of this project, which is not measured. Setup installs no git hook (`plugins/claudetto/src/tiers/setup.ts:67`), so nothing rejects such a message either, and this reason rests on the cons alone. Gated by an `isEnabled` check (row).
+WHY: Nothing found depends on it, and claudetto turns off a bundled surface it does not need (`docs/surfaces.md:3`). An earlier reading of this page rested the drop on a `commit-msg` hook of git that setup installs, and setup installs no git hook (`plugins/claudetto/src/tiers/setup.ts:67`), so that reason is void and the cons above carry it. Gated by an `isEnabled` check (row).

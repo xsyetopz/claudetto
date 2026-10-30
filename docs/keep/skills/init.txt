@@ -9,7 +9,7 @@ PROS:
 - Stays after `disableBundledSkills`.
 - One-line description in the listing (section `init`).
 CONS:
-- Writes a generic `CLAUDE.md`, which claudetto manages with `/claudetto:setup` (`README.md:117`).
+- Writes a generic `CLAUDE.md` over a project's own, and the main agent body takes its conventions from `@CLAUDE.md` (`plugins/claudetto/agents/main.md:23`), so a generic file feeds generic conventions into every turn.
 RECOMMENDATION: DROP, set by the user
 WHY: `disableBundledSkills` does not remove it, because route `extend/skills-and-commands` says built-in commands stay. The snippet's `disableBundledSkills: true` (`archive/plugins/claudetto/modules/setup/prompts.ts:145`) does remove it from the model view. `DCe()` (`chunk-2ht8z368.js:947185` of `2.1.311`) forces every built-in `prompt` skill to `user-invocable-only` under that switch, which hides it from the model and keeps `/init` for the user. So the `22` tokens this skill takes of the `2,210` tokens of the listing are already gone. A `skillOverrides` entry of `off` would reach `/init`, because it is of type `prompt` (`chunk-2ht8z368.js:1698687`) and `DCe()` reads the key only for a `"prompt"` command, apart from the one name `auto-mode-setup`. That entry would only drop `/init` from the user's menu, and would save no model tokens.
 An earlier line here said "It is a command and not a skill", which was too loose. The program's own wording for that case, at offset `3181007`, is "is a UI command, not a skill" for `local-jsx` and "is a built-in CLI command, not a skill" for `local`. `/init` is neither. Read on 2026-10-27.
