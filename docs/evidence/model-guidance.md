@@ -104,5 +104,4 @@ These facts come from the program of Claude Code 2.1.310 and the [request and ca
 
 - [Prohibition Lists](prohibition-lists.md)
 - [Stop Hook Eval](stop-hook-eval.md)
-- Decisions Engine
 - [Evidence](evidence.md)

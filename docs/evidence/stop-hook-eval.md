@@ -26,7 +26,7 @@ This section keeps no result of the eval.
 - The hook adds one model request of about 6,914 input tokens to each turn.
 - A command hook cannot judge a claim in free text.
 
-## Facts From the Binary
+## Facts from the Binary
 
 From the Claude Code `2.1.292` binary, read only.
 
@@ -80,5 +80,4 @@ From live tests of `2.1.292` in `just sandbox` with Haiku 4.5.
 
 - [Model Guidance](model-guidance.md)
 - [Probes 2.1.301](probes-2.1.301.md)
-- Decisions Engine
 - [Evidence](evidence.md)
