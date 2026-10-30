@@ -111,8 +111,9 @@ The core plugin's options are set in the plugin dialog of Claude Code, and `/con
 | Option | What it does |
 | --- | --- |
 | `decide` | `jev` registers the tool `mcp__claudetto__decide`, which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence. `off` registers nothing. |
-| `TYPESAFE_API_KEY` | The key of Jev. Claude Code keeps it in secure storage, not in a settings file. Without a key no tool is registered and nothing leaves the machine. |
+| `TYPESAFE_API_KEY` | The key of Jev, for `decide` and `classifier`. Claude Code keeps it in secure storage, not in a settings file. Without a key no tool is registered and nothing leaves the machine. |
 | `cheapSummary` | `on` answers a compaction with one bounded call on `claude-haiku-5-5`. |
+| `classifier` | `haiku` or `sonnet` judges each tool call that is not read-only with claudetto's own rules, in place of the auto mode classifier: Jev first when a key is set, then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`. Each call is paid, and a failed check denies. It ships `off`. |
 | `subagentCap`, `startCap`, `windowSeconds`, `callCap`, `heavyTokens`, `failLimit` | The run limits. |
 
 Claude calls the decision tool for a decision that is its own, which is the one way to get a second judgment in an autonomous run.
