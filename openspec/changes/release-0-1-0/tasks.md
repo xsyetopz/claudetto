@@ -22,7 +22,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 4. Version Floor (`version-floor`)
 
-- [ ] 4.1 Read the source of the running version from the mod API, and record it in `design.md`. Verify: the command and its output.
+- [x] 4.1 Read the source of the running version from the mod API, and record it in `design.md`. Verify: the command and its output. `cc-inspect` `surface` with kind `mod-api`, name `version`, and version `2.1.314` reads `$.session.version  (call)  claude-code.d.ts-e7bdb529.txt.zst:120951` and `session.version  (event)  claude-code.d.ts-e7bdb529.txt.zst:298995`. `design.md` under "Version Floor" records it, with the `SessionVersion` fields.
 - [ ] 4.2 The `SessionStart` rule warns once under `2.1.314`. Verify: hook lab cases for `2.1.311` and `2.1.314`.
 
 ## 5. Status Line (`status-line`)

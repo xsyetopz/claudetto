@@ -17,7 +17,7 @@
 
 ### Version Floor
 
-- The `SessionStart` rule compares the running version with `2.1.314` by numeric parts. The source of the running version is the mod API value that `cc-inspect` `surface mod-api` names, read before the code is written. If the mod API gives none, the rule reads the version from `process.execPath`'s version folder, which is the layout of this install (`~/.local/share/claude/versions/2.1.314`).
+- The `SessionStart` rule compares the running version with `2.1.314` by numeric parts. The source of the running version is `$.session.version()`. `cc-inspect` `surface mod-api` with the name `version` on `2.1.314` reads two items: `$.session.version` (call, `claude-code.d.ts-e7bdb529.txt.zst:120951`) and `session.version` (event). It answers `SessionVersion`: `version` as `claude --version` prints it, `base` as the release (`2.1.314`, or `2.1.314-dev` for a development build, absent when the version is not spelled as a release), and `builtAt`. The rule compares `base` without its `-dev` suffix, and adds no line when `base` is absent, so no folder layout is read.
 
 ### Hygiene and Finish
 
