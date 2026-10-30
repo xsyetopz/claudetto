@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_968;
+export const SHIPPED_TOTAL = 32_039;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -32,6 +32,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "dedupe skill", chars: -160 },
+	{ name: "docs skill", chars: -71 },
 	// The window and the percentage move no request text, only the bill.
 	{
 		name: "compaction pair",

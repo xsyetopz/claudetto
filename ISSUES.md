@@ -22,6 +22,12 @@ Running the Context7 CLI, `bunx ctx7 --help`, was denied as code from outside th
 
 Fix: the owner adds a permission rule such as `Bash(bunx ctx7:*)` to the settings, or runs the CLI once by hand to confirm its output.
 
+### The gate takes the `$.env` API in a command for a read of an env file
+
+Two `Bash` calls were denied by the claudetto gate with "This call reads `.env`, which can hold secrets" (2026-10-30), and neither read an env file. The first was a mutation check, `perl -0pi -e` over `src/blocks/context7/block.ts` with `$.env.get` in its pattern. The second was a `python3` heredoc that appended this entry, whose text names `.env`. The rule fires only when `src/blocks/gate/env-scan.ts` finds an env file near the working folder, and then any shell text that holds `.env` matches. The mutation checks of the `context7` block were not run because of it.
+
+Fix: the shell rule of `src/blocks/gate/` should treat `.env` as a file only when it stands as a path word (an argument or a redirect target), not inside a quoted pattern, a heredoc body, or after `$`. Add failing gate cases for both commands first. Waits on the owner's approval, because the gate's own message says to stop and report.
+
 ## Fixed
 
 ### A hook lab file named after no block

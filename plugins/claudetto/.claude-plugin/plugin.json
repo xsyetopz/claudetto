@@ -25,6 +25,12 @@
 			"description": "The key of Jev for the `decide` option. Claude Code keeps it in secure storage, not in a settings file.",
 			"sensitive": true
 		},
+		"CONTEXT7_API_KEY": {
+			"type": "string",
+			"title": "Context7 API Key",
+			"description": "Optional. The key the `docs` skill's `ctx7` CLI sends to Context7 for higher rate limits. Claude Code keeps it in secure storage, and claudetto passes it to the CLI through the env, never through the context.",
+			"sensitive": true
+		},
 		"cheapSummary": {
 			"type": "string",
 			"title": "Cheap Compaction Summary",
