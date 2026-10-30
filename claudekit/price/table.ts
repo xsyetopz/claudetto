@@ -1,15 +1,15 @@
 // The one table of per-model prices. A price is read here and nowhere else, so a rate that changes is
 // changed once.
 
-/** Dollars per million tokens, by billed line. A cache write of a TTL the sources do not state is absent. */
+/** Dollars per million tokens, by billed line. */
 export interface PriceRow {
 	readonly input: number;
 	readonly output: number;
 	readonly cacheRead: number;
 	/** The write into the 5-minute cache. */
-	readonly cacheWrite5m?: number;
+	readonly cacheWrite5m: number;
 	/** The write into the 1-hour cache. */
-	readonly cacheWrite1h?: number;
+	readonly cacheWrite1h: number;
 }
 
 /** What one model charges: a row, and for a model that tiers by prompt size, the row for prompts above that size. */
@@ -38,10 +38,22 @@ export const PRICES: Readonly<Record<string, ModelPrice>> = {
 		},
 	},
 	"claude-sonnet-5-5": {
-		base: { input: 2, output: 10, cacheRead: 0.1, cacheWrite5m: 2.5 },
+		base: {
+			input: 2,
+			output: 10,
+			cacheRead: 0.1,
+			cacheWrite5m: 2.5,
+			cacheWrite1h: 4,
+		},
 	},
 	"claude-sonnet-5": {
-		base: { input: 2, output: 10, cacheRead: 0.2, cacheWrite5m: 2.5 },
+		base: {
+			input: 2,
+			output: 10,
+			cacheRead: 0.2,
+			cacheWrite5m: 2.5,
+			cacheWrite1h: 4,
+		},
 	},
 	"claude-haiku-5-5": {
 		base: {

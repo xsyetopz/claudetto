@@ -40,8 +40,6 @@ export const rowFor = (price: ModelPrice, prompt: number): PriceRow =>
 
 /**
  * The dollars one request of `usage` costs on `model`, with cache writes at the rate of `ttl`.
- * It throws when the table holds no rate for that `ttl` and the request wrote to the cache, because a
- * write priced at 0 would hide a price nobody has read.
  */
 export const costOf = (
 	model: string,
@@ -49,17 +47,11 @@ export const costOf = (
 	ttl: CacheTtl = "5m",
 ): number => {
 	const row = rowFor(priceOf(model), promptTokens(usage));
-	const writes = usage.cache_creation_input_tokens ?? 0;
 	const writeRate = ttl === "5m" ? row.cacheWrite5m : row.cacheWrite1h;
-	if (writeRate === undefined && writes > 0) {
-		throw new Error(
-			`no \`${ttl}\` cache write price for the model \`${model}\``,
-		);
-	}
 	return (
 		money(usage.input_tokens ?? 0, row.input) +
 		money(usage.output_tokens ?? 0, row.output) +
 		money(usage.cache_read_input_tokens ?? 0, row.cacheRead) +
-		money(writes, writeRate ?? 0)
+		money(usage.cache_creation_input_tokens ?? 0, writeRate)
 	);
 };

@@ -53,11 +53,14 @@ describe("costOf", () => {
 		expect(costOf("claude-opus-5-5", usage, "1h")).toBe(8);
 	});
 
-	test("throws for a model with no price and for a write with no rate", () => {
+	test("prices a `1h` cache write on both Sonnet models at $4 per million", () => {
+		const write = { cache_creation_input_tokens: 1_000_000 };
+		expect(costOf("claude-sonnet-5-5", write, "1h")).toBeCloseTo(4, 9);
+		expect(costOf("claude-sonnet-5", write, "1h")).toBeCloseTo(4, 9);
+	});
+
+	test("throws for a model with no price", () => {
 		expect(() => costOf("claude-nope", {})).toThrow("claude-nope");
-		expect(() =>
-			costOf("claude-sonnet-5-5", { cache_creation_input_tokens: 1 }, "1h"),
-		).toThrow("1h");
 	});
 });
 
