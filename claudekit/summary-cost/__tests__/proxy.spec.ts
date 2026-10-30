@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { readFile, rm } from "node:fs/promises";
 import { serve } from "bun";
+import { targetOf, usageIn } from "../../forward.ts";
 import { type Row, rowsOf, seenIn } from "../log.ts";
-import { type Mode, start, targetOf, usageIn } from "../proxy.ts";
+import { type Mode, start } from "../proxy.ts";
 
 const summaryBody = JSON.stringify({
 	model: "claude-haiku-5-5",

@@ -1,57 +1,9 @@
 import { appendFile } from "node:fs/promises";
 import { serve } from "bun";
-import { objectOf } from "./json.ts";
-import type { Usage } from "./log.ts";
+import { answerHeaders, sendOn, UPSTREAM, usageIn } from "../forward.ts";
 import { answer, isSummary } from "./stub.ts";
 
 export type Mode = "pass" | "off";
-
-export const UPSTREAM = "https://api.anthropic.com";
-
-export const targetOf = (url: string, upstream: string): string => {
-	const incoming = new URL(url);
-	const to = new URL(upstream);
-	to.pathname = incoming.pathname;
-	to.search = incoming.search;
-	return to.toString();
-};
-
-const TOKEN_KEYS = [
-	"input_tokens",
-	"output_tokens",
-	"cache_creation_input_tokens",
-	"cache_read_input_tokens",
-] as const;
-
-const tokensOf = (value: unknown): Usage | undefined => {
-	const held = objectOf(value);
-	const usage: Usage = {};
-	let any = false;
-	for (const key of TOKEN_KEYS) {
-		const count = held[key];
-		if (typeof count === "number") {
-			usage[key] = count;
-			any = true;
-		}
-	}
-	return any ? usage : undefined;
-};
-
-export const usageIn = (text: string): Usage | undefined => {
-	const line = text
-		.split("\n")
-		.find((l) => l.startsWith("data:") && l.includes('"message_start"'));
-	let parsed: unknown;
-	try {
-		parsed = JSON.parse(line === undefined ? text : line.slice(5).trim());
-	} catch {
-		return undefined;
-	}
-	const held = objectOf(parsed);
-	return (
-		tokensOf(objectOf(held["message"])["usage"]) ?? tokensOf(held["usage"])
-	);
-};
 
 interface Note {
 	(row: Record<string, unknown>): void;
@@ -96,15 +48,6 @@ const record = async (
 	}
 };
 
-const forwarded = (request: Request): Headers => {
-	const headers = new Headers(request.headers);
-	// `accept-encoding` goes so the body that reaches the session is the body that arrived here.
-	for (const name of ["host", "content-length", "accept-encoding"]) {
-		headers.delete(name);
-	}
-	return headers;
-};
-
 interface Context {
 	mode: Mode;
 	upstream: string;
@@ -112,8 +55,10 @@ interface Context {
 }
 
 const handle = async (request: Request, ctx: Context): Promise<Response> => {
-	const hasBody = request.method !== "GET" && request.method !== "HEAD";
-	const body = hasBody ? await request.text() : "";
+	const body =
+		request.method === "GET" || request.method === "HEAD"
+			? ""
+			: await request.text();
 	const encoding = request.headers.get("content-encoding");
 	if (encoding !== null) {
 		// Recorded, because a compressed body cannot be matched and would read as "the summarizer never ran".
@@ -137,12 +82,7 @@ const handle = async (request: Request, ctx: Context): Promise<Response> => {
 
 	let upstream: Response;
 	try {
-		upstream = await fetch(targetOf(request.url, ctx.upstream), {
-			method: request.method,
-			headers: forwarded(request),
-			...(hasBody && body !== "" ? { body } : {}),
-			redirect: "manual",
-		});
+		upstream = await sendOn(request, body, ctx.upstream);
 	} catch (error) {
 		ctx.note({ event: "failed", why: String(error).slice(0, 120) });
 		return new Response("proxy could not reach the API", { status: 502 });
@@ -150,11 +90,10 @@ const handle = async (request: Request, ctx: Context): Promise<Response> => {
 
 	// Not awaited: the answer goes back to the session now and the tokens come from a clone.
 	void record(upstream, summary, ctx.note);
-	const out = new Headers(upstream.headers);
-	for (const name of ["content-encoding", "content-length"]) {
-		out.delete(name);
-	}
-	return new Response(upstream.body, { status: upstream.status, headers: out });
+	return new Response(upstream.body, {
+		status: upstream.status,
+		headers: answerHeaders(upstream),
+	});
 };
 
 export interface Proxy {
