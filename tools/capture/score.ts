@@ -49,3 +49,12 @@ export const scoreOf = (raw: string): Score => {
 			.sort((a, b) => b.chars - a.chars),
 	};
 };
+
+const CLASSIFIER_OPENING =
+	"You are a security monitor for autonomous AI coding agents.";
+
+/** The classifier sends no tools and has no fixed position among the requests, so its text names it. */
+export const isClassifier = (raw: string): boolean =>
+	blockTexts(prop(JSON.parse(raw), "system")).some((text) =>
+		text.startsWith(CLASSIFIER_OPENING),
+	);

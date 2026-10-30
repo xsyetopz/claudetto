@@ -5,13 +5,13 @@ import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { startFakeApi } from "../fake-api.ts";
 import { extraArgs } from "../run.ts";
-import { scoreOf } from "../score.ts";
+import { isClassifier, scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
 
 describe("the fake Messages API", () => {
 	test("keeps the body of a messages request and ends the turn", async () => {
 		const api = startFakeApi();
-		const body = JSON.stringify({ model: "m", messages: [] });
+		const body = JSON.stringify({ model: "m", stream: true, messages: [] });
 
 		const answer = await fetch(`${api.url}/v1/messages`, {
 			method: "POST",
@@ -25,6 +25,42 @@ describe("the fake Messages API", () => {
 		expect(api.others).toEqual([]);
 		expect(stream).toContain("event: message_stop");
 		expect(stream).toContain('"stop_reason":"end_turn"');
+	});
+
+	test("answers the first request that carries tools with the given tool call, and the next one with text", async () => {
+		const api = startFakeApi({ name: "Bash", input: { command: "touch x" } });
+		const body = JSON.stringify({ stream: true, tools: [{ name: "Bash" }] });
+		const post = async (): Promise<string> =>
+			(await fetch(`${api.url}/v1/messages`, { method: "POST", body })).text();
+
+		const first = await post();
+		const second = await post();
+		await api.stop();
+
+		expect(first).toContain('"type":"tool_use"');
+		expect(first).toContain('"name":"Bash"');
+		expect(first).toContain(
+			JSON.stringify(JSON.stringify({ command: "touch x" })),
+		);
+		expect(first).toContain('"stop_reason":"tool_use"');
+		expect(second).toContain('"stop_reason":"end_turn"');
+	});
+
+	test("answers a request that does not stream with one JSON message", async () => {
+		const api = startFakeApi();
+
+		const answer = await fetch(`${api.url}/v1/messages`, {
+			method: "POST",
+			body: JSON.stringify({ messages: [] }),
+		});
+		const message: unknown = await answer.json();
+		await api.stop();
+
+		expect(message).toMatchObject({
+			type: "message",
+			content: [{ type: "text", text: "ok" }],
+			stop_reason: "end_turn",
+		});
 	});
 
 	test("answers another route with an empty object and records it apart", async () => {
@@ -90,6 +126,26 @@ describe("the score of one request", () => {
 		expect(score.messages).toBe(JSON.stringify(body.messages).length);
 	});
 
+	test("tells the auto mode classifier request by the opening of its system text", () => {
+		const classifier = JSON.stringify({
+			system: [
+				{ type: "text", text: "x-anthropic-billing-header: v" },
+				{
+					type: "text",
+					text: `You are a security monitor for autonomous AI coding agents.
+
+## Context`,
+				},
+			],
+		});
+		const main = JSON.stringify({
+			system: [{ type: "text", text: "You are Claude Code" }],
+		});
+
+		expect(isClassifier(classifier)).toBe(true);
+		expect(isClassifier(main)).toBe(false);
+	});
+
 	test("reads a system sent as one string", () => {
 		const score = scoreOf(JSON.stringify({ system: "abcd" }));
 
@@ -138,6 +194,10 @@ describe("the extra flags of each run", () => {
 			"--plugin-dir",
 			"/tmp/probe",
 		]);
+	});
+
+	test("`--classifier` runs in auto mode, so a tool call reaches the classifier", () => {
+		expect(extraArgs(["--classifier"])).toEqual(["--permission-mode", "auto"]);
 	});
 
 	test("a run with neither flag passes nothing extra", () => {

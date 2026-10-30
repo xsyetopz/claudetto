@@ -46,7 +46,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 
 ## 8. Classifier Trim (`low-hitl`)
 
-- [ ] 8.1 `just capture --classifier` records the classifier request. Verify: a reading of the built-in rung near the `140,093` characters of `docs/prompt/machinery.md`.
+- [x] 8.1 `just capture --classifier` records the classifier request. Verify: a reading of the built-in rung near the `140,093` characters of `docs/prompt/machinery.md`. The flag runs `--permission-mode auto`, and the fake API answers the first main request with a `Bash` call of `git push origin main`, because a write inside the working folder (`touch probe.txt`) is allowed without the classifier. It also answers a request that does not stream with a JSON message. Four new cases of `tools/capture/__tests__/capture.spec.ts` failed before the change, and removing the one-shot reset or the JSON branch each fails its own case. `just capture --classifier` reads, in both arms, a classifier request with no tools and system blocks `74, 140015, 248` (`140,337`), so `system[1]` equals the `140,015` of the page. The `248` block holds the login name.
 - [ ] 8.2 Read each `CLAUDE_CODE_AUTO_MODE_*` name in the `2.1.314` binary, and list the ones that change the request text. Verify: the readings in `docs/`.
 - [ ] 8.3 Read every rung in characters, and record the table in `docs/`. Verify: the table and its command.
 

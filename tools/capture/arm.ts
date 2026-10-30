@@ -4,8 +4,8 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { cwd, env } from "node:process";
 import { spawn } from "bun";
-import { type FakeApi, startFakeApi } from "./fake-api.ts";
-import { type Score, scoreOf } from "./score.ts";
+import { type FakeApi, startFakeApi, type ToolCall } from "./fake-api.ts";
+import { isClassifier, type Score, scoreOf } from "./score.ts";
 
 const PLUGIN = "plugins/claudetto";
 
@@ -13,6 +13,15 @@ const PLUGIN = "plugins/claudetto";
 export const PROMPT = "hi";
 
 const RUN_MS = 120_000;
+
+/**
+ * Auto mode allows a write inside the working folder without the classifier, so the call is a push.
+ * The fake's `ok` is no verdict, so the classifier blocks the call, and in a folder with no repository it would fail anyway.
+ */
+const CLASSIFIED_CALL: ToolCall = {
+	name: "Bash",
+	input: { command: "git push origin main", description: "Push the branch" },
+};
 
 /** `/tmp`, not `tmpdir()`: the folder path is in the request, so its length must be fixed. */
 const TEMP_PREFIX = "/tmp/claudetto-capture-";
@@ -76,27 +85,35 @@ const runArm = async (options: {
 	return { code, stderr: await new Response(child.stderr).text(), work };
 };
 
+export interface CaptureOptions {
+	readonly dump?: string | undefined;
+	readonly prompt?: string;
+	readonly extra?: readonly string[];
+	/** Reads the auto mode classifier request in place of the first request. */
+	readonly classifier?: boolean;
+}
+
 /** `dump` is re-indented from the raw text, since `JSON.stringify` of the string would be one line. */
 export const capture = async (
 	arm: Arm,
 	settings: string | undefined,
-	dump?: string,
-	prompt: string = PROMPT,
-	extra: readonly string[] = [],
+	options: CaptureOptions = {},
 ): Promise<Reading> => {
-	const api = startFakeApi();
+	const api = startFakeApi(options.classifier ? CLASSIFIED_CALL : undefined);
 	try {
 		const run = await runArm({
 			api,
 			plugin: arm === "plugin",
 			settings,
-			prompt,
-			extra,
+			prompt: options.prompt ?? PROMPT,
+			extra: options.extra ?? [],
 		});
-		const first = api.bodies[0];
-		if (dump !== undefined && first !== undefined) {
+		const first = options.classifier
+			? api.bodies.find(isClassifier)
+			: api.bodies[0];
+		if (options.dump !== undefined && first !== undefined) {
 			await writeFile(
-				join(dump, `${arm}.json`),
+				join(options.dump, `${arm}.json`),
 				JSON.stringify(JSON.parse(first), undefined, 2),
 			);
 		}
