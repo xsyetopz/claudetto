@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { stat } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { file } from "bun";
 import { MINIMUM_VERSION } from "../../tiers/disables.ts";
@@ -8,6 +8,8 @@ import { CATALOG } from "../catalog.ts";
 const LAB = join(import.meta.dir, "..", "..", "..", "tests");
 
 const SOURCE = join(import.meta.dir, "..", "catalog.ts");
+
+const LAB_SUFFIX = /\.test\.ts$/;
 
 const parts = (version: string): readonly number[] =>
 	version.split(".").map(Number);
@@ -52,6 +54,15 @@ test.each(CATALOG.map((block) => [block.id] as const))(
 		expect(named).toBe(true);
 	},
 );
+
+test("each hook lab file or folder is named after a block", async () => {
+	const ids = new Set(CATALOG.map((block) => block.id));
+	const entries = await readdir(LAB);
+	const strays = entries.filter(
+		(entry) => !ids.has(entry.replace(LAB_SUFFIX, "")),
+	);
+	expect(strays).toEqual([]);
+});
 
 test.each(CATALOG.map((block) => [block.id] as const))(
 	"`attachBlocks` calls the attach function of `%s`",
