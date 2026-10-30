@@ -490,6 +490,8 @@ One surface at a time, each read with `just capture --shipped` against the readi
 | Hook output, the `handoff` reminder | 31,424 | 31,352 | 72 | Six lines merged to four; the folder, the nine headings, the path rule, `[REDACTED]`, and the decisions rule kept |
 | Agent and skill listings | 31,352 | 31,237 | 115 | Four agent descriptions 110 shorter ("Use for" in place of "Use when the product is"), `dedupe` 5 |
 
+The `autoMode` suite, `src/automode/rules.ts`, is read in the classifier request instead: shorter phrasings of 13 rules take its `system` text from 63,571 to 63,453, a fall of 118, and the suite still scored 120 of 120 on the scripted classifier cases.
+
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
 ## History
