@@ -3,7 +3,7 @@
 import { mkdir, readdir } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { file as bunFile, write } from "bun";
-import type { CommandRunner } from "./command.ts";
+import type { CommandRunner } from "../../claudekit/session/command.ts";
 
 const TEMPLATE_SUFFIX = /\.tpl$/;
 

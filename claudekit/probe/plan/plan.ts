@@ -4,6 +4,15 @@ import {
 	PLUGIN_DIR,
 	pctFor,
 } from "../../plugin.ts";
+import {
+	inlinePluginOptions,
+	maxBudget,
+	model as modelFlag,
+	outputFormat,
+	permissionMode,
+	pluginDir,
+	settings,
+} from "../../session/argv.ts";
 import { FINISH_PROMPT } from "../fixture/fixture.ts";
 import type { Arm } from "../round/result.ts";
 
@@ -42,32 +51,22 @@ export const envOf = (
 });
 
 export const flags = (
-	model: string,
+	modelId: string,
 	threshold: number,
 	options: Readonly<Record<string, string>> = {},
-): string[] => [
-	"--model",
-	model,
-	"--plugin-dir",
-	PLUGIN_DIR,
-	"--settings",
-	JSON.stringify({
-		env: envOf(threshold),
-		autoCompactWindow: CONTEXT_WINDOW,
-		pluginConfigs: {
-			"claudetto@inline": {
-				options: { compaction: "built-in", ...options },
-			},
-		},
-	}),
-	"--permission-mode",
-	"acceptEdits",
-	"--max-budget-usd",
-	STEP_BUDGET_USD,
-	"--output-format",
-	"stream-json",
-	"--verbose",
-];
+): string[] =>
+	[
+		modelFlag(modelId),
+		pluginDir(PLUGIN_DIR),
+		settings({
+			env: envOf(threshold),
+			autoCompactWindow: CONTEXT_WINDOW,
+			...inlinePluginOptions({ compaction: "built-in", ...options }),
+		}),
+		permissionMode("acceptEdits"),
+		maxBudget(STEP_BUDGET_USD),
+		outputFormat("stream-json"),
+	].flat();
 
 export const thresholdsOf = (alt: number): Record<Arm, number> => ({
 	ref: HANDOFF_TRIGGER_TOKENS,

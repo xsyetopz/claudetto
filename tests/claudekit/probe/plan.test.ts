@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
+import { weeklyShare } from "../../../claudekit/price/share.ts";
 import {
 	BASE_USD,
 	expectedUsd,
 	FORK_USD,
 } from "../../../claudekit/probe/plan/cost.ts";
 import { envOf, plan } from "../../../claudekit/probe/plan/plan.ts";
-import { weeklyShare } from "../../../claudekit/probe/plan/share.ts";
 import {
 	CONTEXT_WINDOW,
 	compactAt,

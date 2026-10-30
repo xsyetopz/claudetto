@@ -1,6 +1,12 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Mode } from "../api/proxy.ts";
+import {
+	claudeArgv,
+	maxBudget,
+	permissionMode,
+	settings,
+} from "../session/argv.ts";
 
 export const ARMS = ["base", "fork-off", "proxy"] as const;
 
@@ -53,14 +59,11 @@ export const commandOf = (
 	path.join(import.meta.dir, "pty.py"),
 	capture,
 	String(RUN_MS / 1000),
-	"claude",
-	"--debug-file",
-	debugFile,
-	"--settings",
-	JSON.stringify({ env: { CLAUDE_CODE_FORK_SUBAGENT: fork } }),
-	"--permission-mode",
-	"acceptEdits",
-	"--max-budget-usd",
-	BUDGET_USD,
-	PROMPT,
+	...claudeArgv(
+		["--debug-file", debugFile],
+		settings({ env: { CLAUDE_CODE_FORK_SUBAGENT: fork } }),
+		permissionMode("acceptEdits"),
+		maxBudget(BUDGET_USD),
+		[PROMPT],
+	),
 ];

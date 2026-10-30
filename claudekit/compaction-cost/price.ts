@@ -1,3 +1,4 @@
+import { money, priceOf } from "../price/cost.ts";
 import {
 	type Request,
 	requestsOf,
@@ -12,15 +13,15 @@ interface Row {
 	readonly read: number;
 }
 
-export const OPUS: Row = {
-	fresh: 4,
-	out: 20,
-	write: 8,
-	read: 0.2,
-};
+const opus = priceOf("claude-opus-5-5").base;
 
-export const money = (tokens: number, rate: number): number =>
-	(tokens * rate) / 1e6;
+/** The `claude-opus-5-5` row of the price table, with the `1h` write that this login sets. */
+export const OPUS: Row = {
+	fresh: opus.input,
+	out: opus.output,
+	write: opus.cacheWrite1h ?? Number.NaN,
+	read: opus.cacheRead,
+};
 
 export interface Mix {
 	readonly requests: number;

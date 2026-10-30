@@ -1,4 +1,4 @@
-import { shareText, weeklyShare } from "./share.ts";
+import { shareText, weeklyShare } from "../../price/share.ts";
 
 export const FORK_USD = 0.92;
 

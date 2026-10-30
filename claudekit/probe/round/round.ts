@@ -1,9 +1,9 @@
 import { appendFile, mkdtemp, realpath } from "node:fs/promises";
 import path from "node:path";
+import { weeklyShare } from "../../price/share.ts";
 import { eachInOrder, mapInOrder } from "../fixture/ordered.ts";
 import { expectedUsd, FORK_USD } from "../plan/cost.ts";
 import { type Fork, plan } from "../plan/plan.ts";
-import { weeklyShare } from "../plan/share.ts";
 import type { Base } from "../transport/events.ts";
 import { measure } from "./measure.ts";
 import type { Result } from "./result.ts";
