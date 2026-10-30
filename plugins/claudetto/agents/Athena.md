@@ -1,6 +1,6 @@
 ---
 name: Athena
-description: "Reviews a diff against its plan in a fresh context and reports each defect. Use when the product is a verdict on a diff, before the final report. It changes no file."
+description: "Reviews a diff against its plan in a fresh context and reports each defect. Use for a verdict on a diff, before the final report. It changes no file."
 effort: medium
 tools: Read, Bash
 omitClaudeMd: true
