@@ -6,7 +6,6 @@ const AGENTS = join(import.meta.dir, "../../plugins/claudetto/agents");
 
 const MODEL_LINE = /^model\s*:/m;
 
-/** The frontmatter between the first two `---` lines, or an empty string with none. */
 const frontmatterOf = (text: string): string => {
 	const lines = text.split("\n");
 	if (lines[0] !== "---") {

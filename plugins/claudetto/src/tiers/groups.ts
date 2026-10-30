@@ -1,93 +1,90 @@
-// What the setup command offers to keep. `$.ui.ask` takes two to four option labels, so the keys the
-// command may write are bundled into groups that each stand for one decision. A group is kept whole
-// or discarded whole.
-//
-// `tests/claudetto/tier/hooks.test.ts` checks that every key of the snippet sits in exactly one group
-// or in `UNSHIPPED_KEYS`, so a key added to `snippet.ts` cannot end up offered to nobody and
-// discarded without anyone deciding that.
-
+import { builtinSnippet } from "../builtins.ts";
+import {
+	CLASSIFIER_CALL_CHARS,
+	SANDBOX_CHARS,
+	SHIPPED_TOOL_COUNT,
+	SHIPPED_TOTAL,
+} from "../cuts.ts";
+import { BASELINE_TOOL_COUNT, BASELINE_TOTAL, denyList } from "../deny.ts";
+import { count } from "../format.ts";
+import { AUTOCOMPACT_PCT_ENV, compactionSnippet, ENV } from "../keys.ts";
+import { MAIN_AGENT, STYLE } from "../prompts.ts";
+import { SECRET_PATHS } from "../sandbox/sandbox.ts";
+import { AGENT_DENIES, INTEGRATION_DENIES } from "./agents.ts";
+import { ALLOW_RULES } from "./allow.ts";
+import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
+import { envFlags, SUBAGENT_MODEL_ENV } from "./env.ts";
 import type { TierSnippet } from "./snippet.ts";
+import { STATUS_LINE_KEYS } from "./status-line.ts";
+import { SNIPPET_ROW } from "./tiers.ts";
 
-/**
- * Keys of the snippet that `/claudetto:setup` never writes, however the dialog is answered.
- *
- * `autoMode` is here because `autoMode.environment` is the readings of *this* repository
- * (`../automode/environment.ts:1`, "the `autoMode.environment` facts of this project"): the
- * `xsyetopz` remote, `plugins/claudetto/` as the product, and one macOS workstation. The auto-mode
- * classifier reads those as the environment of whoever holds the settings file, and it decides from
- * them whether a command runs without asking, so writing them into a stranger's settings would feed
- * a permission decision facts that are false for that machine. `just setup` still writes them,
- * because it runs inside this checkout, where each reading is true.
- *
- * Nothing of value is lost: the `allow`, `soft_deny`, and `hard_deny` lists of the snippet are
- * `$defaults` alone, as `just capture --arm plugin --shipped` prints, so for anyone but this
- * repository the whole key is the environment facts.
- */
-export const UNSHIPPED_KEYS: readonly string[] = ["autoMode"];
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
 
-/** One bundle of snippet keys, kept or discarded as a whole. `label` is what the dialog shows and what the answer names, so the two must stay the same text. */
+/** The path a group names for one flag of the `env` block. */
+const envPath = (name: string): string => `${ENV}.${name}`;
+
+const codes = (items: readonly string[]): string =>
+	items.map((item) => `\`${item}\``).join(", ");
+
 export interface KeyGroup {
 	readonly label: string;
-	/** What keeping the group does, as one line of the command's output. */
 	readonly why: string;
-	/** The top-level keys of the snippet this group carries. */
 	readonly keys: readonly string[];
 }
 
-/**
- * The three groups, in the order the dialog lists them.
- *
- * The first is one group and not five because `permissions.deny` ships with the two switches of
- * `builtinSnippet` and never apart from them (`snippet.ts`): `disableBundledSkills` alone moves the
- * workflow text into the `Workflow` definition while that tool is still offered, which is a loss.
- * The measured figures are of the whole group together, read with `just capture --arm plugin --shipped`.
- */
 export const KEY_GROUPS: readonly KeyGroup[] = [
 	{
 		label: "Smaller prompt",
-		why: "Turns off the bundled skills and most built-in plugins, denies three tools, allows `git status` and the bare `git diff`, `git log`, and `git show`, and selects the `claudetto:main` agent body and the `claudetto:Concise` output style. Together they take the first request from 42,879 characters to 31,959, and the tool schemas from 12 tools to 9.",
+		why: `Turns off the bundled skills and most built-in plugins, denies ${codes([...denyList(), ...INTEGRATION_DENIES])} and the ${AGENT_DENIES.length} built-in agents, allows ${codes(ALLOW_RULES)}, and selects the \`${MAIN_AGENT}\` agent body and the \`${STYLE}\` output style. With the other groups they take the first request from ${count(BASELINE_TOTAL)} characters to ${count(SHIPPED_TOTAL)}, and the tool schemas from ${BASELINE_TOOL_COUNT} to ${SHIPPED_TOOL_COUNT}.`,
 		keys: [
-			"disableBundledSkills",
-			"enabledPlugins",
+			...Object.keys(builtinSnippet()),
 			"permissions",
 			"agent",
 			"outputStyle",
 		],
 	},
 	{
-		label: "Sandbox",
-		why: "Runs a `Bash` command inside the sandbox with `allowUnsandboxedCommands` set to `false`, and keeps it out of `~/.ssh`, `~/.gnupg`, `~/.aws/credentials`, `~/.netrc`, and `~/.docker/config.json`. It costs 7,254 characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is 140,718 characters.",
-		keys: ["sandbox"],
+		label: "Sandbox and auto mode",
+		why: `Runs a \`Bash\` command inside the sandbox with \`allowUnsandboxedCommands\` set to \`false\`, and keeps it out of ${codes(SECRET_PATHS)}. It costs ${count(SANDBOX_CHARS)} characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is ${count(CLASSIFIER_CALL_CHARS)} characters. It also replaces the built-in \`autoMode\` rule lists with claudetto's shorter suite, which judged the scripted classifier cases as well as the built-in lists at about half the price per call.`,
+		keys: ["sandbox", "autoMode"],
 	},
 	{
 		label: "Models and windows",
-		why: "Writes `claude-opus-5-5` as the main model at `medium` effort, `claude-sonnet-5-5` for subagents, and the context windows and compaction thresholds the handoff is written against.",
+		why: `Writes \`${SNIPPET_ROW.mainModel}\` as the main model at \`${SNIPPET_ROW.effort}\` effort, \`${SNIPPET_ROW.subagentModel}\` for subagents, ${codes(FALLBACK_MODELS)} as the fallback model, the effort ceilings ${codes(Object.entries(MAX_EFFORT).map(([model, level]) => `${model}: ${level}`))}, and the context windows and compaction thresholds the handoff is written against. It also sets claudetto's \`statusLine\` and \`subagentStatusLine\`, which show the model, its effort, the context window, and the usage-limit windows.`,
 		keys: [
 			"model",
 			"effortLevel",
-			"env",
-			"autoCompactWindow",
+			envPath(AUTOCOMPACT_PCT_ENV),
+			envPath(SUBAGENT_MODEL_ENV),
+			...Object.keys(compactionSnippet().settings),
+			"fallbackModel",
 			"modelSettings",
-			"idleCompaction",
+			...STATUS_LINE_KEYS,
+		],
+	},
+	{
+		label: "Features off",
+		why: `Writes ${codes(Object.keys(disablesSnippet()))} and the \`env\` flags ${codes(Object.keys(envFlags()))}, which turn off workflows, artifacts, Remote Control, the claude.ai integrations and push notifications, auto memory, prompt suggestions, tips, voice, the to-do list, cron, fast mode, the advisor tool, the IDE auto-install, error reporting, the git instructions, commit attribution, and the feedback prompts or set the usage-limit, model-switch, plan, cross-session, and motion behaviors. It also names the settings schema for editors.`,
+		keys: [
+			"$schema",
+			...Object.keys(disablesSnippet()),
+			...Object.keys(envFlags()).map(envPath),
 		],
 	},
 ];
 
-/** The labels the dialog offers, which is what an answer of `$.ui.ask` names. */
 export const groupLabels = (): readonly string[] =>
 	KEY_GROUPS.map((group) => group.label);
 
-/** Every key of every group, in the order of the groups. */
 export const groupedKeys = (): readonly string[] =>
 	KEY_GROUPS.flatMap((group) => group.keys);
 
-/**
- * `snippet` cut to the keys of the groups whose label is in `kept`.
- *
- * A key of the snippet that no group carries is left out, which is how a key of `UNSHIPPED_KEYS`
- * stays out however the dialog is answered, and also how a key added to `snippet.ts` without a group
- * is discarded rather than written unasked. The test above makes the second case a failure.
- */
+export const keyPaths = (snippet: TierSnippet): readonly string[] =>
+	Object.entries(snippet).flatMap(([key, value]) =>
+		key === ENV && isRecord(value) ? Object.keys(value).map(envPath) : [key],
+	);
+
 export const keptSnippet = (
 	snippet: TierSnippet,
 	kept: readonly string[],
@@ -97,7 +94,14 @@ export const keptSnippet = (
 			(group) => group.keys,
 		),
 	);
-	return Object.fromEntries(
-		Object.entries(snippet).filter(([key]) => keys.has(key)),
-	);
+	const env = snippet[ENV];
+	const keptEnv = isRecord(env)
+		? Object.entries(env).filter(([name]) => keys.has(envPath(name)))
+		: [];
+	return {
+		...Object.fromEntries(
+			Object.entries(snippet).filter(([key]) => key !== ENV && keys.has(key)),
+		),
+		...(keptEnv.length === 0 ? {} : { [ENV]: Object.fromEntries(keptEnv) }),
+	};
 };

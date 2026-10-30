@@ -1,30 +1,16 @@
-// Gitleaks writes its patterns for Go's `regexp`, so a pattern may carry an inline flag setter such
-// as `(?i)`. JavaScript has no setter and throws on one. A setter becomes a modifier group here,
-// `(?i:...)`, that runs to the end of the group enclosing the setter, which is the scope Go gives
-// it (`https://pkg.go.dev/regexp/syntax`: a flag set by `(?i)` holds to the end of the enclosing
-// group). A setter at the head of a pattern becomes the `i` flag of the compiled pattern instead,
-// which is the same thing and keeps the pattern readable beside the upstream line.
-//
-// A modifier group the upstream config already writes, `(?i:...)`, `(?-i:...)`, or `(?s:...)`, is
-// left as it stands: Bun and Node both take it, and the engine of the running program compiles it
-// or the rule is skipped at load.
-//
-// Nothing else of Go's syntax appears in the default config. It has no lookaround, which is where
-// Go and JavaScript part, and no named group. `translate` proves this per pattern by compiling the
-// result, and the caller drops a pattern that will not compile.
+// JavaScript throws on a Go inline flag setter, so it becomes a modifier group over its enclosing group.
 
-import type { Pattern } from "../../plugins/claudetto/src/secrets/gitleaks/data.ts";
+import type { Pattern } from "../../plugins/claudetto/src/shared/secrets/gitleaks/data.ts";
 
-/** A flag setter. It carries no colon, which is what separates it from a modifier group. */
+/** A flag setter carries no colon, which separates it from a modifier group. */
 const SETTER = /\(\?([a-z-]+)\)/g;
 
-/**
- * The index of the `)` that closes the group enclosing `from`, or the length of `source` when no
- * group encloses it. An escape pair and a character class are stepped over, because a bracket
- * inside either is a literal and closes nothing.
- */
-const groupEnd = (source: string, from: number): number => {
-	let depth = 0;
+/** An escape pair and a character class are stepped over: a bracket inside either closes nothing. The first value `visit` returns, given the index after a parenthesis, ends the walk. */
+export const walkParens = <T>(
+	source: string,
+	from: number,
+	visit: (paren: "(" | ")", after: number) => T | undefined,
+): T | undefined => {
 	let inClass = false;
 	let at = from;
 	while (at < source.length) {
@@ -36,23 +22,28 @@ const groupEnd = (source: string, from: number): number => {
 			inClass = char !== "]";
 		} else if (char === "[") {
 			inClass = true;
-		} else if (char === "(") {
-			depth += 1;
-		} else if (char === ")") {
-			if (depth === 0) {
-				return at - 1;
+		} else if (char === "(" || char === ")") {
+			const found = visit(char, at);
+			if (found !== undefined) {
+				return found;
 			}
-			depth -= 1;
 		}
 	}
-	return source.length;
+	return undefined;
 };
 
-/**
- * Whether the engine takes the pattern. The compiled pattern is read for its own `source`, which
- * is always there, because a compiler that throws answers the question and an object thrown away
- * unread is a lint error of this repo.
- */
+/** The index of the `)` that closes the group enclosing `from`, or the length of `source`. */
+const groupEnd = (source: string, from: number): number => {
+	let depth = 0;
+	return (
+		walkParens(source, from, (paren, after) => {
+			depth += paren === "(" ? 1 : -1;
+			return depth < 0 ? after - 1 : undefined;
+		}) ?? source.length
+	);
+};
+
+/** The compiled pattern's `source` is read because an object thrown away unread is a lint error. */
 const compiles = (source: string, flags: string): boolean => {
 	try {
 		return new RegExp(source, flags).source.length > 0;
@@ -61,12 +52,7 @@ const compiles = (source: string, flags: string): boolean => {
 	}
 };
 
-/**
- * `regex` as a JavaScript pattern, or `undefined` when it will not compile as one.
- *
- * The setters are rewritten from the last to the first, so that an index stays valid while the
- * text before it is untouched. A rewrite leaves a modifier group, which no later pass matches.
- */
+/** Rewritten from the last setter to the first, so indexes before it stay valid. */
 export const translate = (regex: string): Pattern | undefined => {
 	let source = regex;
 	let flags = "";

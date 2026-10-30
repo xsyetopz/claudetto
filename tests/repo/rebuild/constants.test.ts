@@ -1,8 +1,3 @@
-// The rebuilt observer may run only on values the source note records, so each entry of its
-// constants module has to be quoted in that note with its own value. The rule is checked by what it
-// reports for entries passed in, and the last block is the rule over the real module and the real
-// note.
-
 import { describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";

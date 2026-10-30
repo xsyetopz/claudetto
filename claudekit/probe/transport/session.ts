@@ -1,5 +1,3 @@
-// The paid steps of the probe: the base session of a size, and one fork of it. Only `main.ts` on `--run` reaches this file.
-
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { HANDOFF_TRIGGER_TOKENS } from "../../plugin.ts";
@@ -18,7 +16,6 @@ import type { Runners, Start } from "../round/round.ts";
 import { exec } from "./claude.ts";
 import { calls, contextOf, last, problem, type Step } from "./events.ts";
 
-/** Turns off automatic compaction, so the base session keeps the context that its size needs and compacts in no fork's place. */
 const BASE_ENV = { DISABLE_AUTO_COMPACT: "1" };
 
 const filesOf = (steps: Step[], names: string[]): Set<string> =>
@@ -28,11 +25,9 @@ const filesOf = (steps: Step[], names: string[]): Set<string> =>
 			.map(([, f]) => f),
 	);
 
-/** The input sum of the last request of `steps`, which is the context of the base. */
 const contextAfter = (steps: Step[]): number =>
 	contextOf(steps.flatMap((s) => s.events));
 
-/** Runs the base session of `size` in `dir` on `model`, and tags the end of it, which each fork resets to. */
 const runBase = async (
 	dir: string,
 	size: number,
@@ -48,8 +43,6 @@ const runBase = async (
 					"-p",
 					p,
 					...(i ? ["--resume", id] : ["--session-id", id]),
-					// Any threshold does for the base, which `BASE_ENV` stops from compacting at all. The
-					// reference one keeps the base's settings the same as a `ref` fork's but for that switch.
 					...flags(model, HANDOFF_TRIGGER_TOKENS),
 				],
 				dir,
@@ -63,7 +56,6 @@ const runBase = async (
 	});
 	const context = contextAfter(steps);
 	const cost = last(steps.at(-1)?.events ?? []).total_cost_usd ?? 0;
-	// The cost is printed with the context, because `measure.ts` subtracts it from each fork and no other output holds it.
 	process.stdout.write(
 		`base ${size / 1000}k: context ${context} tokens, cost ${cost}\n`,
 	);
@@ -81,7 +73,6 @@ const runBase = async (
 	};
 };
 
-/** Runs fork `f` in `dir` from the end of the base. */
 const runFork = async (f: Fork, dir: string, start: Start): Promise<Result> => {
 	await git(dir, "reset", "-q", "--hard", "base");
 	await git(dir, "clean", "-fdq");
@@ -103,5 +94,4 @@ const runFork = async (f: Fork, dir: string, start: Start): Promise<Result> => {
 	);
 };
 
-/** The runners that reach the provider. */
 export const paidRunners: Runners = { base: runBase, fork: runFork };

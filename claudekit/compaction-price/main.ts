@@ -1,10 +1,3 @@
-// The paid half of the compaction price: a session of `claude -p` steps whose threshold is pinned low,
-// so one step crosses it and the recorder marks the row that follows. With no `--run` it makes no call.
-//
-// Why steps rather than one session: a `-p` step is one turn and leaves one end-of-session row, so the
-// row of a step is that step's own delta. A step that carried the compaction less a plain step is the
-// compaction's price. A whole fork of `claudekit/probe/` cannot give it, because its one row covers the fork.
-
 import { mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
@@ -21,32 +14,17 @@ import {
 import { storedAt, storeFiles } from "../store.ts";
 import { priceLine, priceOf } from "./price.ts";
 
-/**
- * The tokens one step adds to the context, measured and not assumed: the run of 2026-10-30 grew 1,145,
- * 1,135, 1,145, 1,135, and 1,137 tokens over its six steps. The notes are almost none of it, because a
- * step that needs one line of a note reads that line with a `limit`, which is the finding of
- * `docs/evidence/compaction/threshold.md`: a fixture cannot buy context by putting it in a file.
- */
 export const STEP_GROWTH_TOKENS = 1139;
 
-/**
- * How many steps of growth the threshold sits above the first step's context. It has to be at least one,
- * so that step one does not compact and leaves a row to price the marked one against, and at most the
- * step count less two, so that a plain step still follows the compaction. Two is the middle of that
- * band at the default step count, and it holds while the real growth is anywhere from half the measured
- * figure to four times it.
- */
+/** At least one, so that step one does not compact; at most the step count less two. */
 const CROSS_AFTER_STEPS = 2;
 
-/** The steps of the run. Three is the least that leaves a plain step on either side of the marked one. */
 const DEFAULT_STEPS = 6;
 
 const MIN_STEPS = 3;
 
-/** The threshold of the calibration step, high enough that it cannot compact whatever the context is. */
 const NO_COMPACT_THRESHOLD = 1_000_000;
 
-/** What one step of this run costs, from the run of 2026-10-30 which billed 0.2811 over its six steps. */
 const STEP_USD = 0.047;
 
 const USAGE = `Usage: bun claudekit/compaction-price/main.ts [--run] [--steps N] [--threshold T] [--model M] [--dir D] [--cheap-summary]
@@ -55,22 +33,18 @@ With no --run it is a dry run: it prints the plan and the expected cost, and mak
 --run makes the paid calls. N is a whole number of at least ${MIN_STEPS} (default ${DEFAULT_STEPS}), and M is one of ${MODELS.join(", ")} (default ${DEFAULT_MODEL}).
 T is the compaction threshold in tokens. With no --threshold the run calibrates it: one extra step measures the context that the plugin's own prompt and one note produce, and the threshold is set ${CROSS_AFTER_STEPS} steps of growth above it. A fixed figure cannot do that, because the context of a first step is almost all the plugin's prompt and moves with it.`;
 
-/** The parsed command line of a run: whether it is paid, the step count, the compaction threshold in tokens or none to calibrate it, the model id, and the working folder. */
 export interface Config {
 	paid: boolean;
 	steps: number;
 	threshold: number | undefined;
 	model: string;
 	dir: string;
-	/** Whether the run turns the plugin's `cheapSummary` handler on, which is the arm to compare. */
 	cheapSummary: boolean;
 }
 
-/** The plugin options of a run: the `cheapSummary` switch when the arm asks for it, else none. */
 export const optionsOf = (c: Config): Record<string, string> =>
 	c.cheapSummary ? { cheapSummary: "on" } : {};
 
-/** The threshold to pin a run at, given the context its first step reached. */
 export const thresholdFor = (context: number): number =>
 	context + CROSS_AFTER_STEPS * STEP_GROWTH_TOKENS;
 
@@ -82,7 +56,6 @@ const numberOf = (text: string | undefined, least: number): number => {
 	return value;
 };
 
-/** The config of `argv`, or a usage error. */
 export const configOf = (argv: string[]): Config => {
 	const at = (flag: string): string | undefined => {
 		const i = argv.indexOf(flag);
@@ -106,7 +79,6 @@ export const configOf = (argv: string[]): Config => {
 	};
 };
 
-/** One note of about 6,000 tokens, with a code on its first line so a step has something to report. */
 const note = (i: number): string =>
 	[
 		`Code ${i}: ${String((i * 7919) % 1_000_000).padStart(6, "0")}`,
@@ -123,7 +95,6 @@ const partName = (i: number): string => `part-${String(i).padStart(2, "0")}.md`;
 const stepPrompt = (i: number): string =>
 	`Read \`notes/${partName(i)}\`, one \`Read\` call. Then say the number on its first line and nothing else.`;
 
-/** The rows of the newest store of the in-tree plugin, or none when no store holds any. */
 export const storeRows = async (home: string) => {
 	const files = await storeFiles(home);
 	return files
@@ -131,16 +102,6 @@ export const storeRows = async (home: string) => {
 		.toSorted((l, r) => l.at - r.at);
 };
 
-/**
- * The threshold of the run, from `--threshold` or from one calibration step. The step runs the same
- * prompt as the first step of the run, in its own session and with compaction off, so the context it
- * reports is the one the run itself starts from. It is a paid step and it is why the expected cost
- * counts one step more than the run has.
- *
- * It runs without the arm's own options. The step cannot compact, so the summarizer handler could not
- * fire in it anyway, and leaving the options off makes the calibration identical in both arms, which
- * is what lets the two runs be compared at the same threshold.
- */
 const thresholdOf = async (c: Config): Promise<number> => {
 	if (c.threshold !== undefined) {
 		return c.threshold;
@@ -197,10 +158,8 @@ const runSteps = async (c: Config): Promise<Step[]> => {
 	return steps;
 };
 
-/** The paid steps of a run. `main` takes it as an argument so a test can run the whole wiring unpaid. */
 export type Runner = (c: Config) => Promise<Step[]>;
 
-/** Runs the plan and prints the step count, threshold, and expected cost in `total_cost_usd` units; with no `--run` it makes no call, otherwise it runs the steps and prints the billed total and the price line. */
 export const main = async (
 	argv: string[],
 	home: string,

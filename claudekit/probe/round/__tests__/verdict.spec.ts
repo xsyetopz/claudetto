@@ -6,13 +6,10 @@ import { BARS, ranRuns, verdict } from "../verdict.ts";
 
 const SIZE = 30_000;
 
-/** The page that defines the bars, which `BARS` is transcribed from. */
 const PAGE = "docs/evidence/code-compaction-probe.md";
 
-/** The two bars `missesAt` reads outside `BARS`, each a rate rather than a mean of one measure. */
 const CACHE_MEASURES: readonly string[] = ["firstWrite", "shares[0]"];
 
-/** The rows of the bar table of `PAGE`, each the whole line. */
 const barRows = async (): Promise<string[]> => {
 	const page = await readFile(PAGE, "utf8");
 	const section =
@@ -23,7 +20,6 @@ const barRows = async (): Promise<string[]> => {
 		.slice(1);
 };
 
-/** Ten passing forks of the reference and ten of the alternative, which is cheaper. */
 const cheaper = (alt: Parameters<typeof forksOf>[2] = {}) => [
 	...forksOf("ref", 10),
 	...forksOf("alt", 10, { cost: 0.8, ...alt }),
@@ -90,9 +86,6 @@ describe("verdict", () => {
 	});
 
 	test("an arm where one fork did not compact is a gap, not a cache problem", () => {
-		// The smoke round of 2026-10-29 had 2 of 3 `ref` forks finish without compacting, and those forks
-		// have no post-compaction cache figures at all. Read as zeros they made `alt` look worse on three
-		// cache bars, which says nothing about either threshold.
 		const rs = [
 			...forksOf("ref", 1),
 			...forksOf("ref", 2, {
@@ -112,10 +105,6 @@ describe("verdict", () => {
 	});
 
 	test("a fork that compacted but saved no follow-up share is a gap, not a cache problem", () => {
-		// The smoke round of 2026-10-30 had one `ref` fork whose compaction fired near the end of its last
-		// step, so `measure` found one request after the boundary and `shares` came back empty. Read as a
-		// NaN inside the mean of the arm, that one fork made both share bars report a problem against
-		// `alt`, whose own shares were 0.862 and 0.971. The bar tested nothing.
 		const rs = [
 			...forksOf("ref", 2, { shares: [0.92, 0.96] }),
 			result({ arm: "ref", run: 3, shares: [] }),
@@ -140,10 +129,6 @@ describe("verdict", () => {
 	});
 
 	test("writing more cache in total but no more per kept token is no cache problem", () => {
-		// `firstWrite` scales with the context the compaction left, and the threshold is what sets that
-		// context, so the absolute counts of two arms are not comparable. Over the smoke round of
-		// 2026-10-30 `ref` left 5,980 tokens and `alt` left 11,438, and every one of the six forks wrote
-		// between 1.74 and 1.86 tokens of cache per token kept.
 		const rs = [
 			...forksOf("ref", 3, { firstWrite: 10_687, firstPost: 5980 }),
 			...forksOf("alt", 3, {
@@ -189,7 +174,6 @@ describe("verdict", () => {
 
 		const v = verdict(rs, [SIZE]);
 
-		// Without the peak the reason says only that nothing compacted, which names no cause to act on.
 		expect(v.reasons.some((r) => r.includes("81234"))).toBe(true);
 	});
 
@@ -201,7 +185,6 @@ describe("verdict", () => {
 
 		const v = verdict(rs, [SIZE]);
 
-		// One turn carried both arms past both thresholds, so the bars read the fixture and not the threshold.
 		expect(v.winner).toBeNull();
 		expect(v.reasons.some((r) => r.includes("176580"))).toBe(true);
 	});
@@ -216,7 +199,6 @@ describe("verdict", () => {
 	});
 
 	test("a round that saved no compaction point claims no same-point gap", () => {
-		// A round that paid before the probe measured the point is still reported, and reads as unknown.
 		const rs = [
 			...forksOf("ref", 10, { firstPre: Number.NaN }),
 			...forksOf("alt", 10, { firstPre: Number.NaN, cost: 0.8 }),
@@ -226,7 +208,6 @@ describe("verdict", () => {
 	});
 
 	test("one arm that never compacted leaves the other arm's point readable", () => {
-		// A fork that did not compact has no point, and must not make the mean of its arm unreadable.
 		const rs = [
 			...forksOf("ref", 9, { firstPre: 176_600 }),
 			result({ arm: "ref", run: 10, compactions: 0, firstPre: Number.NaN }),
@@ -294,7 +275,6 @@ describe("ranRuns", () => {
 	});
 
 	test("is the count of the thinnest arm when a cap cut one short", () => {
-		// The cap stops the round between two forks, so the arm that was next ends one fork behind.
 		const rs = [...forksOf("ref", 10), ...forksOf("alt", 9, { cost: 0.8 })];
 
 		expect(ranRuns(rs, [SIZE])).toBe(9);
@@ -319,9 +299,6 @@ describe("ranRuns", () => {
 	});
 });
 
-// `verdict.ts` states that `BARS` is transcribed from the table of the page and that nothing parses the
-// Markdown at run time. These two cases are what makes the statement hold: the page and the code drifted
-// once, with `skipped` and `turns` scored here and absent from the table, and nothing noticed.
 describe("the bars against the page that defines them", () => {
 	test("every bar the verdict scores has a row on the page", async () => {
 		const rows = await barRows();

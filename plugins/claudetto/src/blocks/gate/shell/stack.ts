@@ -1,0 +1,95 @@
+import { ARITH, type Ctx, type Frame, frame, push } from "./frames.ts";
+import { RESERVED } from "./shellkinds.ts";
+
+const OPENERS = new Set(["if", "while", "until", "for", "case", "select", "{"]);
+const CLOSERS = new Set(["fi", "done", "esac", "}"]);
+
+const countOpen = (x: Ctx, line: string[]): void => {
+	for (const w of line) {
+		if (OPENERS.has(w)) {
+			x.open++;
+		} else if (CLOSERS.has(w)) {
+			x.open = Math.max(0, x.open - 1);
+		} else if (!RESERVED.has(w)) {
+			return;
+		}
+	}
+};
+
+export const end = (x: Ctx, f: Frame): void => {
+	push(x, f);
+	const had = f.line.length > 0;
+	countOpen(x, f.line);
+	let shifted = 0;
+	while (f.line.length > 0 && RESERVED.has(f.line[0] ?? "")) {
+		f.line.shift();
+		shifted++;
+	}
+	// An unquoted heredoc body is data, so only its substitutions are commands.
+	const plain = x.stack.length === 1 && x.open === 0 && !f.cond && !f.piped;
+	const spots = f.line.map((_, i) => f.bares.get(i + shifted));
+	const lits = f.line.map((_, i) => f.literals.get(i + shifted));
+	if (f.line.length > 0 && !f.body) {
+		x.emit(f.line, plain, spots, lits);
+	}
+	if (had) {
+		f.cond = false;
+	}
+	f.piped = false;
+	f.bares = new Map();
+	f.literals = new Map();
+	f.line = [];
+	f.outs = [];
+};
+
+export const open = (x: Ctx, f: Frame, closer: string, at: number): void => {
+	f.word ??= "";
+	x.stack.push(frame(closer, false, at));
+};
+
+/** A quote, backtick, or backslash before the `))` keeps the stricter reading of a substitution. */
+export const openDollar = (x: Ctx, f: Frame, at: number): number => {
+	const { text } = x;
+	let arith = false;
+	for (
+		let j = at + 3, depth = 0;
+		text[at + 2] === "(" && j < text.length;
+		j++
+	) {
+		const c = text.charAt(j);
+		if ("'\"`\\".includes(c)) {
+			break;
+		}
+		if (c === "(") {
+			depth++;
+		} else if (c === ")" && depth) {
+			depth--;
+		} else if (c === ")") {
+			arith = text[j + 1] === ")";
+			break;
+		}
+	}
+	if (arith) {
+		f.word ??= "";
+		x.stack.push(frame(ARITH, true, at));
+	} else {
+		open(x, f, ")", at);
+	}
+	return at + (arith ? 2 : 1);
+};
+
+export const close = (x: Ctx, f: Frame, at: number): void => {
+	end(x, f);
+	x.stack.pop();
+	if (f.start === undefined) {
+		return;
+	}
+	// The source text of a substitution goes into its word, so the words after it stay with it.
+	const parent = x.stack.at(-1);
+	if (parent === undefined) {
+		throw new Error("`close` ran for a frame with a start and no parent frame");
+	}
+	const raw = x.text.slice(f.start, at + 1);
+	parent.word = (parent.word ?? "") + raw;
+	parent.raws.push(raw);
+};

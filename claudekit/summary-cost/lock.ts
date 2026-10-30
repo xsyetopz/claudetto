@@ -1,16 +1,3 @@
-// The lock that guards `~/.claude.json`, which every live Claude Code session writes.
-//
-// Claude Code uses `proper-lockfile` for it: the lock is a directory at `<file>.lock`, taken with
-// `mkdir`, whose mtime is refreshed while it is held, and a holder older than the stale window may
-// be taken over (`chunk-091chc8g.js:18469`). A session that cannot take it refuses the write rather
-// than clobber the holder: `Config lock still held by a live process after retries; skipping the
-// unlocked fallback write (save_global) to avoid clobbering the lock holder`.
-//
-// The round writes the same file to answer the folder-trust dialog, so it takes the same lock. The
-// round of 2026-10-29 did not, and its own arms logged that contention 8 times. Two unlocked
-// read-modify-writes of a 116 KB config each drop the other's change, and a crash between the
-// truncate and the write leaves no config at all.
-
 import {
 	mkdir,
 	readFile,
@@ -20,13 +7,10 @@ import {
 	writeFile,
 } from "node:fs/promises";
 
-/** The lock of a file, which is a directory next to it. */
 export const lockPath = (file: string): string => `${file}.lock`;
 
-/** How old a holder may be before it counts as dead and may be taken over. */
 const STALE_MS = 20_000;
 
-/** How long to wait for a live holder before giving up on the write. */
 const WAIT_MS = 15_000;
 
 const STEP_MS = 100;
@@ -40,7 +24,6 @@ const exists = (error: unknown): boolean =>
 const sleep = (ms: number): Promise<void> =>
 	new Promise((resolve) => setTimeout(resolve, ms));
 
-/** How long the lock of `file` has been held, or nothing when it is not held. */
 const heldForMs = async (file: string): Promise<number | undefined> => {
 	try {
 		return Date.now() - (await stat(lockPath(file))).mtimeMs;
@@ -49,17 +32,12 @@ const heldForMs = async (file: string): Promise<number | undefined> => {
 	}
 };
 
-/**
- * Takes the lock of `file` and gives back the release. It waits while a live holder has it and
- * throws when the wait runs out, because a write that cannot take the lock is the write that loses
- * another session's change.
- */
+/** Throws when the wait runs out, because a write without the lock loses another session's change. */
 export const held = (
 	file: string,
 	wait: number = WAIT_MS,
 ): Promise<() => Promise<void>> => attempt(file, Date.now() + wait);
 
-/** One try for the lock of `file`, which waits and tries again until `until` passes. */
 const attempt = async (
 	file: string,
 	until: number,
@@ -89,11 +67,7 @@ const attempt = async (
 	return attempt(file, until);
 };
 
-/**
- * Replaces `file` under its lock, from the text that `edit` makes out of the current text. The new
- * text goes to a temporary file in the same folder and is renamed over the old one, so a crash
- * leaves either the old config or the new one and never a half-written one.
- */
+/** Writes a temporary file and renames it, so a crash never leaves a half-written config. */
 export const underLock = async (
 	file: string,
 	edit: (before: string) => Promise<string> | string,

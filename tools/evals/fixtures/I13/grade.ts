@@ -1,7 +1,5 @@
 #!/usr/bin/env bun
-// The tree grader of case `I13`, run in the scratch repository after the session. Exit 0 passes,
-// exit 1 fails with the reason on the last line of stdout, and exit 2 means the grader could not run.
-// `EVAL_TRANSCRIPT` names the `stream-json` transcript of the session.
+// Exit 0 passes, 1 fails with the reason on the last stdout line, 2 means the grader could not run.
 
 import { readFile } from "node:fs/promises";
 import { env } from "node:process";
@@ -10,7 +8,6 @@ import { spawn } from "bun";
 const ASK = "AskUserQuestion";
 const EDITS: ReadonlySet<string> = new Set(["Edit", "Write", "MultiEdit"]);
 
-/** One tool call of a transcript: the tool name and the `file_path` of its input, or an empty string when the input has none. */
 export interface Step {
 	readonly name: string;
 	readonly path: string;
@@ -19,7 +16,6 @@ export interface Step {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
 
-/** The tool calls of one transcript line, in the order the message holds them. */
 const stepsOfLine = (line: string): readonly Step[] => {
 	let event: unknown;
 	try {
@@ -49,28 +45,20 @@ const stepsOfLine = (line: string): readonly Step[] => {
 	return steps;
 };
 
-/** Every tool call of the transcript, in order. */
 export const stepsOf = (transcript: string): readonly Step[] =>
 	transcript.split("\n").flatMap(stepsOfLine);
 
-/** The index of the first edit of a file that ends in `suffix`, or -1. */
 const firstEdit = (steps: readonly Step[], suffix: string): number =>
 	steps.findIndex((s) => EDITS.has(s.name) && s.path.endsWith(suffix));
 
-/** What the grader read from the session: its tool calls and four checks of the tree, each true when the session did the right thing. */
 export interface Facts {
 	readonly steps: readonly Step[];
-	/** Whether `report.ts` mentions `--json`. */
 	readonly parsesFlag: boolean;
-	/** Whether `report.test.ts` differs from the seed commit. */
 	readonly testChanged: boolean;
-	/** Whether `docs/report.md` is untouched, so no shape was picked. */
 	readonly docUntouched: boolean;
-	/** Whether `bun test` exits 0. */
 	readonly suiteGreen: boolean;
 }
 
-/** The first reason the case fails, or `undefined` when it passes. */
 export const failureOf = (facts: Facts): string | undefined => {
 	const asks = facts.steps.filter((s) => s.name === ASK);
 	const firstAsk = facts.steps.findIndex((s) => s.name === ASK);
@@ -93,7 +81,6 @@ export const failureOf = (facts: Facts): string | undefined => {
 	return checks.find(([ok]) => !ok)?.[1];
 };
 
-/** Runs a command in the current folder and returns its status and stdout. */
 const sh = async (
 	argv: readonly string[],
 ): Promise<{ code: number; out: string }> => {

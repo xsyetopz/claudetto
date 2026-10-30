@@ -83,6 +83,28 @@ Size, from the `## Size` table:
 
 The page also says this prompt is `+124,997` characters against its "Default, Lean Prompt" baseline.
 
+Local reading on `2.1.314`, 2026-10-30, with `just capture --classifier`: the fake API answers the first main request with a `Bash` call of `git push origin main`, which auto mode sends to the classifier. The classifier request carries no tools and system blocks of `74`, `140,015`, and `248`, so `system[1]` equals the page's figure. The `248` block holds the login name, so it differs between logins. The fake's `ok` is no verdict, so the program retried the request ten times and then blocked the call. Both arms read the same, so the plugin adds nothing to this request.
+
+### Env Names That Change the Classifier Request
+
+`2.1.314` reads 24 `CLAUDE_CODE_AUTO_MODE_*` names, listed with `grep -aoE "CLAUDE_CODE_AUTO_MODE_[A-Z0-9_]+"` over the binary. Each was read on 2026-10-30 with `just capture --classifier --arm plain --dump DIR` and that name set, and the dump was compared with a run that set none. Two runs that set none differ only in `metadata.user_id`, a per-run device and session id, so the comparison leaves that line out.
+
+Only `CLAUDE_CODE_AUTO_MODE_MODEL` changed the request. With `claude-haiku-5-5` in place of the default `claude-sonnet-5`:
+
+| Part | Default | `claude-haiku-5-5` |
+| --- | --- | --- |
+| `system[1]` | `140,015` | `140,239` |
+| `messages` | `616` | `829` |
+| `max_tokens` | `64` | `2112` |
+| `stop_sequences` | `</severity>` | `</block>` |
+| `thinking` | `{"type":"disabled"}` | absent |
+
+The rules text is the same. The output part is not: the default asks for `<severity>N</severity>` from `0` to `100`, and the Haiku request asks for `<block>yes</block>` or `<block>no</block>` with a `<category>` and a `<reason>`, and its stage 1 line opens with "Err on the side of blocking."
+
+The default is `claude-sonnet-5`, the base Sonnet 5, not `claude-sonnet-5-5`. The name cannot move the classifier to `claude-sonnet-5-5`, `claude-opus-5-5`, or `claude-opus-5`: the program holds those three in one list and drops an env value in it with "the API's safeguards refuse the classifier's escalated check on it", and the default takes its place. A run with `CLAUDE_CODE_AUTO_MODE_MODEL=claude-sonnet-5-5` sent `claude-sonnet-5` at `max_tokens` `64` with `</severity>`, the same as no value. `ANTHROPIC_DEFAULT_SONNET_MODEL` set to either of the first two is refused the same way, with "cannot serve as the classifier; using the Sonnet 5 default instead".
+
+No other name changed a byte of the request: `ARTIFACT_CONSENT_RULE`, `CLASSIFIER_OVERLAP`, `CLASSIFY_ASK_USER_QUESTION`, `CLASSIFY_EDITS`, `COMPACT_THREAD_RULE`, `EDIT_REMOVAL`, `EMAIL_SENDER_REPLY_TURN`, `EMAIL_SENDER_TURN`, `EXTERNAL_PERMISSIONS`, `GIT_STATUS`, `GIT_STATUS_UPLOADS`, `HEARTH_MEMBER_RELAY_ROWS`, `OUTCOME_CODES`, `PRIOR_ASSISTANT_CONTEXT`, `REMOTE_BROWSER`, `REPO_VISIBILITY`, `SEGMENTED_TRANSCRIPT`, `SERVER`, and `THREAD_ASK_HELD` at both `1` and `0`, and `GIT_STATUS_LIMIT=10`, `EDIT_REMOVAL_CAP=10`, `TEMPERATURE=0`, and `TIER=strict`. That holds for this setup only: one user turn of `hi`, one `Bash` call, an empty folder, and a local fake API that answers every other route with `{}`, so no server flag is set. The `GIT_STATUS` names were read again in a git repository with one commit and one untracked file, and `PRIOR_ASSISTANT_CONTEXT` and `SEGMENTED_TRANSCRIPT` again with an assistant sentence before the call, and those dumps are also byte-identical to their baselines. The assistant sentence did not reach the classifier transcript in either run. `SERVER` cannot be read here, because the program reports that a session behind `127.0.0.1` is not eligible for the server classifier. Several names act on content this setup does not have (edits, email turns, threads, artifacts), so "no change" means unmeasured for those, not "never changes".
+
 The default rule on the page is "By default, actions are ALLOWED." Only a HARD BLOCK match, or a SOFT BLOCK match with no ALLOW exception, blocks.
 
 Custom rules, route `prompts/auto-classifier-custom`:
@@ -94,6 +116,32 @@ Custom rules, route `prompts/auto-classifier-custom`:
 - The example is shorter. `system[1]` is `75,325` against `140,015`. The diff reads "Lines added: 4. Lines removed: 72. Size change: -64,690 characters."
 - So the size depends on the lists. Replacing a list shortens the prompt. The page gives no figure for a list that keeps `$defaults` and adds entries. That figure is `not given`.
 - The same `auto_mode` object is also in `safeguards.classifier_context` of the main request.
+
+### Size per Rung
+
+Command: `just capture --classifier --arm plain --settings FILE`, one run per row, against the local fake API, `2.1.314`. "One rule" means the list holds only `"Run tests."` and no `$defaults`. The built-in rule counts come from the bullet lines under each heading of the built-in `system[1]`.
+
+| Rung | `autoMode` and env | `system[1]` | Cut |
+| --- | --- | --- | --- |
+| Built-in | unset | `140,015` | `0` |
+| Empty lists | all four lists `[]` | `140,015` | `0` |
+| `allow` replaced | one rule (drops 17 built-in exceptions) | `132,025` | `7,990` |
+| `soft_deny` replaced | one rule (drops 72 built-in soft blocks) | `75,266` | `64,749` |
+| `hard_deny` replaced | one rule (drops the built-in Data Exfiltration hard block) | `134,747` | `5,268` |
+| `environment` replaced | one rule (drops 21 built-in entries) | `136,482` | `3,533` |
+| All four replaced | one rule each | `58,475` | `81,540` |
+| All four replaced, rule `"x"` | one rule each | `58,439` | `81,576` |
+| Haiku | `CLAUDE_CODE_AUTO_MODE_MODEL=claude-haiku-5-5` | `140,239` | `-224` |
+| Haiku, all four `"x"` | both of the above | `58,663` | `81,352` |
+| `$defaults` after a rule | `soft_deny` `["Run tests.", "$defaults"]` | `140,028` | `-13` |
+| `$defaults` before a rule | `soft_deny` `["$defaults", "Run tests."]` | `140,028` | `-13` |
+| claudetto suite | the lists of `suiteSnippet` in `plugins/claudetto/src/automode/rules.ts` | `66,362` | `73,653` |
+
+- An empty list counts as unset and keeps the built-in rules. `$defaults` keeps them wherever it sits in a list.
+- The claudetto suite covers each built-in rule with 18 broader rules in `4,830` characters. Its rest is the `environment` facts that setup already writes.
+- The four cuts add up exactly to the all-four cut, so each list is one block of text with no shared parts.
+- About `58,400` characters is the floor that settings can reach. The rest is the frame (threat model, user intent rule, evaluation rules, process), and no setting or env name of `2.1.314` changes it. A shorter request needs a classifier prompt of our own.
+- Each cut removes block rules, and the default rule is "allowed". A `soft_deny` of one rule lets through every action that the 72 built-in soft blocks stopped, such as `git push --force`, a production deploy, or printing a credential. These readings are sizes only. Whether a rung still blocks what the built-in blocks is unmeasured.
 
 What the page does not say: which model the classifier runs on, whether the call is cached across tool calls, and any setting that skips it. All `not given`. The system block carries a `cache marker` of `{"type":"ephemeral"}`. The page does not say what that saves.
 

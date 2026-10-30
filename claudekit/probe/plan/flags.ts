@@ -1,5 +1,3 @@
-// The command line of the probe. A value that does not parse is `null`, and the caller prints the usage and makes no call.
-
 import os from "node:os";
 import path from "node:path";
 import {
@@ -17,20 +15,9 @@ import {
 	MODELS,
 } from "./plan.ts";
 
-/** The parsed command line of the probe: the run mode, runs per arm, model, candidate threshold in tokens, base sizes in tokens, cost cap in dollars, and output folder. */
 export interface Config {
-	/** Whether the run is paid. Only `--run` sets it. */
 	paid: boolean;
-	/**
-	 * Whether the run stops after the base sessions and runs no fork. It is how the paid path is
-	 * exercised against a real `claude` for the price of one base rather than a whole round, and it is
-	 * how the base size of `--sizes` is settled, because the base prints its measured context.
-	 */
 	baseOnly: boolean;
-	/**
-	 * Whether the run only reports the forks that `--dir` already holds, and makes no call. It is how a
-	 * round that stopped at its cost cap, or that was killed, is still reported from what it paid for.
-	 */
 	report: boolean;
 	runs: number;
 	model: string;
@@ -40,7 +27,6 @@ export interface Config {
 	dir: string;
 }
 
-/** The value after `flag`, `undefined` without the flag, or `null` when the flag ends the line. */
 const rawValue = (args: string[], flag: string): string | undefined | null => {
 	const at = args.indexOf(flag);
 	if (at < 0) {
@@ -49,7 +35,6 @@ const rawValue = (args: string[], flag: string): string | undefined | null => {
 	return args[at + 1] ?? null;
 };
 
-/** `read` of the value of `flag`, or `fallback` without the flag, or `null` when the value does not parse. */
 const flagged = <T>(
 	args: string[],
 	flag: string,
@@ -68,7 +53,6 @@ const wholeAbove = (text: string, floor: number): number | null => {
 	return Number.isInteger(n) && n >= floor ? n : null;
 };
 
-/** The usage text printed when a value does not parse, with the defaults and limits of each flag. */
 export const USAGE = `Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--alt-threshold T] [--sizes A,B] [--max-total-usd U] [--dir D]
 With no --run it is a dry run: it prints the plan and the expected cost, and makes no call.
 --base-only stops after the base sessions and runs no fork, which exercises the paid path and measures the base context for the price of one base.
@@ -97,10 +81,6 @@ const capOf = (text: string): number | null => {
 const modelOf = (text: string): string | null =>
 	MODELS.find((m) => m === text) ?? null;
 
-/**
- * The config of `args`, or `null` when any value is wrong, or `--run` is given with `--dry-run`, or
- * `--run` is given with `--report`, which would pay for forks and then report the saved ones instead.
- */
 export const parse = (args: string[]): Config | null => {
 	const paid = args.includes("--run");
 	const report = args.includes("--report");

@@ -1,11 +1,3 @@
-// A synthetic pair of session files for the tests of `claudekit/compaction-cost/`.
-// Session one (project `proj-a`), prompt sizes in tokens:
-//   100,000  150,000  200,000  | boundary pre 200,000 post 20,000 | summary 40,000 chars
-//   30,000  50,000
-// Session two (project `proj-b`):
-//   50,000  100,000  | boundary pre 100,000 post 17,000 | summary 20,000 chars
-//   25,000
-
 import { mkdir, mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -14,7 +6,6 @@ import { write } from "bun";
 /** A string that no loaded item may hold, because loading keeps no message text. */
 export const MARKER = "SECRET-MARKER-9137";
 
-/** An assistant record whose prompt is `size` tokens, all of it cache read. */
 export const assistant = (size: number, tools: object[] = []): string =>
 	JSON.stringify({
 		type: "assistant",
@@ -43,7 +34,6 @@ export const boundary = (pre: number, post: number, trigger: string): string =>
 		},
 	});
 
-/** A compaction summary whose content is `chars` characters long, led by the marker. */
 export const summary = (chars: number): string =>
 	JSON.stringify({
 		type: "user",
@@ -87,7 +77,6 @@ const put = async (
 	await write(path.join(root, project, name), `${lines.join("\n")}\n`);
 };
 
-/** Writes the two sessions, and a third without a compaction, under a new folder. */
 export const writeFixture = async (): Promise<string> => {
 	const root = await mkdtemp(path.join(os.tmpdir(), "compaction-cost-"));
 	await put(root, "proj-a", "one.jsonl", SESSION_ONE);

@@ -109,7 +109,6 @@ describe("runAll retry", () => {
 		...over,
 	});
 
-	/** Runners whose first fork fails with `why` and whose later forks are all valid. */
 	const flaky = (why: string): Runners => {
 		let calls = 0;
 		return {

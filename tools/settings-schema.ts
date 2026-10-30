@@ -1,29 +1,15 @@
-// The settings keys Claude Code reads, from the JSON Schemas that `clawdipedia` publishes for the
-// version, vendored so that the gate needs no network.
-//
-// A key is checked against these files and not against the program's bytes. A string search over the
-// 276 MB binary answers for `model` and for `agent` whether or not the program reads either as a
-// settings key, and it cannot tell a key a user may write from one only an administrator may.
-//
-//   bun tools/settings-schema.ts            print the version and the key count of each vendored copy
-//   bun tools/settings-schema.ts --fetch    download both schemas again
-//   bun tools/settings-schema.ts --upstream compare the vendored copies with the published ones
+// Checked against the schema, not the binary: a byte search cannot tell a user key from a managed one.
+// Usage: bun tools/settings-schema.ts [--fetch|--upstream]
 
 import { join } from "node:path";
 import { file as bunFile, write as bunWrite, CryptoHasher } from "bun";
 
-/** One published schema: where it lives upstream and where the repository keeps its copy. */
 export interface SchemaSource {
 	readonly url: string;
-	/** The vendored copy, relative to the repository root. */
 	readonly path: string;
 }
 
-/**
- * The two schemas the checks read. `settings` is the user's own `settings.json`, which is the file
- * `just setup` writes, and `managed` adds the keys an administrator alone can set, which claudetto
- * refuses but must still name correctly.
- */
+/** `managed` adds the keys only an administrator can set, which claudetto refuses but must name right. */
 export const SCHEMAS = {
 	settings: {
 		url: "https://clawdipedia.cc/schemas/claude-code-settings.json",
@@ -35,16 +21,12 @@ export const SCHEMAS = {
 	},
 } as const satisfies Readonly<Record<string, SchemaSource>>;
 
-/** Which schema a check reads: the user settings file or the managed one. */
 export type SchemaName = keyof typeof SCHEMAS;
 
 const ROOT = join(import.meta.dir, "..");
 
-/** A vendored schema, as the checks read it. */
 export interface SettingsSchema {
-	/** The title the document carries, which names the Claude Code version it was built for. */
 	readonly title: string;
-	/** The top-level property names, which are the settings keys Claude Code reads. */
 	readonly keys: readonly string[];
 	/** The keys the schema flags `x-managed-only`, which Claude Code ignores outside managed settings. */
 	readonly managedOnly: readonly string[];
@@ -79,13 +61,12 @@ const parse = (text: string, where: string): SettingsSchema => {
 	};
 };
 
-/** The vendored schema of `name`. A missing file throws, because a check that passes with no schema checks nothing. */
+/** A missing file throws, because a check that passes with no schema checks nothing. */
 export const schemaOf = async (name: SchemaName): Promise<SettingsSchema> => {
 	const source = SCHEMAS[name];
 	return parse(await bunFile(join(ROOT, source.path)).text(), source.path);
 };
 
-/** Every key either schema holds, which is what a name claudetto refuses is checked against. */
 export const everyKey = async (): Promise<readonly string[]> => {
 	const [settings, managed] = await Promise.all([
 		schemaOf("settings"),
@@ -94,7 +75,6 @@ export const everyKey = async (): Promise<readonly string[]> => {
 	return [...new Set([...settings.keys, ...managed.keys])];
 };
 
-/** The names of `names` that neither schema holds, in the order given. */
 export const keysMissing = async (
 	names: readonly string[],
 ): Promise<readonly string[]> => {

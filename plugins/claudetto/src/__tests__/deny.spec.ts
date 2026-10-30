@@ -13,10 +13,9 @@ import {
 	NEVER_DENY,
 } from "../deny.ts";
 
-/** The characters a definition costs the request: its own JSON plus the comma that joins it. */
+/** A definition costs its JSON plus the comma that joins it. */
 const inArray = (definition: number): number => definition + 1;
 
-/** The smallest definition of the baseline is `DeferredToolPlaceholder` at 204 characters. */
 const SMALLEST_DEFINITION = 204;
 
 const sumOf = (values: readonly number[]): number => {
@@ -39,7 +38,7 @@ describe("the reading behind each denied name", () => {
 	test("the three denied together fall by the sum of their definitions", () => {
 		const sum = sumOf(DENIED_TOOLS.map((entry) => inArray(entry.chars)));
 
-		expect(sum).toBe(5356 + 4632 + 2178);
+		expect(sum).toBe(5356 + 4887 + 2178);
 		expect(BASELINE_TOTAL - DENIED_TOGETHER_TOTAL).toBe(sum);
 		expect(BASELINE_TOOLS - DENIED_TOGETHER_TOOLS).toBe(sum);
 	});
@@ -55,10 +54,15 @@ describe("the names that must not be denied", () => {
 			const faults = denyFaults([...denyList(), entry.name]);
 
 			expect(faults).toHaveLength(1);
-			expect(faults[0]).toContain(entry.tokens.toLocaleString("en-US"));
-			expect(entry.chars).toBeGreaterThan(0);
+			expect(faults[0]).toBe(`${entry.name} must not be denied: ${entry.why}.`);
 		});
 	}
+
+	test("only the `Bash` deny lowers the request", () => {
+		const lowers = NEVER_DENY.filter((entry) => entry.chars < 0);
+
+		expect(lowers.map((entry) => entry.name)).toEqual(["Bash"]);
+	});
 
 	test("a deny of every faulty name gives one line each", () => {
 		expect(denyFaults(["ToolSearch", "Skill", "Bash"])).toHaveLength(3);

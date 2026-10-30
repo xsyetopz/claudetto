@@ -15,7 +15,6 @@ interface Config {
 	numStartups?: number;
 }
 
-/** A config shaped like the real one: another project, another top-level key, another flag. */
 const config = JSON.stringify({
 	numStartups: 412,
 	projects: { [OTHER]: { hasTrustDialogAccepted: true, lastCost: 0.42 } },

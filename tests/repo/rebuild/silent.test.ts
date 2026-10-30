@@ -1,8 +1,3 @@
-// The rebuilt observer sends nothing but the one request of a check. The rule is held by what it
-// reports for code passed in, and the last block runs it over the real plugin. The kept state move
-// of the dropped telemetry function, the reset of the two counters, has its own cases in
-// `plugins/claudetto-you-should-know/tests/answer.test.ts`.
-
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { silentFaults } from "../../../tools/rebuild/silent.ts";

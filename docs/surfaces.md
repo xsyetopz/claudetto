@@ -20,7 +20,7 @@ taken against the archived tree on Claude Code `2.1.311` with a probe built by h
 repository, so they are method and history, not a baseline: no claim of this change cites a number
 from above this line.
 
-Read on 2026-10-28 and read again on 2026-10-30, both on Claude Code `2.1.312` (`claude --version`),
+Read on 2026-10-28 and 2026-10-30 on Claude Code `2.1.312` and read again on 2026-10-30 on `2.1.314` (`claude --version`),
 with `just capture`, which is
 `tools/capture/run.ts` of this repository. The harness starts a fake Messages API on a free loopback
 port in its own process, runs `claude -p "hi"` once per arm, and scores the first request body. Each
@@ -35,7 +35,7 @@ request to the messages route and one to another route per arm, and the only hos
 
 | Arm | Settings | Total chars | `system` chars | `system` blocks | Tools | `tools` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `plain` | defaults, no file | 42,879 | 5,954 | 74, 62, 5,818 | 12 | 28,187 | 8,061 |
+| `plain` | defaults, no file | 46,105 | 5,954 | 74, 62, 5,818 | 12 | 29,512 | 9,984 |
 
 On 2026-10-28 a second row, the `plugin` arm with `--plugin-dir plugins/claudetto`, read equal to this
 one to the character, because the plugin was then one empty mod with no skill, no subagent, no
@@ -44,17 +44,19 @@ agents, an output style, a handoff block, and a skill, so the row is dropped and
 read under "The Shipped Combination" below. A tree that lands prompt text while the `plugin` arm
 stays equal to `plain` is a finding to dig into and not a pass.
 
-The `plain` row read 42,687 with a `system` of 5,764 on 2026-10-28 and reads 42,879 with 5,954 on
-2026-10-30, under the same `2.1.312`. "The Baseline Has Drifted" below is the record of that move.
+The `plain` row read 42,687 with a `system` of 5,764 on 2026-10-28, 42,879 with 5,954 on 2026-10-30
+under `2.1.312`, and reads 46,105 with 5,954 on `2.1.314`, where `tools` grew 28,187 to 29,512
+and `messages` 8,061 to 9,984 and `system` held. "The Baseline Has Drifted" below is the record of
+the first move, and "The Baseline Moved Again" the second.
 
 The 12 tool definitions of the baseline, each as the characters of its own JSON:
 
 | Tool | Chars |
 | --- | --- |
 | `Workflow` | 5,355 |
-| `Agent` | 4,850 |
-| `ScheduleWakeup` | 4,631 |
-| `Bash` | 3,041 |
+| `Agent` | 5,246 |
+| `ScheduleWakeup` | 4,886 |
+| `Bash` | 3,715 |
 | `ReportFindings` | 2,177 |
 | `Read` | 1,919 |
 | `Skill` | 1,803 |
@@ -80,7 +82,7 @@ beside each reading, so a drift shows up instead of passing silently. The 42,789
 under the macOS `TMPDIR`, which is 132 characters more than the same tree read under `/tmp`.
 
 Three readings of the same tree, taken together on 2026-10-28, which is the evidence for the
-paragraph above. The third row reads 42,879 now, for the engine's reason in "The Baseline Has
+paragraph above. The third row read 42,879 on `2.1.312` and reads 46,105 on `2.1.314`, for the engine's reason in "The Baseline Has
 Drifted", and the comparison among the three holds:
 
 | Working folder | Path chars | Total chars | `system[2]` | `messages` chars |
@@ -98,23 +100,23 @@ change cites a figure from above this section.
 ## The Deny List of the New Tree
 
 Read on 2026-10-28 and again on 2026-10-30 with `just capture --arm plain --deny <names>` on Claude
-Code `2.1.312`, each row one run against the baseline above, with the same harness, the same 34-character working folder, and
+Code `2.1.312` and `2.1.314`, each row one run against the baseline above, with the same harness, the same 34-character working folder, and
 no other settings key. The harness writes the settings file itself from `--deny`, so a row cannot
 drift from a scratch file on disk.
 
 | Deny of the run | Total chars | Change | Tools | `tools` chars | `system` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- | --- |
-| nothing, the baseline | 42,879 | | 12 | 28,187 | 5,954 | 8,061 |
-| `Workflow` | 37,523 | −5,356 | 11 | 22,831 | 5,954 | 8,061 |
-| `ScheduleWakeup` | 38,247 | −4,632 | 11 | 23,555 | 5,954 | 8,061 |
-| `ReportFindings` | 40,701 | −2,178 | 11 | 26,009 | 5,954 | 8,061 |
-| all three | 30,713 | −12,166 | 9 | 16,021 | 5,954 | 8,061 |
-| `DesignSync` | 42,867 | −12 | 12 | 28,187 | 5,954 | 8,049 |
-| `Artifact`, `RemoteTrigger`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `mcp__computer-use` | 42,879 | 0 | 12 | 28,187 | 5,954 | 8,061 |
+| nothing, the baseline | 46,105 | | 12 | 29,512 | 5,954 | 9,984 |
+| `Workflow` | 40,749 | −5,356 | 11 | 24,156 | 5,954 | 9,984 |
+| `ScheduleWakeup` | 41,218 | −4,887 | 11 | 24,625 | 5,954 | 9,984 |
+| `ReportFindings` | 43,927 | −2,178 | 11 | 27,334 | 5,954 | 9,984 |
+| all three | 33,684 | −12,421 | 9 | 17,091 | 5,954 | 9,984 |
+| `DesignSync` | 46,093 | −12 | 12 | 29,512 | 5,954 | 9,972 |
+| `Artifact`, `RemoteTrigger`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `mcp__computer-use` | 46,105 | 0 | 12 | 29,512 | 5,954 | 9,984 |
 
 So the deny list claudetto writes is `Workflow`, `ScheduleWakeup`, and `ReportFindings`, which is
-12,166 characters of the first request for three tools this project does not use. The three rows are each the
-tool's own definition plus the comma that joined it (5,355 + 1, 4,631 + 1, 2,177 + 1), `system` and
+12,421 characters of the first request for three tools this project does not use. The three rows are each the
+tool's own definition plus the comma that joined it (5,355 + 1, 4,886 + 1, 2,177 + 1), `system` and
 `messages` do not move in any of them, and the combined row equals the sum, so nothing grew in the
 place of what left. `plugins/claudetto/src/deny.ts` holds these numbers and
 `plugins/claudetto/src/__tests__/deny.spec.ts` checks the arithmetic of every row, so a name without a reading
@@ -128,7 +130,7 @@ it arms the autonomous `/loop` and the session crons that `session_crons` of the
 reports. It is denied anyway, because the archived snippet also set `CLAUDE_CODE_DISABLE_CRON=1`, so
 the two agree, and because claudetto's own goal loop does not call it: a search of the installed
 `claudetto` finds the name only in its own deny list. A user who wants `/loop` drops
-this one name and pays 4,632 characters a session for it.
+this one name and pays 4,887 characters a session for it.
 
 Two names of the archived snippet are dropped here, each on its own reading. `DesignSync` is a
 deferred tool, so denying it removes no definition; the 12 characters it saves are its name in the
@@ -138,16 +140,20 @@ stay out until a reading on the real login shows them. That reading is still ope
 limit of this section: the key is fake, so a surface a login gates may be absent because the login
 is absent.
 
-The three names that must never be denied were read again here rather than taken from the archived
-page, because that page read tokens on `2.1.311`. In characters on `2.1.312`, read on 2026-10-30
-against the 42,879 baseline, denying `ToolSearch` takes the request to 74,620 because all 20 deferred
-tools load (`tools` 60,290), denying `Skill` takes it to 51,949 because the `Workflow` definition
-grows from 5,355 to 22,310 characters (`tools` 43,338, `messages` 2,148), and denying `Bash` takes it
-to 43,785 because `Grep` at 3,224 and `Glob` at 731 arrive in its place (`tools` 29,102, 13 tools).
-Every sign agrees with the token readings the spec cites (+15,898, +5,599, +384), and `denyFaults` of
-`plugins/claudetto/src/deny.ts` fails a list that holds any of the three and names both figures.
+The three names that were read as never to be denied were read again here rather than taken from the
+archived page, because that page read tokens on `2.1.311`. In characters on `2.1.314`, read on
+2026-10-30 against the 46,105 baseline, denying `ToolSearch` takes the request to 83,027 because 12
+deferred tools load (`tools` 66,830, 23 definitions), and denying `Skill` takes it to 54,825 because the
+`Workflow` definition grows from 5,355 to 22,310 characters (`tools` 44,663, `messages` 3,721). Denying
+`Bash` no longer raises the request: it takes it to 45,698, 407 characters under the baseline, because
+`Grep` at 3,224 and `Glob` at 731 arrive in place of a `Bash` of 3,715 (`tools` 29,753, 13 tools) and
+`messages` falls 9,984 to 9,336. The token readings the spec cites (+15,898, +5,599, +384) were not
+taken again, because `just capture` counts characters, and the `+384` of `Bash` no longer agrees in
+sign with the character reading. `denyFaults` of `plugins/claudetto/src/deny.ts` still fails a list
+that holds any of the three and names both figures, and the `Bash` message now prints a negative
+growth, which is a claim the reading no longer supports.
 
-No cost reading exists for this cut yet: it is 12,166 characters off every request of a session, and
+No cost reading exists for this cut yet: it is 12,421 characters off every request of a session, and
 whether that lowers billed cost per finished task is the gate of the cost readings below.
 
 ## The Tool Texts of the New Tree
@@ -190,19 +196,21 @@ The effect on the request, read with `just capture --deny Workflow,ScheduleWakeu
 
 | Arm | Total chars | Tools | `tools` chars | `system` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- |
-| `plain` | 30,713 | 9 | 16,021 | 5,954 | 8,061 |
-| `plugin` | 28,817 | 9 | 12,850 | 5,954 | 9,336 |
+| `plain` | 33,684 | 9 | 17,091 | 5,954 | 9,984 |
+| `plugin` | 31,018 | 9 | 12,919 | 5,954 | 11,490 |
 
-So the eight texts take 3,171 characters off the `tools` array, and the `plugin` arm's per-tool
-descriptions read 973, 1,090, 328, 695, 538, 1,023, 727, and 196, which are our texts to the
-character. The fall of 3,171 is 31 more than the 3,140 of the table above, because the figures above
-are string lengths and the request carries JSON, where a newline or a quotation mark costs two
-characters: the stock texts escape more than ours. That is also the first reading that proves a
+So the eight texts take 4,172 characters off the `tools` array on `2.1.314`, and the `plugin` arm's
+per-tool descriptions read 973, 1,090, 328, 695, 538, 1,023, 727, and 196, which are our texts to the
+character. The fall of 4,172 is 1,032 more than the 3,140 of the table above, and was 31 more on
+`2.1.312`. The table holds the smaller stock reading of each tool, and the capture reads `Agent` at
+3,227 and `Bash` at 1,934 here, the larger ones, which adds 1,070 to the string lengths: 4,128 by
+those readings, and the 44 left are the characters that JSON escapes in the stock texts more than in
+ours. The stock readings of the table are of `2.1.312` and were not taken again. That is also the first reading that proves a
 `tool.describe` hook changes the request body and not only the screen, which `docs/gates.md` had as
 code-read only.
 
 This run was taken again on 2026-10-30 for the three new texts, and the `plain` arm moved too, 30,521
-to 30,713, with its `system` block 5,764 to 5,954. Nothing of ours touches either figure: the `plain`
+to 30,713 under `2.1.312`, with its `system` block 5,764 to 5,954, and to 33,684 on `2.1.314`. Nothing of ours touches either figure: the `plain`
 arm loads no plugin, and `system` there is the engine's own default body. So the +192 is the installed
 Claude Code changing under the recording, not an effect of this change, and it is the same +192 that
 separates the `BASELINE_TOTAL` of `plugins/claudetto/src/deny.ts:5` from a default capture taken the
@@ -213,7 +221,7 @@ nothing else: it sets no `agent` and no `outputStyle`, so `system` holds the def
 at 5,954. `messages` is not equal across the arms and must not be read as part of the tool-text
 saving. It carries two pieces the plugin adds whatever the tool texts do, the handoff context block of
 `plugins/claudetto/src/handoff.ts` and the agent listing for `Artemis` and `Athena`, which is why the
-`plugin` total falls by less than its `tools` array does. "Shipped Cuts" below prices those two.
+`plugin` total falls by less than its `tools` array does: 11,490 against 9,984 in `messages`. "Shipped Cuts" below prices those two.
 
 Two rules hold this in place, both in `plugins/claudetto/src/tools/tools.ts` and both checked by
 `plugins/claudetto/src/tools/__tests__/tools.spec.ts`. `deadTexts` names any text that is not shorter than its stock
@@ -248,11 +256,24 @@ dates: the subtraction cancelled it. `just check` passed throughout, because the
 `BASELINE_TOTAL - shippedChars() === SHIPPED_TOTAL` tests arithmetic among recorded constants and
 reads no capture. `just inventory` is the check that reads one, which is how it was found.
 
-The repair re-read the totals: the baseline is now 42,879 and the deny of
-all three 30,713, both as the tables above carry them. The drift was not absorbed into the `tool
+The repair re-read the totals: the baseline became 42,879 and the deny of
+all three 30,713 (46,105 and 33,684 on `2.1.314`, as the tables above carry them). The drift was not absorbed into the `tool
 texts` residual, which would have made that row claim 192 characters our texts never cut. It did
 reach one row, for the same engine reason: `main agent body` moved from 67 to 259 under "Shipped Cuts
 and Cost Readings" below, because the default body it replaces grew while the file did not.
+
+### The Baseline Moved Again
+
+Found on 2026-10-30 when the installed Claude Code went from `2.1.312` to `2.1.314` and `just inventory`
+failed: the `baseline` row read 46,105 against 42,879 recorded, the `deny list` row 33,684 against
+30,713, and the `shipped` row 31,356 against 31,959. This time the move is in `tools` and `messages`
+and not in `system`, which held at 5,954: `tools` 28,187 to 29,512 (the `Agent` definition 4,850 to
+5,246 and `Bash` 3,041 to 3,715), and `messages` 8,061 to 9,984. The cause is the engine and not this
+tree, because the `plain` arm loads no plugin. Every row of `plugins/claudetto/src/deny.ts`,
+`builtins.ts`, and `cuts.ts` was read again with `just capture` on `2.1.314`, and the repair is the
+tables of this page. It reached `ScheduleWakeup` (4,631 to 4,886 characters), `agent listing` (480
+to 662), `dedupe skill` (229 to 160), and the `tool texts` residual (3,144 to 7,154), which
+"Shipped Cuts and Cost Readings" explains.
 
 ## The Two Switches
 
@@ -270,39 +291,43 @@ provider was reached and no model call was billed. First the `plain` arm, which 
 
 | Settings of the run | Total | `system` | `tools` (count) | `messages` |
 | --- | --- | --- | --- | --- |
-| defaults | 42,879 | 5,954 | 28,187 (12) | 8,061 |
-| deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` | 30,713 | 5,954 | 16,021 (9) | 8,061 |
-| `disableBundledSkills` alone | 54,258 | 5,954 | 45,142 (12) | 2,485 |
-| `disableBundledSkills` with the deny of all three | 25,137 | 5,954 | 16,021 (9) | 2,485 |
+| defaults | 46,105 | 5,954 | 29,512 (12) | 9,984 |
+| deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` | 33,684 | 5,954 | 17,091 (9) | 9,984 |
+| `disableBundledSkills` alone | 57,134 | 5,954 | 46,467 (12) | 4,058 |
+| `disableBundledSkills` with the deny of all three | 27,758 | 5,954 | 17,091 (9) | 4,058 |
 
 Then the `plugin` arm of the shipped tree, with the `dedupe` skill in place, one switch at a time:
 
 | Switches | Total | `system` | `tools` (count) | `messages` |
 | --- | --- | --- | --- | --- |
-| neither | 30,291 | 5,708 | 12,850 (9) | 11,029 |
-| the twelve plugins off only | 30,023 | 5,708 | 12,850 (9) | 10,761 |
-| both | 24,378 | 5,708 | 12,850 (9) | 5,116 |
-| both, then the `dedupe` skill | 24,607 | 5,708 | 12,850 (9) | 5,345 |
+| neither | 36,946 | 5,708 | 13,682 (9) | 16,874 |
+| the twelve plugins off only | 36,678 | 5,708 | 13,682 (9) | 16,606 |
+| the bundled-skill switch only | 31,624 | 5,708 | 13,682 (9) | 11,552 |
+| both | 31,356 | 5,708 | 13,682 (9) | 11,284 |
 
 What the rows settle:
 
-- `disableBundledSkills` alone is a loss of 11,379 characters, 42,879 to 54,258. `Workflow` inlines the
-  workflow guidance that its listing no longer carries, so `tools` grows 28,187 to 45,142 against a
-  fall of 5,576 in `messages`. A lever that looks like a cut can be a loss on its own.
-- With `Workflow` denied the growth has nowhere to land: `tools` is byte-identical at 16,021 in the
-  third and fourth rows, and the whole 5,576 of `messages` is kept.
-- In the shipped arm the two switches together take 5,913, every character of it out of `messages`,
-  with `tools` at 12,850 and `system` at 5,708 in all three rows. The plugin block alone takes 268 but
-  337 beside the other switch, because `cc-plugin-claude-platform` offers its own `/claude-api` only
-  while no bundled skill holds that name (`clawdipedia` route
-  `extend/skills-and-commands/bundled-skills`).
+- `disableBundledSkills` alone is a loss of 11,029 characters, 46,105 to 57,134. `Workflow` inlines the
+  workflow guidance that its listing no longer carries, so `tools` grows 29,512 to 46,467 against a
+  fall of 5,926 in `messages`. A lever that looks like a cut can be a loss on its own.
+- With `Workflow` denied the growth has nowhere to land: `tools` is byte-identical at 17,091 in the
+  third and fourth rows, and the whole 5,926 of `messages` is kept.
+- In the shipped arm the two switches together take 5,590, every character of it out of `messages`,
+  with `tools` at 13,682 and `system` at 5,708 in all four rows. The plugin block takes 268 alone and
+  268 beside the other switch, and the bundled-skill switch 5,322. On `2.1.312` the block took 337
+  beside the other switch, which was explained by `cc-plugin-claude-platform` offering its own
+  `/claude-api` while no bundled skill held that name; that explanation is not supported by the
+  `2.1.314` reading and was not tested again.
 - Plugin skills survive the switch, which is the capability question. The installed claudetto of
-  2026-10-30, which ships ten skills, was run against the fake API with and without the key.
-  `claudetto:dedupe` and `claudetto:find-docs`, the two of the ten the model may call, are listed in
-  both arms while every bundled name left, and the request fell 38,707 to 33,131, the same 5,576.
-- The `dedupe` skill costs 229 characters of request, 24,378 against 24,607 read minutes apart.
-  Counting its parts predicts 171: 6 for the name, 151 for the `description:` line, and 14 of markup.
-  The measured figure is 58 higher, and the measurement is what this page states.
+  2026-10-30, which ships ten skills, was run on `2.1.312` against the fake API with and without the
+  key. `claudetto:dedupe` and `claudetto:find-docs`, the two of the ten the model may call, are listed in
+  both arms while every bundled name left, and the request fell 38,707 to 33,131, the same 5,576 that
+  the other arms read then. That run was not taken again; the shipped arm of `2.1.314` lists
+  `claudetto:dedupe` and `claudetto:setup` with the key on.
+- The `dedupe` skill costs 160 characters of request, 31,196 with `skills/dedupe/` moved aside against
+  31,356 with it in place. Counting its parts predicts 171: 6 for the name, 151 for the
+  `description:` line, and 14 of markup. The measured figure is 11 lower, and the measurement is what
+  this page states; it was 229 on `2.1.312`, 58 above the prediction.
 
 ## Compaction Keys
 
@@ -330,27 +355,28 @@ per version and not forever.
 
 `just capture --shipped --tools 12` writes the settings of the new tree as one file, the deny list
 beside the three written keys above and the two switches of "The Two Switches", and reads the first
-request of a session with them. Read on 2026-10-30:
+request of a session with them. Read on 2026-10-30 on `2.1.314`:
 
 | Arm | Total | Tools | System | Messages |
 | --- | --- | --- | --- | --- |
-| `plugin` | 24,607 | 12,850 (9) | 5,708 | 5,345 |
+| `plugin` | 31,356 | 13,682 (9) | 5,708 | 11,284 |
 
-The three keys move the first request by 0 characters, and `tools` is what shows it: 12,850 here is
-character-identical to the 12,850 of the tool-text reading above, so nothing the three keys do touches
-a tool description. The two columns that moved are not theirs. `system` is 5,708 here against the
+The three keys move the first request by 0 characters, read by removing `autoCompactWindow` and
+`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` together and `idleCompaction` alone, each of which reads 31,356
+again. The `tools` array of this arm, 13,682, is the 12,919 of the tool-text reading plus the 832 of
+the `sandbox` block, less the 69 that the `env` keys of `tierSnippet` take out, so no tool description
+moves because of the compaction keys. The two columns that moved are not theirs. `system` is 5,708 here against the
 5,954 of the `plain` arm because these settings also carry `agent: claudetto:main`, which puts the
-body of `agents/main.md` where the default body stood, and `messages` is 5,345 here against the 9,336
-of the tool-text reading above because they carry `outputStyle` and the `dedupe` skill and the two
-switches take 5,913 out. Each of those has its own row under "Shipped Cuts" below. That is the point
+body of `agents/main.md` where the default body stood, and `messages` is 11,284 here against the 11,490
+of the tool-text reading above because they carry `outputStyle`, the `sandbox` block, and the `dedupe`
+skill, and the two switches take 5,590 out. Each of those has its own row under "Shipped Cuts" below. That is the point
 of reading the keys in the combination rather than alone: they are bill levers and not request levers,
-and adding them to the snippet costs the prompt nothing. The `plugin` arm is 18,272 characters under
-the 42,879 baseline of the `plain` arm, which is the sum of the inventory below.
+and adding them to the snippet costs the prompt nothing. The `plugin` arm was 14,749 characters under
+the 46,105 baseline of the `plain` arm at this reading, and is 14,066 under it, the sum of the inventory below, since the `docs` skill shipped.
 This table is the whole shipped combination: `agents/main.md` under the `agent` key, the output style,
-the handoff context block, the two agent files, and the skill are all in it, which is why `system` and
-`messages` moved. The arm read 30,462 on 2026-10-29 and 30,450 on the morning of 2026-10-30, a fall of
-12 characters that sat entirely in `tools`, 13,021 to 13,009. The three tool texts then took it to
-30,291, with `tools` at 12,850, the two switches to 24,378, and the `dedupe` skill to 24,607. The
+the handoff context block, the agent files, and the skills are all in it, which is why `system` and
+`messages` moved. The arm read 30,462 on 2026-10-29 and 30,450 on the morning of 2026-10-30, and 31,959 on `2.1.312`
+at the end of that day, and read 31,356 on `2.1.314` with two agent files, 31,968 with four, and reads 32,039 with the `docs` skill. The
 section below on shipped cuts holds the reading per piece, and `just inventory` is what re-reads these
 three totals against the figures the tree records.
 
@@ -453,51 +479,65 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-42,879 baseline less every cut in it has to equal the 24,607 the shipped arm reads, so a cut that
+46,105 baseline less every cut in it has to equal the 32,039 the shipped arm reads, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
-is the check that re-reads each total from a capture, and it is the one that found the 12 characters
-and then the 192 characters of drift above.
+is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
+the 192 characters, and then the 3,226 of drift above.
 
 | Shipped cut | Characters off the first request | Cost reading |
 | --- | --- | --- |
-| Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,166 | None exists yet |
-| The eight upfront tool texts (`tool texts`) | 3,144 | None exists yet |
-| `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,913 | None exists yet. Plugin skills survive it, per "The Two Switches" |
-| The `dedupe` skill | −229 | None needed. It is the one skill the tree ships, and the model may call it |
+| Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
+| The residual of the eight upfront tool texts and the pieces no row names (`tool texts`) | 7,332 | None exists yet |
+| `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
+| The `dedupe` skill | −155 | None needed. The model may call it |
+| The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | 259 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | 528 | None exists yet. A placebo run would price the prompt text |
 | The plugin's own text in the third system block (`plugin system text`) | −38 | None needed. It is the host's, not ours |
-| The agent listing of `Artemis` and `Athena` | −480 | None needed. It is a listing the harness builds from each file's `description` and tools |
-| The handoff context block of `src/handoff.ts` | −770 | None exists yet. A placebo run would price the prompt text |
+| The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −1,045 | None needed. It is a listing the harness builds from each file's `description` and tools |
+| The handoff context block of `src/blocks/handoff/handoff.ts` | −748 | None exists yet. A placebo run would price the prompt text |
 | `output-styles/Concise.md` under the `outputStyle` key | −1,693 | None exists yet. A placebo run would price the prompt text |
+| The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
+| The `sandbox` block | −7,254 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
+| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
 
-The rows sum to 18,272, which is 42,879 less the 24,607 of the shipped arm. A negative row is a piece
+The rows sum to 14,066, which is 46,105 less the 32,039 of the shipped arm. A negative row is a piece
 the tree adds.
 
-Every figure above is a whole-request reading of one capture set of 2026-10-30, so the rows add up and
-each is the difference from the full arm rather than from the row before it: the arm reads 24,607 with
-everything in place, 24,127 with `Artemis.md` and `Athena.md` moved aside, 22,914 with `output-styles/`
-moved aside, 22,434 with both of those moved aside, and 24,866 with `agents/main.md` moved aside. The
-additivity is read and not assumed, since 480 plus 1,693 is the 2,173 that separates the full arm from
-the both-aside arm. Three of these rows moved when `just inventory` was first run, and the page section
-above on the shipped combination says why.
+Every figure above is a whole-request reading of one capture set of 2026-10-30 on `2.1.314`, so the
+rows add up and each is the difference from the full arm rather than from the row before it: the arm
+reads 31,356 with everything in place, 30,694 with `Artemis.md` and `Athena.md` moved aside, 29,663
+with `output-styles/` moved aside, 29,001 with both of those moved aside, 31,615 with `agents/main.md`
+moved aside, 31,308 with `commands/setup.md` moved aside, 31,196 with `skills/dedupe/` moved aside, and
+24,102 without the `sandbox` block. The additivity is read and not assumed, since 662 plus 1,693 is the
+2,355 that separates the full arm from the both-aside arm. Two of these rows moved when `just inventory`
+was run on `2.1.314`, `agent listing` and `dedupe skill`, and the section above on the baseline says
+why. Adding `Hephaestus` and `Hermes` later that day moved the arm to 31,968. It reads 31,475 with the
+two files moved aside, so their listing costs 493, and the other 119 are the longer roster of the
+`Agent` text, which falls in the `tool texts` residual. Adding the `docs` skill moved the arm to 32,039,
+so its listing line costs 71.
 
 The tool-text row is the one figure here that no isolating capture reaches, because hiding our tool
 texts means hiding the plugin itself, so it is the residual of the shipped reading once every other
-piece is measured. The direct reading of the `tools` array in the isolation run above, 16,021 to
-12,850, puts the same cut at 3,171, so the residual carries 27 characters the direct reading does not.
-Whether that 27 is a term of its own or a coincidence of two readings these captures do not settle, so
-the row is named as the plug and not as a measurement. It was once also the figure that separated the
-main agent body's raw characters from its wire characters; that pair has moved since and no longer
-matches, so the two are not one term. The instrument itself is deterministic rather than noisy: three
-consecutive readings of the shipped arm in the morning of 2026-10-30, before the tool texts, the
-switches, and the skill, gave 30,450 with `system`, `tools`, and `messages` identical at 5,708,
-13,009, and 11,029, and the plain and deny arms reproduced 42,687 and 30,521 to the character. So the
-12 characters between the two dates were a change of the tree and not a spread of the instrument, and
-`just inventory` still allows 12 characters of slack per row, which is small against the 1,382 of
-drift it was built to catch.
+piece is measured, and it is a plug and not a measurement. On `2.1.314` it was 7,154 and no longer
+the tool texts alone, and it is 7,035 since the roster grew. The split below is of the 7,154. The direct reading of the `tools` array puts the tool texts at 4,241, 17,091 in
+the deny arm against 12,850 in the shipped arm without the `sandbox` block, which was 3,171 on
+`2.1.312`. The other 2,913 are request text that no row of the table names: 646 in `messages` that the
+keys of `tierSnippet` outside the table, such as `env` and `enableWorkflows`, cut once the deny list is
+in place; 570 that `permissions.deny` cuts beyond the three names, 558 for the six `Agent(...)` rules
+and 12 for `DesignSync`; and 1,697 not separated, because the two switches read 7,675 on the arm with
+no `sandbox` block and 5,590 on the shipped one, so the pieces interact and a difference from the full
+arm does not price them alone. The agreement of 27 characters between the direct reading and the
+residual on `2.1.312` was a coincidence of two readings. A row for each named piece needs a row in
+`tests/claudetto/cuts.test.ts`, which lists the rows by name. The instrument itself is deterministic
+rather than noisy: three consecutive readings of the shipped arm in the morning of 2026-10-30, before
+the tool texts, the switches, and the skill, gave 30,450 with `system`, `tools`, and `messages`
+identical at 5,708, 13,009, and 11,029, and the plain and deny arms reproduced 42,687 and 30,521 to
+the character. So the 12 characters between the two dates were a change of the tree and not a spread of
+the instrument, and `just inventory` still allows 12 characters of slack per row, which is small
+against the 1,382 of drift it was built to catch.
 
 The body replaces the default body the plugin arm sends, so 5,572 characters stand where 5,856 stand,
 and the request falls 259, not the 284 that the lengths alone give, because the body travels as a JSON
@@ -506,18 +546,19 @@ string and ours escapes characters the default text does not. The row was 67 aga
 so the same file replaces 284 raw characters instead of 94 and earns 259 on the wire instead of 67.
 The 5,856 is the plugin's default and the 5,818 of the `plain` arm is the host's, and the 38 between
 them is the row above for the plugin's own system text. The agent listing is a cost rather than a free row:
-`plugins/claudetto/src/register.ts` refuses the `agent.offer` for `claudetto:main`, a type no session
-delegates to, but `Artemis` and `Athena` are delegation targets, so the harness lists both with their
-descriptions and their tools, which reads 480 characters. That row was 0 while `main` was the only
+`plugins/claudetto/src/blocks/agent-offer/block.ts` refuses the `agent.offer` for `claudetto:main`, a type no session
+delegates to, but `Artemis`, `Athena`, `Hephaestus`, and `Hermes` are delegation targets, so the harness lists
+all four with their descriptions and their tools, which reads 1,155 characters: 662 for the first two and 493 for
+the other two. That row was 480 on `2.1.312` and 0 while `main` was the only
 agent file in the tree. `docs/prompt/footprint.md` holds the readings and the `agent.offer` lever.
 
 The style row is a cost and not a cut: the file's body of 1,526 characters enters `messages` under a
-header, and the harness appends a reminder on each user message. Moving the folder aside reads 22,914
-against 24,607, so the three together cost 1,693. The same pair read 1,705 on 2026-10-29, when the arm
+header, and the harness appends a reminder on each user message. Moving the folder aside reads 29,663
+against 31,356, so the three together cost 1,693. The same pair read 1,705 on 2026-10-29, when the arm
 stood 12 higher in `tools`, which is the fall of 12 the section above accounts for.
 
-One of the eleven shipped rows is priced, and it is the one that moves no request text. The nine that
-move text come to 18,272 characters off the baseline, and they are unpriced: a shorter request and
+One of the fourteen shipped rows is priced, and it is the one that moves no request text. The eleven
+that move text come to 14,137 characters off the baseline, and they are unpriced: a shorter request and
 not a saving until a task-set run prices them. The deny list is also
 a capability cut, which the section on the deny list states per name, and a tool description is behavior, so
 for both of them the next evidence is a finished-task run and not a character count.
@@ -692,7 +733,7 @@ The page warns that its own system prompt line "moved between 2,277 and 2,427 ac
 
 The `Skill` row is the corroboration that matters. The page reports `Workflow` growing from `5,313` to `22,089` characters when `Skill` goes. Our own probe measured `Workflow` at `5,355` characters in a plain run and `22,310` with `disableBundledSkills: true`. Two independent captures, the same swell, a gap of under one percent. So the mechanism is settled and not a quirk of our harness: when no `Skill` tool can load `workflow-authoring`, the program moves that guidance into the `Workflow` tool text.
 
-Three penalties the page measures and our probe never tested. Removing `ToolSearch` costs `+15,898` tokens, because every deferred tool then loads. Removing `Skill` costs `+5,599`. Removing `Bash` costs `+384`, because the program substitutes `Glob` and `Grep`. So three plausible trims are losses, and none of the three goes in a deny list.
+Three penalties the page measures and our probe never tested. Removing `ToolSearch` costs `+15,898` tokens, because every deferred tool then loads. Removing `Skill` costs `+5,599`. Removing `Bash` costs `+384`, because the program substitutes `Glob` and `Grep`. So three plausible trims are losses, and none of the three goes in a deny list. On `2.1.314` our own capture reads `Bash` the other way, 407 characters under the baseline ("The Baseline Moved Again" above). `Bash` stays on `NEVER_DENY` because the deny removes the shell, and that saving does not pay for the capability.
 
 The deferred pool is `13,425` tokens that the default session does not pay. That is the single largest saving in the program, and `DeferredToolPlaceholder` with `ToolSearch` is what holds it open.
 

@@ -1,7 +1,3 @@
-// The `ci` workflow once ran `bun tools/check.ts`, a deleted file, so every push failed before any
-// step of the gate ran. These cases read each place that spells a `bun <file>` command and check
-// that the file is on disk.
-
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { file as bunFile, Glob } from "bun";
@@ -9,29 +5,22 @@ import { MIN_CLAUDE_CODE_VERSION } from "../../tools/limits.ts";
 
 const ROOT = join(import.meta.dir, "..", "..");
 
-/**
- * A `bun <file>` command, which is Bun running a file of this repository.
- * `bun run`, `bun add`, `bun install`, `bun check`, `bun test`, and `bunx` name no file.
- */
+/** A `bun <file>` command: `bun run`, `add`, `install`, `check`, `test`, and `bunx` name no file. */
 const BUN_FILE =
 	/\bbun\s+(?!run\b|add\b|install\b|check\b|test\b|-)([^\s"']+)/g;
 
-/** The Claude Code package with the version a workflow installs. */
 const INSTALLED = /@anthropic-ai\/claude-code@([\d.]+)/g;
 
-/** An action a workflow step uses, with its `@` reference. */
 const USES = /uses:\s*(\S+)/g;
 
 /** A reference pinned to a commit, which is 40 hexadecimal digits. */
 const PINNED = /@[\da-f]{40}$/;
 
-/** The files that `text` runs through Bun. */
 const filesRun = (text: string): string[] =>
 	[...text.matchAll(BUN_FILE)]
 		.map((match) => match[1] ?? "")
 		.filter((token) => token.includes("/"));
 
-/** Each place of the repository that spells a command of the gate. */
 const sourcesOf = async (): Promise<{ file: string; text: string }[]> => {
 	const paths = ["justfile", "package.json"];
 	for await (const path of new Glob(".github/workflows/*.yml").scan(ROOT)) {

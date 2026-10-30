@@ -1,6 +1,3 @@
-// The flag parse of `main.ts`, apart from it so that a test reaches it without running the tool.
-
-/** The value after `--name`, or none when the flag is absent. */
 export const argOf = (
 	args: readonly string[],
 	name: string,
@@ -9,7 +6,6 @@ export const argOf = (
 	return at === -1 ? undefined : args[at + 1];
 };
 
-/** Parses a comma-separated list, drops anything that is not a finite number above zero, and returns `fallback` when nothing is left. */
 export const numbersOf = (
 	text: string | undefined,
 	fallback: number[],

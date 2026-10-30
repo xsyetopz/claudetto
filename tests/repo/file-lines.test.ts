@@ -1,7 +1,3 @@
-// The cases plant files of a known length under a
-// temporary root, so the rule is checked by what it reports and not by the files this repository
-// happens to hold. The last case is the gate itself over the new tree.
-
 import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -9,11 +5,9 @@ import { join } from "node:path";
 import { lineCount, longFilesIn } from "../../tools/file-lines.ts";
 import { MAX_SOURCE_LINES, MAX_TEST_LINES } from "../../tools/limits.ts";
 
-/** A file of `lines` lines, each one a comment, ending with a newline. */
 const body = (lines: number): string =>
 	`${Array.from({ length: lines }, (_, i) => `// line ${i + 1}`).join("\n")}\n`;
 
-/** A temporary root holding each `[path, lines]` pair as a file of that many lines. */
 const rootWith = async (files: [string, number][]): Promise<string> => {
 	const root = await mkdtemp(join(tmpdir(), "file-lines-"));
 	const dirs = new Set(files.map(([path]) => join(root, path, "..")));

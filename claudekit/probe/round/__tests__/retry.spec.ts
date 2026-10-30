@@ -3,8 +3,6 @@ import { worthRetry } from "../retry.ts";
 
 describe("worthRetry", () => {
 	test("a stream that stopped before its result event is run again", () => {
-		// The errors page of the Claude API warns that a streamed response can fail after a 200, which
-		// reaches this harness as a step that produced no `result` event rather than as a status.
 		expect(worthRetry("step 1: no result event")).toBe(true);
 	});
 
@@ -17,7 +15,6 @@ describe("worthRetry", () => {
 	});
 
 	test("a fork that used its turn budget is not run again", () => {
-		// Settled by its own run: the same fixture would spend a whole fork to reach the same place.
 		expect(worthRetry("step 1: is_error (error_max_turns)")).toBe(false);
 	});
 
@@ -34,8 +31,6 @@ describe("worthRetry", () => {
 	});
 
 	test("a step that exited cleanly but reported nothing is told from a word containing exit", () => {
-		// The pattern carries its trailing space, so a message about something that "exited" is not a
-		// non-zero exit. A harness fault must not read as the network.
 		expect(worthRetry("threw: git exited with a bad tag")).toBe(false);
 	});
 });

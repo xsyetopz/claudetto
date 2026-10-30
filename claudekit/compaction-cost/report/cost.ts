@@ -1,14 +1,11 @@
-// Printing only: the tables about the bill. Each section prints one table of `main.ts`,
-// so the numbers can be copied straight into the two evidence pages.
-
+import { money } from "../../price/cost.ts";
 import type { Derived, Step } from "../bill/derive.ts";
 import { type Cell, type Kept, keptOf } from "../bill/fit.ts";
 import type { Charged, Row } from "../bill/replay.ts";
-import { type Mix, money, OPUS } from "../price.ts";
+import { type Mix, OPUS } from "../price.ts";
 import type { BoundaryStats } from "../transcripts/stats.ts";
 import { head, line, pad, pct, usd, whole } from "./format.ts";
 
-/** Prints the size of the loaded sample: sessions, requests, and compactions. */
 export const sample = (
 	sessions: number,
 	requests: number,
@@ -19,7 +16,6 @@ export const sample = (
 	);
 };
 
-/** Prints the mean pre and post context in tokens, the kept share in percent with its range, and the mean duration in seconds of the compactions that ran. */
 export const compactions = (stats: BoundaryStats): void => {
 	head("The compactions that ran");
 	line(["trigger auto", `${stats.auto} of ${stats.count}`]);
@@ -32,7 +28,6 @@ export const compactions = (stats: BoundaryStats): void => {
 	line(["mean duration", `${stats.seconds.toFixed(1)} s`]);
 };
 
-/** Prints the measured dollars of each billed line with its percent of the total, and the dollars of one turn. */
 export const costMix = (mix: Mix): void => {
 	head("The measured cost mix, nothing modelled");
 	const lines: readonly (readonly [string, number, boolean])[] = [
@@ -52,7 +47,6 @@ export const costMix = (mix: Mix): void => {
 	line([pad("per turn", 12), pad(`$${mix.perTurn.toFixed(4)}`, 9), pad("", 6)]);
 };
 
-/** Prints one row per replayed threshold, in tokens and dollars, with the percent change of `billed` against the row at `base`, or the last row when `base` is not swept. */
 export const replayTable = (rows: readonly Row[], base: number): void => {
 	const billedBase =
 		rows.find((row) => row.threshold === base)?.billed ??
@@ -86,7 +80,6 @@ export const replayTable = (rows: readonly Row[], base: number): void => {
 	}
 };
 
-/** Prints the replay with the lost-work charge in dollars, and the turns of lost work per compaction at which the base threshold would win. */
 export const chargedTable = (
 	charged: readonly Charged[],
 	base: number,
@@ -112,7 +105,6 @@ export const chargedTable = (
 	}
 };
 
-/** Prints the fitted fixed block and summary in tokens, then what a compaction of each of `sizes` leaves, in tokens and percent. */
 export const keptFit = (kept: Kept, sizes: readonly number[]): void => {
 	head(`What a compaction leaves behind, measured, summary ${kept.mode}`);
 	line(["boundaries with a summary record", String(kept.rows)]);
@@ -128,7 +120,6 @@ export const keptFit = (kept: Kept, sizes: readonly number[]): void => {
 	}
 };
 
-/** Prints the mean edits per request by prompt-size band, early after a compaction against steady, with the early rate as a percent of the steady one. */
 export const crossTableOf = (cells: readonly Cell[]): void => {
 	head("The edit rate by context size and by distance from a compaction");
 	line([
@@ -156,7 +147,6 @@ export const crossTableOf = (cells: readonly Cell[]): void => {
 	}
 };
 
-/** Prints the fine sweep in tokens and dollars, and the cheapest threshold with the range within 1% of it when `band` is given. */
 export const sweepTable = (
 	steps: readonly Step[],
 	band: { best: Step; low: number; high: number } | undefined,
@@ -186,7 +176,6 @@ export const sweepTable = (
 	}
 };
 
-/** Prints the percent and window settings that a handoff trigger implies, and the token count where each one fires. */
 export const derived = (one: Derived): void => {
 	head(`The tier values a trigger of ${whole(one.trigger)} implies`);
 	line(["AUTOCOMPACT_PCT", one.pct.toFixed(4)]);
@@ -195,7 +184,6 @@ export const derived = (one: Derived): void => {
 	line(["which fires at", whole(one.haikuFires)]);
 };
 
-/** Prints the price row used, in dollars per million tokens, and the dollars of one compaction of the mean context. */
 export const footer = (stats: BoundaryStats): void => {
 	const one = money(stats.pre, OPUS.read) + money(stats.post, OPUS.out);
 	console.info(

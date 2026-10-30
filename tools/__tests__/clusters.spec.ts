@@ -1,6 +1,3 @@
-// The check refuses a cluster of sibling files that should have been a folder. Each case here plants
-// the shape rather than asserting the wording, because the decision is what the check returns.
-
 import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -13,11 +10,7 @@ import {
 	stemOf,
 } from "../clusters.ts";
 
-/**
- * A folder holding the given file names, named `tools` so that the repeat rule has a word to match.
- * The names are file names and not stems, because that is what the walk reads and because a fault
- * message has to name a file that is on disk.
- */
+/** The names are file names, not stems, since the walk reads those and a fault must name a file on disk. */
 const folder = (
 	files: string[],
 	dir = "tools",
@@ -29,7 +22,6 @@ const folder = (
 	folders,
 });
 
-/** A tree under a fresh temp root, with each path written as an empty module. */
 const treeOf = async (paths: string[]): Promise<string> => {
 	const root = await mkdtemp(join(tmpdir(), "claudetto-clusters-"));
 	await Promise.all(

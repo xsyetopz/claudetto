@@ -1,6 +1,3 @@
-// The measures of one fork, from the events of its steps. A fork is one `claude -p` step that finishes the tasks
-// after the base, so the compaction happens inside it at the threshold of its arm.
-
 import { LAST_TASK, SOURCES } from "../fixture/fixture.ts";
 import {
 	afterCompaction,
@@ -15,17 +12,11 @@ import {
 } from "../transport/events.ts";
 import type { Arm, Result } from "./result.ts";
 
-/** The line of `tasks.md` that is ticked when the fork has done every task. */
 const LAST_TICKED = `[x] ${LAST_TASK}`;
 
 const isSource = (file: string): boolean =>
 	SOURCES.some((s) => file.endsWith(`/${s}`));
 
-/**
- * The reads of a file that was already read, by the base or earlier in the fork itself. Counting only
- * against the base's reads misses the case this probe is built to see: a fork reads the notes reserved
- * for it, loses them to a compaction, and goes back for them. Those files are not in the base's set.
- */
 const rereadsOf = (
 	done: readonly [string, string][],
 	read: ReadonlySet<string>,
@@ -44,7 +35,6 @@ const rereadsOf = (
 	return total;
 };
 
-/** The `Result` of one fork. Its `cost` is the spend above `base.cost`, a figure the events do not hold reads `NaN`, and `invalid` names why a fork cannot count. */
 export const measure = (
 	arm: Arm,
 	size: number,

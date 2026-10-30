@@ -1,12 +1,7 @@
 import type { Arm, Result } from "../round/result.ts";
 
-/**
- * The context a fork of each arm compacted at in a round that separated, so a default round carries no
- * same-point gap and a test that wants one sets `firstPre` itself.
- */
 const FIRED: Record<Arm, number> = { ref: 138_000, alt: 99_000 };
 
-/** One valid fork with passing measures, which a test overrides one field at a time. */
 export const result = (over: Partial<Result> = {}): Result => ({
 	arm: "ref",
 	size: 30_000,
@@ -29,7 +24,6 @@ export const result = (over: Partial<Result> = {}): Result => ({
 	...over,
 });
 
-/** `n` forks of `arm`, numbered from 1, with `over` applied to each. */
 export const forksOf = (
 	arm: Arm,
 	n: number,

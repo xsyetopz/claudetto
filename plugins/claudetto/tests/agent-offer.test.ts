@@ -1,7 +1,3 @@
-// `main` is the thread's own body under the `agent` setting, so the harness's line for it in the
-// agent listing names a type no session delegates to. Refusing the offer takes that line out of the
-// first message.
-
 import type { AgentOfferInput, On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 

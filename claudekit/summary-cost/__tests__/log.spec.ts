@@ -1,9 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { linesOf, rowsOf, seenIn } from "../log.ts";
 
-// The lines as `--debug-file` writes them, each `t(...)` of the summarizer in `chunk-1wgxyh0t.js`.
-// A line may carry a prefix or an escape sequence, so no count may depend on a line starting where
-// the pattern does.
 const capture = `\u001b[2K[AgentSummary] Timer fired for agent agt_1\r
 \u001b[2K[AgentSummary] Skipping summary for agt_1: not enough messages (2)\r
 [AgentSummary] Timer fired for agent agt_1\r
@@ -69,8 +66,6 @@ describe("seenIn", () => {
 		expect(seen.bodyChars).toEqual([40_000, 52_000]);
 	});
 
-	// The summarizer only means something as a share of the arm, which is the claim under test: that
-	// it is a large part of the spend of a session that runs agents.
 	test("keeps the summarizer's tokens apart from the tokens of the whole arm", () => {
 		const rows =
 			rowsOf(`{"event":"usage","summary":false,"usage":{"input_tokens":500,"cache_read_input_tokens":20000}}
@@ -97,8 +92,7 @@ describe("seenIn", () => {
 		expect(seen.input).toBe(0);
 	});
 
-	// `started` separates "the summarizer made no request" from "the proxy never came up", which are
-	// the same row of zeros otherwise, and one round of zeros was the second of the two.
+	// `started` separates "the summarizer made no request" from "the proxy never came up".
 	test("counts the heartbeat of the proxy", () => {
 		const rows = rowsOf('{"event":"started","pid":1}\n{"event":"stopped"}');
 
@@ -111,8 +105,6 @@ describe("seenIn", () => {
 		expect(seenIn(rowsOf("")).started).toBe(0);
 	});
 
-	// A `fetch` wrapper saw 3 requests in a session of about 90 model turns, which is not the session,
-	// and an answer whose tokens could not be read is not an answer of zero.
 	test("counts every request it saw and every answer it could not read", () => {
 		const rows =
 			rowsOf(`{"event":"request","summary":false,"path":"/v1/messages"}

@@ -1,6 +1,6 @@
 import type { On, ToolDescribeInput } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { TOOL_TEXTS } from "../src/tools/texts.ts";
+import { TOOL_TEXTS } from "../src/blocks/tool-describe/texts.ts";
 
 const call = (description: string): ToolDescribeInput => ({
 	tool: "Read",

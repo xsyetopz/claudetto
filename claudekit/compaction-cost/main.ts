@@ -1,11 +1,4 @@
-// What compaction costs this login, and what another threshold would have cost.
-// Free: it reads transcripts only, makes no model call, and reaches no network.
-//
-//   bun claudekit/compaction-cost/main.ts [--thresholds 120000,200000] [--base 224999]
-//                                   [--seed 11] [--per 20] [--root DIR]
-//
-// The numbers it prints are the ones `docs/evidence/compaction/boundaries.md` and
-// `docs/evidence/compaction/threshold.md` carry, so a later run checks those pages.
+// Usage: bun claudekit/compaction-cost/main.ts [--thresholds 120000,200000] [--base 224999] [--seed 11] [--per 20] [--root DIR]
 
 import { argv } from "node:process";
 import { bestOf, derive, sweep } from "./bill/derive.ts";
@@ -29,7 +22,6 @@ const DEFAULT_THRESHOLDS = [
 	120_000, 146_000, 170_000, 200_000, 224_999, 267_000,
 ];
 
-/** How far back a re-read measure looks. None reaches the whole history. */
 const DEPTHS: readonly (number | undefined)[] = [40, 100, 250, undefined];
 
 const main = async (): Promise<void> => {
@@ -76,7 +68,6 @@ const main = async (): Promise<void> => {
 		base,
 	);
 
-	// `--charge` overrides the measured turns, to read the sweep's sensitivity to it.
 	const turns = oneOf(argOf(args, "charge"), charge.turns);
 	const bounds = numbersOf(argOf(args, "sweep"), []);
 	const [from, to, step] = bounds;

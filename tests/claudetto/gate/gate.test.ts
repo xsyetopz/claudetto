@@ -1,18 +1,16 @@
-// The permission gate: which calls it reads, which it allows with no `git` run, and what it asks or denies.
-
 import { describe, expect, test } from "bun:test";
 import {
 	bash,
 	facts,
-} from "../../../plugins/claudetto/src/gate/__tests__/facts-stub.ts";
+} from "../../../plugins/claudetto/src/blocks/gate/__tests__/facts-stub.ts";
 import {
 	GATED_KEYS,
 	gate,
 	gated,
 	stricter,
-} from "../../../plugins/claudetto/src/gate/gate.ts";
-import { GLOB_WORD_MAX } from "../../../plugins/claudetto/src/gate/limits.ts";
-import { SHELL_SCAN_MAX_CHARS } from "../../../plugins/claudetto/src/shell/limits.ts";
+} from "../../../plugins/claudetto/src/blocks/gate/gate.ts";
+import { GLOB_WORD_MAX } from "../../../plugins/claudetto/src/blocks/gate/limits.ts";
+import { SHELL_SCAN_MAX_CHARS } from "../../../plugins/claudetto/src/blocks/gate/shell/limits.ts";
 
 describe("the keys the gate reads", () => {
 	test("the list is the six keys of the gate", () => {
@@ -220,10 +218,7 @@ describe("file tools", () => {
 	});
 });
 
-// `onCheck` of `plugins/claudetto/src/gate/hooks.ts` answers the stricter of the engine's verdict and
-// ours, so that an `allow` of the gate cannot undo a deny rule or a mode the user set. A hook of
-// `tool.check` may answer in either direction and the last word up the chain stands, which is why the
-// ordering is a value this case can read rather than a condition inside the hook.
+// `onCheck` answers the stricter of the engine's verdict and ours, so an `allow` cannot undo a deny.
 describe("the stricter of two decisions", () => {
 	test("a deny wins over an ask and an allow, either way round", () => {
 		expect(stricter("deny", "ask")).toBe("deny");

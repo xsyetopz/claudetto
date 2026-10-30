@@ -1,54 +1,25 @@
-// What a compaction leaves behind, measured instead of assumed.
-//
-// A flat kept share is wrong away from the threshold that produced it: the context
-// after a compaction is a fixed block, the system prompt and the tool schemas, plus
-// a summary. A flat share of a small context would leave less than the summary
-// alone needs, and a flat share of a large one would leave more than the engine
-// ever wrote.
-//
-// Fitting `post` against `pre` by least squares does not work either, and that is
-// worth stating: every real boundary fired at one threshold, so `pre` has almost no
-// spread, and a line through it has no leverage. The first attempt returned a slope
-// of 1.29 and an intercept of −274,470, which predicts a negative context.
-//
-// So the two parts are measured separately instead. The summary's size comes from
-// the `isCompactSummary` record that follows each boundary, and the fixed block is
-// what is left of `postTokens` once the summary is taken out.
-
 import { CHARS_PER_TOKEN, type Session } from "../transcripts/transcripts.ts";
 import type { Placed } from "../work/charge.ts";
 
-/** What a compaction leaves behind, fitted over the real boundaries: a fixed block and a summary, both in tokens. */
 export interface Kept {
-	/** Tokens that survive whatever the context held: system prompt and tools. */
 	readonly fixed: number;
-	/** The summary's size as a share of the context it summarized. */
 	readonly share: number;
-	/** The summary's measured size in tokens, for the constant model. */
 	readonly summary: number;
 	/** Boundaries that carried a summary record, so that both parts are measured. */
 	readonly rows: number;
-	/**
-	 * How the summary is assumed to behave away from the measured threshold.
-	 * `proportional` scales it with the context, which favours a low threshold.
-	 * `constant` holds it at its measured size, which favours a high one. The two
-	 * bound the answer, because nothing in these rows says which is true.
-	 */
+	/** `proportional` favours a low threshold and `constant` a high one; the two bound the answer. */
 	readonly mode: "proportional" | "constant";
 }
 
-/** The post-compaction size this model predicts for a context of `size`. */
 export const keptOf = (kept: Kept, size: number): number =>
 	Math.min(
 		size,
 		kept.fixed + (kept.mode === "constant" ? kept.summary : kept.share * size),
 	);
 
-/** The part of the kept context that the compacting turn had to write out. */
 export const summaryOf = (kept: Kept, size: number): number =>
 	Math.max(0, keptOf(kept, size) - kept.fixed);
 
-/** Measure the fixed block and the summary over every boundary with a summary. */
 export const measureKept = (
 	sessions: readonly Session[],
 	mode: Kept["mode"],
@@ -90,7 +61,6 @@ export const measureKept = (
 	};
 };
 
-/** One context-size band of the cross table: the request count and mean edits per request, for requests early after a compaction and for steady ones. */
 export interface Cell {
 	readonly label: string;
 	readonly early: { requests: number; edit: number };
@@ -116,14 +86,7 @@ const rate = (rows: readonly Placed[]): { requests: number; edit: number } => {
 	};
 };
 
-/**
- * The edit rate by context size and by distance from the last compaction at once.
- * Distance and size are collinear by construction, so this is the only free way to
- * ask which of the two the charge really tracks: read across a row for the effect
- * of a compaction at a fixed size, and down a column for the effect of size alone.
- * Requests before the first compaction of a session are left out of both arms, so
- * the comparison is within post-compaction work only.
- */
+/** Edit rate by size and by distance at once, because the two are collinear by construction. */
 export const crossTable = (
 	placed: readonly Placed[],
 	early: number,

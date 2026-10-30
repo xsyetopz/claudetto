@@ -31,7 +31,6 @@ const request = (
 	},
 });
 
-/** One compaction as stream-json reports it, with the harness's own count of the context it fired at. */
 const fired = (pre: number, post: number): Event => ({
 	type: "system",
 	subtype: "compact_boundary",
@@ -88,7 +87,6 @@ describe("measure", () => {
 	test("takes the peak context as the largest input side of a request", () => {
 		const r = measure("ref", 30_000, 1, [step(...events)], BASE, NONE, "");
 
-		// `m1`, at 1 uncached plus 9000 read plus 100 written, is the largest of the four requests.
 		expect(r.peak).toBe(9101);
 	});
 
@@ -109,7 +107,6 @@ describe("measure", () => {
 	});
 
 	test("takes the compaction point from the boundary and not from the billed requests", () => {
-		// The billed requests of this fork peak at about 9,000 tokens, where the harness counted 176,591.
 		const r = measure("ref", 30_000, 1, [step(...events)], BASE, NONE, "");
 
 		expect(r.firstPre).toBe(176_591);
@@ -155,8 +152,6 @@ describe("measure", () => {
 	});
 
 	test("counts a second read of a file the fork itself read first", () => {
-		// A fork that loses a file to a compaction and goes back for it reads a file the base never read,
-		// so a count against the base's own reads alone reports nothing.
 		const twice = [
 			request("m1", { read: 1, write: 1 }, [["Read", "/p/later/part-00.md"]]),
 			request("m2", { read: 1, write: 1 }, [["Read", "/p/later/part-00.md"]]),

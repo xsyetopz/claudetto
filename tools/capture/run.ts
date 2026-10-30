@@ -1,24 +1,36 @@
 #!/usr/bin/env bun
-// The reporting command: it takes a reading of each arm and prints the split, so a size question can
-// be answered by one run. The run itself lives in `arm.ts`, which `inventory.ts` reads as well.
 
 import { mkdir } from "node:fs/promises";
 import { argv } from "node:process";
 import { file as bunFile } from "bun";
-import { ARMS, type Arm, capture } from "./arm.ts";
+import { count } from "../../plugins/claudetto/src/format.ts";
+import { ARMS, type Arm, capture, PROMPT } from "./arm.ts";
 import type { Score } from "./score.ts";
 import { denySettings, shippedSettings } from "./settings.ts";
 
-/** The value of `--name`, or none. */
 const argOf = (args: readonly string[], name: string): string | undefined => {
 	const at = args.indexOf(`--${name}`);
 	return at >= 0 ? args[at + 1] : undefined;
 };
 
-/**
- * The settings text of each run: the shipped combination, a deny of the named tools, the text of a
- * file, or no file at all.
- */
+/** `--strict-mcp-config` keeps the login's own servers out of the reading. */
+export const extraArgs = (args: readonly string[]): string[] => {
+	const mcp = argOf(args, "mcp-config");
+	const plugin = argOf(args, "plugin-dir");
+	return [
+		...(mcp === undefined ? [] : ["--mcp-config", mcp, "--strict-mcp-config"]),
+		...(plugin === undefined ? [] : ["--plugin-dir", plugin]),
+		...(args.includes("--classifier") ? ["--permission-mode", "auto"] : []),
+	];
+};
+
+const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
+  [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
+  [--classifier]
+
+--classifier reads the auto mode classifier request in place of the first request.
+Its last system block holds the login name, so it differs between logins.`;
+
 const settingsOf = async (options: {
 	file: string | undefined;
 	deny: string | undefined;
@@ -35,8 +47,6 @@ const settingsOf = async (options: {
 		: await bunFile(options.file).text();
 };
 
-const count = (value: number): string => value.toLocaleString("en-US");
-
 const row = (arm: Arm, score: Score): void => {
 	console.info(
 		`  ${arm.padEnd(6)} | total ${count(score.total).padStart(7)} | system ${count(score.system).padStart(7)} | tools ${count(score.tools).padStart(7)} (${score.toolCount}) | messages ${count(score.messages).padStart(6)}`,
@@ -45,6 +55,10 @@ const row = (arm: Arm, score: Score): void => {
 
 const main = async (): Promise<void> => {
 	const args = argv.slice(2);
+	if (args.includes("--help")) {
+		console.info(USAGE);
+		return;
+	}
 	const only = argOf(args, "arm");
 	const file = argOf(args, "settings");
 	const deny = argOf(args, "deny");
@@ -65,13 +79,23 @@ const main = async (): Promise<void> => {
 	);
 	console.info(`Settings of each run: ${settings ?? "the defaults"}`);
 	const dump = argOf(args, "dump");
+	const prompt = argOf(args, "prompt") ?? PROMPT;
 	if (dump !== undefined) {
 		await mkdir(dump, { recursive: true });
 	}
 	const readings = await Promise.all(
-		arms.map((arm) => capture(arm, settings, dump)),
+		arms.map((arm) =>
+			capture(arm, settings, {
+				dump,
+				prompt,
+				extra: extraArgs(args),
+				classifier: args.includes("--classifier"),
+			}),
+		),
 	);
-	console.info("\nThe characters of the first request:");
+	console.info(
+		`\nThe characters of the ${args.includes("--classifier") ? "classifier" : "first"} request:`,
+	);
 	for (const reading of readings) {
 		if (reading.score === undefined) {
 			console.error(
