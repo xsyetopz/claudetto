@@ -20,11 +20,16 @@ export const extraArgs = (args: readonly string[]): string[] => {
 	return [
 		...(mcp === undefined ? [] : ["--mcp-config", mcp, "--strict-mcp-config"]),
 		...(plugin === undefined ? [] : ["--plugin-dir", plugin]),
+		...(args.includes("--classifier") ? ["--permission-mode", "auto"] : []),
 	];
 };
 
 const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
-  [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]`;
+  [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
+  [--classifier]
+
+--classifier reads the auto mode classifier request in place of the first request.
+Its last system block holds the login name, so it differs between logins.`;
 
 const settingsOf = async (options: {
 	file: string | undefined;
@@ -79,9 +84,18 @@ const main = async (): Promise<void> => {
 		await mkdir(dump, { recursive: true });
 	}
 	const readings = await Promise.all(
-		arms.map((arm) => capture(arm, settings, dump, prompt, extraArgs(args))),
+		arms.map((arm) =>
+			capture(arm, settings, {
+				dump,
+				prompt,
+				extra: extraArgs(args),
+				classifier: args.includes("--classifier"),
+			}),
+		),
 	);
-	console.info("\nThe characters of the first request:");
+	console.info(
+		`\nThe characters of the ${args.includes("--classifier") ? "classifier" : "first"} request:`,
+	);
 	for (const reading of readings) {
 		if (reading.score === undefined) {
 			console.error(

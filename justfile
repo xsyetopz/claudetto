@@ -66,7 +66,7 @@ hygiene *args:
 window-report:
     bun tools/window-report.ts
 
-# Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --shipped, --deny A,B, --settings FILE, --mcp-config FILE, --plugin-dir DIR, --tools N, --dump DIR, --prompt TEXT, --help)
+# Score the first request of a session in characters, free and with no model call: `claude -p` against a local fake Messages API (--arm plain|plugin, --shipped, --deny A,B, --settings FILE, --mcp-config FILE, --plugin-dir DIR, --tools N, --dump DIR, --prompt TEXT, --help), or with `--classifier` the auto mode classifier request
 capture *args:
     bun tools/capture/run.ts "$@"
 
