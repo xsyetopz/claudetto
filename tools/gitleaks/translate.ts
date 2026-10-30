@@ -15,17 +15,25 @@ const groupEnd = (source: string, from: number): number => {
 		at += 1;
 		if (char === "\\") {
 			at += 1;
-		} else if (inClass) {
+			continue;
+		}
+		if (inClass) {
 			inClass = char !== "]";
-		} else if (char === "[") {
-			inClass = true;
-		} else if (char === "(") {
-			depth += 1;
-		} else if (char === ")") {
-			if (depth === 0) {
-				return at - 1;
-			}
-			depth -= 1;
+			continue;
+		}
+		switch (char) {
+			case "[":
+				inClass = true;
+				break;
+			case "(":
+				depth += 1;
+				break;
+			case ")":
+				if (depth === 0) {
+					return at - 1;
+				}
+				depth -= 1;
+				break;
 		}
 	}
 	return source.length;

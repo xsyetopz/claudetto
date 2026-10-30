@@ -132,16 +132,17 @@ export const onCheck: WithOptions<HookFor<"tool.check">> = async (
 		return engine;
 	}
 	const decision = stricter(engine.decision, own.decision);
-	if (decision === engine.decision) {
-		return engine;
+	switch (decision) {
+		case engine.decision:
+			return engine;
+		case "deny":
+			return { decision, reason: stoppedText(own.reason) };
+		default:
+			// The reason is left out rather than passed as `undefined`, which the engine's type refuses.
+			return own.reason === undefined
+				? { decision }
+				: { decision, reason: own.reason };
 	}
-	if (decision === "deny") {
-		return { decision, reason: stoppedText(own.reason) };
-	}
-	// The reason is left out rather than passed as `undefined`, which the engine's type refuses.
-	return own.reason === undefined
-		? { decision }
-		: { decision, reason: own.reason };
 };
 
 /** `ask` with no `decider`: an ask a hook made belongs to a person, and where nobody can be asked it is a deny. */

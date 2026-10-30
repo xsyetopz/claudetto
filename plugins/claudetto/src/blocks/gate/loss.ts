@@ -163,14 +163,15 @@ export const localLoss = (call: GitCall): Loss | undefined =>
 
 const commitsAll = (args: string[]): boolean => {
 	for (const arg of args) {
-		if (arg === "--") {
-			return false;
-		}
-		if (arg === "--all") {
-			return true;
-		}
-		if (!SHORT_FLAG_START.test(arg)) {
-			continue;
+		switch (arg) {
+			case "--":
+				return false;
+			case "--all":
+				return true;
+			default:
+				if (!SHORT_FLAG_START.test(arg)) {
+					continue;
+				}
 		}
 		for (const letter of arg.slice(1)) {
 			if (letter === "a") {
@@ -202,14 +203,17 @@ const namesPath = (
 
 const stashesTree = (args: string[]): boolean => {
 	const [verb] = args;
-	if (verb === undefined || verb.startsWith("-")) {
-		return !namesPath(args, 1, STASH_VALUE_OPTS);
-	}
-	if (verb === "push") {
-		return !namesPath(args.slice(1), 1, STASH_VALUE_OPTS);
-	}
-	if (verb === "save") {
-		return true;
+	switch (verb) {
+		case undefined:
+			return !namesPath(args, 1, STASH_VALUE_OPTS);
+		case "push":
+			return !namesPath(args.slice(1), 1, STASH_VALUE_OPTS);
+		case "save":
+			return true;
+		default:
+			if (verb.startsWith("-")) {
+				return !namesPath(args, 1, STASH_VALUE_OPTS);
+			}
 	}
 	return (
 		(verb === "apply" || verb === "pop") &&

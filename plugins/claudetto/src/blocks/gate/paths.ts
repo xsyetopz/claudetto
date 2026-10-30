@@ -33,11 +33,11 @@ const normal = (path: string): string => {
 };
 
 const homeOf = (name: string, at: Places): string => {
-	if (name === baseName(at.home)) {
-		return at.home;
-	}
-	if (name === "root") {
-		return "/var/root";
+	switch (name) {
+		case baseName(at.home):
+			return at.home;
+		case "root":
+			return "/var/root";
 	}
 	const parent = at.home.slice(0, at.home.lastIndexOf("/")) || "/home";
 	return `${parent}/${name}`;
@@ -159,11 +159,11 @@ const partRe = (part: string): RegExp | undefined => {
 	const source = part.replace(
 		/\[!?\]?[^\]]*\]|[*?]|[.+^${}()|\\[\]]/g,
 		(tok) => {
-			if (tok === "*") {
-				return "[^/]*";
-			}
-			if (tok === "?") {
-				return "[^/]";
+			switch (tok) {
+				case "*":
+					return "[^/]*";
+				case "?":
+					return "[^/]";
 			}
 			if (tok.length > 1) {
 				return tok[1] === "!" ? `[^${tok.slice(2)}` : tok;

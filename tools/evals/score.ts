@@ -21,16 +21,18 @@ export const scoreTree = (result: CommandResult): Score => {
 	if (result.timedOut) {
 		return { verdict: "error", detail: "the grader timed out" };
 	}
-	if (result.code === 0) {
-		return { verdict: "pass", detail: lastLine(result.stdout) };
+	switch (result.code) {
+		case 0:
+			return { verdict: "pass", detail: lastLine(result.stdout) };
+		case 1:
+			return { verdict: "fail", detail: lastLine(result.stdout) };
+		default: {
+			const status =
+				result.code === undefined ? "no status" : `status ${result.code}`;
+			return {
+				verdict: "error",
+				detail: `the grader ended with ${status}: ${lastLine(result.stderr)}`,
+			};
+		}
 	}
-	if (result.code === 1) {
-		return { verdict: "fail", detail: lastLine(result.stdout) };
-	}
-	const status =
-		result.code === undefined ? "no status" : `status ${result.code}`;
-	return {
-		verdict: "error",
-		detail: `the grader ended with ${status}: ${lastLine(result.stderr)}`,
-	};
 };

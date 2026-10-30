@@ -57,11 +57,11 @@ export const parseClassifierArgs = (
 	},
 ): Options | { readonly error: string } => {
 	const [flag, ...rest] = args;
-	if (flag === undefined) {
-		return options;
-	}
-	if (flag === "--run") {
-		return parseClassifierArgs(rest, { ...options, run: true });
+	switch (flag) {
+		case undefined:
+			return options;
+		case "--run":
+			return parseClassifierArgs(rest, { ...options, run: true });
 	}
 	const patch = VALUE_FLAGS.get(flag);
 	const [value, ...after] = rest;

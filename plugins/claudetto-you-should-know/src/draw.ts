@@ -111,18 +111,21 @@ const cardOf = (t: Table, card: Card): RenderElement =>
 	});
 
 const bodyOf = (t: Table, d: Drawing): readonly RenderNode[] => {
-	if (d.view.kind === "asked") {
-		return [
-			t.Box({
-				marginLeft: BORROWED.STAR_CELLS,
-				children: t.Text({ dimColor: true, children: "Dismissed." }),
-			}),
-		];
+	switch (d.view.kind) {
+		case "asked":
+			return [
+				t.Box({
+					marginLeft: BORROWED.STAR_CELLS,
+					children: t.Text({ dimColor: true, children: "Dismissed." }),
+				}),
+			];
+		case "explained":
+			return parseExplanation(d.view.explanation).map((card) =>
+				cardOf(t, card),
+			);
+		default:
+			return [];
 	}
-	if (d.view.kind === "explained") {
-		return parseExplanation(d.view.explanation).map((card) => cardOf(t, card));
-	}
-	return [];
 };
 
 export const drawView = (t: Table, d: Drawing): RenderElement => {

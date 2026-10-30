@@ -109,15 +109,20 @@ export const press = async (
 	if (view === null) {
 		return;
 	}
-	if (key === "dismiss" && view.kind === "asked") {
-		await saveRow(p, closed(row));
-		p.refresh();
-		return;
-	}
-	if (key === "respond") {
-		await respond(p, row, view);
-		p.refresh();
-		return;
+	switch (key) {
+		case "dismiss":
+			if (view.kind === "asked") {
+				await saveRow(p, closed(row));
+				p.refresh();
+				return;
+			}
+			break;
+		case "respond":
+			await respond(p, row, view);
+			p.refresh();
+			return;
+		default:
+			break;
 	}
 	await saveCounters(p, RESET);
 	await apply(p, row, view, key);

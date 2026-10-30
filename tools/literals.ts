@@ -76,16 +76,17 @@ const templateEnd = (scan: Scan, at: number): number => {
 	let from = at + 1;
 	while (k < scan.source.length) {
 		const step = scan.source.startsWith("${", k) ? "code" : scan.source[k];
-		if (step === "`") {
-			blank(scan, from, k, "~");
-			return k + 1;
-		}
-		if (step === "code") {
-			blank(scan, from, k + 2, "~");
-			from = scanCode(scan, k + 2, true);
-			k = from + 1;
-		} else {
-			k += step === "\\" ? 2 : 1;
+		switch (step) {
+			case "`":
+				blank(scan, from, k, "~");
+				return k + 1;
+			case "code":
+				blank(scan, from, k + 2, "~");
+				from = scanCode(scan, k + 2, true);
+				k = from + 1;
+				break;
+			default:
+				k += step === "\\" ? 2 : 1;
 		}
 	}
 	return k;
