@@ -37,21 +37,28 @@ const ran = (stdout: string, exitCode = 0) => ({
 	},
 });
 
-const lab = (
-	on: On,
-	stdout: string,
-): readonly { path: string; text: string }[] => {
+const sink = (on: On): readonly { path: string; text: string }[] => {
 	const files: { path: string; text: string }[] = [];
-	on("process.run", () => ran(stdout));
 	on("fs.write", (_$, e) => {
 		files.push({ path: e.path, text: e.text });
 		return { value: undefined };
 	});
 	on("ui.log", () => ({ value: undefined }));
 	on("classic.SessionEnd", () => ({}));
-	on("classic.PreCompact", () => ({}));
 	return files;
 };
+
+const lab = (
+	on: On,
+	stdout: string,
+): readonly { path: string; text: string }[] => {
+	on("process.run", () => ran(stdout));
+	on("classic.PreCompact", () => ({}));
+	return sink(on);
+};
+
+const clear = ($: Engine) =>
+	$.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
 
 // The event carries the path resolved against the working directory, so the folder matches inside it.
 const handoffs = (
@@ -60,6 +67,12 @@ const handoffs = (
 	files.filter((file) =>
 		file.path.replaceAll("\\", "/").includes(`/${HANDOFF_DIR}/`),
 	);
+
+const writtenOn = async ($: Engine, on: On, stdout: string) => {
+	const files = lab(on, stdout);
+	await clear($);
+	return handoffs(files);
+};
 
 test("a typed clear leaves one handoff file", async ($: Engine, on: On) => {
 	const files = lab(on, WITH_WORK);
@@ -98,16 +111,10 @@ test("a session with no user turn leaves no file and no error", async ($: Engine
 });
 
 test("a transcript that cannot be read leaves no file and no error", async ($: Engine, on: On) => {
-	const files: { path: string; text: string }[] = [];
 	on("process.run", () => {
 		throw new Error("tail: no such file");
 	});
-	on("fs.write", (_$, e) => {
-		files.push({ path: e.path, text: e.text });
-		return { value: undefined };
-	});
-	on("ui.log", () => ({ value: undefined }));
-	on("classic.SessionEnd", () => ({}));
+	const files = sink(on);
 
 	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
 
@@ -115,14 +122,8 @@ test("a transcript that cannot be read leaves no file and no error", async ($: E
 });
 
 test("a failing tail leaves no file and no error", async ($: Engine, on: On) => {
-	const files: { path: string; text: string }[] = [];
 	on("process.run", () => ran("", 1));
-	on("fs.write", (_$, e) => {
-		files.push({ path: e.path, text: e.text });
-		return { value: undefined };
-	});
-	on("ui.log", () => ({ value: undefined }));
-	on("classic.SessionEnd", () => ({}));
+	const files = sink(on);
 
 	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
 
@@ -139,15 +140,19 @@ const told = (on: On): readonly { text: string; to: string }[] => {
 	return lines;
 };
 
+const cleared = async ($: Engine, on: On) => {
+	const lines = told(on);
+	await clear($);
+	return lines;
+};
+
 // Failures go to the `transcript` sink: it shows a dim row, while `debug` shows nothing.
 test("a transcript that cannot be read tells the user in one line", async ($: Engine, on: On) => {
 	on("process.run", () => {
 		throw new Error("tail: no such file");
 	});
 	on("fs.write", () => ({ value: undefined }));
-	const lines = told(on);
-
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
+	const lines = await cleared($, on);
 
 	expect(lines).toHaveLength(1);
 	expect(lines[0]?.to).toBe("transcript");
@@ -156,9 +161,7 @@ test("a transcript that cannot be read tells the user in one line", async ($: En
 test("a tail that exits non-zero tells the user in one line", async ($: Engine, on: On) => {
 	on("process.run", () => ran("", 1));
 	on("fs.write", () => ({ value: undefined }));
-	const lines = told(on);
-
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
+	const lines = await cleared($, on);
 
 	expect(lines).toHaveLength(1);
 	expect(lines[0]?.to).toBe("transcript");
@@ -169,9 +172,7 @@ test("a write that fails tells the user in one line", async ($: Engine, on: On) 
 	on("fs.write", () => {
 		throw new Error("EACCES: permission denied");
 	});
-	const lines = told(on);
-
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
+	const lines = await cleared($, on);
 
 	expect(lines).toHaveLength(1);
 	expect(lines[0]?.to).toBe("transcript");
@@ -185,11 +186,9 @@ test("the read is bounded by bytes, whatever the transcript's size", async ($: E
 		argv.push([...e.argv]);
 		return ran(WITH_WORK);
 	});
-	on("fs.write", () => ({ value: undefined }));
-	on("ui.log", () => ({ value: undefined }));
-	on("classic.SessionEnd", () => ({}));
+	sink(on);
 
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
+	await clear($);
 
 	expect(argv).toEqual([["tail", "-c", "262144", TRANSCRIPT]]);
 });
@@ -201,39 +200,29 @@ test("the read on a clear is bounded by the cut SessionEnd enforces", async ($: 
 		bounds.push(e.init?.timeoutMs);
 		return ran(WITH_WORK);
 	});
-	on("fs.write", () => ({ value: undefined }));
-	on("ui.log", () => ({ value: undefined }));
-	on("classic.SessionEnd", () => ({}));
+	sink(on);
 
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
+	await clear($);
 
 	expect(bounds).toEqual([1100]);
 });
 
 test("the handoff names the files the session touched", async ($: Engine, on: On) => {
-	const files = lab(on, WITH_WORK);
+	const written = await writtenOn($, on, WITH_WORK);
 
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
-
-	expect(handoffs(files)[0]?.text).toContain("src/api.ts");
+	expect(written[0]?.text).toContain("src/api.ts");
 });
 
 test("the handoff carries the user's ask", async ($: Engine, on: On) => {
-	const files = lab(on, WITH_WORK);
+	const written = await writtenOn($, on, WITH_WORK);
 
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
-
-	expect(handoffs(files)[0]?.text).toContain(
-		"Rename `fetchUser` to `getUser`.",
-	);
+	expect(written[0]?.text).toContain("Rename `fetchUser` to `getUser`.");
 });
 
 test("the file is named handoff- and a UTC stamp", async ($: Engine, on: On) => {
-	const files = lab(on, WITH_WORK);
+	const written = await writtenOn($, on, WITH_WORK);
 
-	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
-
-	const name = handoffs(files)[0]?.path.split("/").at(-1) ?? "";
+	const name = written[0]?.path.split("/").at(-1) ?? "";
 	expect(name).toMatch(NAME);
 });
 

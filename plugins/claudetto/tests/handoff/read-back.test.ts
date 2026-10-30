@@ -35,6 +35,17 @@ const listed = (name: string) => ({
 	isLink: false,
 });
 
+/** The store, the root, and a log that fills `lines`, for a case that sets its own folder. */
+const quiet = (on: On, lines: Line[]): void => {
+	mock.store(on);
+	on("session.root", () => ({ value: "/repo" }));
+	on("ui.log", (_$, e) => {
+		lines.push({ text: e.text, to: e.to });
+		return { value: undefined };
+	});
+	on("classic.SessionStart", () => ({}));
+};
+
 /** The submit runs from a timer, so a case starts the timer and then settles the clock. */
 const lab = (
 	on: On,
@@ -49,8 +60,7 @@ const lab = (
 	const sent: string[] = [];
 	const lines: Line[] = [];
 	const clock = mock.clock(on, { now });
-	mock.store(on);
-	on("session.root", () => ({ value: "/repo" }));
+	quiet(on, lines);
 	// The event carries the path resolved against the working directory, so match inside it.
 	on("fs.exists", (_$, e) => ({
 		value: e.path.replaceAll("\\", "/").endsWith(HANDOFF_DIR),
@@ -66,11 +76,6 @@ const lab = (
 		sent.push(e.text);
 		return { text: e.text };
 	});
-	on("ui.log", (_$, e) => {
-		lines.push({ text: e.text, to: e.to });
-		return { value: undefined };
-	});
-	on("classic.SessionStart", () => ({}));
 	return { sent, lines, settle: () => clock.settle() };
 };
 
@@ -163,15 +168,9 @@ test("a stale handoff is named once and not at every start", async ($: Engine, o
 });
 
 test("a project with no handoff folder yet takes nothing in and shows no error", async ($: Engine, on: On) => {
-	const lines: string[] = [];
-	mock.store(on);
-	on("session.root", () => ({ value: "/repo" }));
+	const lines: Line[] = [];
+	quiet(on, lines);
 	on("fs.exists", () => ({ value: false }));
-	on("ui.log", (_$, e) => {
-		lines.push(e.text);
-		return { value: undefined };
-	});
-	on("classic.SessionStart", () => ({}));
 
 	await $.classic.SessionStart({ source: "clear" });
 
@@ -192,18 +191,12 @@ test("a submit the session refuses tells the user in one line", async ($: Engine
 test("a handoff file that cannot be read tells the user in one line", async ($: Engine, on: On) => {
 	const lines: Line[] = [];
 	mock.clock(on, { now: 0 });
-	mock.store(on);
-	on("session.root", () => ({ value: "/repo" }));
+	quiet(on, lines);
 	on("fs.exists", () => ({ value: true }));
 	on("fs.list", () => ({ value: [listed(NEWER)] }));
 	on("fs.read", () => {
 		throw new Error("EIO: the handoff could not be read");
 	});
-	on("ui.log", (_$, e) => {
-		lines.push({ text: e.text, to: e.to });
-		return { value: undefined };
-	});
-	on("classic.SessionStart", () => ({}));
 
 	await $.classic.SessionStart({ source: "resume" });
 

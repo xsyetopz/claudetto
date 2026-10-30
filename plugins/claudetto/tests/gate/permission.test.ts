@@ -1,8 +1,9 @@
 import type { On } from "claude-code";
-import { type Engine, expect, mock, test } from "claude-code/testing";
+import { type Engine, expect, test } from "claude-code/testing";
 import { stoppedText } from "../../src/blocks/gate/denials.ts";
 import { GATED_KEYS } from "../../src/blocks/gate/gate.ts";
 import { DENY_ROOT, RUN_HINT } from "../../src/blocks/gate/prompts.ts";
+import { bareRepo } from "./facts.ts";
 
 type Behavior = string | undefined;
 
@@ -53,27 +54,14 @@ test("a Skill request is passed on with no allow", async ($: Engine, on: On) => 
 });
 
 const withFacts = (on: On, failing = false): void => {
-	mock.clock(on, { now: 0 });
-	mock.store(on);
+	bareRepo(on);
 	on("session.cwd", () => {
 		if (failing) {
 			throw new Error("the session could not be read");
 		}
 		return { value: "/repo" };
 	});
-	on("session.root", () => ({ value: "/repo" }));
 	on("env.get", () => ({ value: undefined }));
-	on("process.run", () => ({
-		value: {
-			exitCode: 1,
-			stdout: "",
-			stderr: "",
-			isStdoutTruncated: false,
-			isStderrTruncated: false,
-		},
-	}));
-	on("fs.exists", () => ({ value: false }));
-	on("fs.read", () => ({ value: "" }));
 	on("classic.PermissionRequest", () => ({}));
 };
 

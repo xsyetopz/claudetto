@@ -23,46 +23,63 @@ const say = (text: string, handle: string): SessionMessage => ({
 const cachedFlags = (request: ModelCompleteInput | undefined): boolean[] =>
 	(request?.promptBlocks ?? []).map((block) => block.cache === true);
 
-test("a shipped row makes no model call and the engine compacts", async ($: Engine, on: On) => {
-	const asked: ModelCompleteInput[] = [];
+type Answer = (
+	e: ModelCompleteInput,
+) =>
+	| { deny: string }
+	| { value: { isAnswered: true; text: string; usage: typeof USAGE } };
+
+/** The stubs beneath the plugin. `core` counts the compactions that fell through to the engine. */
+const lab = (on: On, answer: Answer): { core: number } => {
+	const seen = { core: 0 };
 	on("env.get", () => ({ value: "/home/me" }));
 	on("fs.read", () => ({ value: LOGIN }));
-	on("model.complete", (_$, e) => {
-		asked.push(e);
-		return { deny: "no row prices a cheap summary" };
+	on("model.complete", (_$, e) => answer(e));
+	on("session.compact", () => {
+		seen.core += 1;
+		return { skip: "core ran" };
 	});
-	on("session.compact", () => ({ skip: "core ran" }));
+	return seen;
+};
 
-	const out = await $.session.compact({
+const compact = ($: Engine) =>
+	$.session.compact({
 		trigger: "auto",
 		messages: [say("Build the export.", "h0")],
 	});
 
+const reply =
+	(text: string): Answer =>
+	() => ({
+		value: { isAnswered: true, text, usage: USAGE },
+	});
+
+const ON = { options: { cheapSummary: "on" } };
+
+test("a shipped row makes no model call and the engine compacts", async ($: Engine, on: On) => {
+	const asked: ModelCompleteInput[] = [];
+	lab(on, (e) => {
+		asked.push(e);
+		return { deny: "no row prices a cheap summary" };
+	});
+
+	const out = await compact($);
+
 	expect(asked).toEqual([]);
 	expect(out.skip).toBe("core ran");
 });
-
-const ON = { options: { cheapSummary: "on" } };
 
 test(
 	"the option answers the compaction with one call on the cheap model and a cached block",
 	ON,
 	async ($: Engine, on: On) => {
 		const asked: ModelCompleteInput[] = [];
-		on("env.get", () => ({ value: "/home/me" }));
-		on("fs.read", () => ({ value: LOGIN }));
-		on("model.complete", (_$, e) => {
+		lab(on, (e) => {
 			asked.push(e);
-			return {
-				value: { isAnswered: true, text: "The summary.", usage: USAGE },
-			};
+			return reply("The summary.")(e);
 		});
-		on("session.compact", () => ({ skip: "core ran" }));
 
-		const out = await $.session.compact({
-			trigger: "auto",
-			messages: [say("Build the export.", "h0")],
-		});
+		const out = await compact($);
 
 		expect(asked).toHaveLength(1);
 		expect(asked[0]?.model).toBe("claude-haiku-5-5");
@@ -82,21 +99,11 @@ test(
 	"a call that throws leaves the compaction to the engine",
 	ON,
 	async ($: Engine, on: On) => {
-		const seen = { core: 0 };
-		on("env.get", () => ({ value: "/home/me" }));
-		on("fs.read", () => ({ value: LOGIN }));
-		on("model.complete", () => {
+		const seen = lab(on, () => {
 			throw new Error("the provider is down");
 		});
-		on("session.compact", () => {
-			seen.core += 1;
-			return { skip: "core ran" };
-		});
 
-		const out = await $.session.compact({
-			trigger: "auto",
-			messages: [say("Build the export.", "h0")],
-		});
+		const out = await compact($);
 
 		expect(seen.core).toBe(1);
 		expect(out.skip).toBe("core ran");
@@ -107,21 +114,9 @@ test(
 	"an empty reply leaves the compaction to the engine",
 	ON,
 	async ($: Engine, on: On) => {
-		const seen = { core: 0 };
-		on("env.get", () => ({ value: "/home/me" }));
-		on("fs.read", () => ({ value: LOGIN }));
-		on("model.complete", () => ({
-			value: { isAnswered: true, text: "  ", usage: USAGE },
-		}));
-		on("session.compact", () => {
-			seen.core += 1;
-			return { skip: "core ran" };
-		});
+		const seen = lab(on, reply("  "));
 
-		const out = await $.session.compact({
-			trigger: "auto",
-			messages: [say("Build the export.", "h0")],
-		});
+		const out = await compact($);
 
 		expect(seen.core).toBe(1);
 		expect(out.skip).toBe("core ran");
