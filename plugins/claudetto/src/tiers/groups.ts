@@ -15,6 +15,7 @@ import { ALLOW_RULES } from "./allow.ts";
 import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
 import { envFlags, SUBAGENT_MODEL_ENV } from "./env.ts";
 import type { TierSnippet } from "./snippet.ts";
+import { STATUS_LINE_KEYS } from "./status-line.ts";
 import { SNIPPET_ROW } from "./tiers.ts";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -52,7 +53,7 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
 	},
 	{
 		label: "Models and windows",
-		why: `Writes \`${SNIPPET_ROW.mainModel}\` as the main model at \`${SNIPPET_ROW.effort}\` effort, \`${SNIPPET_ROW.subagentModel}\` for subagents, ${codes(FALLBACK_MODELS)} as the fallback model, the effort ceilings ${codes(Object.entries(MAX_EFFORT).map(([model, level]) => `${model}: ${level}`))}, and the context windows and compaction thresholds the handoff is written against.`,
+		why: `Writes \`${SNIPPET_ROW.mainModel}\` as the main model at \`${SNIPPET_ROW.effort}\` effort, \`${SNIPPET_ROW.subagentModel}\` for subagents, ${codes(FALLBACK_MODELS)} as the fallback model, the effort ceilings ${codes(Object.entries(MAX_EFFORT).map(([model, level]) => `${model}: ${level}`))}, and the context windows and compaction thresholds the handoff is written against. It also sets claudetto's \`statusLine\` and \`subagentStatusLine\`, which show the model, its effort, the context window, and the usage-limit windows.`,
 		keys: [
 			"model",
 			"effortLevel",
@@ -61,6 +62,7 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
 			...Object.keys(compactionSnippet().settings),
 			"fallbackModel",
 			"modelSettings",
+			...STATUS_LINE_KEYS,
 		],
 	},
 	{

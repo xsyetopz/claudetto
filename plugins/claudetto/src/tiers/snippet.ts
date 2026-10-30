@@ -11,6 +11,7 @@ import { AGENT_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES, ruleFaults } from "./allow.ts";
 import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
 import { envFlags, SUBAGENT_MODEL_ENV } from "./env.ts";
+import { statusLineSnippet } from "./status-line.ts";
 import { HAIKU_MODEL, type TierRow } from "./tiers.ts";
 
 export type Node =
@@ -128,4 +129,5 @@ export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 	modelSettings: modelSettingsOf(row),
 	...(row.mainModel === undefined ? {} : { model: row.mainModel }),
 	...(row.effort === undefined ? {} : { effortLevel: row.effort }),
+	...statusLineSnippet(),
 });

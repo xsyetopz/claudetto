@@ -1,4 +1,5 @@
 import type { TierSnippet } from "./snippet.ts";
+import { STATUS_LINE_KEYS } from "./status-line.ts";
 
 export type Json = Record<string, unknown>;
 
@@ -33,18 +34,32 @@ interface Leaf {
 	readonly value: unknown;
 }
 
+// A status line is one command with its options, so a user's own line is kept whole and never takes a key of ours.
+const WHOLE: readonly string[] = STATUS_LINE_KEYS;
+
 const leavesOf = (node: unknown, path: readonly string[] = []): Leaf[] =>
-	isRecord(node)
+	isRecord(node) && !WHOLE.includes(path.join("."))
 		? Object.entries(node).flatMap(([key, child]) =>
 				leavesOf(child, [...path, key]),
 			)
 		: [{ path, value: node }];
 
-const same = (had: unknown, value: unknown): boolean =>
-	Array.isArray(had) && Array.isArray(value)
-		? had.length === value.length &&
-			value.every((entry, at) => had[at] === entry)
-		: had === value;
+const same = (had: unknown, value: unknown): boolean => {
+	if (Array.isArray(had) && Array.isArray(value)) {
+		return (
+			had.length === value.length &&
+			value.every((entry, at) => same(had[at], entry))
+		);
+	}
+	if (isRecord(had) && isRecord(value)) {
+		const keys = Object.keys(value);
+		return (
+			Object.keys(had).length === keys.length &&
+			keys.every((key) => same(had[key], value[key]))
+		);
+	}
+	return had === value;
+};
 
 const UNION = "permissions.deny";
 

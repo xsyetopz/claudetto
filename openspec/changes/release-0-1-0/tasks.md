@@ -28,8 +28,8 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 ## 5. Status Line (`status-line`)
 
 - [ ] 5.1 Read the `2.1.314` status line stdin fields from the docs, and make D1 to D4 and D7 of `/tmp/ccx/report-statusline.md` failing fixtures. Verify: the tests fail for the stated reason.
-- [ ] 5.2 Build `src/statusline/` and `bin/claudetto-statusline`, stdin only. Verify: the fixtures pass, and a test shows no file, network, or process call.
-- [ ] 5.3 Setup writes `statusLine` and `subagentStatusLine` and keeps a user value. Verify: merge tests.
+- [x] 5.2 Build `src/statusline/` and `bin/claudetto-statusline`, stdin only. Verify: the fixtures pass, and a test shows no file, network, or process call.
+- [x] 5.3 Setup writes `statusLine` and `subagentStatusLine` and keeps a user value. Verify: merge tests.
 
 ## 6. Hygiene and Finish (`session-hygiene`, `finish-loop`)
 

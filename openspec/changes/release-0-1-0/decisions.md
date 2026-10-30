@@ -96,3 +96,14 @@ Each line holds the decision, who made it, and the source. A line marked open wa
   - Long-term stability (user, 2026-10-30): a block rides only a typed, documented route, never a binary internal. Each block names its routes in the host's own event type and the Claude Code version its lab cases pin, so a host change fails that block's case and nothing else.
   - Loader reading (2026-10-30, Claude Code `2.1.314`): the hook loader refuses `block.attach(on)` through an object, `"on" is passed to something other than a function named at the top of this file or imported from one of the module's own files`. So each block exports an attach function as a `const` named at the top of its file (the lint bans `function` declarations, and the loader accepts the `const`: `just check` passed with it), and the catalog calls each by name. One module may hook one event several times: a throwaway plugin with three `skill.prompt` hooks passed 4 of 4 lab cases.
   - It ships in `0.1.0`, built by workers on the shared core.
+
+## Choices Settled by Claude on Verified Readings, 2026-10-30
+
+The user asked that each open choice be settled with the least problematic option the verified data supports.
+
+- D29. Setup writes `statusLine` and `subagentStatusLine` as the shell command `bun --no-env-file "$(ls -d "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline"` (with `--subagent` for the second), and `statusLine` also gets `refreshInterval: 5`. This is the command of `0.4.0-alpha.2`.
+  - Why: user settings do not expand `${CLAUDE_PLUGIN_ROOT}`, because `khe` of `chunk-01y36vdn.js` in `2.1.314` passes the command to the shell unchanged. The plugin cache holds one folder per version (`installed_plugins.json` on this machine: `.../claudetto/claudetto/0.0.0`). An absolute path would break on each update. `sort -V` picks `0.10.0` over `0.9.0` (a test checks it), and the macOS `sort` `2.3-Apple` supports it.
+  - `padding` and `hideVimModeIndicator` stay unset: the line does not render `vim.mode`, and the margin of `COLUMNS_MARGIN` already covers the default padding.
+  - A status line merges as one value: a user's own line is kept whole and reported once, and claudetto adds no key to it.
+  - The two keys sit in the dialog group "Models and windows", because `$.ui.ask` takes at most four options and the four groups are in use. The line shows the model, the effort, the context window, and the limit windows that this group sets.
+- D30. The IDE auto-install is turned off by the env twin `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL=1` in `settings.json`, not by `autoInstallIdeExtension: false` in `~/.claude.json`. `l2r` of `chunk-sq7yspzm.js` (offset `3244316`) in `2.1.314` skips the install when either one is set, so the effect is the same. `~/.claude.json` is rewritten by a running Claude Code, and setup writes only `settings.json`.
