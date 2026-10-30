@@ -1,12 +1,12 @@
 ## Purpose
 
-Look up current library docs at the lowest context cost, through Context7 or a tool of our own.
+Look up current library docs at the lowest context cost, through the Context7 CLI.
 
 ## ADDED Requirements
 
 ### Requirement: Lightest Option Wins
 
-The lookup SHALL be the option with the fewest characters of standing context (tool definitions and descriptions) among a light Context7 integration and our own tool, read by `just capture`. The old `find-docs` skill is not restored as it was (D15).
+The lookup SHALL run the Context7 CLI `ctx7`, never the Context7 MCP server, and its standing context SHALL stay below the server's, as read by `just capture`. The old `find-docs` skill is not restored as it was (D15, D35).
 
 #### Scenario: Choice Recorded
 

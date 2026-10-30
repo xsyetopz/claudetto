@@ -4,6 +4,7 @@ import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { startFakeApi } from "../fake-api.ts";
+import { extraArgs } from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
 
@@ -116,5 +117,30 @@ describe("the score of one request", () => {
 			{ name: "B", chars: JSON.stringify(large).length, desc: 12 },
 			{ name: "A", chars: JSON.stringify(small).length, desc: 0 },
 		]);
+	});
+});
+
+describe("the extra flags of each run", () => {
+	test("`--mcp-config` loads only that file's servers, and `--plugin-dir` adds a plugin", () => {
+		const args = [
+			"--arm",
+			"plain",
+			"--mcp-config",
+			"c7.json",
+			"--plugin-dir",
+			"/tmp/probe",
+		];
+
+		expect(extraArgs(args)).toEqual([
+			"--mcp-config",
+			"c7.json",
+			"--strict-mcp-config",
+			"--plugin-dir",
+			"/tmp/probe",
+		]);
+	});
+
+	test("a run with neither flag passes nothing extra", () => {
+		expect(extraArgs(["--arm", "plain"])).toEqual([]);
 	});
 });
