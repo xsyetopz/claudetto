@@ -28,6 +28,7 @@ const OPTIONS: readonly string[] = [
 	"TYPESAFE_API_KEY",
 	"CONTEXT7_API_KEY",
 	"cheapSummary",
+	"classifier",
 	"subagentCap",
 	"startCap",
 	"windowSeconds",

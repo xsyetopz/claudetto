@@ -22,7 +22,7 @@
 		"TYPESAFE_API_KEY": {
 			"type": "string",
 			"title": "TypeSafe API Key",
-			"description": "The key of Jev for the `decide` option. Claude Code keeps it in secure storage, not in a settings file.",
+			"description": "The key of Jev for the `decide` and `classifier` options.Claude Code keeps it in secure storage, not in a settings file.",
 			"sensitive": true
 		},
 		"CONTEXT7_API_KEY": {
@@ -37,6 +37,13 @@
 			"description": "Use `on` to have claudetto answer a compaction with one bounded call on `claude-haiku-5-5` instead of letting Claude Code summarize on the model the session runs. It is `off` because no measured rows price it yet, and every failure of the call falls back to the compaction of Claude Code.",
 			"default": "off",
 			"options": ["off", "on"]
+		},
+		"classifier": {
+			"type": "string",
+			"title": "Own Tool-Call Classifier",
+			"description": "Use `haiku` or `sonnet` to have claudetto judge each tool call that reads or changes more than the read-only tools, in place of the auto mode classifier of Claude Code. It asks Jev first when `TYPESAFE_API_KEY` is set, then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, and every call is paid. A failed or unclear check denies the call. It is `off` because no measured rows price it or compare it with the built-in classifier yet.",
+			"default": "off",
+			"options": ["off", "haiku", "sonnet"]
 		},
 		"subagentCap": {
 			"type": "number",

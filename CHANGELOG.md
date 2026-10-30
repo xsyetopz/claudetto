@@ -90,6 +90,12 @@ After each update, do the steps in the "Update" section of the README.
   Lucide is ISC-licensed, which asks that the notice travel with the copies, so `docs/keep/lucide/` vendors the licence, the two glyphs as downloaded, the two composed sources, and the `rsvg-convert` commands that render them.
   Nothing of either drawing is redrawn: the composed file adds a `#17181a` square, a `#f2f2f2` stroke in place of `currentColor`, and a transform that centres the glyph at 640 px with a 192 px margin.
   Replacing either file later changes nothing in a catalogue: the same check states that the file "may become the listing icon only once: the first time the plugin is saved or submitted in the developer portal".
+- The `classifier` option, `off` by default, judges each tool call that is not read-only with claudetto's own rule suite, from a `classic.PreToolUse` hook in `plugins/claudetto/src/blocks/classify/`.
+  It asks Jev first when `TYPESAFE_API_KEY` is set and lets Jev decide alone only at a block probability of at most 0.05 or at least 0.95. Otherwise one call goes to `claude-haiku-5-5` at `high` (`haiku`) or `claude-sonnet-5-5` at `medium` (`sonnet`), with the rules in one cached system block.
+  The judge reads the user's messages and the earlier tool calls, and no assistant prose or tool output, because the agent can argue for itself in both and an injected instruction reaches it through tool output.
+  A failed call, a reply with no verdict, or a thrown error denies, because an unwatched session cannot answer a prompt.
+  A probe on the fake Messages API showed that a hook answer of `allow`, `deny`, or `ask` sends zero requests to the built-in classifier for that call, so the option replaces the built-in classifier, not adds to it.
+  It is off because every judged call is paid and no measured rows price it or compare it with the built-in classifier yet.
 
 ### Fixed
 
