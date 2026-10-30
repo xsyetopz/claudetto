@@ -257,7 +257,7 @@ The broad-rule source is `permission-modes` on `code.claude.com`, the page the s
 
 ## The Facts of `autoMode.environment`
 
-The list is `ENVIRONMENT_FACTS` of `plugins/claudetto/src/automode/environment.ts`. Each fact names
+Setup no longer writes these facts: since D39 of `openspec/changes/release-0-1-0/decisions.md` it writes the suite, whose `environment` list holds no fact of one repository, and `plugins/claudetto/src/automode/environment.ts` was removed. The list was `ENVIRONMENT_FACTS` of that file. Each fact names
 the field it fills, the text the classifier reads, and what was read for it. The session column below
 is the one thing the code does not carry: a date in a value the classifier reads would be narration,
 so it lives here.
