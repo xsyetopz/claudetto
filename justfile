@@ -19,14 +19,11 @@ lint:
 typecheck:
     bun check
 
-# Check that every surface a tier row names has a decision page under `docs/keep/`, check that no sibling files form a cluster that should be a folder, check that every exported declaration carries a JSDoc block that adds a fact, check that a `path:line` citation in a page the repo owns points at a line that exists, check that a backticked `just <recipe>` in such a page is a recipe this `justfile` defines, check that no text is written as a `join("\n")` over an array literal or as an escaped `\n` between its words where a multiline template literal would show its shape, check that the generated Gitleaks rules still match the vendored config, check that the four manifests that declare the version of this project all declare the same one, then validate the plugin manifest and the marketplace that lists it. `--strict` makes a manifest warning a failure, such as an unrecognized field. The plugin-directory checks it prints, such as the missing listing icon, count only under `--profile directory`, which stays off because this change submits nothing to the catalog
+# Check that no agent file declares a tool the runtime withholds from it, check that no sibling files form a cluster that should be a folder, check that every exported declaration carries a JSDoc block that adds a fact, check that no text is written as a `join("\n")` over an array literal or as an escaped `\n` between its words where a multiline template literal would show its shape, check that the generated Gitleaks rules still match the vendored config, check that the four manifests that declare the version of this project all declare the same one, then validate the plugin manifest and the marketplace that lists it. Each check reads the code that ships; the prose checks of `docs/` are gone. `--strict` makes a manifest warning a failure, such as an unrecognized field. The plugin-directory checks it prints, such as the missing listing icon, count only under `--profile directory`, which stays off because this change submits nothing to the catalog
 validate:
-    bun tools/keep-pages.ts
     bun tools/agent-tools.ts
     bun tools/clusters.ts
     bun tools/jsdoc.ts
-    bun tools/citations.ts
-    bun tools/recipes.ts
     bun tools/literals.ts
     bun tools/gitleaks/run.ts --check
     bun tools/rebuild/constants.ts

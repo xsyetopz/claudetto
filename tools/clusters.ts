@@ -33,12 +33,10 @@ export const ROOTS: readonly string[] = [
 const SKIP = new Set(["node_modules", ".git"]);
 
 /**
- * Folders whose layout another check already owns, so this one must not ask them to move. `docs/keep/`
- * is read by name rather than by a reader: `tools/keep-pages.ts:77` scans `docs/keep/` plus the folder
- * `KIND_FOLDERS` gives for a kind of surface, and `:96` builds the path of a missing page as
- * `docs/keep/<folder>/<name>.md`. A page there is named for the surface it decides, so a cluster of
- * sibling names is the shape that check requires rather than a shape to fix. The exemption is a path
- * and not a folder name, so a folder called `keep` elsewhere is still governed.
+ * Folders whose shape is the point, so this check must not ask them to move. A page under `docs/keep/`
+ * is named for the one surface it decides, so a run of sibling names there is the layout the folder
+ * wants rather than a cluster to fix. The exemption is a path and not a folder name, so a folder called
+ * `keep` elsewhere is still governed.
  */
 const EXEMPT: readonly string[] = ["docs/keep"];
 
