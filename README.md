@@ -48,7 +48,8 @@ A value you already set keeps your value.
 The keys take effect in the next session, because Claude Code reads them when it starts.
 
 The command is answered in code and tells the model nothing of its output, so running it costs no tokens.
-Its row in the command listing costs 48 characters of the first request.
+A `claude -p "/claudetto:setup"` run against a fake Messages API on `127.0.0.1` sent that API no request at all, so the measurement is zero and not an estimate.
+Its row in the command listing costs 48 characters of the first request, which is the whole price of having the command.
 
 ### The Three Groups
 
