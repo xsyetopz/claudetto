@@ -437,6 +437,47 @@ eight by a command over the tree rather than by a model reading the reply
 (`docs/evidence/grader-blindness.md`), and the `check` of each is prose that a runner has to
 implement.
 
+## Surface Baseline of `0.1.0`
+
+Read on 2026-10-31 with Claude Code `2.1.314`. Every surface claudetto reaches, read before any cut.
+`just inventory` held its three rows: baseline 46,105, deny list 33,684, shipped 32,039.
+
+The first request comes from `just capture --shipped --dump DIR`, in the `plugin` arm, and reads
+32,039 in total: `system` 5,708, `tools` 13,801 (9), `messages` 11,848. Each row is the JSON length
+of its piece as the request carries it.
+
+| Surface | Where it travels | Characters |
+| --- | --- | --- |
+| Session prompt, `agents/main.md` body | third `system` block | 5,715 (5,572 text) |
+| Tool texts | `tools` | 13,801 |
+| `Bash` / `Agent` / `Read` / `Skill` | `tools` | 3,699 / 3,021 / 1,665 / 1,403 |
+| `ToolSearch` / `ListAgents` / `Edit` / `Write` / placeholder | `tools` | 1,204 / 1,070 / 931 / 594 / 204 |
+| Sandbox notes and configuration | last message | 6,422 (995 notes, 5,427 configuration) |
+| Output style `Concise` | last message | 1,939 |
+| Agent listing, four agents | last message | 1,155 |
+| Environment block | last message | 847 |
+| Skill listing, three skills | last message | 481 |
+| Hook output, the `handoff` block's reminder | first message | 819 |
+
+The sandbox rows appear only because the shipped settings turn the sandbox on, and the plain arm
+carries none. The configuration lists paths of the capture's temp folder and the user's home, and the
+harness cuts it at a fixed count with "... and 153 more", so its length depends on the machine.
+
+The classifier request is read with `just capture --classifier --arm ARM --settings FILE`. A
+`--shipped` run sends no classifier request, because the shipped sandbox runs the played
+`git push` without the classifier. The file holds the shipped `autoMode` alone, or the shipped
+settings with `sandbox.enabled` set to `false`.
+
+| Classifier arm | Total | `system` |
+| --- | --- | --- |
+| `plain`, built-in lists | 141,962 | 140,337 |
+| `plugin`, shipped `autoMode` suite | 65,340 | 63,893 |
+| `plugin`, all shipped settings, sandbox off | 66,075 | 64,628 |
+
+A `-p` run now writes Claude Code's classifier billing notice to stderr whenever the base URL is not
+`*.anthropic.com`. The remote flag `tengu_velvet_heron` gates the notice. The notice does not
+stop the classifier, so it changes no reading.
+
 ## History
 
 This section reads the archived tree, which no longer ships. Each reading explains why the current
