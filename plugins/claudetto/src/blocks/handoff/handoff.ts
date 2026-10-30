@@ -216,10 +216,9 @@ export const CONTEXT_BLOCK = "context_management";
 
 /** The redaction line is here because `redact` does not cover the file Claude writes. */
 export const contextManagementText = (): string =>
-	`When the conversation grows long, a handoff file carries the work into the next context window.
-Write it under \`${HANDOFF_DIR}\` with these nine headings:
+	`When the conversation grows long, write a handoff file under \`${HANDOFF_DIR}\` for the next context window, with these headings:
 ${HANDOFF_SECTIONS.map((section) => `\`${section}\``).join(", ")}
-Reference a plan, spec, issue, commit, or diff by its path or URL, in place of pasting its text.
-Write \`[REDACTED]\` in place of a key or a token.
-A file that you write holds the decisions and the reasons, which code cannot read off a transcript.
+Cite plans, specs, issues, commits, and diffs by path or URL, not by pasting them.
+Write \`[REDACTED]\` for a key or a token.
+Record decisions and their reasons, which code cannot read off a transcript.
 Continue each task to its end.`;

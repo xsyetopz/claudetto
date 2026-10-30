@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_424;
+export const SHIPPED_TOTAL = 31_352;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -46,7 +46,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "plugin system text", chars: -38 },
 	// The four agents are delegation targets, so the harness lists them in the first message.
 	{ name: "agent listing", chars: -1155 },
-	{ name: "handoff context", chars: -820 },
+	{ name: "handoff context", chars: -748 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
 	{ name: "output style", chars: -1644 },
 	// Setup does not ship the key; the classifier call pays for the lists.
