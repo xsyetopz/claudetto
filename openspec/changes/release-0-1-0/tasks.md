@@ -69,7 +69,7 @@ Each task lands its own tests and docs, and each group ends with `just check` pa
 ## 12. Building Blocks (`building-blocks`)
 
 - [x] 12.1 The block core: the `Block` record, `src/blocks/catalog.ts` with `attachBlocks`, and the `/init` interview as the first block. Verify: `bun test src/blocks` reads 5 pass, and renaming the block's id fails the lab-file and attach-call cases; `claude plugin test plugins/claudetto` reads 144 pass.
-- [ ] 12.2 Move each hook of `register.ts` into a block, with its lab cases unchanged and its lab file named after the block. Verify: `claude plugin test plugins/claudetto` reads the same pass count, and `register.ts` holds only `attachBlocks`.
+- [x] 12.2 Move each hook of `register.ts` into a block, with its lab cases unchanged and its lab file named after the block. Verify: `claude plugin test plugins/claudetto` reads the same pass count, and `register.ts` holds only `attachBlocks`. `claude plugin test plugins/claudetto` reads 144 pass, the count of 12.1. `src/register.ts` holds one call, `attachBlocks(on, options)`. Each lab file or folder of `tests/` is named after one of the ten blocks of `src/blocks/`.
 - [ ] 12.3 Move `claudetto-you-should-know`'s hooks into blocks on the same core. Verify: its lab reads the same pass count.
 - [ ] 12.4 New blocks by kind from the surface catalog in `.claude/claudetto/research/`: prompts, agents, commands and tool texts, context, screens, and the status line. One worker per kind, each in its own worktree. Verify: each block's lab cases, and an `Athena` review of the merged diff.
 - [ ] 12.5 Each base text meets the writing guide in `.claude/claudetto/research/`, and its character count is recorded with its cut. Verify: `just capture --shipped` before and after.
