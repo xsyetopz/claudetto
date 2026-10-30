@@ -15,7 +15,7 @@ One plugin, `claudetto`, on Claude Code `2.1.314`: the mod (`plugins/claudetto/s
 | `prompt-trim` | Cut every surface claudetto reaches: the session prompt, tool texts, agent and skill texts, the output style, and hook output, each read by `just capture` and `just inventory` before and after. `session/prompt` itself is rebuilt only if a reading shows it costs little | `prompt.compose`, `prompt.section`, `tool.describe`, static files | D12, D21 | `archive/plugins/claudetto/modules/session/prompt/` |
 | `summary` | The compaction summary on Haiku 5.5, at `high` | `src/summary.ts` | D16 | `src/summary.ts` today |
 | `classifier-trim` | Read the size of the classifier request per rung, free, then pick the smallest rung that decides like A | `tools/capture/`, `autoMode` lists, `CLAUDE_CODE_AUTO_MODE_*` env | D10, D20 | `docs/prompt/machinery.md`, the `2.1.314` binary |
-| `auto-mode-ab` | A paid A/B of the built-in classifier run locally (A) against claudetto's own mode (C) and the smallest trim rungs (B) | `tools/evals/` | D17, D19, D20 | `tools/evals/`, `src/jev/` |
+| `auto-mode-ab` | A paid A/B of the built-in classifier run locally (A) against claudetto's own mode (C, on two models) and the smallest trim rungs (B) | `tools/evals/` | D17, D19, D20, D36 | `tools/evals/`, `src/jev/` |
 
 Kept as they are: `Artemis`, `Athena`, `src/handoff.ts`, `src/read-back.ts`, and the other modules of `src/`. Out by decision: `Zeus`, `Hephaestus`, `Apollo` (D6), the OpenSpec workflow skills, the preset source, and `bin/minispec` (D3), `ground`, `protect`, and `notes` (D9).
 

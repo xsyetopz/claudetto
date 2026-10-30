@@ -12,7 +12,7 @@ The restart removed features the user never agreed to drop, and setup writes les
 - A light docs lookup through Context7 or our own (D15).
 - The compaction summary runs on Haiku 5.5 at `high` (D16).
 - **BREAKING**: The classifier request is cut down rung by rung. Each rung is read in characters for free, and its regression is read in a paid A/B against the built-in classifier run locally. The `autoMode` lists and `src/automode/faults.ts` follow the readings (D20).
-- A paid A/B of claudetto's own auto mode, Jev first and then Haiku 5.5 at `high`, against the built-in classifier. Nothing is wired before the reading (D17, D19).
+- A paid A/B of claudetto's own auto mode, Jev first and then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, against the built-in classifier. Nothing is wired before the reading (D17, D19, D36).
 - Every surface claudetto reaches is cut and read before and after: the prompt, tool texts, agent and skill texts, the output style, and hook output (D21).
 - Version `0.1.0` in every manifest.
 
