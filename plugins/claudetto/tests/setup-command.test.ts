@@ -37,13 +37,21 @@ interface Written {
 	readonly text: string;
 }
 
+/** One dialog the engine raised, as it arrived at the tool. */
+interface Dialog {
+	readonly question: string;
+	readonly labels: readonly string[];
+}
+
 /**
- * The question of a dialog the engine raised, taken from the tool input.
+ * The question and the offered labels of a dialog the engine raised, taken from the tool input.
  *
- * `$.ui.ask` looks its answer up under this exact text, after its own shortening of what the plugin
- * passed, so a stub that answers must key on what arrived and not on the text it sent.
+ * `$.ui.ask` looks its answer up under this exact question text, after its own shortening of what the
+ * plugin passed, so a stub that answers must key on what arrived and not on the text it sent. The
+ * labels are read so that a case claiming to answer with an unoffered group can hold that against
+ * what the dialog really offered, rather than assume it.
  */
-const askedQuestion = (input: object): string => {
+const dialogOf = (input: object): Dialog => {
 	const questions = "questions" in input ? input.questions : undefined;
 	const first: unknown = Array.isArray(questions) ? questions[0] : undefined;
 	if (typeof first !== "object" || first === null || !("question" in first)) {
@@ -53,30 +61,52 @@ const askedQuestion = (input: object): string => {
 	if (typeof question !== "string") {
 		throw new Error("the dialog's question is no string");
 	}
-	return question;
+	const options = "options" in first ? first.options : undefined;
+	const labels = (Array.isArray(options) ? options : []).map(
+		(option: unknown) =>
+			typeof option === "object" && option !== null && "label" in option
+				? String(option.label)
+				: "",
+	);
+	return { labels, question };
 };
 
+/** What one answered run did: the files it wrote, and each dialog the stub answered. */
+interface Run {
+	readonly files: readonly Written[];
+	readonly asked: readonly Dialog[];
+}
+
 /**
- * Answers the dialog with `labels` over a settings file holding `{}`, and collects each write.
+ * Answers the dialog with `labels` over a settings file holding `{}`, and collects the writes.
  *
  * `$.ui.ask` is a `tool.call` of `AskUserQuestion` through every hook but the calling one, so a test
  * answers the dialog by answering that call with the result the tool would have given.
  *
+ * `asked` is collected because the command says "Nothing was chosen" both for an answer that names no
+ * group and for a dialog nobody answered, so its own output cannot tell the two apart. A case that
+ * means to drive the filter holds the dialog instead: that it was raised once, and that what it
+ * answered with is not among the labels the dialog offered. A wrong answer key is caught by the cases
+ * that expect a write, where it stops the file from being written at all.
+ *
  * `uname -s` is left unanswered, so the platform is unknown and no `sandbox` block is composed, which
  * keeps the written keys the same on any machine running this test.
  */
-const answered = (on: On, labels: readonly string[]): readonly Written[] => {
+const answered = (on: On, labels: readonly string[]): Run => {
 	const files: Written[] = [];
+	const asked: Dialog[] = [];
 	environment(on);
 	on("fs.read", () => ({ value: "{}" }));
 	on("fs.write", (_$, e) => {
 		files.push({ path: e.path, text: e.text });
 		return { value: undefined };
 	});
-	on("tool.call", { tool: "AskUserQuestion" }, (_$, e) => ({
-		result: { answers: { [askedQuestion(e)]: [...labels] } },
-	}));
-	return files;
+	on("tool.call", { tool: "AskUserQuestion" }, (_$, e) => {
+		const dialog = dialogOf(e);
+		asked.push(dialog);
+		return { result: { answers: { [dialog.question]: [...labels] } } };
+	});
+	return { asked, files };
 };
 
 test("the command is answered in code, so the model is left nothing to read", async ($: Engine, on: On) => {
@@ -96,7 +126,7 @@ test("with nobody to ask, the command writes nothing and says so", async ($: Eng
 });
 
 test("a kept group is written to the user settings file, and only its keys", async ($: Engine, on: On) => {
-	const files = answered(on, ["Smaller prompt"]);
+	const { files } = answered(on, ["Smaller prompt"]);
 
 	await run($);
 
@@ -117,15 +147,16 @@ test("a kept group is written to the user settings file, and only its keys", asy
 });
 
 test("a run that writes a file still leaves the model nothing to read", async ($: Engine, on: On) => {
-	answered(on, ["Smaller prompt"]);
+	const { files } = answered(on, ["Smaller prompt"]);
 
 	const out = await run($);
 
+	expect(files).toHaveLength(1);
 	expect(out.context).toBeUndefined();
 });
 
 test("two kept groups are written together", async ($: Engine, on: On) => {
-	const files = answered(on, ["Smaller prompt", "Models and windows"]);
+	const { files } = answered(on, ["Smaller prompt", "Models and windows"]);
 
 	await run($);
 
@@ -136,10 +167,22 @@ test("two kept groups are written together", async ($: Engine, on: On) => {
 });
 
 test("an answer naming no offered group writes nothing", async ($: Engine, on: On) => {
-	const files = answered(on, ["something the dialog never offered"]);
+	const unoffered = "something the dialog never offered";
+	const { asked, files } = answered(on, [unoffered]);
 
 	const out = await run($);
 
+	expect(asked).toHaveLength(1);
+	expect(asked[0]?.labels ?? []).not.toContain(unoffered);
 	expect(files).toEqual([]);
 	expect(out.text ?? "").toContain("Nothing was chosen");
+});
+
+test("the dialog offers the groups the report then speaks of", async ($: Engine, on: On) => {
+	const { asked } = answered(on, ["Sandbox"]);
+
+	await run($);
+
+	expect(asked[0]?.labels ?? []).toContain("Sandbox");
+	expect((asked[0]?.labels ?? []).length).toBeGreaterThanOrEqual(2);
 });

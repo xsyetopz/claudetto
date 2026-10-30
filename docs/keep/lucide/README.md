@@ -37,8 +37,16 @@ rsvg-convert -w 1024 -h 1024 -o plugins/claudetto-you-should-know/.claude-plugin
 `rsvg-convert` comes from `librsvg`, installed with Homebrew. It is not in `just check`, because the
 two PNG files are committed and nothing regenerates them on a gate run.
 
-`claude plugin validate --profile directory` takes a square PNG or JPEG of 512 to 2048 px on each
-side and under 2 MB, and it accepts neither SVG nor WebP, which is why a PNG is committed beside the
-SVG it is rendered from. The same check states that the file "may become the listing icon only once:
-the first time the plugin is saved or submitted in the developer portal", so replacing either PNG
-after a submission does not change the icon that the catalogue shows.
+A PNG is committed beside the SVG it is rendered from because the listing wants one, not because the
+local validator insists. `claude plugin validate --profile directory` checks an icon it finds only
+for a magic number that matches the file's own extension: a `.png` must open with the PNG signature,
+a `.jpg` with `FF D8 FF`, and a `.svg` is merely parsed as text. It reads no dimensions and no byte
+count beyond a floor of 12, so it passes a 256 px PNG, a 3000 px PNG, and an `icon.svg` alike, and
+raises `ICON_INVALID` only for a file whose bytes contradict its extension.
+
+The requirement itself comes from the `fix` advice of the validator's `ICON_MISSING` warning, which
+is raised only when no icon is found at all: "a square PNG or JPEG in the plugin: 512 to 2048 px on
+each side, under 2 MB. SVG and WebP are not accepted. That file may become the listing icon only
+once: the first time the plugin is saved or submitted in the developer portal." So the sizes are the
+developer portal's rule and go unchecked here, and replacing either PNG after a submission does not
+change the icon that the catalogue shows.

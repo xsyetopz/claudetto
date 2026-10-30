@@ -84,7 +84,8 @@ After each update, do the steps in the "Update" section of the README.
   Nothing compared them: `tests/repo/manifests.test.ts` tests the `userConfig` options and the source paths, and `claude plugin validate` checks the shape of each file and not the value inside it, so the prose of `CONTRIBUTING.md` was the only rule and it named three of the four.
   `package.json` is the reference, the marketplace version is read from under `metadata`, and a manifest with no string `version` is a fault on its own.
 - Each plugin ships a listing icon, so `claude plugin validate --profile directory` now passes both with no warning at all (the user, 2026-10-30: "if you want to give it an icon, fetch a royalty-free svg somewhere that fits the plugin's idea").
-  They are 1024 by 1024 PNG files at `plugins/claudetto/.claude-plugin/icon.png` and `plugins/claudetto-you-should-know/.claude-plugin/icon.png`, because that check takes a square PNG or JPEG of 512 to 2048 px under 2 MB and accepts neither SVG nor WebP.
+  They are 1024 by 1024 PNG files at `plugins/claudetto/.claude-plugin/icon.png` and `plugins/claudetto-you-should-know/.claude-plugin/icon.png`, which is what the developer portal asks for: a square PNG or JPEG of 512 to 2048 px under 2 MB, with neither SVG nor WebP accepted.
+  That rule is the `fix` advice of the validator's `ICON_MISSING` warning and goes unchecked locally, because the check on an icon it finds compares magic bytes against the file's own extension and reads no dimensions at all.
   The glyphs are Lucide `gauge` for the core plugin, whose thesis is that every value ships with its measurement, and Lucide `lightbulb` for the add-on, which raises one note.
   Lucide is ISC-licensed, which asks that the notice travel with the copies, so `docs/keep/lucide/` vendors the licence, the two glyphs as downloaded, the two composed sources, and the `rsvg-convert` commands that render them.
   Nothing of either drawing is redrawn: the composed file adds a `#17181a` square, a `#f2f2f2` stroke in place of `currentColor`, and a transform that centres the glyph at 640 px with a 192 px margin.
@@ -140,9 +141,11 @@ After each update, do the steps in the "Update" section of the README.
 - The report of `/claudetto:setup` no longer opens with a plan tier, which was always the wrong one.
   It printed `Tier: claude_pro.` to every user, because a hooks module cannot reach `.claude.json` to read the login and the command composes from `SNIPPET_ROW`, whichever row that constant names.
   `tierReport` now takes the tier as `string | undefined` and prints no line for `undefined`, which is what the hook passes; `just setup` reads the login itself and still prints its own tier.
+  Two cases of `tests/claudetto/tier/hooks.test.ts` hold `setupReport` to printing neither a `Tier:` line nor the tier of `SNIPPET_ROW` for any choice of groups, so the line cannot come back unnoticed.
 - Setup now says what a discarded group would have done, which nothing read before.
   `KeyGroup.why` held one line for each of the three groups and no caller used it: the dialog of `$.ui.ask` shows labels with no descriptions, and a kept group is spelled out by the `Wrote` line of each of its keys, so a person who declined a group was told only its name.
   Each discarded line now carries it, and it costs no tokens, because the hook answers with `text` and no `context`.
+  Two more cases of `tests/claudetto/tier/hooks.test.ts` hold every discarded group's `why` in the report and hold a kept group out of the discarded lines.
 - Three gaps in the checks are closed, each of which let a shipped behavior change without a failure.
   `tests/claudetto/tiers.test.ts` now holds the guard that `tiers.ts:117` claimed was there and was not: every row of `TIERS` must give the snippet of `SNIPPET_ROW`, which is what makes the `command.run` hook safe to compose from one row while it cannot read the plan.
   `plugins/claudetto/tests/setup-command.test.ts` now answers the dialog instead of testing only the "nobody to ask" path, through a `tool.call` stub on `AskUserQuestion` keyed on the question the engine passed, and asserts the written path and the written keys.
@@ -154,6 +157,13 @@ After each update, do the steps in the "Update" section of the README.
   `skipped` and `turns` were scored in code and absent from the table of `docs/evidence/code-compaction-probe.md`, "The Bars"; both rows are added there.
   The file's own header said it "reads them from there", which no code did, so it now says the list is transcribed and why nothing parses the Markdown at run time: a probe round must decide with no `docs/` read.
   Two cases in `claudekit/probe/round/__tests__/verdict.spec.ts` hold the two lists against each other in both directions, so the next bar added to either side fails the gate.
+- Two of the new lab cases of `plugins/claudetto/tests/setup-command.test.ts` passed without driving what they named, found by a review of the commit that added them.
+  "a run that writes a file still leaves the model nothing to read" asserted `out.context` alone and threw its writes away, which holds on the "nobody to ask" path too, so it would have passed with the dialog stub never reached; it now asserts the write as well, and a stub keyed on the wrong question makes it fail.
+  "an answer naming no offered group writes nothing" asserted no write and the "Nothing was chosen" text, which the command prints for an unanswered dialog and for an unoffered answer alike, so neither assertion could tell the filter from a stub that never ran; it now holds the dialog itself, that it was raised once and that the label it answered with is not among the labels offered.
+  The helper collects each dialog rather than each question text, and one case holds that the dialog really offers the groups the report speaks of.
+- `docs/keep/lucide/README.md` and the icon entry of this changelog said `claude plugin validate --profile directory` enforces a square PNG or JPEG of 512 to 2048 px under 2 MB and takes neither SVG nor WebP, and it enforces none of that.
+  The check on an icon it finds compares the file's magic bytes against its own extension and nothing else: a `.png` must open with the PNG signature, a `.jpg` with `FF D8 FF`, a `.svg` is merely parsed as text, and there is no dimension read and no byte count beyond a floor of 12, so a 256 px PNG, a 3000 px PNG, and an `icon.svg` all pass.
+  The sizes are the `fix` advice of the `ICON_MISSING` warning, which the validator raises only when it finds no icon at all, so both pages now name the developer portal as what asks for them and say that the local check does not.
 
 ### Removed
 

@@ -14,6 +14,7 @@ import {
 import {
 	chosenGroups,
 	platformNamed,
+	setupReport,
 } from "../../../plugins/claudetto/src/tiers/hooks.ts";
 import { refusedPaths } from "../../../plugins/claudetto/src/tiers/keys.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
@@ -181,5 +182,47 @@ describe("what the command writes", () => {
 
 		expect(applied.settings["sandbox"]).toBeDefined();
 		expect(applied.settings["outputStyle"]).toBeUndefined();
+	});
+});
+
+describe("the report the command returns", () => {
+	const reportFor = (labels: readonly string[]): string => {
+		const kept = keptSnippet(snippet(), labels);
+		return setupReport("/home/u/.claude/settings.json", labels, {
+			...applyTier({}, kept, refusedPaths(kept)),
+		});
+	};
+
+	// A hooks module cannot reach `.claude.json`, so the command composes from `SNIPPET_ROW` and reads
+	// no plan. Printing that row's own tier would tell every user they are on the plan the constant
+	// names, which is a fact about this code and not about them (`src/tiers/report.ts:20-28`).
+	test("it names no tier, because the command reads no plan", () => {
+		for (const labels of [[], ["Sandbox"], groupLabels()]) {
+			expect(reportFor(labels)).not.toContain("Tier:");
+		}
+	});
+
+	test("the row's own tier is printed by no choice of groups", () => {
+		for (const labels of [[], ["Sandbox"], groupLabels()]) {
+			expect(reportFor(labels)).not.toContain(SNIPPET_ROW.tier);
+		}
+	});
+
+	// `why` is the one place a user reads what a group does: the `$.ui.ask` dialog shows labels and no
+	// descriptions, and a discarded group leaves no `Wrote` line of its own.
+	test("a discarded group is named with what keeping it would have done", () => {
+		const report = reportFor(["Sandbox"]);
+
+		for (const group of KEY_GROUPS.filter(
+			(entry) => entry.label !== "Sandbox",
+		)) {
+			expect(report).toContain(`Discarded ${group.label}`);
+			expect(report).toContain(group.why);
+		}
+	});
+
+	test("a kept group is named in no discarded line", () => {
+		expect(reportFor(["Sandbox"])).not.toContain("Discarded Sandbox");
+		expect(reportFor(groupLabels())).not.toContain("Discarded");
 	});
 });
