@@ -91,6 +91,14 @@ test(
 	},
 );
 
+const ignoreOfferTwice = async ($: Engine, l: ReturnType<typeof lab>) => {
+	await typed($, "first");
+	await typed($, "second");
+
+	await step($, l, { turnId: "t2", index: 0 });
+	await step($, l, { turnId: "t3", index: 0 });
+};
+
 test(
 	"an ignored offer past the free count leaves a skip that grows",
 	ON,
@@ -98,11 +106,7 @@ test(
 		const l = lab(on, {
 			store: { sessions: [openRow("offer")], typedPastInARow: 2 },
 		});
-		await typed($, "first");
-		await typed($, "second");
-
-		await step($, l, { turnId: "t2", index: 0 });
-		await step($, l, { turnId: "t3", index: 0 });
+		await ignoreOfferTwice($, l);
 
 		expect(l.store.get("typedPastInARow")).toBe(3);
 		expect(l.store.get("looksToSkip")).toBe(1);
@@ -114,11 +118,7 @@ test(
 	ON,
 	async ($: Engine, on: On) => {
 		const l = lab(on, { store: { sessions: [openRow("offer")] } });
-		await typed($, "first");
-		await typed($, "second");
-
-		await step($, l, { turnId: "t2", index: 0 });
-		await step($, l, { turnId: "t3", index: 0 });
+		await ignoreOfferTwice($, l);
 
 		expect(l.store.get("typedPastInARow")).toBe(1);
 		expect(l.store.get("looksToSkip")).toBe(0);
