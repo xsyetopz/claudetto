@@ -11,6 +11,7 @@ import { attachHandoff, handoff } from "./handoff/block.ts";
 import { attachHygiene, hygiene } from "./hygiene/block.ts";
 import { attachInitInterview, initInterview } from "./init-interview/block.ts";
 import { attachPlanMode, planMode } from "./plan-mode/block.ts";
+import { attachPriceStep, priceStep } from "./price-step/block.ts";
 import { attachRunLimits, runLimits } from "./run-limits/block.ts";
 import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
 import { attachStatusLine, statusLine } from "./status-line/block.ts";
@@ -20,6 +21,7 @@ import { attachWindow, windowBlock } from "./window/block.ts";
 
 /** One row per block, in the order `attachBlocks` calls them, which is the hook chain order. */
 export const CATALOG: readonly Block[] = [
+	priceStep,
 	setupCommand,
 	statusLine,
 	initInterview,
@@ -42,6 +44,8 @@ export const CATALOG: readonly Block[] = [
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
 export const attachBlocks = (on: On, options: PluginOptions): void => {
 	const context: BlockContext = { options };
+	// Outermost, so it bounds the result and `context` the model reads, after every other block's hook.
+	attachPriceStep(on, context);
 	attachSetupCommand(on, context);
 	attachStatusLine(on, context);
 	attachInitInterview(on, context);
