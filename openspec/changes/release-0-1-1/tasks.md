@@ -2,7 +2,7 @@
 
 ## 1. Block Kinds
 
-- [ ] 1.1 Remove `context` and `screen` from `BlockKind` in `plugins/claudetto/src/blocks/block.ts`, and point task 12.4 of `openspec/changes/release-0-1-0/tasks.md` at this change. Verify: `just check` exits 0, and `rg '"(context|screen)"' plugins/claudetto/src/blocks` finds no `kind` value.
+- [x] 1.1 Remove `context` and `screen` from `BlockKind` in `plugins/claudetto/src/blocks/block.ts`, and point task 12.4 of `openspec/changes/release-0-1-0/tasks.md` at this change. Verify: `just check` exits 0, and `rg '"(context|screen)"' plugins/claudetto/src/blocks` finds no `kind` value.
 
 ## 2. `status-line` Block
 

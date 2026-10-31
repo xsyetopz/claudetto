@@ -5,8 +5,6 @@ export type BlockKind =
 	| "agent"
 	| "command"
 	| "tool-text"
-	| "context"
-	| "screen"
 	| "status-line"
 	| "policy"
 	| "session";
