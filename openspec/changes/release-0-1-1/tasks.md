@@ -20,7 +20,7 @@
 
 ## 3. Release `0.1.1`
 
-- [ ] 3.1 Move the four manifests to `0.1.1` and add a `[0.1.1]` section to `CHANGELOG.md`. Verify: `just validate` passes and `rg '"0\.1\.0"' $(git ls-files '*.json')` finds no manifest.
+- [x] 3.1 Move the four manifests to `0.1.1` and add a `[0.1.1]` section to `CHANGELOG.md`. Verify: `just validate` passes and `rg '"0\.1\.0"' $(git ls-files '*.json')` finds no manifest. `just validate` exits 0, and the `rg` finds nothing and exits 1. The README names `0.1.1` too.
 - [ ] 3.2 Run the gate, and review the change diff. Verify: `just check` exits 0, and a `claudetto:Athena` review of `main..feat/0.1.1` against this change reports no open defect.
 
 ## Workflow follow-up
