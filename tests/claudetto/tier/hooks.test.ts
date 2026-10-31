@@ -3,7 +3,7 @@ import {
 	chosenGroups,
 	platformNamed,
 	setupReport,
-} from "../../../plugins/claudetto/src/blocks/setup-command/hooks.ts";
+} from "../../../plugins/claudetto/src/blocks/setup-command/setup.ts";
 import { refusedNames } from "../../../plugins/claudetto/src/refused.ts";
 import {
 	groupedKeys,
