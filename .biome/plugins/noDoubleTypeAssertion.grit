@@ -1,6 +1,0 @@
-language js
-
-or { `$x as $mid as $t`, `($x as $mid) as $t` } as $assert where {
-	$mid <: or { `unknown`, `any` },
-	register_diagnostic(span=$assert, message="Remove the `as unknown as T` double assertion and fix the types, or validate the value with a type guard instead.", severity="error")
-}

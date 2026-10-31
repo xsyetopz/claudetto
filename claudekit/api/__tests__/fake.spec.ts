@@ -1,5 +1,13 @@
 import { describe, expect, test } from "bun:test";
-import { startFakeApi } from "../fake.ts";
+import { type FakeApi, startFakeApi } from "../fake.ts";
+
+const postTo = async (api: FakeApi, body: unknown): Promise<string> =>
+	(
+		await fetch(`${api.url}/v1/messages`, {
+			method: "POST",
+			body: JSON.stringify(body),
+		})
+	).text();
 
 describe("the fake Messages API", () => {
 	test("keeps the body of a messages request and ends the turn", async () => {
@@ -40,9 +48,8 @@ describe("the fake Messages API", () => {
 
 	test("answers the first request that carries tools with the given tool call, and the next one with text", async () => {
 		const api = startFakeApi({ name: "Bash", input: { command: "touch x" } });
-		const body = JSON.stringify({ stream: true, tools: [{ name: "Bash" }] });
-		const post = async (): Promise<string> =>
-			(await fetch(`${api.url}/v1/messages`, { method: "POST", body })).text();
+		const post = (): Promise<string> =>
+			postTo(api, { stream: true, tools: [{ name: "Bash" }] });
 
 		const first = await post();
 		const second = await post();
@@ -55,6 +62,44 @@ describe("the fake Messages API", () => {
 		);
 		expect(first).toContain('"stop_reason":"tool_use"');
 		expect(second).toContain('"stop_reason":"end_turn"');
+	});
+
+	test("answers each request that carries tools with the next of the given calls, then with text", async () => {
+		const api = startFakeApi([
+			{ name: "Agent", input: { prompt: "p" } },
+			{ name: "Read", input: { file_path: "/f" } },
+		]);
+		const post = (): Promise<string> =>
+			postTo(api, { stream: true, tools: [{ name: "Read" }] });
+
+		const first = await post();
+		const second = await post();
+		const third = await post();
+		await api.stop();
+
+		expect(first).toContain('"name":"Agent"');
+		expect(second).toContain('"name":"Read"');
+		expect(third).toContain('"stop_reason":"end_turn"');
+	});
+
+	test("stamps every answer with the given model and token counts", async () => {
+		const stamp = {
+			id: "msg_stamp",
+			model: "claude-haiku-5-5",
+			usage: { input_tokens: 7, output_tokens: 3 },
+		};
+		const api = startFakeApi({ name: "Bash", input: {} }, "ok", stamp);
+		const post = (body: unknown): Promise<string> => postTo(api, body);
+
+		const call = await post({ stream: true, tools: [{ name: "Bash" }] });
+		const text = await post({ stream: true });
+		const whole = await post({});
+		await api.stop();
+
+		for (const answer of [call, text, whole]) {
+			expect(answer).toContain('"model":"claude-haiku-5-5"');
+			expect(answer).toContain('"input_tokens":7');
+		}
 	});
 
 	test("answers a request that does not stream with one JSON message", async () => {

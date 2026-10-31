@@ -6,10 +6,11 @@ model is called and no provider is reached.
 
 ## Main Prompt
 
-`plugins/claudetto/agents/main.md` is 5,379 characters on disk. The harness sends 5,303 of them, which
-the request carries as 5,386, 294 under the budget of 5,680. The budget is the default body the file
-replaces, measured as the request carries it, since an agent file used as the main thread replaces
-that body instead of adding to it (`docs/prompt/overrides.md`, "What This Means for `main.md` and
+`plugins/claudetto/agents/main.md` is 3,614 characters on disk. The harness sends 3,538 of them, which
+the request carries as 3,608, 70 under the budget of 3,678, read on Claude Code `2.1.316`. The budget is
+the default body the file replaces under the shipped settings, whose `autoMemoryEnabled: false` takes
+the memory section out of it, measured as the request carries it, since an agent file used as the
+main thread replaces that body instead of adding to it (`docs/prompt/overrides.md`, "What This Means for `main.md` and
 `Concise.md`"). The archived file was 11,135 characters, which is more than twice the body it would
 have stood in for.
 
@@ -495,6 +496,16 @@ One surface at a time, each read with `just capture --shipped` against the readi
 The `autoMode` suite, `src/automode/rules.ts`, is read in the classifier request instead: shorter phrasings of 13 rules take its `system` text from 63,571 to 63,453, a fall of 118, and the suite still scored 120 of 120 on the scripted classifier cases.
 
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
+
+Read again on 2026-10-31 with Claude Code `2.1.316`, the shipped first request is 31,213: `system`
+5,439, `tools` 13,504 (9), `messages` 11,588. The 24 under 31,237 are the engine's, all in the sandbox
+block, and "The Baseline Moved a Third Time" of `docs/surfaces.md` holds the readings. The
+`/statusline` label adds nothing: the tree of `0.1.0` reads the same request from a working folder
+path of the same length.
+
+With `agents/main.md` cut to a body of 3,540 characters, the shipped first request is 29,433: `system`
+3,674, `tools` 13,504 (9), `messages` 11,588. With the file moved aside it is 29,505, so the file
+saves 72 where it had cost 1,708.
 
 ## History
 

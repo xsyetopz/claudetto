@@ -32,7 +32,7 @@ session that never needs it.
 
 | Surface | When the harness loads it | What it costs | What belongs there |
 | --- | --- | --- | --- |
-| `agents/main.md` under the `agent` setting | Every request, as the body of `system` | Replaces the default body of 5,627; our 5,493 cuts 134, and the request-neutral bound is 5,600 | A rule that applies to every turn whatever the session touches |
+| `agents/main.md` under the `agent` setting | Every request, as the body of `system` | Replaces the default body, 3,645 under the shipped settings; ours carries 3,608 against the default's 3,678, a cut of 72 in the whole request | A rule that applies to every turn whatever the session touches |
 | `~/.claude/rules/<name>.md` with `paths` | First `Read`, `Write`, or `Edit` of a matching file, and again on demand after a compaction | Nothing until a match, then its body in `messages` | A rule that applies only to a kind of file, such as how to write a comment or a test |
 | `~/.claude/rules/<name>.md` without `paths` | Launch, with the priority of `.claude/CLAUDE.md` | Its body in `messages`, every session | A personal rule with no file kind to scope it to |
 | `~/.claude/CLAUDE.md` | Launch, for every project | Its body in `messages`, every session | The user's own standing preferences. claudetto reads this file and does not write it |
@@ -44,11 +44,11 @@ session that never needs it.
 
 ## Why Not the System Prompt
 
-The body of `system` has a hard bound that the other surfaces do not. The harness sends the default
-body of 5,627 characters when no agent setting is set, so an agent file above that size makes every
-request of every session larger than a stock session, which is a loss and not a trim. The body
-travels as JSON and ours escapes 27 characters more than the default text, so the figure that keeps
-the request from growing is 5,600 and not 5,627.
+The body of `system` has a hard bound that the other surfaces do not. The harness sends a default
+body when no agent setting is set, 3,645 characters under the shipped settings on `2.1.316`, so an
+agent file above that size makes every request of every session larger, which is a loss and not a
+trim. The body travels as JSON and ours has more line breaks than the default text, each escaped, so
+the bound is 3,678 as the request carries it, and `tests/repo/prompt-budget.test.ts` reads it that way.
 
 That bound is the reason a rule needs a reason to be there. A rule about writing a comment applies
 only while code is being written, and a `paths` rule covers exactly that case for nothing, so the

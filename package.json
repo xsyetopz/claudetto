@@ -1,17 +1,17 @@
 {
 	"name": "claudetto",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"private": true,
 	"description": "A very opinionated Claude Code plugin designed by a Rustacean",
 	"type": "module",
 	"scripts": {
 		"test": "bun test",
 		"typecheck": "bun check",
-		"lint": "bunx biome check --error-on-warnings && bun run lint:suppressions",
+		"lint": "biome check --error-on-warnings && bun run lint:suppressions",
 		"lint:md": "bunx markdownlint-cli2",
-		"lint:suppressions": "bun .biome/check-suppressions.mjs",
-		"lint:fix": "bunx biome check --write --error-on-warnings",
-		"lint:ci": "bunx biome ci --error-on-warnings"
+		"lint:suppressions": "biome-json-suppressions",
+		"lint:fix": "biome check --write --error-on-warnings",
+		"lint:ci": "biome ci --error-on-warnings"
 	},
 	"commitlint": {
 		"extends": [
