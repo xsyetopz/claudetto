@@ -1,8 +1,8 @@
 import type { EngineInterface, HookFor } from "claude-code";
-import { settingsFileIn } from "../../settings-file.ts";
+import { settingsFileFor, settingsOf } from "../../settings-file.ts";
 import { groupLabels, KEY_GROUPS, keptSnippet } from "../../tiers/groups.ts";
 import { refusedPaths } from "../../tiers/keys.ts";
-import { applyTier, type Json, settingsText } from "../../tiers/merge.ts";
+import { applyTier, settingsText } from "../../tiers/merge.ts";
 import { tierReport } from "../../tiers/report.ts";
 import { tierSnippet, UNKNOWN_PLATFORM } from "../../tiers/snippet.ts";
 import { SNIPPET_ROW } from "../../tiers/tiers.ts";
@@ -29,9 +29,6 @@ export const chosenGroups = (answer: string): readonly string[] => {
 		.map((part) => part.trim())
 		.filter((part) => labels.includes(part));
 };
-
-const isObject = (value: unknown): value is Json =>
-	typeof value === "object" && value !== null && !Array.isArray(value);
 
 const discardedLines = (kept: readonly string[]): readonly string[] =>
 	KEY_GROUPS.filter((group) => !kept.includes(group.label)).map(
@@ -61,32 +58,6 @@ const unameOf = async ($: EngineInterface): Promise<string> => {
 	}
 };
 
-const settingsPath = async ($: EngineInterface): Promise<string> => {
-	const [configDir, home] = await Promise.all([
-		$.env.get("CLAUDE_CONFIG_DIR"),
-		$.env.get("HOME"),
-	]);
-	return settingsFileIn(
-		configDir === undefined || configDir === "" ? `${home}/.claude` : configDir,
-	);
-};
-
-const heldSettings = async (
-	$: EngineInterface,
-	file: string,
-): Promise<Json | undefined> => {
-	if (!(await $.fs.exists(file))) {
-		return {};
-	}
-	let parsed: unknown;
-	try {
-		parsed = JSON.parse(await $.fs.read(file));
-	} catch {
-		return undefined;
-	}
-	return isObject(parsed) ? parsed : undefined;
-};
-
 const askedGroups = async ($: EngineInterface): Promise<readonly string[]> => {
 	try {
 		const answer = await $.ui.ask(QUESTION, {
@@ -101,8 +72,13 @@ const askedGroups = async ($: EngineInterface): Promise<readonly string[]> => {
 };
 
 export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
-	const file = await settingsPath($);
-	const held = await heldSettings($, file);
+	const file = settingsFileFor(
+		await $.env.get("CLAUDE_CONFIG_DIR"),
+		await $.env.get("HOME"),
+	);
+	const held = settingsOf(
+		(await $.fs.exists(file)) ? await $.fs.read(file) : undefined,
+	);
 	if (held === undefined) {
 		return {
 			text: `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP_COMMAND} again.`,
