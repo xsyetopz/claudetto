@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 import type { Block, BlockContext } from "../block.ts";
-import { onSetupCommand, SETUP_COMMAND } from "./hooks.ts";
+import { onSetupCommand } from "../settings-commands.ts";
+import { SETUP_COMMAND } from "./setup.ts";
 
 export const setupCommand: Block = {
 	id: "setup-command",
