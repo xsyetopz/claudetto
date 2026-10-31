@@ -10,11 +10,12 @@ const usageOf = (model: string, prompt: number): TurnUsage => ({
 	output_tokens: 0,
 });
 
-/** A step that asks for `calls` and holds its stop chunk, carrying `usage` unless it is `undefined`, until `release`; each call answers `chars` characters. */
+/** A step that asks for `calls` and holds its stop chunk, carrying `usage` unless it is `undefined`, until `release`; each call answers `chars` characters, and a call in `failing` throws once. */
 const lab = (
 	on: On,
 	step: { usage: TurnUsage | null | undefined; calls: readonly string[] },
 	chars: Readonly<Record<string, number>>,
+	failing: Set<string> = new Set(),
 ) => {
 	const asked = Promise.withResolvers<void>();
 	const held = Promise.withResolvers<void>();
@@ -36,9 +37,13 @@ const lab = (
 			usage: step.usage ?? null,
 		};
 	});
-	on("tool.call", (_$, e) => ({
-		result: "x".repeat(chars[e.tool_use_id ?? ""] ?? 0),
-	}));
+	on("tool.call", (_$, e) => {
+		const id = e.tool_use_id ?? "";
+		if (failing.delete(id)) {
+			throw new Error(`${id} failed`);
+		}
+		return { result: "x".repeat(chars[id] ?? 0) };
+	});
 	return { asked: asked.promise, release: held.resolve };
 };
 
@@ -57,7 +62,10 @@ const run = async (
 	);
 	step.release();
 	await drained;
-	return Promise.all(answers);
+	const settled = await Promise.allSettled(answers);
+	return settled.map((one) =>
+		one.status === "fulfilled" ? one.value : undefined,
+	);
 };
 
 test("a Haiku result that would take the next request over the step is withheld", async ($: Engine, on: On) => {
@@ -118,4 +126,20 @@ test("a step that ends with no reading passes its result", async ($: Engine, on:
 	const [answer] = await run($, step, ["c1"]);
 
 	expect(answer?.deny).toBeUndefined();
+});
+
+test("a call that throws leaves no wait behind for a later call of the same id", async ($: Engine, on: On) => {
+	const step = lab(
+		on,
+		{ usage: usageOf(HAIKU_MODEL, 99_900), calls: ["c1"] },
+		{ c1: 400 },
+		new Set(["c1"]),
+	);
+
+	const [thrown] = await run($, step, ["c1"]);
+	const later = await $.tool.call({ tool: "mcp__s__read", tool_use_id: "c1" });
+
+	expect(thrown).toBeUndefined();
+	expect(later.deny).toBeUndefined();
+	expect(later.result).toBe("x".repeat(400));
 });
