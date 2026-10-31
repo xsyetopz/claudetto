@@ -26,8 +26,10 @@ export const extraArgs = (args: readonly string[]): string[] => {
 
 const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
   [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
-  [--classifier]
+  [--classifier] [--interactive]
 
+--interactive runs each arm in a detached \`tmux\` session with no \`-p\`, so the request
+holds the tools of an interactive session. It needs \`tmux\` on the PATH.
 --classifier reads the auto mode classifier request in place of the first request.
 Its last system block holds the login name, so it differs between logins.`;
 
@@ -53,6 +55,13 @@ const row = (arm: Arm, score: Score): void => {
 	);
 };
 
+const intro = (interactive: boolean, settings: string | undefined): void => {
+	console.info(
+		`Each arm runs \`${interactive ? "claude" : "claude -p"}\` against a fake Messages API on 127.0.0.1. No provider is reached.`,
+	);
+	console.info(`Settings of each run: ${settings ?? "the defaults"}`);
+};
+
 const main = async (): Promise<void> => {
 	const args = argv.slice(2);
 	if (args.includes("--help")) {
@@ -74,10 +83,8 @@ const main = async (): Promise<void> => {
 		process.exitCode = 1;
 		return;
 	}
-	console.info(
-		"Each arm runs `claude -p` against a fake Messages API on 127.0.0.1. No provider is reached.",
-	);
-	console.info(`Settings of each run: ${settings ?? "the defaults"}`);
+	const interactive = args.includes("--interactive");
+	intro(interactive, settings);
 	const dump = argOf(args, "dump");
 	const prompt = argOf(args, "prompt") ?? PROMPT;
 	if (dump !== undefined) {
@@ -90,6 +97,7 @@ const main = async (): Promise<void> => {
 				prompt,
 				extra: extraArgs(args),
 				classifier: args.includes("--classifier"),
+				interactive,
 			}),
 		),
 	);

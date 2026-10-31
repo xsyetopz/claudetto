@@ -29,7 +29,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 export const settingsText = (settings: Json): string =>
 	`${JSON.stringify(settings, undefined, 2)}\n`;
 
-interface Leaf {
+export interface Leaf {
 	readonly path: readonly string[];
 	readonly value: unknown;
 }
@@ -37,7 +37,10 @@ interface Leaf {
 // A status line is one command with its options, so a user's own line is kept whole and never takes a key of ours.
 const WHOLE: readonly string[] = STATUS_LINE_KEYS;
 
-const leavesOf = (node: unknown, path: readonly string[] = []): Leaf[] =>
+export const leavesOf = (
+	node: unknown,
+	path: readonly string[] = [],
+): Leaf[] =>
 	isRecord(node) && !WHOLE.includes(path.join("."))
 		? Object.entries(node).flatMap(([key, child]) =>
 				leavesOf(child, [...path, key]),
@@ -71,7 +74,10 @@ const wantedAt = (dotted: string, had: unknown, value: unknown): unknown =>
 const writes = (dotted: string, had: unknown, wanted: unknown): boolean =>
 	had === undefined || (dotted === UNION && !same(had, wanted));
 
-const valueAt = (settings: unknown, path: readonly string[]): unknown => {
+export const valueAt = (
+	settings: unknown,
+	path: readonly string[],
+): unknown => {
 	let at = settings;
 	for (const key of path) {
 		if (!isRecord(at) || !Object.hasOwn(at, key)) {
@@ -82,7 +88,7 @@ const valueAt = (settings: unknown, path: readonly string[]): unknown => {
 	return at;
 };
 
-const withValue = (
+export const withValue = (
 	settings: Json,
 	path: readonly string[],
 	value: unknown,

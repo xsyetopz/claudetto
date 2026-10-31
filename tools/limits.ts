@@ -8,7 +8,7 @@ export const MAX_SOURCE_LINES = 300;
 export const MAX_TEST_LINES = 500;
 
 /** The Claude Code version the framework is built against; `README.md` and the `ci` workflow must agree. */
-export const MIN_CLAUDE_CODE_VERSION = "2.1.314";
+export const MIN_CLAUDE_CODE_VERSION = "2.1.316";
 
 /** In characters as the request carries the body, under the shipped settings, whose `autoMemoryEnabled: false` drops the memory section; `agents/main.md` replaces this body, so a larger one is a loss. */
 export const DEFAULT_MAIN_BODY_CHARS = 3678;

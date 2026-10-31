@@ -8,6 +8,7 @@ import type {
 import type { Block, BlockContext } from "../block.ts";
 import { jevBody, postJev } from "../decide/api.ts";
 import { keyOf } from "../decide/options.ts";
+import { markJudged } from "./judged.ts";
 import {
 	actionOf,
 	denied,
@@ -78,11 +79,15 @@ export const classifyBlock: Block = {
 };
 
 export const attachClassify = (on: On, context: BlockContext): void => {
-	on("classic.PreToolUse", ($, e, next) => {
+	on("classic.PreToolUse", async ($, e, next) => {
 		const variant = variantOf(context.options);
 		if (variant === undefined || READ_ONLY_TOOLS.has(e.tool)) {
 			return next(e);
 		}
-		return classify($, e, variant, context.options);
+		const result = await classify($, e, variant, context.options);
+		if ("allow" in result && result.allow === true) {
+			markJudged(e.tool_use_id);
+		}
+		return result;
 	});
 };

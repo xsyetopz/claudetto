@@ -6,6 +6,7 @@ import type {
 	PluginOptions,
 } from "claude-code";
 import type { Block, BlockContext, WithOptions } from "../block.ts";
+import { takeJudged } from "../classify/judged.ts";
 import { admitCall } from "../run-limits/calls.ts";
 import { failedText } from "../run-limits/failures.ts";
 import { changeLedger } from "../run-limits/ledger.ts";
@@ -112,6 +113,8 @@ export const onCheck: WithOptions<HookFor<"tool.check">> = async (
 	next,
 	options,
 ) => {
+	// First, so that every way out of this hook removes the entry.
+	const judged = takeJudged(e.tool_use_id);
 	const refused = repeatedText(await denialsOf($), e.tool, e.input);
 	if (refused !== undefined) {
 		return { decision: "deny", reason: refused };
@@ -129,6 +132,15 @@ export const onCheck: WithOptions<HookFor<"tool.check">> = async (
 		: undefined;
 	const engine = await next(e);
 	if (own === undefined) {
+		return engine;
+	}
+	// The classifier reads the user's words, which this gate cannot, so its allow settles an ask as auto mode's does.
+	if (
+		own.decision === "ask" &&
+		!own.person &&
+		engine.decision === "allow" &&
+		judged
+	) {
 		return engine;
 	}
 	const decision = stricter(engine.decision, own.decision);

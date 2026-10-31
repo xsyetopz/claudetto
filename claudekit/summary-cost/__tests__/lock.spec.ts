@@ -9,6 +9,7 @@ import {
 	utimes,
 	writeFile,
 } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { held, lockPath, underLock } from "../lock.ts";
 
@@ -21,7 +22,7 @@ afterEach(async () => {
 });
 
 const aConfig = async (text = '{"projects":{}}'): Promise<string> => {
-	const dir = `/tmp/lock-${process.pid}-${Math.random()}`;
+	const dir = path.join(tmpdir(), `lock-${process.pid}-${Math.random()}`);
 	dirs.push(dir);
 	await mkdir(dir, { recursive: true });
 	const file = path.join(dir, "config.json");

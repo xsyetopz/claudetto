@@ -19,6 +19,8 @@ export interface Deps {
 	readonly pluginDir: string;
 	readonly model?: string;
 	readonly maxBudgetUsd?: number;
+	/** Lets a test keep its folders under `tmpdir()`, where a sandbox allows writes. */
+	readonly tempPrefix?: string;
 }
 
 export interface Outcome {
@@ -35,7 +37,7 @@ export const executeSession = async (
 	deps: Deps,
 	session: Session,
 ): Promise<Outcome> => {
-	const root = await mkdtemp(TEMP_PREFIX);
+	const root = await mkdtemp(deps.tempPrefix ?? TEMP_PREFIX);
 	const repo = join(root, "repo");
 	const seeded = await seedFixture(deps.run, {
 		root: deps.fixturesRoot,

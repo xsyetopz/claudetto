@@ -6,5 +6,10 @@
     {
       "serverName": "apple-docs"
     }
-  ]
+  ],
+  "sandbox": {
+    "network": {
+      "allowLocalBinding": true
+    }
+  }
 }

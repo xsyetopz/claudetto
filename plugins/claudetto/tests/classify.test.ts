@@ -17,7 +17,7 @@ const USAGE = {
 const KEY = "typesafe-key";
 
 const VARIANTS = [
-	{ option: "haiku", model: "claude-haiku-5-5", effort: "high" },
+	{ option: "haiku", model: "claude-haiku-5-5", effort: "medium" },
 	{ option: "sonnet", model: "claude-sonnet-5-5", effort: "medium" },
 ] as const;
 
@@ -291,6 +291,18 @@ test(
 );
 
 test(
+	"the verdict asks for 1000 tokens, so thinking has room past the verdict inside a 30-second call",
+	SONNET,
+	async ($: Engine, on: On) => {
+		const state = stub(on, says("<block>no</block>"), 0.5, "");
+
+		await $.tool.call(PUSH);
+
+		expect(state.asked[0]?.maxTokens).toBe(1000);
+	},
+);
+
+test(
 	"a read-only tool runs with no classifier call",
 	SONNET,
 	async ($: Engine, on: On) => {
@@ -303,6 +315,47 @@ test(
 		expect(state.ran).toEqual(["Read"]);
 	},
 );
+
+/** Runs `command` with the model answering "no", and gives whether it ran. */
+const ranAfterNo = async ($: Engine, on: On, command: string) => {
+	const state = stub(on, says("<block>no</block>"), 0.5, "");
+	const out = await $.tool.call({ tool: "Bash", command });
+	return { isError: out.isError === true, ran: state.ran };
+};
+
+const FORCE_PUSH = "git push --force-with-lease origin feature/typo";
+
+test(
+	"the classifier's allow settles the gate's ask on a force push",
+	SONNET,
+	async ($: Engine, on: On) => {
+		expect(await ranAfterNo($, on, FORCE_PUSH)).toEqual({
+			isError: false,
+			ran: ["Bash"],
+		});
+	},
+);
+
+test(
+	"the classifier's allow does not settle a push to a host no remote names",
+	SONNET,
+	async ($: Engine, on: On) => {
+		expect(
+			await ranAfterNo(
+				$,
+				on,
+				"git push https://git.example.invalid/x.git main",
+			),
+		).toEqual({ isError: true, ran: [] });
+	},
+);
+
+test("with the classifier off, the gate's ask on a force push stands", async ($: Engine, on: On) => {
+	expect(await ranAfterNo($, on, FORCE_PUSH)).toEqual({
+		isError: true,
+		ran: [],
+	});
+});
 
 test("the option off makes no call", async ($: Engine, on: On) => {
 	const state = stub(on, says("<block>yes</block>"), 0.99);

@@ -21,6 +21,10 @@ const SITES: readonly Site[] = [
 	},
 	{ path: "README.md", declaration: /Claude Code `(\d+\.\d+\.\d+)` or later/ },
 	{
+		path: "README.md",
+		declaration: /Claude Code is older than `(\d+\.\d+\.\d+)`/,
+	},
+	{
 		path: "CONTRIBUTING.md",
 		declaration: /Claude Code `(\d+\.\d+\.\d+)`/,
 	},
@@ -64,10 +68,13 @@ const readSite = async (site: Site): Promise<Reading> => {
 		: { path: site.path, had };
 };
 
-/** Read and write are paired so that every site can be moved at once. */
-const moveSite = async (site: Site, version: string): Promise<void> => {
-	const text = await bunFile(site.path).text();
-	await bunWrite(site.path, moved(text, site, version));
+/** One write per file, since a file can hold two sites and two parallel writes to it would drop one. */
+const moveFile = async (path: string, version: string): Promise<void> => {
+	let text = await bunFile(path).text();
+	for (const site of SITES.filter((s) => s.path === path)) {
+		text = moved(text, site, version);
+	}
+	await bunWrite(path, text);
 };
 
 const main = async (): Promise<void> => {
@@ -94,7 +101,8 @@ const main = async (): Promise<void> => {
 		process.exitCode = 1;
 		return;
 	}
-	await Promise.all(SITES.map((site) => moveSite(site, version)));
+	const paths = [...new Set(SITES.map((site) => site.path))];
+	await Promise.all(paths.map((path) => moveFile(path, version)));
 	console.info(
 		`Moved ${SITES.length} declarations to ${version}. The readings in the comments are left as they were taken; run \`just check\`.`,
 	);

@@ -1,4 +1,4 @@
-export const MINIMUM_VERSION = "2.1.314";
+export const MINIMUM_VERSION = "2.1.316";
 
 export const CONFIG_DISABLES = {
 	workflowSizeGuideline: "unrestricted",
