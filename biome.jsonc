@@ -2,7 +2,7 @@
 // This file holds only this repo's own settings. When a check fails, fix the code
 // so it passes with every rule at full strength.
 {
-	"$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
 	"extends": ["biome-json/strict"],
 	"linter": {
 		"rules": {
