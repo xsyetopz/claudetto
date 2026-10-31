@@ -17,18 +17,18 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_237;
+export const SHIPPED_TOTAL = 31_213;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
-export const SANDBOX_CHARS = 7254;
+export const SANDBOX_CHARS = 7230;
 
 export const CLASSIFIER_CALL_CHARS = 140_718;
 
 export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "deny list", chars: BASELINE_TOTAL - DENIED_TOGETHER_TOTAL },
 	// The residual: hiding our tool texts hides the plugin itself, and it holds request text no row names.
-	{ name: "tool texts", chars: 7332 },
+	{ name: "tool texts", chars: 7319 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "dedupe skill", chars: -155 },
@@ -40,13 +40,13 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 		cost: { shift: -14.2, source: "docs/evidence/compaction/threshold.md" },
 	},
 	{ name: "idleCompaction off", chars: 0 },
-	// Less than the length difference: the JSON string escapes more of our body's characters.
-	{ name: "main agent body", chars: 528 },
-	// The plugin's presence lengthens the default third system block.
-	{ name: "plugin system text", chars: -38 },
+	// The default body it replaces is the one the shipped settings already shortened.
+	{ name: "main agent body", chars: -1708 },
+	// Takes the memory section out of the default body, so it reads only with `agents/main.md` moved aside.
+	{ name: "auto memory off", chars: 2138 },
 	// The four agents are delegation targets, so the harness lists them in the first message.
 	{ name: "agent listing", chars: -1045 },
-	{ name: "handoff context", chars: -748 },
+	{ name: "handoff context", chars: -773 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
 	{ name: "output style", chars: -1644 },
 	// Setup writes the suite, but only the classifier call carries the lists.

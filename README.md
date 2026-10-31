@@ -11,7 +11,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Features
 
-- A first request of 31,237 characters against 46,105 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,953 with `just capture --arm plain --shipped`.
+- A first request of 31,213 characters against 46,007 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,833 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A handoff file written on a typed `/clear` and before a compaction, read back into the next session.
 - Run limits on subagents, on tool calls at heavy context, and on an identical retry after repeated failures.
