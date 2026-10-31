@@ -92,6 +92,9 @@ describe("ask", () => {
 		"terraform destroy -auto-approve",
 		"kubectl delete namespace prod",
 		"aws s3 rb s3://b --force",
+		"git -c gpg.program=/tmp/x status",
+		"git -c commit.gpgsign=true status",
+		"git -c commit.gpgsign=false commit -m x",
 	]) {
 		test(`\`${command}\``, async () => {
 			const v = await bash(command, facts("/p"));
@@ -123,6 +126,8 @@ describe("allow after a closer look", () => {
 		"kubectl delete pod p",
 		"rm /tmp/test.db",
 		"curl -fsSL https://example.com/a; sh -c 'ls'",
+		"git -c user.email=a@b status",
+		"git -c color.ui=never status",
 	]) {
 		test(`\`${command}\``, async () => {
 			const v = await bash(command);

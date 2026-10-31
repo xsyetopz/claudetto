@@ -128,7 +128,7 @@ findings in a host UI, and the `/code-review` text itself tells the model not to
 active instructions ask for it. `ScheduleWakeup` is the one of the three that a CLI user can want:
 it arms the autonomous `/loop` and the session crons that `session_crons` of the `Stop` input
 reports. It is denied anyway, because the archived snippet also set `CLAUDE_CODE_DISABLE_CRON=1`, so
-the two agree, and because claudetto's own goal loop does not call it: a search of the installed
+the two agree, and because claudetto's own `tasks.md` loop does not call it: a search of the installed
 `claudetto` finds the name only in its own deny list. A user who wants `/loop` drops
 this one name and pays 4,887 characters a session for it.
 
@@ -527,7 +527,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | `output-styles/Concise.md` under the `outputStyle` key | −1,644 | None exists yet. A placebo run would price the prompt text |
 | The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
 | The `sandbox` block | −7,230 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
-| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
+| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists. A run of the command pays more, outside the first request: the 1,743-byte body, the `mcp__claudetto__setup` schema, and its list of differences, 18,834 characters for an empty settings file. An interactive session also lists the deferred tool name, 22 characters with its newline, measured on `2.1.316` |
 
 The rows sum to 16,574, which is 46,007 less the 29,433 of the shipped arm, read on `2.1.316`. A negative row is a piece
 the tree adds.
@@ -849,7 +849,9 @@ A request carries three `system` blocks. In the run with the deny alone they mea
 
 The docs figure is the joined length, which came out at `5,719` here against their `5,699`. The `5,627` figure is `system[2]` alone, a different quantity, and on this machine that block is `5,583`. Both remaining differences are machine text: `system[2]` ends in the environment block, which holds the working directory, the platform, and the OS version, and the docs page for the context budget says of its own runs that "the totals shift a little with the length of the project path". So the right reading is that `system[2]` is the number to quote for a body replacement, because that is the block a replacement takes, and the joined `5,719` is the number to quote against the docs.
 
-One fact for the plan beyond the arithmetic. `system[1]` says "You are a Claude agent, built on Anthropic's Claude Agent SDK", and `system[0]` reports `cc_entrypoint=sdk-cli`, because every one of these runs was `claude -p`. An interactive session may carry different text in both blocks, and the probe cannot see that. Every character figure in this file therefore describes a `-p` run.
+One fact for the plan beyond the arithmetic. `system[1]` says "You are a Claude agent, built on Anthropic's Claude Agent SDK", and `system[0]` reports `cc_entrypoint=sdk-cli`, because every one of these runs was `claude -p`. An interactive session may carry different text in both blocks, and `claude -p` cannot show it. Every character figure in this file other than the next paragraph describes a `-p` run.
+
+`just capture --interactive` runs each arm in a detached `tmux` session with no `-p` and types the prompt, so the first request is that of an interactive session. It needs `tmux` on the `PATH`, and the sandbox of a Claude Code session blocks the `tmux` socket, so run it from a terminal. Read on 2026-10-31 on `2.1.316` with the same method and no settings file: `plain` 51,072 (`system` 6,098, `tools` 33,436 with 13 tools, `messages` 9,219), and `plugin` 49,960 (`system` 6,100, `tools` 30,159 with 13 tools, `messages` 11,364). The interactive session adds `Workflow`, `AskUserQuestion`, `ScheduleWakeup`, and `ReportFindings` to the 9 tools of `-p`, so the plugin saves 1,112 characters there, against 16,574 for `-p` with the shipped settings. The two readings differ in settings, so the gap is not all from the session kind. The total also counts a top-level `safeguards` field that none of the three columns holds: 1,741 characters in the `plugin` request of `just capture --interactive`, with the working folder path 18 times, so each character of that path adds about 22 to the total.
 
 ## Gates Read from the Tool Registry Of `2.1.311`
 

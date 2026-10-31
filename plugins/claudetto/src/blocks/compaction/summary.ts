@@ -6,6 +6,7 @@ import type {
 	SessionCompacted,
 	SessionCompactInput,
 } from "claude-code";
+import { capOf } from "../../shared/thinking.ts";
 import { HAIKU_MODEL, type TierRow } from "../../tiers/tiers.ts";
 
 const OPTION_ON = "on";
@@ -20,8 +21,10 @@ export const isCheapSummaryOn = (
 /** The summary's length, which every turn after the compaction carries. */
 export const SUMMARY_MAX_CHARS = 4000;
 
-/** Above the limit in tokens, so the token cap never cuts a reply that the character limit would keep. */
+/** Above the character limit in tokens. The thinking shares the cap, so a reply can still reach it. */
 export const SUMMARY_MAX_TOKENS = 2000;
+
+const SUMMARY_CAP = capOf(SUMMARY_MAX_TOKENS);
 
 /** How long the call may take before the engine's own compaction answers instead. */
 export const SUMMARY_TIMEOUT_MS = 90_000;
@@ -94,6 +97,13 @@ export const summarize = async (
 	}
 	try {
 		const reply = await ask.complete(request);
+		// A cut summary loses its last lines with no mark, so the engine's full compaction is the better answer.
+		if (reply.usage.output_tokens >= SUMMARY_CAP) {
+			ask.log(
+				`Cheap summary reached its cap of ${SUMMARY_CAP} output tokens, thinking included, so it is cut and the engine compacts`,
+			);
+			return undefined;
+		}
 		if (reply.isAnswered && reply.text.trim() !== "") {
 			if (reply.text.length > SUMMARY_MAX_CHARS) {
 				ask.log(

@@ -10,6 +10,7 @@ import { pathOf } from "../paths.ts";
 import * as T from "../prompts.ts";
 import { nameOf } from "../shell/shellkinds.ts";
 import { type Finding, verdict } from "./finding.ts";
+import { pushHostFinding } from "./push.ts";
 
 const FORCE_FLAG = /^-[A-Za-z]*f/;
 
@@ -22,10 +23,15 @@ export const gitFinding = (
 	if (call === undefined) {
 		return undefined;
 	}
-	if (remoteRewrite(call)) {
-		return verdict("ask", T.ASK_PUSH);
-	}
 	const at = dir === null ? null : pathOf(dir, call.dir ?? ".", f);
+	const rewrite = remoteRewrite(call) ? verdict("ask", T.ASK_PUSH) : undefined;
+	const host = pushHostFinding(call, f, at ?? f.cwd);
+	if (host !== undefined) {
+		return async () => (await host()) ?? rewrite;
+	}
+	if (rewrite !== undefined) {
+		return rewrite;
+	}
 	const bulk = bulkStage(call);
 	if (bulk || wholeTree(call)) {
 		return async () => {

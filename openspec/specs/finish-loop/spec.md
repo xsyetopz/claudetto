@@ -1,7 +1,7 @@
 # finish-loop Specification
 
 ## Purpose
-Drive a task to done: a goal command that must pass, and the open boxes of `tasks.md`.
+Drive a task to done: the open boxes of an applied change's `tasks.md`.
 
 ## Requirements
 

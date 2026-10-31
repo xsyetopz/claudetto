@@ -2,7 +2,7 @@ import type { Facts, Verdict } from "../gate.ts";
 import { codeSecret } from "../paths.ts";
 import * as T from "../prompts.ts";
 import { nameOf, operands, optionOf, wordSet } from "../shell/shellkinds.ts";
-import { baseName } from "../shell/wrappers.ts";
+import { baseName, stripWrappers } from "../shell/wrappers.ts";
 import { denySecret, secretWord, verdict } from "./finding.ts";
 
 export const NO_READ = wordSet(
@@ -14,18 +14,52 @@ export const PATTERNED = wordSet("grep egrep fgrep rg ugrep sed awk");
 const EXCLUDE_PATHSPEC = /^:(?:[!^]|\([^)]*\bexclude\b[^)]*\))/;
 const UPLOAD = /^(?:-[A-Za-z]|[^=@<]*=)?[@<](.+)$/;
 
+/** The indexes in `argv` of the script words of a match command, which name no file it reads. */
+const scriptAt = (argv: string[]): ReadonlySet<number> => {
+	const rest = stripWrappers(argv);
+	const offset = argv.length - rest.length;
+	if (
+		!PATTERNED.has(nameOf(rest)) ||
+		rest.some((w, i) => argv[offset + i] !== w)
+	) {
+		return new Set();
+	}
+	return new Set(
+		patternAt(rest.slice(1), nameOf(rest)).map((i) => offset + 1 + i),
+	);
+};
+
 export const holdsSecret = (
 	command: string,
 	commands: string[][],
 	f: Facts,
-): boolean =>
-	codeSecret(command) !== undefined ||
-	commands.some((argv) => argv.some((w) => secretWord(f.cwd, w, f)));
+): boolean => {
+	const scripts = commands.map(scriptAt);
+	// One cut per script word keeps a second, real file name of the same text in the scan.
+	let text = command;
+	for (const [n, argv] of commands.entries()) {
+		for (const i of scripts[n] ?? []) {
+			text = text.replace(argv[i] ?? "", "");
+		}
+	}
+	return (
+		codeSecret(text) !== undefined ||
+		commands.some((argv, n) =>
+			argv.some((w, i) => !scripts[n]?.has(i) && secretWord(f.cwd, w, f)),
+		)
+	);
+};
 
 const PATTERN_VALUES = wordSet("-e -f --regexp --expression --file");
 const PATTERN_OPTS = wordSet("-e --regexp --expression");
 
-export const patternAt = (words: string[]): number[] => {
+/** BSD `sed -i ''` gives the backup suffix as its own word, which is not the script. */
+const suffixAt = (words: string[], name: string): number =>
+	name === "sed"
+		? words.findIndex((w, i) => w === "" && words[i - 1] === "-i")
+		: -1;
+
+export const patternAt = (words: string[], name: string): number[] => {
 	const end = words.indexOf("--");
 	const options = end < 0 ? words : words.slice(0, end);
 	const given: number[] = [];
@@ -40,7 +74,13 @@ export const patternAt = (words: string[]): number[] => {
 			}
 		}
 	}
-	return fromOption ? given : [words.indexOf(operands(words)[0] ?? "\0")];
+	if (fromOption) {
+		return given;
+	}
+	const suffix = suffixAt(words, name);
+	const kept = words.filter((_, i) => i !== suffix);
+	const at = kept.indexOf(operands(kept)[0] ?? "\0");
+	return [suffix >= 0 && at >= suffix ? at + 1 : at];
 };
 
 const readWords = (name: string, rest: string[]): string[] => {
@@ -70,7 +110,7 @@ export const secretFinding = (
 		return undefined;
 	}
 	const skipped = PATTERNED.has(name)
-		? patternAt(rest.slice(1)).map((i) => i + 1)
+		? patternAt(rest.slice(1), name).map((i) => i + 1)
 		: [];
 	const word = readWords(
 		name,

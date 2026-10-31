@@ -19,7 +19,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Requirements
 
-- Claude Code `2.1.314` or later.
+- Claude Code `2.1.316` or later.
 - `git`.
 
 Nothing else. Setup runs inside Claude Code, so it needs no checkout of this repository, no [Bun](https://bun.sh), and no `just`.
@@ -43,13 +43,17 @@ Then run the setup command in Claude Code and restart it:
 /claudetto:setup
 ```
 
-It asks which groups of settings to keep, writes the ones you keep to your user settings file, and names every key it wrote and every key it skipped.
-A value you already set keeps your value.
+The model calls the tool `mcp__claudetto__setup`, which returns each difference between your user settings file and claudetto's keys, with your value and claudetto's value.
+Then it asks you about each group of differences with `AskUserQuestion`, and writes only the keys you keep through the same tool.
+A key you keep replaces your value. A key you do not keep stays as it is.
+The report names every key it wrote and every key it skipped.
 The keys take effect in the next session, because Claude Code reads them when it starts.
 
-The command is answered in code and tells the model nothing of its output, so running it costs no tokens.
-A `claude -p "/claudetto:setup"` run against a fake Messages API on `127.0.0.1` sent that API no request at all, so the measurement is zero and not an estimate.
-Its row in the command listing costs 48 characters of the first request, which is the whole price of having the command.
+Setup also offers two sandbox switches that are not in the groups: `sandbox.enabled: false`, which runs `Bash` outside the sandbox, and `sandbox.network.allowLocalBinding: true`, which lets a sandboxed command listen on a local port.
+
+The tool is registered only in an interactive session, because only a person can choose the keys.
+A setup run costs model tokens: the command body is 1,743 bytes, and the list of differences for an empty settings file is 18,834 characters.
+Its row in the command listing costs 48 characters of the first request.
 
 ### The Four Groups
 
@@ -60,10 +64,10 @@ Its row in the command listing costs 48 characters of the first request, which i
 | Models and windows | `model`, `effortLevel`, `autoCompactWindow`, `fallbackModel` (`claude-sonnet-5-5`), `modelSettings` (the Haiku window and the `maxEffortLevel` ceilings `high` for `claude-opus-5-5`, `medium` for `claude-sonnet-5-5`, and `high` for `claude-haiku-5-5`), `idleCompaction`, the `env` entries `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `CLAUDE_CODE_SUBAGENT_MODEL`, and the status line keys `statusLine` and `subagentStatusLine`. |
 | Features off | `$schema`, the five `/config` switches (`workflowSizeGuideline`, `workflowKeywordTriggerEnabled`, `enableWorkflows`, `enableArtifact`, `remoteControlAtStartup`), the seven claude.ai and notification keys (`disableClaudeAiConnectors`, `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `autoUploadSessions`, `disableRemoteControl`, `inputNeededNotifEnabled`, `agentPushNotifEnabled`), the session features (`autoMemoryEnabled`, `autoDreamEnabled`, `promptSuggestionEnabled`, `awaySummaryEnabled`, `spinnerTipsEnabled`, `feedbackDrafts`, `feedbackSurveyRate`, `todoFeatureEnabled`, `voiceEnabled`), the prompt keys (`includeGitInstructions`, `showThinkingSummaries`, `attribution`), the behaviors (`autoContinueAtUsageLimit`, `switchModelsOnFlag`, `precomputeCompactionEnabled`, `showClearContextOnPlanAccept`, `useAutoModeDuringPlan`, `crossSessionInbound`, `prefersReducedMotion`), `minimumVersion`, and the feature `env` flags of `plugins/claudetto/src/tiers/env.ts`. |
 
-The dialog prints each group's measured figures from `plugins/claudetto/src/cuts.ts` and `plugins/claudetto/src/deny.ts`, and `just inventory` checks them against a reading taken now.
+The tool gives each group's measured figures from `plugins/claudetto/src/cuts.ts` and `plugins/claudetto/src/deny.ts`, and `just inventory` checks them against a reading taken now.
 `minimumVersion` keeps the updater from moving below the version claudetto is checked on; it does not stop an older Claude Code from starting.
 
-A group you discard writes none of its keys, and a key of that group you already have stays as it is.
+A key you discard is not written, and the value you already have for it stays as it is.
 
 The `autoMode` suite holds no fact of this repository, so its `environment` list names only how the classifier tells a trusted host from an external one.
 
@@ -72,27 +76,27 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 
 ### Setup from a Checkout
 
-`just setup` does the same work from a checkout of this repository, for every group at once, and takes `--settings PATH` to aim at another file and `--dry-run` to print the report and write nothing.
+`just setup` writes every group at once from a checkout of this repository, with no model call. It keeps a value you already set, and takes `--settings PATH` to aim at another file and `--dry-run` to print the report and write nothing.
 
 ## What the Core Plugin Changes
 
 | Part | Effect |
 | --- | --- |
-| Settings | `/claudetto:setup` writes the keys of the four groups above. |
+| Settings | `/claudetto:setup` writes the keys you keep from the four groups above, and the sandbox switches. |
 | Handoff | A handoff file is written on a typed `/clear` and before a compaction. The next session reads it back. See [Handoff](#handoff). |
 | Compaction | The compaction of Claude Code stays, with a handoff written before it. The option `cheapSummary` set to `on` answers a compaction with one bounded call on `claude-haiku-5-5`. |
 | Output style | The plugin ships `claudetto:Concise`, which the Smaller prompt group selects. |
-| Permission gate | Stops only a call that loses bytes for good, tampers with the system, or reads a secret. It asks before a `git push` that forces, deletes, or mirrors. |
+| Permission gate | Stops only a call that loses bytes for good, tampers with the system, or reads a secret. It asks before a `git push` that forces, deletes, or mirrors, and before a push to an address that no remote of the repository names. With `classifier` on, the classifier's allow settles an ask of the gate, except the ask on an address no remote names, which only a person settles. |
 | Run limits | Caps the subagents at once and the subagent starts per period, refuses an identical retry after repeated failures, and holds tool calls at heavy context. |
 | Tool descriptions | A shorter description for a few tools. |
 | Agents | `claudetto:main` as the thread's own body, plus four subagents: `claudetto:Artemis` searches many files read-only and returns paths and lines, `claudetto:Athena` reviews a diff in a fresh context and reports each defect, `claudetto:Hephaestus` makes one edit whose goal, files, and check are known and runs the check, and `claudetto:Hermes` answers a question from the web with its sources. `Artemis`, `Athena`, and `Hermes` write no file. |
 | Skills | `dedupe` finds duplicate code with `jscpd` and decides which clones to merge. `docs` looks up current library docs with the Context7 CLI: `bunx ctx7 library`, then `bunx ctx7 docs`. |
 | Status line | Setup writes `statusLine` and `subagentStatusLine`: the folder, the branch of a worktree session, the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown. A line you already set is kept. `/statusline` with no text writes the same two keys with no model call, and prints each key it wrote, or `Wrote no key.` |
 | Hygiene | `just hygiene` removes the stale temp folders and old handoffs that Claude Code never removes, and takes `--dry-run`. The same sweep runs at each startup. |
-| `/goal` | `/goal <cmd>` blocks a stop while the command fails. An applied change's `tasks.md` with an open box blocks a stop too. Five blocked stops in a row with no file change let the stop through. |
+| `tasks.md` loop | An applied OpenSpec change's `tasks.md` with an open box blocks a stop. Five blocked stops in a row with no file change let the stop through. |
 | `/init` | The interview reads the repository, asks only what it does not show, and writes the memory files after a yes to each draft. |
 | Plan mode | A shorter plan mode reminder that names `claudetto:Artemis` for a search over many files. |
-| Version warning | One line at startup when Claude Code is older than `2.1.314`. |
+| Version warning | One line at startup when Claude Code is older than `2.1.316`. |
 
 ## Plugins
 
@@ -117,7 +121,7 @@ The core plugin's options are set in the plugin dialog of Claude Code, and `/con
 | `TYPESAFE_API_KEY` | The key of Jev, for `decide` and `classifier`. Claude Code keeps it in secure storage, not in a settings file. Without a key no tool is registered and nothing leaves the machine. |
 | `CONTEXT7_API_KEY` | Optional. The key the `docs` skill's `ctx7` CLI sends to Context7 for higher rate limits. Claude Code keeps it in secure storage, and it reaches the CLI through the env, never through the context. |
 | `cheapSummary` | `on` answers a compaction with one bounded call on `claude-haiku-5-5` at `high` effort, held to 4,000 characters. |
-| `classifier` | `haiku` or `sonnet` judges each tool call that is not read-only with claudetto's own rules, in place of the auto mode classifier: Jev first when a key is set, then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`. Each call is paid, and a failed check denies. It ships `off`. |
+| `classifier` | `haiku` or `sonnet` judges each tool call that is not read-only with claudetto's own rules, in place of the auto mode classifier: Jev first when a key is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, each at `medium`. Each call is paid, and a failed check denies. It ships `off`. |
 | `subagentCap`, `startCap`, `windowSeconds`, `callCap`, `heavyTokens`, `failLimit` | The run limits. |
 
 Claude calls the decision tool for a decision that is its own, which is the one way to get a second judgment in an autonomous run.
@@ -149,9 +153,10 @@ When `openspec` is on `PATH` and the project has no `openspec/`, `just setup` ru
 ```bash
 claude plugin marketplace update claudetto
 claude plugin update claudetto@claudetto
+claude plugin update claudetto-you-should-know@claudetto
 ```
 
-Run the `claude plugin update` line again for each add-on that you installed, with its name in place of `claudetto`.
+Each plugin updates on its own: `claude plugin update claudetto@claudetto` leaves `claudetto-you-should-know` at its old version. Skip the last line if you did not install it.
 Then restart Claude Code, and read the [changelog](CHANGELOG.md).
 
 To try an unreleased checkout, run:

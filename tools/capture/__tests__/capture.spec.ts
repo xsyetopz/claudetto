@@ -3,6 +3,7 @@
 import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
+import { sessionArgv } from "../arm.ts";
 import { extraArgs } from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
@@ -112,5 +113,29 @@ describe("the extra flags of each run", () => {
 
 	test("a run with neither flag passes nothing extra", () => {
 		expect(extraArgs(["--arm", "plain"])).toEqual([]);
+	});
+});
+
+describe("the command line of one arm", () => {
+	test("a `-p` arm passes the prompt with `-p`", () => {
+		expect(
+			sessionArgv({
+				plugin: undefined,
+				prompt: "hi",
+				interactive: false,
+				extra: [],
+			}),
+		).toEqual(["claude", "-p", "hi"]);
+	});
+
+	test("an interactive arm has no `-p`, because the prompt is typed into the session", () => {
+		expect(
+			sessionArgv({
+				plugin: "/p",
+				prompt: "hi",
+				interactive: true,
+				extra: ["--x"],
+			}),
+		).toEqual(["claude", "--plugin-dir", "/p", "--x"]);
 	});
 });

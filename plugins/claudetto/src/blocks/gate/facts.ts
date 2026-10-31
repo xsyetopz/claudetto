@@ -9,6 +9,7 @@ import { gitState } from "./tree-state.ts";
 
 const temps = new Map<string, Promise<string[]>>();
 const TRAILING_SLASHES = /\/+$/;
+const PUSH_SUFFIX = / \(push\)$/;
 
 export interface FactsEnv {
 	cwd: string;
@@ -38,6 +39,23 @@ const tempsOf = async (
 	return pairs.flat();
 };
 
+/** `git remote -v` prints `name<TAB>url (fetch|push)`; a run that fails reads as unknown, never as no remote. */
+const pushUrls = async (
+	io: FactsIo,
+	dir: string,
+): Promise<readonly string[] | undefined> => {
+	const out = await io
+		.run(["git", "-C", dir, "remote", "-v"], GIT_TIMEOUT_MS)
+		.catch(() => undefined);
+	if (out?.exitCode !== 0) {
+		return undefined;
+	}
+	return out.stdout
+		.split("\n")
+		.filter((line) => line.endsWith(" (push)"))
+		.map((line) => line.split("\t")[1]?.replace(PUSH_SUFFIX, "") ?? "");
+};
+
 export const factsFrom = async (
 	{ cwd, home, tmp, claudeTmp, xdg }: FactsEnv,
 	io: FactsIo,
@@ -64,6 +82,7 @@ export const factsFrom = async (
 		tmp: (tmp ?? "/tmp").replace(TRAILING_SLASHES, ""),
 		temps: await dirs,
 		git: gitState(io.run),
+		pushUrls: (dir) => pushUrls(io, dir),
 		userEdits: (dir) =>
 			userEdits({
 				git: (args) => io.run(["git", "-C", dir, ...args], GIT_TIMEOUT_MS),

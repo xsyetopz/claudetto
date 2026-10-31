@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { trust, untrust, withoutTrust, withTrust } from "../trust.ts";
 
 const DIR = "/private/tmp/claudetto-summary-round/base-1";
@@ -77,7 +79,7 @@ describe("withoutTrust", () => {
 
 describe("trust and untrust", () => {
 	test("write the file, so the round leaves the config as it found it", async () => {
-		const file = `/tmp/trust-${process.pid}-${Math.random()}.json`;
+		const file = join(tmpdir(), `trust-${process.pid}-${Math.random()}.json`);
 		await writeFile(file, config);
 
 		await trust(file, DIR);

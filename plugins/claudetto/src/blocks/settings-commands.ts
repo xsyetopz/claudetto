@@ -1,19 +1,23 @@
 // Both commands that write the user settings live in one file, because the hook loader takes `$` into a helper only within the file that defines it.
 
-import type { EngineInterface, HookFor } from "claude-code";
+import type { EngineInterface, HookFor, MatchedHook } from "claude-code";
 import { settingsFileFor, settingsOf } from "../settings-file.ts";
-import { groupLabels, keptSnippet } from "../tiers/groups.ts";
 import { refusedPaths } from "../tiers/keys.ts";
 import { applyTier, type Json, settingsText } from "../tiers/merge.ts";
 import { tierReport } from "../tiers/report.ts";
 import { tierSnippet } from "../tiers/snippet.ts";
 import { statusLineSnippet } from "../tiers/status-line.ts";
 import { SNIPPET_ROW } from "../tiers/tiers.ts";
+import { differencesOf, setupWrite } from "./setup-command/diff.ts";
 import {
-	chosenGroups,
+	diffReply,
+	keptIds,
 	platformNamed,
-	QUESTION,
 	SETUP_COMMAND,
+	SETUP_DESCRIPTION,
+	SETUP_INPUT_SCHEMA,
+	type SETUP_MATCH,
+	SETUP_TOOL,
 	setupReport,
 	UNAME_MS,
 } from "./setup-command/setup.ts";
@@ -52,19 +56,6 @@ const unameOf = async ($: EngineInterface): Promise<string> => {
 	}
 };
 
-const askedGroups = async ($: EngineInterface): Promise<readonly string[]> => {
-	try {
-		const answer = await $.ui.ask(QUESTION, {
-			options: [...groupLabels()],
-			header: "Setup",
-			multiSelect: true,
-		});
-		return chosenGroups(answer);
-	} catch {
-		return [];
-	}
-};
-
 /** The answer when the write fails, or `undefined` once the file is written. */
 const writeFailure = async (
 	$: EngineInterface,
@@ -81,24 +72,51 @@ const writeFailure = async (
 	}
 };
 
-export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
+const declareSetup = ($: EngineInterface): Promise<unknown> =>
+	$.tool.register({
+		name: SETUP_TOOL,
+		description: SETUP_DESCRIPTION,
+		inputSchema: SETUP_INPUT_SCHEMA,
+	});
+
+/** `$.tool.register` rejects until the session binds, so a refusal before `next` is retried after. */
+export const onSetupStart: HookFor<"session.start"> = async ($, e, next) => {
+	let early = true;
+	try {
+		await declareSetup($);
+	} catch {
+		early = false;
+	}
+	const started = await next(e);
+	if (!early) {
+		await declareSetup($).catch(() => undefined);
+	}
+	return started;
+};
+
+/** The merge stays in code, so the model never edits the settings file by hand. */
+export const onSetupTool: MatchedHook<"tool.call", typeof SETUP_MATCH> = async (
+	$,
+	e,
+	_next,
+) => {
 	const { file, held } = await userSettings($);
 	if (held === undefined) {
 		return {
-			text: `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP_COMMAND} again.`,
+			result: `${file} could not be read as a JSON object, so nothing was written. Tell the user to fix the file and run /${SETUP_COMMAND} again.`,
 		};
 	}
-	const kept = await askedGroups($);
-	if (kept.length === 0) {
-		return { text: "Nothing was chosen, so nothing was written." };
+	const snippet = tierSnippet(SNIPPET_ROW, platformNamed(await unameOf($)));
+	const ids = keptIds(e);
+	if (ids === undefined) {
+		return { result: diffReply(file, differencesOf(held, snippet)) };
 	}
-	const snippet = keptSnippet(
-		tierSnippet(SNIPPET_ROW, platformNamed(await unameOf($))),
-		kept,
-	);
-	const applied = applyTier(held, snippet, refusedPaths(snippet));
-	const failed = await writeFailure($, file, applied.settings);
-	return failed ?? { text: setupReport(file, kept, applied) };
+	const write = setupWrite(held, snippet, ids);
+	const failed =
+		write.applied.written.length === 0
+			? undefined
+			: await writeFailure($, file, write.applied.settings);
+	return { result: failed?.text ?? setupReport(file, write) };
 };
 
 export const onStatuslineCommand: HookFor<"command.run"> = async (
