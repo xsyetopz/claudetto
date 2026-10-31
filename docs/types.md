@@ -6,7 +6,7 @@ The mod compiles against the type packages under `plugins/claudetto/.claude-plug
 **They came from Claude Code `2.1.312`**, which the first line of
 `plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts` names.
 
-That is not `MIN_CLAUDE_CODE_VERSION` of `tools/limits.ts`, which is `2.1.314`, and the two numbers
+That is not `MIN_CLAUDE_CODE_VERSION` of `tools/limits.ts`, and the two numbers
 are allowed to differ. The minimum is the version whose documented behavior the code rests on; the
 number above is the version whose engine last wrote the declarations on this machine. The one
 addition `2.1.314` makes to the surface is the call `$.ui.place` and the event `ui.place`
