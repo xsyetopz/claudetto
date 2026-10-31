@@ -27,7 +27,7 @@
 		"@biomejs/biome": "~2.6.3",
 		"@commitlint/cli": "^21.2.4",
 		"@commitlint/config-conventional": "^21.2.4",
-		"@fission-ai/openspec": "^1.15.0",
+		"@fission-ai/openspec": "^1.16.0",
 		"@types/node": "^26.6.5",
 		"biome-json": "github:xsyetopz/biome.jsonc#387e04c",
 		"bun-types": "^1.4.4",
