@@ -1,5 +1,8 @@
 set positional-arguments
 
+# `claude plugin validate` and `claude plugin test` otherwise report to the API and to Datadog at each start, which a check needs neither of.
+export DISABLE_TELEMETRY := "1"
+
 # List recipes
 default:
     @just --list
