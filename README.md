@@ -19,7 +19,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Requirements
 
-- Claude Code `2.1.314` or later.
+- Claude Code `2.1.316` or later.
 - `git`.
 
 Nothing else. Setup runs inside Claude Code, so it needs no checkout of this repository, no [Bun](https://bun.sh), and no `just`.
@@ -92,7 +92,7 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 | `/goal` | `/goal <cmd>` blocks a stop while the command fails. An applied change's `tasks.md` with an open box blocks a stop too. Five blocked stops in a row with no file change let the stop through. |
 | `/init` | The interview reads the repository, asks only what it does not show, and writes the memory files after a yes to each draft. |
 | Plan mode | A shorter plan mode reminder that names `claudetto:Artemis` for a search over many files. |
-| Version warning | One line at startup when Claude Code is older than `2.1.314`. |
+| Version warning | One line at startup when Claude Code is older than `2.1.316`. |
 
 ## Plugins
 

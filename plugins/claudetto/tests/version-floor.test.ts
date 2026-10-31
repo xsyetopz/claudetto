@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { MINIMUM_VERSION } from "../src/tiers/disables.ts";
 
 const lab = (on: On, base: string | undefined): string[] => {
 	const lines: string[] = [];
@@ -20,18 +21,18 @@ const lab = (on: On, base: string | undefined): string[] => {
 	return lines;
 };
 
-test("`2.1.311` at startup adds one line naming it and `2.1.314`", async ($: Engine, on: On) => {
+test("`2.1.311` at startup adds one line naming it and the minimum version", async ($: Engine, on: On) => {
 	const lines = lab(on, "2.1.311");
 
 	await $.classic.SessionStart({ source: "startup" });
 
 	expect(lines).toHaveLength(1);
 	expect(lines[0]).toContain("2.1.311");
-	expect(lines[0]).toContain("2.1.314");
+	expect(lines[0]).toContain(MINIMUM_VERSION);
 });
 
-test("`2.1.314` at startup adds no line", async ($: Engine, on: On) => {
-	const lines = lab(on, "2.1.314");
+test("the minimum version at startup adds no line", async ($: Engine, on: On) => {
+	const lines = lab(on, MINIMUM_VERSION);
 
 	await $.classic.SessionStart({ source: "startup" });
 

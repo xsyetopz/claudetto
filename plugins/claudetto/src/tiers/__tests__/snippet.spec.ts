@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { file } from "bun";
+import { MINIMUM_VERSION } from "../disables.ts";
 import { denyRulesOf } from "../keys.ts";
 import { tierSnippet } from "../snippet.ts";
 import { SNIPPET_ROW, TIERS } from "../tiers.ts";
@@ -73,7 +74,7 @@ describe("the keys setup writes", () => {
 				enableWorkflows: false,
 				enableArtifact: false,
 				remoteControlAtStartup: false,
-				minimumVersion: "2.1.314",
+				minimumVersion: MINIMUM_VERSION,
 			});
 		});
 
