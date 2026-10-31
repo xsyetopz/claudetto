@@ -65,6 +65,22 @@ const askedGroups = async ($: EngineInterface): Promise<readonly string[]> => {
 	}
 };
 
+/** The answer when the write fails, or `undefined` once the file is written. */
+const writeFailure = async (
+	$: EngineInterface,
+	file: string,
+	settings: Json,
+): Promise<{ text: string } | undefined> => {
+	try {
+		await $.fs.write(file, settingsText(settings));
+		return undefined;
+	} catch (error) {
+		return {
+			text: `Could not write ${file} (${String(error)}). Nothing changed.`,
+		};
+	}
+};
+
 export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
 	const { file, held } = await userSettings($);
 	if (held === undefined) {
@@ -81,14 +97,8 @@ export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
 		kept,
 	);
 	const applied = applyTier(held, snippet, refusedPaths(snippet));
-	try {
-		await $.fs.write(file, settingsText(applied.settings));
-	} catch (error) {
-		return {
-			text: `Could not write ${file} (${String(error)}). Nothing changed.`,
-		};
-	}
-	return { text: setupReport(file, kept, applied) };
+	const failed = await writeFailure($, file, applied.settings);
+	return failed ?? { text: setupReport(file, kept, applied) };
 };
 
 export const onStatuslineCommand: HookFor<"command.run"> = async (
@@ -96,28 +106,31 @@ export const onStatuslineCommand: HookFor<"command.run"> = async (
 	e,
 	next,
 ) => {
+	let settings: UserSettings;
 	try {
-		const { file, held } = await userSettings($);
-		if (e.args.trim() !== "") {
-			return held !== undefined && deniesSetupAgent(held)
-				? { text: deniedText(file) }
-				: next(e);
-		}
-		if (held === undefined) {
-			return { text: unreadableText(file) };
-		}
-		const snippet = statusLineSnippet();
-		const applied = applyTier(held, snippet, refusedPaths(snippet));
-		if (applied.written.length > 0) {
-			await $.fs.write(file, settingsText(applied.settings));
-		}
-		return {
-			text: [
-				tierReport(undefined, applied),
-				...(applied.written.length > 0 ? [`Wrote ${file}.`] : []),
-			].join("\n"),
-		};
+		settings = await userSettings($);
 	} catch {
 		return next(e);
 	}
+	const { file, held } = settings;
+	if (e.args.trim() !== "") {
+		return held !== undefined && deniesSetupAgent(held)
+			? { text: deniedText(file) }
+			: next(e);
+	}
+	if (held === undefined) {
+		return { text: unreadableText(file) };
+	}
+	const snippet = statusLineSnippet();
+	const applied = applyTier(held, snippet, refusedPaths(snippet));
+	if (applied.written.length === 0) {
+		return { text: tierReport(undefined, applied) };
+	}
+	const failed = await writeFailure($, file, applied.settings);
+	return (
+		failed ?? {
+			text: `${tierReport(undefined, applied)}
+Wrote ${file}.`,
+		}
+	);
 };

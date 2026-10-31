@@ -147,3 +147,20 @@ test("the `/statusline` listing says it makes no model call", async ($: Engine, 
 
 	expect(out.description).toBe(DESCRIPTION);
 });
+
+test("a write that fails says so and leaves the built-in unrun", async ($: Engine, on: On) => {
+	on("env.get", (_$, e) => ({
+		value: e.name === "HOME" ? "/home/u" : undefined,
+	}));
+	on("fs.exists", () => ({ value: false }));
+	on("fs.write", () => {
+		throw new Error("read-only");
+	});
+	on("command.run", () => ({ text: BUILT_IN }));
+
+	const out = await run($, "");
+
+	expect(out.text ?? "").toContain(`Could not write ${FILE}`);
+	expect(out.text ?? "").toContain("Nothing changed.");
+	expect(out.text ?? "").not.toContain(BUILT_IN);
+});
