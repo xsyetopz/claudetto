@@ -128,7 +128,7 @@ findings in a host UI, and the `/code-review` text itself tells the model not to
 active instructions ask for it. `ScheduleWakeup` is the one of the three that a CLI user can want:
 it arms the autonomous `/loop` and the session crons that `session_crons` of the `Stop` input
 reports. It is denied anyway, because the archived snippet also set `CLAUDE_CODE_DISABLE_CRON=1`, so
-the two agree, and because claudetto's own goal loop does not call it: a search of the installed
+the two agree, and because claudetto's own `tasks.md` loop does not call it: a search of the installed
 `claudetto` finds the name only in its own deny list. A user who wants `/loop` drops
 this one name and pays 4,887 characters a session for it.
 

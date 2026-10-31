@@ -157,7 +157,7 @@ describe("the keys setup writes", () => {
 			});
 		});
 
-		test(`${row.tier}: \`modelProposedGoals\` stays unset while \`/goal <cmd>\` is planned`, () => {
+		test(`${row.tier}: \`modelProposedGoals\` stays unset`, () => {
 			expect(snippet).not.toHaveProperty("modelProposedGoals");
 		});
 	}

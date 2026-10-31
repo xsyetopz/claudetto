@@ -89,7 +89,7 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 | Skills | `dedupe` finds duplicate code with `jscpd` and decides which clones to merge. `docs` looks up current library docs with the Context7 CLI: `bunx ctx7 library`, then `bunx ctx7 docs`. |
 | Status line | Setup writes `statusLine` and `subagentStatusLine`: the folder, the branch of a worktree session, the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown. A line you already set is kept. `/statusline` with no text writes the same two keys with no model call, and prints each key it wrote, or `Wrote no key.` |
 | Hygiene | `just hygiene` removes the stale temp folders and old handoffs that Claude Code never removes, and takes `--dry-run`. The same sweep runs at each startup. |
-| `/goal` | `/goal <cmd>` blocks a stop while the command fails. An applied change's `tasks.md` with an open box blocks a stop too. Five blocked stops in a row with no file change let the stop through. |
+| `tasks.md` loop | An applied OpenSpec change's `tasks.md` with an open box blocks a stop. Five blocked stops in a row with no file change let the stop through. |
 | `/init` | The interview reads the repository, asks only what it does not show, and writes the memory files after a yes to each draft. |
 | Plan mode | A shorter plan mode reminder that names `claudetto:Artemis` for a search over many files. |
 | Version warning | One line at startup when Claude Code is older than `2.1.316`. |

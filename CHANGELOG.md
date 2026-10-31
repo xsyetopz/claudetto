@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 Before 1.0.0, a release can change or remove behavior.
 After each update, do the steps in the "Update" section of the README.
 
+## [Unreleased]
+
+### Removed
+
+- claudetto's `/goal`. It read the condition as a shell command, so `/goal release-0-2-0` ran `sh -c release-0-2-0`, which fails on every stop, and its start prompt stayed queued after `/goal clear`.
+  The built-in `/goal` now runs with its text unchanged, and a model judges the condition. To require a check, name it in the condition, such as `/goal just check exits 0`.
+  The `mcp__claudetto__goal` tool, `/goal resume`, the `paused` and `blocked` goal states, and claudetto's goal mark in the prompt hint go with it. The `tasks.md` loop stays.
+
 ## [0.1.1] - 2026-10-31
 
 ### Added

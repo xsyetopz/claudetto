@@ -113,6 +113,19 @@ test("a file edit between stops starts the count again", async ($: Engine, on: O
 	expect(out.block).toContain("2.3");
 });
 
+test("`/goal x` reaches the built-in `command.run` with its text unchanged", async ($: Engine, on: On) => {
+	on("command.run", (_$, e) => ({ text: `built-in /${e.command} ${e.args}` }));
+
+	const out = await $.command.run({
+		command: "goal",
+		args: "x",
+		origin: { kind: "composer" },
+		presentation: { isFullscreen: false, columns: 80 },
+	});
+
+	expect(out).toEqual({ text: "built-in /goal x" });
+});
+
 test("a unreadable `tasks.md` stops, since the loop is a help", async ($: Engine, on: On) => {
 	lab(on, [apply, edit("/p/gone/tasks.md", "e1")]);
 
