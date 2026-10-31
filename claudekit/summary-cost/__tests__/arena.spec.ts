@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { spawn } from "node:child_process";
 import { readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { output } from "../../output.ts";
 import { commandOf, forkOf, modeOf, PROMPT } from "../arena.ts";
@@ -81,7 +82,10 @@ describe("pty.py", () => {
 		seconds: string,
 		fake: string,
 	): Promise<{ capture: string; code: number | null; ms: number }> => {
-		const capture = `/tmp/pty-${process.pid}-${Math.random()}.log`;
+		const capture = path.join(
+			tmpdir(),
+			`pty-${process.pid}-${Math.random()}.log`,
+		);
 		const started = Date.now();
 		const code = await new Promise<number | null>((resolve) => {
 			const child = spawn(
