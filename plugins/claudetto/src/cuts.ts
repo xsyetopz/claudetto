@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 31_213;
+export const SHIPPED_TOTAL = 29_433;
 
 export const SHIPPED_TOOL_COUNT = 9;
 
@@ -41,7 +41,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	},
 	{ name: "idleCompaction off", chars: 0 },
 	// The default body it replaces is the one the shipped settings already shortened.
-	{ name: "main agent body", chars: -1708 },
+	{ name: "main agent body", chars: 72 },
 	// Takes the memory section out of the default body, so it reads only with `agents/main.md` moved aside.
 	{ name: "auto memory off", chars: 2138 },
 	// The four agents are delegation targets, so the harness lists them in the first message.

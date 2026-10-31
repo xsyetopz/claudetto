@@ -295,7 +295,10 @@ body that `agents/main.md` replaces is 3,645 characters, not 5,760, because `aut
 alone takes the memory section out of it. With the file in place the key moves no request text,
 31,213 with it and without it. So `main agent body` is read as before, with the file moved aside,
 and it is −1,708: the file now costs more than the body it replaces. The memory section is its own
-row, `auto memory off`, 2,138, read with the file moved aside, 29,473 against 31,611. The `tool texts`
+row, `auto memory off`, 2,138, read with the file moved aside, 29,473 against 31,611.
+The file was then cut to a body of 3,540 characters, which the request carries as 3,538 in the third
+block and 3,608 with the escapes of a JSON string, against 3,678 for the default. The shipped arm reads
+29,433 with it and 29,505 with it moved aside, so `main agent body` is 72. The `tool texts`
 residual is 7,319, and `handoff context` 773, against 748.
 
 ## The Two Switches
@@ -502,7 +505,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,007 baseline less every cut in it has to equal the 31,213 the shipped arm reads, so a cut that
+46,007 baseline less every cut in it has to equal the 29,433 the shipped arm reads, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -517,7 +520,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | −1,708 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | 72 | None exists yet. A placebo run would price the prompt text |
 | `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text |
 | The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −1,045 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/blocks/handoff/handoff.ts` | −773 | None exists yet. A placebo run would price the prompt text |
@@ -526,7 +529,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `sandbox` block | −7,230 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
 | The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
 
-The rows sum to 14,794, which is 46,007 less the 31,213 of the shipped arm, read on `2.1.316`. A negative row is a piece
+The rows sum to 16,574, which is 46,007 less the 29,433 of the shipped arm, read on `2.1.316`. A negative row is a piece
 the tree adds.
 
 On 2026-10-31 on `2.1.316` every row was read again, each as the difference
