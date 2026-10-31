@@ -13,6 +13,11 @@
 - [ ] 2.5 Add the `/statusline` line to `README.md`. Verify: the README line matches what a real `/statusline` run in the temporary config prints.
 - [x] 2.6 Cut `plugins/claudetto/agents/main.md` under the 3,645-character body it replaces with the shipped settings, and move `DEFAULT_MAIN_BODY_CHARS` to 3,678, the body as the request carries it. Verify: `bun test tests/repo/prompt-budget.test.ts` passes, `just inventory` holds every row, and `just check` exits 0. The body is 3,540 characters and the request carries it as 3,608 against the default's 3,678, since a JSON string escapes each line break, so the test now reads the carried length; the old body fails it at 5,384. `bun test tests/repo/prompt-budget.test.ts` reads 4 pass, 0 fail, and `just inventory` reads `shipped | recorded 29433 | read 29433`, with the file moved aside 29,505, so `main agent body` is 72 where it was −1,708.
 
+## 2b. Haiku Price Step
+
+- [ ] 2.7 Probe first: a `turn.step` hook that records `usage` by `agentId`, and a `tool.call` hook that returns `{ deny }` after `next(e)` for a result over a set size, in a `claude -p --model haiku` session against the fake API of `claudekit`. Verify: the `turn.step` result carries `usage` with the model and the four token counts, the `tool.call` input names the same `agentId` as the step, and the next request holds the withheld text in place of the result. On a failure, stop and revise `design.md`.
+- [ ] 2.8 Build the block: the `turn.step` record, the `tool.call` bound, and the withheld text. Verify: a unit spec and a hook lab file cover each scenario of `specs/tier-profiles/spec.md` and pass, the catalog test passes, and `just inventory` holds every row.
+
 ## 3. Release `0.1.1`
 
 - [ ] 3.1 Move the four manifests to `0.1.1` and add a `[0.1.1]` section to `CHANGELOG.md`. Verify: `just validate` passes and `rg '"0\.1\.0"' $(git ls-files '*.json')` finds no manifest.
