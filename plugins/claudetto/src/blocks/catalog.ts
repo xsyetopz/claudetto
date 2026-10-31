@@ -13,6 +13,7 @@ import { attachInitInterview, initInterview } from "./init-interview/block.ts";
 import { attachPlanMode, planMode } from "./plan-mode/block.ts";
 import { attachRunLimits, runLimits } from "./run-limits/block.ts";
 import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
+import { attachStatusLine, statusLine } from "./status-line/block.ts";
 import { attachToolDescribe, toolDescribe } from "./tool-describe/block.ts";
 import { attachVersionFloor, versionFloor } from "./version-floor/block.ts";
 import { attachWindow, windowBlock } from "./window/block.ts";
@@ -20,6 +21,7 @@ import { attachWindow, windowBlock } from "./window/block.ts";
 /** One row per block, in the order `attachBlocks` calls them, which is the hook chain order. */
 export const CATALOG: readonly Block[] = [
 	setupCommand,
+	statusLine,
 	initInterview,
 	decide,
 	toolDescribe,
@@ -41,6 +43,7 @@ export const CATALOG: readonly Block[] = [
 export const attachBlocks = (on: On, options: PluginOptions): void => {
 	const context: BlockContext = { options };
 	attachSetupCommand(on, context);
+	attachStatusLine(on, context);
 	attachInitInterview(on, context);
 	attachDecide(on, context);
 	attachToolDescribe(on, context);
