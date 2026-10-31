@@ -153,9 +153,10 @@ When `openspec` is on `PATH` and the project has no `openspec/`, `just setup` ru
 ```bash
 claude plugin marketplace update claudetto
 claude plugin update claudetto@claudetto
+claude plugin update claudetto-you-should-know@claudetto
 ```
 
-Run the `claude plugin update` line again for each add-on that you installed, with its name in place of `claudetto`.
+Each plugin updates on its own: `claude plugin update claudetto@claudetto` leaves `claudetto-you-should-know` at its old version. Skip the last line if you did not install it.
 Then restart Claude Code, and read the [changelog](CHANGELOG.md).
 
 To try an unreleased checkout, run:
