@@ -19,7 +19,7 @@ export const waitFor = (id: string, step: Step): void => {
 	byCall.set(id, step);
 };
 
-/** The step that made the call, removed so the map holds only calls still running. */
+/** The step that made the call, removed before the call runs so that a call that throws leaves no entry. */
 export const takeStep = (id: string | undefined): Step | undefined => {
 	if (id === undefined) {
 		return undefined;

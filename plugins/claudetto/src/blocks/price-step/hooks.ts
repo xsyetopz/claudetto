@@ -33,8 +33,8 @@ const modelText = (result: unknown, text: string | undefined): string =>
 
 /** A result counts with its `context`, since both land in the next request. */
 export const onToolCall: HookFor<"tool.call"> = async (_$, e, next) => {
-	const answer = await next(e);
 	const step = takeStep(e.tool_use_id);
+	const answer = await next(e);
 	if (step === undefined || answer.deny !== undefined) {
 		return answer;
 	}
