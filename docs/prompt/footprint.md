@@ -496,6 +496,12 @@ The `autoMode` suite, `src/automode/rules.ts`, is read in the classifier request
 
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
+Read again on 2026-10-31 with Claude Code `2.1.316`, the shipped first request is 31,213: `system`
+5,439, `tools` 13,504 (9), `messages` 11,588. The 24 under 31,237 are the engine's, all in the sandbox
+block, and "The Baseline Moved a Third Time" of `docs/surfaces.md` holds the readings. The
+`/statusline` label adds nothing: the tree of `0.1.0` reads the same request from a working folder
+path of the same length.
+
 ## History
 
 This section reads the archived tree, which no longer ships. Each reading explains why the current
