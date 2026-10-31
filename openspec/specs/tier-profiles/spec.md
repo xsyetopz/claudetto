@@ -96,13 +96,13 @@ Setup SHALL run from inside Claude Code with no checkout of this repository, no 
 #### Scenario: The Dialog
 
 - **WHEN** `/claudetto:setup` runs with a person to ask
-- **THEN** one `$.ui.ask` dialog offers the groups of `plugins/claudetto/src/tiers/groups.ts`, between two and four of them because `$.ui.ask` accepts no other count, and every key the snippet sets sits in exactly one group or in `UNSHIPPED_KEYS`
+- **THEN** one `$.ui.ask` dialog offers the groups of `plugins/claudetto/src/tiers/groups.ts`, between two and four of them because `$.ui.ask` accepts no other count, and every key the snippet sets sits in exactly one group
 
 #### Scenario: A Fact of This Repository Is Not Shipped
 
-- **WHEN** a key of the snippet carries a reading of this repository rather than a value true of any machine
-- **THEN** the command SHALL write it for nobody, whatever the dialog is answered, and `UNSHIPPED_KEYS` SHALL name it with the reason
-- **AND** `autoMode` SHALL be such a key, because `autoMode.environment` is the facts of this project (`plugins/claudetto/src/automode/environment.ts:1`) and the auto-mode classifier decides from them whether a command runs without asking, so a false fact there widens or narrows a permission on a machine that was never read
+- **WHEN** a value would carry a reading of this repository rather than a value true of any machine
+- **THEN** the snippet SHALL NOT hold it, because the command writes the snippet for every user
+- **AND** `autoMode` SHALL hold the claudetto suite of `plugins/claudetto/src/automode/rules.ts`, whose `environment` list names no fact of one repository, and the group "Sandbox and auto mode" SHALL offer it (D39)
 
 #### Scenario: A Discarded Group
 
@@ -134,3 +134,50 @@ The system SHALL NOT state a saving as a share of plan limits without a measurem
 
 - **WHEN** setup reports the row it wrote
 - **THEN** the report names the keys and values, and gives no percentage of a limit
+
+### Requirement: The Snippet Holds the Planned Keys
+
+The snippet SHALL hold `$schema`, `minimumVersion: "2.1.314"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, `statusLine`, and `subagentStatusLine`, and setup SHALL write only `~/.claude/settings.json`.
+
+#### Scenario: Clean Write
+
+- **WHEN** setup writes to an empty settings file
+- **THEN** `jq` reads each key above with its value, and `~/.claude.json` is unchanged
+
+### Requirement: The Haiku Summary Runs at High
+
+The compaction summary call on Haiku 5.5 SHALL use effort `high`, apart from the tier row's `effort`, which stays the main session's `effortLevel` (D16).
+
+#### Scenario: Summary Call
+
+- **WHEN** `session.compact` is answered by the summary
+- **THEN** the call names `claude-haiku-5-5` and effort `high`
+
+### Requirement: A Tool Result Does Not Carry a Haiku Request Past the Price Step
+
+A tool result SHALL be withheld when it would take the next request of a Haiku 5.5 loop over 100,000 prompt tokens, since the handoff trigger is checked between calls (`docs/window-weights.md`). The prompt SHALL be read from the `usage` of the step that made the call, and the result's size estimated from its text. A step answered by any other model SHALL be left alone.
+
+#### Scenario: Result Would Cross the Step
+
+- **WHEN** a tool call made by a step that `claude-haiku-5-5` answered returns a result, and that step's prompt and output tokens, the step's results already passed, and this result's estimated tokens sum to more than 100,000
+- **THEN** the model reads a withheld result that names its estimated size, the 100,000 step, and how to ask for less, and no request carries the result
+
+#### Scenario: Result Fits
+
+- **WHEN** the same sum is 100,000 or less
+- **THEN** the result reaches the model unchanged
+
+#### Scenario: Other Model
+
+- **WHEN** the step that made the call was answered by a model that is not Haiku 5.5
+- **THEN** the result reaches the model unchanged, whatever its size
+
+#### Scenario: Several Calls in One Step
+
+- **WHEN** a Haiku 5.5 step makes two calls whose results each fit alone but together cross the step
+- **THEN** the result that returns first reaches the model unchanged, and the second is withheld
+
+#### Scenario: Step Ends with No Reading
+
+- **WHEN** the step that made the call ends with no `usage`
+- **THEN** the result reaches the model unchanged
