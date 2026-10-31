@@ -3,6 +3,10 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import {
+	userSettingsLab,
+	type Written,
+} from "../src/blocks/__tests__/lab-support.ts";
+import {
 	DESCRIPTION,
 	SETUP_AGENT_DENY,
 	STATUSLINE,
@@ -17,25 +21,11 @@ const FILE = "/home/u/.claude/settings.json";
 const BUILT_IN = "built-in /statusline ran";
 
 interface Lab {
-	readonly files: { readonly path: string; readonly text: string }[];
+	readonly files: readonly Written[];
 }
 
 const lab = (on: On, held: string | undefined): Lab => {
-	const state: Lab = { files: [] };
-	on("env.get", (_$, e) => ({
-		value: e.name === "HOME" ? "/home/u" : undefined,
-	}));
-	on("fs.exists", () => ({ value: held !== undefined }));
-	on("fs.read", () => {
-		if (held === undefined) {
-			throw new Error("no file");
-		}
-		return { value: held };
-	});
-	on("fs.write", (_$, e) => {
-		state.files.push({ path: e.path, text: e.text });
-		return { value: undefined };
-	});
+	const state: Lab = { files: userSettingsLab(on, held) };
 	on("command.run", () => ({ text: BUILT_IN }));
 	return state;
 };

@@ -14,8 +14,29 @@ const QUOTE_CHARS = /['"]/g;
 const EXPANSION =
 	/\$(?:\{[^}]*\}|\([^)]*\)|[A-Za-z_]\w*|[0-9@*#?$!-])|`[^`]*`/g;
 const OPEN_TAIL = /[$`(){}*?[\\]/;
+const GLOB_CHAR = /[*?[]/;
+const NOT_ENV_CHAR = /[^\w.$`-]/;
+
+/**
+ * The parser has removed quotes and expanded braces, so each character after the last expansion is literal.
+ * One that an env file name never holds, after the last `/`, keeps the name off every env file; a glob could eat it.
+ */
+const literalTailBars = (word: string): boolean => {
+	const last = [...word.matchAll(EXPANSION)].at(-1);
+	if (last === undefined) {
+		return false;
+	}
+	const tail = word.slice(last.index + last[0].length);
+	return (
+		!GLOB_CHAR.test(tail) &&
+		NOT_ENV_CHAR.test(tail.slice(tail.lastIndexOf("/") + 1))
+	);
+};
 
 const safeWord = (word: string, names: readonly string[]): boolean => {
+	if (literalTailBars(word)) {
+		return true;
+	}
 	const text = word.replace(QUOTE_CHARS, "");
 	const last = [...text.matchAll(EXPANSION)].at(-1);
 	if (last === undefined) {
@@ -66,7 +87,9 @@ export const fedFinding = (
 	if (named.secret && (piped || empty)) {
 		return verdict("ask", T.ASK_SECRET_FED);
 	}
-	const skipped = PATTERNED.has(nameOf(rest)) ? patternAt(words) : [];
+	const skipped = PATTERNED.has(nameOf(rest))
+		? patternAt(words, nameOf(rest))
+		: [];
 	const files = words.filter((_, i) => !skipped.includes(i));
 	const unread = files.filter(
 		(w) =>

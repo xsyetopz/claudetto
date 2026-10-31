@@ -7,7 +7,7 @@ export type Finding = Verdict | (() => Promise<Verdict | undefined>);
 export const verdict = (
 	decision: Verdict["decision"],
 	reason: string,
-	flags: { secret?: true } = {},
+	flags: { secret?: true; person?: true } = {},
 ): Verdict => ({ decision, reason, ...flags });
 export const denySecret = (word: string): Verdict =>
 	verdict("deny", T.DENY_SECRET({ word }), { secret: true });

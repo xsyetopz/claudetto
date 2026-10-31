@@ -1,16 +1,18 @@
 import type { On } from "claude-code";
 import type { Block, BlockContext } from "../block.ts";
-import { onSetupCommand } from "../settings-commands.ts";
-import { SETUP_COMMAND } from "./setup.ts";
+import { onSetupStart, onSetupTool } from "../settings-commands.ts";
+import { SETUP_MATCH } from "./setup.ts";
 
 export const setupCommand: Block = {
 	id: "setup-command",
 	kind: "command",
-	routes: ["command.run"],
+	routes: ["session.start", "tool.call"],
 	needs: "2.1.314",
 };
 
 export const attachSetupCommand = (on: On, _context: BlockContext): void => {
-	// Answers `{ text }` with no `context`, so the model reads nothing and the session pays no tokens.
-	on("command.run", { command: SETUP_COMMAND }, onSetupCommand);
+	// No `command.run` hook, so the body of `commands/setup.md` reaches the model, which asks the user.
+	// A session with nobody to answer `AskUserQuestion` cannot choose keys, so it gets no tool.
+	on("session.start", { isInteractive: [true] }, onSetupStart);
+	on("tool.call", SETUP_MATCH, onSetupTool);
 };

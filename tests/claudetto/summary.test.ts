@@ -164,6 +164,21 @@ describe("the answer to a compaction", () => {
 		expect(blank.seen.lines).toHaveLength(1);
 	});
 
+	test("a reply that reached the token cap is cut mid-summary, so the engine compacts and the line names the cap", async () => {
+		const { ask, seen } = asking(async () => ({
+			isAnswered: true,
+			text: "The state of the work: the gate fix is",
+			usage: { ...USAGE, output_tokens: SUMMARY_MAX_TOKENS + 2048 },
+		}));
+
+		const out = await summarize(COMPACT, ask, true);
+
+		expect(out).toBeUndefined();
+		expect(seen.lines).toEqual([
+			`Cheap summary reached its cap of ${SUMMARY_MAX_TOKENS + 2048} output tokens, thinking included, so it is cut and the engine compacts`,
+		]);
+	});
+
 	test("the instructions name the character limit, so the model writes to it", () => {
 		expect(SUMMARY_INSTRUCTIONS).toContain(`${SUMMARY_MAX_CHARS} characters`);
 	});

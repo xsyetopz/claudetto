@@ -8,6 +8,19 @@ After each update, do the steps in the "Update" section of the README.
 
 ## [Unreleased]
 
+### Changed
+
+- `/claudetto:setup` is now done by the model. It loads the tool `mcp__claudetto__setup`, which returns each difference between your user settings and claudetto's keys. Then it asks about them with `AskUserQuestion`, and writes only the ones you keep through the same tool. A kept key replaces your value; a key you do not keep stays as it is.
+  Setup also offers two sandbox switches: `sandbox.enabled: false`, and `sandbox.network.allowLocalBinding: true` for a command that listens on a local port.
+  The tool is registered only in an interactive session. Setup now costs model tokens, because the model reads the differences and asks. `just setup` still writes every key with no model call.
+
+### Fixed
+
+- With `classifier` on, a force push the user asked for was denied: the classifier allowed it, but the gate's ask stayed, and where nobody can be asked an ask is a deny. The classifier's allow now settles the gate's ask, as the auto mode classifier does.
+- A `git push` to a URL that no remote names now asks, and only a person can settle that ask. The gate reads the push URLs with `git remote -v`. Before, only the classifier judged the host, and the `haiku` arm allowed one such push in 10 runs of `just eval --classifier`.
+- The `haiku` classifier denied calls with "the model gave no answer" now and then. Haiku 5.5 cannot turn thinking off, so `$.model.complete` gives its thinking 2048 tokens past the 200 of the verdict, and at `high` effort the thinking could fill all of it and leave no text. The classifier now asks for `medium` and for 1000 tokens, so the cap is 3048, and a denial with no verdict names its cause: a failed call with its status, an abort or the 30-second limit, all 3048 output tokens spent on thinking, or a reply with no text.
+- A `cheapSummary` reply that reaches its cap of 4048 output tokens, thinking included, is cut. It is now dropped with a log line, and the engine compacts, in place of a cut summary.
+
 ### Removed
 
 - claudetto's `/goal`. It read the condition as a shell command, so `/goal release-0-2-0` ran `sh -c release-0-2-0`, which fails on every stop, and its start prompt stayed queued after `/goal clear`.

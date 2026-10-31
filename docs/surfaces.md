@@ -527,7 +527,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | `output-styles/Concise.md` under the `outputStyle` key | −1,644 | None exists yet. A placebo run would price the prompt text |
 | The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
 | The `sandbox` block | −7,230 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
-| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists |
+| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists. A run of the command pays more, outside the first request: the 1,743-byte body, the `mcp__claudetto__setup` schema, and its list of differences, 18,834 characters for an empty settings file. An interactive session also lists the deferred tool name, 22 characters with its newline, measured on `2.1.316` |
 
 The rows sum to 16,574, which is 46,007 less the 29,433 of the shipped arm, read on `2.1.316`. A negative row is a piece
 the tree adds.
