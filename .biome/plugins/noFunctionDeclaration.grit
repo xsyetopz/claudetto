@@ -1,8 +1,0 @@
-language js
-
-JsFunctionDeclaration(id=$name) as $fn where {
-	$fn <: not r"(?s)^\s*(?:async\s+)?function\s*\*.*",
-	$fn <: not contains or { `this`, `arguments`, TsThisParameter() },
-	$fn <: not within or { JsModule(), JsScript() } as $scope where { $scope <: contains TsDeclareFunctionDeclaration(id=$name) },
-	register_diagnostic(span=$fn, message="Write `const name = (...) => {...}` instead of a `function name()` declaration. Arrow functions are not hoisted, so declare the const before its first use.", severity="error")
-}
