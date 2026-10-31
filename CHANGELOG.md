@@ -8,6 +8,8 @@ After each update, do the steps in the "Update" section of the README.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-31
+
 ### Changed
 
 - `/claudetto:setup` is now done by the model. It loads the tool `mcp__claudetto__setup`, which returns each difference between your user settings and claudetto's keys. Then it asks about them with `AskUserQuestion`, and writes only the ones you keep through the same tool. A kept key replaces your value; a key you do not keep stays as it is.

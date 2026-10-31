@@ -1,6 +1,6 @@
 {
 	"name": "claudetto",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"private": true,
 	"description": "A very opinionated Claude Code plugin designed by a Rustacean",
 	"type": "module",
