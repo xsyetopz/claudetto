@@ -4,14 +4,14 @@ Claudetto tunes Claude Code for coding at the lowest token cost.
 It works through the official extension points only: settings, hooks, skills, commands, and an output style.
 It patches nothing.
 
-Version `0.1.0`. The tree is a rebuild in progress, so the core plugin ships less than the older releases did.
+Version `0.1.1`. The tree is a rebuild in progress, so the core plugin ships less than the older releases did.
 Each capability lands with the measurement that decided its values.
 
 The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), which ships the plugins `clawdipedia-docs` and `cc-inspect`, each with a skill and an MCP server.
 
 ## Features
 
-- A first request of 31,237 characters against 46,105 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,953 with `just capture --arm plain --shipped`.
+- A first request of 29,433 characters against 46,007 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,833 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A handoff file written on a typed `/clear` and before a compaction, read back into the next session.
 - Run limits on subagents, on tool calls at heavy context, and on an identical retry after repeated failures.
@@ -87,7 +87,7 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 | Tool descriptions | A shorter description for a few tools. |
 | Agents | `claudetto:main` as the thread's own body, plus four subagents: `claudetto:Artemis` searches many files read-only and returns paths and lines, `claudetto:Athena` reviews a diff in a fresh context and reports each defect, `claudetto:Hephaestus` makes one edit whose goal, files, and check are known and runs the check, and `claudetto:Hermes` answers a question from the web with its sources. `Artemis`, `Athena`, and `Hermes` write no file. |
 | Skills | `dedupe` finds duplicate code with `jscpd` and decides which clones to merge. `docs` looks up current library docs with the Context7 CLI: `bunx ctx7 library`, then `bunx ctx7 docs`. |
-| Status line | Setup writes `statusLine` and `subagentStatusLine`: the folder, the branch of a worktree session, the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown. A line you already set is kept. |
+| Status line | Setup writes `statusLine` and `subagentStatusLine`: the folder, the branch of a worktree session, the pull request, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown. A line you already set is kept. `/statusline` with no text writes the same two keys with no model call, and prints each key it wrote, or `Wrote no key.` |
 | Hygiene | `just hygiene` removes the stale temp folders and old handoffs that Claude Code never removes, and takes `--dry-run`. The same sweep runs at each startup. |
 | `/goal` | `/goal <cmd>` blocks a stop while the command fails. An applied change's `tasks.md` with an open box blocks a stop too. Five blocked stops in a row with no file change let the stop through. |
 | `/init` | The interview reads the repository, asks only what it does not show, and writes the memory files after a yes to each draft. |

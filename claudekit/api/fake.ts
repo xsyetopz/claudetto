@@ -1,6 +1,8 @@
 import { serve } from "bun";
 import {
+	FAKE,
 	jsonResponse,
+	type Stamp,
 	streamResponse,
 	type ToolCall,
 	textMessage,
@@ -18,11 +20,16 @@ export interface FakeApi {
 	stop: () => Promise<void>;
 }
 
-/** With `call`, the first request that carries tools is answered with that tool call, once; every other request gets `text`. */
-export const startFakeApi = (call?: ToolCall, text = "ok"): FakeApi => {
+/** With `call`, the first request that carries tools is answered with that tool call, once, and with a list each such request takes the next; every other request gets `text`. Each answer carries `stamp`'s model and token counts. */
+export const startFakeApi = (
+	call?: ToolCall | readonly ToolCall[],
+	text = "ok",
+	stamp: Stamp = FAKE,
+): FakeApi => {
 	const bodies: string[] = [];
 	const others: string[] = [];
-	let pending = call;
+	const pending = call === undefined ? [] : [call].flat();
+	let made = 0;
 	const server = serve({
 		hostname: "127.0.0.1",
 		port: 0,
@@ -33,14 +40,16 @@ export const startFakeApi = (call?: ToolCall, text = "ok"): FakeApi => {
 				bodies.push(raw);
 				const body: unknown = JSON.parse(raw);
 				if (!streams(body)) {
-					return jsonResponse(textMessage(text));
+					return jsonResponse(textMessage(text, stamp));
 				}
-				if (pending !== undefined && carriesTools(body)) {
-					const answer = toolAnswer(pending);
-					pending = undefined;
-					return streamResponse(answer);
+				const next = pending[made];
+				if (next !== undefined && carriesTools(body)) {
+					// Two calls in one conversation must not share an id.
+					const id = made === 0 ? undefined : `toolu_fake_${made}`;
+					made += 1;
+					return streamResponse(toolAnswer(next, id, stamp));
 				}
-				return streamResponse(textStream(text));
+				return streamResponse(textStream(text, stamp));
 			}
 			others.push(`${request.method} ${pathname}`);
 			return jsonResponse("{}");

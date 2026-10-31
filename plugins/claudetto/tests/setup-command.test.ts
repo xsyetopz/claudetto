@@ -2,7 +2,7 @@
 
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { SETUP_COMMAND } from "../src/blocks/setup-command/hooks.ts";
+import { SETUP_COMMAND } from "../src/blocks/setup-command/setup.ts";
 
 const environment = (on: On): void => {
 	on("env.get", (_$, e) => ({
