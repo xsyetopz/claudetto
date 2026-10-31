@@ -242,3 +242,16 @@ export const remoteRewrite = ({ verb, args }: GitCall): boolean => {
 		(repo ? plain : plain.slice(1)).some((r) => DELETE_REFSPEC.test(r))
 	);
 };
+
+/** The repository a `git push` names, from `--repo` or its first operand; absent for the default remote. */
+export const pushTarget = ({ verb, args }: GitCall): string | undefined => {
+	if (verb !== "push") {
+		return undefined;
+	}
+	const at = args.findIndex((a) => a === "--repo" || a.startsWith("--repo="));
+	const flag = args[at];
+	if (flag !== undefined) {
+		return flag === "--repo" ? args[at + 1] : flag.slice("--repo=".length);
+	}
+	return operands(args, PUSH_VALUE_OPTS)[0];
+};

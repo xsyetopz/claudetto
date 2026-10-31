@@ -4,6 +4,7 @@ import { baseName } from "./wrappers.ts";
 
 const ASSIGN = /^(\w+)(\+?)=(.*)$/s;
 const ARRAY_OR_SUBSTITUTION = /^\(|`/;
+const OPEN_WORD = /[$`*?[]/;
 const OPTION_FLAG = /^[-+]\w/;
 const VALUE_CHANGING_FLAG = /^-\w*[ailuAn]/;
 const REFERENCE_FLAG = /^-\w*n/;
@@ -66,7 +67,15 @@ const writeNames = (argv: string[], name: string, vars: Vars): void => {
 	}
 };
 
-/** A substitution value, a name that `read` sets, and a loop variable have no known value. */
+/** The words of `for x in a b`, or `undefined` when one word can expand to an unknown value. */
+const loopList = (argv: string[]): string[] | undefined => {
+	const list = argv[2] === "in" ? argv.slice(3) : [];
+	return list.length > 0 && list.every((w) => !OPEN_WORD.test(w))
+		? list.map(unmask)
+		: undefined;
+};
+
+/** A substitution value, a name that `read` sets, and a loop variable over an unread list have no known value. */
 export const assign = (argv: string[], vars: Vars, plain: boolean): void => {
 	const name = baseName(argv[0] ?? "");
 	if (READERS.has(name)) {
@@ -75,7 +84,7 @@ export const assign = (argv: string[], vars: Vars, plain: boolean): void => {
 		}
 	}
 	if (LOOPS.has(name) && argv[1] !== undefined) {
-		set(vars, argv[1], undefined, false);
+		setMany(vars, argv[1], loopList(argv) ?? [undefined], false);
 	}
 	writeNames(argv, name, vars);
 	if (DECLARERS.has(name)) {

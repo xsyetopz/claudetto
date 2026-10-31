@@ -1,5 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+import { registeredTools } from "../src/blocks/__tests__/lab-support.ts";
 import { ATTEMPT_TIMEOUT_MS, BACKOFF_MS } from "../src/blocks/decide/limits.ts";
 
 const DECIDE = "mcp__claudetto__decide";
@@ -78,19 +79,10 @@ const callDecide = async ($: Engine, questions: object[] = [STORE]) => {
 };
 
 const declared = async ($: Engine, on: On, key: string) => {
-	const names: string[] = [];
 	mock.env(on, { TYPESAFE_API_KEY: key });
-	on("session.start", (_$, e) => ({ cwd: e.cwd }));
-	on("tool.register", (_$, e) => {
-		names.push(e.name);
-		return { value: { tool: `mcp__claudetto__${e.name}` } };
-	});
-	await $.session.start({
-		cwd: "/p",
-		surface: "terminal",
-		isInteractive: true,
-	});
-	return names;
+	const names = await registeredTools($, on);
+	// Other blocks register their own tools, such as `setup`.
+	return names.filter((name) => name === "decide");
 };
 
 test(

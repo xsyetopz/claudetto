@@ -1,19 +1,20 @@
 import { describe, expect, test } from "bun:test";
 import {
-	chosenGroups,
+	differencesOf,
+	setupWrite,
+} from "../../../plugins/claudetto/src/blocks/setup-command/diff.ts";
+import {
+	diffReply,
 	platformNamed,
 	setupReport,
 } from "../../../plugins/claudetto/src/blocks/setup-command/setup.ts";
 import { refusedNames } from "../../../plugins/claudetto/src/refused.ts";
 import {
 	groupedKeys,
-	groupLabels,
 	KEY_GROUPS,
-	keptSnippet,
 	keyPaths,
 } from "../../../plugins/claudetto/src/tiers/groups.ts";
 import { refusedPaths } from "../../../plugins/claudetto/src/tiers/keys.ts";
-import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
 import {
 	tierSnippet,
 	UNKNOWN_PLATFORM,
@@ -34,12 +35,7 @@ const snippet = (): Record<string, unknown> => ({
 	...tierSnippet(SNIPPET_ROW, PLATFORM),
 });
 
-describe("the groups the dialog offers", () => {
-	test("the table holds the two to four options `$.ui.ask` accepts", () => {
-		expect(KEY_GROUPS.length).toBeGreaterThanOrEqual(2);
-		expect(KEY_GROUPS.length).toBeLessThanOrEqual(4);
-	});
-
+describe("the groups the differences are named by", () => {
 	test("every key of the snippet sits in exactly one group", () => {
 		const keys = [...keyPaths(snippet())].sort(byName);
 
@@ -57,53 +53,6 @@ describe("the groups the dialog offers", () => {
 			KEY_GROUPS.find((group) => group.keys.includes("autoMode"))?.label,
 		).toBe("Sandbox and auto mode");
 	});
-
-	test("keeping every group keeps every key that is offered", () => {
-		const kept = keptSnippet(snippet(), groupLabels());
-
-		expect([...keyPaths(kept)].sort(byName)).toStrictEqual(
-			[...groupedKeys()].sort(byName),
-		);
-	});
-
-	test("keeping no group keeps no key", () => {
-		expect(keptSnippet(snippet(), [])).toStrictEqual({});
-	});
-
-	test("keeping one group keeps its keys and no other", () => {
-		const group = KEY_GROUPS[1];
-		if (group === undefined) {
-			throw new Error("the table has a second group");
-		}
-
-		const kept = keptSnippet(snippet(), [group.label]);
-
-		expect([...keyPaths(kept)].sort(byName)).toStrictEqual(
-			[...group.keys].sort(byName),
-		);
-	});
-});
-
-describe("the answer of the dialog", () => {
-	test("a multi-select answer comes back comma-joined and names its groups", () => {
-		const labels = groupLabels();
-
-		expect(chosenGroups(labels.join(","))).toStrictEqual(labels);
-	});
-
-	test("a label with spaces around it is still its group", () => {
-		const first = groupLabels()[0] ?? "";
-
-		expect(chosenGroups(` ${first} `)).toStrictEqual([first]);
-	});
-
-	test("free text typed under the dialog's Other names no group", () => {
-		expect(chosenGroups("something else")).toStrictEqual([]);
-	});
-
-	test("an empty answer, which is a dismissed dialog, names no group", () => {
-		expect(chosenGroups("")).toStrictEqual([]);
-	});
 });
 
 describe("the platform the command composes for", () => {
@@ -119,35 +68,26 @@ describe("the platform the command composes for", () => {
 		);
 	});
 
-	test("an unknown platform writes no `sandbox.enabled`, so no key claims a sandbox that is not there", () => {
-		const kept = keptSnippet(
+	test("an unknown platform offers no `sandbox.enabled` and no sandbox toggle, so no key claims a sandbox that is not there", () => {
+		const ids = differencesOf(
+			{},
 			{ ...tierSnippet(SNIPPET_ROW, UNKNOWN_PLATFORM) },
-			["Sandbox and auto mode"],
-		);
+		).map((d) => d.id);
 
-		const sandbox = kept["sandbox"];
-		if (!isObject(sandbox)) {
-			throw new Error("the sandbox group keeps a `sandbox` object");
-		}
-		expect(sandbox["enabled"]).toBeUndefined();
-		expect(sandbox["allowUnsandboxedCommands"]).toBe(false);
+		expect(ids.filter((id) => id.startsWith("sandbox.enabled"))).toEqual([]);
+		expect(ids.filter((id) => id.includes("="))).toEqual([]);
+		expect(ids).toContain("sandbox.allowUnsandboxedCommands");
 	});
 });
 
+const everyId = (): readonly string[] =>
+	differencesOf({}, snippet())
+		.map((d) => d.id)
+		.filter((id) => !id.includes("="));
+
 describe("what the command writes", () => {
-	test("a value the user set keeps its value", () => {
-		const held = { outputStyle: "Explanatory" };
-		const kept = keptSnippet(snippet(), groupLabels());
-
-		const applied = applyTier(held, kept, refusedPaths(kept));
-
-		expect(applied.settings["outputStyle"]).toBe("Explanatory");
-	});
-
 	test("a key of `refused.ts` is written for no one", () => {
-		const kept = keptSnippet(snippet(), groupLabels());
-
-		const applied = applyTier({}, kept, refusedPaths(kept));
+		const { applied } = setupWrite({}, snippet(), everyId());
 
 		const env = applied.settings["env"];
 		const names = isObject(env) ? Object.keys(env) : [];
@@ -157,53 +97,36 @@ describe("what the command writes", () => {
 		expect(written).toStrictEqual([]);
 	});
 
-	test("a discarded group leaves the settings without its keys", () => {
-		const kept = keptSnippet(snippet(), ["Sandbox and auto mode"]);
+	test("keeping every difference writes every key that is offered", () => {
+		const { applied } = setupWrite({}, snippet(), everyId());
 
-		const applied = applyTier({}, kept, refusedPaths(kept));
-
-		expect(applied.settings["sandbox"]).toBeDefined();
-		expect(applied.settings["outputStyle"]).toBeUndefined();
+		expect([...keyPaths(applied.settings)].sort(byName)).toStrictEqual(
+			[...keyPaths(snippet())]
+				.filter((path) => !refusedPaths(snippet()).includes(path))
+				.sort(byName),
+		);
 	});
 });
 
-describe("the report the command returns", () => {
-	const reportFor = (labels: readonly string[]): string => {
-		const kept = keptSnippet(snippet(), labels);
-		return setupReport("/home/u/.claude/settings.json", labels, {
-			...applyTier({}, kept, refusedPaths(kept)),
-		});
-	};
+const FILE = "/home/u/.claude/settings.json";
 
-	// A hooks module cannot reach `.claude.json`, so the command reads no plan and composes from `SNIPPET_ROW`.
-	test("it names no tier, because the command reads no plan", () => {
-		for (const labels of [[], ["Sandbox and auto mode"], groupLabels()]) {
-			expect(reportFor(labels)).not.toContain("Tier:");
-		}
+describe("the report the tool returns", () => {
+	// A hooks module cannot reach `.claude.json`, so the tool reads no plan and composes from `SNIPPET_ROW`.
+	test("it names no tier, because the tool reads no plan", () => {
+		const report = setupReport(FILE, setupWrite({}, snippet(), ["model"]));
+
+		expect(report).not.toContain("Tier:");
+		expect(report).toContain(`Wrote ${FILE}.`);
 	});
 
-	test("the row's own tier is printed by no choice of groups", () => {
-		for (const labels of [[], ["Sandbox and auto mode"], groupLabels()]) {
-			expect(reportFor(labels)).not.toContain(SNIPPET_ROW.tier);
-		}
+	test("a refused id is named, and a write of nothing leaves the file unchanged", () => {
+		const report = setupReport(FILE, setupWrite({}, snippet(), ["no.such"]));
+
+		expect(report).toContain("Refused no.such");
+		expect(report).toContain(`${FILE} was not changed.`);
 	});
 
-	// `why` is the only place a user reads what a group does: the dialog shows labels, not descriptions.
-	test("a discarded group is named with what keeping it would have done", () => {
-		const report = reportFor(["Sandbox and auto mode"]);
-
-		for (const group of KEY_GROUPS.filter(
-			(entry) => entry.label !== "Sandbox and auto mode",
-		)) {
-			expect(report).toContain(`Discarded ${group.label}`);
-			expect(report).toContain(group.why);
-		}
-	});
-
-	test("a kept group is named in no discarded line", () => {
-		expect(reportFor(["Sandbox and auto mode"])).not.toContain(
-			"Discarded Sandbox",
-		);
-		expect(reportFor(groupLabels())).not.toContain("Discarded");
+	test("a read with no difference says there is nothing to ask", () => {
+		expect(diffReply(FILE, [])).toContain("nothing to ask");
 	});
 });

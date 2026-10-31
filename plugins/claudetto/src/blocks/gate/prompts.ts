@@ -26,6 +26,8 @@ export const ASK_DELETE_PIPED =
 export const ASK_GIT_LOSS = (v: { verb: string }): string =>
 	`The command \`git ${v.verb}\` can delete work that no commit and no reflog keeps.`;
 export const ASK_PUSH = "This push rewrites or deletes history on the remote.";
+export const ASK_PUSH_HOST = (v: { target: string }): string =>
+	`This push sends the repository to \`${v.target}\`, which no remote of the repository names.`;
 export const ASK_DB_LOSS = "This command can drop or wipe a database.";
 export const ASK_INFRA_LOSS =
 	"This command can destroy a cloud or cluster resource.";

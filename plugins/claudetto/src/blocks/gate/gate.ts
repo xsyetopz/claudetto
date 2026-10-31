@@ -13,6 +13,8 @@ export interface GitConfig {
 export type Facts = Places & {
 	gitConfig?: () => Promise<GitConfig | undefined>;
 	hasEnvFile?: () => Promise<readonly string[] | undefined>;
+	/** The push URLs of the remotes of the repository at `dir`, or `undefined` when `git` cannot read them. */
+	pushUrls?: (dir: string) => Promise<readonly string[] | undefined>;
 	git: (
 		scope: GitScope,
 		dir: string,
@@ -28,6 +30,8 @@ export interface Verdict {
 	decision: Decision;
 	reason?: string;
 	secret?: true;
+	/** An `ask` that only a person settles: a classifier's allow does not. */
+	person?: true;
 }
 
 const STRICTNESS: readonly Decision[] = ["allow", "ask", "deny"];
@@ -100,5 +104,9 @@ export const gate = async (
 		return { decision: "allow" };
 	}
 	const reason = [...new Set(asks.map((v) => v.reason))].join("\n");
-	return verdict("ask", reason);
+	return verdict(
+		"ask",
+		reason,
+		asks.some((v) => v.person) ? { person: true } : {},
+	);
 };
