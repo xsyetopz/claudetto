@@ -150,6 +150,8 @@ What follows is that a compaction trigger of any value below the 100,000 price s
 
 The value stays at 90,000, because no reading here gives a better one and `prd.md`, G10, bars picking one. What the reading changes is the claim: the trigger lowers the share of Haiku requests priced above the step, and it does not rule them out. Each request is priced alone (`docs/models.md`, "The Price Cliff"), so a request that crosses pays the higher price for that request only.
 
+The bound is the `price-step` block in `plugins/claudetto/src/blocks/price-step/`. Its `tool.call` hook withholds a result that would take the next request of a Haiku 5.5 step over 100,000, and tells the model to ask for less. It reads the step's prompt from the `usage` of the step's stop chunk, adds that step's results already passed, and counts the result at 3 characters a token. The 3 is not measured against the token-count API.
+
 Two limits on this reading. The 47 responses already over 100,000 came from threads that ran with no Haiku trigger, so they show the cliff is reachable and not what the trigger does. Whether a thread is a Haiku main session or a subagent was not told apart, so none of it is a measured Haiku main session. Rows from the recorder, once they exist, replace this reading.
 
 ## The Engine's Second Ask for a Missing `<summary>` Block
