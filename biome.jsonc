@@ -56,15 +56,6 @@
 	},
 	"overrides": [
 		{
-			"includes": [
-				"tests/**",
-				"plugins/*/tests/**",
-				"**/__tests__/**",
-				"**/*.test.ts",
-				"**/*.spec.ts"
-			]
-		},
-		{
 			"includes": ["plugins/*/tests/**"],
 			"linter": {
 				"rules": {
