@@ -1,6 +1,6 @@
 // Each arm gets an empty working folder, config folder, and fake API, so no two arms mix.
 
-import { writeFile } from "node:fs/promises";
+import { realpath, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { cwd } from "node:process";
 import type { ToolCall } from "../../claudekit/api/answer.ts";
@@ -8,8 +8,9 @@ import { type FakeApi, startFakeApi } from "../../claudekit/api/fake.ts";
 import { isClassifier } from "../../claudekit/api/match.ts";
 import { claudeArgv, pluginDir, print } from "../../claudekit/session/argv.ts";
 import { spawnCommand } from "../../claudekit/session/command.ts";
-import { fakeApiEnv } from "../../claudekit/session/env.ts";
+import { FAKE_KEY, fakeApiEnv } from "../../claudekit/session/env.ts";
 import { makeFolders } from "../../claudekit/session/folders.ts";
+import { interactiveConfig, runInTmux } from "../../claudekit/session/tmux.ts";
 import { type Score, scoreOf } from "./score.ts";
 
 /** One word, so the message part is as small as a session allows. */
@@ -46,26 +47,55 @@ export interface Reading {
 	readonly workChars: number;
 }
 
+/** The `claude` words of one arm. An interactive arm gets its prompt typed in, so it has no `-p`. */
+export const sessionArgv = (options: {
+	plugin: string | undefined;
+	prompt: string;
+	interactive: boolean;
+	extra: readonly string[];
+}): string[] =>
+	claudeArgv(
+		options.interactive ? [] : print(options.prompt),
+		options.plugin === undefined ? [] : pluginDir(options.plugin),
+		options.extra,
+	);
+
 const runArm = async (options: {
 	api: FakeApi;
 	plugin: boolean;
 	settings: string | undefined;
 	prompt: string;
+	interactive: boolean;
 	extra: readonly string[];
 }): Promise<{ code: number; stderr: string; work: string }> => {
-	const { config, work } = await makeFolders(TEMP_PREFIX, options.settings);
-	const ran = await spawnCommand(
-		claudeArgv(
-			print(options.prompt),
-			options.plugin ? pluginDir(join(cwd(), PLUGIN)) : [],
-			options.extra,
-		),
-		{
-			cwd: work,
-			env: fakeApiEnv(options.api.url, config),
-			timeoutMs: RUN_MS,
-		},
+	const { root, config, work } = await makeFolders(
+		TEMP_PREFIX,
+		options.settings,
 	);
+	const argv = sessionArgv({
+		...options,
+		plugin: options.plugin ? join(cwd(), PLUGIN) : undefined,
+	});
+	const env = fakeApiEnv(options.api.url, config);
+	if (options.interactive) {
+		// The session names its folder by the real path, so that is the key its trust needs.
+		const real = await realpath(work);
+		await writeFile(
+			join(config, ".claude.json"),
+			interactiveConfig(real, FAKE_KEY),
+		);
+		const ran = await runInTmux({
+			argv,
+			cwd: work,
+			env,
+			socket: join(root, "tmux.sock"),
+			prompt: options.prompt,
+			done: () => options.api.bodies.length > 0,
+			timeoutMs: RUN_MS,
+		});
+		return { code: ran.code, stderr: ran.stderr || ran.screen, work: real };
+	}
+	const ran = await spawnCommand(argv, { cwd: work, env, timeoutMs: RUN_MS });
 	// A run that was killed or never started has no status; the report needs a number that is not 0.
 	return { code: ran.code ?? 1, stderr: ran.stderr, work };
 };
@@ -76,6 +106,8 @@ export interface CaptureOptions {
 	readonly extra?: readonly string[];
 	/** Reads the auto mode classifier request in place of the first request. */
 	readonly classifier?: boolean;
+	/** Runs the session in `tmux` with no `-p`, so the tools of an interactive session are in the request. */
+	readonly interactive?: boolean;
 }
 
 /** `dump` is re-indented from the raw text, since `JSON.stringify` of the string would be one line. */
@@ -91,6 +123,7 @@ export const capture = async (
 			plugin: arm === "plugin",
 			settings,
 			prompt: options.prompt ?? PROMPT,
+			interactive: options.interactive ?? false,
 			extra: options.extra ?? [],
 		});
 		const first = options.classifier
