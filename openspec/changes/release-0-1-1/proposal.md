@@ -11,6 +11,7 @@ Task 12.4 of `release-0-1-0` asked for a block of every kind in `BlockKind`, and
 - `BlockKind` loses `context` and `screen`. No block uses either one.
 - A new `status-line` block answers the built-in `/statusline` with no model call. It writes claudetto's `statusLine` and `subagentStatusLine`, keeps a line the user set, and reports what it did. Its listing description says that claudetto writes the line.
 - `/statusline <text>` with arguments still runs the built-in when `Agent(statusline-setup)` is not denied. When it is denied, claudetto says so and names the rule to remove.
+- `agents/main.md` is cut to fit the 3,645-character body it replaces under the shipped settings, and its budget moves from 5,627 characters to 3,678 as the request carries the body. On `2.1.316` the file costs 1,708 characters more than that body.
 - Release `0.1.1`: the four manifests, a `CHANGELOG.md` section, and the README line for `/statusline`.
 
 ## Capabilities
@@ -22,6 +23,7 @@ None.
 ### Modified Capabilities
 
 - `status-line`: adds the requirement that `/statusline` is answered by claudetto with no model call. This capability is created by `release-0-1-0`, which is archived first.
+- `prompt-footprint`: the main agent budget is the body under the shipped settings, 3,678 as the request carries it, not 5,627.
 
 ## Impact
 
@@ -30,4 +32,5 @@ None.
 - `plugins/claudetto/src/blocks/catalog.ts`: one catalog row and one attach call.
 - The settings read and write in `plugins/claudetto/src/blocks/setup-command/hooks.ts` move to a module both blocks share.
 - `openspec/changes/release-0-1-0/tasks.md`: 12.4 points at this change.
+- `plugins/claudetto/agents/main.md`, `tools/limits.ts`, and `tests/repo/prompt-budget.test.ts`.
 - The `0.1.1` manifests, `CHANGELOG.md`, and `README.md`.
