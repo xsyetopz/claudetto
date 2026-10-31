@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { serve } from "bun";
 import { type Row, rowsOf, seenIn } from "../../summary-cost/log.ts";
 import { targetOf, usageIn } from "../forward.ts";
@@ -77,7 +79,7 @@ interface Started {
 }
 
 const proxyFor = (mode: Mode, upstream: string): Started => {
-	const log = `/tmp/proxy-${process.pid}-${Math.random()}.jsonl`;
+	const log = join(tmpdir(), `proxy-${process.pid}-${Math.random()}.jsonl`);
 	logs.push(log);
 	const proxy = start(mode, log, upstream);
 	return { url: proxy.url, log, stop: proxy.stop };

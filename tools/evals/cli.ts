@@ -101,6 +101,7 @@ export const main = async (
 		readonly cases?: readonly RuleCase[];
 		readonly fixturesRoot?: string;
 		readonly root?: string;
+		readonly tempPrefix?: string;
 	},
 ): Promise<number> => {
 	if (args[0] === "--classifier") {
@@ -128,6 +129,7 @@ export const main = async (
 		run: io.run,
 		fixturesRoot,
 		pluginDir: resolve(io.root ?? cwd(), PLUGIN_DIR),
+		...(io.tempPrefix === undefined ? {} : { tempPrefix: io.tempPrefix }),
 		...(options.model === undefined ? {} : { model: options.model }),
 		...(options.maxBudgetUsd === undefined
 			? {}

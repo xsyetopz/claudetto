@@ -26,6 +26,7 @@ const CASE_K: RuleCase = {
 	fails: "f",
 	graders: [{ kind: "tree", check: "c" }],
 };
+const TEMP_PREFIX = join(tmpdir(), "claudetto-eval-");
 const CASE_Z: RuleCase = { ...CASE_K, codes: ["Z"] };
 
 const makeRoot = async (): Promise<string> => {
@@ -138,6 +139,7 @@ describe("run mode", () => {
 			fixturesRoot: root,
 			cases: [CASE_K],
 			root: "/repo",
+			tempPrefix: TEMP_PREFIX,
 		});
 
 		expect(status).toBe(0);
@@ -156,6 +158,7 @@ describe("run mode", () => {
 			out: () => undefined,
 			fixturesRoot: root,
 			cases: [CASE_K],
+			tempPrefix: TEMP_PREFIX,
 		});
 
 		expect(status).toBe(1);

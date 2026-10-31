@@ -138,6 +138,7 @@ describe("executing a session", () => {
 		run,
 		fixturesRoot: root,
 		pluginDir: "/p",
+		tempPrefix: join(tmpdir(), "claudetto-eval-"),
 	});
 
 	test("scores the grader's exit status after the session ran", async () => {
