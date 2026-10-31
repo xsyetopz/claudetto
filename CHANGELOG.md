@@ -6,6 +6,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 Before 1.0.0, a release can change or remove behavior.
 After each update, do the steps in the "Update" section of the README.
 
+## [0.1.1] - 2026-10-31
+
+### Added
+
+- A tool result that would take a `claude-haiku-5-5` request over 100,000 prompt tokens is withheld, and the model is told to ask for a smaller part. Above that step Haiku 5.5 bills the whole request at five times, and the handoff at 90,000 cannot stop one large result.
+  The call still runs. The bound reads the step's `usage` from its stop chunk and counts a result at 3 characters a token.
+
+### Changed
+
+- `agents/main.md` is cut to 3,540 characters, under the 3,645-character body it replaces with the shipped settings. The shipped first request on `2.1.316` reads 29,433 characters, 72 fewer than with the built-in body.
+
+### Fixed
+
+- `/statusline` with no text writes claudetto's `statusLine` and `subagentStatusLine` with no model call, keeps a line you already set, and reports what it did. Setup denies `Agent(statusline-setup)`, so the built-in command used to spend a model turn and then fail.
+  `/statusline <text>` still runs the built-in when that agent is not denied. When it is denied, claudetto names the rule to remove.
+
+### Removed
+
+- The block kinds `context` and `screen`, which no block used.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

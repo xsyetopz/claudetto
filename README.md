@@ -4,7 +4,7 @@ Claudetto tunes Claude Code for coding at the lowest token cost.
 It works through the official extension points only: settings, hooks, skills, commands, and an output style.
 It patches nothing.
 
-Version `0.1.0`. The tree is a rebuild in progress, so the core plugin ships less than the older releases did.
+Version `0.1.1`. The tree is a rebuild in progress, so the core plugin ships less than the older releases did.
 Each capability lands with the measurement that decided its values.
 
 The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), which ships the plugins `clawdipedia-docs` and `cc-inspect`, each with a skill and an MCP server.
