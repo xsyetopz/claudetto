@@ -1,6 +1,0 @@
-language js
-
-JsCallExpression(callee=$fn) as $call where {
-	$fn <: r"(?s)^(?:.*\.)?(?:(?:access|appendFile|chmod|chown|close|copyFile|cp|exists|fchmod|fchown|fdatasync|fstat|fsync|ftruncate|futimes|glob|lchmod|lchown|link|lstat|lutimes|mkdir|mkdtemp|open|opendir|read|readdir|readFile|readlink|readv|realpath|rename|rm|rmdir|stat|statfs|symlink|truncate|unlink|utimes|write|writeFile|writev|exec|execFile|spawn|gzip|gunzip|deflate|inflate|deflateRaw|inflateRaw|unzip|brotliCompress|brotliDecompress|pbkdf2|scrypt|randomFill|generateKeyPair|generateKey|generatePrime|checkPrime|hkdf)Sync)$",
-	register_diagnostic(span=$call, message="Replace the blocking Node `*Sync` call with its async version (for example `await readFile()` from `node:fs/promises`).", severity="error")
-}
