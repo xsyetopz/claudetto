@@ -1,4 +1,4 @@
-export const BASELINE_TOTAL = 46_105;
+export const BASELINE_TOTAL = 46_007;
 
 export const BASELINE_TOOL_COUNT = 12;
 
@@ -13,12 +13,12 @@ export interface DenyReading {
 
 /** Each `chars` is one less than its `tools` difference, because a definition travels with a comma. */
 export const DENIED_TOOLS: readonly DenyReading[] = [
-	{ name: "Workflow", chars: 5355, total: 40_749, tools: 24_156 },
-	{ name: "ScheduleWakeup", chars: 4886, total: 41_218, tools: 24_625 },
-	{ name: "ReportFindings", chars: 2177, total: 43_927, tools: 27_334 },
+	{ name: "Workflow", chars: 5355, total: 40_651, tools: 24_156 },
+	{ name: "ScheduleWakeup", chars: 4886, total: 41_120, tools: 24_625 },
+	{ name: "ReportFindings", chars: 2177, total: 43_829, tools: 27_334 },
 ];
 
-export const DENIED_TOGETHER_TOTAL = 33_684;
+export const DENIED_TOGETHER_TOTAL = 33_586;
 
 export const DENIED_TOGETHER_TOOLS = 17_091;
 
@@ -60,10 +60,10 @@ export const DROPPED_DENIES: readonly DroppedDeny[] = [
 			"TaskUpdate",
 			"mcp__computer-use",
 		],
-		total: 46_105,
+		total: 46_007,
 		tools: 29_512,
 	},
-	{ names: ["DesignSync"], total: 46_093, tools: 29_512 },
+	{ names: ["DesignSync"], total: 45_995, tools: 29_512 },
 ];
 
 export const denyList = (): readonly string[] =>

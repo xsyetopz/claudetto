@@ -67,36 +67,36 @@ export interface BuiltinReading {
 }
 
 export const BUILTIN_CUTS: readonly BuiltinReading[] = [
-	{ settings: "the defaults", total: 46_105, tools: 29_512, messages: 9984 },
+	{ settings: "the defaults", total: 46_007, tools: 29_512, messages: 9984 },
 	{
 		settings: "`disableBundledSkills` alone",
-		total: 57_134,
+		total: 57_036,
 		tools: 46_467,
 		messages: 4058,
 	},
 	{
 		settings: "`disableBundledSkills` with the deny list",
-		total: 27_758,
+		total: 27_660,
 		tools: 17_091,
 		messages: 4058,
 	},
 	{
 		settings: "the shipped combination",
-		total: 36_946,
-		tools: 13_682,
-		messages: 16_874,
+		total: 36_803,
+		tools: 13_504,
+		messages: 17_178,
 	},
 	{
 		settings: "the shipped combination with the built-in plugins off",
-		total: 36_678,
-		tools: 13_682,
-		messages: 16_606,
+		total: 36_535,
+		tools: 13_504,
+		messages: 16_910,
 	},
 	{
 		settings: "the shipped combination with both switches",
-		total: 31_356,
-		tools: 13_682,
-		messages: 11_284,
+		total: 31_213,
+		tools: 13_504,
+		messages: 11_588,
 	},
 ];
 
