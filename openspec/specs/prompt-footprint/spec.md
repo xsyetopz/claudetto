@@ -16,12 +16,17 @@ Each of `agents/main.md`, `output-styles/Concise.md`, each skill `description:` 
 
 ### Requirement: The Main Agent File Is Smaller Than the Body It Replaces
 
-`agents/main.md` SHALL be smaller than the default system body that a main-thread agent file replaces, which is `5,627` characters (`system[2]`, `docs/prompt/overrides.md`). The file replaces the body and does not add to it, so a file larger than the body is a loss.
+`agents/main.md` SHALL be smaller than the default system body that a main-thread agent file replaces under the shipped settings, which is `3,645` characters on Claude Code `2.1.316` and `3,678` as the request carries it, since a JSON string escapes each line break. The size of `agents/main.md` SHALL be read the same way. The file replaces the body and does not add to it, so a file larger than the body is a loss.
 
 #### Scenario: File Larger Than the Body
 
-- **WHEN** `agents/main.md` is larger than `5,627` characters
-- **THEN** the test fails and names the file, its size, and `5,627`
+- **WHEN** `agents/main.md` is larger than `3,678` characters as the request carries it
+- **THEN** the test fails and names the file, its size, and `3,678`
+
+#### Scenario: Unset Config
+
+- **WHEN** the budget is read from a config without `autoMemoryEnabled: false`
+- **THEN** it is not the budget, because that config keeps the memory section and its body reads `5,627` (`docs/surfaces.md`, "The Baseline Moved a Third Time")
 
 ### Requirement: Budgets Fall
 
@@ -76,3 +81,12 @@ The system SHALL keep the added tool descriptions under a budget, and SHALL NOT 
 
 - **WHEN** a change adds a tool definition
 - **THEN** the budget test counts it and fails if the total passes the limit
+
+### Requirement: Every Surface Is Read and Cut
+
+Each surface claudetto reaches SHALL be read before and after its cut by `just capture` or `just inventory`: the session prompt, tool texts, agent and skill texts, the output style, hook output, and the classifier request (D21). A fresh session SHALL cost less than the 13.8k-token baseline (G6).
+
+#### Scenario: Release Reading
+
+- **WHEN** `0.1.0` is cut
+- **THEN** `just capture --shipped` reads a first request below the `0.0.0` reading, and `just inventory` passes
