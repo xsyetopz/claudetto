@@ -8,7 +8,7 @@ import {
 	previewOf,
 } from "../plan.ts";
 
-const NONE = { agents: false, claude: false, ignore: false };
+const NONE = { agents: false, claude: false };
 
 const textOf = (
 	files: readonly { path: string; text: string }[],
@@ -82,36 +82,6 @@ describe("planStarter", () => {
 		const files = ["notes.txt"];
 
 		expect(planStarter({ files, tracked: files }, NONE)).toEqual([]);
-	});
-
-	test(".ignore holds only the heavy paths that git tracks", () => {
-		const files = ["package.json", "bun.lock", "dist/app.min.js", "src/a.ts"];
-
-		const plan = planStarter({ files, tracked: files }, NONE);
-
-		const ignore = textOf(plan, ".ignore") ?? "";
-		expect(ignore.split("\n")).toContain("bun.lock");
-		expect(ignore.split("\n")).toContain("dist/");
-		expect(ignore).not.toContain("node_modules/");
-	});
-
-	test("an untracked heavy path is left out of .ignore", () => {
-		const files = ["package.json", "node_modules/a/index.js"];
-
-		const plan = planStarter({ files, tracked: ["package.json"] }, NONE);
-
-		expect(textOf(plan, ".ignore")).toBeUndefined();
-	});
-
-	test("an existing .ignore is never replaced", () => {
-		const files = ["package.json", "bun.lock"];
-
-		const plan = planStarter(
-			{ files, tracked: files },
-			{ ...NONE, ignore: true },
-		);
-
-		expect(plan.map((file) => file.path)).toEqual(["AGENTS.md", "CLAUDE.md"]);
 	});
 
 	test("all families together stay under the cap by dropping later ones", () => {

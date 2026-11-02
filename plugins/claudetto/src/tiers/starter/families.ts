@@ -17,8 +17,10 @@ export interface Family {
 	readonly markers: readonly string[];
 	/** The first command of a kind whose `when` is present wins. */
 	readonly commands: readonly Command[];
-	/** Generated or heavy paths: a `dir/`, a `*` glob on a file name, or a file name. */
+	/** Build, cache, and dependency paths: a `dir/` or a `*` glob on a file name. */
 	readonly heavy: readonly string[];
+	/** Lock and minified files, which git tracks: a file name or a `*` glob. */
+	readonly bulky?: readonly string[];
 	/** Tools whose bounding flags no doc or `--help` confirmed. */
 	readonly omitted?: readonly string[];
 }
@@ -67,11 +69,8 @@ export const FAMILIES: readonly Family[] = [
 				when: ["eslint.config.*", ".eslintrc*"],
 			},
 		],
-		heavy: [
-			"node_modules/",
-			"dist/",
-			".next/",
-			"coverage/",
+		heavy: ["node_modules/", "dist/", ".next/", "coverage/"],
+		bulky: [
 			"bun.lock",
 			"bun.lockb",
 			"package-lock.json",
@@ -119,10 +118,8 @@ export const FAMILIES: readonly Family[] = [
 			".ruff_cache/",
 			".pytest_cache/",
 			"*.egg-info/",
-			"uv.lock",
-			"poetry.lock",
-			"Pipfile.lock",
 		],
+		bulky: ["uv.lock", "poetry.lock", "Pipfile.lock"],
 		omitted: ["pip"],
 	},
 	{
@@ -130,7 +127,8 @@ export const FAMILIES: readonly Family[] = [
 		label: "Ruby",
 		markers: ["Gemfile", "*.gemspec", "Rakefile"],
 		commands: [{ kind: "test", run: "rspec --fail-fast", when: [".rspec"] }],
-		heavy: ["vendor/bundle/", "Gemfile.lock", "coverage/", "tmp/", "log/"],
+		heavy: ["vendor/bundle/", "coverage/", "tmp/", "log/"],
+		bulky: ["Gemfile.lock"],
 		omitted: ["rubocop", "bundler"],
 	},
 	{
@@ -159,7 +157,8 @@ export const FAMILIES: readonly Family[] = [
 				when: [".stylelintrc*", "stylelint.config.*"],
 			},
 		],
-		heavy: ["*.min.css", "*.min.js", "*.map"],
+		heavy: [],
+		bulky: ["*.min.css", "*.min.js", "*.map"],
 		omitted: ["htmlhint"],
 	},
 	{
@@ -196,7 +195,8 @@ export const FAMILIES: readonly Family[] = [
 			{ kind: "test", run: "cargo test -q" },
 			{ kind: "build", run: "cargo build -q --message-format short" },
 		],
-		heavy: ["target/", "Cargo.lock"],
+		heavy: ["target/"],
+		bulky: ["Cargo.lock"],
 		omitted: ["cargo fmt", "cargo clippy"],
 	},
 	{
@@ -207,7 +207,8 @@ export const FAMILIES: readonly Family[] = [
 			{ kind: "test", run: "swift test -q", when: ["Package.swift"] },
 			{ kind: "build", run: "swift build -q", when: ["Package.swift"] },
 		],
-		heavy: [".build/", "DerivedData/", "Package.resolved", "Pods/"],
+		heavy: [".build/", "DerivedData/", "Pods/"],
+		bulky: ["Package.resolved"],
 		omitted: ["xcodebuild", "xcbeautify"],
 	},
 	{
@@ -259,6 +260,7 @@ export const FAMILIES: readonly Family[] = [
 				when: [".golangci.yml", ".golangci.yaml", ".golangci.toml"],
 			},
 		],
-		heavy: ["vendor/", "go.sum"],
+		heavy: ["vendor/"],
+		bulky: ["go.sum"],
 	},
 ];

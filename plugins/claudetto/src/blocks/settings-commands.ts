@@ -6,12 +6,7 @@ import { refusedPaths } from "../tiers/keys.ts";
 import { applyTier, type Json, settingsText } from "../tiers/merge.ts";
 import { tierReport } from "../tiers/report.ts";
 import { tierSnippet } from "../tiers/snippet.ts";
-import {
-	linesOf,
-	planStarter,
-	previewOf,
-	type StarterFile,
-} from "../tiers/starter/plan.ts";
+import { linesOf } from "../tiers/starter/plan.ts";
 import { statusLineSnippet } from "../tiers/status-line.ts";
 import { SNIPPET_ROW } from "../tiers/tiers.ts";
 import { differencesOf, setupWrite } from "./setup-command/diff.ts";
@@ -28,6 +23,9 @@ import {
 	setupReport,
 	UNAME_MS,
 } from "./setup-command/setup.ts";
+import { starterPart } from "./setup-command/starter/files.ts";
+import { ignoresPart } from "./setup-command/starter/ignores.ts";
+import { type StarterIo, WRITE } from "./setup-command/starter/io.ts";
 import {
 	deniedText,
 	deniesSetupAgent,
@@ -125,8 +123,6 @@ const rulesReport = async (
 
 const GIT_MS = 5000;
 
-const WRITE = "Write";
-
 const gitLines = async (
 	$: EngineInterface,
 	cwd: string,
@@ -142,65 +138,17 @@ const gitLines = async (
 	}
 };
 
-const writeNew = async (
-	$: EngineInterface,
-	cwd: string,
-	file: StarterFile,
-): Promise<string> => {
-	const path = `${cwd}/${file.path}`;
-	try {
-		if (await $.fs.exists(path)) {
-			return `\`${path}\` exists, so it was left as it is.`;
-		}
-		await $.fs.write(path, file.text);
-		return `Wrote \`${path}\`.`;
-	} catch (error) {
-		return `Could not write \`${path}\` (${String(error)}).`;
-	}
-};
-
-/** The starter files for a repo with no memory file, shown in a dialog and written only on a yes. */
-const starterPart = async ($: EngineInterface): Promise<string | undefined> => {
-	let cwd: string;
-	try {
-		cwd = await $.session.cwd();
-	} catch {
-		return undefined;
-	}
-	const files = planStarter(
-		{
-			files: await gitLines($, cwd, [
-				"ls-files",
-				"--cached",
-				"--others",
-				"--exclude-standard",
-			]),
-			tracked: await gitLines($, cwd, ["ls-files"]),
-		},
-		{
-			agents: await $.fs.exists(`${cwd}/AGENTS.md`),
-			claude: await $.fs.exists(`${cwd}/CLAUDE.md`),
-			ignore: await $.fs.exists(`${cwd}/.ignore`),
-		},
-	);
-	if (files.length === 0) {
-		return undefined;
-	}
-	let answer: string;
-	try {
-		answer = await $.ui.ask(
-			`${previewOf(files)}\nWrite these files? A file that exists is never replaced.`,
-			{ options: [WRITE, "Skip"], header: "Starter" },
-		);
-	} catch {
-		return "Wrote no starter file: the question was dismissed, or this session has no one to answer.";
-	}
-	if (answer.trim() !== WRITE) {
-		return "Wrote no starter file.";
-	}
-	const lines = await Promise.all(files.map((file) => writeNew($, cwd, file)));
-	return lines.join("\n");
-};
+const starterIo = ($: EngineInterface): StarterIo => ({
+	cwd: async () => await $.session.cwd(),
+	git: async (args) => gitLines($, await $.session.cwd(), args),
+	exists: async (path) => await $.fs.exists(path),
+	read: async (path) => await $.fs.read(path),
+	write: async (path, text) => {
+		await $.fs.write(path, text);
+	},
+	ask: async (question, header) =>
+		await $.ui.ask(question, { options: [WRITE, "Skip"], header }),
+});
 
 /** The merge stays in code, so the model never edits the settings file by hand. */
 const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
@@ -248,11 +196,13 @@ const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
 
 export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
 	const settings = await settingsPart($);
-	const starter = await starterPart($);
-	return {
-		text:
-			starter === undefined ? settings.text : `${settings.text}\n${starter}`,
-	};
+	const io = starterIo($);
+	const parts = [
+		settings.text,
+		await starterPart(io),
+		await ignoresPart(io),
+	].filter((part) => part !== undefined);
+	return { text: parts.join("\n") };
 };
 
 export const onStatuslineCommand: HookFor<"command.run"> = async (

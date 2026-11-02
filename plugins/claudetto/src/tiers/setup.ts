@@ -8,6 +8,7 @@ import { readTier, unknownTierLine } from "./read.ts";
 import { tierReport } from "./report.ts";
 import { tierSnippet } from "./snippet.ts";
 import { askYes, offerStarter } from "./starter/cli.ts";
+import { offerIgnores } from "./starter/ignore/cli.ts";
 
 const isRecord = (value: unknown): value is Json =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -98,6 +99,13 @@ const main = async (): Promise<void> => {
 	console.info(init.report);
 	console.info(
 		await offerStarter(
+			process.cwd(),
+			args,
+			args.yes === true ? async () => true : askYes,
+		),
+	);
+	console.info(
+		await offerIgnores(
 			process.cwd(),
 			args,
 			args.yes === true ? async () => true : askYes,

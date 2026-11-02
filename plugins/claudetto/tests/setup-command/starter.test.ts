@@ -2,7 +2,7 @@
 
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { SETUP_COMMAND } from "../../src/blocks/setup-command/setup.ts";
+import { questionOf, run } from "./support.ts";
 
 const FILE = "/home/u/.claude/settings.json";
 
@@ -20,17 +20,6 @@ const ok = (stdout: string) => ({
 		isStderrTruncated: false,
 	},
 });
-
-const questionOf = (input: object): string => {
-	const first: unknown =
-		"questions" in input && Array.isArray(input.questions)
-			? input.questions[0]
-			: undefined;
-	if (typeof first === "object" && first !== null && "question" in first) {
-		return String(first.question);
-	}
-	throw new Error("not a dialog");
-};
 
 /** A repo at `/r` that holds `files`, a settings file that already holds every key, and `held` files on disk. */
 const lab = (
@@ -77,16 +66,6 @@ const lab = (
 	});
 	return state;
 };
-
-const run = async ($: Engine): Promise<string> =>
-	(
-		await $.command.run({
-			command: SETUP_COMMAND,
-			args: "",
-			origin: { kind: "composer" },
-			presentation: { isFullscreen: false, columns: 80 },
-		})
-	).text ?? "";
 
 test("a repo with neither file is shown the starter files, and a Write writes them", async ($: Engine, on: On) => {
 	const state = lab(on, ["Cargo.toml", "src/main.rs"], [], "Write");

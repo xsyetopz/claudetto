@@ -12,7 +12,7 @@ import {
 	type StarterFile,
 } from "./plan.ts";
 
-const gitLines = async (
+export const gitLines = async (
 	cwd: string,
 	args: readonly string[],
 ): Promise<string[]> => {
@@ -42,7 +42,6 @@ export const readListing = async (cwd: string): Promise<Listing> => ({
 const existingIn = async (cwd: string): Promise<Existing> => ({
 	agents: await exists(join(cwd, "AGENTS.md")),
 	claude: await exists(join(cwd, "CLAUDE.md")),
-	ignore: await exists(join(cwd, ".ignore")),
 });
 
 const isExists = (error: unknown): boolean =>
