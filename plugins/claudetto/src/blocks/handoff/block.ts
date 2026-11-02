@@ -21,6 +21,7 @@ import {
 	readBackText,
 	staleLine,
 } from "./read-back.ts";
+import { atRoot } from "./root.ts";
 import { HANDOFF_INPUT_SCHEMA, HANDOFF_MATCH, TOOL_HANDOFF } from "./tool.ts";
 
 /** Wall clock to leave for the write itself, so a slow `tail` cannot eat the whole budget. */
@@ -49,7 +50,7 @@ const copyMisnamed = async (
 		return `The handoff Claude wrote, \`${misnamed}\`, could not be read (${error})`;
 	}
 	try {
-		await $.fs.write(path, text);
+		await $.fs.write(atRoot(await $.session.root(), path), text);
 		$.ui.log(
 			`The handoff Claude wrote, \`${misnamed}\`, has a name the next session does not read, so it was copied to \`${path}\`.`,
 		);
@@ -113,7 +114,7 @@ const writeHandoff = async (
 		}
 		// Own catch: the failure line must name the file, and the path exists only here.
 		try {
-			await $.fs.write(path, text);
+			await $.fs.write(atRoot(await $.session.root(), path), text);
 			if (unread !== "") {
 				$.ui.log(`${unread}, so the code-built handoff is \`${path}\``);
 			}
@@ -147,10 +148,11 @@ const readBack = async ($: EngineInterface, source: string): Promise<void> => {
 		return;
 	}
 	try {
-		if (!(await $.fs.exists(HANDOFF_DIR))) {
+		const dir = atRoot(await $.session.root(), HANDOFF_DIR);
+		if (!(await $.fs.exists(dir))) {
 			return;
 		}
-		const entries = await $.fs.list(HANDOFF_DIR);
+		const entries = await $.fs.list(dir);
 		const name = newestHandoff(entries.map((entry) => entry.name));
 		const key = readBackKey(await $.session.root());
 		if (name === undefined || name === (await $.store.get(key))) {
@@ -162,7 +164,7 @@ const readBack = async ($: EngineInterface, source: string): Promise<void> => {
 			$.ui.log(staleLine(name, ageMs));
 			return;
 		}
-		const text = readBackText(name, await $.fs.read(`${HANDOFF_DIR}/${name}`));
+		const text = readBackText(name, await $.fs.read(`${dir}/${name}`));
 		$.clock.after(0, () => {
 			submitReadBack($, name, text).catch(() => undefined);
 		});
@@ -180,7 +182,8 @@ const HANDOFF_SPEC: ToolSpec = {
 const ANY_ID = /./;
 
 const sessionOf = ($: EngineInterface): Session => ({
-	write: (path, text) => $.fs.write(path, text),
+	write: async (path, text) =>
+		$.fs.write(atRoot(await $.session.root(), path), text),
 	clear: () => $.command.run({ command: "clear" }),
 	submit: (text) => $.prompt.submit({ text }),
 	taken: async (name) => $.store.set(readBackKey(await $.session.root()), name),

@@ -39,6 +39,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- A handoff written after a shell `cd` went to `.claude/claudetto/handoffs/` under the new directory, and a resume read the folder there too, so the next session found no handoff and the sweep never reached the file. The handoff and the handover now write and read the folder under the project root that `$.session.root()` gives.
 - A `claude` session that a `claudekit` probe or `just capture` started inherited the `CLAUDE_CODE_*` variables of the session that ran it, such as `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_EFFORT`, so the child dropped tools from its request and `just inventory` read 3,004 characters below the recorded total. `withoutSessionVariables` of `claudekit/session/env.ts` now drops them and keeps the login, the provider switches, and the rest of the shell.
 - The status line showed no branch in a plain checkout, because Claude Code sends `worktree.branch` for a worktree session only. The line now reads the branch from the checkout's `.git/HEAD`, following a `.git` file's `gitdir:` line, and shows a detached `HEAD` as its first 7 hex digits.
 - The repeat-denial guard refused a call denied twice even after the user had answered, so the user's consent could not reach the classifier. A prompt the user sends, typed or queued at the terminal or through Remote Control, now clears the denial counts. A task notification or a scheduled prompt does not.
