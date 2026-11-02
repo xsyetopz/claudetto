@@ -16,6 +16,7 @@ prefix is a path of the live tree, and a path of the tree before the `0.0.0` res
 - [levers.md](levers.md): one row per Claude Code key, with its source and its measurement.
 - [models.md](models.md): the evidence for model and effort levels, each claim marked `official`, `measured`, or `self-report`.
 - [confine.md](confine.md): the `confineEnabled` option, which confines the writes of each `Bash` command at the operating system level and leaves the classifier on the command as written.
+- [search-tools.md](search-tools.md): which search tools a session has, which ignore files each reads, and the measured output of `ast-grep`, `fd`, `difft`, and `universal-ctags` against `rg` and `git diff`.
 - [sandbox.md](sandbox.md): the sandbox keys of the `low-hitl` capability and the snippet that sets them.
 - [surfaces.md](surfaces.md): the Claude Code surfaces that claudetto turns off and what each costs.
 - [types.md](types.md): the vendored Claude Code types that the mod compiles against, and where they came from.
