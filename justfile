@@ -68,6 +68,10 @@ setup *args:
 hygiene *args:
     plugins/claudetto/bin/claudetto-hygiene "$@"
 
+# Remove old dev scratch folders from the temp folders (--hours N, --dry-run)
+gc *args:
+    bun claudekit/gc/main.ts "$@"
+
 # Report window cost per task from recorded rows
 window-report:
     bun tools/window-report.ts

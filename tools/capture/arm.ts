@@ -9,7 +9,10 @@ import { isClassifier } from "../../claudekit/api/match.ts";
 import { claudeArgv, pluginDir, print } from "../../claudekit/session/argv.ts";
 import { spawnCommand } from "../../claudekit/session/command.ts";
 import { FAKE_KEY, fakeApiEnv } from "../../claudekit/session/env.ts";
-import { makeFolders } from "../../claudekit/session/folders.ts";
+import {
+	type SessionFolders,
+	withFolders,
+} from "../../claudekit/session/folders.ts";
 import { interactiveConfig, runInTmux } from "../../claudekit/session/tmux.ts";
 import { type Score, scoreOf } from "./score.ts";
 
@@ -67,11 +70,24 @@ const runArm = async (options: {
 	prompt: string;
 	interactive: boolean;
 	extra: readonly string[];
-}): Promise<{ code: number; stderr: string; work: string }> => {
-	const { root, config, work } = await makeFolders(
-		TEMP_PREFIX,
-		options.settings,
+	calls: number;
+	tempPrefix: string;
+}): Promise<{ code: number; stderr: string; work: string }> =>
+	// Only the exit status, the stderr, and the path length leave the root; the dump is written outside it.
+	withFolders(options.tempPrefix, options.settings, (folders) =>
+		runIn(folders, options),
 	);
+
+const runIn = async (
+	{ root, config, work }: SessionFolders,
+	options: {
+		api: FakeApi;
+		plugin: boolean;
+		prompt: string;
+		interactive: boolean;
+		extra: readonly string[];
+	},
+): Promise<{ code: number; stderr: string; work: string }> => {
 	const argv = sessionArgv({
 		...options,
 		plugin: options.plugin ? join(cwd(), PLUGIN) : undefined,
@@ -108,6 +124,10 @@ export interface CaptureOptions {
 	readonly classifier?: boolean;
 	/** Runs the session in `tmux` with no `-p`, so the tools of an interactive session are in the request. */
 	readonly interactive?: boolean;
+	/** The tool calls the fake answers with in turn, before it answers `ok`. */
+	readonly calls?: readonly ToolCall[] | undefined;
+	/** Lets a test keep its folders under `tmpdir()`, where a sandbox allows writes. */
+	readonly tempPrefix?: string;
 }
 
 /** `dump` is re-indented from the raw text, since `JSON.stringify` of the string would be one line. */
@@ -116,7 +136,9 @@ export const capture = async (
 	settings: string | undefined,
 	options: CaptureOptions = {},
 ): Promise<Reading> => {
-	const api = startFakeApi(options.classifier ? CLASSIFIED_CALL : undefined);
+	const api = startFakeApi(
+		options.classifier ? CLASSIFIED_CALL : options.calls,
+	);
 	try {
 		const run = await runArm({
 			api,
@@ -125,6 +147,8 @@ export const capture = async (
 			prompt: options.prompt ?? PROMPT,
 			interactive: options.interactive ?? false,
 			extra: options.extra ?? [],
+			calls: options.calls?.length ?? 0,
+			tempPrefix: options.tempPrefix ?? TEMP_PREFIX,
 		});
 		const first = options.classifier
 			? api.bodies.find(isClassifier)
@@ -133,6 +157,17 @@ export const capture = async (
 			await writeFile(
 				join(options.dump, `${arm}.json`),
 				JSON.stringify(JSON.parse(first), undefined, 2),
+			);
+			const dir = options.dump;
+			await Promise.all(
+				api.bodies
+					.slice(1)
+					.map((body, n) =>
+						writeFile(
+							join(dir, `${arm}.${n + 1}.json`),
+							JSON.stringify(JSON.parse(body), undefined, 2),
+						),
+					),
 			);
 		}
 		return {

@@ -78,11 +78,13 @@ describe("the flag parts", () => {
 	});
 
 	test("keeps a number option a JSON number, because the host refuses a string for a `number` field", () => {
-		const part = settings(inlinePluginOptions({ handoverTokens: 16_000 }));
+		const part = settings(
+			inlinePluginOptions({ handoverThresholdTokens: 16_000 }),
+		);
 
 		expect(JSON.parse(part[1] ?? "")).toEqual({
 			pluginConfigs: {
-				"claudetto@inline": { options: { handoverTokens: 16_000 } },
+				"claudetto@inline": { options: { handoverThresholdTokens: 16_000 } },
 			},
 		});
 	});

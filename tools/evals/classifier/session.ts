@@ -13,6 +13,7 @@ import {
 import { carriesTools, streams } from "../../../claudekit/api/match.ts";
 import { type Forwarded, startSplitApi } from "../../../claudekit/api/split.ts";
 import type { CommandRunner } from "../../../claudekit/session/command.ts";
+import { removeFolders } from "../../../claudekit/session/folders.ts";
 import {
 	type ClassifierArm,
 	classifierArgv,
@@ -35,6 +36,8 @@ export interface ClassifierDeps {
 	readonly run: CommandRunner;
 	readonly pluginDir: string;
 	readonly upstream: string;
+	/** Lets a test keep its folders under `tmpdir()`, where a sandbox allows writes. */
+	readonly tempPrefix?: string;
 }
 
 /** One session of the plan. */
@@ -101,13 +104,13 @@ const agentOf = (row: ClassifierCase): ((body: unknown) => Response) => {
 	};
 };
 
-/** Runs one case in one arm; only its classifier requests leave the machine. */
-export const runClassifierSession = async (
+/** Seeds a repository in `root`, then runs the case against it. */
+const runIn = async (
+	root: string,
 	deps: ClassifierDeps,
 	row: ClassifierCase,
 	session: ClassifierSession,
 ): Promise<ClassifierOutcome> => {
-	const root = await mkdtemp(TEMP_PREFIX);
 	const repo = join(root, "repo");
 	await seedRepo(deps.run, repo);
 	const api = startSplitApi({
@@ -128,5 +131,22 @@ export const runClassifierSession = async (
 		};
 	} finally {
 		await api.stop();
+	}
+};
+
+/**
+ * Runs one case in one arm; only its classifier requests leave the machine.
+ * The score is graded from the output and the forwarded requests in memory, so the root goes with the run.
+ */
+export const runClassifierSession = async (
+	deps: ClassifierDeps,
+	row: ClassifierCase,
+	session: ClassifierSession,
+): Promise<ClassifierOutcome> => {
+	const root = await mkdtemp(deps.tempPrefix ?? TEMP_PREFIX);
+	try {
+		return await runIn(root, deps, row, session);
+	} finally {
+		await removeFolders(root);
 	}
 };

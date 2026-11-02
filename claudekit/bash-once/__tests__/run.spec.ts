@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { which } from "bun";
-import { runBashOnce } from "../run.ts";
+import { captureBashOnce, runBashOnce } from "../run.ts";
 
 const hasClaude = which("claude") !== null;
 
@@ -23,5 +23,25 @@ describe.skipIf(!hasClaude)("runBashOnce", () => {
 
 		expect(out).not.toBe("hi");
 		expect(out.toLowerCase()).toContain("permission");
+	}, 120_000);
+
+	test("counts no classifier request outside `auto` mode", async () => {
+		const out = await captureBashOnce({
+			command: "echo hi",
+			settings: { permissions: { allow: ["Bash"] } },
+		});
+
+		expect(out.classifierRequests).toBe(0);
+	}, 120_000);
+
+	test("counts classifier requests that carry the command in `auto` mode", async () => {
+		const out = await captureBashOnce({
+			command: "echo MARK > out.txt; pwd -P",
+			settings: {},
+			permissionMode: "auto",
+		});
+
+		expect(out.classifierRequests).toBeGreaterThan(0);
+		expect(out.classifierSawCommand).toBeGreaterThan(0);
 	}, 120_000);
 });

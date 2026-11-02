@@ -1,8 +1,13 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { readdir, readFile, rm } from "node:fs/promises";
+import { readdir, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { makeFolders, type SessionFolders } from "../folders.ts";
+import {
+	makeFolders,
+	removeFolders,
+	type SessionFolders,
+	withFolders,
+} from "../folders.ts";
 
 const PREFIX = join(tmpdir(), "claudekit-folders-");
 
@@ -30,5 +35,51 @@ describe("makeFolders", () => {
 		expect(await readFile(join(made.config, "settings.json"), "utf8")).toBe(
 			'{"a":1}',
 		);
+	});
+});
+
+const exists = async (path: string): Promise<boolean> => {
+	try {
+		await stat(path);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+describe("removeFolders", () => {
+	test("removes the root with what it holds, and a root that is gone is no error", async () => {
+		made = await makeFolders(PREFIX, "{}");
+
+		await removeFolders(made.root);
+		await removeFolders(made.root);
+
+		expect(await exists(made.root)).toBe(false);
+	});
+});
+
+describe("withFolders", () => {
+	test("removes the root when the use ends, and gives back what the use returned", async () => {
+		let root = "";
+
+		const got = await withFolders(PREFIX, undefined, (folders) => {
+			root = folders.root;
+			return Promise.resolve(folders.work.length);
+		});
+
+		expect(got).toBeGreaterThan(0);
+		expect(await exists(root)).toBe(false);
+	});
+
+	test("removes the root when the use throws, and the error still reaches the caller", async () => {
+		let root = "";
+
+		const failed = withFolders(PREFIX, undefined, (folders) => {
+			root = folders.root;
+			return Promise.reject(new Error("the session failed"));
+		});
+
+		await expect(failed).rejects.toThrow("the session failed");
+		expect(await exists(root)).toBe(false);
 	});
 });

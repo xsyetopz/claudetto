@@ -24,7 +24,7 @@ const runNamed = async (name: string): Promise<void> => {
 	}
 	const run = await runScenario(scenario);
 	console.info(
-		`## ${name} (${run.mains.length} main of ${run.all.length} requests, bodies in ${run.root})`,
+		`## ${name} (${run.mains.length} main of ${run.all.length} requests)`,
 	);
 	run.mains.forEach((raw, at) => {
 		console.info(`  ${at}: ${lineOf(raw)}`);

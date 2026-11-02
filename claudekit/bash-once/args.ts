@@ -10,11 +10,20 @@ export interface Args {
 	readonly file?: string;
 	/** A `PreToolUse` hook command for `Bash`. */
 	readonly hook?: string;
+	/** A plugin folder for `--plugin-dir`. */
+	readonly pluginDir?: string;
+	/** A `--permission-mode` such as `auto`. */
+	readonly permissionMode?: string;
 }
 
-const FLAGS = ["--settings", "--hook"] as const;
+const FLAGS = [
+	"--settings",
+	"--hook",
+	"--plugin-dir",
+	"--permission-mode",
+] as const;
 
-/** `COMMAND [FILE] [--settings JSON] [--hook COMMAND]`. Throws on a missing command or flag value. */
+/** `COMMAND [FILE] [--settings JSON] [--hook COMMAND] [--plugin-dir DIR] [--permission-mode MODE]`. Throws on a missing command or flag value. */
 export const parseArgs = (argv: readonly string[]): Args => {
 	const words: string[] = [];
 	const flags: Record<string, string> = {};
@@ -34,7 +43,7 @@ export const parseArgs = (argv: readonly string[]): Args => {
 	const [command, file] = words;
 	if (command === undefined) {
 		throw new Error(
-			"a `COMMAND` is required: bash-once COMMAND [FILE] [--settings JSON] [--hook COMMAND]",
+			"a `COMMAND` is required: bash-once COMMAND [FILE] [--settings JSON] [--hook COMMAND] [--plugin-dir DIR] [--permission-mode MODE]",
 		);
 	}
 	return {
@@ -44,6 +53,12 @@ export const parseArgs = (argv: readonly string[]): Args => {
 			? {}
 			: { settings: flags["--settings"] }),
 		...(flags["--hook"] === undefined ? {} : { hook: flags["--hook"] }),
+		...(flags["--plugin-dir"] === undefined
+			? {}
+			: { pluginDir: flags["--plugin-dir"] }),
+		...(flags["--permission-mode"] === undefined
+			? {}
+			: { permissionMode: flags["--permission-mode"] }),
 	};
 };
 
@@ -82,3 +97,11 @@ export const toolResultOf = (body: string | undefined): string => {
 	}
 	return typeof text === "string" ? text : JSON.stringify(text);
 };
+
+/** The text of the `Bash` command that each classifier request in `bodies` carries, once per request. */
+export const classifierSaw = (
+	bodies: readonly string[],
+	command: string,
+): number =>
+	bodies.filter((body) => body.includes(JSON.stringify(command).slice(1, -1)))
+		.length;

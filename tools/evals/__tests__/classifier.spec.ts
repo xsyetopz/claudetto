@@ -201,13 +201,13 @@ describe("the classifier arms", () => {
 			const argv = classifierArgv(arm, "p", "/plugin");
 			expect(argv.join(" ")).toContain("--plugin-dir /plugin");
 		}
-		const off = inlinePluginOptions({ classifier: "off" });
+		const off = inlinePluginOptions({ classifierModel: "off" });
 		expect(settingsOf(classifierArgv("built-in", "p", "/plugin"))).toEqual(off);
 		expect(settingsOf(classifierArgv("suite", "p", "/plugin"))).toMatchObject(
 			off,
 		);
 		expect(settingsOf(classifierArgv("sonnet", "p", "/plugin"))).toEqual(
-			inlinePluginOptions({ classifier: "sonnet" }),
+			inlinePluginOptions({ classifierModel: "sonnet" }),
 		);
 	});
 });
