@@ -1,6 +1,8 @@
 import { lstat, readdir, readFile, rm, rmdir } from "node:fs/promises";
 import { join } from "node:path";
-import { type MaxAge, STALE_PATHS } from "./paths.ts";
+import { HANDOFF_DIR } from "../blocks/handoff/handoff.ts";
+import { newestHandoff } from "../blocks/handoff/read-back.ts";
+import { type Refusal, refusal } from "./guard.ts";
 
 const DAY_MS = 86_400_000;
 const MINUTE_MS = 60_000;
@@ -8,15 +10,17 @@ const SESSION_ID =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const HANDOFF = /^handoff-.*\.md$/;
 const PROBE = /^fswatch-probe-/;
-const HANDOFF_DIR = ".claude/claudetto/handoffs";
 
-/** `temp` is the root `claude-<uid>`, `sessions` is `~/.claude/sessions/`, `days` is `cleanupPeriodDays`, and `current` is the running session's id. */
+/** `temps` are the roots `claude-<uid>`, `sessions` is `~/.claude/sessions/`, and `current` is the running session's id. A limit of 0 turns its kind off. */
 export interface SweepRoots {
-	readonly temp: string;
+	readonly temps: readonly string[];
 	readonly project: string;
 	readonly sessions: string;
 	readonly current: string;
-	readonly days: number;
+	readonly handoffDays: number;
+	readonly sessionDays: number;
+	readonly probeMinutes: number;
+	readonly home: string;
 	readonly now: number;
 	readonly dryRun: boolean;
 }
@@ -28,9 +32,10 @@ export interface Removed {
 	readonly bytes: number;
 }
 
-/** What the sweep removed, in the order of `STALE_PATHS`. */
+/** What the sweep removed, in the order of `STALE_PATHS`, and the roots it refused. */
 export interface SweepReport {
 	readonly removed: readonly Removed[];
+	readonly refused: readonly Refusal[];
 }
 
 interface Entry {
@@ -72,18 +77,6 @@ const bytesOf = async (path: string): Promise<number> => {
 	return bytes;
 };
 
-const limitMs = (row: string, days: number): number => {
-	const maxAge: MaxAge | undefined = STALE_PATHS.find(
-		(path) => path.id === row,
-	)?.maxAge;
-	if (maxAge === undefined) {
-		throw new Error(`no row ${row} in STALE_PATHS`);
-	}
-	return maxAge === "cleanupPeriodDays"
-		? days * DAY_MS
-		: maxAge.minutes * MINUTE_MS;
-};
-
 const liveSessions = async (roots: SweepRoots): Promise<Set<string>> => {
 	const ids = new Set([roots.current]);
 	const files = (await entriesOf(roots.sessions)).filter(
@@ -105,26 +98,33 @@ const liveSessions = async (roots: SweepRoots): Promise<Set<string>> => {
 	return ids;
 };
 
-const probes = async (roots: SweepRoots): Promise<Entry[]> => {
-	const cutoff = roots.now - limitMs("probe", roots.days);
-	return (await entriesOf(roots.temp)).filter(
+const probes = async (temp: string, roots: SweepRoots): Promise<Entry[]> => {
+	if (roots.probeMinutes <= 0) {
+		return [];
+	}
+	const cutoff = roots.now - roots.probeMinutes * MINUTE_MS;
+	return (await entriesOf(temp)).filter(
 		(entry) => entry.isDir && PROBE.test(entry.name) && entry.mtime < cutoff,
 	);
 };
 
 const sessionFolders = async (
+	temp: string,
 	roots: SweepRoots,
+	live: ReadonlySet<string>,
 ): Promise<{ stale: Entry[]; parents: string[] }> => {
-	const cutoff = roots.now - limitMs("session-temp", roots.days);
-	const live = await liveSessions(roots);
-	const projects = (await entriesOf(roots.temp)).filter(
+	const stale: Entry[] = [];
+	const parents: string[] = [];
+	if (roots.sessionDays <= 0) {
+		return { stale, parents };
+	}
+	const cutoff = roots.now - roots.sessionDays * DAY_MS;
+	const projects = (await entriesOf(temp)).filter(
 		(entry) => entry.isDir && !PROBE.test(entry.name),
 	);
 	const listed = await Promise.all(
 		projects.map((project) => entriesOf(project.path)),
 	);
-	const stale: Entry[] = [];
-	const parents: string[] = [];
 	for (const [at, project] of projects.entries()) {
 		const found = (listed[at] ?? []).filter(
 			(entry) =>
@@ -141,21 +141,37 @@ const sessionFolders = async (
 	return { stale, parents };
 };
 
-const handoffs = async (roots: SweepRoots): Promise<Entry[]> => {
-	const cutoff = roots.now - limitMs("handoff", roots.days);
-	const all = (await entriesOf(join(roots.project, HANDOFF_DIR)))
-		.filter((entry) => !entry.isDir && HANDOFF.test(entry.name))
-		.sort((a, b) => a.mtime - b.mtime);
-	return all.slice(0, -1).filter((entry) => entry.mtime < cutoff);
+const handoffs = async (
+	project: string,
+	roots: SweepRoots,
+): Promise<Entry[]> => {
+	if (roots.handoffDays <= 0) {
+		return [];
+	}
+	const cutoff = roots.now - roots.handoffDays * DAY_MS;
+	const all = (await entriesOf(join(project, HANDOFF_DIR))).filter(
+		(entry) => !entry.isDir && HANDOFF.test(entry.name),
+	);
+	const read = newestHandoff(all.map((entry) => entry.name));
+	return all.filter((entry) => entry.name !== read && entry.mtime < cutoff);
 };
 
-/** Removes every entry of `STALE_PATHS` past its age, or with `dryRun` only lists them. It never throws for a missing folder. */
+/** Removes every entry of `STALE_PATHS` past its age, or with `dryRun` only lists them. A root that the guard refuses is skipped and reported. It never throws for a missing folder. */
 export const sweep = async (roots: SweepRoots): Promise<SweepReport> => {
-	const sessions = await sessionFolders(roots);
+	const [projectRefusal, tempRefusals, live] = await Promise.all([
+		refusal(roots.project, roots.home),
+		Promise.all(roots.temps.map((temp) => refusal(temp, roots.home))),
+		liveSessions(roots),
+	]);
+	const temps = roots.temps.filter((_, at) => tempRefusals[at] === undefined);
+	const folders = await Promise.all(
+		temps.map((temp) => sessionFolders(temp, roots, live)),
+	);
+	const probed = await Promise.all(temps.map((temp) => probes(temp, roots)));
 	const rows: [string, Entry[]][] = [
-		["probe", await probes(roots)],
-		["session-temp", sessions.stale],
-		["handoff", await handoffs(roots)],
+		["probe", probed.flat()],
+		["session-temp", folders.flatMap((found) => found.stale)],
+		["handoff", projectRefusal ? [] : await handoffs(roots.project, roots)],
 	];
 	const removed = await Promise.all(
 		rows.flatMap(([row, entries]) =>
@@ -171,8 +187,16 @@ export const sweep = async (roots: SweepRoots): Promise<SweepReport> => {
 	if (!roots.dryRun) {
 		// `rmdir` refuses a folder that still holds anything, so only an emptied project folder goes.
 		await Promise.all(
-			sessions.parents.map((dir) => rmdir(dir).catch(() => undefined)),
+			folders
+				.flatMap((found) => found.parents)
+				.map((dir) => rmdir(dir).catch(() => undefined)),
 		);
 	}
-	return { removed };
+	return {
+		removed,
+		refused: [
+			...(projectRefusal ? [projectRefusal] : []),
+			...tempRefusals.filter((found) => found !== undefined),
+		],
+	};
 };
