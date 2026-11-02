@@ -2,11 +2,12 @@ import type { EngineInterface, HookFor, On, PluginOptions } from "claude-code";
 import { readTier } from "../../tiers/read.ts";
 import type { Block, BlockContext, WithOptions } from "../block.ts";
 import { tasksText } from "./background.ts";
-import { budgetBand, budgetLine } from "./budget.ts";
+import { budgetBand, budgetLine, slowText } from "./budget.ts";
 import { withFailure } from "./failures.ts";
 import { changeLedger } from "./ledger.ts";
 import { type Limits, limitsOf } from "./settings.ts";
 import { admitStart, crowded, runningCount } from "./spawn.ts";
+import { STALL_ASK, STALL_BLOCKS, STALL_LINE, writesFile } from "./stall.ts";
 
 const startsRef = { plugin: "claudetto", key: "starts" } as const;
 
@@ -99,16 +100,57 @@ const usageOf = async (
 	}
 };
 
-/** `additionalContext` continues the turn and costs a request, so text is added once per turn, while `stop_hook_active` is not true. */
-export const onStop: HookFor<"classic.Stop"> = async (_$, e, next) => {
+const stallRef = { plugin: "claudetto", key: "stall" } as const;
+
+const stalledBlocks = async ($: EngineInterface): Promise<number> => {
+	const { value } = await $.state.get(stallRef);
+	return typeof value === "number" ? value : 0;
+};
+
+/** A count that cannot be kept is a session that is not told to stop: the block itself still reaches the model. */
+const countBlock = async (
+	$: EngineInterface,
+	blocked: boolean,
+): Promise<number> => {
+	try {
+		const count = blocked ? (await stalledBlocks($)) + 1 : 0;
+		await $.state.set(stallRef, count);
+		return count;
+	} catch {
+		return 0;
+	}
+};
+
+/** `classic.PostToolUse`: a file written between the blocks is progress, so the count starts again. */
+export const onWritten: HookFor<"classic.PostToolUse"> = async ($, e, next) => {
+	if (writesFile(e.tool_name)) {
+		await countBlock($, false);
+	}
+	return next(e);
+};
+
+/**
+ * `additionalContext` continues the turn and costs a request, so text is added once per turn, while `stop_hook_active` is not true.
+ * A block is the answer of a hook beneath this one; the third in a row with no file written is shown to the user once, and
+ * every block from then on asks the session for one line.
+ */
+export const onStop: HookFor<"classic.Stop"> = async ($, e, next) => {
 	const answer = await next(e);
+	const count = await countBlock($, answer.block !== undefined);
+	const looped = answer.block !== undefined && count >= STALL_BLOCKS;
+	if (looped && count === STALL_BLOCKS) {
+		$.ui.log(STALL_LINE);
+	}
 	const added =
 		e.stop_hook_active === true ? undefined : tasksText(e.background_tasks);
+	const asked = looped
+		? { ...answer, block: `${answer.block}\n${STALL_ASK}` }
+		: answer;
 	return added === undefined
-		? answer
+		? asked
 		: {
-				...answer,
-				additionalContext: [...(answer.additionalContext ?? []), added],
+				...asked,
+				additionalContext: [...(asked.additionalContext ?? []), added],
 			};
 };
 
@@ -123,6 +165,7 @@ export const onSubmitBudget: HookFor<"prompt.submit"> = async ($, e, next) => {
 		return next(e);
 	}
 	const band = budgetBand(usage);
+	const slow = [slowText(usage)].filter((text) => text !== undefined);
 	const speak = await changeLedger<string, boolean>(
 		{
 			held: () => $.state.get(bandRef),
@@ -132,7 +175,9 @@ export const onSubmitBudget: HookFor<"prompt.submit"> = async ($, e, next) => {
 		(held) => ({ next: band, out: held !== band }),
 	);
 	return next(
-		speak === true ? { ...e, context: [...(e.context ?? []), line] } : e,
+		speak === true
+			? { ...e, context: [...(e.context ?? []), line, ...slow] }
+			: e,
 	);
 };
 
@@ -142,6 +187,7 @@ export const runLimits: Block = {
 	routes: [
 		"agent.spawn",
 		"classic.PostToolUseFailure",
+		"classic.PostToolUse",
 		"classic.Stop",
 		"prompt.submit",
 	],
@@ -153,6 +199,7 @@ export const attachRunLimits = (on: On, context: BlockContext): void => {
 	on("classic.PostToolUseFailure", ($, e, next) =>
 		onFailed($, e, next, context.options),
 	);
+	on("classic.PostToolUse", onWritten);
 	on("classic.Stop", onStop);
 	// Rides the prompt, which costs a request already; `classic.Stop` would cost its own.
 	on("prompt.submit", onSubmitBudget);

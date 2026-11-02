@@ -24,8 +24,26 @@ export const budgetLine = (
 	return parts.length === 0 ? undefined : `Budget: ${parts.join(", ")}`;
 };
 
+/** The seven-day share at which the session is told to spend little of what is left. */
+const SLOW_AT = 90;
+
+/** Past `SLOW_AT` the text names the share, so a point moves it; an older share would mislead. */
+export const slowText = (
+	usage: Pick<SessionUsage, "rateLimits">,
+): string | undefined => {
+	const share = used(usage, "seven_day");
+	return share === undefined || share < SLOW_AT
+		? undefined
+		: `Seven-day limit: ${share}% used. Start no subagent fan-out and no paid eval run. With each reply that spent more than 1% of the week, say how much of it remains.`;
+};
+
 const bandOf = (percent: number | undefined): string =>
 	percent === undefined ? "-" : String(Math.floor(percent / BAND));
+
+const weekBand = (percent: number | undefined): string =>
+	percent !== undefined && percent >= SLOW_AT
+		? String(Math.floor(percent))
+		: bandOf(percent);
 
 export const budgetBand = (
 	usage: Pick<SessionUsage, "context" | "rateLimits">,
@@ -33,5 +51,5 @@ export const budgetBand = (
 	[
 		bandOf(usage.context.percent),
 		bandOf(used(usage, "five_hour")),
-		bandOf(used(usage, "seven_day")),
+		weekBand(used(usage, "seven_day")),
 	].join("/");

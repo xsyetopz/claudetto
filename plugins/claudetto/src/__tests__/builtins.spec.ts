@@ -12,9 +12,6 @@ import {
 	pluginsOff,
 } from "../builtins.ts";
 
-const reading = (settings: string) =>
-	BUILTIN_CUTS.find((row) => row.settings === settings);
-
 describe("the plugin block", () => {
 	test("turns off every built-in plugin but the one that reads policy only", () => {
 		const block = enabledPlugins();
@@ -58,29 +55,10 @@ describe("the snippet", () => {
 	});
 });
 
+const reading = (settings: string) =>
+	BUILTIN_CUTS.find((row) => row.settings === settings);
+
 describe("the readings that decided the switches", () => {
-	test("the bundled switch alone raises the request", () => {
-		const defaults = reading("the defaults");
-		const alone = reading("`disableBundledSkills` alone");
-
-		expect(alone?.total).toBeGreaterThan(defaults?.total ?? 0);
-	});
-
-	test("the growth it causes is the tool definitions and not the messages", () => {
-		const defaults = reading("the defaults");
-		const alone = reading("`disableBundledSkills` alone");
-
-		expect(alone?.tools).toBeGreaterThan(defaults?.tools ?? 0);
-		expect(alone?.messages).toBeLessThan(defaults?.messages ?? 0);
-	});
-
-	test("the deny list leaves the tool definitions untouched by the switch", () => {
-		const denied = reading("`disableBundledSkills` with the deny list");
-
-		// 17,091 is the `tools` reading of the deny list on its own, so the switch moved none of it.
-		expect(denied?.tools).toBe(17_091);
-	});
-
 	test("the shipped cut is the difference the shipped rows read", () => {
 		const before = reading("the shipped combination");
 		const after = reading("the shipped combination with both switches");

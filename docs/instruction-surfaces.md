@@ -48,7 +48,7 @@ The body of `system` has a hard bound that the other surfaces do not. The harnes
 body when no agent setting is set, 3,645 characters under the shipped settings on `2.1.316`, so an
 agent file above that size makes every request of every session larger, which is a loss and not a
 trim. The body travels as JSON and ours has more line breaks than the default text, each escaped, so
-the bound is 3,678 as the request carries it, and `tests/repo/prompt-budget.test.ts` reads it that way.
+the bound is 3,678 as the request carries it, and `tests/repo/prompt/budget.test.ts` reads it that way.
 
 That bound is the reason a rule needs a reason to be there. A rule about writing a comment applies
 only while code is being written, and a `paths` rule covers exactly that case for nothing, so the

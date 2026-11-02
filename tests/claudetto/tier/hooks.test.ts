@@ -4,7 +4,7 @@ import {
 	setupWrite,
 } from "../../../plugins/claudetto/src/blocks/setup-command/diff.ts";
 import {
-	diffReply,
+	nothingToAsk,
 	platformNamed,
 	setupReport,
 } from "../../../plugins/claudetto/src/blocks/setup-command/setup.ts";
@@ -127,6 +127,6 @@ describe("the report the tool returns", () => {
 	});
 
 	test("a read with no difference says there is nothing to ask", () => {
-		expect(diffReply(FILE, [])).toContain("nothing to ask");
+		expect(nothingToAsk(FILE)).toContain("nothing to ask");
 	});
 });

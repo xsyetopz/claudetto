@@ -7,6 +7,7 @@ prefix is a path of the live tree, and a path of the tree before the `0.0.0` res
 
 - [agent-misattribution.md](agent-misattribution.md): a task sent on 2026-10-29 to the read-only `Artemis` agent that needed a write, and the cause.
 - [auto-mode.md](auto-mode.md): the `claude auto-mode` defaults, config, and critique run on `2.1.311`, and the `autoMode` lists setup wrote.
+- [classifier-input.md](classifier-input.md): which forms of a user message the built-in classifier and the `classify` block read, and which they drop.
 - [default-body-gap.md](default-body-gap.md): what the default system body carries that the agent file body that replaces it drops, item by item.
 - [early-stops.md](early-stops.md): how 90 subagent runs of 2026-10-27 ended, and which final texts leave work open.
 - [gates.md](gates.md): the tool gates and settings read from the Claude Code `2.1.311` program.
@@ -38,7 +39,6 @@ prefix is a path of the live tree, and a path of the tree before the `0.0.0` res
 - [evidence/probes-2.1.301.md](evidence/probes-2.1.301.md): probes of a plugin hooks file, an agent file, and a `Stop` hook input on `2.1.301`.
 - [evidence/prohibition-lists.md](evidence/prohibition-lists.md): why a list of what not to do anchors the failure it forbids.
 - [evidence/redaction.md](evidence/redaction.md): the secret redaction passes of the handoff writer and where each rule comes from.
-- [evidence/reply-openings.md](evidence/reply-openings.md): the reading that turned down a structural check of reply openings.
 - [evidence/stop-hook-eval.md](evidence/stop-hook-eval.md): an eval of a prompt hook on `Stop` that is too small to prove it blocks false claims.
 - [evidence/usage-evidence/usage-evidence.md](evidence/usage-evidence/usage-evidence.md): the prices, models, and usage facts that claudetto relies on, each with a source label.
 

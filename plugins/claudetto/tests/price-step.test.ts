@@ -2,6 +2,13 @@ import type { On, TurnUsage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { HAIKU_MODEL } from "../src/tiers/tiers.ts";
 
+/** A stand-in MCP tool, declared so a generated `McpToolInputs` does not reject its name. */
+declare module "claude-code" {
+	interface McpToolInputs {
+		mcp__s__read: Record<never, never>;
+	}
+}
+
 const usageOf = (model: string, prompt: number): TurnUsage => ({
 	model,
 	input_tokens: prompt,

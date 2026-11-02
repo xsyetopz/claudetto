@@ -83,7 +83,7 @@ test(
 
 		expect(asked).toHaveLength(1);
 		expect(asked[0]?.model).toBe("claude-haiku-5-5");
-		expect(asked[0]?.effort).toBe("high");
+		expect(asked[0]?.effort).toBe("medium");
 		expect(asked[0]?.maxTokens).toBe(2000);
 		expect(cachedFlags(asked[0])).toEqual([true, false]);
 		// `usage` is on the compacted half only, and the skipped half declares `messages`, so narrow via `skip`.
@@ -107,6 +107,33 @@ test(
 
 		expect(seen.core).toBe(1);
 		expect(out.skip).toBe("core ran");
+	},
+);
+
+test(
+	"a reply at the cap is cut, and the log line names its text length so the thinking share can be read off",
+	ON,
+	async ($: Engine, on: On) => {
+		const lines: string[] = [];
+		const seen = lab(on, () => ({
+			value: {
+				isAnswered: true,
+				text: "x".repeat(1234),
+				usage: { ...USAGE, output_tokens: 4048 },
+			},
+		}));
+		on("ui.log", (_$, e) => {
+			lines.push(e.text);
+			return { value: undefined };
+		});
+
+		const out = await compact($);
+
+		expect(seen.core).toBe(1);
+		expect(out.skip).toBe("core ran");
+		expect(lines).toHaveLength(1);
+		expect(lines[0]).toContain("4048");
+		expect(lines[0]).toContain("1234 characters");
 	},
 );
 

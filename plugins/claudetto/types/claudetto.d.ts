@@ -1,6 +1,15 @@
 // The contract of this plugin: the named values it keeps in the session (`$.state`). It is a `.d.ts` with no import, named by `types` in `plugin.json`.
 
 declare module "claude-code" {
+	/** Written by hand, because the generated MCP types list only the tools a session had connected, and `decide` connects only with a key. */
+	interface McpToolInputs {
+		mcp__claudetto__decide: {
+			questions: {
+				question: string;
+				options: { label: string; description: string }[];
+			}[];
+		};
+	}
 	interface PluginState {
 		claudetto: {
 			/** The auto mode denials of the session by the key of the call: how many, and the reason of the newest. */
@@ -24,8 +33,12 @@ declare module "claude-code" {
 					}
 				>
 			>;
-			/** The `tasks.md` loop blocks in a row and the progress mark they saw. */
-			loop: { readonly count: number; readonly seen: string };
+			/** The person's prompts typed while a turn ran, each with the id of the agent's newest call at Enter. */
+			prompts: readonly { readonly text: string; readonly after?: string }[];
+			/** How many Stop blocks came in a row with no file written between them. */
+			stall: number;
+			/** The models already named as off the tier row, so each is named once. */
+			offRow: readonly string[];
 		};
 	}
 }

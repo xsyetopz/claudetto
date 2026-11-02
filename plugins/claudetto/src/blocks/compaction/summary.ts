@@ -39,7 +39,7 @@ export const SUMMARY_INSTRUCTIONS =
 	"Reply with the summary only.";
 
 /** Not the row's `effort`, which is the main session's `effortLevel`. */
-export const SUMMARY_EFFORT: ModelEffort = "high";
+export const SUMMARY_EFFORT: ModelEffort = "medium";
 
 const transcriptOf = (e: SessionCompactInput): string =>
 	e.messages.map((message) => `${message.role}: ${message.text}`).join("\n\n");
@@ -99,8 +99,11 @@ export const summarize = async (
 		const reply = await ask.complete(request);
 		// A cut summary loses its last lines with no mark, so the engine's full compaction is the better answer.
 		if (reply.usage.output_tokens >= SUMMARY_CAP) {
+			const text = reply.isAnswered
+				? `${reply.text.length} characters of text`
+				: "no text";
 			ask.log(
-				`Cheap summary reached its cap of ${SUMMARY_CAP} output tokens, thinking included, so it is cut and the engine compacts`,
+				`Cheap summary reached its cap of ${SUMMARY_CAP} output tokens, thinking included, with ${text}, so it is cut and the engine compacts`,
 			);
 			return undefined;
 		}

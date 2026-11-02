@@ -157,6 +157,15 @@ describe("the keys setup writes", () => {
 			});
 		});
 
+		test(`${row.tier}: \`default\` and each alias resolve to the row's models, never an older one`, () => {
+			expect(snippet["env"]).toMatchObject({
+				ANTHROPIC_DEFAULT_MODEL: "claude-opus-5-5",
+				ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-5-5",
+				ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-5-5",
+				ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-5-5",
+			});
+		});
+
 		test(`${row.tier}: \`modelProposedGoals\` stays unset`, () => {
 			expect(snippet).not.toHaveProperty("modelProposedGoals");
 		});

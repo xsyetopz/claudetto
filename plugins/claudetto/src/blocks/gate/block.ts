@@ -5,6 +5,7 @@ import type {
 	On,
 	PluginOptions,
 } from "claude-code";
+import { PERSON_PROMPT } from "../../shared/person.ts";
 import type { Block, BlockContext, WithOptions } from "../block.ts";
 import { takeJudged } from "../classify/judged.ts";
 import { admitCall } from "../run-limits/calls.ts";
@@ -12,7 +13,7 @@ import { failedText } from "../run-limits/failures.ts";
 import { changeLedger } from "../run-limits/ledger.ts";
 import { limitsOf } from "../run-limits/settings.ts";
 import { type Denials, repeatedText, stoppedText } from "./denials.ts";
-import { onDenied } from "./denied.ts";
+import { onDenied, onSubmitDenials } from "./denied.ts";
 import { factsFrom } from "./facts.ts";
 import { type Facts, gate, gated, stricter } from "./gate.ts";
 import { CHECK_FAIL } from "./prompts.ts";
@@ -201,6 +202,7 @@ export const gateBlock: Block = {
 		"tool.check",
 		"classic.PermissionDenied",
 		"classic.PermissionRequest",
+		"prompt.submit",
 	],
 	needs: "2.1.314",
 };
@@ -213,4 +215,5 @@ export const attachGate = (on: On, context: BlockContext): void => {
 	// Only counts; the reason reaches the model from `onCheck`.
 	on("classic.PermissionDenied", onDenied);
 	on("classic.PermissionRequest", onPermission);
+	on("prompt.submit", PERSON_PROMPT, onSubmitDenials);
 };

@@ -1,4 +1,4 @@
-// No I/O, so a plan can be printed before anything is approved.
+// No I/O, so a plan can be printed before anything runs.
 
 import { EVAL_MIN_RUNS_PER_ARM } from "../limits.ts";
 import { RULE_CASE_ARMS, type RuleCase } from "./main-rules.ts";

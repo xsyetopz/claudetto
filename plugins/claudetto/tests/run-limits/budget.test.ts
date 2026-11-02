@@ -129,3 +129,42 @@ test("the widest line is the character cost recorded with the cuts", () => {
 
 	expect(line?.length).toBe(BUDGET_LINE_MAX_CHARS);
 });
+
+const WEEK = (percentUsed: number) => ({
+	context: { tokens: 76_000, window: 200_000, percent: 38 },
+	rateLimits: [{ kind: "seven_day", percentUsed }],
+});
+
+for (const share of [90, 99]) {
+	test(`a prompt at a seven-day share of ${share}% tells the session to start no fan-out and no paid run, and names the share`, async ($: Engine, on: On) => {
+		lab(on, WEEK(share));
+
+		const out = await $.prompt.submit(PROMPT);
+
+		const text = (out.context ?? []).join("\n");
+		expect(text).toContain(`${share}%`);
+		expect(text).toContain("no subagent fan-out");
+		expect(text).toContain("no paid eval run");
+		expect(text).toContain("more than 1%");
+	});
+}
+
+test("a prompt below a seven-day share of 90% adds no slowing text", async ($: Engine, on: On) => {
+	lab(on, WEEK(89));
+
+	const out = await $.prompt.submit(PROMPT);
+
+	expect((out.context ?? []).join("\n")).not.toContain("fan-out");
+});
+
+test("a share that rose a point past 90% speaks again, so the named share is not stale", async ($: Engine, on: On) => {
+	let usage = WEEK(90);
+	on("prompt.submit", (_$, e) => e);
+	on("session.usage", () => ({ value: { startedAt: 0, ...usage } }));
+
+	await $.prompt.submit(PROMPT);
+	usage = WEEK(92);
+	const after = await $.prompt.submit(PROMPT);
+
+	expect((after.context ?? []).join("\n")).toContain("92%");
+});

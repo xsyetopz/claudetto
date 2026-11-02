@@ -3,6 +3,7 @@ import { shareClaims } from "../../../plugins/claudetto/src/blocks/window/report
 import { AUTOCOMPACT_PCT_ENV } from "../../../plugins/claudetto/src/keys.ts";
 import {
 	envFlags,
+	MODEL_PINS,
 	SUBAGENT_MODEL_ENV,
 } from "../../../plugins/claudetto/src/tiers/env.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
@@ -83,6 +84,7 @@ describe("a value the user set stays", () => {
 			...envFlags(),
 			[PCT]: "50.0000",
 			[SUBAGENT_MODEL_ENV]: ROW.subagentModel,
+			...MODEL_PINS,
 		});
 	});
 

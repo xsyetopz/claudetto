@@ -9,7 +9,7 @@ import {
 
 const sound = (): RuleCase => ({
 	codes: ["R1"],
-	section: "defects",
+	section: "fixing_defects",
 	rule: "a rule",
 	scenario: "a scenario",
 	passes: "a decision",

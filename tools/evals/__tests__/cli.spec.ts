@@ -98,7 +98,7 @@ describe("plan mode", () => {
 		expect(lines.filter((l) => l.startsWith("unseeded "))).toHaveLength(1);
 	});
 
-	test("over the shipped inventory plans the seeded case alone and names the rest", async () => {
+	test("over the shipped inventory plans every case and names none unseeded", async () => {
 		const { run, calls } = stubRunner();
 		const lines: string[] = [];
 
@@ -106,10 +106,10 @@ describe("plan mode", () => {
 
 		expect(status).toBe(0);
 		expect(calls).toHaveLength(0);
-		expect(lines).toContain(`model calls: ${2 * EVAL_MIN_RUNS_PER_ARM}`);
-		expect(lines.filter((l) => l.startsWith("unseeded "))).toHaveLength(
-			RULE_CASES.length - 1,
+		expect(lines).toContain(
+			`model calls: ${RULE_CASES.length * 2 * EVAL_MIN_RUNS_PER_ARM}`,
 		);
+		expect(lines.filter((l) => l.startsWith("unseeded "))).toHaveLength(0);
 	});
 
 	test("a bad argument exits 2 and prints the usage", async () => {
@@ -145,6 +145,25 @@ describe("run mode", () => {
 		expect(status).toBe(0);
 		expect(calls.filter(isSession)).toHaveLength(2);
 		expect(lines.some((l) => l.startsWith("2 sessions: 2 pass"))).toBe(true);
+	});
+
+	test("a run with no `--model` starts each session on `claude-opus-5-5`", async () => {
+		const root = await makeRoot();
+		const { run, calls } = stubRunner();
+
+		await main(["--run", "--case", "K", "--runs", "1"], {
+			run,
+			out: () => undefined,
+			fixturesRoot: root,
+			cases: [CASE_K],
+			tempPrefix: TEMP_PREFIX,
+		});
+
+		const sessions = calls.filter(isSession);
+		expect(sessions).toHaveLength(2);
+		for (const { argv } of sessions) {
+			expect(argv[argv.indexOf("--model") + 1]).toBe("claude-opus-5-5");
+		}
 	});
 
 	test("exits 1 when a session could not be graded", async () => {

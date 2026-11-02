@@ -41,6 +41,8 @@ interface Redirect {
 export interface ParseResult {
 	commands: string[][];
 	redirects: Redirect[];
+	/** The files that `<` and `<>` open for reading. */
+	inputs: string[];
 	code: string[];
 	background: string[][];
 	opaque: Set<string[]>;

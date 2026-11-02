@@ -240,6 +240,10 @@ export const globsSecret = (dir: string, word: string, at: Places): boolean => {
 };
 
 export const codeSecret = (code: string): string | undefined =>
-	[...code.matchAll(/(?<![\w.$)\]`-])\.env(?:rc|[._-][\w.-]+)?(?![\w.(-])/g)]
+	[
+		...code.matchAll(
+			/(?<![\w.$)\]`-])(?<!\$\\)\.env(?:rc|[._-][\w.-]+)?(?![\w.(-])/g,
+		),
+	]
 		.map((m) => m[0])
 		.find((name) => ENV_FILE.test(name));

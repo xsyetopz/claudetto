@@ -60,6 +60,19 @@ test("the handoff block costs no request", async ($: Engine, on: On) => {
 	expect(asked).toEqual([]);
 });
 
+test("the engine's `context_management` section, which says no handoff is needed, is left out", async ($: Engine, on: On) => {
+	on("prompt.section", (_$, e) => ({ text: `core ${e.name}` }));
+
+	const dropped = await $.prompt.section({
+		name: "context_management",
+		text: "you don't need to wrap up early or hand off mid-task",
+	});
+	const kept = await $.prompt.section({ name: "memory", text: "memory" });
+
+	expect(dropped.text).toBeNull();
+	expect(kept.text).toBe("core memory");
+});
+
 test("no text is added to a message the harness injects", async ($: Engine, on: On) => {
 	on("prompt.attachment", (_$, e) => e);
 

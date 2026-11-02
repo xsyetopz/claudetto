@@ -13,6 +13,10 @@ export const DENY_SYSTEM_WRITE = (v: { path: string }): string =>
 	`This call writes to \`${v.path}\`, a system folder.`;
 export const DENY_SECRET = (v: { word: string }): string =>
 	`This call reads \`${v.word}\`, which can hold secrets. To change an env file, use \`Edit\` or \`Write\`. The gate asks the user to approve that call. Ask the user for a value that you need.`;
+export const DENY_SECRET_ARGV = (v: { word: string }): string =>
+	`This command puts what it reads from \`${v.word}\` in a program's arguments, where each local user can read it with \`ps\`. Keep the value in the environment: set it in the shell with \`export NAME="$(…)"\`, then start the program with \`exec\`.`;
+export const ASK_SECRET_ENV = (v: { word: string }): string =>
+	`This command reads \`${v.word}\` into a shell variable, which no output and no program argument shows.`;
 export const DENY_ENV_DUMP =
 	"This command prints each environment variable. Variables can hold secrets. Print one variable by its name, such as `printenv PATH`. Alternatively, ask the user for the value that you need.";
 export const ASK_SECRET_FED =
@@ -57,3 +61,8 @@ export const DENY_REPEATED_CALL = (v: {
 	rule: string;
 }): string =>
 	`Auto mode denied this same call ${v.count} times. The reason of the last denial: ${v.reason} Stop and report this to the user. Give the reason above and the rule that would allow the call: \`"${v.rule}"\` in \`permissions.allow\`. Do not send this call again, and do not look for another way to it.`;
+export const DENY_REPEATED_UNEXPLAINED = (v: {
+	count: number;
+	command: string;
+}): string =>
+	`Auto mode denied this same call ${v.count} times, and the classifier gave no reason, so there is no fact to act on. Stop and report this to the user: give the exact command as \`! ${v.command}\`, which the user can run in the TUI. Do not send this call again, and do not look for another way to it. Go on with the rest of the work.`;

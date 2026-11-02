@@ -5,12 +5,12 @@ import type {
 	ModelCompleteResult,
 	ModelEffort,
 	PreToolUseResult,
-	SessionMessage,
 	ToolCallEnvelope,
 } from "claude-code";
 import { capOf } from "../../shared/thinking.ts";
 import { answersOf } from "../decide/ask.ts";
 import { classifierRules } from "./prompt.ts";
+import { callLine } from "./transcript.ts";
 
 // Haiku 5.5 cannot turn thinking off, so `$.model.complete` adds only 2048 tokens of room for it: at `high` the thinking can fill the cap and leave no text.
 export const VARIANTS = {
@@ -56,22 +56,6 @@ const sentence = (text: string): string => {
 export const denied = (reason: string, rule?: string): PreToolUseResult => ({
 	deny: `The claudetto classifier blocked this call${rule ? ` under the rule ${rule}` : ""}. ${sentence(reason)}`,
 });
-
-const callLine = (tool: string, input: unknown): string =>
-	`${tool} ${JSON.stringify(input)}`;
-
-/** Assistant prose and tool results stay out: the agent can argue for itself in both. */
-export const transcriptOf = (messages: readonly SessionMessage[]): string =>
-	messages
-		.flatMap((message) => {
-			if (message.role === "assistant") {
-				return message.toolUses.map(
-					(use) => `Agent ran: ${callLine(use.tool, use.input)}`,
-				);
-			}
-			return message.text.trim() === "" ? [] : [`User: ${message.text}`];
-		})
-		.join("\n");
 
 export const actionOf = (e: ToolCallEnvelope): string => {
 	const { tool, tool_use_id: _id, ...args } = e;

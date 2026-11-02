@@ -74,6 +74,19 @@ This is not a `/usage` paste. `sessionCost` of the pre-restart plugin, which the
 - The five-hour share fell by 6 points while the week rose, so that window reset inside the session. A five-hour delta is therefore not a cost rate unless both reads sit in one window, which is a constraint the recorder of task 9.3 has to hold: it drops a row whose window reset between its two reads.
 - The line is free and already in the code, so group 9 needs no new source for the plan share. What it needs is the per-turn tie to the token categories, which this line does not carry, and a share baseline per row rather than per session.
 
+## The Rate from Whole-Account Readings, 2026-11-02
+
+Both rates above set one session's cost against a meter that counts the whole account, so both run high. `METER_READINGS` of `claudekit/price/share.ts` now prices every call of the account over the meter's own span, with `claudekit/price/table.ts`, and the `claude-opus-5` calls are priced at the `claude-opus-5-5` row:
+
+| Date | Span | Dollars | Meter |
+| --- | --- | --- | --- |
+| 2026-10-31 | the week of 2026-10-26, from 04:00 UTC, after the limit ran out | `$1,132.87` over 34,691 calls | 100% |
+| 2026-11-02 | the week so far, to 16:17 UTC, when the status line read 11% | `$87.78` over 2,674 calls, plus `$21.55` of eval sessions whose transcripts stay under `/tmp` | 11% |
+
+- **About `$11.19` per weekly percent**, the two pooled: `$1,242.20` over 111 points, with a band of one point per reading, `$10.99` to `$11.40`. Each reading alone gives `$11.33` and `$9.94`.
+- At that rate the week of 2026-10-26 prices at 101%, against the meter's 100%.
+- Each cache write is priced at the `5m` rate, because a transcript does not say which cache it went into.
+
 ## Per-Model Cost of Reading B
 
 `/usage` reports cost per model directly, which answers a gap that our transcript measurement could not: `claude-opus-5` had to be excluded there for want of a published price, and here its cost is given.

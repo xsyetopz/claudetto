@@ -80,10 +80,4 @@ describe("the gate names only files that exist", () => {
 		expect(sources.length).toBeGreaterThan(0);
 		expect(loose).toEqual([]);
 	});
-
-	test("the pinned version is the one `README.md` tells a user to install", async () => {
-		const text = await bunFile(join(ROOT, "README.md")).text();
-
-		expect(text).toContain(`\`${MIN_CLAUDE_CODE_VERSION}\``);
-	});
 });

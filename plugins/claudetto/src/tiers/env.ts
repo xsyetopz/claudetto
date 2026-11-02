@@ -1,4 +1,13 @@
+import { HAIKU_MODEL, OPUS_MODEL, SONNET_MODEL } from "./tiers.ts";
+
 export const SUBAGENT_MODEL_ENV = "CLAUDE_CODE_SUBAGENT_MODEL";
+
+export const MODEL_PINS: Readonly<Record<string, string>> = {
+	ANTHROPIC_DEFAULT_MODEL: OPUS_MODEL,
+	ANTHROPIC_DEFAULT_OPUS_MODEL: OPUS_MODEL,
+	ANTHROPIC_DEFAULT_SONNET_MODEL: SONNET_MODEL,
+	ANTHROPIC_DEFAULT_HAIKU_MODEL: HAIKU_MODEL,
+};
 
 export interface EnvFlag {
 	readonly name: string;

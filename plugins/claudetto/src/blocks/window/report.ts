@@ -1,3 +1,4 @@
+import { type ClassifyRow, tokensOf } from "./classify-spend.ts";
 import { WEIGHT_MIN_ROWS } from "./limits.ts";
 import { inputOf, type TurnRow, type WindowRow } from "./window.ts";
 
@@ -132,15 +133,63 @@ export const savingLine = (
 		: `Saving: ${windowsText(five, seven)}`;
 };
 
+/** The values `ttlOf` can record, in the order the report prints them. */
+export const TTLS = ["5m", "1h", "auto"] as const;
+
+/** Dollars per weekly percent for each TTL: a 1-hour write costs more but saves the rewrite after an idle gap. */
+export const ttlLines = (rows: readonly WindowRow[]): string[] =>
+	TTLS.map((ttl) => {
+		const own = rows.filter(
+			(row) => row.ttl === ttl && (row.sevenPoints ?? 0) > 0,
+		);
+		let points = 0;
+		let usd = 0;
+		for (const row of own) {
+			points += row.sevenPoints ?? 0;
+			usd += row.usd;
+		}
+		const head = `Dollars per weekly percent, ttl ${ttl}`;
+		return own.length === 0
+			? `${head}: ${NOT_MEASURED}`
+			: `${head}: $${(usd / points).toFixed(2)} over ${own.length} ${own.length === 1 ? "row" : "rows"}`;
+	});
+
+const PERCENT = 100;
+
+const sumTokens = (rows: readonly (ClassifyRow | TurnRow)[]): number => {
+	let total = 0;
+	for (const row of rows) {
+		total += tokensOf(row);
+	}
+	return total;
+};
+
+/** The week is the turns' tokens plus the classify calls', which the turns do not hold. */
+export const classifyLine = (
+	rows: readonly ClassifyRow[],
+	turns: readonly TurnRow[],
+): string => {
+	if (rows.length === 0) {
+		return `Classify block: ${NOT_MEASURED}, no model call recorded`;
+	}
+	const own = sumTokens(rows);
+	const week = own + sumTokens(turns);
+	const calls = `${rows.length} ${rows.length === 1 ? "call" : "calls"}`;
+	return `Classify block: ${own.toLocaleString("en-US")} tokens in ${calls}, ${((own / week) * PERCENT).toFixed(1)}% of the week's ${week.toLocaleString("en-US")} tokens`;
+};
+
 export const reportText = (
 	rows: readonly WindowRow[],
 	turns: readonly TurnRow[],
+	classifyRows: readonly ClassifyRow[] = [],
 ): string =>
 	[
 		...(rows.length === 0
 			? [`Points per task: ${NOT_MEASURED}`]
 			: perTask(rows).map(taskLine)),
 		weightLine(rows, turns),
+		...ttlLines(rows),
+		classifyLine(classifyRows, turns),
 	].join("\n");
 
 const SHARE_OF_LIMIT =

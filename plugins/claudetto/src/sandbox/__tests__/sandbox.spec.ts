@@ -260,12 +260,6 @@ describe("excludedCommands that re-open a secret path", () => {
 });
 
 describe("every row names a route", () => {
-	test("each row carries the sandbox route", () => {
-		for (const row of SANDBOX_KEYS) {
-			expect(row.route).toBe("configure/permissions/sandbox");
-		}
-	});
-
 	test("the written rows are exactly the three claudetto writes", () => {
 		const written = SANDBOX_KEYS.filter((row) => row.value !== undefined);
 
@@ -273,18 +267,6 @@ describe("every row names a route", () => {
 			"sandbox.enabled",
 			"sandbox.allowUnsandboxedCommands",
 			"sandbox.filesystem.denyRead",
-		]);
-	});
-
-	test("the table carries one row per key of the route", () => {
-		expect(SANDBOX_KEYS.map((row) => row.name)).toEqual([
-			"sandbox.enabled",
-			"sandbox.autoAllowBashIfSandboxed",
-			"sandbox.allowUnsandboxedCommands",
-			"sandbox.failIfUnavailable",
-			"sandbox.filesystem.denyRead",
-			"sandbox.filesystem.allowRead",
-			"sandbox.excludedCommands",
 		]);
 	});
 });

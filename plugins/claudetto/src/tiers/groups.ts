@@ -13,7 +13,7 @@ import { SECRET_PATHS } from "../sandbox/sandbox.ts";
 import { AGENT_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES } from "./allow.ts";
 import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
-import { envFlags, SUBAGENT_MODEL_ENV } from "./env.ts";
+import { envFlags, MODEL_PINS, SUBAGENT_MODEL_ENV } from "./env.ts";
 import type { TierSnippet } from "./snippet.ts";
 import { STATUS_LINE_KEYS } from "./status-line.ts";
 import { SNIPPET_ROW } from "./tiers.ts";
@@ -57,6 +57,7 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
 			"effortLevel",
 			envPath(AUTOCOMPACT_PCT_ENV),
 			envPath(SUBAGENT_MODEL_ENV),
+			...Object.keys(MODEL_PINS).map(envPath),
 			...Object.keys(compactionSnippet().settings),
 			"fallbackModel",
 			"modelSettings",

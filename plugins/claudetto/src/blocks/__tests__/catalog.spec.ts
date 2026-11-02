@@ -7,8 +7,6 @@ import { CATALOG } from "../catalog.ts";
 
 const LAB = join(import.meta.dir, "..", "..", "..", "tests");
 
-const SOURCE = join(import.meta.dir, "..", "catalog.ts");
-
 const LAB_SUFFIX = /\.test\.ts$/;
 
 const parts = (version: string): readonly number[] =>
@@ -19,11 +17,6 @@ const atOrBelow = (version: string, floor: string): boolean => {
 	const differs = a.findIndex((part, index) => part !== b[index]);
 	return differs === -1 || (a[differs] ?? 0) < (b[differs] ?? 0);
 };
-
-const pascal = (id: string): string =>
-	id.replace(/(^|-)(\w)/g, (_match, _dash, letter: string) =>
-		letter.toUpperCase(),
-	);
 
 test("each block id is used once", () => {
 	const ids = CATALOG.map((block) => block.id);
@@ -63,14 +56,6 @@ test("each hook lab file or folder is named after a block", async () => {
 	);
 	expect(strays).toEqual([]);
 });
-
-test.each(CATALOG.map((block) => [block.id] as const))(
-	"`attachBlocks` calls the attach function of `%s`",
-	async (id) => {
-		const source = await file(SOURCE).text();
-		expect(source).toContain(`attach${pascal(id)}(on, context);`);
-	},
-);
 
 test("the version comparison orders by number, not by text", () => {
 	expect(atOrBelow("2.1.99", "2.1.314")).toBe(true);

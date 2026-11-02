@@ -1,0 +1,8 @@
+Excerpts of Claude Code 2.1.316 session transcripts, read on 2026-10-31. Each keeps the harness text and drops the session's own words.
+
+<system-reminder>
+PostToolUse:Bash hook additional context:
+
+<pasted_content id="071c">
+
+The user sent a new message while you were working:

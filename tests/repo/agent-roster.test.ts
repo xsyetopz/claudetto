@@ -6,10 +6,13 @@ import {
 	AGENTS_DIR,
 	agentFaults,
 	bodyNamesWithheld,
+	missingSections,
 	parseAgent,
 	readAgents,
 	rosterFaults,
 	rosterNames,
+	sectionFaults,
+	textOutsideSections,
 	withheldBy,
 } from "../../tools/agent-tools.ts";
 
@@ -75,6 +78,82 @@ describe("the shipped agent files", () => {
 
 	test("carry no fault in the tree", async () => {
 		expect(agentFaults([...(await agentsByName()).values()])).toEqual([]);
+	});
+});
+
+describe("the section check", () => {
+	test("each subagent body holds its text in named sections", () => {
+		expect(sectionFaults([...AGENTS.values()])).toEqual([]);
+	});
+
+	test("each subagent body holds the five sections, `<when_blocked>` among them", () => {
+		for (const agent of [...AGENTS.values()].filter((a) => a.tools !== null)) {
+			expect(missingSections(agent.body)).toEqual([]);
+		}
+	});
+
+	test("names a section the body lacks", () => {
+		expect(
+			sectionFaults([
+				parseAgent(
+					`${AGENTS_DIR}/Hermes.md`,
+					`---
+name: Hermes
+---
+<role>
+Search.
+</role>
+`,
+				),
+			]),
+		).toEqual([
+			`${AGENTS_DIR}/Hermes.md: lacks <doing_the_work>, <harness_messages>, <when_blocked>, <report_format>`,
+		]);
+	});
+
+	test("finds a line between sections and a section never closed", () => {
+		expect(
+			textOutsideSections(
+				`<role>
+Search.
+</role>
+
+Stray.
+<report_format>
+End.`,
+			),
+		).toEqual(["Stray.", "<report_format> is never closed"]);
+	});
+
+	test("passes a body made only of sections", () => {
+		expect(
+			textOutsideSections(
+				`
+<role>
+Search.
+</role>
+
+<when_blocked>
+Say so.
+</when_blocked>
+`,
+			),
+		).toEqual([]);
+	});
+
+	test("leaves `main` to its budget test", () => {
+		expect(
+			sectionFaults([
+				parseAgent(
+					`${AGENTS_DIR}/main.md`,
+					`---
+name: main
+---
+Free text.
+`,
+				),
+			]),
+		).toEqual([]);
 	});
 });
 

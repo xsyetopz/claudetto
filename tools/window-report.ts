@@ -2,6 +2,10 @@
 
 import { homedir } from "node:os";
 import { storedAt, storeFiles } from "../claudekit/store.ts";
+import {
+	CLASSIFY_KEY,
+	classifyOf,
+} from "../plugins/claudetto/src/blocks/window/classify-spend.ts";
 import { reportText } from "../plugins/claudetto/src/blocks/window/report.ts";
 import {
 	ROWS_KEY,
@@ -18,7 +22,10 @@ const main = async (): Promise<void> => {
 	const turns = files
 		.flatMap((file) => turnsOf(storedAt(file, TURNS_KEY)))
 		.toSorted((l, r) => l.at - r.at);
-	console.info(reportText(rows, turns));
+	const classifyRows = files
+		.flatMap((file) => classifyOf(storedAt(file, CLASSIFY_KEY)))
+		.toSorted((l, r) => l.at - r.at);
+	console.info(reportText(rows, turns, classifyRows));
 };
 
 if (import.meta.main) {
