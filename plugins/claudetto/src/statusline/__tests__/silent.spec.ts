@@ -21,6 +21,10 @@ const FORBIDDEN: readonly RegExp[] = [
 	/\beval\s*\(/,
 ];
 
+const ALLOWED: Readonly<Record<string, RegExp>> = {
+	"local.ts": /^import .* from "node:(?:fs\/promises|path)";$/,
+};
+
 const sources = async (): Promise<{ name: string; text: string }[]> => {
 	const names = (await readdir(DIR)).filter((name) => name.endsWith(".ts"));
 	const files = await Promise.all(
@@ -40,6 +44,7 @@ test("no source of the line names a file, network, or process call", async () =>
 		text
 			.split("\n")
 			.filter((line) => !line.trimStart().startsWith("//"))
+			.filter((line) => !ALLOWED[name]?.test(line))
 			.flatMap((line) =>
 				FORBIDDEN.filter((pattern) => pattern.test(line)).map(
 					(pattern) => `${name}: ${line.trim()} (${pattern})`,

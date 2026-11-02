@@ -10,6 +10,7 @@ export const DEFAULT_COLUMNS = 80;
 export const COLUMNS_MARGIN = 4;
 /** The most subagent rows shown, since the panel is small. */
 export const SUBAGENT_ROWS_MAX = 20;
+export const SPEC_CHANGES_SHOWN = 2;
 /** The gap between two items of a row. */
 export const ITEM_GAP = /* " · " */ " \u00B7 ";
 /** The part of a limit window that must pass before a pace shows. */

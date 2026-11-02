@@ -11,6 +11,7 @@ export const ICON = {
 	reserve: "⇣",
 	cache: "⌁",
 	pr: "⇄",
+	spec: "☐",
 	done: "✓",
 	error: "✗",
 	agent: "⏵",
