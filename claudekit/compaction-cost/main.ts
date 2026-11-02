@@ -1,11 +1,12 @@
 // Usage: bun claudekit/compaction-cost/main.ts [--thresholds 120000,200000] [--base 224999] [--seed 11] [--per 20] [--root DIR]
 
 import { argv } from "node:process";
+import { money } from "../price/cost.ts";
 import { bestOf, derive, sweep } from "./bill/derive.ts";
 import { crossTable, measureKept } from "./bill/fit.ts";
 import { replay, tracksOf, withCharge } from "./bill/replay.ts";
 import { argOf, numbersOf, oneOf } from "./flags.ts";
-import { mixOf } from "./price.ts";
+import { mixOf, OPUS } from "./price.ts";
 import * as costReport from "./report/cost.ts";
 import * as workReport from "./report/work.ts";
 import { boundaryStats, gapsOf } from "./transcripts/stats.ts";
@@ -52,7 +53,12 @@ const main = async (): Promise<void> => {
 	costReport.keptFit(kept, [225_000, 170_000, 120_000, 80_000]);
 
 	const tracks = tracksOf(sessions);
-	const fixed = { writes: mix.write, out: mix.out, kept };
+	// The replay prices each post-compaction write itself, so the recorded ones leave the fixed total.
+	const fixed = {
+		writes: mix.write - money(kept.written, OPUS.write),
+		out: mix.out,
+		kept,
+	};
 	const rows = thresholds.map((threshold) => replay(tracks, threshold, fixed));
 	costReport.replayTable(rows, base);
 

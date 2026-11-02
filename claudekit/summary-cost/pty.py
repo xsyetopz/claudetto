@@ -23,6 +23,27 @@ import sys
 import time
 
 
+EXIT_GRACE_S = 10.0
+
+
+def pump(pid: int, master: int, out, until: float) -> bool:
+    """Copies the pty to `out` until `until`, and says whether the child let go first."""
+    while time.monotonic() < until:
+        ready, _, _ = select.select([master], [], [], 0.5)
+        if ready:
+            try:
+                chunk = os.read(master, 65536)
+            except OSError:
+                # The pty reports `EIO` once the child has let go of the other end.
+                return True
+            if not chunk:
+                return True
+            out.write(chunk)
+        if os.waitpid(pid, os.WNOHANG)[0] == pid:
+            return True
+    return False
+
+
 def main() -> int:
     capture, deadline_s, *command = sys.argv[1:]
     deadline = time.monotonic() + float(deadline_s)
@@ -33,32 +54,22 @@ def main() -> int:
         os.execvp(command[0], command)
         return 1  # Unreachable: `execvp` replaces this process or raises.
 
-    gone = False
     with open(capture, "wb", buffering=0) as out:
-        while time.monotonic() < deadline:
-            ready, _, _ = select.select([master], [], [], 0.5)
-            if ready:
-                try:
-                    chunk = os.read(master, 65536)
-                except OSError:
-                    # The pty reports `EIO` once the child has let go of the other end.
-                    gone = True
-                    break
-                if not chunk:
-                    gone = True
-                    break
-                out.write(chunk)
-            if os.waitpid(pid, os.WNOHANG)[0] == pid:
-                gone = True
-                break
-
-    # A session with a prompt does not exit when its turn ends, so the deadline ends it. The kill is
-    # skipped once the child is gone, because its pid can already belong to another process.
-    if not gone:
-        try:
-            os.kill(pid, signal.SIGTERM)
-        except ProcessLookupError:
-            pass
+        gone = pump(pid, master, out, deadline)
+        # A session with a prompt does not exit when its turn ends, so the deadline ends it. The kill is
+        # skipped once the child is gone, because its pid can already belong to another process.
+        if not gone:
+            try:
+                os.kill(pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            # Claude Code draws to the pty while it exits, and blocks once no one reads it.
+            gone = pump(pid, master, out, time.monotonic() + EXIT_GRACE_S)
+        if not gone:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
     try:
         os.waitpid(pid, 0)
     except ChildProcessError:

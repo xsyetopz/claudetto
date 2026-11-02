@@ -53,7 +53,7 @@ export interface BoundaryStats {
 export const boundaryStats = (sessions: readonly Session[]): BoundaryStats => {
 	const all: Boundary[] = boundariesOf(sessions);
 	const kept = all
-		.filter((one) => one.pre > 0)
+		.filter((one) => one.pre >= one.post && one.pre > 0)
 		.map((one) => (100 * one.post) / one.pre);
 	return {
 		count: all.length,

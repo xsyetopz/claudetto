@@ -6,7 +6,11 @@ import { write } from "bun";
 /** A string that no loaded item may hold, because loading keeps no message text. */
 export const MARKER = "SECRET-MARKER-9137";
 
-export const assistant = (size: number, tools: object[] = []): string =>
+export const assistant = (
+	size: number,
+	tools: object[] = [],
+	written = 0,
+): string =>
 	JSON.stringify({
 		type: "assistant",
 		timestamp: "2026-10-28T10:00:00.000Z",
@@ -16,7 +20,7 @@ export const assistant = (size: number, tools: object[] = []): string =>
 			usage: {
 				input_tokens: 0,
 				cache_read_input_tokens: size,
-				cache_creation_input_tokens: 0,
+				cache_creation_input_tokens: written,
 				output_tokens: 1000,
 			},
 		},

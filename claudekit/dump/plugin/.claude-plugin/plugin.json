@@ -1,0 +1,9 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
+	"name": "claudekit-dump",
+	"version": "0.0.0",
+	"description": "Writes the rows and the API form of `$.session.messages()` to a file before each tool call.",
+	"author": {
+		"name": "xsyetopz"
+	}
+}

@@ -1,10 +1,18 @@
-import { CHARS_PER_TOKEN, type Session } from "../transcripts/transcripts.ts";
+import {
+	CHARS_PER_TOKEN,
+	type Request,
+	type Session,
+} from "../transcripts/transcripts.ts";
 import type { Placed } from "../work/charge.ts";
 
 export interface Kept {
 	readonly fixed: number;
 	readonly share: number;
 	readonly summary: number;
+	/** Mean tokens the first request after a boundary wrote to the cache: the new prefix is a miss. */
+	readonly write: number;
+	/** All such tokens in the sessions, which the fixed write total already holds. */
+	readonly written: number;
 	/** Boundaries that carried a summary record, so that both parts are measured. */
 	readonly rows: number;
 	/** `proportional` favours a low threshold and `constant` a high one; the two bound the answer. */
@@ -20,6 +28,29 @@ export const keptOf = (kept: Kept, size: number): number =>
 export const summaryOf = (kept: Kept, size: number): number =>
 	Math.max(0, keptOf(kept, size) - kept.fixed);
 
+const requestAfter = (items: Session, index: number): Request | undefined => {
+	const found = items.slice(index + 1).find((item) => item.kind === "request");
+	return found?.kind === "request" ? found : undefined;
+};
+
+const writtenAfter = (
+	sessions: readonly Session[],
+): { tokens: number; count: number } => {
+	let tokens = 0;
+	let count = 0;
+	for (const items of sessions) {
+		for (const [index, one] of items.entries()) {
+			const after =
+				one.kind === "boundary" ? requestAfter(items, index) : undefined;
+			if (after !== undefined) {
+				tokens += after.write;
+				count += 1;
+			}
+		}
+	}
+	return { tokens, count };
+};
+
 export const measureKept = (
 	sessions: readonly Session[],
 	mode: Kept["mode"],
@@ -32,7 +63,7 @@ export const measureKept = (
 			if (
 				one?.kind === "boundary" &&
 				next?.kind === "summary" &&
-				one.pre > 0 &&
+				one.pre >= one.post &&
 				one.post > 0
 			) {
 				pairs.push({
@@ -43,6 +74,7 @@ export const measureKept = (
 			}
 		}
 	}
+	const after = writtenAfter(sessions);
 	let fixed = 0;
 	let share = 0;
 	let summary = 0;
@@ -56,6 +88,8 @@ export const measureKept = (
 		fixed: fixed / count,
 		share: share / count,
 		summary: summary / count,
+		write: after.count === 0 ? 0 : after.tokens / after.count,
+		written: after.tokens,
 		rows: pairs.length,
 		mode,
 	};
