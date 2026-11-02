@@ -13,7 +13,7 @@ export const OPENSPEC_INIT = [
 
 const shownInit = `\`${OPENSPEC_INIT.join(" ")}\``;
 
-const exists = async (path: string): Promise<boolean> => {
+export const exists = async (path: string): Promise<boolean> => {
 	try {
 		await access(path);
 		return true;

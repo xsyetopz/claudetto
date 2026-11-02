@@ -1,0 +1,166 @@
+// Pure code, no model call: the family comes from marker files, the commands from the table, the `.ignore` from tracked heavy paths.
+
+import { type Command, FAMILIES, type Family, type Kind } from "./families.ts";
+
+/** A memory file costs about one character per character in every request, so the starter stays short. */
+export const AGENTS_CAP = 600;
+
+export interface Listing {
+	/** Every file git sees, tracked or not and not ignored: the markers are read from it. */
+	readonly files: readonly string[];
+	/** The files git tracks: only these can need a `.ignore` entry. */
+	readonly tracked: readonly string[];
+}
+
+export interface Existing {
+	readonly agents: boolean;
+	readonly claude: boolean;
+	readonly ignore: boolean;
+}
+
+export interface StarterFile {
+	readonly path: string;
+	readonly text: string;
+}
+
+const AGENTS = "AGENTS.md";
+const CLAUDE = "CLAUDE.md";
+const IGNORE = ".ignore";
+
+const KIND_ORDER: readonly Kind[] = ["test", "build", "lint", "types"];
+
+const SENTENCES: Record<Kind, (label: string, run: string) => string> = {
+	test: (label, run) => `Run the ${label}tests with \`${run}\`.`,
+	build: (label, run) => `Build the ${label}code with \`${run}\`.`,
+	lint: (label, run) => `Lint the ${label}code with \`${run}\`.`,
+	types: (label, run) => `Check the ${label}types with \`${run}\`.`,
+};
+
+export const linesOf = (text: string): string[] =>
+	text.split("\n").filter((line) => line.trim() !== "");
+
+const globOf = (glob: string): string =>
+	glob
+		.split("*")
+		.map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+		.join("[^/]*");
+
+/** A root name or `*` glob, an exact path, or a `dir/` prefix. */
+const present = (pattern: string, paths: readonly string[]): boolean => {
+	if (pattern.endsWith("/")) {
+		return paths.some((path) => path.startsWith(pattern));
+	}
+	if (pattern.includes("/")) {
+		return paths.includes(pattern);
+	}
+	const name = new RegExp(`^${globOf(pattern)}$`);
+	return paths.some((path) => !path.includes("/") && name.test(path));
+};
+
+export const detectFamilies = (files: readonly string[]): readonly Family[] =>
+	FAMILIES.filter((family) =>
+		family.markers.some((marker) => present(marker, files)),
+	);
+
+const commandOf = (
+	family: Family,
+	kind: Kind,
+	files: readonly string[],
+): Command | undefined =>
+	family.commands.find(
+		(command) =>
+			command.kind === kind &&
+			(command.when === undefined ||
+				command.when.some((name) => present(name, files))),
+	);
+
+const familyLines = (
+	family: Family,
+	files: readonly string[],
+	label: string,
+): string[] =>
+	KIND_ORDER.flatMap((kind) => {
+		const command = commandOf(family, kind, files);
+		return command === undefined ? [] : [SENTENCES[kind](label, command.run)];
+	});
+
+const agentsText = (
+	families: readonly Family[],
+	files: readonly string[],
+): string | undefined => {
+	const lines = families.flatMap((family) =>
+		familyLines(
+			family,
+			files,
+			families.length > 1 ? `${family.label} ` : "",
+		).map((line) => `- ${line}`),
+	);
+	let text = `# ${AGENTS}\n\n`;
+	let kept = 0;
+	for (const line of lines) {
+		if (text.length + line.length + 1 > AGENTS_CAP) {
+			break;
+		}
+		text += `${line}\n`;
+		kept++;
+	}
+	return kept === 0 ? undefined : text;
+};
+
+/** A heavy pattern names a `dir/` anywhere, or a file name, with `*` for any run of characters. */
+const heavyRegex = (pattern: string): RegExp =>
+	pattern.endsWith("/")
+		? new RegExp(`(^|/)${globOf(pattern.slice(0, -1))}/`)
+		: new RegExp(`(^|/)${globOf(pattern)}$`);
+
+const heavyEntries = (
+	families: readonly Family[],
+	tracked: readonly string[],
+): string[] => [
+	...new Set(
+		families
+			.flatMap((family) => family.heavy)
+			.filter((pattern) =>
+				tracked.some((path) => heavyRegex(pattern).test(path)),
+			),
+	),
+];
+
+/** The files to write, none of them a file the repo already holds; empty when the repo has a memory file or no known family. */
+export const planStarter = (
+	listing: Listing,
+	existing: Existing,
+): readonly StarterFile[] => {
+	if (existing.agents || existing.claude) {
+		return [];
+	}
+	const families = detectFamilies(listing.files);
+	const agents = agentsText(families, listing.files);
+	if (agents === undefined) {
+		return [];
+	}
+	const heavy = heavyEntries(families, listing.tracked);
+	return [
+		{ path: AGENTS, text: agents },
+		{ path: CLAUDE, text: `# ${CLAUDE}\n\n@${AGENTS}\n` },
+		...(existing.ignore || heavy.length === 0
+			? []
+			: [{ path: IGNORE, text: `${heavy.join("\n")}\n` }]),
+	];
+};
+
+const TRAILING_NEWLINE = /\n$/;
+
+/** Each new file as added lines, so a person sees exactly what a yes writes. */
+export const previewOf = (files: readonly StarterFile[]): string =>
+	files
+		.map((file) =>
+			[
+				`+++ ${file.path}`,
+				...file.text
+					.replace(TRAILING_NEWLINE, "")
+					.split("\n")
+					.map((line) => `+${line}`),
+			].join("\n"),
+		)
+		.join("\n");

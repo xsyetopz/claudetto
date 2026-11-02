@@ -40,6 +40,14 @@ describe("parseArgs", () => {
 		expect(args).toEqual({ dryRun: true, settings: "/tmp/s.json" });
 	});
 
+	test("--yes answers the starter files question", () => {
+		const argv = ["--yes"];
+
+		const args = parseArgs(argv);
+
+		expect(args).toEqual({ dryRun: false, yes: true });
+	});
+
 	test("--settings with no path throws", () => {
 		const argv = ["--settings"];
 

@@ -83,6 +83,16 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 
 `just setup` writes every group at once from a checkout of this repository, with no model call. It keeps a value you already set, and takes `--settings PATH` to aim at another file and `--dry-run` to print the report and write nothing.
 
+### Starter Files
+
+On a repo with neither `AGENTS.md` nor `CLAUDE.md`, `just setup` and `/claudetto:setup` offer three new files, built in code with no model call and no system prompt text:
+
+- `AGENTS.md`, under 600 characters, holds the bounded test, build, and lint commands of the language family that the root marker files name, such as `Cargo.toml` or `package.json` with `bun.lock`. The families are JS/TS, Python, Ruby, shell, HTML/CSS, C/C++, Rust, Swift, JVM, .NET, and Go, and `plugins/claudetto/src/tiers/starter/families.ts` holds each table. A command carries only flags read from the tool's `--help` or its docs, and a tool without a confirmed flag is left out.
+- `CLAUDE.md` is `# CLAUDE.md`, a blank line, and `@AGENTS.md`.
+- `.ignore` lists the family's heavy paths that git tracks, such as lock files and minified bundles. Claude Code reads no `.claudeignore`; `rg` and the `@` file picker read `.ignore`.
+
+The dialog shows each file as added lines and writes only after a `Write`. `just setup` asks at the terminal, takes `--yes` to answer for you, and with `--dry-run` prints the files and writes nothing. A file that exists is never replaced, and `/init` stays the interview for the rest.
+
 ## What the Core Plugin Changes
 
 | Part | Effect |
