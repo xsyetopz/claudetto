@@ -56,6 +56,12 @@
 			"description": "Use `true` to run every `Bash` command in an OS sandbox that refuses a write outside the project folder, the temp folders, and the tool caches (`~/.bun`, `~/.cache`): `sandbox-exec` on macOS, `bwrap` on Linux. Reads, the network, and processes stay open, and `.git/hooks` and `.git/config` of the project are read-only. It sets `CLAUDE_CODE_SHELL_PREFIX`, so the permission check, the deny rules, the hooks, and the auto mode classifier judge the command the model wrote. It needs the built-in sandbox `off`. Where `sandbox-exec` or `bwrap` is missing, a `Bash` call is refused with the reason and never runs unconfined. It is `false` because it changes where `Bash` may write.",
 			"default": false
 		},
+		"readGuardEnabled": {
+			"type": "boolean",
+			"title": "Guard whole reads of heavy files",
+			"description": "Use `false` to let `Read` take a lock file, a minified or map file, or a file under `node_modules` or another generated folder whole. By default such a read without a `limit` is denied with a hint to pass `offset` and `limit`, to use `rg`, or to use the package command. It adds nothing to the request and `Bash` is untouched. It is `true` because a whole lock file costs far more context than it gives.",
+			"default": true
+		},
 		"maxSubagentStarts": {
 			"type": "number",
 			"title": "Subagent starts per period",

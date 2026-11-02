@@ -31,6 +31,7 @@ const OPTIONS: readonly string[] = [
 	"handoverThresholdTokens",
 	"classifierModel",
 	"confineEnabled",
+	"readGuardEnabled",
 	"maxSubagentStarts",
 	"limitPeriodSeconds",
 	"maxHeavyToolCalls",
