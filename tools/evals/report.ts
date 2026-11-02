@@ -1,5 +1,6 @@
 // An `error` is counted apart and left out of the rate: a run that was not graded says nothing.
 
+import { total } from "../../claudekit/total.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../limits.ts";
 import type { Outcome } from "./execute.ts";
 
@@ -35,6 +36,20 @@ export const rateOf = (row: Row): string => {
 export const isCitable = (row: Row): boolean =>
 	row.pass + row.fail >= EVAL_MIN_RUNS_PER_ARM;
 
+const sessions = (n: number): string =>
+	n === 1 ? "1 session" : `${n} sessions`;
+
+/** The tokens and dollars of the sessions that reported them, so a paid run states its cost. */
+export const spendLine = (outcomes: readonly Outcome[]): string => {
+	const spent = outcomes.flatMap((o) =>
+		o.spend === undefined ? [] : [o.spend],
+	);
+	const tokens = total(spent.map((s) => s.tokens));
+	const usd = total(spent.map((s) => s.costUsd));
+	const none = outcomes.length - spent.length;
+	return `Spend: ${tokens.toLocaleString("en-US")} tokens and $${usd.toFixed(2)} over ${sessions(spent.length)}; ${sessions(none)} reported none.`;
+};
+
 export const reportLines = (
 	outcomes: readonly Outcome[],
 ): readonly string[] => {
@@ -51,6 +66,7 @@ export const reportLines = (
 		outcomes.filter((outcome) => outcome.score.verdict === verdict).length;
 	lines.push(
 		"",
+		spendLine(outcomes),
 		`${outcomes.length} sessions: ${count("pass")} pass, ${count("fail")} fail, ${count("error")} error.`,
 	);
 	return lines;

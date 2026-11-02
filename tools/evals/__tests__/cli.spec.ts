@@ -215,6 +215,18 @@ describe("the report", () => {
 		expect(reportLines(short).some((l) => l.endsWith("| no |"))).toBe(true);
 	});
 
+	test("totals the spend of the sessions that report one, and counts the rest", () => {
+		const lines = reportLines([
+			{ ...outcome("pass"), spend: { tokens: 1000, costUsd: 0.25 } },
+			{ ...outcome("fail"), spend: { tokens: 2500, costUsd: 0.5 } },
+			outcome("error"),
+		]);
+
+		expect(lines.at(-2)).toBe(
+			"Spend: 3,500 tokens and $0.75 over 2 sessions; 1 session reported none.",
+		);
+	});
+
 	test("totals the verdicts", () => {
 		const lines = reportLines([
 			outcome("pass"),

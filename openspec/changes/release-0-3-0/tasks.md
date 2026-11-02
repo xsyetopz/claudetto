@@ -285,6 +285,7 @@ Claim table in the 0.3.0 notes: 31 claims, 15 true, 4 false (`.claudeignore`, `v
 - [x] 27.7 Update `tests/tool-describe.test.ts` for 27.6 without loosening an assertion. Done, with no edit: no assertion of `tests/tool-describe.test.ts` named an old phrase, and the suite passes in `just check`.
 - [x] 27.8 Paid, after approval: the prompt eval of the changed texts, with its cost asked first. Done on 2026-11-03: `just eval --run --arm main.md --budget 8`, 80 sessions, 71 pass and 0 error. Seven cases scored 10/10 and `I13` 1/10. The cost was not recorded, because the eval keeps no transcript; it is estimated at about 5.0M tokens from the 80-session run of 2026-11-02.
 - [x] 27.9 After 27.6, rerun the measurement tasks 22.12, 22.13, and 22.15, which wait on settled texts. All three were read after `72a2a004`.
+- [x] 27.10 Keep the cost of an eval run, which 27.8 lost because each session's folder went with its output. Done on 2026-11-03: `executeSession` reads the `modelUsage` tokens and `total_cost_usd` of the session's `result` before it removes the folder, and the report ends with a `Spend:` line. The specs `readTokens`, `executeSession` spend, and the report spend line failed first, 3 of 21, and pass after; `just check` exit 0, 1802, 308, and 42 pass.
 
 ## 28. CLI Tools Instead of Built-in and System Tools
 
