@@ -2,6 +2,7 @@
 
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { sleep } from "bun";
 import { PLUGIN_DIR } from "../plugin.ts";
 import type { Scenario } from "./session.ts";
 
@@ -74,6 +75,22 @@ body
 `,
 	);
 };
+
+/** Time for the session's settings watcher to see a changed file before the next turn. */
+const WATCH_MS = 5000;
+
+/** Writes a project file between turns from outside the session, where the session's sandbox would refuse the write. */
+const writeWork =
+	(path: string, text: string) =>
+	async (folders: { readonly work: string }): Promise<void> => {
+		await mkdir(join(folders.work, path, ".."), { recursive: true });
+		await writeFile(join(folders.work, path), text);
+	};
+
+const memory = (line: string): string => `# CLAUDE.md
+
+- ${line}
+`;
 
 export const SCENARIOS: Readonly<Record<string, Scenario>> = {
 	baseline: { steps: [turn("hi"), turn("again"), turn("third")] },
@@ -172,6 +189,35 @@ export const SCENARIOS: Readonly<Record<string, Scenario>> = {
 			},
 		],
 		steps: [turn("spawn it"), turn("next")],
+	},
+	"claude-md-edit": {
+		setup: writeWork("CLAUDE.md", memory("PROBE_MEMORY_ONE")),
+		steps: [
+			turn("hi"),
+			{
+				...turn("next"),
+				before: writeWork("CLAUDE.md", memory("PROBE_MEMORY_TWO")),
+			},
+			turn("more"),
+		],
+	},
+	// The deny names a tool the request lists, so a reloaded file shows as a shorter `tools`; denied at launch, `Write` is gone.
+	"settings-edit": {
+		setup: writeWork(".claude/settings.json", "{}"),
+		steps: [
+			turn("hi"),
+			{
+				...turn("next"),
+				before: async (folders) => {
+					await writeWork(
+						".claude/settings.json",
+						JSON.stringify({ permissions: { deny: ["Write"] } }),
+					)(folders);
+					await sleep(WATCH_MS);
+				},
+			},
+			turn("more"),
+		],
 	},
 	"file-edit": withFile({
 		args: ["--permission-mode", "acceptEdits"],
