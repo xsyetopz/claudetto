@@ -192,6 +192,10 @@ inheriting the running session's `CLAUDE_EFFORT` and `CLAUDE_CODE_SUBAGENT_MODEL
 $6.37 and 4,992,343 tokens, 0.16% of the 3.20B-token week and 0.57% of the weekly limit at $11.19 a
 percent. Seven cases scored 10/10 as before, and `I13` scored 2/10, so the `main.md` scores stand.
 The default arm was not run again, so its scores are from sessions that inherited those variables.
+The `main.md` arm was run again on 2026-11-03, after the positive-form rewrites and the trim of
+`main.md`: 80 sessions, 71 pass. Seven cases scored 10/10 and `I13` scored 1/10, so the scores stand.
+Its cost was not recorded, because the eval kept no transcript of a session; the 80-session run
+before it puts it at about 5.0M tokens.
 
 `tools/evals/__tests__/main-rules.spec.ts` checks the inventory: no case has an empty field, and
 every case names a section the shipped file has. A case whose section the file lacks is reported as
