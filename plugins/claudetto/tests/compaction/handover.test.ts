@@ -112,6 +112,7 @@ const lab = (
 	});
 	const clock = mock.clock(on, { now: 0 });
 	on("env.get", () => ({ value: undefined }));
+	on("session.root", () => ({ value: "/repo" }));
 	on("ui.log", (_$, e) => {
 		seen.lines.push(e.text);
 		return { value: undefined };

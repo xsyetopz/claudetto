@@ -28,6 +28,7 @@ const ran = (stdout: string, exitCode = 0) => ({
 
 const sink = (on: On): readonly { path: string; text: string }[] => {
 	const files: { path: string; text: string }[] = [];
+	on("session.root", () => ({ value: "/repo" }));
 	on("fs.write", (_$, e) => {
 		files.push({ path: e.path, text: e.text });
 		return { value: undefined };

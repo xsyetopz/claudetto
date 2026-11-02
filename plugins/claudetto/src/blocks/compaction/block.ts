@@ -2,6 +2,7 @@ import type { EngineInterface, HookFor, On } from "claude-code";
 import { readTier } from "../../tiers/read.ts";
 import type { TierRow } from "../../tiers/tiers.ts";
 import type { Block, BlockContext, WithOptions } from "../block.ts";
+import { atRoot } from "../handoff/root.ts";
 import { asCompaction } from "../window/hooks.ts";
 import { afterTurn, handOverTo, type Session } from "./handover.ts";
 import { isCheapSummaryOn, summarize } from "./summary.ts";
@@ -44,7 +45,8 @@ export const onCompact: WithOptions<HookFor<"session.compact">> = (
 	});
 
 const sessionOf = ($: EngineInterface): Session => ({
-	write: (path, text) => $.fs.write(path, text),
+	write: async (path, text) =>
+		$.fs.write(atRoot(await $.session.root(), path), text),
 	compact: () => $.command.run({ command: "compact" }),
 	submit: (text) => $.prompt.submit({ text }),
 	log: (line) => $.ui.log(line),

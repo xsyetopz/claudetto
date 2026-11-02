@@ -51,6 +51,7 @@ const compactAfterMisnamed = async (
 		},
 	}));
 	on("fs.read", () => read);
+	on("session.root", () => ({ value: "/repo" }));
 	on("fs.write", (_$, e) => {
 		run.files.push({ path: e.path, text: e.text });
 		return { value: undefined };

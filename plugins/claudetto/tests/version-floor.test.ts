@@ -16,6 +16,7 @@ const lab = (on: On, base: string | undefined): string[] => {
 		return { value: undefined };
 	});
 	// No handoff folder, so the handoff block's read-back on a resume stays silent.
+	on("session.root", () => ({ value: "/repo" }));
 	on("fs.exists", () => ({ value: false }));
 	on("classic.SessionStart", () => ({}));
 	return lines;
