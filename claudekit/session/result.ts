@@ -1,5 +1,7 @@
 // A reader for the `result` of a `claude -p` run.
 
+import { total } from "../total.ts";
+
 /** A tool call that the permission system refused during the run. */
 export interface PermissionDenial {
 	readonly toolName: string;
@@ -59,12 +61,8 @@ export const parsed = (text: string): unknown => {
 	}
 };
 
-/**
- * The `result` of the stdout of a `claude -p` run, or `undefined` when there is none. It reads
- * `--output-format json` (one object, or an array of events) and also `stream-json` (one event a line),
- * and takes the last `result` event in each.
- */
-export const readResult = (stdout: string): RunResult | undefined => {
+/** The last `result` event of the stdout of a `claude -p` run, in any of the forms `readResult` reads. */
+const lastResult = (stdout: string): Record<string, unknown> | undefined => {
 	const whole = parsed(stdout.trim());
 	let events: unknown[];
 	if (Array.isArray(whole)) {
@@ -77,5 +75,42 @@ export const readResult = (stdout: string): RunResult | undefined => {
 	const found = events.findLast(
 		(event) => isRecord(event) && event["type"] === "result",
 	);
-	return isRecord(found) ? resultOf(found) : undefined;
+	return isRecord(found) ? found : undefined;
+};
+
+/**
+ * The `result` of the stdout of a `claude -p` run, or `undefined` when there is none. It reads
+ * `--output-format json` (one object, or an array of events) and also `stream-json` (one event a line),
+ * and takes the last `result` event in each.
+ */
+export const readResult = (stdout: string): RunResult | undefined => {
+	const found = lastResult(stdout);
+	return found === undefined ? undefined : resultOf(found);
+};
+
+const TOKEN_KEYS = [
+	"inputTokens",
+	"outputTokens",
+	"cacheReadInputTokens",
+	"cacheCreationInputTokens",
+] as const;
+
+const tokensOfModel = (usage: unknown): number =>
+	isRecord(usage)
+		? total(
+				TOKEN_KEYS.map((key) => usage[key]).filter(
+					(n) => typeof n === "number",
+				),
+			)
+		: 0;
+
+/**
+ * The tokens of a `claude -p` run: the input, output, cache read, and cache write tokens of every model in
+ * `modelUsage` of its last `result`, which covers subagents too. `undefined` when the run states none.
+ */
+export const readTokens = (stdout: string): number | undefined => {
+	const usage = lastResult(stdout)?.["modelUsage"];
+	return isRecord(usage)
+		? total(Object.values(usage).map(tokensOfModel))
+		: undefined;
 };

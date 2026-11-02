@@ -42,6 +42,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- `just eval --run` removed each session's folder with its output, so a run kept no record of its cost. Its report now ends with a `Spend:` line of the tokens and dollars of the sessions, read from each session's `result` first.
 - The classifier read the words a user typed after `Stop` hook feedback as the hook's, because the harness puts both in one message. It now reads them as the user's, and the feedback as hook text, which authorizes nothing.
 - The `Stop` hook added the `Background tasks still running` context at every stop, so a long `Monitor` session carried the same list again in each request. It is now added only when a task `id` or `status` changed since it was last added.
 - A handoff written after a shell `cd` went to `.claude/claudetto/handoffs/` under the new directory, and a resume read the folder there too, so the next session found no handoff and the sweep never reached the file. The handoff and the handover now write and read the folder under the project root that `$.session.root()` gives.

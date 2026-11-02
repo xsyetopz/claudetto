@@ -2,8 +2,12 @@
 
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { CommandRunner } from "../../claudekit/session/command.ts";
+import type {
+	CommandResult,
+	CommandRunner,
+} from "../../claudekit/session/command.ts";
 import { removeFolders } from "../../claudekit/session/folders.ts";
+import { readResult, readTokens } from "../../claudekit/session/result.ts";
 import { seedFixture } from "./fixture.ts";
 import type { Session } from "./plan.ts";
 import { type Score, scoreTree } from "./score.ts";
@@ -24,10 +28,26 @@ export interface Deps {
 	readonly tempPrefix?: string;
 }
 
+/** What one session cost, read from its `result` before its folder goes. */
+export interface Spend {
+	readonly tokens: number;
+	readonly costUsd: number;
+}
+
 export interface Outcome {
 	readonly session: Session;
 	readonly score: Score;
+	/** Absent when the session's output holds no `result` with usage. */
+	readonly spend?: Spend;
 }
+
+const spendOf = (ran: CommandResult): { spend?: Spend } => {
+	const tokens = readTokens(ran.stdout);
+	const costUsd = readResult(ran.stdout)?.totalCostUsd;
+	return tokens === undefined || costUsd === undefined
+		? {}
+		: { spend: { tokens, costUsd } };
+};
 
 const errorOf = (session: Session, detail: string): Outcome => ({
 	session,
@@ -58,21 +78,22 @@ const gradeIn = async (
 			? {}
 			: { maxBudgetUsd: deps.maxBudgetUsd }),
 	});
+	const spend = spendOf(ran);
 	if (ran.timedOut || ran.code === undefined) {
-		return errorOf(session, "the session did not finish");
+		return { ...errorOf(session, "the session did not finish"), ...spend };
 	}
 	const transcript = join(root, "transcript.jsonl");
 	await writeFile(transcript, ran.stdout);
 	const [program, ...rest] = seeded.grader;
 	if (program === undefined) {
-		return errorOf(session, "the fixture names no grader");
+		return { ...errorOf(session, "the fixture names no grader"), ...spend };
 	}
 	const graded = await deps.run([program, ...rest], {
 		cwd: repo,
 		env: { EVAL_TRANSCRIPT: transcript },
 		timeoutMs: GRADER_MS,
 	});
-	return { session, score: scoreTree(graded) };
+	return { session, score: scoreTree(graded), ...spend };
 };
 
 /**

@@ -78,3 +78,37 @@ describe("`executeSession` scratch root", () => {
 		expect(await readdir(parent)).toEqual([]);
 	});
 });
+
+describe("`executeSession` spend", () => {
+	test("keeps the tokens and dollars of the session's `result`, read before the root goes", async () => {
+		await setup();
+		const result = {
+			type: "result",
+			total_cost_usd: 0.5,
+			modelUsage: {
+				"claude-opus-5-5": {
+					inputTokens: 10,
+					outputTokens: 20,
+					cacheReadInputTokens: 300,
+					cacheCreationInputTokens: 4000,
+				},
+			},
+		};
+		const { run } = stubRunner((call) =>
+			isSession(call) ? ok({ stdout: `${JSON.stringify(result)}\n` }) : ok(),
+		);
+
+		const outcome = await executeSession(deps(run), SESSION);
+
+		expect(outcome.spend).toEqual({ tokens: 4330, costUsd: 0.5 });
+	});
+
+	test("states no spend for a session whose output has no `result`", async () => {
+		await setup();
+		const { run } = stubRunner();
+
+		const outcome = await executeSession(deps(run), SESSION);
+
+		expect(outcome.spend).toBeUndefined();
+	});
+});

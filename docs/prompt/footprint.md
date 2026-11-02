@@ -176,7 +176,9 @@ moved to `rules/claudetto-code.md`, and its case is in `tools/evals/conduct/repl
 Running a case calls a model. A citable arm needs 10 runs
 (`EVAL_MIN_RUNS_PER_ARM` of `tools/limits.ts`, the floor the paid probe printed), and the arms are
 the shipped `main.md` against the default body, so a citable run of the eight cases is 160 sessions.
-`just eval --run` runs them. The results above are from one run of 160 sessions on 2026-11-02,
+`just eval --run` runs them, and its report ends with a `Spend:` line: the tokens of every model in
+`modelUsage` and the `total_cost_usd` of each session's `result`, read before the session's folder is
+removed. The results above are from one run of 160 sessions on 2026-11-02,
 on `claude-opus-5-5`, at $14.39 and 11,933,697 tokens, regraded after grader fixes. `I13` and
 `W5-15` were run again with fixed fixtures, 40 sessions at $4.18 and 3,303,607 tokens. A `-p`
 session has no `AskUserQuestion`, so `I13` grades the question in the final reply. The `main.md` arm of

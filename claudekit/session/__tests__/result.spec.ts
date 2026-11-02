@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readResult } from "../result.ts";
+import { readResult, readTokens } from "../result.ts";
 
 const RESULT = {
 	type: "result",
@@ -56,5 +56,39 @@ not json
 		expect(readResult("")).toBeUndefined();
 		expect(readResult("garbage")).toBeUndefined();
 		expect(readResult(JSON.stringify({ type: "system" }))).toBeUndefined();
+	});
+});
+
+describe("readTokens", () => {
+	const usage = (
+		input: number,
+		output: number,
+		read: number,
+		write: number,
+	) => ({
+		inputTokens: input,
+		outputTokens: output,
+		cacheReadInputTokens: read,
+		cacheCreationInputTokens: write,
+		costUSD: 1,
+	});
+
+	test("sums the four token counts of every model of the last `result`", () => {
+		const stream = `${JSON.stringify({ type: "system" })}
+${JSON.stringify({
+	...RESULT,
+	modelUsage: {
+		"claude-opus-5-5": usage(1, 2, 300, 40),
+		"claude-haiku-5-5": usage(5, 6, 0, 0),
+	},
+})}
+`;
+
+		expect(readTokens(stream)).toBe(354);
+	});
+
+	test("is `undefined` when the result states no model usage", () => {
+		expect(readTokens(JSON.stringify(RESULT))).toBeUndefined();
+		expect(readTokens("")).toBeUndefined();
 	});
 });
