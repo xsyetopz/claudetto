@@ -13,7 +13,7 @@ export const AST_GREP: OptionalTool = {
 	binaries: ["ast-grep", "sg"],
 	brew: "ast-grep",
 	release: "https://github.com/ast-grep/ast-grep/releases/download",
-	agents: [],
+	agents: ["Athena", "Hephaestus"],
 };
 
 export const OPTIONAL_TOOLS: readonly OptionalTool[] = [AST_GREP];

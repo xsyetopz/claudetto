@@ -5,7 +5,7 @@ import { AST_GREP, OPTIONAL_TOOLS } from "../tools.ts";
 const RELEASE = `https://github.com/ast-grep/ast-grep/releases/download/${AST_GREP.version}`;
 
 describe("the table", () => {
-	test("holds ast-grep alone, pinned to 0.51.1", () => {
+	test("holds `ast-grep` alone, pinned to `0.51.1`", () => {
 		expect(OPTIONAL_TOOLS.map((tool) => tool.id)).toEqual(["ast-grep"]);
 		expect(AST_GREP.version).toBe("0.51.1");
 	});
@@ -15,7 +15,7 @@ describe("the table", () => {
 	});
 });
 
-describe("targetOf", () => {
+describe("`targetOf`", () => {
 	const cases: readonly [string, string, string][] = [
 		["darwin", "arm64", "aarch64-apple-darwin"],
 		["darwin", "x64", "x86_64-apple-darwin"],
@@ -37,8 +37,8 @@ describe("targetOf", () => {
 	});
 });
 
-describe("installFor with brew on the PATH", () => {
-	test("macOS on Apple silicon runs brew", () => {
+describe("`installFor` with `brew` on the `PATH`", () => {
+	test("macOS on Apple silicon runs `brew`", () => {
 		const install = installFor(
 			AST_GREP,
 			{ platform: "darwin", arch: "arm64" },
@@ -52,7 +52,7 @@ describe("installFor with brew on the PATH", () => {
 		});
 	});
 
-	test("Linux runs brew on both architectures", () => {
+	test("Linux runs `brew` on both architectures", () => {
 		for (const arch of ["x64", "arm64"]) {
 			const install = installFor(AST_GREP, { platform: "linux", arch }, true);
 
@@ -76,7 +76,7 @@ describe("installFor with brew on the PATH", () => {
 	});
 });
 
-describe("installFor with no package manager", () => {
+describe("`installFor` with no package manager", () => {
 	const cases: readonly [string, string, string, string][] = [
 		["darwin", "arm64", "aarch64-apple-darwin", "~/.local/bin"],
 		["darwin", "x64", "x86_64-apple-darwin", "~/.local/bin"],
@@ -107,7 +107,7 @@ describe("installFor with no package manager", () => {
 		});
 	});
 
-	test("brew on Windows is not used, since no bottle is built there", () => {
+	test("`brew` on Windows is not used, since no bottle is built there", () => {
 		const install = installFor(
 			AST_GREP,
 			{ platform: "win32", arch: "x64" },
@@ -118,14 +118,14 @@ describe("installFor with no package manager", () => {
 	});
 });
 
-describe("installFor with an arch the launch check could not read", () => {
-	test("Linux with brew still runs brew", () => {
+describe("`installFor` with an arch the launch check could not read", () => {
+	test("Linux with `brew` still runs `brew`", () => {
 		expect(installFor(AST_GREP, { platform: "linux" }, true).kind).toBe(
 			"command",
 		);
 	});
 
-	test("Linux without brew has no zip to name", () => {
+	test("Linux without `brew` has no zip to name", () => {
 		expect(installFor(AST_GREP, { platform: "linux" }, false)).toEqual({
 			kind: "none",
 		});

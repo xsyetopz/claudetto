@@ -14,7 +14,7 @@ const heavyOf = (family: Family): readonly string[] => family.heavy;
 const bulkyOf = (family: Family): readonly string[] => family.bulky ?? [];
 
 describe("the fixed template", () => {
-	test(".gitignore holds the paths no tool should list", () => {
+	test("`.gitignore` holds the paths no tool should list", () => {
 		expect(GITIGNORE_FIXED).toEqual([
 			".DS_Store",
 			"Thumbs.db",
@@ -26,7 +26,7 @@ describe("the fixed template", () => {
 		]);
 	});
 
-	test("a folder of no known family gets the fixed lines and an empty .ignore", () => {
+	test("a folder of no known family gets the fixed lines and an empty `.ignore`", () => {
 		const files = ["notes.txt"];
 
 		const lines = ignoreLines({ files, tracked: files });
@@ -38,7 +38,7 @@ describe("the fixed template", () => {
 
 describe("each family", () => {
 	for (const family of FAMILIES) {
-		test(`${family.id}: tracked heavy and bulky paths go to .ignore only`, () => {
+		test(`${family.id}: tracked heavy and bulky paths go to \`.ignore\` only`, () => {
 			const files = [
 				...markersOf(family),
 				...[...heavyOf(family), ...bulkyOf(family)].map(sampleOf),
@@ -52,7 +52,7 @@ describe("each family", () => {
 			}
 		});
 
-		test(`${family.id}: heavy paths git does not track go to .gitignore, and absent bulky ones nowhere`, () => {
+		test(`${family.id}: heavy paths git does not track go to \`.gitignore\`, and absent bulky ones nowhere`, () => {
 			const files = markersOf(family);
 			const tracked = files.filter((name) => !bulkyOf(family).includes(name));
 
@@ -86,7 +86,7 @@ describe("a repo with two stacks", () => {
 		expect(lines.gitignore).toContain(".gradle/");
 	});
 
-	test("a lock file git sees but does not track still goes to .ignore", () => {
+	test("a lock file git sees but does not track still goes to `.ignore`", () => {
 		const lines = ignoreLines({
 			files: ["Cargo.toml", "Cargo.lock"],
 			tracked: ["Cargo.toml"],

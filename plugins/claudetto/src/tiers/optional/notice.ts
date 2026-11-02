@@ -16,5 +16,5 @@ export const noticeLine = (tool: OptionalTool, install: Install): string => {
 		install.kind === "none"
 			? `Releases are at ${RELEASES_PAGE}.`
 			: `Install: ${install.kind === "command" ? `\`${install.shown}\`` : install.shown}.`;
-	return `\`${tool.id}\` is not on your PATH, and it gives a precise structural search. ${how} \`/claudetto:setup\` can do it.`;
+	return `\`${tool.id}\` is not on your \`PATH\`, and it gives a precise structural search. ${how} \`/claudetto:setup\` can do it.`;
 };

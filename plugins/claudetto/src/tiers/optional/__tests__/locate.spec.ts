@@ -11,12 +11,12 @@ const existing =
 	async (path: string) =>
 		paths.includes(path);
 
-describe("binaryNames", () => {
+describe("`binaryNames`", () => {
 	test("macOS names both binaries", () => {
 		expect(binaryNames(AST_GREP, UNIX)).toEqual(["ast-grep", "sg"]);
 	});
 
-	test("Linux leaves out sg, which the shadow tools own", () => {
+	test("Linux leaves out `sg`, which the shadow tools own", () => {
 		expect(binaryNames(AST_GREP, LINUX)).toEqual(["ast-grep"]);
 	});
 
@@ -30,14 +30,14 @@ describe("binaryNames", () => {
 	});
 });
 
-describe("isOnPath", () => {
-	test("finds a binary in a later folder of the PATH", async () => {
+describe("`isOnPath`", () => {
+	test("finds a binary in a later folder of the `PATH`", async () => {
 		const found = await isOnPath(["sg"], UNIX, "/a:/b:/c", existing("/c/sg"));
 
 		expect(found).toBe(true);
 	});
 
-	test("an unset PATH finds nothing", async () => {
+	test("an unset `PATH` finds nothing", async () => {
 		expect(await isOnPath(["sg"], UNIX, undefined, existing("/a/sg"))).toBe(
 			false,
 		);
@@ -49,7 +49,7 @@ describe("isOnPath", () => {
 		);
 	});
 
-	test("an empty entry of the PATH is skipped", async () => {
+	test("an empty entry of the `PATH` is skipped", async () => {
 		expect(await isOnPath(["sg"], UNIX, ":/a:", existing("/sg"))).toBe(false);
 	});
 

@@ -134,7 +134,7 @@ describe("the dialog text", () => {
 	});
 });
 
-describe("settle", () => {
+describe("`settle`", () => {
 	test("rebuilds the text from the file as it is when the user answers", () => {
 		const edits = ignoreEdits({ files: GO, tracked: GO }, {});
 		const edit = edits[0];

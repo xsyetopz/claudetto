@@ -12,6 +12,7 @@ describe("noticeLine", () => {
 
 		expect(line).toContain("`brew install ast-grep`");
 		expect(line).toContain("`/claudetto:setup`");
+		expect(line).toContain("on your `PATH`");
 		expect(line).not.toContain("\n");
 	});
 
