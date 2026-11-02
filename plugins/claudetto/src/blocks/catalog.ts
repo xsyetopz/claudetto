@@ -20,6 +20,7 @@ import { attachStatusLine, statusLine } from "./status-line/block.ts";
 import { attachToolDescribe, toolDescribe } from "./tool-describe/block.ts";
 import { attachVersionFloor, versionFloor } from "./version-floor/block.ts";
 import { attachWindow, windowBlock } from "./window/block.ts";
+import { attachWorktreeBase, worktreeBase } from "./worktree-base/block.ts";
 
 /** One row per block, in the order `attachBlocks` calls them, which is the hook chain order. */
 export const CATALOG: readonly Block[] = [
@@ -43,6 +44,7 @@ export const CATALOG: readonly Block[] = [
 	confine,
 	readGuard,
 	boundOutput,
+	worktreeBase,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -69,4 +71,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachConfine(on, context);
 	attachReadGuard(on, context);
 	attachBoundOutput(on, context);
+	attachWorktreeBase(on, context);
 };

@@ -323,6 +323,13 @@ The user asked on 2026-11-03, through the `claudetto-05` session, that setup kee
 - [ ] 30.3 In code with no model call, `just setup` and `/claudetto:setup` show the diff of each file and write after a yes, through the dialog 28.12 uses, replacing the rule that an existing `.ignore` is skipped. Verify with the hook lab and the `starter` CLI spec, and with one dry run on a real folder that has a `.gitignore` of its own.
 - [ ] 30.4 Document the block, the split between the two files, and why `.rgignore` is not written in `README.md` and `docs/search-tools.md`, and add a `CHANGELOG.md` entry.
 
+## 31. Worktree Base
+
+The user asked on 2026-11-03, through the `claudetto-05` session, why agent worktrees started from an old base, and for a guard when the cause lies in Claude Code.
+
+- [x] 31.1 Reproduce with no paid call and find who picks the base. Done on 2026-11-03: `just worktree-base agent` on a repo with `feat` one commit ahead of `origin/main` printed `agent start WORKTREE_HEAD=f79e1a7:A` against `feat tip f9132ae`, and `enter` made `.claude/worktrees/probe` at `origin/main`. With `worktree.baseRef` set to `"head"` the agent started at the tip. Claude Code `2.1.316` picks the base: it uses local `HEAD` only for `fromHead` or `worktree.baseRef: "head"`, and otherwise `origin/<default branch>`. claudetto registers no `WorktreeCreate` hook and sets no `worktree.baseRef`. The agents of this change that started from `544088f7`, the `origin/main` of the day, are `ab3428760409dd6bc` (its 27.3 work was redone) and `ac671c073adb16b38` (no work kept); `a9a7`, `abbb`, `ac6e`, and `af3c` were reset to the branch tip before their work.
+- [x] 31.2 Add the `worktree-base` block: on `classic.SubagentStart` and on `classic.PostToolUse` of `EnterWorktree`, compare the worktree's `HEAD` with the tip of the main checkout's branch in plain `git`, and when the tip is missing, add a context line with both commits and `git merge --ff-only <tip>` and show one `$.ui.log` line naming `worktree.baseRef`. Document it in `docs/worktrees.md`, and add a `CHANGELOG.md` entry. Done on 2026-11-03: the lab `plugins/claudetto/tests/worktree-base.test.ts` failed 2 of 6 cases before the block and passes after. `just worktree-base agent --plugin-dir plugins/claudetto` showed the line in the subagent's request, `enter` showed it after `EnterWorktree`, and `agent head` showed none.
+
 ## Workflow follow-up
 
 - Move each `ISSUES.md` entry to "Fixed" with the commit that fixes it, as its task closes.
