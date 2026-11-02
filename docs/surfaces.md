@@ -176,20 +176,20 @@ therefore holds the smaller of the two, so a text that passes it is shorter in e
 
 | Tool | Stock, smaller reading | Claudetto | Saved |
 | --- | --- | --- | --- |
-| `Agent` | 2,906 | 444 | 2,462 |
+| `Agent` | 2,906 | 449 | 2,457 |
 | `AskUserQuestion` | 2,083 | 829 | 1,254 |
 | `Bash` | 1,267 | 870 | 397 |
 | `Edit` | 360 | 243 | 117 |
-| `Read` | 790 | 283 | 507 |
+| `Read` | 790 | 291 | 499 |
 | `Skill` | 1,417 | 195 | 1,222 |
 | `ToolSearch` | 953 | 234 | 719 |
 | `Write` | 240 | 196 | 44 |
-| total | 10,016 | 3,294 | 6,722 |
+| total | 10,016 | 3,307 | 6,709 |
 
 The table holds the upfront tools of the current tree. The capture below is of the 2026-10-30 texts
 and has not been taken again for these lengths. `AskUserQuestion` is in the interactive request only,
 so the `-p` request carries the other seven. `DeferredToolPlaceholder`, 83 characters, has nothing to
-give. Two texts are not in this table because no first request carries them: `SendMessage`, 3,008
+give. Two texts are not in this table because no first request carries them: `SendMessage`, 2,976
 against a stock 4,259, which the harness defers, and `ListAgents`, 261 against a stock 777, which the
 hook moves behind `ToolSearch` by answering with `isDeferred`.
 
@@ -232,8 +232,8 @@ the archived tree lost a `Write` text that way, 261 characters against a stock 2
 `alwaysLoadedChars` counts a text only for a tool the harness sends upfront, because a deferred
 tool's text reaches no request until `ToolSearch` loads it, so counting it would overstate the
 always-loaded total. Eight of the ten shipped texts are for upfront tools, and the shipped
-always-loaded total is 3,294 characters that replace 10,016. `alwaysLoadedChars` leaves out the
-3,008 of `SendMessage` and the 261 of `ListAgents`, which reach a request only through `ToolSearch`.
+always-loaded total is 3,307 characters that replace 10,016. `alwaysLoadedChars` leaves out the
+2,976 of `SendMessage` and the 261 of `ListAgents`, which reach a request only through `ToolSearch`.
 
 No cost reading exists for these texts yet, which is the gate of the cost readings below: a shorter request is a saving
 only when billed cost per finished task does not rise, and a tool description is also behavior, so
@@ -509,7 +509,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,007 baseline less every cut in it has to equal the 27,886 the shipped arm records, so a cut that
+46,007 baseline less every cut in it has to equal the 27,960 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -519,16 +519,16 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | --- | --- | --- |
 | Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
 | Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
-| The `tool.describe` texts, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 6,637 | None exists yet. The `AskUserQuestion` text is only in the interactive request, which it shortens by 1,276 |
+| The `tool.describe` texts, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 6,624 | None exists yet. The `AskUserQuestion` text is only in the interactive request, which it shortens by 1,276 |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | −1,936 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | −2,010 | None exists yet. A placebo run would price the prompt text |
 | `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text |
 | The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −726 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text |
-| `output-styles/Concise.md` under the `outputStyle` key | −1,751 | None exists yet. A placebo run would price the prompt text |
+| `output-styles/Concise.md` under the `outputStyle` key | −1,738 | None exists yet. A placebo run would price the prompt text |
 | The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
 | The `sandbox` block | −7,228 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
 | The `handoff` tool in the deferred list and the MCP instructions block that names the plugin | −235 | None exists yet. The tool entry itself, 728 characters of JSON, is paid only in a session that fetches it |
@@ -536,15 +536,16 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `/claudetto:handoff` row in the command listing | −61 | None needed. It tells the model the command exists; its file is the request that has the model call the `handoff` tool |
 | The fall that no row above explains (`unexplained residual`) | 4,307 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and nothing sets it to close the gap |
 
-The rows sum to 18,121, which is 46,007 less the 27,886 the shipped arm records. A negative row is a piece
+The rows sum to 18,047, which is 46,007 less the 27,960 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Each read row is the
 shipped `-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path,
 less the same arm with the piece removed in a clone of the same path length (each character of the path
-adds one). The shipped arm reads 27,886, and `SHIPPED_TOTAL` is that reading. The rows other than `tool texts` and the
+adds one). The shipped arm reads 27,960, and `SHIPPED_TOTAL` is that reading. The rows other than `tool texts` and the
 residual were read before `ListAgents` moved behind `ToolSearch`, against the arm of 28,527 then. An earlier version of this
 paragraph set it 23 below the inventory reading for a "path artifact" that no reading shows; that is gone.
+The positive-form rewrites of the prompt texts moved the arm from 27,886 to 27,960: `main.md` +74 in `system`, the `Agent` and `Read` texts +13 in `tools`, and the `Concise` reminder −13 in `messages`. Each of `tool texts`, `main agent body`, and `output style` removes its whole text, so each row moved by its text's change and was not read again.
 Read: `deny list` (12,421, the `plain` baseline of 46,007 less the deny arm of 33,586), `deferred tool denies` (24, with the two rules out of `permissions.deny`), `tool texts` (6,637, the
 arm with the `tool-describe` block detached from the catalog reads 34,523), `built-in surface` (5,590, with
 `disableBundledSkills` and `enabledPlugins` out of the settings), `docs skill` (−71), `main agent body` (−1,936,

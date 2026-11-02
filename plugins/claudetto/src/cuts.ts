@@ -17,7 +17,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 27_886;
+export const SHIPPED_TOTAL = 27_960;
 
 /** The fall of the shipped arm that no row above accounts for; each row is read alone, so rows that interact leave a gap. */
 export const UNEXPLAINED_RESIDUAL = 4307;
@@ -33,7 +33,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// Names only leave the deferred list. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68.
 	{ name: "deferred tool denies", chars: 24 },
 	// Read: the shipped arm with the `tool-describe` block detached from the catalog, less the shipped arm.
-	{ name: "tool texts", chars: 6637 },
+	{ name: "tool texts", chars: 6624 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "docs skill", chars: -71 },
@@ -45,7 +45,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	},
 	{ name: "idleCompaction off", chars: 0 },
 	// The default body it replaces is the one the shipped settings already shortened.
-	{ name: "main agent body", chars: -1936 },
+	{ name: "main agent body", chars: -2010 },
 	// Takes the memory section out of the default body, so it reads only with `agents/main.md` moved aside.
 	{ name: "auto memory off", chars: 2138 },
 	// The four agents are delegation targets, so the harness lists them in the first message.
@@ -54,7 +54,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// A deferred tool adds its name to the tool list and an MCP instructions block to the same message.
 	{ name: "handoff tool listing", chars: -235 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
-	{ name: "output style", chars: -1751 },
+	{ name: "output style", chars: -1738 },
 	// Setup writes the suite, but only the classifier call carries the lists.
 	{ name: "autoMode lists", chars: 0 },
 	// Repays its text: sandbox auto-allow precedes the classifier, so a sandboxed `Bash` call pays none.

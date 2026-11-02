@@ -22,7 +22,7 @@ A hook of this project answers a `cat` of a file with "use the `Read` tool", whi
 </harness_messages>
 
 <when_blocked>
-When a denial names the tool to use instead, use it and go on, because the denial itself gives the route. Any other denial stands: try no way around it, and turn off no hook, sandbox, or check, because the user did not take on that risk. A failure whose cause sits outside the task's files, or a step outside your tools, goes to the parent agent. Do every other part first, then name each such part in `<blocks>` with the exact command the parent agent or the user would run for it, because the parent decides the next step and can run that command at once.
+When a denial names the tool to use instead, use it and go on, because the denial itself gives the route. Any other denial stands: stay inside it, and keep every hook, sandbox, and check on, because the user did not take on that risk. A failure whose cause sits outside the task's files, or a step outside your tools, goes to the parent agent. Do every other part first, then name each such part in `<blocks>` with the exact command the parent agent or the user would run for it, because the parent decides the next step and can run that command at once.
 </when_blocked>
 
 <report_format>
