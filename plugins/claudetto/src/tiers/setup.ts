@@ -7,6 +7,7 @@ import { initOpenSpec } from "./openspec.ts";
 import { readTier, unknownTierLine } from "./read.ts";
 import { tierReport } from "./report.ts";
 import { tierSnippet } from "./snippet.ts";
+import { askYes, offerStarter } from "./starter/cli.ts";
 
 const isRecord = (value: unknown): value is Json =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -14,6 +15,7 @@ const isRecord = (value: unknown): value is Json =>
 export interface SetupArgs {
 	readonly settings?: string;
 	readonly dryRun: boolean;
+	readonly yes?: true;
 }
 
 export interface SetupPlan {
@@ -24,11 +26,15 @@ export interface SetupPlan {
 export const parseArgs = (argv: readonly string[]): SetupArgs => {
 	let settings: string | undefined;
 	let dryRun = false;
+	let yes = false;
 	for (let at = 0; at < argv.length; at++) {
 		const arg = argv[at];
 		switch (arg) {
 			case "--dry-run":
 				dryRun = true;
+				break;
+			case "--yes":
+				yes = true;
 				break;
 			case "--settings":
 				settings = argv[++at];
@@ -40,7 +46,11 @@ export const parseArgs = (argv: readonly string[]): SetupArgs => {
 				throw new Error(`Unknown argument ${arg}`);
 		}
 	}
-	return { dryRun, ...(settings === undefined ? {} : { settings }) };
+	return {
+		dryRun,
+		...(yes ? { yes } : {}),
+		...(settings === undefined ? {} : { settings }),
+	};
 };
 
 export const planSetup = (
@@ -86,6 +96,13 @@ const main = async (): Promise<void> => {
 	}
 	const init = await initOpenSpec(process.cwd(), args.dryRun);
 	console.info(init.report);
+	console.info(
+		await offerStarter(
+			process.cwd(),
+			args,
+			args.yes === true ? async () => true : askYes,
+		),
+	);
 	if (init.failed) {
 		process.exitCode = 1;
 	}
