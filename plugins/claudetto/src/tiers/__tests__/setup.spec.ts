@@ -93,6 +93,13 @@ describe("planSetup", () => {
 
 		expect(plan.report).toContain("Skipped autoCompactWindow");
 	});
+
+	test("a dry run reports each key as one it would write, since it writes none", () => {
+		const plan = planSetup(MAX_20X, {}, PLATFORM, true);
+
+		expect(plan.report).toContain("Would write model = ");
+		expect(plan.report).not.toContain("Wrote ");
+	});
 });
 
 describe("keys the user already set", () => {

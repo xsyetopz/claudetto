@@ -16,12 +16,13 @@ const skippedLine = (skip: Skipped): string => {
 export const tierReport = (
 	tier: string | undefined,
 	applied: Applied,
+	verb: "Wrote" | "Would write" = "Wrote",
 ): string =>
 	[
 		...(tier === undefined ? [] : [`Tier: ${tier}.`]),
 		...applied.written.map(
-			(entry) => `Wrote ${entry.path} = ${shown(entry.value)}.`,
+			(entry) => `${verb} ${entry.path} = ${shown(entry.value)}.`,
 		),
 		...applied.skipped.map(skippedLine),
-		...(applied.written.length === 0 ? ["Wrote no key."] : []),
+		...(applied.written.length === 0 ? [`${verb} no key.`] : []),
 	].join("\n");
