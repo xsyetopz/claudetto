@@ -43,7 +43,15 @@ test("a startup runs `claudetto-hygiene` in the project with the session id and 
 
 	expect(runs).toHaveLength(1);
 	expect(runs[0]?.argv[0]).toEndWith("/bin/claudetto-hygiene");
-	expect(runs[0]?.argv.slice(1)).toEqual(["--session", "s1", "--days", "7"]);
+	// The lab applies the manifest defaults, so the probe limit of 60 rides along.
+	expect(runs[0]?.argv.slice(1)).toEqual([
+		"--session",
+		"s1",
+		"--days",
+		"7",
+		"--probe-minutes",
+		"60",
+	]);
 	expect(runs[0]?.cwd).toBe("/work");
 });
 
@@ -52,7 +60,12 @@ test("an unset `cleanupPeriodDays` passes no `--days`, so the CLI reads its own 
 
 	await $.classic.SessionStart({ source: "startup" });
 
-	expect(runs[0]?.argv.slice(1)).toEqual(["--session", "s1"]);
+	expect(runs[0]?.argv.slice(1)).toEqual([
+		"--session",
+		"s1",
+		"--probe-minutes",
+		"60",
+	]);
 });
 
 test("the start returns while the sweep still runs", async ($: Engine, on: On) => {
@@ -78,3 +91,44 @@ test("a resume runs no sweep, so one process sweeps once", async ($: Engine, on:
 
 	expect(runs).toEqual([]);
 });
+
+const startupRuns = async ($: Engine, on: On): Promise<Run[]> => {
+	const runs = lab(on, 7, never);
+	await $.classic.SessionStart({ source: "startup" });
+	return runs;
+};
+
+test(
+	"the retention options go to the process as flags, and 0 is passed as off",
+	{
+		options: {
+			handoffCleanupPeriodDays: 14,
+			sessionTempCleanupPeriodDays: 0,
+			probeCleanupPeriodMinutes: 5,
+		},
+	},
+	async ($: Engine, on: On) => {
+		const runs = await startupRuns($, on);
+
+		expect(runs[0]?.argv.slice(1)).toEqual([
+			"--session",
+			"s1",
+			"--days",
+			"7",
+			"--handoff-days",
+			"14",
+			"--session-days",
+			"0",
+			"--probe-minutes",
+			"5",
+		]);
+	},
+);
+
+test(
+	"with `hygieneEnabled` false a startup starts no process",
+	{ options: { hygieneEnabled: false } },
+	async ($: Engine, on: On) => {
+		expect(await startupRuns($, on)).toEqual([]);
+	},
+);
