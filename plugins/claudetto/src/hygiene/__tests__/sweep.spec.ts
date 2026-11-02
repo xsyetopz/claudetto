@@ -74,6 +74,20 @@ test("a project folder left empty by the sweep goes too", async () => {
 	expect(await exists(project)).toBe(false);
 });
 
+test("a saved output past a day goes, and a younger one and other files stay", async () => {
+	const dir = join(roots.project, ".claude/claudetto/output");
+	await mkdir(dir, { recursive: true });
+	const old = await file(join(dir, "output-toolu_1.txt"), 25 * 60 * 60_000);
+	const young = await file(join(dir, "output-toolu_2.txt"), 23 * 60 * 60_000);
+	const other = await file(join(dir, "notes.txt"), 90 * DAY_MS);
+
+	await sweep(roots);
+
+	expect(await exists(old)).toBe(false);
+	expect(await exists(young)).toBe(true);
+	expect(await exists(other)).toBe(true);
+});
+
 test("old handoffs go and the newest stays, even when it is old too", async () => {
 	const dir = join(roots.project, ".claude/claudetto/handoffs");
 	const oldest = await file(

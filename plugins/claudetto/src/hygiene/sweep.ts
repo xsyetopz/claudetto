@@ -1,5 +1,6 @@
 import { lstat, readdir, readFile, rm, rmdir } from "node:fs/promises";
 import { join } from "node:path";
+import { BOUND_OUTPUT_DIR } from "../blocks/bound-output/block.ts";
 import { HANDOFF_DIR } from "../blocks/handoff/handoff.ts";
 import { newestHandoff } from "../blocks/handoff/read-back.ts";
 import { type Refusal, refusal } from "./guard.ts";
@@ -10,6 +11,8 @@ const SESSION_ID =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const HANDOFF = /^handoff-.*\.md$/;
 const PROBE = /^fswatch-probe-/;
+const BOUND_OUTPUT = /^output-.*\.txt$/;
+const BOUND_OUTPUT_MINUTES = 1440;
 
 /** `temps` are the roots `claude-<uid>`, `sessions` is `~/.claude/sessions/`, and `current` is the running session's id. A limit of 0 turns its kind off. */
 export interface SweepRoots {
@@ -156,6 +159,17 @@ const handoffs = async (
 	return all.filter((entry) => entry.name !== read && entry.mtime < cutoff);
 };
 
+const boundOutputs = async (
+	project: string,
+	roots: SweepRoots,
+): Promise<Entry[]> => {
+	const cutoff = roots.now - BOUND_OUTPUT_MINUTES * MINUTE_MS;
+	return (await entriesOf(join(project, BOUND_OUTPUT_DIR))).filter(
+		(entry) =>
+			!entry.isDir && BOUND_OUTPUT.test(entry.name) && entry.mtime < cutoff,
+	);
+};
+
 /** Removes every entry of `STALE_PATHS` past its age, or with `dryRun` only lists them. A root that the guard refuses is skipped and reported. It never throws for a missing folder. */
 export const sweep = async (roots: SweepRoots): Promise<SweepReport> => {
 	const [projectRefusal, tempRefusals, live] = await Promise.all([
@@ -172,6 +186,10 @@ export const sweep = async (roots: SweepRoots): Promise<SweepReport> => {
 		["probe", probed.flat()],
 		["session-temp", folders.flatMap((found) => found.stale)],
 		["handoff", projectRefusal ? [] : await handoffs(roots.project, roots)],
+		[
+			"bound-output",
+			projectRefusal ? [] : await boundOutputs(roots.project, roots),
+		],
 	];
 	const removed = await Promise.all(
 		rows.flatMap(([row, entries]) =>

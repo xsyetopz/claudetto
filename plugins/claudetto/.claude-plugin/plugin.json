@@ -92,6 +92,13 @@
 			"description": "How many times the same call fails with the same error before an identical retry is refused. Left unset, it is 3.",
 			"min": 1
 		},
+		"maxTestOutputChars": {
+			"type": "number",
+			"title": "Test and build output in characters",
+			"description": "The most characters of a `Bash` test, build, lint, or check run that the model reads. A longer output keeps its head, its tail, and its failure lines, and the whole output goes to a file under `.claude/claudetto/output/`. `0` turns the cut off. Left unset, it is 8000, about 2000 tokens: room for the banner, the summary, and a few failures of a run.",
+			"default": 8000,
+			"min": 0
+		},
 		"hygieneEnabled": {
 			"type": "boolean",
 			"title": "Session hygiene",
