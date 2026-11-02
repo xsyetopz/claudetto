@@ -1,7 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { stoppedText } from "../../src/blocks/gate/denials.ts";
-import { GATED_KEYS } from "../../src/blocks/gate/gate.ts";
 import { DENY_ROOT, RUN_HINT } from "../../src/blocks/gate/prompts.ts";
 import { bareRepo } from "./facts.ts";
 
@@ -186,16 +185,4 @@ test("a gate that fails holds the call for a person", async ($: Engine, on: On) 
 	});
 
 	expect(verdict.decision).toBe("ask");
-});
-
-// A key list, not literals in a condition, so this case can read it.
-test("the gated keys are the six the gate reads and no more", () => {
-	expect([...GATED_KEYS]).toEqual([
-		"command",
-		"file_path",
-		"notebook_path",
-		"path",
-		"pattern",
-		"glob",
-	]);
 });

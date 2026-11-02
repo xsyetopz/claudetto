@@ -1,5 +1,9 @@
 import { isRecord } from "./gate.ts";
-import { DENY_GATED, DENY_REPEATED_CALL } from "./prompts.ts";
+import {
+	DENY_GATED,
+	DENY_REPEATED_CALL,
+	DENY_REPEATED_UNEXPLAINED,
+} from "./prompts.ts";
 
 export interface Denial {
 	readonly count: number;
@@ -34,12 +38,31 @@ export const withDenial = (
 export const stoppedText = (reason: string | undefined): string =>
 	DENY_GATED({ rule: reason ?? "" });
 
+const NO_REASON = /\(it gave no explanation\)|^\s*$/i;
+
+const commandOf = (tool: string, input: unknown): string => {
+	const command = isRecord(input) ? input["command"] : undefined;
+	return typeof command === "string"
+		? command
+		: `${tool} ${JSON.stringify(input)}`;
+};
+
 export const repeatedText = (
 	held: Denials | undefined,
 	tool: string,
 	input: unknown,
 ): string | undefined => {
 	const seen = held?.[signature(tool, input)];
+	if (
+		seen &&
+		seen.count >= DENIALS_PER_CALL_MAX &&
+		NO_REASON.test(seen.reason)
+	) {
+		return DENY_REPEATED_UNEXPLAINED({
+			count: seen.count,
+			command: commandOf(tool, input),
+		});
+	}
 	return seen && seen.count >= DENIALS_PER_CALL_MAX
 		? DENY_REPEATED_CALL({
 				count: seen.count,

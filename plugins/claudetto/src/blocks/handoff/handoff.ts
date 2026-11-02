@@ -153,9 +153,39 @@ const shorten = (text: string): string =>
 
 export const BUILT_BY_CODE = "Built by claudetto";
 
+export const HANDOFF_NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
+
+const baseName = (path: string): string =>
+	path.replaceAll("\\", "/").split("/").at(-1) ?? "";
+
 /** Only a writing tool counts: a read of the injected handoff is not a new one. */
-export const wroteOwn = (tail: Tail): boolean =>
-	tail.written.some((path) => path.includes(HANDOFF_DIR));
+export const ownHandoffs = (
+	tail: Tail,
+): { readonly valid: boolean; readonly misnamed: string | undefined } => {
+	const own = tail.written.filter((path) => path.includes(HANDOFF_DIR));
+	return {
+		valid: own.some((path) => HANDOFF_NAME.test(baseName(path))),
+		misnamed: own.findLast((path) => !HANDOFF_NAME.test(baseName(path))),
+	};
+};
+
+const quoted = (text: string): string[] =>
+	shorten(text)
+		.split("\n")
+		.map((line) => (line === "" ? ">" : `> ${line}`));
+
+const turnLines = (turns: readonly Turn[]): string[] =>
+	turns.flatMap((turn) => [
+		`**${turn.role === "user" ? "User" : "Claude"}:**`,
+		"",
+		...quoted(turn.text),
+		"",
+	]);
+
+const couldNotRead = (section: string): string[] => [
+	`Code could not read the ${section.toLowerCase()} from the transcript.`,
+	"",
+];
 
 /** Empty string for a transcript with no user turn, so the caller writes nothing. */
 export const handoffText = (tail: Tail, startedAt: string): string => {
@@ -163,33 +193,16 @@ export const handoffText = (tail: Tail, startedAt: string): string => {
 	if (!turns.some((turn) => turn.role === "user")) {
 		return "";
 	}
-	const lines = [
-		"# Handoff",
-		"",
+	const paths = tail.paths.slice(-PATHS).map((path) => `- \`${path}\``);
+	const filled: Readonly<Record<string, string[]>> = {
+		"Current state": turnLines(turns),
+		"Key files and symbols":
+			paths.length > 0 ? [...paths, ""] : couldNotRead("Key files and symbols"),
+	};
+	return layout(
 		`${BUILT_BY_CODE} from the transcript at ${startedAt}, with no model call.`,
-		"It carries what code can read: the recent turns and the files the session touched.",
-		"The decisions of the session are not here, because code cannot find them.",
-		"",
-		"## Recent Turns",
-		"",
-	];
-	for (const turn of turns) {
-		lines.push(
-			`### ${turn.role === "user" ? "User" : "Claude"}`,
-			"",
-			shorten(turn.text),
-			"",
-		);
-	}
-	const paths = tail.paths.slice(-PATHS);
-	if (paths.length > 0) {
-		lines.push("## Files Touched", "");
-		for (const path of paths) {
-			lines.push(`- \`${path}\``);
-		}
-		lines.push("");
-	}
-	return lines.join("\n");
+		(section) => filled[section] ?? couldNotRead(section),
+	);
 };
 
 const FRACTION = /\..*$/;
@@ -212,13 +225,45 @@ export const HANDOFF_SECTIONS = [
 	"Open questions",
 ];
 
+export const HANDOFF_NAME_PATTERN = "handoff-YYYY-MM-DDTHH-MM-SS.md";
+
+export const HANDOFF_TITLE = "# Handoff";
+
+export const layout = (
+	source: string,
+	body: (section: string) => readonly string[],
+): string =>
+	[
+		HANDOFF_TITLE,
+		"",
+		source,
+		"",
+		...HANDOFF_SECTIONS.flatMap((section) => [
+			`## ${section}`,
+			"",
+			...body(section),
+		]),
+	]
+		.join("\n")
+		.trimEnd()
+		.concat("\n");
+
+/** The tool name Claude Code shows the model for the handoff tool. */
+export const HANDOFF_TOOL = "handoff";
+
+export const HANDOFF_CALL = `mcp__claudetto__${HANDOFF_TOOL}`;
+
 export const CONTEXT_BLOCK = "context_management";
+
+/** The empty layout is shown without its blank lines, because the reminder is sent on every session. */
+const BLANK_LINES = /\n\n/g;
 
 /** The redaction line is here because `redact` does not cover the file Claude writes. */
 export const contextManagementText = (): string =>
-	`When the conversation grows long, write a handoff file under \`${HANDOFF_DIR}\` for the next context window, with these headings:
-${HANDOFF_SECTIONS.map((section) => `\`${section}\``).join(", ")}
-Cite plans, specs, issues, commits, and diffs by path or URL, not by pasting them.
-Write \`[REDACTED]\` for a key or a token.
-Record decisions and their reasons, which code cannot read off a transcript.
-Continue each task to its end.`;
+	`When the conversation grows long, finish the task in hand, then call \`${HANDOFF_CALL}\`, which writes this layout:
+
+\`\`\`markdown
+${layout("Written by Claude at <UTC time>.", () => []).replace(BLANK_LINES, "\n")}\`\`\`
+
+It saves \`${HANDOFF_DIR}/${HANDOFF_NAME_PATTERN}\`, clears the idle session, and starts the next turn from it and your next prompt. Without the tool, a reply that starts with \`${HANDOFF_TITLE}\` is saved the same way.
+Cite plans, specs, issues, commits, and diffs by path or URL, not pasted. Write \`[REDACTED]\` for a key or a token.`;

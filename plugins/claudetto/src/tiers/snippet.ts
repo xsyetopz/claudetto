@@ -10,7 +10,7 @@ import { pctFor } from "../threshold.ts";
 import { AGENT_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES, ruleFaults } from "./allow.ts";
 import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
-import { envFlags, SUBAGENT_MODEL_ENV } from "./env.ts";
+import { envFlags, MODEL_PINS, SUBAGENT_MODEL_ENV } from "./env.ts";
 import { statusLineSnippet } from "./status-line.ts";
 import { HAIKU_MODEL, type TierRow } from "./tiers.ts";
 
@@ -123,6 +123,7 @@ export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 		...(row.subagentModel === undefined
 			? {}
 			: { [SUBAGENT_MODEL_ENV]: row.subagentModel }),
+		...(row.mainModel === undefined ? {} : MODEL_PINS),
 	},
 	autoCompactWindow: row.contextCap,
 	fallbackModel: [...FALLBACK_MODELS],

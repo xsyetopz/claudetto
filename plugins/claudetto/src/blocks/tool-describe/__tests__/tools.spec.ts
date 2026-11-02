@@ -107,10 +107,9 @@ describe("the stock readings", () => {
 		}
 	});
 
-	test("no reading is zero or negative", () => {
+	test("`stockOf` reads above zero for each stock tool", () => {
 		for (const entry of STOCK) {
-			expect(entry.capture).toBeGreaterThan(0);
-			expect(entry.docs ?? 1).toBeGreaterThan(0);
+			expect(stockOf(entry.name)).toBeGreaterThan(0);
 		}
 	});
 });

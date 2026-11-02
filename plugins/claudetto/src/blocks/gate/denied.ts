@@ -54,3 +54,11 @@ export const onDenied: HookFor<"classic.PermissionDenied"> = async (
 		return answer;
 	}
 };
+
+// A new message from the person can carry the consent the earlier denials lacked.
+export const onSubmitDenials: HookFor<"prompt.submit"> = async ($, e, next) => {
+	if (e.isMeta !== true) {
+		await $.state.set(denialRef, {}).catch(() => undefined);
+	}
+	return next(e);
+};

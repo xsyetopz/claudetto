@@ -24,7 +24,7 @@ Until a probe result is accepted, the system SHALL use the built-in compaction, 
 #### Scenario: The Code Path Is Offered Again
 
 - **WHEN** a verdict line under `docs/` no longer says "No winner"
-- **THEN** `tests/repo/compaction-default.test.ts` fails, which is the signal to build the code path and declare an option for it; until then `src/compaction/hook.ts` answers every compaction with `next(e)`
+- **THEN** that measured winner is the signal to build the code path and declare an option for it; until then `src/compaction/hook.ts` answers every compaction with `next(e)`
 
 #### Scenario: A Cost Claim Arrives from Outside
 

@@ -23,7 +23,6 @@ Their numbers stay in the git history.
 | [Auto Mode Critique](auto-mode-critique.md) | What `claude auto-mode critique` answers about the rules of this project | 2026-10-27 | Not stated |
 | [Compaction Boundaries](compaction/boundaries.md) | Where this login's own sessions compacted | 2026-10-28 | `2.1.312` |
 | [Compaction Threshold](compaction/threshold.md) | This login's work replayed against other compaction thresholds | 2026-10-28 to 2026-10-30 | `2.1.312` |
-| [Reply-Opening Signal](reply-openings.md) | Whether a structural check can read the opening of a reply | 2026-10-28 | Not stated |
 | [Grader Blindness](grader-blindness.md) | That a grader reading text scores the claim and not the work | 2026-10-29 | Not applicable |
 | [Redaction](redaction.md) | The secret redaction of the handoff, read from the bundle | 2026-10-29 | `2.1.312` |
 

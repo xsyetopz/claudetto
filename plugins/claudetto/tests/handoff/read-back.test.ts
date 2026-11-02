@@ -79,10 +79,10 @@ const lab = (
 	return { sent, lines, settle: () => clock.settle() };
 };
 
-test("a session after a clear takes the newest handoff in once", async ($: Engine, on: On) => {
+test("a resumed session takes the newest handoff in once", async ($: Engine, on: On) => {
 	const { sent, settle } = lab(on, { [OLDER]: BUILT, [NEWER]: WRITTEN });
 
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent).toHaveLength(1);
@@ -93,7 +93,7 @@ test("a session after a clear takes the newest handoff in once", async ($: Engin
 test("the injected text opens with the source of the file", async ($: Engine, on: On) => {
 	const { sent, settle } = lab(on, { [OLDER]: BUILT });
 
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent[0]?.startsWith(sourceLine(BUILT))).toBe(true);
@@ -102,8 +102,8 @@ test("the injected text opens with the source of the file", async ($: Engine, on
 test("a second start of the same session takes nothing in again", async ($: Engine, on: On) => {
 	const { sent, settle } = lab(on, { [NEWER]: WRITTEN });
 
-	await $.classic.SessionStart({ source: "clear" });
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent).toHaveLength(1);
@@ -116,7 +116,7 @@ test("a file newer than the one taken is taken in as well", async ($: Engine, on
 	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 	files[NEWER] = WRITTEN;
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent).toHaveLength(2);
@@ -140,7 +140,7 @@ test("a handoff past the stale limit is named and not taken in", async ($: Engin
 		STALE_MS + 2 * DAY_MS,
 	);
 
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent).toEqual([]);
@@ -151,7 +151,7 @@ test("a handoff past the stale limit is named and not taken in", async ($: Engin
 test("a handoff inside the stale limit is still taken in", async ($: Engine, on: On) => {
 	const { sent, settle } = lab(on, { [NEWER]: WRITTEN }, STALE_MS - DAY_MS);
 
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent).toHaveLength(1);
@@ -160,8 +160,8 @@ test("a handoff inside the stale limit is still taken in", async ($: Engine, on:
 test("a stale handoff is named once and not at every start", async ($: Engine, on: On) => {
 	const { lines, settle } = lab(on, { [NEWER]: WRITTEN }, STALE_MS + DAY_MS);
 
-	await $.classic.SessionStart({ source: "clear" });
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(lines).toHaveLength(1);
@@ -172,7 +172,7 @@ test("a project with no handoff folder yet takes nothing in and shows no error",
 	quiet(on, lines);
 	on("fs.exists", () => ({ value: false }));
 
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 
 	expect(lines).toEqual([]);
 });
@@ -180,7 +180,7 @@ test("a project with no handoff folder yet takes nothing in and shows no error",
 test("a submit the session refuses tells the user in one line", async ($: Engine, on: On) => {
 	const { sent, lines, settle } = lab(on, { [NEWER]: WRITTEN }, 0, true);
 
-	await $.classic.SessionStart({ source: "clear" });
+	await $.classic.SessionStart({ source: "resume" });
 	await settle();
 
 	expect(sent).toEqual([]);

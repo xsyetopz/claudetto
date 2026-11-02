@@ -28,7 +28,6 @@ const LITERAL_DOC =
 	/\$\(\s*cat\s+<<-?\s*(['"])(\w+)\1[ \t]*\n(?:(?!\t*\2\n)[^\n]*\n)*\t*\2\n\s*\)/g;
 const SUBSTITUTION_START = /\$\(|`/;
 const DYNAMIC_CHAR = /[$`]/;
-const INPUT_TARGET = /<\s*(['"]?)([^\s;&|<>'"]+)\1/g;
 
 const nextDir = (
 	rest: string[],
@@ -149,11 +148,10 @@ export const bashFindings = (
 			out.push(found);
 		}
 	}
-	const inputs = command.matchAll(INPUT_TARGET);
 	const secret = [
-		...[...inputs]
-			.map((m) => m[2] ?? "")
-			.filter((w) => [f.cwd, dir ?? f.cwd].some((d) => secretWord(d, w, f))),
+		...parsed.inputs.filter((w) =>
+			[f.cwd, dir ?? f.cwd].some((d) => secretWord(d, w, f)),
+		),
 		...parsed.code.map(codeSecret).filter((w) => w !== undefined),
 	][0];
 	return secret === undefined ? out : [...out, denySecret(secret)];

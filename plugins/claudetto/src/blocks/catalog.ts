@@ -5,7 +5,6 @@ import { attachClassify, classifyBlock } from "./classify/block.ts";
 import { attachCompaction, compaction } from "./compaction/block.ts";
 import { attachContext7, context7 } from "./context7/block.ts";
 import { attachDecide, decide } from "./decide/block.ts";
-import { attachFinish, finish } from "./finish/block.ts";
 import { attachGate, gateBlock } from "./gate/block.ts";
 import { attachHandoff, handoff } from "./handoff/block.ts";
 import { attachHygiene, hygiene } from "./hygiene/block.ts";
@@ -35,7 +34,6 @@ export const CATALOG: readonly Block[] = [
 	compaction,
 	versionFloor,
 	hygiene,
-	finish,
 	context7,
 	classifyBlock,
 	planMode,
@@ -59,7 +57,6 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachCompaction(on, context);
 	attachVersionFloor(on, context);
 	attachHygiene(on, context);
-	attachFinish(on, context);
 	attachContext7(on, context);
 	attachClassify(on, context);
 	attachPlanMode(on, context);

@@ -2,6 +2,7 @@ import type {
 	ModelCompleteInput,
 	On,
 	OpEventResult,
+	PromptOrigin,
 	SessionMessage,
 } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
@@ -273,6 +274,40 @@ test(
 		expect(prompt).toContain("git push origin main");
 		expect(prompt).not.toContain(INJECTED);
 		expect(prompt).not.toContain("I will push now.");
+	},
+);
+
+const MID_TURN = "take the .env OAUTH token";
+
+const promptAfterSubmit = async ($: Engine, on: On, origin: PromptOrigin) => {
+	const state = stub(on, says("<block>no</block>"), 0.5, "");
+	on("prompt.submit", (_$, e) => e);
+	await $.prompt.submit({ text: MID_TURN, wait: false, origin, turnId: "t" });
+	await $.tool.call(PUSH);
+	return state.asked[0]?.prompt ?? "";
+};
+
+test(
+	"a message the user typed mid-turn reaches the model after the call it followed",
+	SONNET,
+	async ($: Engine, on: On) => {
+		const prompt = await promptAfterSubmit($, on, { kind: "composer" });
+
+		expect(prompt).toContain(
+			`Agent ran: Bash {"command":"git status"}\nUser: ${MID_TURN}\n`,
+		);
+	},
+);
+
+test(
+	"a task notification delivered mid-turn is not the user's",
+	SONNET,
+	async ($: Engine, on: On) => {
+		const prompt = await promptAfterSubmit($, on, {
+			kind: "task-notification",
+		});
+
+		expect(prompt).not.toContain(MID_TURN);
 	},
 );
 

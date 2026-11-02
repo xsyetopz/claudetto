@@ -41,6 +41,7 @@ export const parse = (text: unknown, git?: GitFacts): ParseResult => {
 	const result: ParseResult = {
 		commands: [],
 		redirects: [],
+		inputs: [],
 		code: [],
 		background: [],
 		opaque: new Set(),
@@ -49,7 +50,7 @@ export const parse = (text: unknown, git?: GitFacts): ParseResult => {
 		unknownVerb: false,
 		gitProgram: false,
 	};
-	const { commands: out, redirects, code, background } = result;
+	const { commands: out, redirects, inputs, code, background } = result;
 	const first = String(text ?? "");
 	const queue: Queued[] = [
 		{ text: first, body: false, lone: oneCommand(first) },
@@ -69,6 +70,9 @@ export const parse = (text: unknown, git?: GitFacts): ParseResult => {
 	const redirect = (op: string, target: string, line: string[]) => {
 		if (op.startsWith(">") && !FD_TARGET.test(target)) {
 			redirects.push({ op, target });
+		}
+		if ((op === "<" || op === "<>") && !FD_TARGET.test(target)) {
+			inputs.push(target);
 		}
 		if (op !== "<<<") {
 			return;

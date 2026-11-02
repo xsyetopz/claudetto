@@ -92,11 +92,11 @@ describe("the switch of the cheap summarizer", () => {
 });
 
 describe("the request of a row that has it on", () => {
-	test("it names `claude-haiku-5-5`, effort `high`, and a cap", () => {
+	test("it names `claude-haiku-5-5`, effort `medium`, and a cap", () => {
 		const request = summaryRequest(COMPACT, true);
 
 		expect(request?.model).toBe("claude-haiku-5-5");
-		expect(request?.effort).toBe("high");
+		expect(request?.effort).toBe("medium");
 		expect(request?.maxTokens).toBe(SUMMARY_MAX_TOKENS);
 	});
 
@@ -175,7 +175,7 @@ describe("the answer to a compaction", () => {
 
 		expect(out).toBeUndefined();
 		expect(seen.lines).toEqual([
-			`Cheap summary reached its cap of ${SUMMARY_MAX_TOKENS + 2048} output tokens, thinking included, so it is cut and the engine compacts`,
+			`Cheap summary reached its cap of ${SUMMARY_MAX_TOKENS + 2048} output tokens, thinking included, with 38 characters of text, so it is cut and the engine compacts`,
 		]);
 	});
 

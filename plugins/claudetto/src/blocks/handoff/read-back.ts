@@ -1,6 +1,4 @@
-import { BUILT_BY_CODE, HANDOFF_DIR } from "./handoff.ts";
-
-const HANDOFF_NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
+import { BUILT_BY_CODE, HANDOFF_DIR, HANDOFF_NAME } from "./handoff.ts";
 
 /** The stamp is fixed-width UTC, so names sort by time and the last is the newest. */
 export const newestHandoff = (names: readonly string[]): string | undefined =>
@@ -9,10 +7,19 @@ export const newestHandoff = (names: readonly string[]): string | undefined =>
 		.sort()
 		.at(-1);
 
+const READ_BACK_START = "The handoff below was ";
+
 export const sourceLine = (text: string): string =>
 	text.includes(BUILT_BY_CODE)
-		? "The handoff below was built by code from the transcript, so it holds no decisions and no reasons."
-		: "The handoff below was written by Claude in the session that ended, so it holds its decisions.";
+		? `${READ_BACK_START}built by code from the transcript, so it holds no decisions and no reasons.`
+		: `${READ_BACK_START}written by Claude in the session that ended, so it holds its decisions.`;
+
+/** A prompt that opens with the source line is the injected handoff, not something the user typed. */
+export const isReadBack = (text: string): boolean =>
+	text.startsWith(READ_BACK_START);
+
+/** Keyed by project root: the store is one file for the whole login and stamps can collide. */
+export const readBackKey = (root: string): string => `handoff.readback:${root}`;
 
 /** The path goes in so the session can read the whole file when the text was cut. */
 export const readBackText = (name: string, text: string): string =>

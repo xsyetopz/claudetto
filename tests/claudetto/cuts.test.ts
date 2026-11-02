@@ -22,15 +22,17 @@ describe("the inventory accounts for the whole fall", () => {
 			"deny list",
 			"tool texts",
 			"built-in surface",
-			"dedupe skill",
 			"docs skill",
 			"main agent body",
 			"auto memory off",
 			"agent listing",
 			"handoff context",
+			"handoff tool listing",
 			"output style",
 			"sandbox block",
 			"setup command listing",
+			"handoff command listing",
+			"unexplained residual",
 		]);
 		expect(shippedChars(moving)).toBe(BASELINE_TOTAL - SHIPPED_TOTAL);
 	});
@@ -55,17 +57,19 @@ describe("a cut counts as a saving only with a bill reading", () => {
 			"deny list",
 			"tool texts",
 			"built-in surface",
-			"dedupe skill",
 			"docs skill",
 			"idleCompaction off",
 			"main agent body",
 			"auto memory off",
 			"agent listing",
 			"handoff context",
+			"handoff tool listing",
 			"output style",
 			"autoMode lists",
 			"sandbox block",
 			"setup command listing",
+			"handoff command listing",
+			"unexplained residual",
 		]);
 	});
 

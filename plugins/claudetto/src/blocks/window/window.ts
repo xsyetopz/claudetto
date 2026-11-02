@@ -40,6 +40,8 @@ export interface WindowRow {
 	readonly points?: number;
 	readonly sevenPoints?: number;
 	readonly usd: number;
+	/** The cache TTL of the main conversation: `5m`, `1h`, or `auto` when nothing sets it. */
+	readonly ttl?: string;
 	readonly afterCompaction?: true;
 }
 
@@ -89,7 +91,7 @@ const moved = (
 export const measureRow = (
 	input: SessionMeasureInput,
 	last: Reading | undefined,
-	tag: { source: Source; task: string; afterCompaction?: true },
+	tag: { source: Source; task: string; afterCompaction?: true; ttl?: string },
 	at: number,
 ): { row?: WindowRow; reading?: Reading } => {
 	const five = input.rateLimits.find((limit) => limit.kind === FIVE_HOUR);
@@ -213,17 +215,27 @@ export const inputOf = (row: TurnRow): number =>
 export const keepTurns = (rows: readonly TurnRow[], row: TurnRow): TurnRow[] =>
 	kept(rows, row);
 
+export const isTokenRow = (
+	value: unknown,
+	label: string,
+	counts: readonly string[],
+): boolean => {
+	if (typeof value !== "object" || value === null) {
+		return false;
+	}
+	const row: Readonly<Record<string, unknown>> = { ...value };
+	return (
+		typeof row[label] === "string" &&
+		counts.every((key) => typeof row[key] === "number")
+	);
+};
+
 const isTurn = (value: unknown): value is TurnRow =>
-	typeof value === "object" &&
-	value !== null &&
-	"task" in value &&
-	typeof value.task === "string" &&
-	"inputTokens" in value &&
-	typeof value.inputTokens === "number" &&
-	"cacheReadTokens" in value &&
-	typeof value.cacheReadTokens === "number" &&
-	"cacheWriteTokens" in value &&
-	typeof value.cacheWriteTokens === "number";
+	isTokenRow(value, "task", [
+		"inputTokens",
+		"cacheReadTokens",
+		"cacheWriteTokens",
+	]);
 
 export const turnsOf = (stored: unknown): TurnRow[] =>
 	Array.isArray(stored) ? stored.filter(isTurn) : [];

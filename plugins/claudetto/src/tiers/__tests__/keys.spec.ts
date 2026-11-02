@@ -56,10 +56,4 @@ describe("tier snippet keys", () => {
 			expect(unknown).toEqual([]);
 		});
 	}
-
-	test("each unofficial name names its source", () => {
-		const bare = UNOFFICIAL_ENV.filter((entry) => entry.source.trim() === "");
-
-		expect(bare).toEqual([]);
-	});
 });

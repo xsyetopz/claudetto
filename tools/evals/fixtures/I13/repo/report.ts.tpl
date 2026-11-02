@@ -3,6 +3,7 @@ export interface Row {
 	readonly count: number;
 }
 
+/** `--json` prints the whole `Summary`, `total` included, because the dashboard reads `total`. */
 export interface Summary {
 	readonly rows: readonly Row[];
 	readonly total: number;

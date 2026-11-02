@@ -38,10 +38,16 @@
 			"default": "off",
 			"options": ["off", "on"]
 		},
+		"handoverTokens": {
+			"type": "number",
+			"title": "Handover Size in Tokens",
+			"description": "The input tokens of the last response from which a turn's end hands over: claudetto asks a fork of the conversation for a handoff, compacts the conversation to it, and sends the next prompt. Left unset, it is 400000, or half the context window when that is smaller. Claude Code's own compaction stays for a turn that outgrows the window before it ends.",
+			"min": 1
+		},
 		"classifier": {
 			"type": "string",
 			"title": "Own Tool-Call Classifier",
-			"description": "Use `haiku` or `sonnet` to have claudetto judge each tool call that reads or changes more than the read-only tools, in place of the auto mode classifier of Claude Code. It asks Jev first when `TYPESAFE_API_KEY` is set, then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, and every call is paid. A failed or unclear check denies the call. It is `off` because no measured rows price it or compare it with the built-in classifier yet.",
+			"description": "Use `haiku` or `sonnet` to have claudetto judge each tool call that reads or changes more than the read-only tools, in place of the auto mode classifier of Claude Code. It asks Jev first when `TYPESAFE_API_KEY` is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, both at `medium`, and every call is paid. A failed or unclear check denies the call. Its verdict settles the call, so the auto mode classifier of Claude Code does not run on it, and its `allow` skips the permission prompt in every permission mode, because the hook cannot read the mode. It is `off`, which leaves the judging to the auto mode classifier.",
 			"default": "off",
 			"options": ["off", "haiku", "sonnet"]
 		},

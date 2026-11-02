@@ -5,21 +5,31 @@ import type {
 	PreToolUseResult,
 	ToolCallEnvelope,
 } from "claude-code";
+import { PERSON_PROMPT } from "../../shared/person.ts";
 import type { Block, BlockContext } from "../block.ts";
 import { jevBody, postJev } from "../decide/api.ts";
 import { keyOf } from "../decide/options.ts";
+import {
+	CLASSIFY_KEY,
+	classifyOf,
+	classifyRowOf,
+	keepClassify,
+} from "../window/classify-spend.ts";
 import { markJudged } from "./judged.ts";
+import { onMidTurnPrompt } from "./mid-turn.ts";
+import { transcriptOf } from "./transcript.ts";
 import {
 	actionOf,
 	denied,
 	jevQuestion,
 	jevVerdict,
 	READ_ONLY_TOOLS,
-	transcriptOf,
 	type Variant,
 	verdictOf,
 	verdictRequest,
 } from "./verdict.ts";
+
+const promptsRef = { plugin: "claudetto", key: "prompts" } as const;
 
 export const variantOf = (options: PluginOptions): Variant | undefined => {
 	const value = options["classifier"];
@@ -57,15 +67,26 @@ export const classify = async (
 	options: PluginOptions,
 ): Promise<PreToolUseResult> => {
 	try {
-		const transcript = transcriptOf(await $.session.messages());
+		const transcript = transcriptOf(
+			await $.session.messages(),
+			(await $.state.get(promptsRef).catch(() => undefined))?.value,
+		);
 		const action = actionOf(e);
 		const jev = await askJev($, options, transcript, action);
 		if (jev !== undefined) {
 			return jev;
 		}
-		return verdictOf(
-			await $.model.complete(verdictRequest(variant, transcript, action)),
-		);
+		const request = verdictRequest(variant, transcript, action);
+		const reply = await $.model.complete(request);
+		// A failed write must not change the verdict, so it is logged and dropped.
+		try {
+			const made = classifyRowOf(request.model, reply, await $.clock.now());
+			const rows = classifyOf(await $.store.get(CLASSIFY_KEY));
+			await $.store.set(CLASSIFY_KEY, keepClassify(rows, made));
+		} catch (error) {
+			$.ui.log(`Failed to record the classify tokens (${error})`);
+		}
+		return verdictOf(reply);
 	} catch (error) {
 		return denied(`the check failed (${error})`);
 	}
@@ -74,7 +95,7 @@ export const classify = async (
 export const classifyBlock: Block = {
 	id: "classify",
 	kind: "policy",
-	routes: ["classic.PreToolUse"],
+	routes: ["classic.PreToolUse", "prompt.submit"],
 	needs: "2.1.314",
 };
 
@@ -90,4 +111,5 @@ export const attachClassify = (on: On, context: BlockContext): void => {
 		}
 		return result;
 	});
+	on("prompt.submit", PERSON_PROMPT, onMidTurnPrompt);
 };

@@ -8,6 +8,7 @@ import {
 	type CommandRunner,
 	spawnCommand,
 } from "../../claudekit/session/command.ts";
+import { EVAL_MODEL } from "../limits.ts";
 import {
 	classifierMain,
 	type Patch,
@@ -130,7 +131,7 @@ export const main = async (
 		fixturesRoot,
 		pluginDir: resolve(io.root ?? cwd(), PLUGIN_DIR),
 		...(io.tempPrefix === undefined ? {} : { tempPrefix: io.tempPrefix }),
-		...(options.model === undefined ? {} : { model: options.model }),
+		model: options.model ?? EVAL_MODEL,
 		...(options.maxBudgetUsd === undefined
 			? {}
 			: { maxBudgetUsd: options.maxBudgetUsd }),

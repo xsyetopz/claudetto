@@ -1,3 +1,4 @@
+import { placedSecret } from "./findings/argv.ts";
 import { bashFindings, parseWithGit } from "./findings/bash.ts";
 import { fileFindings } from "./findings/file.ts";
 import { textOf, verdict } from "./findings/finding.ts";
@@ -77,15 +78,25 @@ export const gate = async (
 ): Promise<Verdict> => {
 	const fields = isRecord(input) ? input : {};
 	const command = textOf(fields, "command");
-	const findings =
-		tool === "Bash" || tool === "Monitor"
-			? bashFindings(
-					command,
+	const shell = tool === "Bash" || tool === "Monitor";
+	const placed = shell ? placedSecret(command, f) : undefined;
+	if (placed?.kind === "argument") {
+		return verdict("deny", T.DENY_SECRET_ARGV({ word: placed.word }));
+	}
+	const read = placed?.rest ?? command;
+	const findings = shell
+		? [
+				...bashFindings(
+					read,
 					f,
 					agentId !== undefined,
-					await parseWithGit(command, f),
-				)
-			: fileFindings(tool, fields, f);
+					await parseWithGit(read, f),
+				),
+				...(placed
+					? [verdict("ask", T.ASK_SECRET_ENV({ word: placed.word }))]
+					: []),
+			]
+		: fileFindings(tool, fields, f);
 	const verdicts = findings.filter((x) => typeof x !== "function");
 	const denied = verdicts.find((v) => v.decision === "deny");
 	if (denied) {

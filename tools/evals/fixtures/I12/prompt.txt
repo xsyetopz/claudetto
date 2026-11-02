@@ -1,0 +1,1 @@
+Read `a.ts`, `b.ts`, and `c.ts`, and say which one exports `parse`.

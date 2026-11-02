@@ -1,6 +1,6 @@
 // Both commands that write the user settings live in one file, because the hook loader takes `$` into a helper only within the file that defines it.
 
-import type { EngineInterface, HookFor, MatchedHook } from "claude-code";
+import type { EngineInterface, HookFor } from "claude-code";
 import { settingsFileFor, settingsOf } from "../settings-file.ts";
 import { refusedPaths } from "../tiers/keys.ts";
 import { applyTier, type Json, settingsText } from "../tiers/merge.ts";
@@ -9,15 +9,16 @@ import { tierSnippet } from "../tiers/snippet.ts";
 import { statusLineSnippet } from "../tiers/status-line.ts";
 import { SNIPPET_ROW } from "../tiers/tiers.ts";
 import { differencesOf, setupWrite } from "./setup-command/diff.ts";
+import { askKept } from "./setup-command/questions.ts";
 import {
-	diffReply,
-	keptIds,
+	CODE_RULES,
+	rulesDifference,
+	userRulesFile,
+} from "./setup-command/rules.ts";
+import {
+	nothingToAsk,
 	platformNamed,
 	SETUP_COMMAND,
-	SETUP_DESCRIPTION,
-	SETUP_INPUT_SCHEMA,
-	type SETUP_MATCH,
-	SETUP_TOOL,
 	setupReport,
 	UNAME_MS,
 } from "./setup-command/setup.ts";
@@ -72,51 +73,92 @@ const writeFailure = async (
 	}
 };
 
-const declareSetup = ($: EngineInterface): Promise<unknown> =>
-	$.tool.register({
-		name: SETUP_TOOL,
-		description: SETUP_DESCRIPTION,
-		inputSchema: SETUP_INPUT_SCHEMA,
-	});
-
-/** `$.tool.register` rejects until the session binds, so a refusal before `next` is retried after. */
-export const onSetupStart: HookFor<"session.start"> = async ($, e, next) => {
-	let early = true;
+const textOf = async (
+	$: EngineInterface,
+	path: string,
+): Promise<string | undefined> => {
 	try {
-		await declareSetup($);
+		return (await $.fs.exists(path)) ? await $.fs.read(path) : undefined;
 	} catch {
-		early = false;
+		return undefined;
 	}
-	const started = await next(e);
-	if (!early) {
-		await declareSetup($).catch(() => undefined);
+};
+
+interface RulesFiles {
+	readonly path: string;
+	readonly held: string | undefined;
+	readonly shipped: string | undefined;
+}
+
+const rulesFiles = async (
+	$: EngineInterface,
+	settingsFile: string,
+): Promise<RulesFiles> => {
+	const path = userRulesFile(settingsFile);
+	return {
+		path,
+		held: await textOf($, path),
+		shipped: await textOf($, `${$.plugin.root}/${CODE_RULES}`),
+	};
+};
+
+const rulesReport = async (
+	$: EngineInterface,
+	{ path, held, shipped }: RulesFiles,
+): Promise<string> => {
+	if (shipped === undefined || held === shipped) {
+		return `${path} already holds the shipped code rules. It was not written.`;
 	}
-	return started;
+	try {
+		await $.fs.write(path, shipped);
+		return `Wrote ${path}. A new session loads it after its first file read.`;
+	} catch (error) {
+		return `Could not write ${path} (${String(error)}).`;
+	}
 };
 
 /** The merge stays in code, so the model never edits the settings file by hand. */
-export const onSetupTool: MatchedHook<"tool.call", typeof SETUP_MATCH> = async (
-	$,
-	e,
-	_next,
-) => {
+export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
 	const { file, held } = await userSettings($);
 	if (held === undefined) {
 		return {
-			result: `${file} could not be read as a JSON object, so nothing was written. Tell the user to fix the file and run /${SETUP_COMMAND} again.`,
+			text: `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP_COMMAND} again.`,
 		};
 	}
 	const snippet = tierSnippet(SNIPPET_ROW, platformNamed(await unameOf($)));
-	const ids = keptIds(e);
-	if (ids === undefined) {
-		return { result: diffReply(file, differencesOf(held, snippet)) };
+	const rules = await rulesFiles($, file);
+	const offer = rulesDifference(rules.shipped, rules.held);
+	const differences = [
+		...differencesOf(held, snippet),
+		...(offer === undefined ? [] : [offer]),
+	];
+	if (differences.length === 0) {
+		return { text: nothingToAsk(file) };
 	}
-	const write = setupWrite(held, snippet, ids);
+	const ids = await askKept(
+		(question, options) => $.ui.ask(question, options),
+		differences,
+	);
+	if (ids === undefined) {
+		return {
+			text: `Nothing was written: a question was dismissed, or this session has no one to answer. ${file} was not changed.`,
+		};
+	}
+	const write = setupWrite(
+		held,
+		snippet,
+		ids.filter((id) => id !== CODE_RULES),
+	);
 	const failed =
 		write.applied.written.length === 0
 			? undefined
 			: await writeFailure($, file, write.applied.settings);
-	return { result: failed?.text ?? setupReport(file, write) };
+	const rulesLine = ids.includes(CODE_RULES)
+		? [await rulesReport($, rules)]
+		: [];
+	return {
+		text: [failed?.text ?? setupReport(file, write), ...rulesLine].join("\n"),
+	};
 };
 
 export const onStatuslineCommand: HookFor<"command.run"> = async (

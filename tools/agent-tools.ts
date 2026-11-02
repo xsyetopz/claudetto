@@ -78,6 +78,58 @@ export const AGENTS_DIR = "plugins/claudetto/agents";
 
 const MAIN = "main";
 
+const SECTION_OPEN = /^<([a-z_]+)>$/;
+
+export const textOutsideSections = (body: string): string[] => {
+	const outside: string[] = [];
+	let open: string | undefined;
+	for (const line of body.split("\n").map((raw) => raw.trim())) {
+		if (open !== undefined) {
+			open = line === `</${open}>` ? undefined : open;
+		} else if (SECTION_OPEN.test(line)) {
+			open = SECTION_OPEN.exec(line)?.[1];
+		} else if (line !== "") {
+			outside.push(line);
+		}
+	}
+	return open === undefined
+		? outside
+		: [...outside, `<${open}> is never closed`];
+};
+
+export const SUBAGENT_SECTIONS = [
+	"role",
+	"doing_the_work",
+	"harness_messages",
+	"when_blocked",
+	"report_format",
+] as const;
+
+export const missingSections = (body: string): string[] =>
+	SUBAGENT_SECTIONS.filter(
+		(name) => !body.split("\n").some((line) => line.trim() === `<${name}>`),
+	);
+
+export const sectionFaults = (agents: readonly Agent[]): string[] =>
+	agents
+		.filter((agent) => !agent.file.endsWith(`${MAIN}.md`))
+		.flatMap((agent) => {
+			const outside = textOutsideSections(agent.body);
+			const missing = missingSections(agent.body);
+			return [
+				...(outside.length === 0
+					? []
+					: [
+							`${agent.file}: ${outside.length} body lines sit outside a named section, the first is "${outside[0]}"`,
+						]),
+				...(missing.length === 0
+					? []
+					: [
+							`${agent.file}: lacks ${missing.map((name) => `<${name}>`).join(", ")}`,
+						]),
+			];
+		});
+
 export const agentName = (agent: Agent): string =>
 	agent.file.slice(AGENTS_DIR.length + 1, -".md".length);
 
@@ -128,7 +180,11 @@ export const readAgents = async (root: string): Promise<Agent[]> => {
 
 if (import.meta.main) {
 	const agents = await readAgents(join(import.meta.dir, ".."));
-	const lines = [...agentFaults(agents), ...rosterFaults(AGENT_ROSTER, agents)];
+	const lines = [
+		...agentFaults(agents),
+		...sectionFaults(agents),
+		...rosterFaults(AGENT_ROSTER, agents),
+	];
 	for (const line of lines) {
 		console.error(line);
 	}

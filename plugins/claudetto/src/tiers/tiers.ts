@@ -16,6 +16,10 @@ export const HAIKU_PRICE_STEP = 100_000;
 
 export const HAIKU_MODEL = "claude-haiku-5-5";
 
+export const SONNET_MODEL = "claude-sonnet-5-5";
+
+export const OPUS_MODEL = "claude-opus-5-5";
+
 export interface TierRow {
 	readonly tier: string;
 	readonly subagentCap: number;
@@ -36,8 +40,8 @@ export interface TierRow {
 }
 
 const SHARED = {
-	subagentModel: "claude-sonnet-5-5",
-	mainModel: "claude-opus-5-5",
+	subagentModel: SONNET_MODEL,
+	mainModel: OPUS_MODEL,
 	effort: "medium",
 	cheapSummary: false,
 	contextCap: CONTEXT_WINDOW,

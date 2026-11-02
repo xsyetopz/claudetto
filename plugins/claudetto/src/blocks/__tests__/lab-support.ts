@@ -6,21 +6,42 @@ export interface Written {
 	readonly text: string;
 }
 
+/** The code rules file: the user's copy, absent when `held` is `undefined`, and the one the plugin ships. */
+export interface RulesLab {
+	readonly held?: string;
+	readonly shipped: string;
+}
+
+export const USER_RULES = "/home/u/.claude/rules/claudetto-code.md";
+
+const SHIPPED_RULES = "/rules/claudetto-code.md";
+
 /** A home of `/home/u` whose settings file holds `held`, or is absent when `held` is `undefined`. */
 export const userSettingsLab = (
 	on: On,
 	held: string | undefined,
+	rules?: RulesLab,
 ): Written[] => {
 	const files: Written[] = [];
+	const textAt = (path: string): string | undefined => {
+		if (rules === undefined) {
+			return held;
+		}
+		if (path === USER_RULES) {
+			return rules.held;
+		}
+		return path.endsWith(SHIPPED_RULES) ? rules.shipped : held;
+	};
 	on("env.get", (_$, e) => ({
 		value: e.name === "HOME" ? "/home/u" : undefined,
 	}));
-	on("fs.exists", () => ({ value: held !== undefined }));
-	on("fs.read", () => {
-		if (held === undefined) {
+	on("fs.exists", (_$, e) => ({ value: textAt(e.path) !== undefined }));
+	on("fs.read", (_$, e) => {
+		const text = textAt(e.path);
+		if (text === undefined) {
 			throw new Error("no file");
 		}
-		return { value: held };
+		return { value: text };
 	});
 	on("fs.write", (_$, e) => {
 		files.push({ path: e.path, text: e.text });

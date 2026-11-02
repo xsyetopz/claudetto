@@ -1,5 +1,8 @@
 # Default Body Gap
 
+The section names below are those of `0.2.0`. The `0.3.0` names, and which old section each one
+replaces, are in "Sections of `0.2.0` and Their Replacements" of `docs/prompt/footprint.md`.
+
 The `agent` setting makes an agent file the main thread, and the harness then sends that file's body
 as `system[2]` in place of the default body. It does not append: the `clawdipedia` route
 `prompts/agents/agent-main` (read 2026-10-29) states "The agent file body replaces the body
