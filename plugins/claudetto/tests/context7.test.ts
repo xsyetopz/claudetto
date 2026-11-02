@@ -25,8 +25,8 @@ const started = async (
 };
 
 test(
-	"the `CONTEXT7_API_KEY` option reaches the env that `bunx ctx7` inherits",
-	{ options: { CONTEXT7_API_KEY: KEY } },
+	"the `context7ApiKey` option reaches the env that `bunx ctx7` inherits",
+	{ options: { context7ApiKey: KEY } },
 	async ($: Engine, on: On) => {
 		const writes = await started($, on, {});
 
@@ -36,7 +36,7 @@ test(
 
 test(
 	"a `CONTEXT7_API_KEY` already in the env is the user's and stays",
-	{ options: { CONTEXT7_API_KEY: KEY } },
+	{ options: { context7ApiKey: KEY } },
 	async ($: Engine, on: On) => {
 		const writes = await started($, on, { CONTEXT7_API_KEY: "own" });
 

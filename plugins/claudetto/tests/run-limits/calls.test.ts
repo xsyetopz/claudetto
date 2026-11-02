@@ -35,7 +35,7 @@ const options = (set: PluginOptions): { options: PluginOptions } => ({
 
 test(
 	"the call past the cap at heavy context is held with one line that gives the cap",
-	options({ callCap: 2 }),
+	options({ maxHeavyToolCalls: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on, HEAVY);
 		await call($);
@@ -45,14 +45,14 @@ test(
 
 		expect(held.decision).toBe("deny");
 		expect(held.reason).toContain("2");
-		expect(held.reason).toContain("callCap");
+		expect(held.reason).toContain("maxHeavyToolCalls");
 		expect(held.reason?.split("\n")).toHaveLength(1);
 	},
 );
 
 test(
 	"the calls under the cap at heavy context go through",
-	options({ callCap: 2 }),
+	options({ maxHeavyToolCalls: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on, HEAVY);
 		await call($);
@@ -65,7 +65,7 @@ test(
 
 test(
 	"a light context is never capped",
-	options({ callCap: 2 }),
+	options({ maxHeavyToolCalls: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on, LIGHT);
 		await call($);
@@ -79,7 +79,7 @@ test(
 
 test(
 	"a context that falls back below the heavy line starts the count again",
-	options({ callCap: 2 }),
+	options({ maxHeavyToolCalls: 2 }),
 	async ($: Engine, on: On) => {
 		let tokens = HEAVY;
 		mock.clock(on, { now: 0 });
@@ -99,7 +99,7 @@ test(
 
 test(
 	"a call after the period has passed is counted from zero",
-	options({ callCap: 2, windowSeconds: 60 }),
+	options({ maxHeavyToolCalls: 2, limitPeriodSeconds: 60 }),
 	async ($: Engine, on: On) => {
 		const clock = lab(on, HEAVY);
 		await call($);
@@ -114,7 +114,7 @@ test(
 
 test(
 	"a heavy-context threshold from the options replaces the default",
-	options({ callCap: 1, heavyTokens: 50_000 }),
+	options({ maxHeavyToolCalls: 1, heavyContextTokens: 50_000 }),
 	async ($: Engine, on: On) => {
 		lab(on, LIGHT);
 		await call($);

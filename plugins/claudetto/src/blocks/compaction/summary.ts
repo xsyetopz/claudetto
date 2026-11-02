@@ -9,14 +9,14 @@ import type {
 import { capOf } from "../../shared/thinking.ts";
 import { HAIKU_MODEL, type TierRow } from "../../tiers/tiers.ts";
 
-const OPTION_ON = "on";
-
-/** No tier row turns the field on while no row prices the call, so today the option is the only switch. */
+/** No tier row turns the field on while no row prices the call, so today the option is the only switch. The old `cheapSummary` took `on` before it became a boolean. */
 export const isCheapSummaryOn = (
 	row: TierRow | undefined,
 	options: PluginOptions,
 ): boolean =>
-	options["cheapSummary"] === OPTION_ON || row?.cheapSummary === true;
+	options["cheapSummaryEnabled"] === true ||
+	options["cheapSummary"] === "on" ||
+	row?.cheapSummary === true;
 
 /** The summary's length, which every turn after the compaction carries. */
 export const SUMMARY_MAX_CHARS = 4000;

@@ -24,14 +24,48 @@ describe("limitsOf", () => {
 	});
 
 	test("an option replaces the default, a numeric string included", () => {
-		const limits = limitsOf({ subagentCap: 2, callCap: "7" }, 5);
+		const limits = limitsOf({ maxHeavyToolCalls: "7" }, 5);
 
-		expect(limits.subagentCap).toBe(2);
 		expect(limits.callCap).toBe(7);
 	});
 
+	test("the cap of Claude Code beats a stored `subagentCap`, which beats the plan row", () => {
+		expect(limitsOf({ subagentCap: 2 }, 5, 8).subagentCap).toBe(8);
+		expect(limitsOf({ subagentCap: 2 }, 5).subagentCap).toBe(2);
+	});
+
+	test("an option stored under its name before the rename still counts", () => {
+		const limits = limitsOf(
+			{
+				startCap: 4,
+				windowSeconds: 30,
+				callCap: 6,
+				heavyTokens: 9,
+				failLimit: 2,
+			},
+			undefined,
+		);
+
+		expect(limits).toMatchObject({
+			startCap: 4,
+			windowMs: 30_000,
+			callCap: 6,
+			heavyTokens: 9,
+			failLimit: 2,
+		});
+	});
+
+	test("the new name wins over the stored old one", () => {
+		expect(
+			limitsOf({ maxSubagentStarts: 3, startCap: 4 }, undefined).startCap,
+		).toBe(3);
+	});
+
 	test("a value that is not a positive number gives the default", () => {
-		const limits = limitsOf({ startCap: 0, failLimit: "many" }, undefined);
+		const limits = limitsOf(
+			{ maxSubagentStarts: 0, maxIdenticalFailures: "many" },
+			undefined,
+		);
 
 		expect(limits.startCap).toBe(12);
 		expect(limits.failLimit).toBe(3);
@@ -39,7 +73,10 @@ describe("limitsOf", () => {
 });
 
 describe("the period", () => {
-	const limits = limitsOf({ startCap: 2, callCap: 1, heavyTokens: 10 }, 9);
+	const limits = limitsOf(
+		{ maxSubagentStarts: 2, maxHeavyToolCalls: 1, heavyContextTokens: 10 },
+		9,
+	);
 
 	test("a start is counted until the period holds the cap", () => {
 		const first = admitStart([], 0, limits);
@@ -64,7 +101,7 @@ describe("the period", () => {
 });
 
 describe("failures", () => {
-	const limits = limitsOf({ failLimit: 2 }, undefined);
+	const limits = limitsOf({ maxIdenticalFailures: 2 }, undefined);
 	const call = { tool: "Bash", input: { command: "make" } };
 
 	test("the same error adds up and a new error starts again", () => {

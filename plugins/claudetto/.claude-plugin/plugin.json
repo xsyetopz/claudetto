@@ -12,80 +12,104 @@
 	"types": "./types/claudetto.d.ts",
 	"keywords": ["hooks", "coding", "cost"],
 	"userConfig": {
-		"decide": {
+		"decideProvider": {
 			"type": "string",
-			"title": "Second Opinion",
-			"description": "Use `off` for no decision tool. Use `jev` for Jev, which needs `TYPESAFE_API_KEY` and sends the questions to the TypeSafe API. With `jev` and a key, the tool `mcp__claudetto__decide` is registered and Claude calls it for a decision that is its own. An `AskUserQuestion` dialog always reaches the user either way. The default is `jev` because the key is the switch: without one no tool is registered and nothing leaves the machine.",
+			"title": "Second opinion",
+			"description": "Use `off` for no decision tool. Use `jev` for Jev, which needs `typesafeApiKey` or `TYPESAFE_API_KEY` in the env and sends the questions to the TypeSafe API. With `jev` and a key, the tool `mcp__claudetto__decide` is registered and Claude calls it for a decision that is its own. An `AskUserQuestion` dialog always reaches the user either way. The default is `jev` because the key is the switch: without one no tool is registered and nothing leaves the machine.",
 			"default": "jev",
 			"options": ["off", "jev"]
 		},
-		"TYPESAFE_API_KEY": {
+		"typesafeApiKey": {
 			"type": "string",
-			"title": "TypeSafe API Key",
-			"description": "The key of Jev for the `decide` and `classifier` options.Claude Code keeps it in secure storage, not in a settings file.",
+			"title": "TypeSafe API key",
+			"description": "The key of Jev for the `decideProvider` and `classifierModel` options. Claude Code keeps it in secure storage, not in a settings file. The env variable `TYPESAFE_API_KEY` serves when this is unset.",
 			"sensitive": true
 		},
-		"CONTEXT7_API_KEY": {
+		"context7ApiKey": {
 			"type": "string",
-			"title": "Context7 API Key",
+			"title": "Context7 API key",
 			"description": "Optional. The key the `docs` skill's `ctx7` CLI sends to Context7 for higher rate limits. Claude Code keeps it in secure storage, and claudetto passes it to the CLI through the env, never through the context.",
 			"sensitive": true
 		},
-		"cheapSummary": {
-			"type": "string",
-			"title": "Cheap Compaction Summary",
-			"description": "Use `on` to have claudetto answer a compaction with one bounded call on `claude-haiku-5-5` instead of letting Claude Code summarize on the model the session runs. It is `off` because no measured rows price it yet, and every failure of the call falls back to the compaction of Claude Code.",
-			"default": "off",
-			"options": ["off", "on"]
+		"cheapSummaryEnabled": {
+			"type": "boolean",
+			"title": "Cheap compaction summary",
+			"description": "Use `true` to have claudetto answer a compaction with one bounded call on `claude-haiku-5-5` instead of letting Claude Code summarize on the model the session runs. It is `false` because no measured rows price it yet, and every failure of the call falls back to the compaction of Claude Code.",
+			"default": false
 		},
-		"handoverTokens": {
+		"handoverThresholdTokens": {
 			"type": "number",
-			"title": "Handover Size in Tokens",
+			"title": "Handover size in tokens",
 			"description": "The input tokens of the last response from which a turn's end hands over: claudetto asks a fork of the conversation for a handoff, compacts the conversation to it, and sends the next prompt. Left unset, it is 400000, or half the context window when that is smaller. Claude Code's own compaction stays for a turn that outgrows the window before it ends.",
 			"min": 1
 		},
-		"classifier": {
+		"classifierModel": {
 			"type": "string",
-			"title": "Own Tool-Call Classifier",
-			"description": "Use `haiku` or `sonnet` to have claudetto judge each tool call that reads or changes more than the read-only tools, in place of the auto mode classifier of Claude Code. It asks Jev first when `TYPESAFE_API_KEY` is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, both at `medium`, and every call is paid. A failed or unclear check denies the call. Its verdict settles the call, so the auto mode classifier of Claude Code does not run on it, and its `allow` skips the permission prompt in every permission mode, because the hook cannot read the mode. It is `off`, which leaves the judging to the auto mode classifier.",
+			"title": "Own tool-call classifier model",
+			"description": "Use `haiku` or `sonnet` to have claudetto judge each tool call that reads or changes more than the read-only tools, in place of the auto mode classifier of Claude Code. It asks Jev first when `typesafeApiKey` or `TYPESAFE_API_KEY` is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, both at `medium`, and every call is paid. A failed or unclear check denies the call. Its verdict settles the call, so the auto mode classifier of Claude Code does not run on it, and its `allow` skips the permission prompt in every permission mode, because the hook cannot read the mode. It is `off`, which leaves the judging to the auto mode classifier.",
 			"default": "off",
 			"options": ["off", "haiku", "sonnet"]
 		},
-		"subagentCap": {
+		"confineEnabled": {
+			"type": "boolean",
+			"title": "Confine Bash writes",
+			"description": "Use `true` to run every `Bash` command in an OS sandbox that refuses a write outside the project folder, the temp folders, and the tool caches (`~/.bun`, `~/.cache`): `sandbox-exec` on macOS, `bwrap` on Linux. Reads, the network, and processes stay open, and `.git/hooks` and `.git/config` of the project are read-only. It sets `CLAUDE_CODE_SHELL_PREFIX`, so the permission check, the deny rules, the hooks, and the auto mode classifier judge the command the model wrote. It needs the built-in sandbox `off`. Where `sandbox-exec` or `bwrap` is missing, a `Bash` call is refused with the reason and never runs unconfined. It is `false` because it changes where `Bash` may write.",
+			"default": false
+		},
+		"maxSubagentStarts": {
 			"type": "number",
-			"title": "Subagents at Once",
-			"description": "The most subagents that run at the same time. Left unset, the cap is the one of the plan of this login, and a login with no plan row has none. A start past the cap is refused.",
+			"title": "Subagent starts per period",
+			"description": "The most subagent starts inside the period of `limitPeriodSeconds`. Left unset, it is 12. The most subagents at once is the `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` variable of Claude Code, set in its `env` setting.",
 			"min": 1
 		},
-		"startCap": {
+		"limitPeriodSeconds": {
 			"type": "number",
-			"title": "Subagent Starts per Period",
-			"description": "The most subagent starts inside the period of `windowSeconds`. Left unset, it is 12.",
+			"title": "Period in seconds",
+			"description": "The length of the period that `maxSubagentStarts`, `maxHeavyToolCalls`, and `maxIdenticalFailures` count in. Left unset, it is 600.",
 			"min": 1
 		},
-		"windowSeconds": {
+		"maxHeavyToolCalls": {
 			"type": "number",
-			"title": "Period in Seconds",
-			"description": "The length of the period that `startCap`, `callCap`, and `failLimit` count in. Left unset, it is 600.",
-			"min": 1
-		},
-		"callCap": {
-			"type": "number",
-			"title": "Tool Calls per Period at Heavy Context",
+			"title": "Tool calls per period at heavy context",
 			"description": "The most tool calls inside the period while the context is heavy. A call past the cap is held. Left unset, it is 20.",
 			"min": 1
 		},
-		"heavyTokens": {
+		"heavyContextTokens": {
 			"type": "number",
-			"title": "Heavy Context in Tokens",
+			"title": "Heavy context in tokens",
 			"description": "The input tokens of the last response from which the context counts as heavy. Left unset, it is 400000.",
 			"min": 1
 		},
-		"failLimit": {
+		"maxIdenticalFailures": {
 			"type": "number",
-			"title": "Identical Failures Before a Refusal",
+			"title": "Identical failures before a refusal",
 			"description": "How many times the same call fails with the same error before an identical retry is refused. Left unset, it is 3.",
 			"min": 1
+		},
+		"hygieneEnabled": {
+			"type": "boolean",
+			"title": "Session hygiene",
+			"description": "Use `false` to start no hygiene process at a session start, so claudetto removes no file of its own or of Claude Code. It is `true` because the sweep removes only the temp folders and handoffs that Claude Code never removes, past their age.",
+			"default": true
+		},
+		"handoffCleanupPeriodDays": {
+			"type": "number",
+			"title": "Handoff retention in days",
+			"description": "The age in days from which hygiene removes a handoff, except the newest one that a resume reads. Use 0 to keep every handoff. Left unset, it follows `cleanupPeriodDays`.",
+			"min": 0
+		},
+		"sessionTempCleanupPeriodDays": {
+			"type": "number",
+			"title": "Session temp retention in days",
+			"description": "The age in days from which hygiene removes the temp folder of a session that is not running. Use 0 to keep them all. Left unset, it follows `cleanupPeriodDays`.",
+			"min": 0
+		},
+		"probeCleanupPeriodMinutes": {
+			"type": "number",
+			"title": "Probe folder retention in minutes",
+			"description": "The age in minutes from which hygiene removes an `fswatch-probe-*` folder of the temp root. Use 0 to keep them all. Left unset, it is 60.",
+			"default": 60,
+			"min": 0
 		}
 	}
 }

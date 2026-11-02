@@ -36,7 +36,7 @@ const options = (set: PluginOptions): { options: PluginOptions } => ({
 
 test(
 	"an identical call is refused after the fail limit, with the earlier error as the reason",
-	options({ failLimit: 2 }),
+	options({ maxIdenticalFailures: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on);
 		await failedTwice($, SAME);
@@ -45,13 +45,13 @@ test(
 
 		expect(out.decision).toBe("deny");
 		expect(out.reason).toContain(ERROR);
-		expect(out.reason).toContain("failLimit");
+		expect(out.reason).toContain("maxIdenticalFailures");
 	},
 );
 
 test(
 	"an identical call under the fail limit goes through",
-	options({ failLimit: 2 }),
+	options({ maxIdenticalFailures: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on);
 		await failed($, SAME);
@@ -64,7 +64,7 @@ test(
 
 test(
 	"a call with another input is not refused",
-	options({ failLimit: 2 }),
+	options({ maxIdenticalFailures: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on);
 		await failedTwice($, SAME);
@@ -77,7 +77,7 @@ test(
 
 test(
 	"failures with different errors do not add up",
-	options({ failLimit: 2 }),
+	options({ maxIdenticalFailures: 2 }),
 	async ($: Engine, on: On) => {
 		lab(on);
 		await failed($, SAME, "first error");
@@ -91,7 +91,7 @@ test(
 
 test(
 	"the refusal lifts once the period has passed since the last failure",
-	options({ failLimit: 2, windowSeconds: 60 }),
+	options({ maxIdenticalFailures: 2, limitPeriodSeconds: 60 }),
 	async ($: Engine, on: On) => {
 		const clock = lab(on);
 		await failedTwice($, SAME);

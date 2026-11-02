@@ -5,6 +5,7 @@ import type {
 	PreToolUseResult,
 	ToolCallEnvelope,
 } from "claude-code";
+import { optionOverDefault } from "../../shared/option.ts";
 import { PERSON_PROMPT } from "../../shared/person.ts";
 import type { Block, BlockContext } from "../block.ts";
 import { jevBody, postJev } from "../decide/api.ts";
@@ -32,7 +33,12 @@ import {
 const promptsRef = { plugin: "claudetto", key: "prompts" } as const;
 
 export const variantOf = (options: PluginOptions): Variant | undefined => {
-	const value = options["classifier"];
+	const value = optionOverDefault(
+		options,
+		"classifierModel",
+		"classifier",
+		"off",
+	);
 	return value === "haiku" || value === "sonnet" ? value : undefined;
 };
 

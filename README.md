@@ -11,7 +11,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Features
 
-- A first request of 29,417 characters against 46,007 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,833 with `just capture --arm plain --shipped`.
+- A first request of 27,886 characters against 46,007 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A `/claudetto:handoff` command that has the session call the `handoff` tool, plus a handoff written before a compaction.
 - A handoff reply that compacts the conversation to itself, with no summary call, so the next turn reads the cached prefix.
@@ -89,15 +89,15 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 | --- | --- |
 | Settings | `/claudetto:setup` writes the keys you keep from the four groups above, the sandbox switches, and the code rules file. |
 | Handoff | `/claudetto:handoff` has the session call the `handoff` tool, which writes the file, clears, and submits the next prompt. A handoff is also written before a compaction and read back on `resume`. See [Handoff](#handoff). |
-| Compaction | A reply that starts with `# Handoff` compacts the conversation to the first message, one assistant line, and that reply, with no model call. A turn that ends at 400,000 tokens of context or more gets its handoff from one fork of the conversation, which the cache serves, compacts the same way, and waits for the user's next prompt. Any other compaction is Claude Code's, with a handoff written before it. The option `cheapSummary` set to `on` answers it with one bounded call on `claude-haiku-5-5`. |
+| Compaction | A reply that starts with `# Handoff` compacts the conversation to the first message, one assistant line, and that reply, with no model call. A turn that ends at 400,000 tokens of context or more gets its handoff from one fork of the conversation, which the cache serves, compacts the same way, and waits for the user's next prompt. Any other compaction is Claude Code's, with a handoff written before it. The option `cheapSummaryEnabled` set to `true` answers it with one bounded call on `claude-haiku-5-5`. |
 | Output style | The plugin ships `claudetto:Concise`, which the Smaller prompt group selects. |
-| Permission gate | Stops only a call that loses bytes for good, tampers with the system, or reads a secret. It asks before a `git push` that forces, deletes, or mirrors, and before a push to an address that no remote of the repository names. With `classifier` on, the classifier's allow settles an ask of the gate, except the ask on an address no remote names, which only a person settles. |
+| Permission gate | Stops only a call that loses bytes for good, tampers with the system, or reads a secret. It asks before a `git push` that forces, deletes, or mirrors, and before a push to an address that no remote of the repository names. With `classifierModel` set to `haiku` or `sonnet`, the classifier's allow settles an ask of the gate, except the ask on an address no remote names, which only a person settles. |
 | Run limits | Caps the subagents at once and the subagent starts per period, refuses an identical retry after repeated failures, and holds tool calls at heavy context. |
 | Tool descriptions | A shorter description for a few tools. |
 | Agents | `claudetto:main` as the thread's own body, plus four subagents: `claudetto:Artemis` searches many files read-only and returns paths and lines, `claudetto:Athena` reviews a diff in a fresh context and reports each defect, `claudetto:Hephaestus` makes one edit whose goal, files, and check are known and runs the check, and `claudetto:Hermes` answers a question from the web with its sources. `Artemis`, `Athena`, and `Hermes` write no file. |
 | Skills | `docs` looks up current library docs with the Context7 CLI: `bunx ctx7 library`, then `bunx ctx7 docs`. |
 | Status line | Setup writes `statusLine` and `subagentStatusLine`: the folder, the branch, read from the checkout's `.git/HEAD` when Claude Code sends none, the pull request, each open OpenSpec change with its ticked and total task boxes, such as `☐ release-0-3-0 4/12`, the model, the context, the cost, the 5-hour and 7-day limits, and the cache countdown. A line you already set is kept. `/statusline` with no text writes the same two keys with no model call, and prints each key it wrote, or `Wrote no key.` |
-| Hygiene | `just hygiene` removes the stale temp folders and old handoffs that Claude Code never removes, and takes `--dry-run`. The same sweep runs at each startup. |
+| Hygiene | `just hygiene` removes the stale temp folders and old handoffs that Claude Code never removes, and takes `--dry-run`. The same sweep runs at each startup. `handoffCleanupPeriodDays`, `sessionTempCleanupPeriodDays`, and `probeCleanupPeriodMinutes` set the age per kind, 0 turns a kind off, and `hygieneEnabled` set to `false` starts no sweep. |
 | `/init` | The interview reads the repository, asks only what it does not show, and writes the memory files after a yes to each draft. |
 | Plan mode | A shorter plan mode reminder that names `claudetto:Artemis` for a search over many files. |
 | Version warning | One line at startup when Claude Code is older than `2.1.316`. |
@@ -111,23 +111,43 @@ claudetto is a marketplace with one core plugin and one add-on.
 | `claudetto` | Everything above. |
 | `claudetto-you-should-know` | One short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. |
 
-Turning the add-on on with its `enabled` option makes one model call every sixth step of a turn, on `claude-haiku-5-5` at `high` effort.
+Turning the add-on on with its `sideCheckEnabled` option makes one model call every sixth step of a turn, on `claude-haiku-5-5` at `high` effort.
 No price per token of that model sits in any file of this repository, so this page states the bounds of the call instead of a figure in money: a fixed instruction block sent with `cache: true`, a digest of at most 8,000 characters built by the plugin rather than the session window, and a reply bounded at 512 tokens.
-Its `model` and `effort` options move the first two of those.
+Its `sideCheckModel` and `sideCheckEffortLevel` options move the first two of those.
 
 ## Configuration
 
 The core plugin's options are set in the plugin dialog of Claude Code, and `/config` lists them.
 
-| Option | What it does |
+| Option | Type, default | What it does |
+| --- | --- | --- |
+| `decideProvider` | string, `jev` | `jev` registers the tool `mcp__claudetto__decide`, which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence. `off` registers nothing. |
+| `typesafeApiKey` | string, unset | The key of Jev, for `decideProvider` and `classifierModel`. Claude Code keeps it in secure storage, not in a settings file, and the env variable `TYPESAFE_API_KEY` serves when it is unset. Without a key no tool is registered and nothing leaves the machine. |
+| `context7ApiKey` | string, unset | Optional. The key the `docs` skill's `ctx7` CLI sends to Context7 for higher rate limits. Claude Code keeps it in secure storage, and it reaches the CLI through the env variable `CONTEXT7_API_KEY`, never through the context. |
+| `cheapSummaryEnabled` | boolean, `false` | `true` answers a compaction with one bounded call on `claude-haiku-5-5` at `medium` effort, held to 4,000 characters. |
+| `handoverThresholdTokens` | number, unset | The context, in input tokens of the last response, from which a turn's end hands over through a fork. Unset, it is 400,000, or half the context window when that is smaller. |
+| `classifierModel` | string, `off` | `haiku` or `sonnet` judges each tool call that is not read-only with claudetto's own rules, in place of the auto mode classifier: Jev first when a key is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, each at `medium`. Each call is paid, and a failed check denies. Its `allow` also skips the permission prompt in every permission mode, because the hook cannot read the mode. It ships `off`, which leaves the judging to the auto mode classifier. Change it in `/config`. |
+| `confineEnabled` | boolean, `false` | `true` confines the writes of every `Bash` command at the operating system level, with `sandbox-exec` on macOS and `bwrap` on Linux. A command can write only the project, `/tmp`, `$TMPDIR`, `~/.bun`, and `~/.cache`, and not `.git/hooks` or `.git/config`. It sets `CLAUDE_CODE_SHELL_PREFIX`, so the permission check, the deny rules, the `PreToolUse` hooks, and the auto mode classifier still judge the command the model wrote. Without `bwrap` on Linux the call is refused, never run unconfined. The built-in `sandbox` must be off. See [docs/confine.md](docs/confine.md). |
+| `maxSubagentStarts` | number, 12 | The most subagent starts inside the period of `limitPeriodSeconds`. |
+| `limitPeriodSeconds` | number, 600 | The period that `maxSubagentStarts`, `maxHeavyToolCalls`, and `maxIdenticalFailures` count in. |
+| `maxHeavyToolCalls` | number, 20 | The most tool calls inside the period while the context holds `heavyContextTokens` or more. |
+| `heavyContextTokens` | number, 400,000 | The input tokens of the last response from which the context counts as heavy. |
+| `maxIdenticalFailures` | number, 3 | How many times the same call fails with the same error before an identical retry is refused. |
+
+The add-on `claudetto-you-should-know` has `sideCheckEnabled` (boolean, `false`), `sideCheckModel` (string, `claude-haiku-5-5`), and `sideCheckEffortLevel` (string, `high`).
+
+The most subagents at once is not a claudetto option: Claude Code has `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, which you set in the `env` setting. claudetto refuses a start at that number too, and without it at the cap of your plan.
+
+The options had other names before this release. A value stored under the old name is read until the new name is set, except for the two keys in secure storage, which Claude Code may not hand over: enter `typesafeApiKey` and `context7ApiKey` again in the plugin dialog, or keep the env variables.
+
+| Before | Now |
 | --- | --- |
-| `decide` | `jev` registers the tool `mcp__claudetto__decide`, which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence. `off` registers nothing. |
-| `TYPESAFE_API_KEY` | The key of Jev, for `decide` and `classifier`. Claude Code keeps it in secure storage, not in a settings file. Without a key no tool is registered and nothing leaves the machine. |
-| `CONTEXT7_API_KEY` | Optional. The key the `docs` skill's `ctx7` CLI sends to Context7 for higher rate limits. Claude Code keeps it in secure storage, and it reaches the CLI through the env, never through the context. |
-| `cheapSummary` | `on` answers a compaction with one bounded call on `claude-haiku-5-5` at `high` effort, held to 4,000 characters. |
-| `handoverTokens` | The context, in input tokens of the last response, from which a turn's end hands over through a fork. Unset, it is 400,000, or half the context window when that is smaller. |
-| `classifier` | `haiku` or `sonnet` judges each tool call that is not read-only with claudetto's own rules, in place of the auto mode classifier: Jev first when a key is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, each at `medium`. Each call is paid, and a failed check denies. Its `allow` also skips the permission prompt in every permission mode, because the hook cannot read the mode. It ships `off`, which leaves the judging to the auto mode classifier. |
-| `subagentCap`, `startCap`, `windowSeconds`, `callCap`, `heavyTokens`, `failLimit` | The run limits. |
+| `decide`, `TYPESAFE_API_KEY`, `CONTEXT7_API_KEY` | `decideProvider`, `typesafeApiKey`, `context7ApiKey` |
+| `cheapSummary` (`on`, `off`) | `cheapSummaryEnabled` (`true`, `false`) |
+| `handoverTokens`, `classifier` | `handoverThresholdTokens`, `classifierModel` |
+| `startCap`, `windowSeconds`, `callCap`, `heavyTokens`, `failLimit` | `maxSubagentStarts`, `limitPeriodSeconds`, `maxHeavyToolCalls`, `heavyContextTokens`, `maxIdenticalFailures` |
+| `subagentCap` | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` in the `env` setting |
+| `enabled`, `model`, `effort` of the add-on | `sideCheckEnabled`, `sideCheckModel`, `sideCheckEffortLevel` |
 
 Claude calls the decision tool for a decision that is its own, which is the one way to get a second judgment in an autonomous run.
 Each pick sends the question and the options to the TypeSafe API.
@@ -145,7 +165,7 @@ Claude calls the `handoff` tool or writes the handoff as a reply, and `/claudett
   A handoff older than seven days is named in one line and not injected.
 - A main-loop reply that starts with `# Handoff` is saved as a handoff file. Then `/compact` runs, and the hook answers it with the first message, kept whole, one assistant line, and the reply. So no summary call is made. The next request reads the tools and system prompt from cache and writes the rest again, about 4k tokens. Then the next prompt goes in: "Continue from the handoff above: take its next steps."
   Claude Code's own system section that says no handoff is needed is left out.
-- A main-loop turn that ends with its context at `handoverTokens` or more, with no handoff reply, hands over through `$.model.fork`. At idle the fork repeats the last request and adds the final reply and one prompt for the handoff, so the cache serves the context: on the real API the fork read 33,568 tokens from cache and wrote 29. The handover then waits for the user's next prompt, because the turn already answered the user. A reply that starts with `# Handoff` goes the way above. Any other fork reply leaves the compaction to Claude Code, with one log line, and no turn's end forks again until a compaction has run. A turn after a handover that still ends at the size forks nothing, so the session never hands over in a loop.
+- A main-loop turn that ends with its context at `handoverThresholdTokens` or more, with no handoff reply, hands over through `$.model.fork`. At idle the fork repeats the last request and adds the final reply and one prompt for the handoff, so the cache serves the context: on the real API the fork read 33,568 tokens from cache and wrote 29. The handover then waits for the user's next prompt, because the turn already answered the user. A reply that starts with `# Handoff` goes the way above. Any other fork reply leaves the compaction to Claude Code, with one log line, and no turn's end forks again until a compaction has run. A turn after a handover that still ends at the size forks nothing, so the session never hands over in a loop.
   Claude Code's own compaction stays for a turn that outgrows the window before it ends.
   When the session wrote a handoff file itself, the hooks write no file beside it.
 

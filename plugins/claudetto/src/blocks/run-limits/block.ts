@@ -27,7 +27,12 @@ const planCap = async ($: EngineInterface): Promise<number | undefined> => {
 const limitsFor = async (
 	$: EngineInterface,
 	options: PluginOptions,
-): Promise<Limits> => limitsOf(options, await planCap($));
+): Promise<Limits> =>
+	limitsOf(
+		options,
+		await planCap($),
+		Number(await $.env.get("CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS")),
+	);
 
 export const onSpawn: WithOptions<HookFor<"agent.spawn">> = async (
 	$,

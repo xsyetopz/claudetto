@@ -205,17 +205,26 @@ describe("the key of Jev", () => {
 	const env = async () => "from-env";
 
 	test("the option off gives no key, whatever the env holds", async () => {
-		expect(await jevKey({ decide: "off" }, env)).toBeUndefined();
+		expect(await jevKey({ decideProvider: "off" }, env)).toBeUndefined();
 	});
 
 	test("the option `jev` takes the key of the option before the env", async () => {
-		expect(await jevKey({ decide: "jev", TYPESAFE_API_KEY: "opt" }, env)).toBe(
-			"opt",
+		expect(
+			await jevKey({ decideProvider: "jev", typesafeApiKey: "opt" }, env),
+		).toBe("opt");
+	});
+
+	test("the options stored under their names before the rename still count", async () => {
+		expect(await jevKey({ decide: "jev", TYPESAFE_API_KEY: "old" }, env)).toBe(
+			"old",
 		);
+		expect(await jevKey({ decide: "off" }, env)).toBeUndefined();
 	});
 
 	test("the option `jev` falls back to the env, and an empty one is no key", async () => {
-		expect(await jevKey({ decide: "jev" }, env)).toBe("from-env");
-		expect(await jevKey({ decide: "jev" }, async () => "")).toBeUndefined();
+		expect(await jevKey({ decideProvider: "jev" }, env)).toBe("from-env");
+		expect(
+			await jevKey({ decideProvider: "jev" }, async () => ""),
+		).toBeUndefined();
 	});
 });

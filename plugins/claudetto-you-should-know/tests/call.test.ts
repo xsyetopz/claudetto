@@ -35,20 +35,31 @@ test(
 	},
 );
 
-test(
-	"the model and the effort come from the options of the plugin",
-	{ options: { enabled: true, model: "claude-sonnet-5-5", effort: "low" } },
-	async ($: Engine, on: On) => {
+for (const [name, options] of [
+	[
+		"the model and the effort come from the options of the plugin",
+		{
+			sideCheckEnabled: true,
+			sideCheckModel: "claude-sonnet-5-5",
+			sideCheckEffortLevel: "low",
+		},
+	],
+	[
+		"the options stored under their names before the rename still count",
+		{ enabled: true, model: "claude-sonnet-5-5", effort: "low" },
+	],
+] as const) {
+	test(name, { options }, async ($: Engine, on: On) => {
 		const l = await runCheck($, on);
 
 		expect(l.asked[0]?.model).toBe("claude-sonnet-5-5");
 		expect(l.asked[0]?.effort).toBe("low");
-	},
-);
+	});
+}
 
 test(
 	"an effort outside the five levels falls back to the default",
-	{ options: { enabled: true, effort: "maximum" } },
+	{ options: { sideCheckEnabled: true, sideCheckEffortLevel: "maximum" } },
 	async ($: Engine, on: On) => {
 		const l = await runCheck($, on);
 

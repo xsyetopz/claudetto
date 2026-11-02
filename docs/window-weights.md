@@ -178,7 +178,7 @@ It does not reach our handler. `WIo` at `chunk-r5cyd28m.js:1531068` is the dispa
 Two consequences for the price of the handler, both unmeasured and both arithmetic on the reading above:
 
 - Where the engine re-asks, its compaction costs **two** calls on the model the session runs, not one. So the saving of one bounded `claude-haiku-5-5` call is larger on those compactions than a one-call comparison shows.
-- Our handler has no counterpart. `summarize` in `plugins/claudetto/src/summary.ts` makes one call and never re-asks; a throw or an empty reply returns nothing and `onCompact` falls back to `next(e)` (`plugins/claudetto/src/compaction/hook.ts`). So a failure costs the cheap call **plus** the engine's whole path, which is the worst case of the handler and the only case where it loses.
+- Our handler has no counterpart. `summarize` in `plugins/claudetto/src/blocks/compaction/summary.ts` makes one call and never re-asks; a throw or an empty reply returns nothing and `onCompact` falls back to `next(e)` (`plugins/claudetto/src/blocks/compaction/block.ts`). So a failure costs the cheap call **plus** the engine's whole path, which is the worst case of the handler and the only case where it loses.
 
 Found on the reactive path only. The auto and manual path at `chunk-r5cyd28m.js:2404938` retries on `prompt_too_long` through `Drn` and otherwise takes `ewe(messages) ?? mt`, the last assistant text message, with no second content-level ask. `compactionApiAttemptsLeft` is the shared counter for both, and it gates the re-ask rather than causing it.
 
@@ -219,7 +219,7 @@ The whole-run totals are the steadier comparison, because they do not depend on 
 - **Nothing here checks the summary.** The handler's step ended at about 10,000 tokens and the engine's at about 23,000, so part of the difference is a shorter summary and not a cheaper call. A summary that drops what the work needed is not a saving, which is a bar of `docs/evidence/code-compaction-probe.md`, "The Bars", and no run here tests it.
 - **Three runs per arm is the smoke floor and not the citable one of 10.** The direction is the same in all six runs; the size of it is not pinned.
 
-Until those are answered, every tier row leaves the handler off and the `cheapSummary` option stays `off` by default. What has changed is that the figure is no longer missing and the reason to keep it off is no longer the absence of one.
+Until those are answered, every tier row leaves the handler off and the `cheapSummaryEnabled` option stays `false` by default. What has changed is that the figure is no longer missing and the reason to keep it off is no longer the absence of one.
 
 One thing the rows settle for free, as a cross-check of a paid reading: the last base row of the first probe round holds `76,033` tokens, which is the figure `claudekit/probe/main.ts --run --base-only` printed from the `stream-json` events, and the six forks of the round after it hold `79,446`, `79,968`, `79,991`, `79,447`, `80,949`, and `80,430`, which are exactly the peaks that round recorded. Two independent paths agree on the context, so the probe's reading is not a parse of its own invention.
 

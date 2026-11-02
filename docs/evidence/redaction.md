@@ -28,7 +28,7 @@ The module name and every offset hold for that build alone, because the bundle s
 
 ## What the Rebuild Runs
 
-`plugins/claudetto/src/secrets/redact.ts` is the program's own redaction order: the private key blocks of `Xls`, then the 13 `low` rows, then the 52 `high` ones, each row gated by its prefilter as `lt` gates it, and each hit replaced by `Fe`. The rows are compiled by `be(true)`, which is the compiler the program's own redaction calls, so a row with a capture group keeps the boundary the pattern needed and loses only the group.
+`plugins/claudetto/src/shared/secrets/redact.ts` is the program's own redaction order: the private key blocks of `Xls`, then the 13 `low` rows, then the 52 `high` ones, each row gated by its prefilter as `lt` gates it, and each hit replaced by `Fe`. The rows are compiled by `be(true)`, which is the compiler the program's own redaction calls, so a row with a capture group keeps the boundary the pattern needed and loses only the group.
 
 All 65 rows ship, which `tests/claudetto/redact.test.ts` asserts by id. This closes the gap the archived file recorded as "a floor, not the whole table": the eleven GitLab tokens were missing there because that file compiled the `high` rows the way `Yi()` does, and `Yi()` is the display path, which `redactForDisplay` alone calls.
 
@@ -55,7 +55,7 @@ The values of the credential environment variables of the session are not covere
 
 The table of the program names 65 shapes. The default config of Gitleaks names 222 rules, each with the keyword gate, the entropy bound, and the allowlists its author tuned, so the second pass adds the vendors the table does not name and this tree writes no pattern of its own.
 
-Nothing of it is copied by hand. `just gitleaks-rules --fetch` downloads `config/gitleaks.toml` and `LICENSE` at the pinned ref, writes both under `docs/keep/gitleaks/`, and generates `plugins/claudetto/src/secrets/gitleaks/rules.ts`. Updating to a newer release is `just gitleaks-rules --fetch --ref TAG` and one edit of `REF` in `tools/gitleaks/run.ts`.
+Nothing of it is copied by hand. `just gitleaks-rules --fetch` downloads `config/gitleaks.toml` and `LICENSE` at the pinned ref, writes both under `docs/keep/gitleaks/`, and generates `plugins/claudetto/src/shared/secrets/gitleaks/rules.ts`. Updating to a newer release is `just gitleaks-rules --fetch --ref TAG` and one edit of `REF` in `tools/gitleaks/run.ts`.
 
 The data ships as one JSON string and not as TypeScript rows for two reasons, both measured and not assumed: the mod loader of Claude Code refuses a `.json` import, which a probe proved by its refusal, and 216 formatted rules are some 3,000 lines against the `MAX_SOURCE_LINES` cap of 300.
 
@@ -106,8 +106,8 @@ The same sample measures the false positives, which is the real risk of 216 more
 
 ## Where It Is Applied
 
-In `parseTail` of `plugins/claudetto/src/handoff.ts`, at the read, on each turn's text and on each touched path, so no secret of the session is carried further in than the reader. The field `written` is the one exception: it never reaches the file, and `wroteOwn` matches the handoff folder inside it, which a redaction of the path could break.
+In `parseTail` of `plugins/claudetto/src/blocks/handoff/handoff.ts`, at the read, on each turn's text and on each touched path, so no secret of the session is carried further in than the reader. The field `written` is the one exception: it never reaches the file, and `wroteOwn` matches the handoff folder inside it, which a redaction of the path could break.
 
 ## The Licence of the Second Pass
 
-The Gitleaks rules are data of the Gitleaks project, MIT licensed, `Copyright (c) 2019 Zachary Rice`. The generator writes the licence in full into the header of `plugins/claudetto/src/secrets/gitleaks/rules.ts`, so the notice travels with the plugin, and the file it was read from is kept beside the config at `docs/keep/gitleaks/LICENSE`.
+The Gitleaks rules are data of the Gitleaks project, MIT licensed, `Copyright (c) 2019 Zachary Rice`. The generator writes the licence in full into the header of `plugins/claudetto/src/shared/secrets/gitleaks/rules.ts`, so the notice travels with the plugin, and the file it was read from is kept beside the config at `docs/keep/gitleaks/LICENSE`.
