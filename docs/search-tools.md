@@ -74,7 +74,25 @@ File lists, whole tree:
 For the last query the default output of `ast-grep run` is 11,948 characters against 2,929 for
 `rg -nU`, since it prints each whole matched block, and `--files-with-matches` prints 607 characters
 for both. So `ast-grep` is the more precise search for a structural query, and its default output is
-larger. It is not bundled: the macOS `aarch64` binary is 53,955,184 bytes, and an agent body names it
+larger.
+
+`ast-grep` has no limit on the match count, and in a pipe `--heading never`, `-C 0`, and
+`--color never` leave the output the same size. `--inspect summary` adds 1,444 characters on stderr.
+The cut that works is `--json=stream` through `jq`, run from `plugins`:
+
+| Query | Default | `--files-with-matches` | `jq` `file:line:` and the first 80 characters | `rg -n` |
+| --- | --- | --- | --- | --- |
+| `next(e)` | 3,493 | 994 | 2,537 | 3,739 |
+| `JSON.stringify($A)` | 5,776 | 1,349 | 3,008 | 3,618 |
+| `$.fs.write($A, $B)` | 668 | 164 | 616 | 260 |
+| `try { $$$ } catch { return undefined; }` | 10,636 | 503 | 762 | 2,641 (`-U`) |
+
+That form costs 48 to 88 characters per match against 73 to 165 for `rg -n`, and it keeps the
+matches that `rg` misses. The command is
+`ast-grep run -l ts -p 'PATTERN' --json=stream PATH | jq -r '"\(.file):\(.range.start.line+1):\(.text|split("\n")[0][0:80])"'`,
+with `| head -n N` for a cap.
+
+It is not bundled: the macOS `aarch64` binary is 53,955,184 bytes, and an agent body names it
 only for use when `command -v ast-grep` finds it. It installs with `brew install ast-grep`, or from
 the release zips for Linux `x86_64` and `aarch64` (gnu only) and macOS `x86_64` and `aarch64`, since
 Homebrew has no Intel macOS bottle for 0.51.1.
