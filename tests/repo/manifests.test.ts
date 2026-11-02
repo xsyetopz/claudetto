@@ -32,6 +32,7 @@ const OPTIONS: readonly string[] = [
 	"classifierModel",
 	"confineEnabled",
 	"readGuardEnabled",
+	"missingToolNoticeEnabled",
 	"maxSubagentStarts",
 	"limitPeriodSeconds",
 	"maxHeavyToolCalls",

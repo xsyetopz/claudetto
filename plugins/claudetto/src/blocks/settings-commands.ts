@@ -10,6 +10,8 @@ import { linesOf } from "../tiers/starter/plan.ts";
 import { statusLineSnippet } from "../tiers/status-line.ts";
 import { SNIPPET_ROW } from "../tiers/tiers.ts";
 import { differencesOf, setupWrite } from "./setup-command/diff.ts";
+import { NO, type ToolsIo, YES } from "./setup-command/optional/io.ts";
+import { toolsPart } from "./setup-command/optional/part.ts";
 import { askKept } from "./setup-command/questions.ts";
 import {
 	CODE_RULES,
@@ -150,6 +152,33 @@ const starterIo = ($: EngineInterface): StarterIo => ({
 		await $.ui.ask(question, { options: [WRITE, "Skip"], header }),
 });
 
+const INSTALL_MS = 600_000;
+
+const toolsIo = ($: EngineInterface): ToolsIo => ({
+	uname: async (flag) => {
+		try {
+			return (await $.process.run(["uname", flag], { timeoutMs: UNAME_MS }))
+				.stdout;
+		} catch {
+			return "";
+		}
+	},
+	path: async () => await $.env.get("PATH"),
+	exists: async (path) => await $.fs.exists(path),
+	decline: async (key, version) => {
+		await $.store.set(key, version);
+	},
+	ask: async (question, header) =>
+		await $.ui.ask(question, { options: [YES, NO], header }),
+	run: async (argv) => {
+		const result = await $.process.run(argv, { timeoutMs: INSTALL_MS });
+		return {
+			exitCode: result.exitCode,
+			text: result.exitCode === 0 ? result.stdout : result.stderr,
+		};
+	},
+});
+
 /** The merge stays in code, so the model never edits the settings file by hand. */
 const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
 	const { file, held } = await userSettings($);
@@ -201,6 +230,7 @@ export const onSetupCommand: HookFor<"command.run"> = async ($, _e, _next) => {
 		settings.text,
 		await starterPart(io),
 		await ignoresPart(io),
+		await toolsPart(toolsIo($)),
 	].filter((part) => part !== undefined);
 	return { text: parts.join("\n") };
 };

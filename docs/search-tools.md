@@ -119,6 +119,19 @@ only for use when `command -v ast-grep` finds it. It installs with `brew install
 the release zips for Linux `x86_64` and `aarch64` (gnu only) and macOS `x86_64` and `aarch64`, since
 Homebrew has no Intel macOS bottle for 0.51.1.
 
+Two paths offer it, and neither bundles it. A new session looks up `ast-grep` and `sg` in the `PATH`
+folders, with `$.fs.exists` and no process, and when neither is there it shows one line to you,
+which is not sent to the model. The line names `brew install ast-grep` where `brew` is on the `PATH`
+and has a bottle for the platform, and otherwise the release zip `app-<target>.zip` and the folder to
+unpack it to (`~/.local/bin`, or `%USERPROFILE%\bin` on Windows). The targets are
+`aarch64-apple-darwin`, `x86_64-apple-darwin`, `x86_64-unknown-linux-gnu`,
+`aarch64-unknown-linux-gnu`, `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc`, and
+`i686-pc-windows-msvc`. The line is shown once per pinned version, and the option
+`missingToolNoticeEnabled` set to `false` turns it off. `/claudetto:setup` shows the same command
+and runs it only after you pick Yes; a No records the choice so the launch line stays quiet. Where
+there is no package manager it shows the zip URL and the folder, and runs nothing. On Linux the check
+does not look for `sg`, since the shadow tools own that name there.
+
 `difft` 0.72.0 against `git diff`, on five commits of this repository:
 
 | Commit | `git diff` | `git diff -U1` | `difft --display inline` | `difft` side by side, width 120 |

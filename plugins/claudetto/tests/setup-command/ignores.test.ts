@@ -2,7 +2,7 @@
 
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { questionOf, run } from "./support.ts";
+import { answering, processResult, run } from "./support.ts";
 
 const FILE = "/home/u/.claude/settings.json";
 const QUESTION = "Write the ignore file block?";
@@ -60,28 +60,9 @@ const lab = (
 			stdout = "true\n";
 		}
 		const failed = revParse && !inRepo;
-		return {
-			value: {
-				stdout: failed ? "" : stdout,
-				stderr: "",
-				exitCode: failed ? 128 : 0,
-				isStdoutTruncated: false,
-				isStderrTruncated: false,
-			},
-		};
+		return processResult(failed ? "" : stdout, failed ? 128 : 0);
 	});
-	on("tool.call", (_$, e, next) => {
-		if (e.tool !== "AskUserQuestion") {
-			return next(e);
-		}
-		const question = questionOf(e);
-		state.asked.push(question);
-		return {
-			result: {
-				answers: { [question]: question.includes(QUESTION) ? answer : "Skip" },
-			},
-		};
-	});
+	answering(on, state.asked, (q) => (q.includes(QUESTION) ? answer : "Skip"));
 	return state;
 };
 

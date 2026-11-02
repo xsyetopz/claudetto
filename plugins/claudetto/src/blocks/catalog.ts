@@ -11,6 +11,7 @@ import { attachGate, gateBlock } from "./gate/block.ts";
 import { attachHandoff, handoff } from "./handoff/block.ts";
 import { attachHygiene, hygiene } from "./hygiene/block.ts";
 import { attachInitInterview, initInterview } from "./init-interview/block.ts";
+import { attachMissingTool, missingTool } from "./missing-tool/block.ts";
 import { attachPlanMode, planMode } from "./plan-mode/block.ts";
 import { attachPriceStep, priceStep } from "./price-step/block.ts";
 import { attachReadGuard, readGuard } from "./read-guard/block.ts";
@@ -38,6 +39,7 @@ export const CATALOG: readonly Block[] = [
 	compaction,
 	versionFloor,
 	hygiene,
+	missingTool,
 	context7,
 	classifyBlock,
 	planMode,
@@ -65,6 +67,7 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachCompaction(on, context);
 	attachVersionFloor(on, context);
 	attachHygiene(on, context);
+	attachMissingTool(on, context);
 	attachContext7(on, context);
 	attachClassify(on, context);
 	attachPlanMode(on, context);
