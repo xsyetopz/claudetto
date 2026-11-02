@@ -13,6 +13,21 @@ describe("the classifier rules", () => {
 		expect(classifierRules().length).toBeLessThanOrEqual(CLASSIFIER_RULES_CAP);
 	});
 
+	// The model writes the verdict last, so the reason it states decides the verdict.
+	test("ask for the reason before the block", () => {
+		const rules = classifierRules();
+		expect(rules.indexOf("<reason>")).toBeGreaterThan(-1);
+		expect(rules.indexOf("<reason>")).toBeLessThan(rules.indexOf("<block>"));
+	});
+
+	test("do not count a comment in a source or test file as an instruction surface", () => {
+		const rule = SOFT_RULES.find((r) => r.name === "Rewire the Agent");
+		expect(rule?.text).toContain("output styles");
+		expect(rule?.text).toContain(
+			"comment or doc comment in a source or test file",
+		);
+	});
+
 	test("name each soft rule with what the user must name, in the frame's own words", () => {
 		const rules = classifierRules();
 		for (const rule of SOFT_RULES) {
