@@ -28,7 +28,7 @@ afterEach(async () => {
 	await rm(dir, { recursive: true, force: true });
 });
 
-describe("offerIgnores", () => {
+describe("`offerIgnores`", () => {
 	test("a dry run shows the diff and writes nothing", async () => {
 		await repo();
 
@@ -88,7 +88,7 @@ describe("offerIgnores", () => {
 		expect(report).toContain("up to date");
 	});
 
-	test("a repo that has an AGENTS.md is still offered the ignore files", async () => {
+	test("a repo that has an `AGENTS.md` is still offered the ignore files", async () => {
 		await repo();
 		await writeFile(join(dir, "AGENTS.md"), "mine\n");
 		let asked = false;

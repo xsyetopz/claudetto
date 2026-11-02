@@ -13,7 +13,15 @@ describe("markers", () => {
 	});
 });
 
-describe("applyBlock", () => {
+describe("`applyBlock`", () => {
+	test("a CRLF file keeps one block on a rerun, in CRLF", () => {
+		const first = applyBlock("x\r\n", ["a"]);
+		const second = applyBlock(first, ["a", "b"]);
+
+		expect(first).toBe(`x\r\n\r\n${block("a").replaceAll("\n", "\r\n")}`);
+		expect(second).toBe(`x\r\n\r\n${block("a", "b").replaceAll("\n", "\r\n")}`);
+	});
+
 	test("a missing file becomes the block alone", () => {
 		expect(applyBlock(undefined, ["a", "b"])).toBe(block("a", "b"));
 	});
@@ -101,7 +109,7 @@ node_modules/
 	});
 });
 
-describe("diffOf", () => {
+describe("`diffOf`", () => {
 	test("a new file shows every line as added", () => {
 		expect(
 			diffOf(

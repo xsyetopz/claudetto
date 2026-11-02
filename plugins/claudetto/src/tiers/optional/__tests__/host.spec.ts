@@ -15,7 +15,7 @@ const folders =
 	async (path: string) =>
 		held.includes(path);
 
-describe("hostFromUname", () => {
+describe("`hostFromUname`", () => {
 	const cases: readonly [string, string, string, string | undefined][] = [
 		["Darwin", "arm64", "darwin", "arm64"],
 		["Darwin", "x86_64", "darwin", "x64"],
@@ -35,7 +35,7 @@ describe("hostFromUname", () => {
 	}
 });
 
-describe("hostFromFiles", () => {
+describe("`hostFromFiles`", () => {
 	test("`OS` of `Windows_NT` is Windows, with the arch the variable names", async () => {
 		const read = async (arch: string) =>
 			hostFromFiles(envOf("Windows_NT", arch), folders());

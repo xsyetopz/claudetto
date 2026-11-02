@@ -47,7 +47,7 @@ const appended = (text: string, block: readonly string[]): string => {
  * line wins and an appended line would undo a negation. A file with no block gets one after a blank line; an unclosed block is
  * left alone, since its end is unknown.
  */
-export const applyBlock = (
+const applyLf = (
 	current: string | undefined,
 	lines: readonly string[],
 ): string | undefined => {
@@ -72,6 +72,15 @@ export const applyBlock = (
 	}
 	return kept.length === 0 ? current : appended(text, block);
 };
+
+/** A CRLF file is read and written in CRLF, so its markers are found again on a rerun. */
+export const applyBlock = (
+	current: string | undefined,
+	lines: readonly string[],
+): string | undefined =>
+	current?.includes("\r\n") === true
+		? applyLf(current.replaceAll("\r\n", "\n"), lines)?.replaceAll("\n", "\r\n")
+		: applyLf(current, lines);
 
 const linesOfText = (text: string | undefined): string[] =>
 	text === undefined || text === ""

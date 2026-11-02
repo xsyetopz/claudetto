@@ -132,7 +132,7 @@ test("a settled repo is asked nothing, and a rerun changes no byte", async ($: E
 	expect(first.disk.get("/r/.gitignore")).toBe(settled);
 });
 
-test("a repo with an AGENTS.md is still offered the ignore files", async ($: Engine, on: On) => {
+test("a repo with an `AGENTS.md` is still offered the ignore files", async ($: Engine, on: On) => {
 	const state = lab(on, GO, { "AGENTS.md": "mine\n" }, "Skip");
 
 	await run($);
