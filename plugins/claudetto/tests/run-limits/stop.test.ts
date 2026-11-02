@@ -92,3 +92,31 @@ test("a Stop adds no budget line, since that text would continue the turn", asyn
 
 	expect((out.additionalContext ?? []).join("\n")).not.toContain("Budget");
 });
+
+test("the same tasks at the next Stop are not listed again", async ($: Engine, on: On) => {
+	lab(on);
+
+	const first = await stopped($, [MONITOR]);
+	const second = await stopped($, [MONITOR]);
+
+	expect((first.additionalContext ?? []).join("\n")).toContain(MONITOR.id);
+	expect(second.additionalContext ?? []).toEqual([]);
+});
+
+test("a task whose status changed is listed again", async ($: Engine, on: On) => {
+	lab(on);
+
+	await stopped($, [MONITOR]);
+	const out = await stopped($, [{ ...MONITOR, status: "stalled" }]);
+
+	expect((out.additionalContext ?? []).join("\n")).toContain("stalled");
+});
+
+test("a new task joins the list and the list is shown again", async ($: Engine, on: On) => {
+	lab(on);
+
+	await stopped($, [MONITOR]);
+	const out = await stopped($, [MONITOR, SHELL]);
+
+	expect((out.additionalContext ?? []).join("\n")).toContain(SHELL.id);
+});
