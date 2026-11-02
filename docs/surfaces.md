@@ -512,7 +512,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,007 baseline less every cut in it has to equal the 27,960 the shipped arm records, so a cut that
+46,007 baseline less every cut in it has to equal the 27,908 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -527,7 +527,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | −2,010 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | −1,958 | None exists yet. A placebo run would price the prompt text |
 | `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text |
 | The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −726 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text |
@@ -545,7 +545,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
 | The fall that no row above explains (`unexplained residual`) | 1,797 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
-The rows sum to 18,047, which is 46,007 less the 27,960 the shipped arm records. A negative row is a piece
+The rows sum to 18,099, which is 46,007 less the 27,908 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
@@ -553,7 +553,7 @@ again that day against the shipped arm of 27,960, which `SHIPPED_TOTAL` records.
 `-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path (each character
 of the path adds one, and the real path counts, since `/tmp` resolves to `/private/tmp`), less the same arm
 with the piece removed in a clone of the same path length, one piece at a time. A clone was restored before
-the next removal. The readings, each as the arm without the piece less 27,960:
+the next removal. The readings, each as the arm without the piece less 27,960, except `main agent body`, read again on 2026-11-03 against 27,908 after the file was trimmed; the other rows were not read again:
 
 | Row | Arm without the piece | Row | How the piece was removed |
 | --- | --- | --- | --- |
@@ -562,7 +562,7 @@ the next removal. The readings, each as the arm without the piece less 27,960:
 | `tool texts` | 34,628 | 6,668 | the `tool-describe` block detached from the catalog |
 | `built-in surface` | 33,550 | 5,590 | `disableBundledSkills` and `enabledPlugins` out of the settings |
 | `docs skill` | 27,889 | −71 | `skills/docs/` moved out of the plugin |
-| `main agent body` | 25,950 | −2,010 | `agents/main.md` moved aside |
+| `main agent body` | 25,950 | −1,958 | `agents/main.md` moved aside |
 | `auto memory off` | 28,088 | 2,138 | `autoMemoryEnabled` out and `agents/main.md` moved aside, against 25,950 |
 | `agent listing` | 27,234 | −726 | the four agent files moved aside |
 | `handoff context` | 27,020 | −940 | the `prompt.context` answer of the `handoff` block left without its block |

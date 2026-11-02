@@ -6,9 +6,9 @@ model is called and no provider is reached.
 
 ## Main Prompt
 
-`plugins/claudetto/agents/main.md` is 6,011 characters on disk. On 2026-11-02, before the denial and scope lines were reworded, on Claude Code `2.1.316`,
+`plugins/claudetto/agents/main.md` is 5,385 characters on disk on 2026-11-03. On 2026-11-02, before the denial and scope lines were reworded, on Claude Code `2.1.316`,
 `just capture --arm plugin --shipped` read the third `system` block at 5,951 characters, the body with
-its ends trimmed. As a JSON string the body is now 5,979 characters, 21 under the cap `MAIN_BODY_CAP` of 6,000
+its ends trimmed. As a JSON string the body is 5,349 characters on 2026-11-03, 651 under the cap `MAIN_BODY_CAP` of 6,000
 in `tools/limits.ts`, which the user set. The cap stands above the earlier budget, the 3,678 characters of the
 default body that the file replaces (`DEFAULT_MAIN_BODY_CHARS`). An agent file used as the main thread replaces that body instead of adding to it
 (`docs/prompt/overrides.md`, "What This Means for `main.md` and `Concise.md`"). The archived file was
@@ -127,7 +127,7 @@ The rewrite is 5,616 characters smaller than the archived file. Four groups of t
 ### Sections of `0.2.0` and Their Replacements
 
 The `0.3.0` body replaces each `0.2.0` section for the flaw the user named on 2026-10-31. It measures
-5,979 characters against the cap `MAIN_BODY_CAP` of 6,000 in `tools/limits.ts`, which the user set.
+5,979 characters then, and 5,349 after the trim of 2026-11-03, against the cap `MAIN_BODY_CAP` of 6,000 in `tools/limits.ts`, which the user set.
 
 | `0.2.0` section | Flaw the user named on 2026-10-31 | New section |
 | --- | --- | --- |
@@ -270,7 +270,7 @@ nothing fails when one drifts.
 
 | Piece | Kind | Budget | Measured as | Reading |
 | --- | --- | --- | --- | --- |
-| `agents/main.md` | file | 6,000 | `request JSON` | 5,979 on 2026-11-02. The earlier budget was 5,680, the default body as the request carried it on 2026-10-29: 5,628 characters plus the 52 it escapes |
+| `agents/main.md` | file | 6,000 | `request JSON` | 5,979 on 2026-11-02, 5,349 on 2026-11-03. The earlier budget was 5,680, the default body as the request carried it on 2026-10-29: 5,628 characters plus the 52 it escapes |
 | `output-styles/Concise.md` | file | 1,936 | `characters` | 1,936 on 2026-11-02. The earlier budget was 1,540, the built-in `Concise` style in `messages[1]` (`docs/prompt/overrides.md`) |
 | `Agent` | tool text | 1,047 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/blocks/tool-describe/tools.ts:19`) |
 | `Bash` | tool text | 1,085 | `characters` | The stock description it replaces, the smaller of docs 1,934 and capture 1,267 |
@@ -609,7 +609,7 @@ checkout path adds one: a copy of the tree at `/tmp/` plus 42 characters reads 2
 resolves to `/private/tmp`. With the file moved aside it is
 26,591, with a `system` of 3,499, so the file costs 1,936 where an earlier, shorter body saved 72.
 After the positive-form rewrites of the same day the first request reads 27,960: `system` 5,495,
-`tools` 10,185 (8), `messages` 11,637, read with `just capture --arm plugin --shipped`, and the file costs 2,010.
+`tools` 10,185 (8), `messages` 11,637, read with `just capture --arm plugin --shipped`, and the file costs 2,010. After the trim of 2026-11-03, which shortens `<finishing>` and the line-range sentence of `<project_context>`, it reads 27,908 and the file costs 1,958; the interactive arm reads 39,733.
 The interactive arm reads 41,628: `system` 5,412, `tools` 15,871 (10), `messages` 12,231, `safeguards` 7,457, and
 `bun claudekit/context-split/main.ts` sums the parts of the request that `/context` counts as system
 prompt to 17,176 characters there, 16,617 for `-p`.
