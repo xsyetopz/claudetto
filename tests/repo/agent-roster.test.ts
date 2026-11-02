@@ -78,7 +78,7 @@ describe("the shipped agent files", () => {
 			expect(body).toContain("`command -v ast-grep`");
 			expect(body).toContain("--json=stream");
 			expect(body).toContain("| head -n");
-			expect(body).toContain("`--files-with-matches`");
+			expect(body).toContain("--files-with-matches PATH` when `jq` is missing");
 			expect(body).not.toContain("with `grep`");
 		});
 	}
