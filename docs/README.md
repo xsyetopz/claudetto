@@ -20,6 +20,7 @@ prefix is a path of the live tree, and a path of the tree before the `0.0.0` res
 - [sandbox.md](sandbox.md): the sandbox keys of the `low-hitl` capability and the snippet that sets them.
 - [surfaces.md](surfaces.md): the Claude Code surfaces that claudetto turns off and what each costs.
 - [types.md](types.md): the vendored Claude Code types that the mod compiles against, and where they came from.
+- [worktrees.md](worktrees.md): why a new worktree starts at `origin/<default branch>`, the `worktree.baseRef` setting, and the `worktree-base` block that names a missing branch tip.
 - [window-weights.md](window-weights.md): what `/usage` of `2.1.311` already shows, so the window recorder adds only what it lacks.
 
 ## `docs/prompt/`

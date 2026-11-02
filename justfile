@@ -104,6 +104,10 @@ compaction-price *args:
 summary-cost *args:
     bun claudekit/summary-cost/main.ts "$@"
 
+# Show which commit a new worktree starts at, against the fake API (enter|agent [BASE_REF] [--plugin-dir DIR])
+worktree-base *args:
+    bun claudekit/worktree-base/main.ts "$@"
+
 # Run the proxy that answers the status-line summarizer locally (LOG_PATH, --pass)
 summary-proxy *args:
     bun claudekit/api/proxy.ts "$@"
