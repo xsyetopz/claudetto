@@ -1,6 +1,7 @@
 import { appendFile, mkdtemp, realpath } from "node:fs/promises";
 import path from "node:path";
 import { weeklyShare } from "../../price/share.ts";
+import { removeFolders } from "../../session/folders.ts";
 import { eachInOrder, mapInOrder } from "../fixture/ordered.ts";
 import { expectedUsd, FORK_USD } from "../plan/cost.ts";
 import { type Fork, plan } from "../plan/plan.ts";
@@ -75,10 +76,29 @@ export interface Round {
 /** Thrown when the cap stops a round, so the forks already run come back with the cause. */
 class Capped extends Error {}
 
+/**
+ * `root` is the user's results folder and keeps `results.jsonl`; the base folders under it are scratch, which every
+ * fork has used by the time this returns, so they go with the round, on a throw too.
+ */
 export const runAll = async (
 	root: string,
 	run: Runners,
 	o: Options,
+): Promise<Round> => {
+	const made: string[] = [];
+	try {
+		return await roundIn(root, run, o, made);
+	} finally {
+		await Promise.all(made.map(removeFolders));
+	}
+};
+
+/** Runs the round and adds each base folder it makes to `made`, for the caller to remove. */
+const roundIn = async (
+	root: string,
+	run: Runners,
+	o: Options,
+	made: string[],
 ): Promise<Round> => {
 	// The dearest end of the band, so a run that might not fit is not started on the hope that it does.
 	const tooDear = overWeekly(
@@ -95,9 +115,9 @@ export const runAll = async (
 	}
 	let spent = 0;
 	const bases = await mapInOrder(o.sizes, async (size) => {
-		const dir = await realpath(
-			await mkdtemp(path.join(root, `${size / 1000}k-`)),
-		);
+		const folder = await mkdtemp(path.join(root, `${size / 1000}k-`));
+		made.push(folder);
+		const dir = await realpath(folder);
 		const start = await run.base(dir, size, o.model);
 		const why = baseProblem(start.context, size, o.lowest);
 		if (why) {

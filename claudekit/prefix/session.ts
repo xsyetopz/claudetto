@@ -1,6 +1,6 @@
 // Drives one interactive `claude` in `tmux` through several turns against the fake API and keeps every request body.
 
-import { mkdir, mkdtemp, realpath, writeFile } from "node:fs/promises";
+import { realpath, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { sleep } from "bun";
 import type { ToolCall } from "../api/answer.ts";
@@ -8,6 +8,7 @@ import { startFakeApi } from "../api/fake.ts";
 import { claudeArgv } from "../session/argv.ts";
 import { spawnCommand } from "../session/command.ts";
 import { FAKE_KEY, fakeApiEnv } from "../session/env.ts";
+import { type SessionFolders, withFolders } from "../session/folders.ts";
 import { interactiveConfig, tmuxArgv } from "../session/tmux.ts";
 import { isMain } from "./report.ts";
 
@@ -41,7 +42,6 @@ export interface Scenario {
 }
 
 export interface Recorded {
-	readonly root: string;
 	/** Every body to the messages route, in order. */
 	readonly all: readonly string[];
 	/** The bodies of the main thread. */
@@ -50,17 +50,20 @@ export interface Recorded {
 	readonly screen: string;
 }
 
-export const runScenario = async (scenario: Scenario): Promise<Recorded> => {
-	const root = await mkdtemp("/tmp/claudetto-prefix-");
-	const config = join(root, "config");
-	const work = join(root, "work");
-	await Promise.all([mkdir(config), mkdir(work)]);
-	if (scenario.settings !== undefined) {
-		await writeFile(
-			join(config, "settings.json"),
-			JSON.stringify(scenario.settings),
-		);
-	}
+/** The scratch root goes when the run ends, so `Recorded` holds the bodies and the screen in memory and no path. */
+export const runScenario = (scenario: Scenario): Promise<Recorded> =>
+	withFolders(
+		"/tmp/claudetto-prefix-",
+		scenario.settings === undefined
+			? undefined
+			: JSON.stringify(scenario.settings),
+		(made) => runIn(made, scenario),
+	);
+
+const runIn = async (
+	{ root, config, work }: SessionFolders,
+	scenario: Scenario,
+): Promise<Recorded> => {
 	// The session keys its trust by the real path.
 	const real = await realpath(work);
 	await writeFile(
@@ -91,7 +94,6 @@ export const runScenario = async (scenario: Scenario): Promise<Recorded> => {
 		await inOrder(scenario.steps, (step) => perform(step, folders, tmux, log));
 		const pane = await tmux("capture-pane", "-p", "-S", "-200", "-t", "claude");
 		return {
-			root,
 			all: [...log],
 			mains: log.filter(isMain),
 			screen: pane.stdout,

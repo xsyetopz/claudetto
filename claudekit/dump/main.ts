@@ -18,7 +18,7 @@ import {
 	settingSources,
 } from "../session/argv.ts";
 import { spawnCommand } from "../session/command.ts";
-import { makeFolders } from "../session/folders.ts";
+import { makeFolders, removeFolders } from "../session/folders.ts";
 import { DUMPS_ENV } from "./plugin/register.ts";
 
 const DUMPS = path.join(import.meta.dir, "../dumps");
@@ -71,47 +71,52 @@ if (!(source && first && last)) {
 	);
 }
 const id = randomUUID();
-const { work } = await makeFolders("/tmp/claudekit-dump-");
-const cwd = await realpath(work);
-const rows = (await readFile(source, "utf8"))
-	.split("\n")
-	.filter(Boolean)
-	.map((l): Row => JSON.parse(l));
-const project = path.join(
-	process.env["CLAUDE_CONFIG_DIR"] ?? path.join(homedir(), ".claude"),
-	"projects",
-	cwd.replace(/[^a-zA-Z0-9]/g, "-"),
-);
-await mkdir(project, { recursive: true });
-await writeFile(
-	path.join(project, `${id}.jsonl`),
-	`${sliceOf(rows, first, last, id, cwd)
-		.map((r) => JSON.stringify(r))
-		.join("\n")}\n`,
-);
-const out = path.join(DUMPS, id);
-await mkdir(out, { recursive: true });
-const ran = await spawnCommand(
-	claudeArgv(
-		["--resume", id],
-		print("Run `true` with the Bash tool, then stop."),
-		model("claude-haiku-5-5"),
-		settingSources("project", "local"),
-		pluginDir(PLUGIN),
-		allowedTools("Bash(true)"),
-		maxBudget(BUDGET_USD),
-		outputFormat("json"),
-	),
-	{ cwd, env: { [DUMPS_ENV]: out } },
-);
-const cost = (() => {
-	try {
-		const value: unknown = JSON.parse(ran.stdout).total_cost_usd;
-		return typeof value === "number" ? `$${value.toFixed(4)}` : "unread";
-	} catch {
-		return "unread";
-	}
-})();
-process.stdout.write(
-	`exit ${ran.code}, cost ${cost}, dumps in ${out}\n${ran.code === 0 ? "" : ran.stderr.slice(0, 2000)}`,
-);
+// The dumps go to `out` and the session to `project`, both outside this root, so only the working folder is scratch.
+const { root, work } = await makeFolders("/tmp/claudekit-dump-");
+try {
+	const cwd = await realpath(work);
+	const rows = (await readFile(source, "utf8"))
+		.split("\n")
+		.filter(Boolean)
+		.map((l): Row => JSON.parse(l));
+	const project = path.join(
+		process.env["CLAUDE_CONFIG_DIR"] ?? path.join(homedir(), ".claude"),
+		"projects",
+		cwd.replace(/[^a-zA-Z0-9]/g, "-"),
+	);
+	await mkdir(project, { recursive: true });
+	await writeFile(
+		path.join(project, `${id}.jsonl`),
+		`${sliceOf(rows, first, last, id, cwd)
+			.map((r) => JSON.stringify(r))
+			.join("\n")}\n`,
+	);
+	const out = path.join(DUMPS, id);
+	await mkdir(out, { recursive: true });
+	const ran = await spawnCommand(
+		claudeArgv(
+			["--resume", id],
+			print("Run `true` with the Bash tool, then stop."),
+			model("claude-haiku-5-5"),
+			settingSources("project", "local"),
+			pluginDir(PLUGIN),
+			allowedTools("Bash(true)"),
+			maxBudget(BUDGET_USD),
+			outputFormat("json"),
+		),
+		{ cwd, env: { [DUMPS_ENV]: out } },
+	);
+	const cost = (() => {
+		try {
+			const value: unknown = JSON.parse(ran.stdout).total_cost_usd;
+			return typeof value === "number" ? `$${value.toFixed(4)}` : "unread";
+		} catch {
+			return "unread";
+		}
+	})();
+	process.stdout.write(
+		`exit ${ran.code}, cost ${cost}, dumps in ${out}\n${ran.code === 0 ? "" : ran.stderr.slice(0, 2000)}`,
+	);
+} finally {
+	await removeFolders(root);
+}

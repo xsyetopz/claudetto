@@ -4,7 +4,7 @@ import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { sessionArgv } from "../arm.ts";
-import { extraArgs } from "../run.ts";
+import { callsOf, extraArgs } from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
 
@@ -113,6 +113,32 @@ describe("the extra flags of each run", () => {
 
 	test("a run with neither flag passes nothing extra", () => {
 		expect(extraArgs(["--arm", "plain"])).toEqual([]);
+	});
+});
+
+describe("the tool calls the fake makes", () => {
+	test("`--calls` reads a list of calls, each a tool name and its input", () => {
+		const text = JSON.stringify([
+			{
+				name: "ToolSearch",
+				input: { query: "select:Monitor", max_results: 1 },
+			},
+			{ name: "ListAgents", input: {} },
+		]);
+
+		expect(callsOf(text)).toEqual([
+			{
+				name: "ToolSearch",
+				input: { query: "select:Monitor", max_results: 1 },
+			},
+			{ name: "ListAgents", input: {} },
+		]);
+	});
+
+	test("a file that is not a list of calls is refused before any session starts", () => {
+		expect(() => callsOf("{}")).toThrow();
+		expect(() => callsOf('[{"name":"Read"}]')).toThrow();
+		expect(() => callsOf('[{"input":{}}]')).toThrow();
 	});
 });
 

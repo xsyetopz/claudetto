@@ -105,7 +105,7 @@ describe("configOf", () => {
 describe("optionsOf", () => {
 	test("turns the handler on only for the arm that asks for it", () => {
 		expect(optionsOf(configOf(["--cheap-summary"]))).toEqual({
-			cheapSummary: "on",
+			cheapSummaryEnabled: true,
 		});
 		expect(optionsOf(configOf([]))).toEqual({});
 	});

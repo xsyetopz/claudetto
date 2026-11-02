@@ -1,4 +1,4 @@
-// The environment variables a probe adds to a `claude` process, each as a small record to spread.
+// The environment variables a probe adds to a `claude` process, and the ones it must not inherit.
 
 /** The variables that keep a session from reporting or updating itself. */
 export const QUIET_ENV: Readonly<Record<string, string>> = {
@@ -30,3 +30,31 @@ export const fakeApiEnv = (
 	...configDirEnv(configDir),
 	...QUIET_ENV,
 });
+
+const SESSION_ONLY = new Set([
+	"AI_AGENT",
+	"CLAUDECODE",
+	"CLAUDE_AUTOCOMPACT_PCT_OVERRIDE",
+	"CLAUDE_EFFORT",
+	"CLAUDE_PID",
+]);
+
+const isLoginOrProvider = (name: string): boolean =>
+	name === "CLAUDE_CODE_OAUTH_TOKEN" || name.startsWith("CLAUDE_CODE_USE_");
+
+const isSessionOnly = (name: string): boolean =>
+	SESSION_ONLY.has(name) ||
+	(name.startsWith("CLAUDE_CODE_") && !isLoginOrProvider(name));
+
+/** `env` without what a running session hands its tools, which a child `claude` would read as its own settings and so drop tools from its request. */
+export const withoutSessionVariables = (
+	env: Readonly<Record<string, string | undefined>>,
+): Record<string, string> => {
+	const kept: Record<string, string> = {};
+	for (const [name, value] of Object.entries(env)) {
+		if (value !== undefined && !isSessionOnly(name)) {
+			kept[name] = value;
+		}
+	}
+	return kept;
+};

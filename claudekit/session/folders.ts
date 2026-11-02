@@ -1,6 +1,6 @@
 // The folders a session runs in: a fresh root with an empty config folder and an empty working folder.
 
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 /** The three folders `makeFolders` creates, all under one temporary root. */
@@ -32,4 +32,25 @@ export const makeFolders = async (
 		await writeFile(join(config, "settings.json"), settings);
 	}
 	return { root, config, work };
+};
+
+/** Removes `root` with all it holds. A root that is already gone is no error. */
+export const removeFolders = (root: string): Promise<void> =>
+	rm(root, { recursive: true, force: true });
+
+/**
+ * Runs `use` in fresh folders and removes them when it ends, on a throw too, so a run leaves no scratch root behind.
+ * A caller whose output is read after the run writes it outside `root` first, or does not use this.
+ */
+export const withFolders = async <T>(
+	prefix: string,
+	settings: string | undefined,
+	use: (folders: SessionFolders) => Promise<T>,
+): Promise<T> => {
+	const folders = await makeFolders(prefix, settings);
+	try {
+		return await use(folders);
+	} finally {
+		await removeFolders(folders.root);
+	}
 };

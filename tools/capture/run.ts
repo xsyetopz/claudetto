@@ -3,6 +3,7 @@
 import { mkdir } from "node:fs/promises";
 import { argv } from "node:process";
 import { file as bunFile } from "bun";
+import type { ToolCall } from "../../claudekit/api/answer.ts";
 import { count } from "../../plugins/claudetto/src/format.ts";
 import { ARMS, type Arm, capture, PROMPT } from "./arm.ts";
 import type { Score } from "./score.ts";
@@ -24,14 +25,33 @@ export const extraArgs = (args: readonly string[]): string[] => {
 	];
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isCall = (value: unknown): value is ToolCall =>
+	isRecord(value) &&
+	typeof value["name"] === "string" &&
+	isRecord(value["input"]);
+
+/** The calls of a `--calls` file, refused whole when one entry is not a call. */
+export const callsOf = (text: string): ToolCall[] => {
+	const parsed: unknown = JSON.parse(text);
+	if (!Array.isArray(parsed) || !parsed.every(isCall)) {
+		throw new Error("--calls takes a JSON list of { name, input } objects");
+	}
+	return parsed;
+};
+
 const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
   [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
-  [--classifier] [--interactive]
+  [--classifier] [--interactive] [--calls FILE]
 
 --interactive runs each arm in a detached \`tmux\` session with no \`-p\`, so the request
 holds the tools of an interactive session. It needs \`tmux\` on the PATH.
 --classifier reads the auto mode classifier request in place of the first request.
-Its last system block holds the login name, so it differs between logins.`;
+Its last system block holds the login name, so it differs between logins.
+--calls FILE makes the fake answer with each tool call of the JSON list in turn, then "ok".
+With --dump each later request is written too, as ARM.1.json, ARM.2.json, and so on.`;
 
 const settingsOf = async (options: {
 	file: string | undefined;
@@ -87,6 +107,11 @@ const main = async (): Promise<void> => {
 	intro(interactive, settings);
 	const dump = argOf(args, "dump");
 	const prompt = argOf(args, "prompt") ?? PROMPT;
+	const callsFile = argOf(args, "calls");
+	const calls =
+		callsFile === undefined
+			? undefined
+			: callsOf(await bunFile(callsFile).text());
 	if (dump !== undefined) {
 		await mkdir(dump, { recursive: true });
 	}
@@ -98,6 +123,7 @@ const main = async (): Promise<void> => {
 				extra: extraArgs(args),
 				classifier: args.includes("--classifier"),
 				interactive,
+				calls,
 			}),
 		),
 	);

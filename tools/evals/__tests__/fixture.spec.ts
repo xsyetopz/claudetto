@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { file as bunFile } from "bun";
+import type { CommandRunner } from "../../../claudekit/session/command.ts";
 import { executeSession } from "../execute.ts";
 import { seededKeys, seedFixture } from "../fixture.ts";
 import { isSession, ok, stubRunner } from "./stub.ts";
@@ -159,15 +160,18 @@ describe("executing a session", () => {
 
 	test("gives the grader the transcript of the session", async () => {
 		const root = await makeRoot();
-		const { run, calls } = stubRunner((call) =>
-			isSession(call) ? ok({ stdout: "line one\n" }) : ok(),
-		);
+		let seen = "";
+		// Read while the grader runs: the scratch root goes when the session ends.
+		const run: CommandRunner = async (argv, options) => {
+			if (argv[0] === "bun") {
+				seen = await readFile(options.env?.["EVAL_TRANSCRIPT"] ?? "", "utf8");
+			}
+			return argv[0] === "claude" ? ok({ stdout: "line one\n" }) : ok();
+		};
 
 		await executeSession(deps(root, run), { key: "K", arm: "main.md", run: 1 });
 
-		const grader = calls.find((c) => c.argv[0] === "bun");
-		const path = grader?.options.env?.["EVAL_TRANSCRIPT"] ?? "";
-		expect(await readFile(path, "utf8")).toBe("line one\n");
+		expect(seen).toBe("line one\n");
 	});
 
 	test("a session that timed out is an error and is not graded", async () => {

@@ -42,8 +42,8 @@ export interface Config {
 	cheapSummary: boolean;
 }
 
-export const optionsOf = (c: Config): Record<string, string> =>
-	c.cheapSummary ? { cheapSummary: "on" } : {};
+export const optionsOf = (c: Config): Record<string, boolean> =>
+	c.cheapSummary ? { cheapSummaryEnabled: true } : {};
 
 export const thresholdFor = (context: number): number =>
 	context + CROSS_AFTER_STEPS * STEP_GROWTH_TOKENS;

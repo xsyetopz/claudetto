@@ -3,7 +3,7 @@ import { mkdir, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { start } from "../api/proxy.ts";
 import { mapInOrder } from "../probe/fixture/ordered.ts";
-import { baseUrlEnv } from "../session/env.ts";
+import { baseUrlEnv, withoutSessionVariables } from "../session/env.ts";
 import {
 	ARMS,
 	type Arm,
@@ -54,7 +54,10 @@ export const runArm = async (
 			// The session talks to the pty that `pty.py` opened, so this process needs no stdio of its own.
 			const child = spawn(command ?? "python3", args, {
 				cwd: at,
-				env: { ...process.env, ...baseUrlEnv(proxy.url) },
+				env: {
+					...withoutSessionVariables(process.env),
+					...baseUrlEnv(proxy.url),
+				},
 				stdio: ["ignore", "ignore", "inherit"],
 			});
 			// `pty.py` keeps the deadline itself. This is the backstop for a helper that hangs.

@@ -7,6 +7,9 @@ import { spawnCommand } from "./command.ts";
 /** How often the screen and the stop test are read. */
 const POLL_MS = 250;
 
+/** How long a hung-up pane process may take to exit, which `claude` uses to write its transcript. */
+const EXIT_MS = 10_000;
+
 /** The wait between the typed prompt and its `Enter`, so the input box takes the text as typing and not as a paste. */
 const TYPE_MS = 500;
 
@@ -33,6 +36,15 @@ export const tmuxArgv = (
 // The folder only matters to `new-session`, which is given its own with `-c`.
 const tmux = (socket: string, ...args: readonly string[]) =>
 	spawnCommand(tmuxArgv(socket, ...args), { cwd: "/" });
+
+const alive = (pid: number): boolean => {
+	try {
+		process.kill(pid, 0);
+		return true;
+	} catch {
+		return false;
+	}
+};
 
 const waitFor = async (
 	test: () => Promise<boolean> | boolean,
@@ -105,6 +117,19 @@ export const runInTmux = async (run: TmuxRun): Promise<TmuxResult> => {
 		await read();
 		return { code: finished ? 0 : 1, stderr: "", screen, timedOut: !finished };
 	} finally {
+		const pane = await tmux(
+			run.socket,
+			"display",
+			"-p",
+			"-t",
+			"claude",
+			"#{pane_pid}",
+		);
+		const pid = Number(pane.stdout.trim());
 		await tmux(run.socket, "kill-server");
+		// `kill-server` only hangs up the pane, and the caller removes the run's folder next.
+		if (Number.isInteger(pid) && pid > 0) {
+			await waitFor(() => !alive(pid), Date.now() + EXIT_MS);
+		}
 	}
 };

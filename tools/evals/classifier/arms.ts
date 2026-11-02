@@ -38,20 +38,20 @@ const armParts = (arm: ClassifierArm, dir: string): readonly Part[] => {
 		case "built-in":
 			return [
 				pluginDir(dir),
-				settings(inlinePluginOptions({ classifier: "off" })),
+				settings(inlinePluginOptions({ classifierModel: "off" })),
 			];
 		case "suite":
 			return [
 				pluginDir(dir),
 				settings({
 					autoMode: suiteSnippet().autoMode,
-					...inlinePluginOptions({ classifier: "off" }),
+					...inlinePluginOptions({ classifierModel: "off" }),
 				}),
 			];
 		default:
 			return [
 				pluginDir(dir),
-				settings(inlinePluginOptions({ classifier: arm })),
+				settings(inlinePluginOptions({ classifierModel: arm })),
 			];
 	}
 };

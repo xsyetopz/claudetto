@@ -2,6 +2,7 @@
 // what was added, and every later call re-reads it until the next compaction. The fixed prefix is the smallest
 // prompt of a segment.
 
+import { total } from "../../total.ts";
 import { transcriptFiles, transcripts, type Window } from "../transcripts.ts";
 import { ASSISTANT_OUTPUT, type Step, segmentsOf } from "./segments.ts";
 
@@ -21,14 +22,6 @@ const LONG_OUTPUT = 2000;
 
 const add = <K>(map: Map<K, number>, key: K, by: number): void => {
 	map.set(key, (map.get(key) ?? 0) + by);
-};
-
-const total = (list: readonly number[]): number => {
-	let sum = 0;
-	for (const value of list) {
-		sum += value;
-	}
-	return sum;
 };
 
 const attribute = (stats: Reread, segment: readonly Step[]): void => {

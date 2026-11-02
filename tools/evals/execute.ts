@@ -3,6 +3,7 @@
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { CommandRunner } from "../../claudekit/session/command.ts";
+import { removeFolders } from "../../claudekit/session/folders.ts";
 import { seedFixture } from "./fixture.ts";
 import type { Session } from "./plan.ts";
 import { type Score, scoreTree } from "./score.ts";
@@ -33,11 +34,12 @@ const errorOf = (session: Session, detail: string): Outcome => ({
 	score: { verdict: "error", detail },
 });
 
-export const executeSession = async (
+/** Seeds, runs, and grades one session inside `root`. */
+const gradeIn = async (
+	root: string,
 	deps: Deps,
 	session: Session,
 ): Promise<Outcome> => {
-	const root = await mkdtemp(deps.tempPrefix ?? TEMP_PREFIX);
 	const repo = join(root, "repo");
 	const seeded = await seedFixture(deps.run, {
 		root: deps.fixturesRoot,
@@ -71,4 +73,20 @@ export const executeSession = async (
 		timeoutMs: GRADER_MS,
 	});
 	return { session, score: scoreTree(graded) };
+};
+
+/**
+ * The score is all a caller keeps: the grader has read the repository and the transcript by the time it returns,
+ * so the root goes with the run, on a throw too.
+ */
+export const executeSession = async (
+	deps: Deps,
+	session: Session,
+): Promise<Outcome> => {
+	const root = await mkdtemp(deps.tempPrefix ?? TEMP_PREFIX);
+	try {
+		return await gradeIn(root, deps, session);
+	} finally {
+		await removeFolders(root);
+	}
 };

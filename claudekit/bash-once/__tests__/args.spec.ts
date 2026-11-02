@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { parseArgs, settingsWithHook, toolResultOf } from "../args.ts";
+import {
+	classifierSaw,
+	parseArgs,
+	settingsWithHook,
+	toolResultOf,
+} from "../args.ts";
 
 describe("parseArgs", () => {
 	test("reads the command and inline `--settings` JSON", () => {
@@ -59,5 +64,31 @@ describe("toolResultOf", () => {
 	test("says so when the body has no result", () => {
 		expect(toolResultOf(undefined)).toBe("no result");
 		expect(toolResultOf("{}")).toBe("no result");
+	});
+});
+
+describe("parseArgs plugin flags", () => {
+	test("reads `--plugin-dir` and `--permission-mode`", () => {
+		const parsed = parseArgs([
+			"ls",
+			"--plugin-dir",
+			"/p",
+			"--permission-mode",
+			"auto",
+		]);
+
+		expect(parsed).toEqual({
+			command: "ls",
+			pluginDir: "/p",
+			permissionMode: "auto",
+		});
+	});
+});
+
+describe("classifierSaw", () => {
+	test("counts the requests that carry the command, escaped as JSON", () => {
+		const bodies = ['{"t":"echo \\"a\\" > f"}', '{"t":"other"}'];
+
+		expect(classifierSaw(bodies, 'echo "a" > f')).toBe(1);
 	});
 });

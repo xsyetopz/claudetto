@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readdir, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Result } from "../result.ts";
@@ -180,5 +180,63 @@ describe("runAll retry", () => {
 			.trim()
 			.split("\n");
 		expect(lines).toHaveLength(7);
+	});
+});
+
+describe("runAll scratch folders", () => {
+	const options = {
+		runs: 1,
+		model: "claude-sonnet-5-5",
+		alt: 100_000,
+		sizes: [90_000],
+		cap: 26,
+		lowest: 100_000,
+		weeklyUsed: 10,
+	};
+	const start = {
+		id: "base-1",
+		context: 95_000,
+		base: { cost: 0.4, read: new Set<string>(), edited: new Set<string>() },
+	};
+
+	test("a finished round leaves the results file and no base folder", async () => {
+		const root = await mkdtemp(path.join(tmpdir(), "round-"));
+		const dirs: string[] = [];
+		const run: Runners = {
+			base: (dir) => {
+				dirs.push(dir);
+				return Promise.resolve(start);
+			},
+			fork: () => Promise.reject(new Error("the fork broke")),
+		};
+
+		await runAll(root, run, options);
+
+		expect(dirs).toHaveLength(1);
+		expect(await readdir(root)).toEqual(["results.jsonl"]);
+	});
+
+	test("a round whose base fails leaves no base folder, and the error still reaches the caller", async () => {
+		const root = await mkdtemp(path.join(tmpdir(), "round-"));
+		const run: Runners = {
+			base: () => Promise.reject(new Error("the base broke")),
+			fork: () => Promise.reject(new Error("a fork was run")),
+		};
+
+		await expect(runAll(root, run, options)).rejects.toThrow("the base broke");
+
+		expect(await readdir(root)).toEqual([]);
+	});
+
+	test("a base-only round leaves no base folder", async () => {
+		const root = await mkdtemp(path.join(tmpdir(), "round-"));
+		const run: Runners = {
+			base: () => Promise.resolve(start),
+			fork: () => Promise.reject(new Error("a fork was run")),
+		};
+
+		await runAll(root, run, { ...options, baseOnly: true });
+
+		expect(await readdir(root)).toEqual([]);
 	});
 });

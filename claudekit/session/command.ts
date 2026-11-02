@@ -1,6 +1,7 @@
 // The one place that starts a process; other modules take a `CommandRunner` so tests can stub it.
 
 import { spawn } from "bun";
+import { withoutSessionVariables } from "./env.ts";
 
 export interface CommandResult {
 	/** The exit status, or `undefined` when the process never exited with one (a kill, a spawn failure). */
@@ -26,7 +27,7 @@ export const spawnCommand: CommandRunner = async (argv, options) => {
 	try {
 		const child = spawn([...argv], {
 			cwd: options.cwd,
-			env: { ...process.env, ...options.env },
+			env: { ...withoutSessionVariables(process.env), ...options.env },
 			stdin: "ignore",
 			stdout: "pipe",
 			stderr: "pipe",
