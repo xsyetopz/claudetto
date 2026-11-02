@@ -3,6 +3,7 @@ import { agentOffer, attachAgentOffer } from "./agent-offer/block.ts";
 import type { Block, BlockContext } from "./block.ts";
 import { attachClassify, classifyBlock } from "./classify/block.ts";
 import { attachCompaction, compaction } from "./compaction/block.ts";
+import { attachConfine, confine } from "./confine/block.ts";
 import { attachContext7, context7 } from "./context7/block.ts";
 import { attachDecide, decide } from "./decide/block.ts";
 import { attachGate, gateBlock } from "./gate/block.ts";
@@ -37,6 +38,7 @@ export const CATALOG: readonly Block[] = [
 	context7,
 	classifyBlock,
 	planMode,
+	confine,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -60,4 +62,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachContext7(on, context);
 	attachClassify(on, context);
 	attachPlanMode(on, context);
+	attachConfine(on, context);
 };

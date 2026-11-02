@@ -1,0 +1,79 @@
+#!/bin/sh
+# Runs the shell command string it is given in the shell of the session, with writes confined to the project, the temp folders, and the tool caches.
+# `CLAUDE_CODE_SHELL_PREFIX` names this file, so Claude Code calls it with the whole command after its permission check.
+# Usage: claudetto-confine COMMAND | claudetto-confine --check --
+# `--check --` starts the sandbox on a command that does nothing and exits 0 when it runs, or 126 with the reason when it does not. It takes two arguments, because a call with the command always has one, so a command string `--check` is run and never taken for the check.
+
+refuse() {
+	printf '%s\n' "claudetto-confine: $1 The command was not run." >&2
+	exit 126
+}
+
+dir=$(cd "$(dirname "$0")" && pwd -P) || refuse "cannot find itself."
+profile="$dir/../src/blocks/confine/profile.sb"
+shell=${SHELL:-/bin/bash}
+[ -x "$shell" ] || shell=/bin/bash
+root=$(cd "${CLAUDETTO_CONFINE_ROOT:-$PWD}" 2>/dev/null && pwd -P) || refuse "the project folder is not there."
+tmp=$(cd "${TMPDIR:-/tmp}" 2>/dev/null && pwd -P) || tmp=/tmp
+home=${HOME:-/nonexistent}
+
+check=false
+if [ $# -eq 2 ] && [ "$1" = --check ] && [ "$2" = -- ]; then
+	check=true
+fi
+cmd=${1-}
+
+# A root that is the home folder or holds it makes the whole home writable, `~/.ssh` included.
+homephys=$(cd "$home" 2>/dev/null && pwd -P) || homephys=$home
+case "$homephys/" in
+"${root%/}/"*) refuse "the project folder \`$root\` is the home folder or holds it." ;;
+esac
+
+$check || [ $# -eq 1 ] || refuse "it takes one command string."
+
+case $(uname -s) in
+Darwin)
+	[ -x /usr/bin/sandbox-exec ] || refuse "\`sandbox-exec\` is missing."
+	[ -r "$profile" ] || refuse "its profile is missing."
+	# The system tools keep their caches in the user folder of the system, whatever `TMPDIR` is.
+	tmpuser=$(getconf DARWIN_USER_TEMP_DIR 2>/dev/null) || tmpuser=$tmp
+	tmpuser=$(cd "$tmpuser/.." 2>/dev/null && pwd -P) || tmpuser=$tmp
+	set -- -f "$profile" -D "ROOT=$root" -D "TMP=$tmp" -D "TMPUSER=$tmpuser" -D "HOME=$home"
+	if $check; then
+		why=$(/usr/bin/sandbox-exec "$@" /usr/bin/true 2>&1) ||
+			refuse "\`sandbox-exec\` cannot start a sandbox here (${why}). Leave the built-in \`sandbox\` setting off or set \`confineEnabled\` to \`false\`."
+		exit 0
+	fi
+	exec /usr/bin/sandbox-exec "$@" "$shell" -c "$cmd"
+	;;
+Linux)
+	command -v bwrap >/dev/null 2>&1 ||
+		refuse "\`bwrap\` is missing; install \`bubblewrap\` (\`apt install bubblewrap\`) or set \`confineEnabled\` to \`false\`."
+	# `--check` takes the same flags as the call, so a flag that fails the call fails the guard first.
+	set -- --ro-bind / / --dev /dev --proc /proc --die-with-parent --new-session
+	if $check; then
+		why=$(bwrap "$@" true 2>&1) ||
+			refuse "\`bwrap\` cannot start a sandbox here (${why}). Allow user namespaces or set \`confineEnabled\` to \`false\`."
+		exit 0
+	fi
+	set -- "$@" --bind "$root" "$root" --bind /tmp /tmp
+	[ "$tmp" = /tmp ] || set -- "$@" --bind "$tmp" "$tmp"
+	# macOS allows these folders by path, so they are made here to be bound, because a bind needs the folder.
+	for d in "$home/.bun" "$home/.cache"; do
+		[ -d "$home" ] && mkdir -p "$d" 2>/dev/null
+		[ -d "$d" ] && set -- "$@" --bind "$d" "$d"
+	done
+	if [ -d "$root/.git" ] && [ ! -L "$root/.git" ]; then
+		# A folder that is bound cannot be renamed or removed, so `mv .git .git.x; git init` fails. The hooks folder and the config are bound read-only and made first, so the sandbox cannot create them.
+		mkdir -p "$root/.git/hooks" 2>/dev/null
+		[ -e "$root/.git/config" ] || : >"$root/.git/config" 2>/dev/null
+		set -- "$@" --bind "$root/.git" "$root/.git"
+		[ -d "$root/.git/hooks" ] && set -- "$@" --ro-bind "$root/.git/hooks" "$root/.git/hooks"
+		[ -f "$root/.git/config" ] && set -- "$@" --ro-bind "$root/.git/config" "$root/.git/config"
+	fi
+	exec bwrap "$@" "$shell" -c "$cmd"
+	;;
+*)
+	refuse "there is no sandbox for $(uname -s)."
+	;;
+esac
