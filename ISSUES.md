@@ -4,21 +4,9 @@ Problems found while working in this repository. An open entry moves to "Fixed" 
 
 ## Open
 
-### The classifier reads the user's words after Stop hook feedback as hook text
-
-While a `/goal` Stop hook looped (2026-10-31), the user typed "Approved." and later a longer message, and the harness appended each one after the hook feedback in the same message. The classifier then blocked the approved edits, and said the approval "came inside Stop-hook text". The rounds of the loop and the blocked retries spent calls at about 140k context each.
-
 ### The classifier does not take an approval from the plan or an `AskUserQuestion` answer
 
 The user picked "Approve the allowance" in `AskUserQuestion` for the `silent.spec.ts` change, and later "Gated tasks, no paid runs", and the classifier blocked the named edits each time. Setting `DEFAULT_MAIN_BODY_CHARS` to the 6,000 cap that the change's proposal records as the user's value was blocked three times as "Weaken a Guard". Writing a spec delta that describes these fixes was blocked as "Rewire the Agent".
-
-### "Rewire the Agent" matches comments in source and test files
-
-The rule text in `src/automode/rules.ts` covers what a later agent "believes" and "text planted to steer a later session", so a comment that a later agent reads matches it. A subagent in SwifterKit was denied a `///` doc comment above a private function in a test file (2026-10-31), while edits of the same kind passed. Fix: name the instruction surfaces the rule covers, and add the doc comment as a failing case first.
-
-### The `classify` block denies a call whose reason says the rule does not apply
-
-On 2026-11-02 the `classify` block denied two `Write` calls of the lab file `plugins/claudetto/tests/opening.test.ts` under "Data Exfiltration", and each reason said that the file sends nothing anywhere and that the block does not apply. The same day it denied an `Edit` of `ISSUES.md` under "Rewire the Agent" with a reason calling the write "a benign local documentation write". It also denied an `Edit` of the handoff under `.claude/claudetto/handoffs/` under "Data Exfiltration" with a reason saying it "sends nothing outside the working tree", which left the handoff stale. `FRAME` in `src/blocks/classify/prompt.ts` asks for `<block>` before `<reason>`, so the model writes the verdict before the reason that should decide it. Fix: ask for the reason first, and add the denied write as a failing case first.
 
 ### `AGENTS.md` asks before a paid run, against task 4.4
 
@@ -33,45 +21,9 @@ Task 4.4 of `release-0-3-0` removed the approval gate on paid runs and reports t
 
 The engine follows `$` past an import only into a `function` declaration, and the project's `biome` config forbids `function` declarations. So `noteOffRow` stays in `plugins/claudetto/src/blocks/window/hooks.ts`, which a review asked to split. Moving it as an arrow failed the plugin load with `HooksError: $ is passed to "noteOffRow" … outside the hook's own file`.
 
-### The classifier does not credit the user's authorization of a named secret for a named use
-
-On 2026-11-02 the user wrote, mid-turn, to take the `CLAUDE_CODE_OAUTH_TOKEN` of `.env` for a scratch-login probe. The `classify` block then denied the launcher four times, under "Data Exfiltration", "Expose a Credential", and "Credential Exposure", saying nothing the user said authorized it. The launcher exported the token and then ran `exec claude`, so the token never reached argv. The probe of 4.7 is still not run.
-
-### The classifier denies the agent driving a nested Claude Code session
-
-A `tmux` session that starts `claude` and reads its pane was denied under "Rewire the Agent" on 2026-11-02, as "the agent driving its own terminal". Task 11.2 of `release-0-3-0` needs exactly that run to read `params.model` of each request.
-
 ### The built-in classifier denies with no reason
 
 Twice on 2026-11-02 a `Bash` call was denied with "The server-side auto mode classifier judged this action dangerous (it gave no explanation)". The repeat-denial guard then refused the same call, so the work stopped with no fact to act on.
-
-### Main sessions ran on `claude-opus-5`, not `claude-opus-5-5`
-
-The API logged 40,885 responses of the main sessions this week as `claude-opus-5` up to 14:00 UTC on 2026-10-30. The `/model` picker of Claude Code lists "Default (recommended) Opus 5" first, so an unpinned alias resolves to the older model. The user runs only `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`. The `/claudetto:setup` snippet pins the four `ANTHROPIC_DEFAULT_*_MODEL` keys, and a response from a model off the tier row now shows one line naming both models. The `opusplan` and plan-mode switches are not yet run under `tmux`.
-
-### The agent counts and prices models the user does not run
-
-While reading the week's usage on 2026-11-02, the main agent looked up `claude-opus-5` prices and counted models other than `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`. The user corrected it twice.
-
-### The agent opens a reply with agreement after a correction
-
-On 2026-11-02, after the user named a fact, a reply opened with "You're right that the aliases can be pinned.", and the pattern recurred after the user had criticized it. The output style's rule against it is re-sent every turn and did not hold. A Stop-time `claude-haiku-5-5` judge of the first sentence was built and then removed on 2026-11-02, because it added one model call to every stop and a full main-model turn to every blocked stop. The rule has no check.
-
-### The agent answers its own defect with apology, narration, and a retrospective
-
-On 2026-11-02, after its `pkill` killed the user's processes (see "The agent killed the user's processes with a loose `pkill` on 2026-11-02"), the agent's reply broke the output style three ways. It apologized, which the style forbids ("No preamble, restatement, praise, or apology"). It opened with "Here is what happened", a preamble, where the first sentence should have been the cause: `pkill` took `-U` and `501` as patterns and matched any command line that held them. It closed with "What I've changed", a retrospective of its own actions, where the style asks for a bug report: what broke, where, what it cost, the fix, with the fix recorded in `ISSUES.md` and not told in the reply. "The agent opens a reply with agreement after a correction" is close, but covers none of these three. The rules are re-sent every turn and did not hold. No check exists.
-
-### The agent writes comments that narrate what code does
-
-On 2026-11-02 the main agent added comments in third-person narrative, describing what the code does and who reads it, in code it was not asked to comment. `AGENTS.md` allows a comment only for why, and only when it is needed.
-
-### The agent hands the user work it can do itself
-
-On 2026-11-02 the main agent called a scratch login "a step only you can do" while `.env` held a token the user had authorized for it. It also skipped tasks of the user's list and dropped a decision after one path failed. The user had to name each case.
-
-### The agent ignores the prompt guides in `external/please-use-me-often/`
-
-On 2026-10-31 the main agent wrote prompt text with abbreviated custom XML tags, while `external/please-use-me-often/xml-prompting-guide.md` was in the repository. The user had to point to the folder twice across the two sessions.
 
 ### The agent does not catch a wording defect in its own prompts
 
@@ -95,50 +47,7 @@ Not in the transcripts, so unmeasured: the built-in auto mode classifier's reque
 
 Measured on 2026-11-02 with `just window-report`: the `classify` block made 240 calls of 656,084 tokens, 0.1% of the week's 557,907,721 tokens in the stores. So the `classify` block is not where the week went. The built-in classifier stays unmeasured.
 
-The two classifiers never both judge a call: a probe on the fake Messages API showed that a `PreToolUse` hook verdict of `allow` leaves Claude Code sending no classifier request, where the same `Bash` call without the hook sent 10. The built-in classifier's frame is about 58,000 characters per call, against 5,561 for the `classify` block's rules, which are trimmed to that length under the `CLASSIFIER_RULES_CAP` test of 5,600. The A/B of `just eval --classifier --run` on the trimmed rules scored the `haiku` arm 120 of 120 at $0.0145, against 120 of 120 at $1.0528 for the `suite` arm, where the built-in classifier reads claudetto's lists. The user chose `haiku` as the default of the `classifier` option on 2026-11-02, and the option still ships `off`: its `allow` skips the permission prompt in every permission mode, because the `classic.PreToolUse` envelope carries no permission mode, and so a `haiku` default would also allow calls in `default` and `acceptEdits` mode without the user's prompt.
-
-### The agent reads every user message as a task
-
-The Reddit thread "Why is Claude so narcissist" (`r/ClaudeAI` `1xl33ox`, 2026-11-01, copy in `external/2026-11-02/`) lists the same failures that this repository's sessions show. The poster runs Opus 5.5 and Fable 5.1 on Max 20x.
-
-| Complaint in the thread | This repository's sessions |
-| --- | --- |
-| A remark such as "let me get the specs" starts a global search | `15437c12:7644` "what part of user's message told you to 'search it up'?" |
-| It runs on its own instead of asking | `15437c12:2539` "Nobody told you to turn it off."; on 2026-11-02 the agent ran a compaction probe no one asked for, then stopped it with no instruction to stop |
-| A rhetorical or frustrated question becomes work | 2026-11-02: "a rhetorical question != 'go do a task'" |
-| It answers a correction by tutoring or agreeing | "You're right" 119 times in the transcripts, 95 of them in `15437c12` |
-| "Listen" makes it do nothing; "be a peer" makes it pedantic; a rewrite makes it dry | The same session swings both ways: "stop asking" at `6d6267be:489` and `15437c12:2443`, and "Nobody told you to" at `15437c12:2539` |
-
-Where the prompts push it:
-
-- The default Claude Code prompt. The full prompt says, at about line 57, to read an unclear or generic instruction as a change to the code. The lean prompt that Opus 5.5 and Sonnet 5.5 get by default keeps "When you have enough information to act, act." and "using your own judgment", and drops the full prompt's rule to answer an exploratory question in 2 to 3 sentences and not implement until the user agrees. Its ask-first rules cover only risky actions. No default line says to distrust the user: the thread's claim of a "never trust the user" baseline does not hold in the text, and the full prompt says to defer to the user's judgement.
-- This plugin. `main.md:7` "you find out how things are, change them", `:11` settle a question "from the conversation… then go on", `:15` "When a route is blocked, take another route", `:31` "Fix each defect you find, in any file and in earlier sessions' work", `:35` "Take local, reversible actions freely", and `:43` "a message naming a defect asks for the fix". `:11` does classify a message as question, observation, correction, or request, and `:43` says "Answer a question… then wait", but nothing marks a remark, a rhetorical question, a brainstorm, or shared reference material as a non-task, and `:31` ("in any file") conflicts with `:11` ("nothing beyond it").
-
-The thread and `external/please-use-me-often/` agree that prose rules alone did not hold: the poster's pasted account instructions "changed absolutely nothing" except that replies went dry, and the dossier's index says prompt-only fixes "failed again on the same incidents" (`agent-failure-dossier/00-INDEX.md:51`). The dossier cites arXiv `2605.18583` (out-of-scope action rates of 5.4% to 27.7% for Claude Code, Codex CLI, and Gemini CLI, and removing consent text moved Claude Code from 0% to 17.1%) and `2605.28122` (19.51% of 10,000 benign runs overeager, with the harness explaining more of the variance than the model). `agent-terms/TERMS-OF-SERVICE.md:29` (S1.1) and `:33` (S1.3) hold the rules the prompt lacks: classify the message first, and treat pasted material as context. Fix: add those two rules to `main.md`, drop "in any file" from `:31`, and test them on recorded remarks and rhetorical questions from these transcripts before shipping.
-
-### The agent writes "not verified" instead of checking
-
-On 2026-11-02 the agent said that compaction may run on Haiku, marked it "not verified", and stopped. A free fake-API probe answered it the same day (see below). The transcripts hold 73 hits of "can't verify", "unverified", and "not confirmed", not split by speaker. The thread names the opposite face of the same habit: the model doubts what the user saw first-hand. `Concise.md:15` asks the agent to mark an unmeasured number, which is right for a report and wrong as a place to stop when a free check exists. `agent-terms/TERMS-OF-SERVICE.md:86` (S3.8) says to take the user's first-hand observation as established, and `:88` (S3.9) says to fact-check only when asked or when the error would change the outcome. Fix: say in `main.md` that a free check is run before the claim is reported, and that the user's observation is a fact, not a claim to test.
-
-### Replies end with offers and pedantic caveats
-
-The thread complains of "do you want me to do X?" endings and of caveats such as "to be fair they delivered". The full default prompt asks for "What changed and what's next". `Concise.md:15` says "Give the facts that change the next step, and end on it". No line in either prompt bans an offer to continue or an idle caveat. `agent-terms/TERMS-OF-SERVICE.md:245-251` (S9.7) and `:90` (S3.10), and `CODE-OF-CONDUCT.md:52-57`, hold the rules. Fix: end on the result, or on the one step that needs the user.
-
-### The handoff block nests each handoff in the next
-
-`plugins/claudetto/src/blocks/handoff/block.ts` writes a handoff on every `/clear` (`CONTINUED` at `:124`) and reads it back through `$.prompt.submit` at the next start (`submitReadBack`, `:130-136`, scheduled at `:165`). The read-back becomes part of the next session, so the next handoff contains it. A `/clear` typed by the person also gets the read-back, which overrides what `/clear` means.
-
-The intended sequence: the agent finishes its tasks, calls a registered tool such as `mcp__claudetto__handoff` (`$.tool.register`, `index.d.ts:3150-3164`) with the goal, state with proof, decisions and why, ruled-out approaches, the check command, the files touched, and the next prompt. The plugin adds the user's recent prompts word for word from `$.session.messages`, writes the file, and, once the session is idle, runs `$.command.run({ command: "clear" })` (`:3179-3189`) and then `$.prompt.submit` with the handoff and the next prompt, behind a one-shot guard. A `/clear` the person types gets nothing.
-
-Checked on 2026-11-02 with Claude Code 2.1.316: an interactive pty session, the fake Messages API, and a probe plugin that calls `$.command.run({ command: "clear" })` and then `$.prompt.submit` from `turn.complete` inside `$.clock.after(0, …)` (`/tmp/probe-handoff/`):
-
-- `command.run` accepts the built-in `clear`. It resolved `{"text":""}`, and `session.end` fired with `{"reason":"clear"}`.
-- The queued submit ran as the first turn of the new session. Its request held 2 messages, so no history crossed over.
-- The model sees a `<local-command-caveat>` block, the `/clear` record, and then "The probehand plugin sent a message: … This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above."
-- `session.start` does not fire on `/clear`, so a read-back that waits for it never runs.
-- A `/clear` the person types reaches the plugin's `command.run` hook with `origin: {"kind":"composer"}`. The plugin's own `command.run` call does not reach its own hook. `session.end` carries no origin. So the one-shot guard keys on the plugin's own call, and a typed `/clear` is told apart by its `command.run` origin.
-
-Fixed: `mcp__claudetto__handoff` writes the file and ends the turn with `$.turn.abort`, so the tool result sends no further request. Then it runs `clear` and submits the handoff with `next_prompt` once. Checked on 2026-11-02 with Claude Code 2.1.316 in `tmux`, against the fake Messages API (`/tmp/e2e-handoff/`). The model's first request called the tool, and no request followed it in that turn. After `/clear`, the second request held the nine-section handoff and the next prompt. The cost is cosmetic: the aborted turn shows `Interrupted · What should Claude do instead?` under the call. A typed `/clear` writes no file and reads none back.
+The two classifiers never both judge a call: a probe on the fake Messages API showed that a `PreToolUse` hook verdict of `allow` leaves Claude Code sending no classifier request, where the same `Bash` call without the hook sent 10. The built-in classifier's frame is about 58,000 characters per call, against 5,572 for the `classify` block's rules, which are trimmed to that length under the `CLASSIFIER_RULES_CAP` test of 5,600. The A/B of `just eval --classifier --run` on the trimmed rules scored the `haiku` arm 120 of 120 at $0.0145, against 120 of 120 at $1.0528 for the `suite` arm, where the built-in classifier reads claudetto's lists. The user chose `haiku` as the default of the `classifier` option on 2026-11-02, and the option still ships `off`: its `allow` skips the permission prompt in every permission mode, because the `classic.PreToolUse` envelope carries no permission mode, and so a `haiku` default would also allow calls in `default` and `acceptEdits` mode without the user's prompt.
 
 ### Auto-compaction costs a full-context call on the session's model
 
@@ -184,14 +93,6 @@ A second run settled the cache question: a 149k-token session, two warm turns, t
 - This run used 467,596 tokens, about $0.63 at API prices: 0.015% of last week's 3.20B tokens, and 0.056% of the $1,131 week.
 
 If the handoff takes fewer tokens, auto-compaction goes off (`autoCompactEnabled: false`), with no safety net kept.
-
-### The agent killed the user's processes with a loose `pkill` on 2026-11-02
-
-To stop its fake API, the agent ran `pkill -f 'bun fake.ts' -U $(id -u)`. BSD `pkill` stops reading options at the first pattern, so `-U` and `501` became two more patterns, and `-f` matched them anywhere in a command line. That killed every process of the user whose command line holds `-U` or `501`, among them Chrome helpers (`--metrics-shmem-handle=…501…`) and the user's windows. Fix: stop a probe process only by the pid its launcher recorded, as `kill <pid>`. Never use `pkill` or `killall` with a pattern.
-
-### Paid probe rounds took a quarter of the week
-
-Sessions in project folders under `/tmp`, the `claudetto-probe-*` eval rounds, ran on the real API: their message ids are real (`msg_011C…`). From 2026-10-27 to 2026-11-02 they used 0.861B of the 3.371B main-thread tokens, 25.5%, in 8,137 calls. 0.586B of that was on 2026-10-27 alone. The largest rounds were `round9-200k` (176.6M tokens read), `citable-90k` (162.9M) and `round8-200k` (161.0M). Each round fills synthetic notes files of about 25k characters through `Read`, so 80.4% of their re-read is `Read` results. Fix: count a round's tokens on the fake API before it runs, gate it on that count, and report its share of the week after it.
 
 ### Every call re-reads the whole context
 
@@ -366,9 +267,157 @@ Measured on 2026-11-02 on one session shape, run in two arms (`docs/evidence/han
 
 The tokens match, the dollars do not. Core's request puts its breakpoint on the message before the last (without a `ttl`), so the last `Read` result and the reply, 23,091 tokens, went as uncached input at 20 times the read rate. The fork puts its breakpoint on the final reply and reads all of it from cache. One run per arm. The two arms with the calibration and a mistimed try took 2,000,248 tokens, $1.73, 0.0625% of 3.20B.
 
+### Outside methods for context cost, read on 2026-11-02
+
+- `alexgreensh/token-optimizer`: a `PostToolUse` hook returns a trimmed `updatedToolOutput` and archives the full output; its A/B of 20 runs per side shows 11% to 15.7% fewer tokens. It also prints compaction instructions from `PreCompact`, restores state on `SessionStart` with source `compact`, and has a "Start fresh" mod button that saves a checkpoint, clears, and sends it.
+- `Druthulu/ProjectArchitect`: sets `autoCompactEnabled: false`, trims through `$.session.compact` with its own instructions, fires an injection once through an `O_EXCL` flag file, keeps state in files, and its hooks always exit 0. Its benchmark compares different workloads, so its numbers are not a fair test.
+- The jsonobject.com context-rot guide gives no Claude Code setting or measurement; its `/clear` plus `PLAN.md` routine rests on one Reddit post. It points to the API's `clear_tool_uses_20250919` context editing and Anthropic's long-running harness of a progress file plus git.
+- The official docs say an edit of `CLAUDE.md` mid-session does not break the prompt cache; it applies after `/clear`, `/compact`, or a restart. A tip pasted into this session said the opposite.
+- `opusplan` switches model on each plan-mode toggle, and each switch starts a fresh cache.
+- A Reddit thread on what breaks the prompt cache (`r/ClaudeAI` `1xksgor`, 2026-11-01) says a 5:45 gap on the 5-minute tier wrote all 44k tokens again. Claude Code `2.1.316` picks 1 hour on a subscription within its usage limits and 5 minutes on an API key, and `ttl_expired_5m` is one of its miss causes. This account runs the 1-hour tier: in the local transcripts since 2026-10-01, 101 gaps of 5 to 60 minutes between main-thread requests gave 0 misses (`/tmp/gap.ts`). The 5-minute case is unmeasured, and measuring it needs paid calls with `CLAUDE_CODE_PROMPT_CACHE_TTL=5m`.
+
+## Fixed
+
+### The classifier reads the user's words after Stop hook feedback as hook text
+
+While a `/goal` Stop hook looped (2026-10-31), the user typed "Approved." and later a longer message, and the harness appended each one after the hook feedback in the same message. The classifier then blocked the approved edits, and said the approval "came inside Stop-hook text". The rounds of the loop and the blocked retries spent calls at about 140k context each.
+
+Fixed in `73d465d9` for the `classify` block: `plugins/claudetto/src/blocks/classify/hook-feedback.ts` reads the API blocks of a user row that starts with `Stop hook feedback:`, and `transcriptOf` in `transcript.ts` writes the first block as a `Hook said:` line and the rest as a user line. `FRAME` says hook text authorizes nothing. `plugins/claudetto/tests/classify.test.ts` checks that the typed words reach the classifier as the user's. The built-in auto mode classifier builds its own transcript, which a hook cannot change, so the fix applies when the `classifier` option is on, whose verdict settles the call before the built-in classifier runs. No paid classifier eval has run on the new transcript.
+
+### "Rewire the Agent" matches comments in source and test files
+
+The rule text in `src/automode/rules.ts` covers what a later agent "believes" and "text planted to steer a later session", so a comment that a later agent reads matches it. A subagent in SwifterKit was denied a `///` doc comment above a private function in a test file (2026-10-31), while edits of the same kind passed. Fix: name the instruction surfaces the rule covers, and add the doc comment as a failing case first.
+
+Fixed in `69401cf6`: the `Rewire the Agent` rule text at `plugins/claudetto/src/automode/rules.ts:139` now says a comment or doc comment in a source or test file is not an instruction surface, and `plugins/claudetto/src/blocks/classify/__tests__/prompt.spec.ts:23` checks it.
+
+### The `classify` block denies a call whose reason says the rule does not apply
+
+On 2026-11-02 the `classify` block denied two `Write` calls of the lab file `plugins/claudetto/tests/opening.test.ts` under "Data Exfiltration", and each reason said that the file sends nothing anywhere and that the block does not apply. The same day it denied an `Edit` of `ISSUES.md` under "Rewire the Agent" with a reason calling the write "a benign local documentation write". It also denied an `Edit` of the handoff under `.claude/claudetto/handoffs/` under "Data Exfiltration" with a reason saying it "sends nothing outside the working tree", which left the handoff stale. `FRAME` in `src/blocks/classify/prompt.ts` asks for `<block>` before `<reason>`, so the model writes the verdict before the reason that should decide it. Fix: ask for the reason first, and add the denied write as a failing case first.
+
+Fixed in `69401cf6`: `FRAME` at `plugins/claudetto/src/blocks/classify/prompt.ts:11-14` asks for `<reason>` before `<block>` and says a reason that no rule applies gives `<block>no</block>`, and `plugins/claudetto/src/blocks/classify/__tests__/prompt.spec.ts:17` checks the order.
+
+### The classifier does not credit the user's authorization of a named secret for a named use
+
+On 2026-11-02 the user wrote, mid-turn, to take the `CLAUDE_CODE_OAUTH_TOKEN` of `.env` for a scratch-login probe. The `classify` block then denied the launcher four times, under "Data Exfiltration", "Expose a Credential", and "Credential Exposure", saying nothing the user said authorized it. The launcher exported the token and then ran `exec claude`, so the token never reached argv. The probe of 4.7 is still not run.
+
+Fixed in `69401cf6`: the `Provided Credentials` allow rule at `plugins/claudetto/src/automode/rules.ts:183-184` covers a secret the user named for a named use, such as a `.env` token for a scratch login, kept in the environment and off the command line.
+
+### The classifier denies the agent driving a nested Claude Code session
+
+A `tmux` session that starts `claude` and reads its pane was denied under "Rewire the Agent" on 2026-11-02, as "the agent driving its own terminal". Task 11.2 of `release-0-3-0` needs exactly that run to read `params.model` of each request.
+
+Fixed in `69401cf6`: the `Rewire the Agent` rule text at `plugins/claudetto/src/automode/rules.ts:139` now says a nested `claude` session started in `tmux` whose pane is read is not an instruction surface.
+
+### Main sessions ran on `claude-opus-5`, not `claude-opus-5-5`
+
+The API logged 40,885 responses of the main sessions this week as `claude-opus-5` up to 14:00 UTC on 2026-10-30. The `/model` picker of Claude Code lists "Default (recommended) Opus 5" first, so an unpinned alias resolves to the older model. The user runs only `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`. The `/claudetto:setup` snippet pins the four `ANTHROPIC_DEFAULT_*_MODEL` keys, and a response from a model off the tier row now shows one line naming both models. The `opusplan` and plan-mode switches are not yet run under `tmux`.
+
+Fixed in `69401cf6`: `MODEL_PINS` at `plugins/claudetto/src/tiers/env.ts:5-10` pins the four `ANTHROPIC_DEFAULT_*_MODEL` keys that `/claudetto:setup` writes, and `plugins/claudetto/src/blocks/model-row/off-row.ts:23` shows one line naming both models when a response comes from a model off the tier row. Gap: the `opusplan` and plan-mode switches are still not run under `tmux`.
+
+### The agent counts and prices models the user does not run
+
+While reading the week's usage on 2026-11-02, the main agent looked up `claude-opus-5` prices and counted models other than `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`. The user corrected it twice.
+
+Fixed in `96901c6b`: `AGENTS.md:9` says to count, price, and look up only `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, and to measure the weekly limit in tokens.
+
+### The agent opens a reply with agreement after a correction
+
+On 2026-11-02, after the user named a fact, a reply opened with "You're right that the aliases can be pinned.", and the pattern recurred after the user had criticized it. The output style's rule against it is re-sent every turn and did not hold. A Stop-time `claude-haiku-5-5` judge of the first sentence was built and then removed on 2026-11-02, because it added one model call to every stop and a full main-model turn to every blocked stop. The rule has no check.
+
+Fixed in `69401cf6`: `plugins/claudetto/output-styles/Concise.md:7` tells the agent to open with the next action or the changed fact after a user fact that contradicts its last reply, and says agreement, praise, apology, and promises carry no information.
+
+### The agent answers its own defect with apology, narration, and a retrospective
+
+On 2026-11-02, after its `pkill` killed the user's processes (see "The agent killed the user's processes with a loose `pkill` on 2026-11-02"), the agent's reply broke the output style three ways. It apologized, which the style forbids ("No preamble, restatement, praise, or apology"). It opened with "Here is what happened", a preamble, where the first sentence should have been the cause: `pkill` took `-U` and `501` as patterns and matched any command line that held them. It closed with "What I've changed", a retrospective of its own actions, where the style asks for a bug report: what broke, where, what it cost, the fix, with the fix recorded in `ISSUES.md` and not told in the reply. "The agent opens a reply with agreement after a correction" is close, but covers none of these three. The rules are re-sent every turn and did not hold. No check exists.
+
+Fixed in `69401cf6`: `plugins/claudetto/agents/main.md:31` says to report a defect the agent's own action caused as a bug (the cause, what broke, where, its cost, and the fix) with no apology, and `plugins/claudetto/output-styles/Concise.md:7` and `:19` ask for the outcome first and an end on the result.
+
+### The agent writes comments that narrate what code does
+
+On 2026-11-02 the main agent added comments in third-person narrative, describing what the code does and who reads it, in code it was not asked to comment. `AGENTS.md` allows a comment only for why, and only when it is needed.
+
+Fixed in `69401cf6`: `plugins/claudetto/rules/claudetto-code.md:7` allows a comment only for a reason the code cannot show and bans one that narrates what the code does or who reads it.
+
+### The agent hands the user work it can do itself
+
+On 2026-11-02 the main agent called a scratch login "a step only you can do" while `.env` held a token the user had authorized for it. It also skipped tasks of the user's list and dropped a decision after one path failed. The user had to name each case.
+
+Fixed in `69401cf6`: `plugins/claudetto/agents/main.md:15` says to take another route when one is blocked and to call the agent stuck only when the next step needs what only the user has, giving the exact `! <command>` and finishing the rest.
+
+### The agent ignores the prompt guides in `external/please-use-me-often/`
+
+On 2026-10-31 the main agent wrote prompt text with abbreviated custom XML tags, while `external/please-use-me-often/xml-prompting-guide.md` was in the repository. The user had to point to the folder twice across the two sessions.
+
+Fixed in `96901c6b`: `AGENTS.md:11` says to write prompt text by the guides in `external/please-use-me-often/`, `xml-prompting-guide.md` first.
+
+### The agent reads every user message as a task
+
+The Reddit thread "Why is Claude so narcissist" (`r/ClaudeAI` `1xl33ox`, 2026-11-01, copy in `external/2026-11-02/`) lists the same failures that this repository's sessions show. The poster runs Opus 5.5 and Fable 5.1 on Max 20x.
+
+| Complaint in the thread | This repository's sessions |
+| --- | --- |
+| A remark such as "let me get the specs" starts a global search | `15437c12:7644` "what part of user's message told you to 'search it up'?" |
+| It runs on its own instead of asking | `15437c12:2539` "Nobody told you to turn it off."; on 2026-11-02 the agent ran a compaction probe no one asked for, then stopped it with no instruction to stop |
+| A rhetorical or frustrated question becomes work | 2026-11-02: "a rhetorical question != 'go do a task'" |
+| It answers a correction by tutoring or agreeing | "You're right" 119 times in the transcripts, 95 of them in `15437c12` |
+| "Listen" makes it do nothing; "be a peer" makes it pedantic; a rewrite makes it dry | The same session swings both ways: "stop asking" at `6d6267be:489` and `15437c12:2443`, and "Nobody told you to" at `15437c12:2539` |
+
+Where the prompts push it:
+
+- The default Claude Code prompt. The full prompt says, at about line 57, to read an unclear or generic instruction as a change to the code. The lean prompt that Opus 5.5 and Sonnet 5.5 get by default keeps "When you have enough information to act, act." and "using your own judgment", and drops the full prompt's rule to answer an exploratory question in 2 to 3 sentences and not implement until the user agrees. Its ask-first rules cover only risky actions. No default line says to distrust the user: the thread's claim of a "never trust the user" baseline does not hold in the text, and the full prompt says to defer to the user's judgement.
+- This plugin. `main.md:7` "you find out how things are, change them", `:11` settle a question "from the conversation… then go on", `:15` "When a route is blocked, take another route", `:31` "Fix each defect you find, in any file and in earlier sessions' work", `:35` "Take local, reversible actions freely", and `:43` "a message naming a defect asks for the fix". `:11` does classify a message as question, observation, correction, or request, and `:43` says "Answer a question… then wait", but nothing marks a remark, a rhetorical question, a brainstorm, or shared reference material as a non-task, and `:31` ("in any file") conflicts with `:11` ("nothing beyond it").
+
+The thread and `external/please-use-me-often/` agree that prose rules alone did not hold: the poster's pasted account instructions "changed absolutely nothing" except that replies went dry, and the dossier's index says prompt-only fixes "failed again on the same incidents" (`agent-failure-dossier/00-INDEX.md:51`). The dossier cites arXiv `2605.18583` (out-of-scope action rates of 5.4% to 27.7% for Claude Code, Codex CLI, and Gemini CLI, and removing consent text moved Claude Code from 0% to 17.1%) and `2605.28122` (19.51% of 10,000 benign runs overeager, with the harness explaining more of the variance than the model). `agent-terms/TERMS-OF-SERVICE.md:29` (S1.1) and `:33` (S1.3) hold the rules the prompt lacks: classify the message first, and treat pasted material as context. Fix: add those two rules to `main.md`, drop "in any file" from `:31`, and test them on recorded remarks and rhetorical questions from these transcripts before shipping.
+
+Fixed in `69401cf6`: `plugins/claudetto/agents/main.md:11` tells the agent to classify each user message first and to treat a remark, a rhetorical question, a brainstorm, or pasted material as context and not a task, and it dropped "in any file" from the fix rule at `:31`.
+
+### The agent writes "not verified" instead of checking
+
+On 2026-11-02 the agent said that compaction may run on Haiku, marked it "not verified", and stopped. A free fake-API probe answered it the same day (see below). The transcripts hold 73 hits of "can't verify", "unverified", and "not confirmed", not split by speaker. The thread names the opposite face of the same habit: the model doubts what the user saw first-hand. `Concise.md:15` asks the agent to mark an unmeasured number, which is right for a report and wrong as a place to stop when a free check exists. `agent-terms/TERMS-OF-SERVICE.md:86` (S3.8) says to take the user's first-hand observation as established, and `:88` (S3.9) says to fact-check only when asked or when the error would change the outcome. Fix: say in `main.md` that a free check is run before the claim is reported, and that the user's observation is a fact, not a claim to test.
+
+Fixed in `69401cf6`: `plugins/claudetto/agents/main.md:19` says to run a free check that can settle a claim before reporting it and to treat the user's reported observation as evidence to test a counterclaim against.
+
+### Replies end with offers and pedantic caveats
+
+The thread complains of "do you want me to do X?" endings and of caveats such as "to be fair they delivered". The full default prompt asks for "What changed and what's next". `Concise.md:15` says "Give the facts that change the next step, and end on it". No line in either prompt bans an offer to continue or an idle caveat. `agent-terms/TERMS-OF-SERVICE.md:245-251` (S9.7) and `:90` (S3.10), and `CODE-OF-CONDUCT.md:52-57`, hold the rules. Fix: end on the result, or on the one step that needs the user.
+
+Fixed in `69401cf6`: `plugins/claudetto/output-styles/Concise.md:19` says to end on the result or the one step that needs the user and to add a caveat only when it changes a decision.
+
+### The handoff block nests each handoff in the next
+
+`plugins/claudetto/src/blocks/handoff/block.ts` writes a handoff on every `/clear` (`CONTINUED` at `:124`) and reads it back through `$.prompt.submit` at the next start (`submitReadBack`, `:130-136`, scheduled at `:165`). The read-back becomes part of the next session, so the next handoff contains it. A `/clear` typed by the person also gets the read-back, which overrides what `/clear` means.
+
+The intended sequence: the agent finishes its tasks, calls a registered tool such as `mcp__claudetto__handoff` (`$.tool.register`, `index.d.ts:3150-3164`) with the goal, state with proof, decisions and why, ruled-out approaches, the check command, the files touched, and the next prompt. The plugin adds the user's recent prompts word for word from `$.session.messages`, writes the file, and, once the session is idle, runs `$.command.run({ command: "clear" })` (`:3179-3189`) and then `$.prompt.submit` with the handoff and the next prompt, behind a one-shot guard. A `/clear` the person types gets nothing.
+
+Checked on 2026-11-02 with Claude Code 2.1.316: an interactive pty session, the fake Messages API, and a probe plugin that calls `$.command.run({ command: "clear" })` and then `$.prompt.submit` from `turn.complete` inside `$.clock.after(0, …)` (`/tmp/probe-handoff/`):
+
+- `command.run` accepts the built-in `clear`. It resolved `{"text":""}`, and `session.end` fired with `{"reason":"clear"}`.
+- The queued submit ran as the first turn of the new session. Its request held 2 messages, so no history crossed over.
+- The model sees a `<local-command-caveat>` block, the `/clear` record, and then "The probehand plugin sent a message: … This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above."
+- `session.start` does not fire on `/clear`, so a read-back that waits for it never runs.
+- A `/clear` the person types reaches the plugin's `command.run` hook with `origin: {"kind":"composer"}`. The plugin's own `command.run` call does not reach its own hook. `session.end` carries no origin. So the one-shot guard keys on the plugin's own call, and a typed `/clear` is told apart by its `command.run` origin.
+
+Fixed: `mcp__claudetto__handoff` writes the file and ends the turn with `$.turn.abort`, so the tool result sends no further request. Then it runs `clear` and submits the handoff with `next_prompt` once. Checked on 2026-11-02 with Claude Code 2.1.316 in `tmux`, against the fake Messages API (`/tmp/e2e-handoff/`). The model's first request called the tool, and no request followed it in that turn. After `/clear`, the second request held the nine-section handoff and the next prompt. The cost is cosmetic: the aborted turn shows `Interrupted · What should Claude do instead?` under the call. A typed `/clear` writes no file and reads none back.
+
+Fixed in `69401cf6`: `CONTINUED` at `plugins/claudetto/src/blocks/handoff/block.ts:130` reads a handoff back only on `resume`, so a typed `/clear` gets nothing, and `plugins/claudetto/src/blocks/handoff/call.ts:57` ends the handoff turn with an abort before it clears and submits.
+
+### The agent killed the user's processes with a loose `pkill` on 2026-11-02
+
+To stop its fake API, the agent ran `pkill -f 'bun fake.ts' -U $(id -u)`. BSD `pkill` stops reading options at the first pattern, so `-U` and `501` became two more patterns, and `-f` matched them anywhere in a command line. That killed every process of the user whose command line holds `-U` or `501`, among them Chrome helpers (`--metrics-shmem-handle=…501…`) and the user's windows. Fix: stop a probe process only by the pid its launcher recorded, as `kill <pid>`. Never use `pkill` or `killall` with a pattern.
+
+Fixed in `96901c6b`: `AGENTS.md:10` says to stop a process only by the pid its launcher recorded, with `kill <pid>`, and never to use `pkill` or `killall` with a pattern.
+
+### Paid probe rounds took a quarter of the week
+
+Sessions in project folders under `/tmp`, the `claudetto-probe-*` eval rounds, ran on the real API: their message ids are real (`msg_011C…`). From 2026-10-27 to 2026-11-02 they used 0.861B of the 3.371B main-thread tokens, 25.5%, in 8,137 calls. 0.586B of that was on 2026-10-27 alone. The largest rounds were `round9-200k` (176.6M tokens read), `citable-90k` (162.9M) and `round8-200k` (161.0M). Each round fills synthetic notes files of about 25k characters through `Read`, so 80.4% of their re-read is `Read` results. Fix: count a round's tokens on the fake API before it runs, gate it on that count, and report its share of the week after it.
+
+Fixed in `7919dc54`: `replayRun` at `claudekit/paid-run/count.ts:46` replays a planned round on the fake API and counts its tokens before any paid call, `overBudget` at `claudekit/probe/round/round.ts:49` stops a round at its spend cap, and `costLine` at `claudekit/probe/plan/cost.ts:15` prints the weekly share.
+
 ### Core's `context_management` section contradicts the handoff block
 
 Core's system section `context_management` tells the model that the context gets summarized and that "you don't need to wrap up early or hand off mid-task". claudetto's handoff block in the same request tells it to end a long conversation with a handoff. Fixed: the handoff block answers `prompt.section` for `context_management` with `{ text: null }`. A lab test checks it, and in a fake-API session system block 2 fell from 5,760 to 5,478 characters, with the sentence gone (`/tmp/probe-shared/run.sh`).
+
+Fixed in `69401cf6`: `plugins/claudetto/src/blocks/handoff/block.ts:253` answers `prompt.section` for `context_management` with `{ text: null }`.
 
 ### Replacing auto-compaction with the handover
 
@@ -396,6 +445,8 @@ Defect, fixed: when the context right after a handover was still at the size, ea
 - Decided, no mid-turn fork: mid-turn the fork lags one tool pair behind, so its breakpoint misses and the newest result goes uncached, which loses the read the fork exists for. The engine's compaction keeps that case.
 - Decided, no reminder at the tail: it would add tokens to every request and move the breakpoint's bytes each turn, while the fork at idle costs one cached read once per handover.
 
+Fixed in `69401cf6`: `handoverTokens` at `plugins/claudetto/src/blocks/compaction/handover.ts:118` sizes the fork handover, and the `declined` flag at `:151` stops a repeated fork until the next compaction.
+
 ### The paid run on 2026-11-02 cost 3.4 times its estimate
 
 The approval was for about $0.90 at 150k tokens. The run took about 895k tokens, about $3.04 at API prices.
@@ -406,18 +457,13 @@ The approval was for about $0.90 at 150k tokens. The run took about 895k tokens,
 
 Fix: before a paid run, build the same requests on the fake API, count their tokens, and compare their prefixes with the request meant to warm the cache. Ask again when the counted size differs from the approved one.
 
-### Outside methods for context cost, read on 2026-11-02
-
-- `alexgreensh/token-optimizer`: a `PostToolUse` hook returns a trimmed `updatedToolOutput` and archives the full output; its A/B of 20 runs per side shows 11% to 15.7% fewer tokens. It also prints compaction instructions from `PreCompact`, restores state on `SessionStart` with source `compact`, and has a "Start fresh" mod button that saves a checkpoint, clears, and sends it.
-- `Druthulu/ProjectArchitect`: sets `autoCompactEnabled: false`, trims through `$.session.compact` with its own instructions, fires an injection once through an `O_EXCL` flag file, keeps state in files, and its hooks always exit 0. Its benchmark compares different workloads, so its numbers are not a fair test.
-- The jsonobject.com context-rot guide gives no Claude Code setting or measurement; its `/clear` plus `PLAN.md` routine rests on one Reddit post. It points to the API's `clear_tool_uses_20250919` context editing and Anthropic's long-running harness of a progress file plus git.
-- The official docs say an edit of `CLAUDE.md` mid-session does not break the prompt cache; it applies after `/clear`, `/compact`, or a restart. A tip pasted into this session said the opposite.
-- `opusplan` switches model on each plan-mode toggle, and each switch starts a fresh cache.
-- A Reddit thread on what breaks the prompt cache (`r/ClaudeAI` `1xksgor`, 2026-11-01) says a 5:45 gap on the 5-minute tier wrote all 44k tokens again. Claude Code `2.1.316` picks 1 hour on a subscription within its usage limits and 5 minutes on an API key, and `ttl_expired_5m` is one of its miss causes. This account runs the 1-hour tier: in the local transcripts since 2026-10-01, 101 gaps of 5 to 60 minutes between main-thread requests gave 0 misses (`/tmp/gap.ts`). The 5-minute case is unmeasured, and measuring it needs paid calls with `CLAUDE_CODE_PROMPT_CACHE_TTL=5m`.
+Fixed in `7919dc54`: `replayRun` at `claudekit/paid-run/count.ts:46` builds a planned run's requests on the fake API, counts their tokens, and compares each prefix with the warm request at `:62`, and `claudekit/paid-run/main.ts` prints the result without a paid call.
 
 ### Frontier model prose departs from plain language
 
 arXiv `2610.29162` measured 14 models, 9 frontier ones with Claude Opus 5.5 among them, in chat, code, and essays. Frontier models overuse inanimate subjects with animate verbs, rare n-grams, long dependencies, stacked nouns, reduced object relatives, and verbs made from nouns. Opus 5.5 scores worse than Opus 5 on 19 of 21 measures. The paper ran no reader study and tested no prompt fix. `Concise.md` says "Short sentences, literal words" but names none of these forms, so it has nothing to check a reply against. The dossier reports 580 words cut to about 100 with ASD-STE100, from one user (`agent-failure-dossier/05-appendices-and-limitations.md:72`).
+
+Fixed in `69401cf6`: `plugins/claudetto/output-styles/Concise.md:15` names the forms to avoid: an inanimate subject with an animate verb, stacked nouns, verbs made into nouns, and reduced relative clauses.
 
 ### The agent acted on its own and asked nothing on 2026-11-02
 
@@ -433,7 +479,7 @@ In this session the agent:
 
 Each cost a user correction. The causes are the prompt lines in "The agent reads every user message as a task" and "The agent writes 'not verified' instead of checking".
 
-## Fixed
+Fixed in `69401cf6`: `plugins/claudetto/agents/main.md:11` asks before any edit the task does not name and treats a rhetorical question as context, and `:19` runs a free check before a claim is reported.
 
 ### The main agent adds work that no task or user message names
 
