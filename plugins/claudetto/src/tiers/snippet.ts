@@ -7,7 +7,7 @@ import { MAIN_AGENT, STYLE } from "../prompts.ts";
 import { sandboxFaults } from "../sandbox/faults.ts";
 import { sandboxSnippet } from "../sandbox/sandbox.ts";
 import { pctFor } from "../threshold.ts";
-import { AGENT_DENIES, INTEGRATION_DENIES } from "./agents.ts";
+import { AGENT_DENIES, DEFERRED_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES, ruleFaults } from "./allow.ts";
 import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
 import { envFlags, MODEL_PINS, SUBAGENT_MODEL_ENV } from "./env.ts";
@@ -41,6 +41,7 @@ export const DROPPED_KEYS: readonly DroppedKey[] = [
 export const denyRules = (): readonly string[] => [
 	...denyList(),
 	...INTEGRATION_DENIES,
+	...DEFERRED_DENIES,
 	...AGENT_DENIES,
 ];
 

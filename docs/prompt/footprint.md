@@ -6,13 +6,16 @@ model is called and no provider is reached.
 
 ## Main Prompt
 
-`plugins/claudetto/agents/main.md` is 3,614 characters on disk. The harness sends 3,538 of them, which
-the request carries as 3,608, 70 under the budget of 3,678, read on Claude Code `2.1.316`. The budget is
-the default body the file replaces under the shipped settings, whose `autoMemoryEnabled: false` takes
-the memory section out of it, measured as the request carries it, since an agent file used as the
-main thread replaces that body instead of adding to it (`docs/prompt/overrides.md`, "What This Means for `main.md` and
-`Concise.md`"). The archived file was 11,135 characters, which is more than twice the body it would
-have stood in for.
+`plugins/claudetto/agents/main.md` is 6,011 characters on disk. On 2026-11-02, before the denial and scope lines were reworded, on Claude Code `2.1.316`,
+`just capture --arm plugin --shipped` read the third `system` block at 5,951 characters, the body with
+its ends trimmed. As a JSON string the body is now 5,979 characters, 21 under the cap `MAIN_BODY_CAP` of 6,000
+in `tools/limits.ts`, which the user set. The cap stands above the earlier budget, the 3,678 characters of the
+default body that the file replaces (`DEFAULT_MAIN_BODY_CHARS`). An agent file used as the main thread replaces that body instead of adding to it
+(`docs/prompt/overrides.md`, "What This Means for `main.md` and `Concise.md`"). The archived file was
+11,135 characters.
+
+The readings below are of earlier files, with a body of 5,572 characters, and stay as the record of how
+the counting rules were settled.
 
 ### What the Harness Sends
 
@@ -59,7 +62,7 @@ escaping term, so the residual stays named as the plug and not as a measurement.
 
 - The front matter is not sent. The third `system` block arrived at 5,572, the body with its ends
   trimmed, against 5,648 on disk. That closes the open question of `docs/prompt/overrides.md`, and
-  the budget test measures the body alone (`tests/repo/prompt-budget.test.ts:22`).
+  the budget test measures the body alone (`tests/repo/prompt/budget.test.ts:22`).
 - The body replaces the default body: 5,572 stands where 5,856 stands in the plugin arm, and no other
   `system` block moves. The request falls 259 and not the 284 of the character count, because the body
   travels as a JSON string and ours escapes characters the default text does not. That is why the
@@ -81,10 +84,10 @@ escaping term, so the residual stays named as the plug and not as a measurement.
 -480. The second was 0 while `main` was the only agent file in the tree.
 
 "Byte Budgets" below holds the budget with its reading.
-`tests/repo/prompt-budget.test.ts` checks the body of `agents/main.md` against the one budget it
-fixes (`tests/repo/prompt-budget.test.ts:30`), reports a body over it by name, size, and budget
-(`tests/repo/prompt-budget.test.ts:26`), and holds the counting rule that front matter is free
-(`tests/repo/prompt-budget.test.ts:46`).
+`tests/repo/prompt/budget.test.ts` checks the body of `agents/main.md` against the one budget it
+fixes (`tests/repo/prompt/budget.test.ts:30`), reports a body over it by name, size, and budget
+(`tests/repo/prompt/budget.test.ts:26`), and holds the counting rule that front matter is free
+(`tests/repo/prompt/budget.test.ts:46`).
 
 ### Why the Body Is Shaped This Way
 
@@ -117,105 +120,166 @@ The rewrite is 5,616 characters smaller than the archived file. Four groups of t
 - The agent roster, which the `Agent` tool's own description already lists. What stays is one line on
   when to delegate and what a brief carries.
 - The "code that only looks wrong" rule. `<asking>` covers it with the two-good-options rule, and
-  task 3.2 does not name it.
+  no recorded failure names it.
 - Reasons that only restate their rule. A reason that generalizes stays, as in "because the same call
   in other words is the same call".
 
+### Sections of `0.2.0` and Their Replacements
+
+The `0.3.0` body replaces each `0.2.0` section for the flaw the user named on 2026-10-31. It measures
+5,979 characters against the cap `MAIN_BODY_CAP` of 6,000 in `tools/limits.ts`, which the user set.
+
+| `0.2.0` section | Flaw the user named on 2026-10-31 | New section |
+| --- | --- | --- |
+| `<role>` | "Read an unclear request as a task" turns doubt into unrequested work | `<role>`, `<understanding_the_request>` |
+| `<security>` | Refuses destruction and DoS even on the user's own systems | `<security_work>`, decided by ownership and authorization |
+| `<harness>` | Names assumed structures, not the literal forms | `<harness_messages>`, quoting `<system-reminder>`, `hook additional context:`, `<pasted_content id="…">`, and the mid-turn message line |
+| `<project>` | Mixes reading order, conflicts, and tools | `<project_context>` |
+| `<tools>` | Assumes a `just` file | `<project_context>`, with "the task runner the project already has" and the `0.2.0` line "Send independent calls in one turn" |
+| `<scope>`, `<asking>` | Send a block to the user as a question | `<finding_out>` (FAFO), `<finishing>` |
+| `<defects>` | Limited to "this session" | `<fixing_defects>`, with earlier sessions in scope and `SendMessage` to a live session |
+| `<code>` | Code style in a session prompt | `<writing_code>` of `rules/claudetto-code.md`, which `claudetto:setup` offers to write to `~/.claude/rules/` |
+| `<actions>` | A paid-run gate, and "ask" as the answer to a block | `<actions_and_consent>` |
+| `<claims>` | No source order, no hypothesis before confirmation | `<finding_out>`, `<claims_and_evidence>` |
+
+One `0.2.0` rule has no full replacement: "Approval of a task or plan covers it end to end."
+`<finishing>` keeps its half that length is no reason to stop, and `<actions_and_consent>` says that
+one approval covers one action, which is about actions others see and not about a task's steps.
+
+The code rules file loads only after a session reads a file. Its `paths:` of `**/*` keeps it out of
+the first request, and an unscoped rules file is in it. Claude Code `2.1.316` read this way on
+2026-11-02, with `claude -p` on a fake API and a `Read` call: a rule scoped to `inside/**` reached the
+request after a `Read` of `inside/a.ts` and not after one of `outside/b.ts`. In `tmux`, the session
+printed `Loaded ../config/rules/claudetto-code.md` under the `Read`. A plugin's own `rules/` folder is
+not loaded, so the file takes effect only once setup writes it.
+
 ## Rules and Cases
 
-The file carries seven behavior rules, each named by a defect of this change's history. `B3-7` of
-`external/please-use-me-often/swe-best-practices.md:122` gives the check for a prompt,
-"Prompt review + eval on change", and `W3-4` gives the failure of a prompt whose rules nothing
-scores: a rule dump that is silently ignored. Each rule has an eval case in `tools/evals/main-rules.ts` with a scenario,
-the decision that passes, and the recorded failure that fails.
+The file carries eight behavior rules with an eval case each, every one named by a defect of this
+change's history. `B3-7` of `external/please-use-me-often/swe-best-practices.md:122` gives the check
+for a prompt, "Prompt review + eval on change", and `W3-4` gives the failure of a prompt whose rules
+nothing scores: a rule dump that is silently ignored. Each case in `tools/evals/main-rules.ts` has a
+scenario, the decision that passes, and the recorded failure that fails. The comment rule of `0.2.0`
+moved to `rules/claudetto-code.md`, and its case is in `tools/evals/conduct/replies.ts`.
 
 | Rule | Codes | Section | State |
 | --- | --- | --- | --- |
-| Fix a defect at its cause and never route around it | `W5-13`, `W1-8` | `<defects>` | Case written, unrun |
-| Read a failing check for the cause, never edit the check | `W5-1`, `I05` | `<defects>` | Case written, unrun |
-| An instruction of the user outranks a rule of the project | `W5-6` | `<project>` | Case written, unrun |
-| Use the surface that exists before building a mechanism | `W5-12`, `I09` | `<tools>` | Case written, unrun |
-| A step inside the scope is taken now, a step outside waits | `W5-11`, `I13` | `<scope>` | Case written, unrun |
-| A comment states only what the code cannot | `W1-15`, `B1-14` | `<code>` | Case written, unrun |
-| Conflicting instructions are named and stopped on | `W5-15` | `<project>` | Case written, unrun |
+| Fix a defect at its cause and never route around it | `W5-13`, `W1-8` | `<fixing_defects>` | `main.md` 10/10, default 10/10 |
+| Read a failing check for the cause, never edit the check | `W5-1`, `I05` | `<fixing_defects>` | `main.md` 10/10, default 10/10 |
+| An instruction of the user outranks a rule of the project | `W5-6` | `<project_context>` | `main.md` 10/10, default 4/10: `bun.lock` did not change |
+| Use the surface that exists before building a mechanism | `W5-12`, `I09` | `<project_context>` | `main.md` 10/10, default 10/10 |
+| A step inside the scope is taken now, a step outside waits | `W5-11`, `I13` | `<finishing>` | `main.md` 10/10, default 10/10 |
+| A question waits until the work it leaves untouched is done | `I13` | `<understanding_the_request>` | `main.md` 1/10, the `0.2.0` `main.md` 1/10, `main.md` with the `report.ts` comment removed 0/10 |
+| Conflicting instructions are named and stopped on | `W5-15` | `<project_context>` | `main.md` 10/10, default 9/10 |
+| Independent tool calls go in one turn | `I12` | `<project_context>` | `main.md` 10/10, default 10/10 |
 
-Running a case calls a model, which needs the user's approval. A citable arm needs 10 runs
+Running a case calls a model. A citable arm needs 10 runs
 (`EVAL_MIN_RUNS_PER_ARM` of `tools/limits.ts`, the floor the paid probe printed), and the arms are
-the shipped `main.md` against the default body, so a citable run of the seven cases is 140 sessions.
-The run and its harness belong to task 3.10. No row above is held until it runs.
+the shipped `main.md` against the default body, so a citable run of the eight cases is 160 sessions.
+`just eval --run` runs them. The results above are from one run of 160 sessions on 2026-11-02,
+on `claude-opus-5-5`, at $14.39 and 11,933,697 tokens, regraded after grader fixes. `I13` and
+`W5-15` were run again with fixed fixtures, 40 sessions at $4.18 and 3,303,607 tokens. A `-p`
+session has no `AskUserQuestion`, so `I13` grades the question in the final reply. The `main.md` arm of
+all eight cases was run again on 2026-11-02 after `main.md` changed, 80 sessions at $6.80 and
+5,776,926 tokens, and the `main.md` scores above are from that run.
+The `I13` row is from a later run of three arms of 10, 30 sessions at $3.38 and 2,937,989 tokens.
+Of its 28 failures, 9 stopped to ask before any edit, so `report.ts` did not parse `--json`, 10
+picked a shape and asked nothing, and 9 picked a shape and edited `docs/report.md`.
+Both `main.md` bodies score 1/10, so the rewrite of `main.md` does not explain the lower score.
+The denial line of `<harness_messages>` changed after these runs, and no case covers it.
+The `main.md` arm of all eight cases was run again on 2026-11-02, after eval sessions stopped
+inheriting the running session's `CLAUDE_EFFORT` and `CLAUDE_CODE_SUBAGENT_MODEL`: 80 sessions at
+$6.37 and 4,992,343 tokens, 0.16% of the 3.20B-token week and 0.57% of the weekly limit at $11.19 a
+percent. Seven cases scored 10/10 as before, and `I13` scored 2/10, so the `main.md` scores stand.
+The default arm was not run again, so its scores are from sessions that inherited those variables.
 
-`tools/evals/__tests__/main-rules.spec.ts` checks the inventory: the seven code groups of task 3.2 are the
-seven cases, no case has an empty field, and every case names a section the shipped file has.
-Renaming `<scope>` in a copy of the file makes the check report `W5-11, I13: agents/main.md has no
-<scope> section`.
+`tools/evals/__tests__/main-rules.spec.ts` checks the inventory: no case has an empty field, and
+every case names a section the shipped file has. A case whose section the file lacks is reported as
+`CODES: agents/main.md has no <SECTION> section`.
 
 ## Output Style
 
-Readings of 2026-10-29, same command, with `"outputStyle": "claudetto:Concise"` in the shipped
-settings. A style adds to the body and does not replace it.
+Readings of 2026-11-02 on Claude Code `2.1.316`, `just capture --arm plugin` with the shipped settings,
+and the same settings without `outputStyle`. A style adds to the body and does not replace it.
 
 | Reading | Characters |
 | --- | --- |
-| `output-styles/Concise.md` on disk | 1,646 |
-| Its front matter, which is not sent | 117 |
-| Its body, trimmed, which is what the harness sends | 1,526 |
-| The harness's header above the body, `# Output Style: claudetto:Concise` | 36 |
-| The harness's reminder after it, repeated on each user message | 102 |
-| The first request with the style against without it, 2026-10-29 | 30,462 against 28,757, so +1,705 |
-| The same pair, 2026-10-30 | 24,607 against 22,914, so +1,693 |
+| `output-styles/Concise.md` on disk | 2,098 |
+| Its front matter, which is not sent | 160 |
+| Its body, trimmed, which is what the harness sends | 1,936 |
+| The same body as a JSON string | 1,958 |
+| The first request with the style against without it | 32,565 against 30,464, so +2,101 |
 
-The body lands in `messages`, not in `system`. `system` stayed at 5,708 with blocks 74, 62, and
-5,572, and `messages` went from 3,652 to 5,345, so +1,693. The 1,693 is 29 above the 1,664 of the
-two inserts, because the request carries JSON, where a newline costs two characters.
+The body lands in `messages`, not in `system`: `messages` went from 10,228 to 12,329, and `system`
+stayed at 6,087 with blocks 74, 62, and 5,951. The 2,101 is the JSON body, the harness's header
+`# Output Style: claudetto:Concise`, and its reminder on each user message.
 
-The two figures above differ by 12 because the first was read on 2026-10-29, when the arm stood 12
-higher in `tools`, and the `messages` figure holds on both dates. The 1,693 is the `messages` array
-alone, which is the style's own ground, and it held while the tool texts, the switches, and the skill
-moved the totals on both sides of the pair. `cuts.ts` holds the row `output style` at −1,693, the
-whole-request figure of 2026-10-30, because every row of that inventory is in that unit and every row
-is read from the one capture set the table at the top of this page lists.
+The cap `OUTPUT_STYLE_CAP` of `tools/limits.ts` is 1,936, the measured trimmed body, and
+`tests/repo/prompt/budget.test.ts` checks it. The earlier cap was 1,540, the cost of the built-in
+`Concise` style (`docs/prompt/overrides.md`). The file passes it by 396, because it also carries the
+rules of the built-in `Proactive` style in `<acting>`, and an output style replaces the built-in one.
+The `0.2.0` body was 1,477 characters, and the archived file was 2,649.
 
-The budget is 1,540, the cost of the built-in `Concise` style (`docs/prompt/overrides.md`), so the
-file has 63 characters of room. The archived file was 2,649.
+The sections, each with the failure it answers:
 
-The rules in the file, each with the failure it answers: the opening is the outcome, the fact, or the
-next action (`W5-18`); a defect of its own is a bug report and not a retrospective (`W5-16`); no
-sentence rates the user, the model, or the exchange; a piece is working only after its check ran in
-this session, with the command and its output (`W5-10`, `I04`); and the `file:line` reference rule
-from `main.md`.
+- `<first_sentence>`: the opening is the outcome, the fact, or the next action, and a fact from the
+  user that contradicts the last reply gets the next action or the changed fact, not agreement
+  (`W5-18`, `I06`).
+- `<acting>`: start at once, take the reasonable reading of a low-risk, reversible step, and ask only
+  between two good options (`I13`).
+- `<sentence_style>`: short literal sentences, the actor as the subject, code items in backticks, and
+  `file:line` references (`W5-16`).
+- `<reporting_results>`: a piece is working only after its check ran this session (`W5-10`, `I04`), a
+  defect of its own is a bug report (`W5-4`), no sentence rates anyone, and the reply ends on the result
+  with no offer.
+- `<requests_to_the_user>`: each decision in `AskUserQuestion`, and a "What I Need from You" list only for
+  steps only the user can take.
 
-## Opening Signal
+### The Built-in Styles of `2.1.316`
 
-No opening hook ships. On 968 turn-final replies of this login's transcripts the free structural
-signal flags 74: 66 are outcome-first openings, 6 are artifacts of the sentence splitter, and 2 are
-the defect the rule targets. `docs/evidence/reply-openings.md` holds the method, the buckets, and the
-three candidates. The rule stays in `Concise.md`, which the harness re-injects at 102 characters a
-message, the third rung of the enforcement ladder. The signal has no cost for group 7 to record.
+Read on 2026-11-02 with `just capture`, which answers from a fake API on `127.0.0.1` and costs
+nothing. The bodies were decoded from the UTF-16 text of the program near byte offset `127214406`.
+
+| Arm | Total | `system` | `messages` |
+| --- | --- | --- | --- |
+| No style (`Default`) | 43,003 | 5,858 (blocks 74, 62, 5,722) | 8,050 |
+| `Proactive` | 44,526 | 5,896 | 9,533, so +1,483 |
+| `Concise` | 44,570 | 5,896 | 9,577, so +1,527 |
+
+The decoded `Proactive` body is 1,125 characters and the `Concise` body 1,165. A style also swaps the
+identity line of `system` for one that names the output style, +38, and adds a per-turn reminder of
+about 104 characters. `Proactive` tells the agent to start at once, to take a reasonable reading of
+low-risk work over a question, and to treat a course correction as normal input. `Concise` tells it to
+lead with the result, cut narration, and keep error text and requested detail in full. The lean
+`system` already asks for confirmation of a hard-to-undo action and a faithful report of outcomes, so
+a style need not repeat either.
 
 ## Byte Budgets
 
-A budget is the text the piece stands in for, read in task 2.3 or 3.1. A piece over its budget makes
+A budget is the text the piece stands in for, read from a stock session. A piece over its budget makes
 every request larger than a stock session, so the figure is a bound and not a target. What counts is
 what the harness sends: for a prompt file the body with the front matter removed and the ends trimmed,
 and for a tool text the description string itself.
 
-The table below holds the budget and the reading of each piece. No check parses it now. The one budget
-that a test checks is that of `agents/main.md`, in `tests/repo/prompt-budget.test.ts`, against the
-`DEFAULT_MAIN_BODY_CHARS` of `tools/limits.ts:40`. A row is meant to carry a reading, to name a file
-that ships, and for a tool to agree with the stock reading it cites, and nothing fails when one drifts.
+The table below holds the budget and the reading of each piece. No check parses it now. Two rows are
+caps that a test checks, in `tests/repo/prompt/budget.test.ts`: the body of `agents/main.md` against
+`MAIN_BODY_CAP` and the body of `output-styles/Concise.md` against `OUTPUT_STYLE_CAP`, both in
+`tools/limits.ts`. Both stand above the text they stand in for. A row is meant to carry a
+reading, to name a file that ships, and for a tool to agree with the stock reading it cites, and
+nothing fails when one drifts.
 
 | Piece | Kind | Budget | Measured as | Reading |
 | --- | --- | --- | --- | --- |
-| `agents/main.md` | file | 5,680 | `request JSON` | The default body as the request carries it: 5,628 characters in the `system` blocks of the no-agent-file arm above, plus the 52 characters it escapes, both from the dumped request of 2026-10-29 |
-| `output-styles/Concise.md` | file | 1,540 | `characters` | The built-in `Concise` style it stands in for, 1,540 in `messages[1]` (`docs/prompt/overrides.md`) |
-| `Agent` | tool text | 1,047 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/tools/tools.ts:32`) |
+| `agents/main.md` | file | 6,000 | `request JSON` | 5,979 on 2026-11-02. The earlier budget was 5,680, the default body as the request carried it on 2026-10-29: 5,628 characters plus the 52 it escapes |
+| `output-styles/Concise.md` | file | 1,936 | `characters` | 1,936 on 2026-11-02. The earlier budget was 1,540, the built-in `Concise` style in `messages[1]` (`docs/prompt/overrides.md`) |
+| `Agent` | tool text | 1,047 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/blocks/tool-describe/tools.ts:19`) |
 | `Bash` | tool text | 1,085 | `characters` | The stock description it replaces, the smaller of docs 1,934 and capture 1,267 |
 | `Read` | tool text | 538 | `characters` | The stock description it replaces, docs and capture both 790 |
 | `Skill` | tool text | 975 | `characters` | The stock description it replaces, docs and capture both 1,417 |
 | `ToolSearch` | tool text | 656 | `characters` | The stock description it replaces, docs and capture both 953 |
 
-`agents/main.md` is the one row bounded on the request and not on the file, because it is the one
-piece whose budget is "no larger than the text it replaces". A newline and a quote each cost one
+`agents/main.md` is the one row bounded on the request and not on the file, because its budget began
+as "no larger than the text it replaces". A newline and a quote each cost one
 character in the file and two in the request, so the two units move apart as the file is edited. The
 edit of 2026-10-29 is the proof: the body lost one character, 5,585 to 5,584, while gaining one
 newline, so its request length held at 5,664 and the request total held at the 29,080 of that
@@ -226,9 +290,8 @@ session.
 
 Two kinds of always-loaded piece get no budget.
 
-- Skill `description:` lines. The tree ships one skill, `dedupe`, and its `description:` line is 151
-  characters. It replaces no stock text, so there is no figure to bound it by; "The Two Switches" of
-  `docs/surfaces.md` holds what the skill costs a request.
+- Skill `description:` lines. The tree ships one skill, `docs`. It replaces no stock text, so there is
+  no figure to bound it by; "The Two Switches" of `docs/surfaces.md` holds what a skill costs a request.
 - Hook-injected strings. `plugins/claudetto/hooks/hooks.json` names one module, and
   `plugins/claudetto/src/register.ts` registers one handler, `tool.describe`, which replaces a
   description instead of adding text. No hook of the new tree injects a string into a request.
@@ -260,12 +323,11 @@ written is larger than 1,720, by 14 plus the name of each skill.
 
 ### The Skills and Their Flags
 
-The restart shipped no `skills/` folder, and the user decided on 2026-10-30 that `dedupe` ships. It is
-the one skill of the tree, and its `description:` line is 151 characters.
+The tree ships one skill, `docs`; the `dedupe` skill was removed.
 
 | Skill | Model may call | Reason |
 | --- | --- | --- |
-| `dedupe` | yes | The model starts it after a change that copies code, which is a moment the user does not name, so the description has to be in context |
+| `docs` | yes | The model looks up library docs at a moment the user does not name, so the description has to be in context |
 
 A row says whether the model is meant to start the skill, and why. No check reads
 the table now. It is meant to hold a row with a reason and a `SKILL.md` for each skill, to leave the
@@ -286,8 +348,8 @@ checks hold it.
   through `$.tool.describe` twice for each of the five described tools and compares the two
   descriptions character for character. The lab runs the registration of `plugins/claudetto/src/register.ts`
   and not a copy of its rule.
-- No impure reading on the prompt path. The prompt modules, `plugins/claudetto/src/tools/texts.ts`
-  and `plugins/claudetto/src/tools/tools.ts`, read no clock (`Date.now`, `new Date`,
+- No impure reading on the prompt path. The prompt modules, `plugins/claudetto/src/blocks/tool-describe/texts.ts`
+  and `plugins/claudetto/src/blocks/tool-describe/tools.ts`, read no clock (`Date.now`, `new Date`,
   `performance.now`, `process.hrtime`, `$.clock`), no counter (`Math.random`, `randomUUID`), and no
   usage number (`session.usage`, `session.measure`), found by grep on 2026-10-30. `tools.ts:8`
   imports `texts.ts` and nothing else. No check scans for it now, and the window recorder of group 7
@@ -298,19 +360,53 @@ The lab case compares two builds inside one process, so it catches a per-call co
 per-session one, and the source scan catches such a counter only when it is written with one of the
 names above.
 
+A third check runs on a whole session. `bun claudekit/prefix/main.ts claudetto` drives a session
+against the fake Messages API, 4 and 7 requests in two runs because the scenario waits a fixed time, with the plugin, the shipped settings, the `Concise` style, the status
+line, a `Read` and `Edit` turn, and a plan-mode switch. Each request kept the earlier `tools`,
+`system`, and `messages` byte for byte, on Claude Code `2.1.316` on 2026-11-02. What claudetto adds is
+appended: the `context_management` block sits in `messages[0]` from the start, and the style
+reminder and the budget line arrive as new `system`-role messages. The status line is in no request.
+So in `2.1.316` the cache-safe way to add context is a new message at the end. `system[0]` carries
+`cc_version` with a suffix taken from the first user message, so anything that replaces that message,
+a compaction or a `/clear`, changes `system[0]`.
+
 ## Context Enters Once
 
 The framework adds no text on a user message. Context enters at the first message of a conversation or
 at a compaction, and nothing after that.
 
 One block of the framework rides that first message. `prompt.context` carries `context_management`,
-which names the handoff folder and the nine headings of a handoff that Claude writes, measured at 545
-characters and 550 request JSON on 2026-10-29. It is bought and not free: no hook can write that file,
+which shows the handoff file name pattern and the whole template of a handoff that Claude writes: the
+title, the source line, and the nine headings. The code-built handoff renders the same template.
+
+| Build | Characters | Request JSON |
+| --- | --- | --- |
+| Headings as one inline list (`544088f7`) | 673 | 681 |
+| Template as a fenced block (`0.3.0`) | 810 | 842 |
+| Handoff as the reply, with the compaction line | 943 | 977 |
+| Handoff through the tool, with the reply as fallback | 1,157 | 1,191 |
+
+The first two rows come from `just capture --shipped --dump DIR` on 2026-10-31, and the third from
+`just capture --arm plugin --shipped --dump DIR` on 2026-11-02. Each counts the block from
+`# context_management` up to `</system-reminder>`, without the closing tag. The third row asks for the
+handoff as the reply and says what a reply that starts with `# Handoff` sets off, 133 characters more
+than the second. The fourth row, from the same command on 2026-11-02, asks for the `handoff` tool with
+its fields and keeps the reply as the fallback, 214 characters more than the third. The tool's
+description (445 characters) and input schema (812) join the tool list. The `544088f7` row was
+captured from a worktree of that commit. The whole request grew by 188 characters: 161 from this block
+and 27 from the plugin's folder path in the sandbox block, because the two builds ran from different
+folders. It is bought and not free: no hook can write that file,
 because both writers make no model call and code reads no decision off a transcript, so the only way
 to get the nine sections is to ask the session for them once per conversation.
 
+The block takes one engine text out. Core's own `context_management` system section tells the model
+that the context is summarized and that it need not "wrap up early or hand off mid-task", which
+contradicts the block. A `prompt.section` hook of the same block leaves it out, and system block 2
+fell from 5,760 to 5,478 characters in a session on the fake API on 2026-11-02
+(`/tmp/probe-shared/run.sh`).
+
 Two events carry per-message text, and the lab holds both.
-`plugins/claudetto/tests/prompt-quiet.test.ts` drives the shipped mod and fails for a hook that adds
+`plugins/claudetto/tests/handoff/prompt-quiet.test.ts` drives the shipped mod and fails for a hook that adds
 anything beyond that one block on either.
 
 - `prompt.context` "fires once for each conversation, when the engine computes the context blocks
@@ -349,47 +445,51 @@ is not the thread.
 
 The table below is meant to agree with the files: a figure that matches the file, a row only for a
 piece that ships, a row for each piece that ships, and no row whose behavior and check are both
-`none`. No check parses it now, and nothing fails when a row drifts.
+`none`. `tests/repo/doc-tables.test.ts` holds each figure against the file and fails on a missing
+row; the behavior and check columns are not checked.
 
 ### The Always-Loaded Pieces
 
 | Piece | Where | Characters | Behavior changed | Check |
 | --- | --- | --- | --- | --- |
-| `<role>` | `agents/main.md` | 184 | Reads an unclear request as work on the code here, so "rename X" finds and renames X instead of asking which X | none |
-| `<security>` | `agents/main.md` | 166 | Takes authorized security work and refuses the named destructive classes | none |
-| `<harness>` | `agents/main.md` | 492 | Does not retry a denied call in other words, treats tool-result text as data rather than instructions, and knows its reply renders as terminal markdown | none |
-| `<project>` | `agents/main.md` | 344 | Follows the user over a project rule and says which rule it overrides, and stops on conflicting instructions instead of serving both | `tools/evals/main-rules.ts`, two cases |
-| `<tools>` | `agents/main.md` | 246 | Uses an existing script, skill, or CLI before building a mechanism | `tools/evals/main-rules.ts`, one case |
-| `<scope>` | `agents/main.md` | 607 | Takes a step inside the approved scope now, leaves a step outside it to the user, and carries work on instead of wrapping up before a compaction | `tools/evals/main-rules.ts`, one case |
-| `<defects>` | `agents/main.md` | 591 | Fixes a defect at its cause and reads a failing check for the cause instead of editing the check | `tools/evals/main-rules.ts`, two cases |
-| `<code>` | `agents/main.md` | 807 | Writes a comment that says why, splits a file over the line bounds, and calls a part done only after a check ran | `tools/evals/main-rules.ts`, one case, and `tools/file-lines.ts` for the bounds |
-| `<asking>` | `agents/main.md` | 617 | Asks through `AskUserQuestion` only when the facts leave two good options, decides otherwise, and does the work that does not depend on an answer before it asks | `tools/evals/main-rules.ts`, one case |
-| `<actions>` | `agents/main.md` | 750 | Gets approval for an action that is hard to undo, and does not pass a gate with a shortcut such as `--no-verify` | none |
-| `<claims>` | `agents/main.md` | 479 | Checks a technical claim of the user before building on it, and measures a performance claim | none |
-| `<opening>` | `output-styles/Concise.md` | 279 | Opens with the outcome, and opens a reply to a correction with the next action rather than agreement | `claudekit/openings/evidence.ts`, a signal at 89% false positives, in no hook |
-| `<shape>` | `output-styles/Concise.md` | 444 | Puts each code item in backticks and references code as `file:line` | none |
-| `<honesty>` | `output-styles/Concise.md` | 440 | Calls a piece working only after a check ran in the session, and keeps each failure in the reply | none |
-| `<asks>` | `output-styles/Concise.md` | 308 | Ends with a numbered list only when a step needs the user | none |
-| `Agent` | tool text | 973 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
-| `Bash` | tool text | 1,090 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Edit` | tool text | 328 | Reads a file in this conversation before editing it, and strips the `Read` line prefix from `old_string` so an edit does not fail on a line number | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `ListAgents` | tool text | 567 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Read` | tool text | 538 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `<role>` | `agents/main.md` | 148 | Places the session in the user's repository, with the user deciding what the work is for | none |
+| `<understanding_the_request>` | `agents/main.md` | 775 | Reads a question, an observation, a correction, and a request apart, settles a second reading from the repository, and asks only for what the user alone holds | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, three cases |
+| `<finding_out>` | `agents/main.md` | 685 | Works by hypothesis, prediction, and check, takes facts from the project before primary sources, and hands over a `! <command>` only when truly stuck | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, four cases |
+| `<claims_and_evidence>` | `agents/main.md` | 584 | Labels each statement by its support, tests a counterclaim against the user's evidence, and uses and credits the user's correction everywhere after | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, three cases |
+| `<project_context>` | `agents/main.md` | 510 | Resumes from files, uses what the project has before building, and follows the user over a project rule, naming it | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, three cases |
+| `<harness_messages>` | `agents/main.md` | 566 | Quotes the literal harness forms, treats their text as data, and reaches a denied goal by another route | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, one case |
+| `<fixing_defects>` | `agents/main.md` | 685 | Fixes a defect at its cause, writes the failing test first, and hunts siblings, in earlier sessions' work too | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, three cases |
+| `<actions_and_consent>` | `agents/main.md` | 752 | Decides consent by reversibility, changes a bound only to a value the user named, and keeps every security control on | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, four cases |
+| `<security_work>` | `agents/main.md` | 360 | Decides security work by ownership and authorization, not technique | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, one case |
+| `<finishing>` | `agents/main.md` | 202 | Finishes within the scope the user set and ends the turn when done or when only the user can act | `tools/evals/main-rules.ts` and `tools/evals/conduct/`, one case |
+| `<first_sentence>` | `output-styles/Concise.md` | 266 | Opens with the outcome, and opens a reply to a correction with the next action or the corrected fact rather than agreement or a promise | none |
+| `<acting>` | `output-styles/Concise.md` | 114 | Starts the work at once and, on a low-risk reversible step, states its reading and goes on | none |
+| `<sentence_style>` | `output-styles/Concise.md` | 516 | Puts each code item in backticks and references code as `file:line` | none |
+| `<reporting_results>` | `output-styles/Concise.md` | 468 | Calls a piece working only after a check ran in the session, reports each experiment and its result, and keeps each failure in the reply | none |
+| `<requests_to_the_user>` | `output-styles/Concise.md` | 214 | Ends with a numbered list only for a step only the user can take, with the exact `! <command>` | none |
+| `Agent` | tool text | 444 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
+| `AskUserQuestion` | tool text, interactive only | 829 | Asks only for a decision the request, the code, and sensible defaults leave open, and otherwise picks, says so, and goes on | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Bash` | tool text | 870 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Edit` | tool text | 243 | Reads a file in this conversation before editing it, and strips the `Read` line prefix from `old_string` so an edit does not fail on a line number | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `ListAgents` | tool text, deferred | 261 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Read` | tool text | 283 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `SendMessage` | tool text | 3,008 | Addresses a peer by the name its `ListAgents` row prints rather than looking for an address syntax, reads a successful send as delivery and not as agreement, waits for a reply on other work instead of looping on `ListAgents`, and refuses to hand a peer work this session denied | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Skill` | tool text | 1,023 | Starts a skill by name instead of restating its steps | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `ToolSearch` | tool text | 727 | Gets a deferred tool's schema before calling it | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Skill` | tool text | 195 | Starts a skill by name instead of restating its steps | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `ToolSearch` | tool text | 234 | Gets a deferred tool's schema before calling it | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Write` | tool text | 196 | Writes a whole file only for a new file or a full replacement, and uses `Edit` for a partial change | `plugins/claudetto/tests/tool-describe.test.ts` |
 
-The eleven `agents/main.md` rows come to 5,283 characters and the file sends 5,303, the difference
-being the blank line between sections. The four `Concise.md` rows come to 1,471 against 1,477. The
-eight upfront tool texts come to 5,392 against a stock sum of 8,710, a cut of 3,318.
+The ten `agents/main.md` rows come to 5,267 characters and the file sends 5,285, the difference
+being the blank line between sections. The five `Concise.md` rows come to 1,578 against 1,586. The
+seven upfront tool texts come to 3,294 against a stock sum of 10,016, a cut of 6,722. The `-p` request
+carries six of them, 2,465 against 7,933, because `AskUserQuestion` is in the interactive request only.
 
-One row of the table is not always loaded, and it is in the table because the check that reads this
-table reads every text of `TOOL_TEXTS` and not only the upfront ones. `SendMessage` is 3,008
-characters against a stock 4,259, so it cuts 1,251, and the harness defers the tool
-(`plugins/claudetto/src/tools/tools.ts:54`), so that cut is paid once at the `ToolSearch` call that
-loads the schema rather than on every request. `alwaysLoadedChars` leaves it out of the 5,392 for
-that reason.
+Two rows of the table are not always loaded. `SendMessage` is 3,008 characters against a stock 4,259,
+so it cuts 1,251, and the harness defers the tool, so that cut is paid once at the `ToolSearch` call
+that loads the schema rather than on every request. `ListAgents` is upfront in stock, and the
+`tool.describe` answer of `plugins/claudetto/src/blocks/tool-describe/tools.ts:90` sets `isDeferred`
+on it, so its 261 characters are paid in a session that messages a peer and loads it beside
+`SendMessage`. Moving it took 633 characters off the interactive request, 40,344 to 39,711, and 641
+off the `-p` request, 28,527 to 27,886. `alwaysLoadedChars` leaves both out of the 3,294.
 
 The `Edit`, `ListAgents`, and `Write` rows were written on 2026-10-30, when the user asked for more
 of this. They are the last upfront tools that had no text: of the nine definitions a shipped request
@@ -411,23 +511,22 @@ fell 198, `<harness>` rose 90, and `<scope>` rose 107, so the file was one chara
 before.
 
 Ten of the eleven moved again the same day, when `<asking>` took the rule that a question needing a
-person waits for the work that does not depend on the answer (task 6.12). `<asking>` rose 247, and the
+person waits for the work that does not depend on the answer. `<asking>` rose 247, and the
 other nine fell 259 between them by rewording alone, no requirement dropped, because the file was 16
 under its bound and the new rule did not fit. 27 now remain under it.
 
 ### What the Check Does Not Settle
 
-A row in the `Check` column that names `tools/evals/main-rules.ts` names a case that is written and
-unrun: running one calls a model. A row that names `tool-describe.test.ts` is checked for presence
+A row in the `Check` column that names `tools/evals/main-rules.ts` names a case whose result is in
+"Rules and Cases" above, from a paid run. A row that names `tool-describe.test.ts` is checked for presence
 and byte identity, not for effect: the lab proves the text ships and is stable, not that it changes a
 decision. Eight rows say `none`, and each of those pieces is held by its behavior alone until a case
 exists. That is the open end of this section, and the reason the table separates the two columns.
 
 The largest open end is the placebo question, and it stays open by decision. Whether this text changes
 an outcome or only the bill was to be measured by running each case against a same-length placebo
-prompt: 8 cases, 2 arms, 10 runs per arm by the citable floor of `EVAL_MIN_RUNS_PER_ARM`, which is 160
-full-task sessions. At the `$1.50` a session that the earlier estimate of `$210` for 140 sessions
-implies, that is about `$240`, near 8% of the weekly limit of this login. The user declined that run
+prompt: 7 cases, 2 arms, 10 runs per arm by the citable floor of `EVAL_MIN_RUNS_PER_ARM`, which is 140
+full-task sessions, about `$210` at `$1.50` a session, near 7% of the weekly limit of this login. The user declined that run
 on 2026-10-29, at 7 cases, and the decline is recorded rather than the result. So every behavior in the
 table above rests on the recorded failure it was written against, and on no measurement of this
 prompt against a placebo. The two published results in the section opening are the nearest evidence
@@ -503,9 +602,174 @@ block, and "The Baseline Moved a Third Time" of `docs/surfaces.md` holds the rea
 `/statusline` label adds nothing: the tree of `0.1.0` reads the same request from a working folder
 path of the same length.
 
-With `agents/main.md` cut to a body of 3,540 characters, the shipped first request is 29,433: `system`
-3,674, `tools` 13,504 (9), `messages` 11,588. With the file moved aside it is 29,505, so the file
-saves 72 where it had cost 1,708.
+With the `agents/main.md` of 2026-11-02, the shipped first request is 27,886 at a working folder path of
+34 characters and a checkout path of 47: `system` 5,421, `tools` 10,172 (8), `messages` 11,650. The
+sandbox block of `messages` names the plugin folder once by its real path, so each character of the
+checkout path adds one: a copy of the tree at `/tmp/` plus 42 characters reads 27,894, since `/tmp`
+resolves to `/private/tmp`. With the file moved aside it is
+26,591, with a `system` of 3,499, so the file costs 1,936 where an earlier, shorter body saved 72.
+The interactive arm reads 41,628: `system` 5,412, `tools` 15,871 (10), `messages` 12,231, `safeguards` 7,457, and
+`bun claudekit/context-split/main.ts` sums the parts of the request that `/context` counts as system
+prompt to 17,176 characters there, 16,617 for `-p`.
+
+## Empty Session by Owner
+
+Two readings of 2026-10-31, before any cut of `0.3.0`. Each splits what an empty session costs among
+the engine, the repository, and claudetto.
+
+`/context all`, in a fresh `tmux` session in this repository, ran `claude --settings FILE` with the
+output of `shippedSettings()` of `tools/capture/settings.ts` and the installed `0.2.0` plugin. It
+showed 9k of 300k tokens:
+
+| Row | Tokens | Engine | Repository | claudetto |
+| --- | --- | --- | --- | --- |
+| System prompt | 1.3k | the identity line | none | the `agents/main.md` body, which replaces the default body |
+| System tools | 6k | the schemas, and the `AskUserQuestion` text | none | the tool texts of `blocks/tool-describe/texts.ts` |
+| MCP server instructions | 36 | none | none | all |
+| Custom agents | 289 | none | none | `Artemis` 73, `Hephaestus` 66, `Athena` 63, `Hermes` 61, `main` 26 |
+| Memory files | 550 | none | `AGENTS.md` 515, `CLAUDE.local.md` 19, `CLAUDE.md` 16 | none |
+| Skills | 786 | none | the seven `openspec-*` skills, about 690 | `dedupe` about 50, `docs` about 20, `setup` under 20 |
+| Messages | 10 | all | none | none |
+
+`/context` lists neither the output style, the sandbox block, nor the `context_management` reminder.
+The capture holds them, so it gives the claudetto share in characters.
+`just capture --shipped --interactive --dump DIR` ran the plain arm at 42,752 characters and the plugin arm at 43,517.
+Its working folder is empty, so the repository share there is 0. The claudetto share is the 765 the
+plugin arm adds plus the 12,482 characters of engine text it replaces (the default body and eight
+tool texts), 13,247 in all. The pieces, in request JSON characters:
+
+| Piece | Where | Characters |
+| --- | --- | --- |
+| Tool texts | `blocks/tool-describe/texts.ts`, 8 tools | 5,446 |
+| Session prompt body | `agents/main.md` | 3,604 |
+| Output style | `output-styles/Concise.md` | 1,540 |
+| Agent listing | the `description:` of the four subagents | 1,045 |
+| `context_management` reminder, with the content-block wrapper it adds | `blocks/handoff/handoff.ts` | 934 |
+| Skill listing | the three skill `description:` lines | 343 |
+| MCP server instructions | `src/register.ts` | 210 |
+| Style reminder, which the engine adds for a plugin output style | the engine | 104 |
+| Deferred tool name `mcp__claudetto__setup` | `src/register.ts` | 23 |
+| Sum | | 13,249 |
+
+The sum is 2 over the share. In the plugin arm, the write-deny list of the sandbox block names the
+plugin folder. The engine cuts that list at a fixed count with "... and N more", so other paths drop
+out, and the block comes out 2 characters shorter. The sandbox block itself, 6,856 characters, is in
+neither arm's difference, because both arms run the shipped settings. The engine sends it only when
+`sandbox.enabled` is `true`, which claudetto's settings set, so all 6,856 are claudetto's.
+
+### After the Cuts of `0.3.0`
+
+`just capture --shipped --interactive --dump DIR` on 2026-11-02 first read the plain arm at 42,061
+and the plugin arm at 46,020. The plain arm is 691 below the reading above, from the engine, and its
+replaced engine text is still 12,482 characters, so the claudetto share was 3,959 plus 12,482, 16,441
+in all. The session prompt had grown to 5,979 and the output style to 1,936 under the rewrite of the
+session prompt.
+
+After the cuts below, the same command read the plain arm at 42,061 and the plugin arm at 42,710, so
+the claudetto share is 649 plus 12,482, 13,131 in all. That is 116 below the reading above. The
+pieces, in request JSON characters:
+
+| Piece | Before `0.3.0` | After | Change |
+| --- | --- | --- | --- |
+| Tool texts, `blocks/tool-describe/texts.ts`, 8 tools | 5,446 | 3,613 | −1,833 |
+| Session prompt body, `agents/main.md` | 3,604 | 5,327 | +1,723 |
+| Output style, `output-styles/Concise.md`, with its heading | 1,540 | 1,756 | +216 |
+| Agent listing | 1,045 | 551 | −494 |
+| `context_management` reminder, with its wrapper | 934 | 942 | +8 |
+| MCP server instructions | 210 | 206 | −4 |
+| Other pieces | 468 | 736 | +268 |
+| Share | 13,247 | 13,131 | −116 |
+
+The "Other pieces" row is the remainder of the share, not a measurement of each piece. It holds the
+skill listing, the style reminder, and the two deferred tool names.
+
+Later the same day, after the `AskUserQuestion` text and the move of `ListAgents` behind
+`ToolSearch`, the same command read the plain arm at 42,129 and the plugin arm at 39,711. The plugin
+arm carries eight tool texts, 3,323 request JSON characters: `Agent` 447, `AskUserQuestion` 838,
+`Bash` 877, `Edit` 245, `Read` 287, `Skill` 195, `ToolSearch` 237, and `Write` 197.
+
+The 39,711 by owner, read from the request of `just capture --shipped --interactive --dump DIR` on
+2026-11-02. "Settings" is engine text whose size claudetto's settings decide. The output style and
+the skill entries are read to about 10 characters, so the claudetto and engine rows are close
+figures, and the sum is exact:
+
+| Owner | Characters | Pieces |
+| --- | --- | --- |
+| claudetto | 12,687 | the `agents/main.md` body 5,285, eight tool texts 3,323, the output style about 1,750, `context_management` 914, the agent entries 720, the MCP instruction 452, the skill entries 243 |
+| Settings | 12,481 | the sandbox block 6,675, the `autoMode` text 4,969, the allow and deny rules in `safeguards` 837 |
+| Engine | 14,516 | the tool schemas and wrappers 10,639, the rest of `safeguards` 1,651, the rest of `messages` 1,442, the top-level keys 657, the two first `system` blocks 127 |
+| Test input | 27 | the user text `hi` |
+
+The sandbox block is not a lever: it is the sandbox itself, as
+"The Sandbox Block by Setting" below shows.
+
+`env.CLAUDE_CODE_DISABLE_CLAUDE_MDS=1` drops every `CLAUDE.md` and memory file from the request. For
+this repository's 1,904 characters of `CLAUDE.md` and `AGENTS.md` it saved 2,419 characters, about
+1.27 request characters per character of memory file, in a capture whose working folder held those
+files. It is not a claudetto default, because it also drops the user's and the project's own
+instructions.
+
+`/context all` on 2026-11-02, Claude Code `2.1.316`, ran `claude --settings FILE` with the output
+of `shippedSettings()` and `--plugin-dir plugins/claudetto`. It showed 11.6k of 300k tokens:
+
+| Row | Before `0.3.0` | After | What moved |
+| --- | --- | --- | --- |
+| System prompt | 1.3k | 4.4k | the row now counts the injected reminders, see below |
+| System tools | 6k | 5.5k | the tool texts |
+| MCP server instructions | 36 | 36 | none |
+| Custom agents | 289 | 201 | `Artemis` 51, `Athena` 51, `Hephaestus` 43, `Hermes` 30, `main` 26 |
+| Memory files | 550 | 742 | `AGENTS.md`, 515 to 707, which is the repository's |
+| Skills | 786 | 786 | none |
+| Messages | 10 | 10 | none |
+
+The System prompt row cannot be compared across the two readings. The before reading listed neither
+the output style, the sandbox block, nor the `context_management` reminder. In the capture of the
+same settings, the plugin arm's `system` blocks are 5,412 characters, about 1.35k tokens at 4
+characters a token. Its injected reminders are 12,047 characters, about 3.0k tokens: the sandbox
+block 6,676, the environment 910, the output style 1,735, the deferred tool names 411, the agent
+types 727, the MCP server instructions 669, and `context_management` 919. Their sum, 17,459
+characters or about 4.36k tokens, is the row's 4.4k, so this `/context` counts the reminders under
+System prompt. The share is measured by
+the capture above, in characters, and is 116 below the reading of `0.2.0`.
+
+Each cut keeps every rule:
+
+- A tool text drops a fact that the tool's input schema already states, such as the `timeout`
+  ceiling, `replace_all`, `offset` and `limit`, `isolation`, and `args`. It also drops a fact that
+  the tool's own output states, such as the kinds of a `ListAgents` row and the error for a missing
+  file.
+- An agent description drops its "Use for" sentence, which the roster of the `Agent` text already
+  gives, and drops a limit that the listing's `(Tools: …)` already shows.
+- The reminder points at the fields of the handoff tool in place of listing them, and shows the
+  empty layout without blank lines.
+- `agents/main.md` and `Concise.md` keep each section and each rule in fewer words. `Concise.md`
+  drops the own-defect sentence and the `AskUserQuestion` sentence, because `<fixing_defects>` and
+  `<understanding_the_request>` of `agents/main.md` carry them.
+
+### The Sandbox Block by Setting
+
+`just capture --arm plugin --interactive --settings FILE` on 2026-11-02, Claude Code `2.1.316`, with
+the shipped settings and one sandbox key removed per run:
+
+| Settings | Total | `tools` | `messages` | Against shipped |
+| --- | --- | --- | --- | --- |
+| Shipped: `enabled`, `allowUnsandboxedCommands: false`, `filesystem.denyRead` | 46,498 | 18,570 | 13,135 | 0 |
+| Without `allowUnsandboxedCommands` | 47,904 | 18,570 | 14,541 | +1,406 |
+| Without `filesystem.denyRead` | 46,342 | 18,570 | 12,979 | −156 |
+| `enabled` only | 47,748 | 18,570 | 14,385 | +1,250 |
+| No `sandbox` key | 38,810 | 17,738 | 6,279 | −7,688 |
+
+The sandbox costs 7,688 characters: 6,856 in the block and 832 in the `Bash` tool text. No key is
+cut, and the sandbox stays on:
+
+- `enabled` is the sandbox itself.
+- `allowUnsandboxedCommands: false` makes the request 1,406 characters shorter, all of it in
+  `messages`. With the key at its default `true`, the engine's sandbox text carries its rules on when
+  to set `dangerouslyDisableSandbox: true`. At `false` the engine drops those rules and writes one
+  line that says the parameter is disabled in this session.
+- `filesystem.denyRead` costs 156, and no other layer enforces it. The gate's `HOME_SECRETS` of
+  `src/blocks/gate/paths.ts` reads the command text only, so a script that `Bash` starts can still
+  open `~/.ssh`. The sandbox denies that read to every child process.
 
 ## History
 

@@ -158,11 +158,12 @@ whether that lowers billed cost per finished task is the gate of the cost readin
 
 ## The Tool Texts of the New Tree
 
-Claudetto sends its own description for five tools through a `tool.describe` hook, and only while
+Claudetto sends its own description for ten tools through a `tool.describe` hook, and only while
 ours is shorter than the description the harness computed for that session, so a text of ours can
-never make a request larger. `plugins/claudetto/src/tools/texts.ts` holds the texts,
-`plugins/claudetto/src/tools/tools.ts` holds the readings and the rule, and
-`plugins/claudetto/src/register.ts` registers the hook.
+never make a request larger. `plugins/claudetto/src/blocks/tool-describe/texts.ts` holds the texts,
+`plugins/claudetto/src/blocks/tool-describe/tools.ts` holds the readings and the rule, and
+`plugins/claudetto/src/blocks/tool-describe/block.ts` registers the hook, which
+`plugins/claudetto/src/blocks/catalog.ts` attaches.
 
 Two stock readings per tool, because a stock description is not one fixed number. `docs` is the
 `clawdipedia` route `prompts/tools` for `2.1.312`, fetched on 2026-10-28. `capture` is our own
@@ -175,21 +176,22 @@ therefore holds the smaller of the two, so a text that passes it is shorter in e
 
 | Tool | Stock, smaller reading | Claudetto | Saved |
 | --- | --- | --- | --- |
-| `Agent` | 2,906 | 973 | 1,933 |
-| `Bash` | 1,267 | 1,090 | 177 |
-| `Edit` | 360 | 328 | 32 |
-| `ListAgents` | 777 | 695 | 82 |
-| `Read` | 790 | 538 | 252 |
-| `Skill` | 1,417 | 1,023 | 394 |
-| `ToolSearch` | 953 | 727 | 226 |
+| `Agent` | 2,906 | 444 | 2,462 |
+| `AskUserQuestion` | 2,083 | 829 | 1,254 |
+| `Bash` | 1,267 | 870 | 397 |
+| `Edit` | 360 | 243 | 117 |
+| `Read` | 790 | 283 | 507 |
+| `Skill` | 1,417 | 195 | 1,222 |
+| `ToolSearch` | 953 | 234 | 719 |
 | `Write` | 240 | 196 | 44 |
-| total | 8,710 | 5,570 | 3,140 |
+| total | 10,016 | 3,294 | 6,722 |
 
-`Edit`, `ListAgents`, and `Write` were added on 2026-10-30 and are the last three upfront tools that
-had no text. A shipped request carries nine definitions, and the ninth is
-`DeferredToolPlaceholder` at 83 characters, which has nothing to give. `SendMessage` has a text too,
-3,008 against a stock 4,259, and it is not in this table because the harness defers it, so its 1,251
-reaches no request until `ToolSearch` loads the schema.
+The table holds the upfront tools of the current tree. The capture below is of the 2026-10-30 texts
+and has not been taken again for these lengths. `AskUserQuestion` is in the interactive request only,
+so the `-p` request carries the other seven. `DeferredToolPlaceholder`, 83 characters, has nothing to
+give. Two texts are not in this table because no first request carries them: `SendMessage`, 3,008
+against a stock 4,259, which the harness defers, and `ListAgents`, 261 against a stock 777, which the
+hook moves behind `ToolSearch` by answering with `isDeferred`.
 
 The effect on the request, read with `just capture --deny Workflow,ScheduleWakeup,ReportFindings
 --tools 12`, both arms in the same run:
@@ -213,25 +215,25 @@ This run was taken again on 2026-10-30 for the three new texts, and the `plain` 
 to 30,713 under `2.1.312`, with its `system` block 5,764 to 5,954, and to 33,684 on `2.1.314`. Nothing of ours touches either figure: the `plain`
 arm loads no plugin, and `system` there is the engine's own default body. So the +192 is the installed
 Claude Code changing under the recording, not an effect of this change, and it is the same +192 that
-separates the `BASELINE_TOTAL` of `plugins/claudetto/src/deny.ts:5` from a default capture taken the
+separates the `BASELINE_TOTAL` of `plugins/claudetto/src/deny.ts:1` from a default capture taken the
 same day. "The Baseline Has Drifted" below is the record of that finding and its repair.
 
 Read `system` and `messages` here rather than the total, because this run isolates the tool texts and
 nothing else: it sets no `agent` and no `outputStyle`, so `system` holds the default body in both arms
 at 5,954. `messages` is not equal across the arms and must not be read as part of the tool-text
 saving. It carries two pieces the plugin adds whatever the tool texts do, the handoff context block of
-`plugins/claudetto/src/handoff.ts` and the agent listing for `Artemis` and `Athena`, which is why the
+`plugins/claudetto/src/blocks/handoff/handoff.ts` and the agent listing for `Artemis` and `Athena`, which is why the
 `plugin` total falls by less than its `tools` array does: 11,490 against 9,984 in `messages`. "Shipped Cuts" below prices those two.
 
-Two rules hold this in place, both in `plugins/claudetto/src/tools/tools.ts` and both checked by
-`plugins/claudetto/src/tools/__tests__/tools.spec.ts`. `deadTexts` names any text that is not shorter than its stock
+Two rules hold this in place, both in `plugins/claudetto/src/blocks/tool-describe/tools.ts` and both checked by
+`plugins/claudetto/src/blocks/tool-describe/__tests__/tools.spec.ts`. `deadTexts` names any text that is not shorter than its stock
 reading, so a text that stops winning fails the gate instead of sitting unread in the repository;
 the archived tree lost a `Write` text that way, 261 characters against a stock 240. And
 `alwaysLoadedChars` counts a text only for a tool the harness sends upfront, because a deferred
 tool's text reaches no request until `ToolSearch` loads it, so counting it would overstate the
-always-loaded total. Eight of the nine shipped texts are for upfront tools, and the shipped
-always-loaded total is 5,570 characters that replace 8,710. The ninth is `SendMessage`, which the
-harness defers, so `alwaysLoadedChars` leaves its 3,008 out.
+always-loaded total. Eight of the ten shipped texts are for upfront tools, and the shipped
+always-loaded total is 3,294 characters that replace 10,016. `alwaysLoadedChars` leaves out the
+3,008 of `SendMessage` and the 261 of `ListAgents`, which reach a request only through `ToolSearch`.
 
 No cost reading exists for these texts yet, which is the gate of the cost readings below: a shorter request is a saving
 only when billed cost per finished task does not rise, and a tool description is also behavior, so
@@ -300,7 +302,8 @@ The file was then cut to a body of 3,540 characters, which the request carries a
 block and 3,608 with the escapes of a JSON string, against 3,678 for the default. The shipped arm read
 29,433 with it and 29,505 with it moved aside, so `main agent body` was 72. The file has since grown,
 the `dedupe` skill has gone, and the `handoff` tool is a small deferred one. On 2026-11-02 the shipped
-arm reads 29,417 and 27,481 with the file moved aside, so `main agent body` is −1,936.
+arm read 28,527 and 26,591 with the file moved aside, so `main agent body` is −1,936. That reading predates
+`ListAgents` moving behind `ToolSearch`, which changes only the tool texts.
 
 ## The Two Switches
 
@@ -506,7 +509,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,007 baseline less every cut in it has to equal the 29,417 the shipped arm records, so a cut that
+46,007 baseline less every cut in it has to equal the 27,886 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -515,7 +518,8 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | Shipped cut | Characters off the first request | Cost reading |
 | --- | --- | --- |
 | Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
-| The `tool.describe` texts of the eight upfront tools (`tool texts`) | 5,182 | None exists yet |
+| Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
+| The `tool.describe` texts, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 6,637 | None exists yet. The `AskUserQuestion` text is only in the interactive request, which it shortens by 1,276 |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
@@ -530,29 +534,30 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `handoff` tool in the deferred list and the MCP instructions block that names the plugin | −235 | None exists yet. The tool entry itself, 728 characters of JSON, is paid only in a session that fetches it |
 | The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists. A run of the command pays nothing in a request: the hook opens the dialogs and answers with `text` alone, and no tool or deferred name stands behind it |
 | The `/claudetto:handoff` row in the command listing | −61 | None needed. It tells the model the command exists; its file is the request that has the model call the `handoff` tool |
-| The fall that no row above explains (`unexplained residual`) | 4,255 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and nothing sets it to close the gap |
+| The fall that no row above explains (`unexplained residual`) | 4,307 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and nothing sets it to close the gap |
 
-The rows sum to 16,590, which is 46,007 less the 29,417 the shipped arm records. A negative row is a piece
+The rows sum to 18,121, which is 46,007 less the 27,886 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Each read row is the
 shipped `-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path,
 less the same arm with the piece removed in a clone of the same path length (each character of the path
-adds one). The shipped arm reads 29,417, and `SHIPPED_TOTAL` is that reading. An earlier version of this
+adds one). The shipped arm reads 27,886, and `SHIPPED_TOTAL` is that reading. The rows other than `tool texts` and the
+residual were read before `ListAgents` moved behind `ToolSearch`, against the arm of 28,527 then. An earlier version of this
 paragraph set it 23 below the inventory reading for a "path artifact" that no reading shows; that is gone.
-Read: `deny list` (12,421, the `plain` baseline of 46,007 less the deny arm of 33,586), `tool texts` (5,182, the
-arm with the `tool-describe` block detached from the catalog reads 34,599), `built-in surface` (5,590, with
+Read: `deny list` (12,421, the `plain` baseline of 46,007 less the deny arm of 33,586), `deferred tool denies` (24, with the two rules out of `permissions.deny`), `tool texts` (6,637, the
+arm with the `tool-describe` block detached from the catalog reads 34,523), `built-in surface` (5,590, with
 `disableBundledSkills` and `enabledPlugins` out of the settings), `docs skill` (−71), `main agent body` (−1,936,
-with `agents/main.md` moved aside, 27,481), `auto memory off` (2,138, with `autoMemoryEnabled` out of the settings
-and the file moved aside, 29,619 against 27,481), `agent listing` (−726), `handoff context` (−940, with the
+with `agents/main.md` moved aside, 26,591), `auto memory off` (2,138, with `autoMemoryEnabled` out of the settings
+and the file moved aside, 28,729 against 26,591), `agent listing` (−726), `handoff context` (−940, with the
 `prompt.context` answer of the `handoff` block left without its block), `handoff tool listing` (−235, with the
 `session.start` registration out), `output style` (−1,751), `sandbox block` (−7,228, with `sandbox` out of the
 settings), `setup command listing` (−48), `handoff command listing` (−61), and the three rows of 0, `compaction
-pair`, `idleCompaction off`, and `autoMode lists`, each of which read 29,417 with its keys out of the settings. The
-cost reading of the `compaction pair` is not from a capture. Not read: `unexplained residual`, 4,255, the fall
+pair`, `idleCompaction off`, and `autoMode lists`, each of which read the full arm with its keys out of the settings. The
+cost reading of the `compaction pair` is not from a capture. Not read: `unexplained residual`, 4,307, the fall
 that the other rows leave. It is set by subtraction and is the one number of the table that no capture
 backs. The rows are read one at a time against the full arm. Whether the removals interact was not tested, so
-the cause of the gap is unknown, and no row was moved to close it. The `tool texts` row is 2,352 below the 7,534 it replaces, which was
+the cause of the gap is unknown, and no row was moved to close it. The `tool texts` row is 897 below the 7,534 it replaces, which was
 the residual and held request text that no row named.
 
 On 2026-10-31 on `2.1.316` every row was read again, each as the difference
@@ -578,7 +583,8 @@ so its listing line costs 71.
 
 The paragraph below is the reading of 2026-10-30, when the tool-text row was a plug. On 2026-11-02 it was read
 by detaching the `tool-describe` block from the catalog in a clone, which hides that block and not the plugin:
-5,182, as "Shipped Cuts" above says.
+5,182 then, 6,048 after the `Agent`, `Skill`, and `ToolSearch` texts were cut, and 6,637 after `ListAgents`
+moved behind `ToolSearch`, as "Shipped Cuts" above says.
 
 The tool-text row was the one figure here that no isolating capture reached, because hiding our tool
 texts meant hiding the plugin itself, so it was the residual of the shipped reading once every other
@@ -650,7 +656,7 @@ The `system` array held 3 blocks and 5,719 characters in every one of the seven 
 
 - A `permissions.deny` entry for a tool name removes that tool's whole definition from the request. The three denied names took 12,166 characters of the first row, and the row with the deny shows the same `system` and the same `messages` as the first row. So a deny is a request-size lever and not only a gate.
 - `disableBundledSkills: true` on its own made the request **larger**, 42,676 to 54,055 characters. The `Workflow` tool definition grew from 5,355 to 22,310 characters while `messages` fell from 8,095 to 2,519. So this key is a saving only together with the removal of `Workflow`, where the pair gives 42,676 to 24,934. A lever that looks like a cut can be a loss on its own, which is why every row here is measured.
-- `enableWorkflows: false` and `disableWorkflows: true` produced byte-identical totals, 37,066, with the same 11 tools. Both remove only the `Workflow` definition and 254 characters of `messages`. The pre-restart snippet set `enableWorkflows: false`; the new tree writes no such key and removes the `Workflow` definition through its deny list (`plugins/claudetto/src/deny.ts:35`). Either way the definition is already gone, so adding `disableWorkflows` changes nothing in the request. It may still change the cloud behavior its description names, which this probe does not read.
+- `enableWorkflows: false` and `disableWorkflows: true` produced byte-identical totals, 37,066, with the same 11 tools. Both remove only the `Workflow` definition and 254 characters of `messages`. The pre-restart snippet set `enableWorkflows: false`; the new tree writes no such key and removes the `Workflow` definition through its deny list (`plugins/claudetto/src/deny.ts:16`). Either way the definition is already gone, so adding `disableWorkflows` changes nothing in the request. It may still change the cloud behavior its description names, which this probe does not read.
 - The largest trim measured cut the first request from 42,676 to 18,191 characters, 57.4% less. Of that, denying `Agent` and `ListAgents` is 6,001 characters and it removes subagents, so it is a capability loss and belongs only to a tier row that rows of `window-budget` support.
 - `ToolSearch` was in the request in all seven runs with `DeferredToolPlaceholder` beside it, so the other built-in tools were already deferred and not in the request. The deferral, not our text, is what keeps the resident tool set at 12 here.
 
@@ -661,7 +667,7 @@ From the first row, the three that the deny removed: `Workflow` 5,355, `Schedule
 
 ## Already Set by the Setup Snippet
 
-Read from the setup snippet of the pre-restart plugin, which this tree no longer holds. The tier snippet of the new tree (`plugins/claudetto/src/tiers/snippet.ts:36`) writes only the keys of a tier row, and the deny list (`plugins/claudetto/src/deny.ts:34`) holds three names, so the keys below are a record of what the pre-restart snippet set and not of what the new tree writes. Each was a measurement row away from needing no new work.
+Read from the setup snippet of the pre-restart plugin, which this tree no longer holds. The tier snippet of the new tree (`plugins/claudetto/src/tiers/snippet.ts:111`) writes only the keys of a tier row, and the deny list (`plugins/claudetto/src/deny.ts:15`) holds three names, so the keys below are a record of what the pre-restart snippet set and not of what the new tree writes. Each was a measurement row away from needing no new work.
 
 Settings: `syncClaudeAiSkills: false`, `syncClaudeAiPlugins: false`, `disableClaudeAiConnectors: true`, `disableBundledSkills: true`, `disableAgentView: true`, `disableRemoteControl: true`, `enableArtifact: false`, `enableWorkflows: false`, `spinnerTipsEnabled: false`, `promptSuggestionEnabled: false`, `awaySummaryEnabled: false`, `autoMemoryEnabled: false`, `autoDreamEnabled: false`, `idleCompaction: false`, `feedbackDrafts: "off"`, `modelProposedGoals: "disabled"`, and twelve built-in plugins set to `false` in `enabledPlugins`.
 
@@ -761,6 +767,8 @@ One behavior to keep in view if the gate ever opens: the same `prompt.submit` ho
 - `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`: the framework uses background runs and `Monitor`.
 - `CLAUDE_CODE_DISABLE_ATTACHMENTS`, `CLAUDE_CODE_DISABLE_FILE_MENTIONS`: these are TUI features that the user types, `@file` among them, so they are part of the CLI and not a non-CLI surface.
 - `DISABLE_AUTOUPDATER`, `DISABLE_UPDATES`, `DISABLE_DOCTOR_COMMAND`, `DISABLE_LOGIN_COMMAND`, `DISABLE_LOGOUT_COMMAND`, `DISABLE_UPGRADE_COMMAND`: these take away a command the user needs to run the CLI, so setup does not write them.
+- `sandbox.enabled` and the sandbox block it adds, 6,675 characters of the interactive request on 2026-11-02: the block is the OS sandbox, a security control, so it is not a lever. `sandbox.filesystem.denyRead` costs 156 and stays, because no other layer stops a child process from reading `~/.ssh`. See "The Sandbox Block by Setting" in `docs/prompt/footprint.md`.
+- `CLAUDE_CODE_DISABLE_CLAUDE_MDS`: it saves about 1.27 characters per character of memory file, but it drops the user's and the project's instructions.
 - `DISABLE_PROMPT_CACHING` and its per-model forms: a cache read is the cheapest input there is, so turning caching off raises cost. Not a trim.
 
 ## Tools Seen in the Listing but Not in Any Request
@@ -823,7 +831,7 @@ The user ruled six of these dropped on 2026-10-27: `claude-api`, `code-review`, 
 
 The per-skill lever exists and is documented. `skillOverrides` "Sets the visibility of each skill", with the values `on`, `name-only`, `user-invocable-only`, and `off`, and the page adds that "Plugin skills are not affected" (`cc-docs read extend/skills-and-commands`, section "Loading and Controls", read 2026-10-27). A second page calls it "Hide or collapse a skill without editing its SKILL.md" and says it is allowed in any settings file (`configure/settings/hooks-and-plugins`).
 
-These read as two routes to the same place. They are not, and the snippet is on the better one but is `257` characters short of the best. Measured on 2026-10-27, eleven runs, with the method of "The Probe, Kept Verbatim" below. Every row denies `Workflow`, `ScheduleWakeup`, and `ReportFindings`, as the deny list of the new tree does (`plugins/claudetto/src/deny.ts:35-37`). `pa` is `plugin-authoring`. The config folder and the work folder were emptied before each run, so no row carries a prior session.
+These read as two routes to the same place. They are not, and the snippet is on the better one but is `257` characters short of the best. Measured on 2026-10-27, eleven runs, with the method of "The Probe, Kept Verbatim" below. Every row denies `Workflow`, `ScheduleWakeup`, and `ReportFindings`, as the deny list of the new tree does (`plugins/claudetto/src/deny.ts:16-18`). `pa` is `plugin-authoring`. The config folder and the work folder were emptied before each run, so no row carries a prior session.
 
 | Settings beside the deny | Total | `messages` | Against the deny alone |
 | --- | --- | --- | --- |
@@ -890,7 +898,7 @@ Four findings that change the deny list.
 
 The four task tools are off for the same family of reasons. `TaskCreate`, `TaskGet`, `TaskUpdate`, and `TaskList` are registered only `when: ["dM()"]` and gated by `isEnabled(){return Lde()}`, where `Lde()` is `dM()&&N3()`. None of the four is in any captured request either.
 
-So a deny entry for `TodoWrite`, `TaskCreate`, `TaskGet`, `TaskList`, or `TaskUpdate` saves zero characters today. The pre-restart snippet denied the four `Task` names; the new tree drops them (`plugins/claudetto/src/deny.ts:84-99`, the run that left the first request at 42,687). They would not be wrong, since they hold the surface off if a later version or an environment variable flips the gate, and a deny of an absent tool costs nothing in the request. They were dead weight in the settings file only.
+So a deny entry for `TodoWrite`, `TaskCreate`, `TaskGet`, `TaskList`, or `TaskUpdate` saves zero characters today. The pre-restart snippet denied the four `Task` names; the new tree drops them (`plugins/claudetto/src/deny.ts:52-66`, the run that left the first request at 42,687). They would not be wrong, since they hold the surface off if a later version or an environment variable flips the gate, and a deny of an absent tool costs nothing in the request. They were dead weight in the settings file only.
 
 `Glob` and `Grep` are not independent tools to keep or drop. They are registered `when: ["(n)=>!mre().has(n.name)"]`, a filter against a set, and the docs page above states the program adds them in place of `Bash`. That is why neither appears in our requests, which all carry `Bash`. The user's ruling of `KEEP` for `Glob` therefore needs no setting at all.
 

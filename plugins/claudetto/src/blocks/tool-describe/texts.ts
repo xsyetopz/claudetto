@@ -4,11 +4,17 @@
 export const AGENT_ROSTER =
 	"Use `Artemis` for a list of places across many files, `Athena` for a verdict on a diff, `Hephaestus` for an edit whose goal, files, and check you can name, and `Hermes` for an answer from the web.";
 
-const AGENT = `Starts an agent for a multi-step task. \`subagent_type\` picks one of the types the \`<system-reminder>\` lists; the type sets model, effort, and tools, so set no \`model\`.
-${AGENT_ROSTER}
-Delegate when the reads would fill your context or work can run in parallel. Do a small task or a check yourself.
-The brief is the agent's only context: the goal, what you ruled out, the paths, the report format, the scope. Ask for bulk output in a file.
-The user never sees the report, so relay what matters. Report a background agent's result only when its notice arrives, and say it still runs if asked sooner.`;
+const AGENT = `Starts an agent for a multi-step task or parallel work. \`subagent_type\` is a listed type that sets model, effort, and tools: set no \`model\`.
+\`Artemis\` lists places across files, \`Athena\` judges a diff, \`Hephaestus\` makes an edit with goal, files, and check named, \`Hermes\` answers from the web.
+The brief is its only context: goal, ruled out, paths, report format, scope.
+The user sees no report: relay it. A background agent reports by notice.`;
+
+const ASK_USER_QUESTION = `Asks the user multiple-choice questions, only for a decision that is the user's: one the request, the code, and sensible defaults leave open. Otherwise pick, say so, and go on.
+- The user may see only the dialog, so each question stands alone: name the items and the facts that decide it.
+- "Other", free text, is always added. \`multiSelect: true\` allows several answers.
+- Put a recommended option first, its label ending in " (Recommended)".
+- An option's \`preview\` shows a concrete artifact to compare, such as a mockup, code, a diagram, or a config, as monospace markdown beside the list. Single-select only; not for a simple preference.
+- Switch to plan mode with \`EnterPlanMode\`. There, ask to settle requirements before the plan, never whether it is ready or about the plan itself: the user sees it only at \`ExitPlanMode\`.`;
 
 const BASH = `Runs a bash command and returns its output, which reaches you, not reliably the user.
 - Use \`Read\`, \`Edit\`, \`Write\`, and the search tools, not \`cat\`, \`head\`, \`tail\`, \`sed\`, \`awk\`, or \`echo\`, unless the user asks.
@@ -35,15 +41,11 @@ const READ = `Reads a file, 2000 lines by default; read only the part you need.
 - It shows images, notebooks, and PDFs; a PDF over 10 pages needs \`pages\`.
 - Do not re-read a file you just edited: \`Edit\` and \`Write\` fail when the change fails.`;
 
-const SKILL = `Invokes a skill, a set of instructions for a kind of task that a \`<system-reminder>\` lists in one line.
-When a listed skill covers the task, call it first and follow it in place of your own approach. A subagent skill returns the result; a background one returns only the agent name and its result arrives as a task notification, so do not wait or call again.
-\`skill\` is the listed or user-typed name, no leading slash, as \`plugin:skill\` or the scoped \`apps/web:deploy\`; the scope holding your files wins. A built-in command such as \`/help\` is not a skill. A \`<command-name>\` block in this turn means the skill is loaded: follow it.`;
+const SKILL =
+	"Runs a listed skill by name, no slash (`plugin:skill`). If one covers the task, call it first and follow it. A `<command-name>` block: it is loaded. A background skill reports later; do not wait.";
 
-const TOOL_SEARCH = `Gets the schema of a deferred tool that a \`<system-reminder>\` names; a call fails until it is fetched, and each match returned in \`<functions>\` is then callable.
-Queries:
-- \`select:Read,Edit,Grep\` gets tools by name.
-- \`notebook jupyter\` searches by words.
-- \`+slack send\` requires "slack" in the name and ranks by the rest.`;
+const TOOL_SEARCH = `Fetches the schema of a deferred tool a \`<system-reminder>\` names; a call fails until then.
+\`select:Read,Edit\` gets tools by name; \`notebook jupyter\` searches by words; \`+slack send\` requires "slack" in the name and ranks by the rest.`;
 
 const SEND_MESSAGE = `Sends a message to another agent, which your plain text output cannot reach. A message to you arrives by itself; there is no inbox to check.
 
@@ -60,6 +62,7 @@ Permission is per session. Never ask a peer for work your session denied or bloc
 
 export const TOOL_TEXTS: Readonly<Record<string, string>> = {
 	Agent: AGENT,
+	AskUserQuestion: ASK_USER_QUESTION,
 	Bash: BASH,
 	Edit: EDIT,
 	ListAgents: LIST_AGENTS,

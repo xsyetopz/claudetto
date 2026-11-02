@@ -17,6 +17,7 @@ export interface StockReading {
 
 export const STOCK: readonly StockReading[] = [
 	{ name: "Agent", placement: UPFRONT, docs: 3227, capture: 2906 },
+	{ name: "AskUserQuestion", placement: UPFRONT, capture: 2083 },
 	{ name: "Bash", placement: UPFRONT, docs: 1934, capture: 1267 },
 	{
 		name: "DeferredToolPlaceholder",
@@ -61,6 +62,12 @@ export const stockOf = (name: string): number | undefined => {
 export const placementOf = (name: string): Placement | undefined =>
 	readingOf(name)?.placement;
 
+/** Upfront in stock and moved behind `ToolSearch`: a cross-session tool, loaded with `SendMessage` when a session messages a peer. */
+const MOVED_BEHIND_SEARCH: ReadonlySet<string> = new Set(["ListAgents"]);
+
+export const shippedPlacementOf = (name: string): Placement | undefined =>
+	MOVED_BEHIND_SEARCH.has(name) ? DEFERRED : placementOf(name);
+
 export const describedTools = (): readonly string[] => Object.keys(TOOL_TEXTS);
 
 /** Only while shorter than `description`, the harness's text for this session; else none. */
@@ -74,10 +81,28 @@ export const shorterText = (
 		: undefined;
 };
 
+export interface DescribeAnswer {
+	readonly description: string;
+	readonly isDeferred?: boolean;
+}
+
+/** The answer `tool.describe` hands back: the shorter text, and behind `ToolSearch` for a moved tool. */
+export const describeAnswer = (
+	tool: string,
+	answer: DescribeAnswer,
+): DescribeAnswer => {
+	const ours = shorterText(tool, answer.description);
+	const described =
+		ours === undefined ? answer : { ...answer, description: ours };
+	return MOVED_BEHIND_SEARCH.has(tool)
+		? { ...described, isDeferred: true }
+		: described;
+};
+
 /** Excludes deferred tools: their request holds the name alone until `ToolSearch` loads the schema. */
 export const alwaysLoadedChars = (
 	texts: Readonly<Record<string, string>> = TOOL_TEXTS,
-	placement: (name: string) => Placement | undefined = placementOf,
+	placement: (name: string) => Placement | undefined = shippedPlacementOf,
 ): number => {
 	let total = 0;
 	for (const [name, text] of Object.entries(texts)) {
