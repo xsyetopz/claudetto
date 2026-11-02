@@ -39,6 +39,8 @@ declare module "claude-code" {
 			stall: number;
 			/** The models already named as off the tier row, so each is named once. */
 			offRow: readonly string[];
+			/** The `id` and `status` of the background tasks last listed at Stop, so an unchanged list is not added again. */
+			tasks: string;
 		};
 	}
 }

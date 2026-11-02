@@ -1,7 +1,7 @@
 import type { EngineInterface, HookFor, On, PluginOptions } from "claude-code";
 import { readTier } from "../../tiers/read.ts";
 import type { Block, BlockContext, WithOptions } from "../block.ts";
-import { tasksText } from "./background.ts";
+import { tasksKey, tasksText } from "./background.ts";
 import { budgetBand, budgetLine, slowText } from "./budget.ts";
 import { withFailure } from "./failures.ts";
 import { changeLedger } from "./ledger.ts";
@@ -107,6 +107,28 @@ const usageOf = async (
 
 const stallRef = { plugin: "claudetto", key: "stall" } as const;
 
+const tasksRef = { plugin: "claudetto", key: "tasks" } as const;
+
+/**
+ * Text that is the same as the last time adds tokens to every request after it and nothing the model
+ * has not read, so the list is added only when a task `id` or `status` changed. A state fault adds it.
+ */
+const tasksChanged = async (
+	$: EngineInterface,
+	key: string,
+): Promise<boolean> => {
+	try {
+		const { value } = await $.state.get(tasksRef);
+		if (value === key) {
+			return false;
+		}
+		await $.state.set(tasksRef, key);
+	} catch {
+		// The list is shown again and nothing else.
+	}
+	return true;
+};
+
 const stalledBlocks = async ($: EngineInterface): Promise<number> => {
 	const { value } = await $.state.get(stallRef);
 	return typeof value === "number" ? value : 0;
@@ -146,8 +168,13 @@ export const onStop: HookFor<"classic.Stop"> = async ($, e, next) => {
 	if (looped && count === STALL_BLOCKS) {
 		$.ui.log(STALL_LINE);
 	}
-	const added =
+	const listed =
 		e.stop_hook_active === true ? undefined : tasksText(e.background_tasks);
+	const added =
+		listed !== undefined &&
+		(await tasksChanged($, tasksKey(e.background_tasks)))
+			? listed
+			: undefined;
 	const asked = looped
 		? { ...answer, block: `${answer.block}\n${STALL_ASK}` }
 		: answer;
