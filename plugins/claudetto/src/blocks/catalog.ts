@@ -12,6 +12,7 @@ import { attachHygiene, hygiene } from "./hygiene/block.ts";
 import { attachInitInterview, initInterview } from "./init-interview/block.ts";
 import { attachPlanMode, planMode } from "./plan-mode/block.ts";
 import { attachPriceStep, priceStep } from "./price-step/block.ts";
+import { attachReadGuard, readGuard } from "./read-guard/block.ts";
 import { attachRunLimits, runLimits } from "./run-limits/block.ts";
 import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
 import { attachStatusLine, statusLine } from "./status-line/block.ts";
@@ -39,6 +40,7 @@ export const CATALOG: readonly Block[] = [
 	classifyBlock,
 	planMode,
 	confine,
+	readGuard,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -63,4 +65,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachClassify(on, context);
 	attachPlanMode(on, context);
 	attachConfine(on, context);
+	attachReadGuard(on, context);
 };
