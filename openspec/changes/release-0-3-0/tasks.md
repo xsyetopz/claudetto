@@ -189,7 +189,7 @@
 Each task closes when its entry moves to "Fixed" with the commit that fixes it, or stays with the reason it cannot close in `0.3.0`.
 
 - [x] 23.1 The classifier reads the user's words after Stop hook feedback as hook text Fixed in `73d465d9` for the `classify` block, moved to "Fixed" of `ISSUES.md`. No paid eval of the new transcript has run.
-- [ ] 23.2 The classifier does not take an approval from the plan or an `AskUserQuestion` answer
+- [ ] 23.2 The classifier does not take an approval from the plan or an `AskUserQuestion` answer Stays open: the denials came from the built-in auto mode classifier, which reads no `AskUserQuestion` answer as approval and which no plugin hook configures; the `classify` block is the opt-in path.
 - [x] 23.3 "Rewire the Agent" matches comments in source and test files Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
 - [x] 23.4 The `classify` block denies a call whose reason says the rule does not apply Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
 - [ ] 23.5 `AGENTS.md` asks before a paid run, against task 4.4 Stays open: the line is the user's own, so `AGENTS.md:8` stays and each paid run is asked first.
@@ -197,7 +197,7 @@ Each task closes when its entry moves to "Fixed" with the commit that fixes it, 
 - [ ] 23.7 A helper that takes `$` cannot leave its hook file Stays open: the engine follows `$` past an import only into a `function` declaration, and the `biome` config forbids `function` declarations.
 - [x] 23.8 The classifier does not credit the user's authorization of a named secret for a named use Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
 - [x] 23.9 The classifier denies the agent driving a nested Claude Code session Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
-- [ ] 23.10 The built-in classifier denies with no reason
+- [ ] 23.10 The built-in classifier denies with no reason Stays open: the text "it gave no explanation" comes from the server-side classifier, and no plugin hook sees or sets its reason.
 - [x] 23.11 Main sessions ran on `claude-opus-5`, not `claude-opus-5-5` Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`. Gap: the `opusplan` and plan-mode switches are not yet run under `tmux`.
 - [x] 23.12 The agent counts and prices models the user does not run Fixed in `96901c6b`, moved to "Fixed" of `ISSUES.md`.
 - [x] 23.13 The agent opens a reply with agreement after a correction Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
@@ -216,7 +216,7 @@ Each task closes when its entry moves to "Fixed" with the commit that fixes it, 
 - [x] 23.26 Paid probe rounds took a quarter of the week Fixed in `7919dc54`, moved to "Fixed" of `ISSUES.md`.
 - [ ] 23.27 Every call re-reads the whole context Stays open: each call re-reads the whole context, which no setting removes.
 - [ ] 23.28 The handover must hit the cache Stays open: the handover must hit a server-side cache that the plugin cannot keep warm, and two paid runs missed.
-- [ ] 23.29 Message 0 is written again at each handover
+- [ ] 23.29 Message 0 is written again at each handover Stays open: the bytes the plugin controls now match, and the remaining miss is on the server side, as two paid runs and the 14.7 run showed.
 - [ ] 23.30 A handover costs half of a core compaction at 166k tokens Stays open: the entry is a measurement of one session shape, and a handover costs about what a core compaction costs.
 - [x] 23.31 Core's `context_management` section contradicts the handoff block Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
 - [x] 23.32 Replacing auto-compaction with the handover Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
