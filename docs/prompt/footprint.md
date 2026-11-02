@@ -143,7 +143,7 @@ The `0.3.0` body replaces each `0.2.0` section for the flaw the user named on 20
 | `<claims>` | No source order, no hypothesis before confirmation | `<finding_out>`, `<claims_and_evidence>` |
 
 One `0.2.0` rule has no full replacement: "Approval of a task or plan covers it end to end."
-`<finishing>` keeps its half that length is no reason to stop, and `<actions_and_consent>` says that
+`<finishing>` keeps its half that a long task continues until the work is done, and `<actions_and_consent>` says that
 one approval covers one action, which is about actions others see and not about a task's steps.
 
 The code rules file loads only after a session reads a file. Its `paths:` of `**/*` keeps it out of
@@ -467,29 +467,29 @@ row; the behavior and check columns are not checked.
 | `<sentence_style>` | `output-styles/Concise.md` | 516 | Puts each code item in backticks and references code as `file:line` | none |
 | `<reporting_results>` | `output-styles/Concise.md` | 468 | Calls a piece working only after a check ran in the session, reports each experiment and its result, and keeps each failure in the reply | none |
 | `<requests_to_the_user>` | `output-styles/Concise.md` | 214 | Ends with a numbered list only for a step only the user can take, with the exact `! <command>` | none |
-| `Agent` | tool text | 444 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
+| `Agent` | tool text | 449 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
 | `AskUserQuestion` | tool text, interactive only | 829 | Asks only for a decision the request, the code, and sensible defaults leave open, and otherwise picks, says so, and goes on | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Bash` | tool text | 870 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Edit` | tool text | 243 | Reads a file in this conversation before editing it, and strips the `Read` line prefix from `old_string` so an edit does not fail on a line number | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `ListAgents` | tool text, deferred | 261 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Read` | tool text | 283 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `SendMessage` | tool text | 3,008 | Addresses a peer by the name its `ListAgents` row prints rather than looking for an address syntax, reads a successful send as delivery and not as agreement, waits for a reply on other work instead of looping on `ListAgents`, and refuses to hand a peer work this session denied | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Read` | tool text | 291 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `SendMessage` | tool text | 2,976 | Addresses a peer by the name its `ListAgents` row prints rather than looking for an address syntax, reads a successful send as delivery and not as agreement, waits for a reply on other work instead of looping on `ListAgents`, and refuses to hand a peer work this session denied | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Skill` | tool text | 195 | Starts a skill by name instead of restating its steps | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `ToolSearch` | tool text | 234 | Gets a deferred tool's schema before calling it | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Write` | tool text | 196 | Writes a whole file only for a new file or a full replacement, and uses `Edit` for a partial change | `plugins/claudetto/tests/tool-describe.test.ts` |
 
 The ten `agents/main.md` rows come to 5,267 characters and the file sends 5,285, the difference
 being the blank line between sections. The five `Concise.md` rows come to 1,578 against 1,586. The
-seven upfront tool texts come to 3,294 against a stock sum of 10,016, a cut of 6,722. The `-p` request
-carries six of them, 2,465 against 7,933, because `AskUserQuestion` is in the interactive request only.
+seven upfront tool texts come to 3,307 against a stock sum of 10,016, a cut of 6,709. The `-p` request
+carries six of them, 2,478 against 7,933, because `AskUserQuestion` is in the interactive request only.
 
-Two rows of the table are not always loaded. `SendMessage` is 3,008 characters against a stock 4,259,
-so it cuts 1,251, and the harness defers the tool, so that cut is paid once at the `ToolSearch` call
+Two rows of the table are not always loaded. `SendMessage` is 2,976 characters against a stock 4,259,
+so it cuts 1,283, and the harness defers the tool, so that cut is paid once at the `ToolSearch` call
 that loads the schema rather than on every request. `ListAgents` is upfront in stock, and the
 `tool.describe` answer of `plugins/claudetto/src/blocks/tool-describe/tools.ts:90` sets `isDeferred`
 on it, so its 261 characters are paid in a session that messages a peer and loads it beside
 `SendMessage`. Moving it took 633 characters off the interactive request, 40,344 to 39,711, and 641
-off the `-p` request, 28,527 to 27,886. `alwaysLoadedChars` leaves both out of the 3,294.
+off the `-p` request, 28,527 to 27,886. `alwaysLoadedChars` leaves both out of the 3,307.
 
 The `Edit`, `ListAgents`, and `Write` rows were written on 2026-10-30, when the user asked for more
 of this. They are the last upfront tools that had no text: of the nine definitions a shipped request
@@ -608,6 +608,8 @@ sandbox block of `messages` names the plugin folder once by its real path, so ea
 checkout path adds one: a copy of the tree at `/tmp/` plus 42 characters reads 27,894, since `/tmp`
 resolves to `/private/tmp`. With the file moved aside it is
 26,591, with a `system` of 3,499, so the file costs 1,936 where an earlier, shorter body saved 72.
+After the positive-form rewrites of the same day the first request reads 27,960: `system` 5,495,
+`tools` 10,185 (8), `messages` 11,637, read with `just capture --arm plugin --shipped`, and the file costs 2,010.
 The interactive arm reads 41,628: `system` 5,412, `tools` 15,871 (10), `messages` 12,231, `safeguards` 7,457, and
 `bun claudekit/context-split/main.ts` sums the parts of the request that `/context` counts as system
 prompt to 17,176 characters there, 16,617 for `-p`.
@@ -686,7 +688,9 @@ skill listing, the style reminder, and the two deferred tool names.
 Later the same day, after the `AskUserQuestion` text and the move of `ListAgents` behind
 `ToolSearch`, the same command read the plain arm at 42,129 and the plugin arm at 39,711. The plugin
 arm carries eight tool texts, 3,323 request JSON characters: `Agent` 447, `AskUserQuestion` 838,
-`Bash` 877, `Edit` 245, `Read` 287, `Skill` 195, `ToolSearch` 237, and `Write` 197.
+`Bash` 877, `Edit` 245, `Read` 287, `Skill` 195, `ToolSearch` 237, and `Write` 197. After the
+positive-form rewrites the plugin arm reads 39,785: `Agent` 452 and `Read` 295 make the eight texts
+3,336, `agents/main.md` adds 74, and the `Concise` reminder drops 13.
 
 The 39,711 by owner, read from the request of `just capture --shipped --interactive --dump DIR` on
 2026-11-02. "Settings" is engine text whose size claudetto's settings decide. The output style and

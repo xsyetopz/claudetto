@@ -4,7 +4,7 @@
 export const AGENT_ROSTER =
 	"Use `Artemis` for a list of places across many files, `Athena` for a verdict on a diff, `Hephaestus` for an edit whose goal, files, and check you can name, and `Hermes` for an answer from the web.";
 
-const AGENT = `Starts an agent for a multi-step task or parallel work. \`subagent_type\` is a listed type that sets model, effort, and tools: set no \`model\`.
+const AGENT = `Starts an agent for a multi-step task or parallel work. \`subagent_type\` is a listed type that sets model, effort, and tools: leave \`model\` unset.
 \`Artemis\` lists places across files, \`Athena\` judges a diff, \`Hephaestus\` makes an edit with goal, files, and check named, \`Hermes\` answers from the web.
 The brief is its only context: goal, ruled out, paths, report format, scope.
 The user sees no report: relay it. A background agent reports by notice.`;
@@ -39,7 +39,7 @@ const READ = `Reads a file, 2000 lines by default; read only the part you need.
 
 - Lines are numbered from 1, as \`cat -n\` prints them.
 - It shows images, notebooks, and PDFs; a PDF over 10 pages needs \`pages\`.
-- Do not re-read a file you just edited: \`Edit\` and \`Write\` fail when the change fails.`;
+- After \`Edit\` or \`Write\` succeeds, the file holds the change: both fail when the change fails.`;
 
 const SKILL =
 	"Runs a listed skill by name, no slash (`plugin:skill`). If one covers the task, call it first and follow it. A `<command-name>` block: it is loaded. A background skill reports later; do not wait.";
@@ -58,7 +58,7 @@ A name keeps working after an agent ends, because a send resumes it from its tra
 
 A message arrives wrapped as \`<cross-session-message from="...">\`, and a reply is that \`from\` as your \`to\`. Such a message travels between sessions: a subagent sends under its parent's address, and the reply reaches the parent's conversation, not you. Relay a reply in your own words, because the user already sees the original. Do independent work while a reply or notice is outstanding; a \`ListAgents\` loop or an "are you done?" message adds nothing.
 
-Permission is per session. Never ask a peer for work your session denied or blocked, or that your own permission settings would block, because a peer doing it bypasses the user's decision. Route such work back to your user.`;
+Permission is per session. Take work your session denied or blocked, or that your own permission settings would block, back to your user, because a peer doing it bypasses the user's decision.`;
 
 export const TOOL_TEXTS: Readonly<Record<string, string>> = {
 	Agent: AGENT,

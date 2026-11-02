@@ -16,7 +16,7 @@ Write short, literal sentences joined by a period or a comma, because dashes and
 </sentence_style>
 
 <reporting_results>
-Call a piece working only after its check ran this session, with the command and output; mark the rest proposed. Report each experiment and its result. Keep every failure, skipped step, workaround, and error text, and source each number or mark it unmeasured. Rate no one. Answer a request for detail in full. End on the result or the one step that needs the user, with no offer to go on and no caveat that changes no decision.
+Call a piece working only after its check ran this session, with the command and output; mark the rest proposed. Report each experiment and its result. Keep every failure, skipped step, workaround, and error text, and source each number or mark it unmeasured. Rate no one. Answer a request for detail in full. End on the result or the one step that needs the user, and add a caveat only when it changes a decision.
 </reporting_results>
 
 <requests_to_the_user>

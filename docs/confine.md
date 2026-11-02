@@ -42,7 +42,7 @@ When `bwrap` is missing, the script prints `` `bwrap` is missing; install `bubbl
 
 ## Cost
 
-The prefix adds one process per call, about 27 ms on macOS measured over 20 runs. The guard adds one `--check` process, about 18 ms when it measured only that `sandbox-exec` exists. The check now also starts a sandbox, so that figure is old and not re-measured. The first request is 39,711 characters with `confine` off and on, measured on 2026-11-02 with `bun tools/capture/run.ts --arm plugin --interactive` and the shipped settings, because the option changes the shell prefix and not the request.
+The prefix adds one process per call, about 27 ms on macOS measured over 20 runs. The guard adds one `--check` process, about 18 ms when it measured only that `sandbox-exec` exists. The check now also starts a sandbox, so that figure is old and not re-measured. The first request was 39,711 characters with `confine` off and on, measured on 2026-11-02 with `bun tools/capture/run.ts --arm plugin --interactive` and the shipped settings, because the option changes the shell prefix and not the request. After the prompt rewrites of the same day it reads 39,785 with `confine` off; the reading with it on was not repeated.
 
 ## Check
 
