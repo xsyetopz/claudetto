@@ -11,7 +11,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Features
 
-- A first request of 27,886 characters against 46,007 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
+- A first request of 27,960 characters against 46,007 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A `/claudetto:handoff` command that has the session call the `handoff` tool, plus a handoff written before a compaction.
 - A handoff reply that compacts the conversation to itself, with no summary call, so the next turn reads the cached prefix.
@@ -102,6 +102,20 @@ A `settings.read` hook that answers them instead was built and dropped: it read 
 | Plan mode | A shorter plan mode reminder that names `claudetto:Artemis` for a search over many files. |
 | Version warning | One line at startup when Claude Code is older than `2.1.316`. |
 
+### Run the Hygiene Sweep by Hand
+
+An installed plugin has no command for the sweep, so call its script by the path in the plugin cache, with `--dry-run` first to list what it would remove and remove nothing:
+
+```sh
+~/.claude/plugins/cache/claudetto/claudetto/<version>/bin/claudetto-hygiene --dry-run
+```
+
+Replace `<version>` with the installed version. Run it without `--dry-run` to remove. It takes `--handoff-days`, `--session-days`, and `--probe-minutes` to set the age of one kind.
+
+### Model `opusplan`
+
+`opusplan` is opt-in; claudetto does not set it. It uses Opus in plan mode and a cheaper model otherwise, so each change of mode switches the model. A switch of model drops the prompt cache, so the first request after each mode change pays the full input price of the context again. Use it only when the plans are worth that cost.
+
 ## Plugins
 
 claudetto is a marketplace with one core plugin and one add-on.
@@ -133,6 +147,10 @@ The core plugin's options are set in the plugin dialog of Claude Code, and `/con
 | `maxHeavyToolCalls` | number, 20 | The most tool calls inside the period while the context holds `heavyContextTokens` or more. |
 | `heavyContextTokens` | number, 400,000 | The input tokens of the last response from which the context counts as heavy. |
 | `maxIdenticalFailures` | number, 3 | How many times the same call fails with the same error before an identical retry is refused. |
+| `hygieneEnabled` | boolean, `true` | `false` starts no hygiene sweep at a session start. |
+| `handoffCleanupPeriodDays` | number, unset | The age in days from which the sweep removes a handoff, except the newest of the project. Unset, it follows `cleanupPeriodDays`. 0 keeps every handoff. |
+| `sessionTempCleanupPeriodDays` | number, unset | The age in days from which the sweep removes the temp folder of a session that is not running. Unset, it follows `cleanupPeriodDays`. 0 keeps them all. |
+| `probeCleanupPeriodMinutes` | number, 60 | The age in minutes from which the sweep removes an `fswatch-probe-*` folder. 0 keeps them all. |
 
 The add-on `claudetto-you-should-know` has `sideCheckEnabled` (boolean, `false`), `sideCheckModel` (string, `claude-haiku-5-5`), and `sideCheckEffortLevel` (string, `high`).
 
@@ -202,6 +220,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 `just capture` reads the first request of a session against a fake API on `127.0.0.1`, with no model call, which is where the character figures above come from.
 `just window-report` prints the cost per rate-limit window from the measured rows, or "not measured" when there are too few.
 `just hygiene` removes stale temp folders and handoffs.
+`just gc` removes the `mkdtemp` folders that the dev tools leave in the temp folder past `--hours` (24 by default, 0 for off). It keeps a folder that is some process's working directory, one with a live `tmux.sock`, and a symlink. It takes `--dry-run`.
 `just claude-version` prints the supported Claude Code version, and a version argument moves every line that declares it.
 
 ## License

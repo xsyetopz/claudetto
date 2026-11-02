@@ -10,6 +10,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Changed
 
+- The prompt texts say what to do instead of what to avoid: the denial line of the four agents, the finishing line of `main.md`, the ending of `Concise`, and the `Agent`, `Read`, and `SendMessage` tool texts. `main.md` also says to read a large file by line range.
 - The options are renamed in the style of the settings of Claude Code: `decide` is `decideProvider`, `TYPESAFE_API_KEY` is `typesafeApiKey`, `CONTEXT7_API_KEY` is `context7ApiKey`, `handoverTokens` is `handoverThresholdTokens`, `classifier` is `classifierModel`, `startCap` is `maxSubagentStarts`, `windowSeconds` is `limitPeriodSeconds`, `callCap` is `maxHeavyToolCalls`, `heavyTokens` is `heavyContextTokens`, and `failLimit` is `maxIdenticalFailures`. In `claudetto-you-should-know`, `enabled`, `model`, and `effort` are `sideCheckEnabled`, `sideCheckModel`, and `sideCheckEffortLevel`.
   - `cheapSummary` is the boolean `cheapSummaryEnabled`, `false` by default, where `on` was `true`.
   - A value stored under an old name is still read, except that the new name wins once it differs from its default. The two keys in secure storage are the exception: enter `typesafeApiKey` and `context7ApiKey` again, or keep the env variables `TYPESAFE_API_KEY` and `CONTEXT7_API_KEY`.
@@ -29,7 +30,7 @@ After each update, do the steps in the "Update" section of the README.
 - A change in `agents/main.md` also fixes each caller or test it breaks, without asking. Before, the body asked before any edit outside the named files, so a rename stopped at its callers.
 - `Artemis` may give a count from `Grep` with `output_mode: "count"` or from a `Glob` list. A count of lines or bytes stays outside its tools.
 - The `cheapSummary` compaction summary runs at effort `medium`, down from `high`. A real compaction at `high` gave 441 characters in 378 output tokens, about two thirds of them thinking, which is an estimate because the reply reports no separate thinking count. The same compaction at `medium` gave 493 characters in 286 output tokens, and the summary stood.
-- The empty interactive session's first request reads 39,711 characters, against 42,129 for the same settings without the plugin, read with `just capture --shipped --interactive`. The `-p` first request reads 27,886, against 46,007 for a stock session. The tool texts of the interactive request are 3,323 characters for eight tools, down from 5,446: each drops the facts its input schema or its output already gives.
+- The empty interactive session's first request reads 39,785 characters, against 42,129 for the same settings without the plugin, read with `just capture --shipped --interactive`. The `-p` first request reads 27,960, against 46,007 for a stock session. The tool texts of the interactive request are 3,336 characters for eight tools, down from 5,446: each drops the facts its input schema or its output already gives.
   - The `Agent`, `Skill`, and `ToolSearch` texts are 444, 195, and 234 characters, and the `AskUserQuestion` text is 829, down from 2,083.
   - `ListAgents` moves behind `ToolSearch`, which a session loads with `SendMessage` to message a peer. That takes 633 characters off the interactive request and 641 off the `-p` request.
   - `NotebookEdit` and `TaskStop` are denied, so they leave the deferred list. The agent descriptions drop the "Use for" sentence that the `Agent` roster gives. `agents/main.md` and `Concise.md` keep each rule in fewer words, and `Concise.md` leaves the own-defect and `AskUserQuestion` rules to `agents/main.md`, which already holds them.
@@ -39,6 +40,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- The `Stop` hook added the `Background tasks still running` context at every stop, so a long `Monitor` session carried the same list again in each request. It is now added only when a task `id` or `status` changed since it was last added.
 - A handoff written after a shell `cd` went to `.claude/claudetto/handoffs/` under the new directory, and a resume read the folder there too, so the next session found no handoff and the sweep never reached the file. The handoff and the handover now write and read the folder under the project root that `$.session.root()` gives.
 - A `claude` session that a `claudekit` probe or `just capture` started inherited the `CLAUDE_CODE_*` variables of the session that ran it, such as `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_EFFORT`, so the child dropped tools from its request and `just inventory` read 3,004 characters below the recorded total. `withoutSessionVariables` of `claudekit/session/env.ts` now drops them and keeps the login, the provider switches, and the rest of the shell.
 - The status line showed no branch in a plain checkout, because Claude Code sends `worktree.branch` for a worktree session only. The line now reads the branch from the checkout's `.git/HEAD`, following a `.git` file's `gitdir:` line, and shows a detached `HEAD` as its first 7 hex digits.
@@ -58,6 +60,8 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Added
 
+- The options `handoffCleanupPeriodDays` and `sessionTempCleanupPeriodDays` (days, unset follows `cleanupPeriodDays`), `probeCleanupPeriodMinutes` (60), and `hygieneEnabled` (`true`) set the age per kind for the hygiene sweep. 0 keeps a kind, and `hygieneEnabled` set to `false` starts no sweep. `claudetto-hygiene` takes `--handoff-days`, `--session-days`, and `--probe-minutes`.
+- `just gc` removes the `mkdtemp` folders of the dev tools past `--hours` (24 by default), except a folder that is a process's working directory, one with a live `tmux.sock`, and a symlink. It takes `--dry-run`.
 - The `confineEnabled` option, `false` by default. With `true`, the `confine` block sets `CLAUDE_CODE_SHELL_PREFIX` to `bin/claudetto-confine`, which runs each `Bash` command under `sandbox-exec` on macOS or `bwrap` on Linux. The command can write only the project, `/tmp`, `$TMPDIR`, `~/.bun`, and `~/.cache`, and not `.git/hooks` or `.git/config`. The prefix wraps the command after the permission check, the deny rules, the `PreToolUse` hooks, and the auto mode classifier, which still see the command as written. A `Bash` hook denies the call when the prefix is not ours or the sandbox cannot start, and the script refuses with exit 126 when `bwrap` is missing. See `docs/confine.md`.
 - `just capture --calls FILE` makes the fake API answer with each tool call of a JSON list in turn, and `--dump` writes each later request as `ARM.1.json`, `ARM.2.json`, and so on.
 - `claudekit/bash-once` takes `--plugin-dir` and `--permission-mode` and reports how many auto mode classifier requests carried the command.
