@@ -2,10 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { TOOL_TEXTS } from "../texts.ts";
 import {
 	alwaysLoadedChars,
+	DEFERRED,
 	deadTexts,
+	describeAnswer,
 	describedTools,
 	placementOf,
 	STOCK,
+	shippedPlacementOf,
 	shorterText,
 	stockOf,
 	UPFRONT,
@@ -46,6 +49,24 @@ describe("every shipped text beats its stock text", () => {
 	});
 });
 
+describe("the length caps of the trimmed texts", () => {
+	test("`Agent` is at most 450 characters", () => {
+		expect(TOOL_TEXTS["Agent"]?.length).toBeLessThanOrEqual(450);
+	});
+
+	test("`Skill` is at most 200 characters", () => {
+		expect(TOOL_TEXTS["Skill"]?.length).toBeLessThanOrEqual(200);
+	});
+
+	test("`ToolSearch` is shorter than its 324 characters", () => {
+		expect(TOOL_TEXTS["ToolSearch"]?.length).toBeLessThan(324);
+	});
+
+	test("`AskUserQuestion` is shorter than its 2083 characters", () => {
+		expect(TOOL_TEXTS["AskUserQuestion"]?.length).toBeLessThan(2083);
+	});
+});
+
 describe("the text the hook hands back", () => {
 	test("ours replaces a longer description", () => {
 		const text = shorterText("Read", "x".repeat(2000));
@@ -68,7 +89,46 @@ describe("the text the hook hands back", () => {
 	});
 });
 
+describe("a tool moved behind `ToolSearch`", () => {
+	test("`ListAgents` goes behind `ToolSearch` with its shorter text, as `SendMessage` already is", () => {
+		const answer = describeAnswer("ListAgents", {
+			description: "x".repeat(2000),
+		});
+
+		expect(answer).toEqual({
+			description: TOOL_TEXTS["ListAgents"] ?? "",
+			isDeferred: true,
+		});
+	});
+
+	test("`ListAgents` is deferred even when the harness text is the shorter one", () => {
+		const answer = describeAnswer("ListAgents", { description: "short" });
+
+		expect(answer).toEqual({ description: "short", isDeferred: true });
+	});
+
+	test("`AskUserQuestion` stays upfront, so a session can ask without a search first", () => {
+		const answer = describeAnswer("AskUserQuestion", {
+			description: "x".repeat(5000),
+		});
+
+		expect(answer.isDeferred).toBeUndefined();
+		expect(shippedPlacementOf("AskUserQuestion")).toBe(UPFRONT);
+	});
+
+	test("the shipped placement of `ListAgents` is deferred and its stock placement is not", () => {
+		expect(placementOf("ListAgents")).toBe(UPFRONT);
+		expect(shippedPlacementOf("ListAgents")).toBe(DEFERRED);
+	});
+});
+
 describe("the always-loaded total", () => {
+	test("counts no text of a tool claudetto moves behind `ToolSearch`", () => {
+		expect(
+			alwaysLoadedChars({ ListAgents: "x".repeat(10), Read: "y".repeat(5) }),
+		).toBe(5);
+	});
+
 	test("counts no text of a tool the harness defers", () => {
 		const texts = { Monitor: "x".repeat(10), Read: "y".repeat(5) };
 
@@ -87,7 +147,7 @@ describe("the always-loaded total", () => {
 		for (const name of describedTools()) {
 			const chars = TOOL_TEXTS[name]?.length ?? 0;
 			all += chars;
-			if (placementOf(name) === UPFRONT) {
+			if (shippedPlacementOf(name) === UPFRONT) {
 				upfront += chars;
 			}
 		}

@@ -85,6 +85,16 @@ describe("the keys setup writes", () => {
 		});
 	}
 
+	test("`NotebookEdit` and `TaskStop` are denied before the built-in agents", () => {
+		const deny = denyRulesOf(tierSnippet(SNIPPET_ROW, "darwin"));
+
+		expect(deny).toContain("NotebookEdit");
+		expect(deny).toContain("TaskStop");
+		expect(deny.indexOf("TaskStop")).toBeLessThan(
+			deny.indexOf("Agent(general-purpose)"),
+		);
+	});
+
 	test("the claude.ai integrations are off, and `DesignSync` is denied", () => {
 		const snippet = tierSnippet(SNIPPET_ROW, "darwin");
 		const deny = denyRulesOf(snippet);

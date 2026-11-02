@@ -10,7 +10,7 @@ import { count } from "../format.ts";
 import { AUTOCOMPACT_PCT_ENV, compactionSnippet, ENV } from "../keys.ts";
 import { MAIN_AGENT, STYLE } from "../prompts.ts";
 import { SECRET_PATHS } from "../sandbox/sandbox.ts";
-import { AGENT_DENIES, INTEGRATION_DENIES } from "./agents.ts";
+import { AGENT_DENIES, DEFERRED_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES } from "./allow.ts";
 import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
 import { envFlags, MODEL_PINS, SUBAGENT_MODEL_ENV } from "./env.ts";
@@ -36,7 +36,7 @@ export interface KeyGroup {
 export const KEY_GROUPS: readonly KeyGroup[] = [
 	{
 		label: "Smaller prompt",
-		why: `Turns off the bundled skills and most built-in plugins, denies ${codes([...denyList(), ...INTEGRATION_DENIES])} and the ${AGENT_DENIES.length} built-in agents, allows ${codes(ALLOW_RULES)}, and selects the \`${MAIN_AGENT}\` agent body and the \`${STYLE}\` output style. With the other groups they take the first request from ${count(BASELINE_TOTAL)} characters to ${count(SHIPPED_TOTAL)}, and the tool schemas from ${BASELINE_TOOL_COUNT} to ${SHIPPED_TOOL_COUNT}.`,
+		why: `Turns off the bundled skills and most built-in plugins, denies ${codes([...denyList(), ...INTEGRATION_DENIES, ...DEFERRED_DENIES])} and the ${AGENT_DENIES.length} built-in agents, allows ${codes(ALLOW_RULES)}, and selects the \`${MAIN_AGENT}\` agent body and the \`${STYLE}\` output style. With the other groups they take the first request from ${count(BASELINE_TOTAL)} characters to ${count(SHIPPED_TOTAL)}, and the tool schemas from ${BASELINE_TOOL_COUNT} to ${SHIPPED_TOOL_COUNT}.`,
 		keys: [
 			...Object.keys(builtinSnippet()),
 			"permissions",

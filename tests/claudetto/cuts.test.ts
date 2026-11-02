@@ -20,6 +20,7 @@ describe("the inventory accounts for the whole fall", () => {
 
 		expect(moving.map((cut) => cut.name)).toEqual([
 			"deny list",
+			"deferred tool denies",
 			"tool texts",
 			"built-in surface",
 			"docs skill",
@@ -55,6 +56,7 @@ describe("a cut counts as a saving only with a bill reading", () => {
 	test("the character cuts are named as unpriced", () => {
 		expect(unpricedCuts()).toEqual([
 			"deny list",
+			"deferred tool denies",
 			"tool texts",
 			"built-in surface",
 			"docs skill",
