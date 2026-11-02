@@ -1,6 +1,7 @@
 import { colorOff, paintOf } from "./color.ts";
-import { num, parse } from "./input.ts";
+import { num, parse, type Rec, str, sub } from "./input.ts";
 import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "./limits.ts";
+import { type Local, NO_LOCAL, readLocal } from "./local.ts";
 import { renderRows } from "./rows.ts";
 import { taskRows } from "./subagents.ts";
 
@@ -14,15 +15,40 @@ const columnsOf = (env: Env): number => {
 	return Number.isInteger(value) && value > 0 ? value : DEFAULT_COLUMNS;
 };
 
+export const projectDirOf = (input: Rec): string | undefined => {
+	const workspace = sub(input, "workspace");
+	return (
+		str(workspace?.["project_dir"]) ??
+		str(workspace?.["current_dir"]) ??
+		str(input["cwd"])
+	);
+};
+
 /** The lines of the main status line for the JSON in `raw`. Pure: the clock and the environment are arguments. */
-export const statusOf = (raw: string, env: Env, now: number): string => {
+export const statusOf = (
+	raw: string,
+	env: Env,
+	now: number,
+	local: Local = NO_LOCAL,
+): string => {
 	const input = parse(raw);
 	if (!input) {
 		return FALLBACK;
 	}
 	const room = Math.max(1, columnsOf(env) - COLUMNS_MARGIN);
-	const rows = renderRows(input, paintOf(!colorOff(env)), now, room);
+	const rows = renderRows(input, paintOf(!colorOff(env)), now, room, local);
 	return rows.length > 0 ? rows.join("\n") : FALLBACK;
+};
+
+export const statusWithFiles = async (
+	raw: string,
+	env: Env,
+	now: number,
+): Promise<string> => {
+	const input = parse(raw);
+	const dir = input ? projectDirOf(input) : undefined;
+	const local = dir ? await readLocal(dir) : NO_LOCAL;
+	return statusOf(raw, env, now, local);
 };
 
 /** The JSON lines of the subagent status line, or `""` so Claude Code keeps its default rows. The width is `columns` of the input, since this command gets no `COLUMNS`. */
@@ -52,7 +78,7 @@ export const main = async (args: readonly string[]): Promise<number> => {
 	try {
 		out = args.includes("--subagent")
 			? subagentsOf(raw, env, now)
-			: statusOf(raw, env, now);
+			: await statusWithFiles(raw, env, now);
 	} catch {
 		out = args.includes("--subagent") ? "" : FALLBACK;
 	}

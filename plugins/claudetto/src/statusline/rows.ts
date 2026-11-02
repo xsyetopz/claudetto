@@ -1,5 +1,6 @@
 import type { Rec } from "./input.ts";
 import { ITEM_GAP, MAX_ROWS } from "./limits.ts";
+import type { Local } from "./local.ts";
 import {
 	branchText,
 	type Ctx,
@@ -10,6 +11,7 @@ import {
 	limitTexts,
 	modelText,
 	prText,
+	specText,
 	type Text,
 } from "./segments.ts";
 import { truncate, width } from "./width.ts";
@@ -20,7 +22,7 @@ const join = (items: readonly Text[]): string =>
 /** The rows in order: place, session, limits, cache. Each row is its items joined by one gap, with no shared column, so an item never waits for a wider item of another row. Empty rows are dropped. */
 const rowsOf = (ctx: Ctx): string[] =>
 	[
-		[folderText(ctx), branchText(ctx), prText(ctx)],
+		[folderText(ctx), branchText(ctx), prText(ctx), specText(ctx)],
 		[modelText(ctx), contextText(ctx), costText(ctx)],
 		limitTexts(ctx),
 		[cacheText(ctx)],
@@ -35,10 +37,11 @@ export const renderRows = (
 	paint: Ctx["paint"],
 	now: number,
 	columns: number,
+	local: Local,
 ): string[] => {
-	const full = rowsOf({ input, paint, now, compact: false });
+	const full = rowsOf({ input, local, paint, now, compact: false });
 	const rows = full.every((row) => width(row) <= columns)
 		? full
-		: rowsOf({ input, paint, now, compact: true });
+		: rowsOf({ input, local, paint, now, compact: true });
 	return rows.map((row) => truncate(row, columns));
 };

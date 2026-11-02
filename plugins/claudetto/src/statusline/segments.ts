@@ -10,11 +10,12 @@ import {
 } from "./format.ts";
 import { ICON } from "./icons.ts";
 import { num, type Rec, str, sub } from "./input.ts";
-import { FIVE_HOUR_S, SEVEN_DAY_S } from "./limits.ts";
+import { FIVE_HOUR_S, SEVEN_DAY_S, SPEC_CHANGES_SHOWN } from "./limits.ts";
+import type { Local } from "./local.ts";
 
-/** What a segment reads: the input, the palette, the clock in milliseconds, and `compact`, which swaps clock times for countdowns. */
 export interface Ctx {
 	input: Rec;
+	local: Local;
 	paint: Paint;
 	now: number;
 	compact: boolean;
@@ -30,9 +31,9 @@ export const folderText = ({ input, paint }: Ctx): Text => {
 	return dir ? paint.bold(`${ICON.folder} ${baseName(dir)}`) : undefined;
 };
 
-/** The branch of a worktree session. A plain checkout reports none on stdin, and asking `git` is a child process. */
-export const branchText = ({ input, paint }: Ctx): Text => {
-	const name = str(sub(input, "worktree")?.["branch"]);
+/** A plain checkout reports no branch on stdin. */
+export const branchText = ({ input, local, paint }: Ctx): Text => {
+	const name = str(sub(input, "worktree")?.["branch"]) ?? local.branch;
 	return name ? paint.branch(`${ICON.branch} ${name}`) : undefined;
 };
 
@@ -48,6 +49,21 @@ export const prText = ({ input, paint }: Ctx): Text => {
 	return paint.review(state)(
 		`${ICON.pr} ${mark}${number}${state ? ` ${state}` : ""}`,
 	);
+};
+
+export const specText = ({ local, paint }: Ctx): Text => {
+	const open = local.changes
+		.filter((change) => change.done < change.total)
+		.toSorted((a, b) => b.mtimeMs - a.mtimeMs);
+	if (open.length === 0) {
+		return undefined;
+	}
+	const named = open
+		.slice(0, SPEC_CHANGES_SHOWN)
+		.map(({ name, done, total }) => `${name} ${done}/${total}`)
+		.join(", ");
+	const rest = open.length - SPEC_CHANGES_SHOWN;
+	return paint.inactive(`${ICON.spec} ${named}${rest > 0 ? ` +${rest}` : ""}`);
 };
 
 /** The model, its effort, and a labeled mark for each of thinking and fast mode. */
@@ -184,7 +200,23 @@ export const limitTexts = (ctx: Ctx): Text[] =>
 		return window ? limitText(label, windowOf(window), spanS, ctx) : undefined;
 	});
 
-/** `⌁ 4m12s/5m 91%`, or `⌁ cold +120k`. Nothing while `caching_observed` is `false`. */
+const CAUSE_MAX = 24;
+
+/** The first cause of the last miss as words, or nothing when no miss happened or the shape is unknown. */
+const missText = (cache: Rec): string | undefined => {
+	const misses = num(cache["misses"]);
+	const causes = sub(cache, "last_miss_cause")?.["causes"];
+	if (misses === undefined || misses <= 0 || !Array.isArray(causes)) {
+		return undefined;
+	}
+	const first: unknown = causes[0];
+	const cause = typeof first === "string" ? str(first) : undefined;
+	return cause === undefined
+		? undefined
+		: `miss: ${cause.replaceAll("_", " ").slice(0, CAUSE_MAX)}`;
+};
+
+/** `⌁ 4m/5m 91%`, or `⌁ cold +120k`, then `miss: tools changed` after a miss. Nothing while `caching_observed` is `false`. */
 export const cacheText = ({ input, paint, now }: Ctx): Text => {
 	const cache = sub(input, "prompt_cache");
 	if (!cache || cache["caching_observed"] === false) {
@@ -201,8 +233,9 @@ export const cacheText = ({ input, paint, now }: Ctx): Text => {
 	const body = cache["warm"]
 		? `${expires === undefined ? "warm" : span(expires * 1000 - now)}${ttl ? `/${ttl}` : ""}`
 		: `cold${cold === undefined ? "" : ` +${thousands(cold)}`}`;
+	const miss = missText(cache);
 	return (cache["warm"] ? paint.ok : paint.inactive)(
-		`${ICON.cache} ${body}${ratio}`,
+		`${ICON.cache} ${body}${ratio}${miss === undefined ? "" : ` ${miss}`}`,
 	);
 };
 
