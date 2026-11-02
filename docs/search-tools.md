@@ -92,7 +92,7 @@ matches that `rg` misses. The command is
 `ast-grep run -l ts -p 'PATTERN' --json=stream PATH | jq -r '"\(.file):\(.range.start.line+1):\(.text|split("\n")[0][0:80])"'`,
 with `| head -n N` for a cap.
 
-It is not bundled: the macOS `aarch64` binary is 53,955,184 bytes, and an agent body names it
+It is not bundled: the macOS `aarch64` binary is 53,955,184 bytes, and the `Athena` and `Hephaestus` bodies name it
 only for use when `command -v ast-grep` finds it. It installs with `brew install ast-grep`, or from
 the release zips for Linux `x86_64` and `aarch64` (gnu only) and macOS `x86_64` and `aarch64`, since
 Homebrew has no Intel macOS bottle for 0.51.1.
