@@ -180,7 +180,7 @@
 - [ ] 22.12 Explain the `unexplained residual` of `cuts.ts`, 4,307 characters, which is set by subtraction and is a plug. Free: read whether the removals interact, two rows at a time, with `just capture --shipped`.
 - [ ] 22.13 Read again each row of the cut table of `docs/surfaces.md` other than `tool texts`, which were read against the 28,527 arm before the `ListAgents` move. Free: `just capture --shipped` with each piece removed.
 - [x] 22.14 Split the claudetto share of the interactive request by piece again, last split at 13,131 before the `AskUserQuestion` text and the `ListAgents` move. Free: `just capture --shipped --interactive --dump DIR`. Done on 2026-11-02 from the pieces of the `--dump` request; `bun test tests/repo` 100 pass.
-- [ ] 22.15 Read again "The effect on the request" in `docs/surfaces.md`, a capture of the 2026-10-30 texts. Free: `just capture --deny Workflow,ScheduleWakeup,ReportFindings --tools 12`.
+- [x] 22.15 Read again "The effect on the request" in `docs/surfaces.md`, a capture of the 2026-10-30 texts. Free: `just capture --deny Workflow,ScheduleWakeup,ReportFindings --tools 12`. Read on `2.1.316` in `d6498d9b`: `plain` 33,586, `plugin` 27,504 with 8 tools, and the texts take 7,669 off `tools`.
 - [x] 22.16 Add a check that the always-loaded table of `docs/prompt/footprint.md` and the tool-text table of `docs/surfaces.md` match `TOOL_TEXTS` and the section lengths, because no check reads them and both drifted this round. Write the failing test first. Verified: `tests/repo/doc-tables.test.ts` first failed on the missing `AskUserQuestion` row, and passes 5 of 5 with the row added. With `Agent` set to 445 in `docs/surfaces.md` it fails two tests.
 - [x] 22.17 Decide whether the main-rules eval results stand. Each eval session started before 22.1 inherited the running session's `CLAUDE_EFFORT` and `CLAUDE_CODE_SUBAGENT_MODEL`, so it did not run as stock. Rerun of the `main.md` arm, after approval: `just eval --run --arm main.md`, 80 sessions. Cost, from the last run of that arm: 5,776,926 tokens, $6.80, 0.18% of the 3.20B-token week and 0.61% of the weekly limit at $11.19 a percent. Rerun on 2026-11-02: 72 of 80 pass, seven cases 10/10 and `I13` 2/10; 4,992,343 tokens, $6.37, 0.16% of the week and 0.57% of the weekly limit. The `main.md` results stand; the default arm was not rerun. Recorded in `docs/prompt/footprint.md`.
 
@@ -188,42 +188,42 @@
 
 Each task closes when its entry moves to "Fixed" with the commit that fixes it, or stays with the reason it cannot close in `0.3.0`.
 
-- [ ] 23.1 The classifier reads the user's words after Stop hook feedback as hook text
+- [x] 23.1 The classifier reads the user's words after Stop hook feedback as hook text Fixed in `73d465d9` for the `classify` block, moved to "Fixed" of `ISSUES.md`. No paid eval of the new transcript has run.
 - [ ] 23.2 The classifier does not take an approval from the plan or an `AskUserQuestion` answer
-- [ ] 23.3 "Rewire the Agent" matches comments in source and test files
-- [ ] 23.4 The `classify` block denies a call whose reason says the rule does not apply
-- [ ] 23.5 `AGENTS.md` asks before a paid run, against task 4.4
-- [ ] 23.6 Two tasks of `release-0-3-0` no longer match their verify text
-- [ ] 23.7 A helper that takes `$` cannot leave its hook file
-- [ ] 23.8 The classifier does not credit the user's authorization of a named secret for a named use
-- [ ] 23.9 The classifier denies the agent driving a nested Claude Code session
+- [x] 23.3 "Rewire the Agent" matches comments in source and test files Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.4 The `classify` block denies a call whose reason says the rule does not apply Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [ ] 23.5 `AGENTS.md` asks before a paid run, against task 4.4 Stays open: the line is the user's own, so `AGENTS.md:8` stays and each paid run is asked first.
+- [ ] 23.6 Two tasks of `release-0-3-0` no longer match their verify text Stays open: 5.3 and 4.5 no longer match their verify text, and no code fix changes that.
+- [ ] 23.7 A helper that takes `$` cannot leave its hook file Stays open: the engine follows `$` past an import only into a `function` declaration, and the `biome` config forbids `function` declarations.
+- [x] 23.8 The classifier does not credit the user's authorization of a named secret for a named use Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.9 The classifier denies the agent driving a nested Claude Code session Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
 - [ ] 23.10 The built-in classifier denies with no reason
-- [ ] 23.11 Main sessions ran on `claude-opus-5`, not `claude-opus-5-5`
-- [ ] 23.12 The agent counts and prices models the user does not run
-- [ ] 23.13 The agent opens a reply with agreement after a correction
-- [ ] 23.14 The agent answers its own defect with apology, narration, and a retrospective
-- [ ] 23.15 The agent writes comments that narrate what code does
-- [ ] 23.16 The agent hands the user work it can do itself
-- [ ] 23.17 The agent ignores the prompt guides in `external/please-use-me-often/`
-- [ ] 23.18 The agent does not catch a wording defect in its own prompts
-- [ ] 23.19 The weekly limit ran out in five days
-- [ ] 23.20 The agent reads every user message as a task
-- [ ] 23.21 The agent writes "not verified" instead of checking
-- [ ] 23.22 Replies end with offers and pedantic caveats
-- [ ] 23.23 The handoff block nests each handoff in the next
-- [ ] 23.24 Auto-compaction costs a full-context call on the session's model
-- [ ] 23.25 The agent killed the user's processes with a loose `pkill` on 2026-11-02
-- [ ] 23.26 Paid probe rounds took a quarter of the week
-- [ ] 23.27 Every call re-reads the whole context
-- [ ] 23.28 The handover must hit the cache
+- [x] 23.11 Main sessions ran on `claude-opus-5`, not `claude-opus-5-5` Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`. Gap: the `opusplan` and plan-mode switches are not yet run under `tmux`.
+- [x] 23.12 The agent counts and prices models the user does not run Fixed in `96901c6b`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.13 The agent opens a reply with agreement after a correction Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.14 The agent answers its own defect with apology, narration, and a retrospective Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.15 The agent writes comments that narrate what code does Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.16 The agent hands the user work it can do itself Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.17 The agent ignores the prompt guides in `external/please-use-me-often/` Fixed in `96901c6b`, moved to "Fixed" of `ISSUES.md`.
+- [ ] 23.18 The agent does not catch a wording defect in its own prompts Stays open: the entry records a gap in the agent's own prompt review that no code fix closes.
+- [ ] 23.19 The weekly limit ran out in five days Stays open: the entry records a spent weekly limit, and the levers it lists are other tasks.
+- [x] 23.20 The agent reads every user message as a task Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.21 The agent writes "not verified" instead of checking Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.22 Replies end with offers and pedantic caveats Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.23 The handoff block nests each handoff in the next Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [ ] 23.24 Auto-compaction costs a full-context call on the session's model Stays open: auto-compaction runs on the session's own model and cannot be moved to a cheaper one.
+- [x] 23.25 The agent killed the user's processes with a loose `pkill` on 2026-11-02 Fixed in `96901c6b`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.26 Paid probe rounds took a quarter of the week Fixed in `7919dc54`, moved to "Fixed" of `ISSUES.md`.
+- [ ] 23.27 Every call re-reads the whole context Stays open: each call re-reads the whole context, which no setting removes.
+- [ ] 23.28 The handover must hit the cache Stays open: the handover must hit a server-side cache that the plugin cannot keep warm, and two paid runs missed.
 - [ ] 23.29 Message 0 is written again at each handover
-- [ ] 23.30 A handover costs half of a core compaction at 166k tokens
-- [ ] 23.31 Core's `context_management` section contradicts the handoff block
-- [ ] 23.32 Replacing auto-compaction with the handover
-- [ ] 23.33 The paid run on 2026-11-02 cost 3.4 times its estimate
-- [ ] 23.34 Outside methods for context cost, read on 2026-11-02
-- [ ] 23.35 Frontier model prose departs from plain language
-- [ ] 23.36 The agent acted on its own and asked nothing on 2026-11-02
+- [ ] 23.30 A handover costs half of a core compaction at 166k tokens Stays open: the entry is a measurement of one session shape, and a handover costs about what a core compaction costs.
+- [x] 23.31 Core's `context_management` section contradicts the handoff block Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.32 Replacing auto-compaction with the handover Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.33 The paid run on 2026-11-02 cost 3.4 times its estimate Fixed in `7919dc54`, moved to "Fixed" of `ISSUES.md`.
+- [ ] 23.34 Outside methods for context cost, read on 2026-11-02 Stays open: the entry records outside methods that were read and not adopted.
+- [x] 23.35 Frontier model prose departs from plain language Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
+- [x] 23.36 The agent acted on its own and asked nothing on 2026-11-02 Fixed in `69401cf6`, moved to "Fixed" of `ISSUES.md`.
 
 ## 24. Garbage Collector (`hygiene`)
 
@@ -251,13 +251,13 @@ Pure code, run by the `SessionStart` hook and `bin/claudetto-hygiene`. No model 
 Baselines on 2026-11-02, free capture: `plugin` 39,711 interactive and 27,886 `-p`, `plain` 42,129. Each saving is in characters.
 
 - [ ] 25.1 Decide whether `AskUserQuestion` moves behind `ToolSearch` (−3,917 interactive, 0 in `-p`).
-- [ ] 25.2 Count the extra turn of a deferred tool on the fake API with `--calls`, before shipping any defer.
+- [x] 25.2 Count the extra turn of a deferred tool on the fake API with `--calls`, before shipping any defer. `ListAgents` upfront takes 2 requests, 57,771 characters, and deferred 3, 86,741. `Agent` upfront takes 2, 56,717, and deferred 3, 83,421. The first use adds about 643 and 533 new characters against a saving of 605 and 2,402 per request.
 - [ ] 25.3 Decide on deferring `Agent` (−2,364) and `Skill` (−566); the five-tool defer saves 8,300 interactive and 4,379 `-p`.
 - [ ] 25.4 Decide whether the `context_management` reminder (−932) loads only when a handoff is likely.
 - [ ] 25.5 Shorten the `autoMode` rules text (4,969) and keep each rule. Verify that `safeguards` falls and the classifier lab passes.
 - [ ] 25.6 Decide whether `main.md` (1,676 over the stock body) is trimmed past the 6,000 cap, and which section.
 - [x] 25.7 Document in `docs/prompt/footprint.md` that `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1` saves 1.27 characters per character of memory file and is not a default. Done on 2026-11-02 from the pieces of the `--dump` request; `bun test tests/repo` 100 pass.
-- [ ] 25.8 Move the `PROBE_MD` option of `/tmp/probe-capture` into `tools/capture`, if `CLAUDE.md` size is to be tracked.
+- [x] 25.8 Move the `PROBE_MD` option of `/tmp/probe-capture` into `tools/capture`, if `CLAUDE.md` size is to be tracked. `just capture --claude-md CHARS` in `2d56b060`, with 4 tests in `tools/capture/__tests__/capture.spec.ts`. 1,000 adds 1,396, 5,000 adds 5,463, and 20,000 adds 20,713.
 - [x] 25.9 Record in `docs/surfaces.md` that the sandbox block (6,675) is not a lever, and the 156 of `denyRead`. Record the split of the 39,711 by owner in `docs/prompt/footprint.md`; that closes 22.14. Done on 2026-11-02 from the pieces of the `--dump` request; `bun test tests/repo` 100 pass.
 
 ## 26. Prompt Cache Audit
@@ -269,7 +269,7 @@ Paid run of 22.8: each request read the previous read plus the previous write, s
 - [x] 26.3 A spec that fails when an earlier byte of `system` or a prior message changes between dumped bodies, with `comparePrefix`. Done: `claudekit/paid-run/__tests__/drift.spec.ts`.
 - [x] 26.4 A spec that pins when `describeAnswer` flips for a stock text of a different length. Done: `tests/claudetto/describe-flip.test.ts`.
 - [ ] 26.5 Paid, after approval: one `claude-haiku-5-5` `Monitor` run after 26.1, compared per request with the 22.8 table. Estimate from 22.8: about 130,000 tokens, $0.0053, 0.0005% of the weekly limit, capped by `--max-budget-usd 0.15`.
-- [ ] 26.6 Test a mid-session `CLAUDE.md` edit and a `settings.json` edit in the free capture.
+- [ ] 26.6 Test a mid-session `CLAUDE.md` edit and a `settings.json` edit in the free capture. Half done: the `CLAUDE.md` edit was read, and the `settings.json` edit was not, because the sandbox refused the write.
 - [x] 26.7 Recompute the cost of the 22.8 run with its `ephemeral_1h` writes at 2 times input, not 1.25. Done: the price table already counts `ephemeral_1h` writes at 2 times input, so the $0.0053 stands.
 
 ## 27. Snippet Claims and Prompt Wording
