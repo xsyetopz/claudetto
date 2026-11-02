@@ -58,6 +58,7 @@ export const planSetup = (
 	state: unknown,
 	current: Json,
 	platform: string,
+	dryRun = false,
 ): SetupPlan => {
 	const { row, read } = readTier(state);
 	if (row === undefined) {
@@ -65,7 +66,10 @@ export const planSetup = (
 	}
 	const snippet = tierSnippet(row, platform);
 	const applied = applyTier(current, snippet, refusedPaths(snippet));
-	return { report: tierReport(row.tier, applied), write: applied.settings };
+	return {
+		report: tierReport(row.tier, applied, dryRun ? "Would write" : "Wrote"),
+		write: applied.settings,
+	};
 };
 
 const readJson = async (path: string, missing: Json): Promise<unknown> => {
@@ -89,7 +93,7 @@ const main = async (): Promise<void> => {
 	if (!isRecord(current)) {
 		throw new Error(`${target} is not a JSON object`);
 	}
-	const plan = planSetup(state, current, process.platform);
+	const plan = planSetup(state, current, process.platform, args.dryRun);
 	console.info(plan.report);
 	if (plan.write !== undefined && !args.dryRun) {
 		await mkdir(dirname(target), { recursive: true });
