@@ -33,6 +33,12 @@ describe("the inventory accounts for the whole fall", () => {
 			"sandbox block",
 			"setup command listing",
 			"handoff command listing",
+			"workflow switches",
+			"git instructions",
+			"explore and plan agents",
+			"built-in agent denies",
+			"cron and fork switches",
+			"context management section",
 			"unexplained residual",
 		]);
 		expect(shippedChars(moving)).toBe(BASELINE_TOTAL - SHIPPED_TOTAL);
@@ -71,6 +77,12 @@ describe("a cut counts as a saving only with a bill reading", () => {
 			"sandbox block",
 			"setup command listing",
 			"handoff command listing",
+			"workflow switches",
+			"git instructions",
+			"explore and plan agents",
+			"built-in agent denies",
+			"cron and fork switches",
+			"context management section",
 			"unexplained residual",
 		]);
 	});

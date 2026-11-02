@@ -520,9 +520,9 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 
 | Shipped cut | Characters off the first request | Cost reading |
 | --- | --- | --- |
-| Deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` (`deny list`) | 12,421 | None exists yet |
+| Deny of `ScheduleWakeup` (4,887) and `ReportFindings` (2,178) (`deny list`). The `Workflow` deny reads 0 on its own, because `enableWorkflows: false` takes the tool out too | 7,065 | None exists yet |
 | Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
-| The `tool.describe` texts, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 6,624 | None exists yet. The `AskUserQuestion` text is only in the interactive request, which it shortens by 1,276 |
+| The `tool.describe` texts, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 6,668 | None exists yet. The `AskUserQuestion` text is only in the interactive request, which it shortens by 1,276 |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
@@ -533,36 +533,72 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text |
 | `output-styles/Concise.md` under the `outputStyle` key | −1,738 | None exists yet. A placebo run would price the prompt text |
 | The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
-| The `sandbox` block | −7,228 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
+| The `sandbox` block | −7,220 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
 | The `handoff` tool in the deferred list and the MCP instructions block that names the plugin | −235 | None exists yet. The tool entry itself, 728 characters of JSON, is paid only in a session that fetches it |
 | The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists. A run of the command pays nothing in a request: the hook opens the dialogs and answers with `text` alone, and no tool or deferred name stands behind it |
 | The `/claudetto:handoff` row in the command listing | −61 | None needed. It tells the model the command exists; its file is the request that has the model call the `handoff` tool |
-| The fall that no row above explains (`unexplained residual`) | 4,307 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and nothing sets it to close the gap |
+| The `Workflow` tool, out through the `Workflow` deny and `enableWorkflows: false` (`workflow switches`) | 5,333 | None exists yet. Read with `built-in surface` out, below |
+| The `Bash` git text, out through `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `includeGitInstructions`, and `attribution` (`git instructions`) | 612 | None exists yet |
+| `Explore` and `Plan`, out through two `Agent(...)` denies and `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` (`explore and plan agents`) | 911 | None exists yet |
+| The `general-purpose`, `claude`, and `statusline-setup` agent denies and the `DesignSync` deny (`built-in agent denies`) | 570 | None exists yet |
+| `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_CODE_FORK_SUBAGENT` (`cron and fork switches`) | 103 | None exists yet |
+| The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
+| The fall that no row above explains (`unexplained residual`) | 1,797 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
 The rows sum to 18,047, which is 46,007 less the 27,960 the shipped arm records. A negative row is a piece
 the tree adds.
 
-Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Each read row is the
-shipped `-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path,
-less the same arm with the piece removed in a clone of the same path length (each character of the path
-adds one). The shipped arm reads 27,960, and `SHIPPED_TOTAL` is that reading. The rows other than `tool texts` and the
-residual were read before `ListAgents` moved behind `ToolSearch`, against the arm of 28,527 then. An earlier version of this
-paragraph set it 23 below the inventory reading for a "path artifact" that no reading shows; that is gone.
-The positive-form rewrites of the prompt texts moved the arm from 27,886 to 27,960: `main.md` +74 in `system`, the `Agent` and `Read` texts +13 in `tools`, and the `Concise` reminder −13 in `messages`. Each of `tool texts`, `main agent body`, and `output style` removes its whole text, so each row moved by its text's change and was not read again.
-Read: `deny list` (12,421, the `plain` baseline of 46,007 less the deny arm of 33,586), `deferred tool denies` (24, with the two rules out of `permissions.deny`), `tool texts` (6,637, the
-arm with the `tool-describe` block detached from the catalog reads 34,523), `built-in surface` (5,590, with
-`disableBundledSkills` and `enabledPlugins` out of the settings), `docs skill` (−71), `main agent body` (−1,936,
-with `agents/main.md` moved aside, 26,591), `auto memory off` (2,138, with `autoMemoryEnabled` out of the settings
-and the file moved aside, 28,729 against 26,591), `agent listing` (−726), `handoff context` (−940, with the
-`prompt.context` answer of the `handoff` block left without its block), `handoff tool listing` (−235, with the
-`session.start` registration out), `output style` (−1,751), `sandbox block` (−7,228, with `sandbox` out of the
-settings), `setup command listing` (−48), `handoff command listing` (−61), and the three rows of 0, `compaction
-pair`, `idleCompaction off`, and `autoMode lists`, each of which read the full arm with its keys out of the settings. The
-cost reading of the `compaction pair` is not from a capture. Not read: `unexplained residual`, 4,307, the fall
-that the other rows leave. It is set by subtraction and is the one number of the table that no capture
-backs. The rows are read one at a time against the full arm. Whether the removals interact was not tested, so
-the cause of the gap is unknown, and no row was moved to close it. The `tool texts` row is 897 below the 7,534 it replaces, which was
-the residual and held request text that no row named.
+Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
+again that day against the shipped arm of 27,960, which `SHIPPED_TOTAL` records. Each read row is the shipped
+`-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path (each character
+of the path adds one, and the real path counts, since `/tmp` resolves to `/private/tmp`), less the same arm
+with the piece removed in a clone of the same path length, one piece at a time. A clone was restored before
+the next removal. The readings, each as the arm without the piece less 27,960:
+
+| Row | Arm without the piece | Row | How the piece was removed |
+| --- | --- | --- | --- |
+| `deny list` | 35,025 | 7,065 | `ScheduleWakeup` and `ReportFindings` out of `permissions.deny` (it was 12,421, the `plain` baseline of 46,007 less the deny arm of 33,586) |
+| `deferred tool denies` | 27,984 | 24 | `NotebookEdit` and `TaskStop` out of `permissions.deny` |
+| `tool texts` | 34,628 | 6,668 | the `tool-describe` block detached from the catalog |
+| `built-in surface` | 33,550 | 5,590 | `disableBundledSkills` and `enabledPlugins` out of the settings |
+| `docs skill` | 27,889 | −71 | `skills/docs/` moved out of the plugin |
+| `main agent body` | 25,950 | −2,010 | `agents/main.md` moved aside |
+| `auto memory off` | 28,088 | 2,138 | `autoMemoryEnabled` out and `agents/main.md` moved aside, against 25,950 |
+| `agent listing` | 27,234 | −726 | the four agent files moved aside |
+| `handoff context` | 27,020 | −940 | the `prompt.context` answer of the `handoff` block left without its block |
+| `handoff tool listing` | 27,725 | −235 | the `session.start` registration out |
+| `output style` | 26,222 | −1,738 | `outputStyle` out of the settings |
+| `sandbox block` | 20,740 | −7,220 | `sandbox` out of the settings |
+| `setup command listing` | 27,912 | −48 | `commands/setup.md` moved aside |
+| `handoff command listing` | 27,899 | −61 | `commands/handoff.md` moved aside |
+| `compaction pair`, `idleCompaction off`, `autoMode lists` | 27,960 | 0 | their keys out of the settings |
+
+The cost reading of the `compaction pair` is not from a capture. The `unexplained residual` is still set by
+subtraction. Against the fourteen rows of the table above it was 9,611, up from 4,307, because the
+`deny list` row fell by 5,356 and the others moved by 8 to 44. It was then read into these pieces, and each named piece is now a row, which leaves 1,797:
+
+| Piece of the residual | Characters | How it was read |
+| --- | --- | --- |
+| The `Workflow` tool, out through the `Workflow` deny and `enableWorkflows: false` | 5,333 | Both removed together read 22,034 against the full arm and either alone reads 0. Read on the arm with `built-in surface` out, it is 38,883 less 33,550 |
+| The `Bash` git text, out through `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `includeGitInstructions`, and `attribution` | 612 | Any two removed read 0; all three read 612 |
+| `Explore` and `Plan`, out through two `Agent(...)` denies and `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | 911 | The two denies read 0 alone; with the variable out they read 1,481 less the 570 of the other denies |
+| The `Agent(general-purpose)`, `Agent(claude)`, and `Agent(statusline-setup)` denies, and the `DesignSync` deny | 570 | 311, 134, and 113 alone, and 12 |
+| `CLAUDE_CODE_DISABLE_CRON` (34) and `CLAUDE_CODE_FORK_SUBAGENT` (69) | 103 | Alone |
+| The `context_management` section, which the `handoff` block nulls | 285 | Read with `agents/main.md` moved aside, 26,235 against 25,950; it is 0 with the file in place, since the file replaces the body |
+| Interaction among the removals | 1,797 | The rest, read below |
+
+The removals do not interact among the large rows. The 28 pairs of `deny list`, `built-in surface`, `sandbox block`,
+`main agent body`, `auto memory off`, `output style`, `tool texts`, and `handoff context` were each removed together and the fall
+compared with the sum of the two single falls. Twenty-six equal it to the character. `main agent body` with `auto memory off` is a
+dependency and not an interaction: the memory flag moves 2,138 only with the file aside and 0 with it in place. `main agent body` with
+`output style` falls 40 more than the sum (3,788 against 3,748). The pairs that do not add are the ones with the pieces
+that are not rows: the git switches with `tool texts` +674, the cron and fork variables with `tool texts` +327 and with `built-in surface` +350,
+and the `Explore`, `Plan`, and other `Agent` denies with `agent listing` +182 each, and the git switches with `handoff context` +27.
+Those sum to 1,742. With the −40 and a gap of 48 inside the plugin pieces they come to 1,750, which leaves about 47 of higher order. The `Workflow` tool is the one large
+case: with `built-in surface` in place its removal reads 22,034, with that row out 5,333, so the two interact by 16,701 (10,923 together against 27,624 apart),
+because with the bundled skills off the `Workflow` definition carries the workflow guidance. It adds to every other row. Removing every piece together (the settings
+emptied, the plugin files and the `tool-describe` and `handoff` hooks out) reads 46,007, the baseline, so no piece is missing; the
+residual is the interaction of the rows.
 
 On 2026-10-31 on `2.1.316` every row was read again, each as the difference
 from the full arm in a worktree whose path is the same length in both arms, which reads 31,181:

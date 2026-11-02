@@ -1,7 +1,6 @@
 // A shorter request is not a saving: the character score and the bill are different measurements.
 
 import { BUILTIN_CHARS } from "./builtins.ts";
-import { BASELINE_TOTAL, DENIED_TOGETHER_TOTAL } from "./deny.ts";
 
 export interface CostReading {
 	/** Billed-cost change in percent; negative is cheaper. */
@@ -19,21 +18,27 @@ export interface Cut {
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
 export const SHIPPED_TOTAL = 27_960;
 
-/** The fall of the shipped arm that no row above accounts for; each row is read alone, so rows that interact leave a gap. */
-export const UNEXPLAINED_RESIDUAL = 4307;
+/**
+ * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
+ * The pairs read: the git switches with `tool texts` 674, the cron and fork switches with `tool texts` 327 and with `built-in surface` 350,
+ * the Explore and Plan denies and the `Agent` denies with `agent listing` 182 each, the git switches with `handoff context` 27,
+ * `main agent body` with `output style` -40, and 48 among the plugin pieces, which leaves about 47 of higher order.
+ */
+export const UNEXPLAINED_RESIDUAL = 1797;
 
 export const SHIPPED_TOOL_COUNT = 8;
 
-export const SANDBOX_CHARS = 7228;
+export const SANDBOX_CHARS = 7220;
 
 export const CLASSIFIER_CALL_CHARS = 140_718;
 
 export const SHIPPED_CUTS: readonly Cut[] = [
-	{ name: "deny list", chars: BASELINE_TOTAL - DENIED_TOGETHER_TOTAL },
+	// `ScheduleWakeup` 4887 and `ReportFindings` 2178. `Workflow` reads 0 here, because `enableWorkflows: false` takes it out too.
+	{ name: "deny list", chars: 7065 },
 	// Names only leave the deferred list. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68.
 	{ name: "deferred tool denies", chars: 24 },
 	// Read: the shipped arm with the `tool-describe` block detached from the catalog, less the shipped arm.
-	{ name: "tool texts", chars: 6624 },
+	{ name: "tool texts", chars: 6668 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "docs skill", chars: -71 },
@@ -62,7 +67,19 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// The hook answers with `text` alone, so only the listing row reaches a request.
 	{ name: "setup command listing", chars: -48 },
 	{ name: "handoff command listing", chars: -61 },
-	// Not read: the difference between the fall of the shipped arm and the rows above, which the rows do not explain.
+	// With the bundled skills on, the `Workflow` definition carries the workflow guidance, so alone it reads 22,034. Read with `built-in surface` out, it adds to that row exactly.
+	{ name: "workflow switches", chars: 5333 },
+	// `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `includeGitInstructions`, and `attribution` each take the text out, so any two of them out read 0.
+	{ name: "git instructions", chars: 612 },
+	// The two `Agent(...)` denies and `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` overlap the same way.
+	{ name: "explore and plan agents", chars: 911 },
+	// `general-purpose` 311, `claude` 134, `statusline-setup` 113, and the `DesignSync` deny 12.
+	{ name: "built-in agent denies", chars: 570 },
+	// `CLAUDE_CODE_DISABLE_CRON` 34 and `CLAUDE_CODE_FORK_SUBAGENT` 69.
+	{ name: "cron and fork switches", chars: 103 },
+	// The `handoff` block nulls the section of the default body, so it reads only with `agents/main.md` moved aside.
+	{ name: "context management section", chars: 285 },
+	// Not a reading: the difference between the fall of the shipped arm and the rows above.
 	{ name: "unexplained residual", chars: UNEXPLAINED_RESIDUAL },
 ];
 
