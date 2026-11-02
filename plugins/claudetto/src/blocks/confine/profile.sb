@@ -1,0 +1,26 @@
+(version 1)
+(allow default)
+
+; Writes are confined; reads, the network, and processes stay open.
+(deny file-write*
+  (require-not
+    (require-any
+      (subpath (param "ROOT"))
+      (subpath (param "TMP"))
+      (subpath "/private/tmp")
+      (subpath (param "TMPUSER"))
+      (subpath (string-append (param "HOME") "/.bun"))
+      (subpath (string-append (param "HOME") "/.cache"))
+      (subpath (string-append (param "HOME") "/Library/Caches"))
+      (literal "/dev/null") (literal "/dev/zero") (literal "/dev/tty")
+      (literal "/dev/dtracehelper")
+      (regex #"^/dev/(fd/|stdout$|stderr$|ttys[0-9]+$)"))))
+
+; A hook or a changed remote of the repository runs later outside the sandbox.
+(deny file-write*
+  (subpath (string-append (param "ROOT") "/.git/hooks"))
+  (literal (string-append (param "ROOT") "/.git/config")))
+
+; `mv .git .git.x; git init` would give a fresh `hooks` and `config` that no rule above covers.
+(deny file-write-unlink
+  (literal (string-append (param "ROOT") "/.git")))
