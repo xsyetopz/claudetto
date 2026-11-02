@@ -37,6 +37,12 @@ jobs:
       - run: bun add --global @anthropic-ai/claude-code@2.1.316
       - run: claude --version
       - run: git config --global user.email ci@example.com && git config --global user.name ci
+      # The `confine` specs need `bwrap` on Linux, and Ubuntu's AppArmor refuses the user namespace it makes unless the sysctl is off.
+      - if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - run: just lint
       - run: just test
       - run: just validate

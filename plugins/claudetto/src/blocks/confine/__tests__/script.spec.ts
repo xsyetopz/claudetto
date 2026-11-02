@@ -13,10 +13,11 @@ const victim = join(scratch, "victim");
 
 const probe = await run("true");
 const ready = probe.code === 0;
-// On macOS with `sandbox-exec` the sandbox must work, so a failing probe fails the suite instead of skipping it.
+// On macOS with `sandbox-exec`, and on Linux in CI, which installs `bwrap`, the sandbox must work, so a failing probe fails the suite instead of skipping it.
 const mustWork =
-	process.platform === "darwin" &&
-	(await file("/usr/bin/sandbox-exec").exists());
+	(process.platform === "darwin" &&
+		(await file("/usr/bin/sandbox-exec").exists())) ||
+	(process.platform === "linux" && process.env["CI"] !== undefined);
 if (!(ready || mustWork)) {
 	console.warn(
 		`confine behavior tests skipped, the sandbox does not start here: ${probe.out.trim()}`,
