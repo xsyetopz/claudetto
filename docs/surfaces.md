@@ -186,44 +186,47 @@ therefore holds the smaller of the two, so a text that passes it is shorter in e
 | `Write` | 240 | 196 | 44 |
 | total | 10,016 | 3,307 | 6,709 |
 
-The table holds the upfront tools of the current tree. The capture below is of the 2026-10-30 texts
-and has not been taken again for these lengths. `AskUserQuestion` is in the interactive request only,
+The table holds the upfront tools of the current tree. The capture below was read again on 2026-11-02
+on Claude Code `2.1.316`. `AskUserQuestion` is in the interactive request only,
 so the `-p` request carries the other seven. `DeferredToolPlaceholder`, 83 characters, has nothing to
 give. Two texts are not in this table because no first request carries them: `SendMessage`, 2,976
 against a stock 4,259, which the harness defers, and `ListAgents`, 261 against a stock 777, which the
 hook moves behind `ToolSearch` by answering with `isDeferred`.
 
-The effect on the request, read with `just capture --deny Workflow,ScheduleWakeup,ReportFindings
---tools 12`, both arms in the same run:
+The effect on the request, read on 2026-11-02 on Claude Code `2.1.316` with `just capture --deny
+Workflow,ScheduleWakeup,ReportFindings --tools 12`, both arms in the same run:
 
 | Arm | Total chars | Tools | `tools` chars | `system` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- |
-| `plain` | 33,684 | 9 | 17,091 | 5,954 | 9,984 |
-| `plugin` | 31,018 | 9 | 12,919 | 5,954 | 11,490 |
+| `plain` | 33,586 | 9 | 17,091 | 5,858 | 9,984 |
+| `plugin` | 27,504 | 8 | 9,422 | 5,576 | 11,856 |
 
-So the eight texts take 4,172 characters off the `tools` array on `2.1.314`, and the `plugin` arm's
-per-tool descriptions read 973, 1,090, 328, 695, 538, 1,023, 727, and 196, which are our texts to the
-character. The fall of 4,172 is 1,032 more than the 3,140 of the table above, and was 31 more on
-`2.1.312`. The table holds the smaller stock reading of each tool, and the capture reads `Agent` at
-3,227 and `Bash` at 1,934 here, the larger ones, which adds 1,070 to the string lengths: 4,128 by
-those readings, and the 44 left are the characters that JSON escapes in the stock texts more than in
-ours. The stock readings of the table are of `2.1.312` and were not taken again. That is also the first reading that proves a
+So the shipped texts take 7,669 characters off the `tools` array, and the `plugin` arm's per-tool
+descriptions read 870 (`Bash`), 449 (`Agent`), 291 (`Read`), 243 (`Edit`), 234 (`ToolSearch`), 196
+(`Write`), 195 (`Skill`), and 83 (`DeferredToolPlaceholder`, untouched), which are our texts to the
+character. The `plugin` arm has one tool fewer because `ListAgents`, 1,151 characters in the `plain`
+arm, is behind `ToolSearch`. The other 6,518 are the seven texts: the stock descriptions read 3,227,
+1,934, 790, 360, 953, 240, and 1,417, which is 6,443 more than ours, and the 75 left are the characters
+that JSON escapes in the stock texts more than in ours. That is also the first reading that proves a
 `tool.describe` hook changes the request body and not only the screen, which `docs/gates.md` had as
 code-read only.
 
-This run was taken again on 2026-10-30 for the three new texts, and the `plain` arm moved too, 30,521
-to 30,713 under `2.1.312`, with its `system` block 5,764 to 5,954, and to 33,684 on `2.1.314`. Nothing of ours touches either figure: the `plain`
-arm loads no plugin, and `system` there is the engine's own default body. So the +192 is the installed
-Claude Code changing under the recording, not an effect of this change, and it is the same +192 that
-separates the `BASELINE_TOTAL` of `plugins/claudetto/src/deny.ts:1` from a default capture taken the
-same day. "The Baseline Has Drifted" below is the record of that finding and its repair.
+The same command read 4,172 off the `tools` array on `2.1.314` with 31,018 and 33,684 as the totals,
+and that reading held the older texts, with `ListAgents` still upfront. The `plain` arm moved between
+readings too: 30,521 to 30,713 under `2.1.312`, 33,684 on `2.1.314`, and 33,586 on `2.1.316`, with its
+`system` block 5,764, then 5,954, then 5,858. Nothing of ours touches those figures: the `plain` arm
+loads no plugin, and `system` there is the engine's own default body. So the drift is the installed
+Claude Code changing under the recording, not an effect of this change. "The Baseline Has Drifted"
+below is the record of that finding and its repair.
 
 Read `system` and `messages` here rather than the total, because this run isolates the tool texts and
-nothing else: it sets no `agent` and no `outputStyle`, so `system` holds the default body in both arms
-at 5,954. `messages` is not equal across the arms and must not be read as part of the tool-text
-saving. It carries two pieces the plugin adds whatever the tool texts do, the handoff context block of
+nothing else: it sets no `agent` and no `outputStyle`. `system` is not equal across the arms either,
+5,858 against 5,576, because the `plugin` arm's request lacks the engine's `Context management`
+paragraph, 282 characters, which the `plain` arm's request holds. `messages` is not equal across the
+arms and must not be read as part of the tool-text saving. It carries two pieces the plugin adds
+whatever the tool texts do, the handoff context block of
 `plugins/claudetto/src/blocks/handoff/handoff.ts` and the agent listing for `Artemis` and `Athena`, which is why the
-`plugin` total falls by less than its `tools` array does: 11,490 against 9,984 in `messages`. "Shipped Cuts" below prices those two.
+`plugin` total falls by less than its `tools` array does: 11,856 against 9,984 in `messages`. "Shipped Cuts" below prices those two.
 
 Two rules hold this in place, both in `plugins/claudetto/src/blocks/tool-describe/tools.ts` and both checked by
 `plugins/claudetto/src/blocks/tool-describe/__tests__/tools.spec.ts`. `deadTexts` names any text that is not shorter than its stock
