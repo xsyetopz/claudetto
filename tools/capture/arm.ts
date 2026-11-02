@@ -14,6 +14,7 @@ import {
 	withFolders,
 } from "../../claudekit/session/folders.ts";
 import { interactiveConfig, runInTmux } from "../../claudekit/session/tmux.ts";
+import { claudeMdOf } from "./memory.ts";
 import { type Score, scoreOf } from "./score.ts";
 
 /** One word, so the message part is as small as a session allows. */
@@ -72,6 +73,7 @@ const runArm = async (options: {
 	extra: readonly string[];
 	calls: number;
 	tempPrefix: string;
+	claudeMd: number | undefined;
 }): Promise<{ code: number; stderr: string; work: string }> =>
 	// Only the exit status, the stderr, and the path length leave the root; the dump is written outside it.
 	withFolders(options.tempPrefix, options.settings, (folders) =>
@@ -86,8 +88,12 @@ const runIn = async (
 		prompt: string;
 		interactive: boolean;
 		extra: readonly string[];
+		claudeMd: number | undefined;
 	},
 ): Promise<{ code: number; stderr: string; work: string }> => {
+	if (options.claudeMd !== undefined) {
+		await writeFile(join(work, "CLAUDE.md"), claudeMdOf(options.claudeMd));
+	}
 	const argv = sessionArgv({
 		...options,
 		plugin: options.plugin ? join(cwd(), PLUGIN) : undefined,
@@ -128,6 +134,8 @@ export interface CaptureOptions {
 	readonly calls?: readonly ToolCall[] | undefined;
 	/** Lets a test keep its folders under `tmpdir()`, where a sandbox allows writes. */
 	readonly tempPrefix?: string;
+	/** The characters of a `CLAUDE.md` placed in the working folder; none when absent. */
+	readonly claudeMd?: number | undefined;
 }
 
 /** `dump` is re-indented from the raw text, since `JSON.stringify` of the string would be one line. */
@@ -149,6 +157,7 @@ export const capture = async (
 			extra: options.extra ?? [],
 			calls: options.calls?.length ?? 0,
 			tempPrefix: options.tempPrefix ?? TEMP_PREFIX,
+			claudeMd: options.claudeMd,
 		});
 		const first = options.classifier
 			? api.bodies.find(isClassifier)
