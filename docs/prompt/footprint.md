@@ -609,7 +609,7 @@ checkout path adds one: a copy of the tree at `/tmp/` plus 42 characters reads 2
 resolves to `/private/tmp`. With the file moved aside it is
 26,591, with a `system` of 3,499, so the file costs 1,936 where an earlier, shorter body saved 72.
 After the positive-form rewrites of the same day the first request reads 27,960: `system` 5,495,
-`tools` 10,185 (8), `messages` 11,637, read with `just capture --arm plugin --shipped`, and the file costs 2,010. After the trim of 2026-11-03, which shortens `<finishing>` and the line-range sentence of `<project_context>`, it reads 27,908 and the file costs 1,958; the interactive arm reads 39,733.
+`tools` 10,185 (8), `messages` 11,637, read with `just capture --arm plugin --shipped`, and the file costs 2,010. After the trim of 2026-11-03, which shortens `<finishing>` and the line-range sentence of `<project_context>`, it reads 27,908 and the file costs 1,958; the interactive arm reads 39,733. Moving `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` then took `tools` to 7,238 (6), and the first request to 24,961 for `-p` and 32,865 interactive.
 The interactive arm reads 41,628: `system` 5,412, `tools` 15,871 (10), `messages` 12,231, `safeguards` 7,457, and
 `bun claudekit/context-split/main.ts` sums the parts of the request that `/context` counts as system
 prompt to 17,176 characters there, 16,617 for `-p`.
