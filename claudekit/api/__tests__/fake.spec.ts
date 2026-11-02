@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { type FakeApi, startFakeApi } from "../fake.ts";
 
+const MESSAGE_ID = /"id":"(msg_[^"]*)"/;
+
 const postTo = async (api: FakeApi, body: unknown): Promise<string> =>
 	(
 		await fetch(`${api.url}/v1/messages`, {
@@ -100,6 +102,22 @@ describe("the fake Messages API", () => {
 			expect(answer).toContain('"model":"claude-haiku-5-5"');
 			expect(answer).toContain('"input_tokens":7');
 		}
+	});
+
+	test("gives each answer its own message id, so the CLI keeps the answers apart", async () => {
+		const api = startFakeApi([
+			{ name: "Read", input: { file_path: "/f" } },
+			{ name: "Bash", input: { command: "ls" } },
+		]);
+		const post = (): Promise<string> =>
+			postTo(api, { stream: true, tools: [{ name: "Read" }] });
+
+		const answers = [await post(), await post(), await post()];
+		await api.stop();
+
+		const ids = answers.map((a) => MESSAGE_ID.exec(a)?.[1]);
+		expect(ids[0]).toBe("msg_fake");
+		expect(new Set(ids).size).toBe(3);
 	});
 
 	test("answers a request that does not stream with one JSON message", async () => {

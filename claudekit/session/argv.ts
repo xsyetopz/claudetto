@@ -61,9 +61,14 @@ export const settings = (object: object): Part => [
 	JSON.stringify(object),
 ];
 
+/** An option's value as its manifest types it: the host refuses a string for a `number` or `boolean` field. */
+export type OptionValue = string | number | boolean;
+
 /** The `pluginConfigs` key that sets the options of the inline plugin, to merge into the object given to `settings`. */
 export const inlinePluginOptions = (
-	options: Readonly<Record<string, string>>,
-): { pluginConfigs: Record<string, { options: Record<string, string> }> } => ({
+	options: Readonly<Record<string, OptionValue>>,
+): {
+	pluginConfigs: Record<string, { options: Record<string, OptionValue> }>;
+} => ({
 	pluginConfigs: { [INLINE_PLUGIN]: { options: { ...options } } },
 });

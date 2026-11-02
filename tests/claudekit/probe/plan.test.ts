@@ -118,13 +118,13 @@ describe("expectedUsd", () => {
 		expect(usd).toBeCloseTo(20 * FORK_USD + BASE_USD, 10);
 	});
 
-	// The user approved about 30.86 units for this round, which is 1.04% of the weekly limit, so a
-	// citable run has to stay under that. The lower bound only catches a price set to nothing, which
-	// would make the cost line say zero before a paid call.
-	test("a citable run of 20 forks stays inside the share of the plan that was approved", () => {
-		const percent = weeklyShare(expectedUsd(20, 2)).mid;
+	// The user approved about 30.86 units for this round, so a citable run has to stay under that. The
+	// approval was in units, so the check reads units, and a new meter calibration cannot move it. The
+	// lower bound only catches a price set to nothing, which would make the cost line say zero before a paid call.
+	test("a citable run of 20 forks stays inside the units of the plan that was approved", () => {
+		const usd = expectedUsd(20, 2);
 
-		expect(percent).toBeGreaterThan(0.1);
-		expect(percent).toBeLessThan(1.04);
+		expect(weeklyShare(usd).mid).toBeGreaterThan(0.1);
+		expect(usd).toBeLessThan(30.86);
 	});
 });

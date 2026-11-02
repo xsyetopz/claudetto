@@ -68,7 +68,9 @@ export const replay = (
 			if (size + growth > threshold) {
 				compactions += 1;
 				compacting +=
-					money(size, OPUS.read) + money(summaryOf(fixed.kept, size), OPUS.out);
+					money(size, OPUS.read) +
+					money(summaryOf(fixed.kept, size), OPUS.out) +
+					money(fixed.kept.write, OPUS.write);
 				size = keptOf(fixed.kept, size);
 			}
 			size += growth;

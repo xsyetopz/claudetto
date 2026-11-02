@@ -8,6 +8,7 @@ import {
 	inlinePluginOptions,
 	maxBudget,
 	model as modelFlag,
+	type OptionValue,
 	outputFormat,
 	permissionMode,
 	pluginDir,
@@ -53,7 +54,7 @@ export const envOf = (
 export const flags = (
 	modelId: string,
 	threshold: number,
-	options: Readonly<Record<string, string>> = {},
+	options: Readonly<Record<string, OptionValue>> = {},
 ): string[] =>
 	[
 		modelFlag(modelId),

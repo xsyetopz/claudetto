@@ -4,7 +4,9 @@ import { LAST_KEY, readingOf } from "./plugin.ts";
 
 const STORE_DIR = ".claude/plugins/store";
 
-const STORE_NAME = "claudetto_inline-";
+// The in-tree plugin writes `claudetto_inline-*` and the installed one `claudetto_claudetto-*`.
+// The `_` keeps `claudetto-you-should-know` out.
+const STORE_NAME = "claudetto_";
 
 export const storeFiles = async (home: string): Promise<unknown[]> => {
 	const dir = path.join(home, STORE_DIR);

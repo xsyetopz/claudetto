@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { lastSevenDay } from "../../claudekit/store.ts";
+import { lastSevenDay, storedAt, storeFiles } from "../../claudekit/store.ts";
 
 let home = "";
 beforeEach(async () => {
@@ -71,5 +71,21 @@ describe("lastSevenDay", () => {
 		const used = await lastSevenDay(home);
 
 		expect(used).toBe(62.5);
+	});
+});
+
+describe("storeFiles", () => {
+	test("the store of the installed plugin is read beside the in-tree one, and a side plugin's is not", async () => {
+		await plant("claudetto_claudetto-a.json", { id: "installed" });
+		await plant("claudetto_inline-a.json", { id: "inline" });
+		await plant("claudetto-you-should-know_claudetto-a.json", { id: "side" });
+
+		const files = await storeFiles(home);
+
+		expect(
+			files
+				.map((file) => storedAt(file, "id"))
+				.toSorted((l, r) => String(l).localeCompare(String(r))),
+		).toEqual(["inline", "installed"]);
 	});
 });
