@@ -4,7 +4,8 @@ import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { sessionArgv } from "../arm.ts";
-import { callsOf, extraArgs } from "../run.ts";
+import { claudeMdOf } from "../memory.ts";
+import { callsOf, claudeMdChars, extraArgs } from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
 
@@ -139,6 +140,32 @@ describe("the tool calls the fake makes", () => {
 		expect(() => callsOf("{}")).toThrow();
 		expect(() => callsOf('[{"name":"Read"}]')).toThrow();
 		expect(() => callsOf('[{"input":{}}]')).toThrow();
+	});
+});
+
+describe("the `CLAUDE.md` of the working folder", () => {
+	test("`--claude-md` takes a count of characters, and its absence means no file", () => {
+		expect(claudeMdChars(["--claude-md", "2000"])).toBe(2000);
+		expect(claudeMdChars(["--arm", "plain"])).toBeUndefined();
+	});
+
+	test("a count that is not a whole number of characters is refused", () => {
+		expect(() => claudeMdChars(["--claude-md", "x"])).toThrow();
+		expect(() => claudeMdChars(["--claude-md", "-1"])).toThrow();
+		expect(() => claudeMdChars(["--claude-md"])).toThrow();
+	});
+
+	test("the file is exactly that many characters, so the request grows by a known size", () => {
+		expect(claudeMdOf(0)).toBe("");
+		expect(claudeMdOf(1)).toHaveLength(1);
+		expect(claudeMdOf(2500)).toHaveLength(2500);
+	});
+
+	test("the file ends in a newline and holds prose lines, not one run of one character", () => {
+		const text = claudeMdOf(300);
+
+		expect(text.endsWith("\n")).toBe(true);
+		expect(text.split("\n").length).toBeGreaterThan(3);
 	});
 });
 
