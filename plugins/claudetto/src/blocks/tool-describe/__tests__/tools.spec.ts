@@ -107,13 +107,24 @@ describe("a tool moved behind `ToolSearch`", () => {
 		expect(answer).toEqual({ description: "short", isDeferred: true });
 	});
 
-	test("`AskUserQuestion` stays upfront, so a session can ask without a search first", () => {
-		const answer = describeAnswer("AskUserQuestion", {
-			description: "x".repeat(5000),
-		});
+	test.each(["AskUserQuestion", "Agent", "Skill"])(
+		"`%s` goes behind `ToolSearch`, whatever the harness text is",
+		(tool) => {
+			const answer = describeAnswer(tool, { description: "short" });
 
-		expect(answer.isDeferred).toBeUndefined();
-		expect(shippedPlacementOf("AskUserQuestion")).toBe(UPFRONT);
+			expect(answer.isDeferred).toBe(true);
+			expect(placementOf(tool)).toBe(UPFRONT);
+			expect(shippedPlacementOf(tool)).toBe(DEFERRED);
+		},
+	);
+
+	test("`Write` and `Edit` stay upfront, because nearly every session uses them", () => {
+		for (const tool of ["Write", "Edit"]) {
+			expect(
+				describeAnswer(tool, { description: "x" }).isDeferred,
+			).toBeUndefined();
+			expect(shippedPlacementOf(tool)).toBe(UPFRONT);
+		}
 	});
 
 	test("the shipped placement of `ListAgents` is deferred and its stock placement is not", () => {

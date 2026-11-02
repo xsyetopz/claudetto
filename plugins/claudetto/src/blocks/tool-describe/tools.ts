@@ -62,8 +62,13 @@ export const stockOf = (name: string): number | undefined => {
 export const placementOf = (name: string): Placement | undefined =>
 	readingOf(name)?.placement;
 
-/** Upfront in stock and moved behind `ToolSearch`: a cross-session tool, loaded with `SendMessage` when a session messages a peer. */
-const MOVED_BEHIND_SEARCH: ReadonlySet<string> = new Set(["ListAgents"]);
+/** Upfront in stock and moved behind `ToolSearch`: one extra request on first use buys the schema out of every request before it. `Write` and `Edit` stay, since nearly every session uses them. */
+const MOVED_BEHIND_SEARCH: ReadonlySet<string> = new Set([
+	"AskUserQuestion",
+	"Agent",
+	"ListAgents",
+	"Skill",
+]);
 
 export const shippedPlacementOf = (name: string): Placement | undefined =>
 	MOVED_BEHIND_SEARCH.has(name) ? DEFERRED : placementOf(name);
