@@ -1,4 +1,4 @@
-// Pure code, no model call: the family comes from marker files, the commands from the table, the `.ignore` from tracked heavy paths.
+// Pure code, no model call: the family comes from marker files and the commands from the table.
 
 import { type Command, FAMILIES, type Family, type Kind } from "./families.ts";
 
@@ -8,14 +8,13 @@ export const AGENTS_CAP = 600;
 export interface Listing {
 	/** Every file git sees, tracked or not and not ignored: the markers are read from it. */
 	readonly files: readonly string[];
-	/** The files git tracks: only these can need a `.ignore` entry. */
+	/** The files git tracks: a heavy path goes to `.ignore` only when git tracks a file of it. */
 	readonly tracked: readonly string[];
 }
 
 export interface Existing {
 	readonly agents: boolean;
 	readonly claude: boolean;
-	readonly ignore: boolean;
 }
 
 export interface StarterFile {
@@ -25,7 +24,6 @@ export interface StarterFile {
 
 const AGENTS = "AGENTS.md";
 const CLAUDE = "CLAUDE.md";
-const IGNORE = ".ignore";
 
 const KIND_ORDER: readonly Kind[] = ["test", "build", "lint", "types"];
 
@@ -39,7 +37,7 @@ const SENTENCES: Record<Kind, (label: string, run: string) => string> = {
 export const linesOf = (text: string): string[] =>
 	text.split("\n").filter((line) => line.trim() !== "");
 
-const globOf = (glob: string): string =>
+export const globOf = (glob: string): string =>
 	glob
 		.split("*")
 		.map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
@@ -107,25 +105,6 @@ const agentsText = (
 	return kept === 0 ? undefined : text;
 };
 
-/** A heavy pattern names a `dir/` anywhere, or a file name, with `*` for any run of characters. */
-const heavyRegex = (pattern: string): RegExp =>
-	pattern.endsWith("/")
-		? new RegExp(`(^|/)${globOf(pattern.slice(0, -1))}/`)
-		: new RegExp(`(^|/)${globOf(pattern)}$`);
-
-const heavyEntries = (
-	families: readonly Family[],
-	tracked: readonly string[],
-): string[] => [
-	...new Set(
-		families
-			.flatMap((family) => family.heavy)
-			.filter((pattern) =>
-				tracked.some((path) => heavyRegex(pattern).test(path)),
-			),
-	),
-];
-
 /** The files to write, none of them a file the repo already holds; empty when the repo has a memory file or no known family. */
 export const planStarter = (
 	listing: Listing,
@@ -139,13 +118,9 @@ export const planStarter = (
 	if (agents === undefined) {
 		return [];
 	}
-	const heavy = heavyEntries(families, listing.tracked);
 	return [
 		{ path: AGENTS, text: agents },
 		{ path: CLAUDE, text: `# ${CLAUDE}\n\n@${AGENTS}\n` },
-		...(existing.ignore || heavy.length === 0
-			? []
-			: [{ path: IGNORE, text: `${heavy.join("\n")}\n` }]),
 	];
 };
 
