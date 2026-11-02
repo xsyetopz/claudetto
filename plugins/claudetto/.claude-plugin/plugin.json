@@ -62,6 +62,12 @@
 			"description": "Use `false` to let `Read` take a lock file, a minified or map file, or a file under `node_modules` or another generated folder whole. By default such a read without a `limit` is denied with a hint to pass `offset` and `limit`, to use `rg`, or to use the package command. It adds nothing to the request and `Bash` is untouched. It is `true` because a whole lock file costs far more context than it gives.",
 			"default": true
 		},
+		"missingToolNoticeEnabled": {
+			"type": "boolean",
+			"title": "Notice of a missing optional tool",
+			"description": "Use `false` to turn off the one line that a new session shows when `ast-grep` is not on the `PATH`. The line names the install command for the platform and `/claudetto:setup`, and it is shown once for the pinned version. The check looks up the `PATH` folders with no process and no model call, and the line is never sent to the model. It is `true` because a user who does not know the tool is missing cannot ask for it.",
+			"default": true
+		},
 		"maxSubagentStarts": {
 			"type": "number",
 			"title": "Subagent starts per period",
