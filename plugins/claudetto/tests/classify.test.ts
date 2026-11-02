@@ -162,6 +162,26 @@ for (const variant of VARIANTS) {
 	);
 
 	test(
+		`${variant.option}: a reply with the reason before the block is read the same`,
+		options,
+		async ($: Engine, on: On) => {
+			const state = stub(
+				on,
+				says(
+					"<reason>The push targets the default branch.</reason><rule>Push</rule><block>yes</block>",
+				),
+			);
+
+			const out = await $.tool.call(PUSH);
+
+			expect(out.isError).toBe(true);
+			expect(out.text).toContain("The push targets the default branch.");
+			expect(out.text).toContain("under the rule Push");
+			expect(state.ran).toEqual([]);
+		},
+	);
+
+	test(
 		`${variant.option}: Jev unsure sends the call to the model`,
 		options,
 		async ($: Engine, on: On) => {
