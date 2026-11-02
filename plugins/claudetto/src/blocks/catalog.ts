@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 import { agentOffer, attachAgentOffer } from "./agent-offer/block.ts";
 import type { Block, BlockContext } from "./block.ts";
+import { attachBoundOutput, boundOutput } from "./bound-output/block.ts";
 import { attachClassify, classifyBlock } from "./classify/block.ts";
 import { attachCompaction, compaction } from "./compaction/block.ts";
 import { attachConfine, confine } from "./confine/block.ts";
@@ -41,6 +42,7 @@ export const CATALOG: readonly Block[] = [
 	planMode,
 	confine,
 	readGuard,
+	boundOutput,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -66,4 +68,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachPlanMode(on, context);
 	attachConfine(on, context);
 	attachReadGuard(on, context);
+	attachBoundOutput(on, context);
 };

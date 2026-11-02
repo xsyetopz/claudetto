@@ -37,6 +37,7 @@ const OPTIONS: readonly string[] = [
 	"maxHeavyToolCalls",
 	"heavyContextTokens",
 	"maxIdenticalFailures",
+	"maxTestOutputChars",
 	"hygieneEnabled",
 	"handoffCleanupPeriodDays",
 	"sessionTempCleanupPeriodDays",

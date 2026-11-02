@@ -148,6 +148,7 @@ The core plugin's options are set in the plugin dialog of Claude Code, and `/con
 | `maxHeavyToolCalls` | number, 20 | The most tool calls inside the period while the context holds `heavyContextTokens` or more. |
 | `heavyContextTokens` | number, 400,000 | The input tokens of the last response from which the context counts as heavy. |
 | `maxIdenticalFailures` | number, 3 | How many times the same call fails with the same error before an identical retry is refused. |
+| `maxTestOutputChars` | number, 8,000 | The most characters of a `Bash` test, build, lint, or check run (`bun test`, `just check`, `cargo test`, `go test`, `pytest`, `npm run test`, `make`, `tsc`, and the like) that the model reads. A longer output keeps its head, its tail, and the lines that match a failure, with one line that names the cut count and the file under `.claude/claudetto/output/` that holds the whole output. The exit status and an error result stay as they are. `0` is off. 8,000 is about 2,000 tokens: room for a runner's banner, its summary, and a few failures. |
 | `hygieneEnabled` | boolean, `true` | `false` starts no hygiene sweep at a session start. |
 | `handoffCleanupPeriodDays` | number, unset | The age in days from which the sweep removes a handoff, except the newest of the project. Unset, it follows `cleanupPeriodDays`. 0 keeps every handoff. |
 | `sessionTempCleanupPeriodDays` | number, unset | The age in days from which the sweep removes the temp folder of a session that is not running. Unset, it follows `cleanupPeriodDays`. 0 keeps them all. |

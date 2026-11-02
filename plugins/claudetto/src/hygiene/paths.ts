@@ -45,4 +45,13 @@ export const STALE_PATHS: readonly StalePath[] = [
 		source:
 			"claudetto writes handoffs into `HANDOFF_DIR` under a UTC stamp, and its read-back takes only the newest name. A reading of the projects in `~/.claude/projects` that hold a handoffs folder, 2026-11-02: 27 handoffs in 5 projects, oldest 2026-10-29.",
 	},
+	{
+		id: "bound-output",
+		root: "project",
+		pattern: ".claude/claudetto/output/output-*.txt",
+		maxAge: { minutes: 1440 },
+		keep: "A file younger than a day, since the model may still read it back for the part of a log that was cut.",
+		source:
+			"claudetto writes the whole output of a test or build run into `BOUND_OUTPUT_DIR` when it cuts the text the model reads. Nothing reads the files after the session, so a day outlasts any session that cut them.",
+	},
 ];
