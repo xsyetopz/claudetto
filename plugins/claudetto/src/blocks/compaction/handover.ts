@@ -5,6 +5,7 @@ import type {
 	SessionCompactResult,
 	SessionContextUsage,
 } from "claude-code";
+import { optionOf } from "../../shared/option.ts";
 import { finished } from "../handoff/finish.ts";
 import { HANDOFF_TITLE, handoffPath } from "../handoff/handoff.ts";
 
@@ -108,7 +109,7 @@ const handOver = async (
 	}
 };
 
-/** The default of `heavyTokens`, where the tool-call cap starts to hold calls. */
+/** The size from which a turn's end hands over, when `handoverThresholdTokens` is unset. */
 const HANDOVER_TOKENS = 400_000;
 
 export const FORK_PROMPT = `The context is large. Write the handoff now, as the whole reply, in the layout of the context management block, starting with \`${HANDOFF_TITLE}\`.`;
@@ -118,7 +119,9 @@ export const handoverTokens = (
 	options: PluginOptions,
 	window: number,
 ): number => {
-	const set = Number(options["handoverTokens"]);
+	const set = Number(
+		optionOf(options, "handoverThresholdTokens", "handoverTokens"),
+	);
 	return Number.isFinite(set) && set > 0
 		? set
 		: Math.min(HANDOVER_TOKENS, window / 2);

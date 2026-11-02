@@ -8,7 +8,7 @@ import type {
 } from "claude-code";
 import { type Engine, type MockClock, mock } from "claude-code/testing";
 
-export const TURNED_ON = { enabled: true } as const;
+export const TURNED_ON = { sideCheckEnabled: true } as const;
 
 export const SESSION = "s1";
 

@@ -30,7 +30,7 @@ const okay = (body: object) =>
 	reply(200, { model: "jev-latest", answers: body });
 
 const option = (decide: string): { options: PluginOptions } => ({
-	options: { decide },
+	options: { decideProvider: decide },
 });
 
 const STORE = {
@@ -278,7 +278,7 @@ test(
 
 test(
 	"the key of the option turns the tool on with no env variable",
-	{ options: { decide: "jev", TYPESAFE_API_KEY: "secure-key" } },
+	{ options: { decideProvider: "jev", typesafeApiKey: "secure-key" } },
 	async ($: Engine, on: On) => {
 		const { fetches } = stub(on, "");
 

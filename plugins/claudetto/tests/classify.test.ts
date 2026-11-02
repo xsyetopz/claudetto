@@ -117,7 +117,7 @@ const called = async (
 };
 
 for (const variant of VARIANTS) {
-	const options = { options: { classifier: variant.option } };
+	const options = { options: { classifierModel: variant.option } };
 
 	test(
 		`${variant.option}: a "no" from the model lets the call run, asked on \`${variant.model}\` at \`${variant.effort}\``,
@@ -245,7 +245,19 @@ for (const variant of VARIANTS) {
 	);
 }
 
-const SONNET = { options: { classifier: "sonnet" } };
+const SONNET = { options: { classifierModel: "sonnet" } };
+
+test(
+	"a `classifier` stored before the rename still turns the check on",
+	{ options: { classifierModel: "off", classifier: "sonnet" } },
+	async ($: Engine, on: On) => {
+		const state = stub(on, says("<block>no</block>"), 0.01, "");
+
+		await $.tool.call(PUSH);
+
+		expect(state.asked).toHaveLength(1);
+	},
+);
 
 test(
 	"with no Jev key the model decides alone",

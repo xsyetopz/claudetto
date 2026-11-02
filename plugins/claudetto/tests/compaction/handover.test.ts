@@ -241,17 +241,24 @@ test("a context at half of a small window forks", async ($: Engine, on: On) => {
 	expect(seen.forks).toHaveLength(1);
 });
 
-test(
-	"the option `handoverTokens` sets the size",
-	{ options: { handoverTokens: 600_000 } },
-	async ($: Engine, on: On) => {
+for (const [name, options] of [
+	[
+		"the option `handoverThresholdTokens` sets the size",
+		{ handoverThresholdTokens: 600_000 },
+	],
+	[
+		"a `handoverTokens` stored before the rename still sets the size",
+		{ handoverTokens: 600_000 },
+	],
+] as const) {
+	test(name, { options }, async ($: Engine, on: On) => {
 		const { seen, finish } = lab($, on, "compact", false, { tokens: 450_000 });
 
 		await finish(DONE);
 
 		expect(seen.forks).toEqual([]);
-	},
-);
+	});
+}
 
 const NO_HANDOFF: readonly {
 	readonly fork: ModelForkResult;

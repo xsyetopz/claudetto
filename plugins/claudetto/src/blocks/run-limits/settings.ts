@@ -1,4 +1,5 @@
 import type { PluginOptions } from "claude-code";
+import { optionOf } from "../../shared/option.ts";
 
 const WINDOW_SECONDS = 600;
 
@@ -27,14 +28,35 @@ const positive = <T extends number | undefined>(
 	return typeof n === "number" && Number.isFinite(n) && n > 0 ? n : fallback;
 };
 
+/**
+ * The subagent cap is Claude Code's own `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, which a user sets in the `env` setting.
+ * A `subagentCap` stored before that option was dropped still counts when the env sets none.
+ */
 export const limitsOf = (
 	options: PluginOptions,
 	planCap: number | undefined,
+	claudeCap?: number,
 ): Limits => ({
-	subagentCap: positive(options["subagentCap"], planCap),
-	startCap: positive(options["startCap"], START_CAP),
-	windowMs: positive(options["windowSeconds"], WINDOW_SECONDS) * 1000,
-	callCap: positive(options["callCap"], CALL_CAP),
-	heavyTokens: positive(options["heavyTokens"], HEAVY_TOKENS),
-	failLimit: positive(options["failLimit"], FAIL_LIMIT),
+	subagentCap: positive(claudeCap, positive(options["subagentCap"], planCap)),
+	startCap: positive(
+		optionOf(options, "maxSubagentStarts", "startCap"),
+		START_CAP,
+	),
+	windowMs:
+		positive(
+			optionOf(options, "limitPeriodSeconds", "windowSeconds"),
+			WINDOW_SECONDS,
+		) * 1000,
+	callCap: positive(
+		optionOf(options, "maxHeavyToolCalls", "callCap"),
+		CALL_CAP,
+	),
+	heavyTokens: positive(
+		optionOf(options, "heavyContextTokens", "heavyTokens"),
+		HEAVY_TOKENS,
+	),
+	failLimit: positive(
+		optionOf(options, "maxIdenticalFailures", "failLimit"),
+		FAIL_LIMIT,
+	),
 });

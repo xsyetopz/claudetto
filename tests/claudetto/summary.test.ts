@@ -78,6 +78,13 @@ describe("the switch of the cheap summarizer", () => {
 		expect(isCheapSummaryOn(base, { cheapSummary: "on" })).toBe(true);
 	});
 
+	test("the boolean option turns it on, and `false` leaves it off", () => {
+		expect([
+			isCheapSummaryOn(base, { cheapSummaryEnabled: true }),
+			isCheapSummaryOn(base, { cheapSummaryEnabled: false }),
+		]).toEqual([true, false]);
+	});
+
 	test("the option turns it on with no row at all", () => {
 		expect(isCheapSummaryOn(undefined, { cheapSummary: "on" })).toBe(true);
 	});

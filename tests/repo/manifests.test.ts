@@ -24,18 +24,22 @@ const isFile = async (path: string): Promise<boolean> => {
 
 // The list is pinned, not derived: searching the source for a name proves no hook reads it.
 const OPTIONS: readonly string[] = [
-	"decide",
-	"TYPESAFE_API_KEY",
-	"CONTEXT7_API_KEY",
-	"cheapSummary",
-	"handoverTokens",
-	"classifier",
-	"subagentCap",
-	"startCap",
-	"windowSeconds",
-	"callCap",
-	"heavyTokens",
-	"failLimit",
+	"decideProvider",
+	"typesafeApiKey",
+	"context7ApiKey",
+	"cheapSummaryEnabled",
+	"handoverThresholdTokens",
+	"classifierModel",
+	"confineEnabled",
+	"maxSubagentStarts",
+	"limitPeriodSeconds",
+	"maxHeavyToolCalls",
+	"heavyContextTokens",
+	"maxIdenticalFailures",
+	"hygieneEnabled",
+	"handoffCleanupPeriodDays",
+	"sessionTempCleanupPeriodDays",
+	"probeCleanupPeriodMinutes",
 ];
 
 describe("the options the manifest offers", () => {
@@ -47,19 +51,19 @@ describe("the options the manifest offers", () => {
 // A manifest `default` reaches the hook as the value, so the code fallback fires only without one.
 describe("the add-on manifest against its own constants", () => {
 	test("the declared effort default is the constant the code falls back to", () => {
-		const declared = observer.userConfig["effort"].default;
+		const declared = observer.userConfig["sideCheckEffortLevel"].default;
 
 		expect(declared).toBe(DEFAULT_EFFORT);
 	});
 
 	test("the declared model default is the constant the code falls back to", () => {
-		const declared = observer.userConfig["model"].default;
+		const declared = observer.userConfig["sideCheckModel"].default;
 
 		expect(declared).toBe(DEFAULT_MODEL);
 	});
 
 	test("the declared effort list is the five levels the code accepts", () => {
-		const declared = observer.userConfig["effort"].options;
+		const declared = observer.userConfig["sideCheckEffortLevel"].options;
 
 		expect(declared).toEqual(["low", "medium", "high", "xhigh", "max"]);
 	});

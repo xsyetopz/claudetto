@@ -1,4 +1,5 @@
 import type { HookFor, On } from "claude-code";
+import { optionOf } from "../../shared/option.ts";
 import type { Block, BlockContext, WithOptions } from "../block.ts";
 
 const keyOf = (value: unknown): string | undefined =>
@@ -11,7 +12,7 @@ export const onContext7Start: WithOptions<HookFor<"session.start">> = async (
 	next,
 	options,
 ) => {
-	const key = keyOf(options["CONTEXT7_API_KEY"]);
+	const key = keyOf(optionOf(options, "context7ApiKey", "CONTEXT7_API_KEY"));
 	if (
 		key !== undefined &&
 		(await $.env.get("CONTEXT7_API_KEY")) === undefined

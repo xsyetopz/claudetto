@@ -40,7 +40,7 @@ describe("the installed observer is off", () => {
 	test("the shipped manifest defaults it to off", async () => {
 		const config = await userConfig();
 
-		expect(config["enabled"]).toMatchObject({
+		expect(config["sideCheckEnabled"]).toMatchObject({
 			type: "boolean",
 			default: false,
 		});

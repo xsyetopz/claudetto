@@ -1,14 +1,17 @@
 import type { PluginOptions } from "claude-code";
+import { optionOf, optionOverDefault } from "../../shared/option.ts";
 
 const MODES = ["off", "jev"] as const;
 
 export type Mode = (typeof MODES)[number];
 
 export const modeOf = (options: PluginOptions): Mode =>
-	MODES.find((m) => m === options["decide"]) ?? "off";
+	MODES.find(
+		(m) => m === optionOverDefault(options, "decideProvider", "decide", "jev"),
+	) ?? "off";
 
 export const keyOf = (options: PluginOptions): string => {
-	const key = options["TYPESAFE_API_KEY"];
+	const key = optionOf(options, "typesafeApiKey", "TYPESAFE_API_KEY");
 	return typeof key === "string" ? key : "";
 };
 

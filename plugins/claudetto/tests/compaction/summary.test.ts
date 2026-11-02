@@ -54,7 +54,7 @@ const reply =
 		value: { isAnswered: true, text, usage: USAGE },
 	});
 
-const ON = { options: { cheapSummary: "on" } };
+const ON = { options: { cheapSummaryEnabled: true } };
 
 test("a shipped row makes no model call and the engine compacts", async ($: Engine, on: On) => {
 	const asked: ModelCompleteInput[] = [];
@@ -69,10 +69,17 @@ test("a shipped row makes no model call and the engine compacts", async ($: Engi
 	expect(out.skip).toBe("core ran");
 });
 
-test(
-	"the option answers the compaction with one call on the cheap model and a cached block",
-	ON,
-	async ($: Engine, on: On) => {
+for (const [name, config] of [
+	[
+		"the option answers the compaction with one call on the cheap model and a cached block",
+		ON,
+	],
+	[
+		"a `cheapSummary` of `on` stored before the rename still turns the call on",
+		{ options: { cheapSummaryEnabled: false, cheapSummary: "on" } },
+	],
+] as const) {
+	test(name, config, async ($: Engine, on: On) => {
 		const asked: ModelCompleteInput[] = [];
 		lab(on, (e) => {
 			asked.push(e);
@@ -92,8 +99,8 @@ test(
 			"The summary.",
 		]);
 		expect(compacted?.usage).toBe(undefined);
-	},
-);
+	});
+}
 
 test(
 	"a call that throws leaves the compaction to the engine",
