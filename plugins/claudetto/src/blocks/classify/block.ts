@@ -16,6 +16,7 @@ import {
 	classifyRowOf,
 	keepClassify,
 } from "../window/classify-spend.ts";
+import { hookSplitsOf, needsBlocks } from "./hook-feedback.ts";
 import { markJudged } from "./judged.ts";
 import { onMidTurnPrompt } from "./mid-turn.ts";
 import { transcriptOf } from "./transcript.ts";
@@ -73,9 +74,14 @@ export const classify = async (
 	options: PluginOptions,
 ): Promise<PreToolUseResult> => {
 	try {
+		const messages = await $.session.messages();
+		const api = needsBlocks(messages)
+			? await $.session.messages({ as: "api" })
+			: [];
 		const transcript = transcriptOf(
-			await $.session.messages(),
+			messages,
 			(await $.state.get(promptsRef).catch(() => undefined))?.value,
+			hookSplitsOf(Array.isArray(api) ? api : []),
 		);
 		const action = actionOf(e);
 		const jev = await askJev($, options, transcript, action);

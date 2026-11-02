@@ -1,10 +1,26 @@
 import type { SessionMessage } from "claude-code";
+import { HOOK_FEEDBACK } from "./hook-feedback.ts";
 import type { MidTurnPrompt } from "./mid-turn.ts";
 
 export const callLine = (tool: string, input: unknown): string =>
 	`${tool} ${JSON.stringify(input)}`;
 
 const userLine = (text: string): string => `User: ${text}`;
+
+const hookLine = (text: string): string => `Hook said: ${text.trimEnd()}`;
+
+/** A hook's text authorizes nothing, so a row whose blocks are not known stays the hook's whole. */
+const rowLines = (
+	text: string,
+	splits: ReadonlyMap<string, readonly string[]>,
+): string[] => {
+	if (!text.startsWith(HOOK_FEEDBACK)) {
+		return [userLine(text)];
+	}
+	const [hook = text, ...typed] = splits.get(text) ?? [];
+	const words = typed.join("").trim();
+	return [hookLine(hook), ...(words === "" ? [] : [userLine(words)])];
+};
 
 const ANSWERED = "AskUserQuestion";
 
@@ -40,6 +56,7 @@ const choiceLines = (
 export const transcriptOf = (
 	messages: readonly SessionMessage[],
 	midTurn: readonly MidTurnPrompt[] = [],
+	splits: ReadonlyMap<string, readonly string[]> = new Map(),
 ): string => {
 	const rowTexts = new Set(
 		messages.filter((m) => m.role === "user").map((m) => m.text.trim()),
@@ -64,7 +81,7 @@ export const transcriptOf = (
 			]);
 		}
 		return [
-			...(message.text.trim() === "" ? [] : [userLine(message.text)]),
+			...(message.text.trim() === "" ? [] : rowLines(message.text, splits)),
 			...choiceLines(message, toolOf),
 		];
 	});
