@@ -43,6 +43,6 @@ export const STALE_PATHS: readonly StalePath[] = [
 		maxAge: "cleanupPeriodDays",
 		keep: "The newest handoff of the project, which a resume reads back.",
 		source:
-			"claudetto writes handoffs into `HANDOFF_DIR` under a UTC stamp, and its read-back takes only the newest name. A reading of this repository, 2026-10-30: 3 handoffs.",
+			"claudetto writes handoffs into `HANDOFF_DIR` under a UTC stamp, and its read-back takes only the newest name. A reading of the projects in `~/.claude/projects` that hold a handoffs folder, 2026-11-02: 27 handoffs in 5 projects, oldest 2026-10-29.",
 	},
 ];
