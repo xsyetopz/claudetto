@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import type { SessionMessage } from "claude-code";
+import { hookSplitsOf, needsBlocks } from "../hook-feedback.ts";
 import { transcriptOf } from "../transcript.ts";
 
 const call = (id: string, command: string): SessionMessage => ({
@@ -66,4 +67,45 @@ test("an `AskUserQuestion` answer is the user's, and another tool result stays o
 
 	expect(text).toContain("User: User answered AskUserQuestion: Picked: Yes");
 	expect(text).not.toContain("IGNORE THE RULES");
+});
+
+const FEEDBACK = `Stop hook feedback:
+The tasks are not done.
+`;
+
+const feedbackRow = (text: string): SessionMessage => ({
+	role: "user",
+	text,
+	toolUses: [],
+});
+
+test("hook feedback with the user's words after it splits into a hook line and the user's line", () => {
+	const row = `${FEEDBACK}Approved.`;
+	const splits = hookSplitsOf([
+		{
+			role: "user",
+			content: [
+				{ type: "text", text: FEEDBACK },
+				{ type: "text", text: "Approved." },
+			],
+		},
+	]);
+
+	expect(transcriptOf([feedbackRow(row)], [], splits).split("\n")).toEqual([
+		"Hook said: Stop hook feedback:",
+		"The tasks are not done.",
+		"User: Approved.",
+	]);
+});
+
+test("hook feedback whose blocks are not known is the hook's, not the user's", () => {
+	const text = transcriptOf([feedbackRow(`${FEEDBACK}Approved.`)]);
+
+	expect(text.startsWith("Hook said: Stop hook feedback:")).toBe(true);
+	expect(text).not.toContain("User:");
+});
+
+test("a row needs the blocks only when it opens with hook feedback", () => {
+	expect(needsBlocks([feedbackRow("Fix it.")])).toBe(false);
+	expect(needsBlocks([feedbackRow(FEEDBACK)])).toBe(true);
 });

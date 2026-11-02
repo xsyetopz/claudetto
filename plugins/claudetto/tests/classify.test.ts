@@ -4,6 +4,7 @@ import type {
 	OpEventResult,
 	PromptOrigin,
 	SessionMessage,
+	SessionMessagesArgs,
 } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { bareRepo } from "./gate/facts.ts";
@@ -58,6 +59,9 @@ const stub = (
 	model: (n: number) => OpEventResult<"model.complete">,
 	jev: number | { status: number } = 0.5,
 	key = KEY,
+	messages: (
+		e: SessionMessagesArgs,
+	) => OpEventResult<"session.messages"> = () => ({ value: MESSAGES }),
 ): Stub => {
 	const state: Stub = { asked: [], fetches: [], ran: [] };
 	// The gate block reads these on every `Bash` call; the engine's own check allows.
@@ -67,7 +71,7 @@ const stub = (
 	on("env.get", (_$, e) =>
 		e.name === "TYPESAFE_API_KEY" ? { value: key } : { value: undefined },
 	);
-	on("session.messages", () => ({ value: MESSAGES }));
+	on("session.messages", (_$, e) => messages(e));
 	on("http.fetch", (_$, e) => {
 		state.fetches.push(e);
 		const status = typeof jev === "number" ? 200 : jev.status;
@@ -433,3 +437,43 @@ test("the option off makes no call", async ($: Engine, on: On) => {
 	expect(state.asked).toEqual([]);
 	expect(state.ran).toEqual(["Bash"]);
 });
+
+test(
+	"the user's words typed after hook feedback reach the classifier as the user's, and the feedback as the hook's",
+	{ options: { classifierModel: "haiku" } },
+	async ($: Engine, on: On) => {
+		const feedback = `Stop hook feedback:
+The tasks are not done.
+`;
+		const state = stub(
+			on,
+			says("<block>no</block><reason>Asked.</reason>"),
+			0.5,
+			KEY,
+			(e) =>
+				e.as === "api"
+					? {
+							value: [
+								{
+									role: "user",
+									content: [
+										{ type: "text", text: feedback },
+										{ type: "text", text: "Approved." },
+									],
+								},
+							],
+						}
+					: {
+							value: [
+								{ role: "user", text: `${feedback}Approved.`, toolUses: [] },
+							],
+						},
+		);
+
+		await $.tool.call(PUSH);
+
+		const sent = JSON.stringify(state.asked[0]);
+		expect(sent).toContain("User: Approved.");
+		expect(sent).toContain("Hook said: Stop hook feedback:");
+	},
+);
