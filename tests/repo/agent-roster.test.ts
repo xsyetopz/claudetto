@@ -71,6 +71,18 @@ describe("the shipped agent files", () => {
 		]);
 	});
 
+	for (const name of ["Athena", "Hephaestus"]) {
+		test(`${name} searches text with \`rg -n\` and code shapes with \`ast-grep\` only when \`command -v\` finds it`, () => {
+			const body = AGENTS.get(name)?.body ?? "";
+			expect(body).toContain("`rg -n`");
+			expect(body).toContain("`command -v ast-grep`");
+			expect(body).toContain("--json=stream");
+			expect(body).toContain("| head -n");
+			expect(body).toContain("`--files-with-matches`");
+			expect(body).not.toContain("with `grep`");
+		});
+	}
+
 	test("name in their body no tool the frontmatter withholds", async () => {
 		const named = [...AGENTS.values()].map(bodyNamesWithheld);
 		expect(named.flat()).toEqual([]);
