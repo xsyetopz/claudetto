@@ -9,7 +9,12 @@ import { tierSnippet } from "../tiers/snippet.ts";
 import { linesOf } from "../tiers/starter/plan.ts";
 import { statusLineSnippet } from "../tiers/status-line.ts";
 import { SNIPPET_ROW } from "../tiers/tiers.ts";
+import { userClaudeMdFile, withSection } from "./general-rules/rules.ts";
 import { differencesOf, setupWrite } from "./setup-command/diff.ts";
+import {
+	GENERAL_RULES_ID,
+	generalDifference,
+} from "./setup-command/general-rules.ts";
 import { NO, type ToolsIo, YES } from "./setup-command/optional/io.ts";
 import { toolsPart } from "./setup-command/optional/part.ts";
 import { askKept } from "./setup-command/questions.ts";
@@ -123,6 +128,19 @@ const rulesReport = async (
 	}
 };
 
+const generalReport = async (
+	$: EngineInterface,
+	path: string,
+	held: string | undefined,
+): Promise<string> => {
+	try {
+		await $.fs.write(path, withSection(held));
+		return `Wrote ${path}.`;
+	} catch (error) {
+		return `Could not write ${path} (${String(error)}).`;
+	}
+};
+
 const GIT_MS = 5000;
 
 const gitLines = async (
@@ -189,11 +207,13 @@ const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
 	}
 	const snippet = tierSnippet(SNIPPET_ROW, platformNamed(await unameOf($)));
 	const rules = await rulesFiles($, file);
-	const offer = rulesDifference(rules.shipped, rules.held);
-	const differences = [
-		...differencesOf(held, snippet),
-		...(offer === undefined ? [] : [offer]),
-	];
+	const userMd = userClaudeMdFile(file);
+	const userMdHeld = await textOf($, userMd);
+	const offers = [
+		rulesDifference(rules.shipped, rules.held),
+		generalDifference(userMdHeld),
+	].filter((offer) => offer !== undefined);
+	const differences = [...differencesOf(held, snippet), ...offers];
 	if (differences.length === 0) {
 		return { text: nothingToAsk(file) };
 	}
@@ -209,15 +229,18 @@ const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
 	const write = setupWrite(
 		held,
 		snippet,
-		ids.filter((id) => id !== CODE_RULES),
+		ids.filter((id) => id !== CODE_RULES && id !== GENERAL_RULES_ID),
 	);
 	const failed =
 		write.applied.written.length === 0
 			? undefined
 			: await writeFailure($, file, write.applied.settings);
-	const rulesLine = ids.includes(CODE_RULES)
-		? [await rulesReport($, rules)]
-		: [];
+	const rulesLine = [
+		...(ids.includes(CODE_RULES) ? [await rulesReport($, rules)] : []),
+		...(ids.includes(GENERAL_RULES_ID)
+			? [await generalReport($, userMd, userMdHeld)]
+			: []),
+	];
 	return {
 		text: [failed?.text ?? setupReport(file, write), ...rulesLine].join("\n"),
 	};

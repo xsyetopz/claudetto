@@ -531,7 +531,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,084 baseline less every cut in it has to equal the 24,984 the shipped arm records, so a cut that
+46,084 baseline less every cut in it has to equal the 25,314 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -562,9 +562,10 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | The `general-purpose`, `claude`, and `statusline-setup` agent denies and the `DesignSync` deny (`built-in agent denies`) | 570 | None exists yet |
 | `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_CODE_FORK_SUBAGENT` (`cron and fork switches`) | 103 | None exists yet |
 | The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
+| The three general rules that the `general-rules` block adds at `SessionStart` while the user's `CLAUDE.md` lacks the section (`general rules`) | −330 | None exists yet. Read on 2026-11-03 on `2.1.317` with `just inventory`, the shipped arm with the block less the 24,984 it recorded without it. A user `CLAUDE.md` of 1,000 characters added 1,394, read with `just capture --user-claude-md 1000`: 1,017 for the file as escaped JSON and 377 for the wrapper that names it, which the file pays once |
 | The fall that no row above explains (`unexplained residual`) | 1,805 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
-The rows sum to 21,100, which is 46,084 less the 24,984 the shipped arm records. A negative row is a piece
+The rows sum to 20,770, which is 46,084 less the 25,314 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read

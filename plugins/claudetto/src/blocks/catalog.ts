@@ -9,6 +9,7 @@ import { attachConfine } from "./confine/block.ts";
 import { attachContext7 } from "./context7/block.ts";
 import { attachDecide } from "./decide/block.ts";
 import { attachGate } from "./gate/block.ts";
+import { attachGeneralRules } from "./general-rules/block.ts";
 import { attachHandoff } from "./handoff/block.ts";
 import { attachHygiene } from "./hygiene/block.ts";
 import { attachInitInterview } from "./init-interview/block.ts";
@@ -44,6 +45,7 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachHygiene(on, context);
 	attachMissingTool(on, context);
 	attachBunRule(on, context);
+	attachGeneralRules(on);
 	attachContext7(on, context);
 	attachClassify(on, context);
 	attachPlanMode(on, context);

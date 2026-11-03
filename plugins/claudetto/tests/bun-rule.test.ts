@@ -1,7 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { BUN_RULE } from "../src/blocks/bun-rule/block.ts";
-import { storeStub } from "./setup-command/support.ts";
+import { GENERAL_RULES } from "../src/blocks/general-rules/rules.ts";
+import { sessionStart, sessionStartStubs } from "./session-start-support.ts";
 
 const CWD = "/repo";
 
@@ -9,48 +10,46 @@ const lab = (on: On, present: readonly string[]): void => {
 	on("fs.exists", (_$, e) => ({
 		value: present.some((name) => e.path === `${CWD}/${name}`),
 	}));
-	// The other `classic.SessionStart` hooks of the plugin read these, and a missing stub skips the chain.
 	on("env.get", () => ({ value: undefined }));
-	storeStub(on, new Map());
-	on("ui.log", () => ({ value: undefined }));
-	on("session.version", () => ({
-		value: { version: "2.1.317", base: "2.1.317", builtAt: "" },
-	}));
-	on("session.id", () => ({ value: "s" }));
-	on("session.root", () => ({ value: CWD }));
-	on("classic.SessionStart", () => ({}));
+	sessionStartStubs(on, CWD);
 };
 
 const start = (
 	$: Engine,
 	source: "startup" | "clear" | "compact" = "startup",
-) => $.classic.SessionStart({ source, cwd: CWD });
+) => sessionStart($, CWD, source);
+
+/** The texts a start adds besides the general rules, which every session gets from their own block. */
+const added = (out: {
+	additionalContext?: readonly string[];
+}): readonly string[] =>
+	(out.additionalContext ?? []).filter((text) => text !== GENERAL_RULES);
 
 test("a folder with `package.json` and `bun.lock` adds the `bun` text", async ($: Engine, on: On) => {
 	lab(on, ["package.json", "bun.lock"]);
 
 	const out = await start($);
 
-	expect(out.additionalContext).toEqual([BUN_RULE]);
+	expect(added(out)).toEqual([BUN_RULE]);
 });
 
 test("`clear` and `compact` add the text again", async ($: Engine, on: On) => {
 	lab(on, ["package.json", "bun.lock"]);
 
-	expect((await start($, "clear")).additionalContext).toEqual([BUN_RULE]);
-	expect((await start($, "compact")).additionalContext).toEqual([BUN_RULE]);
+	expect(added(await start($, "clear"))).toEqual([BUN_RULE]);
+	expect(added(await start($, "compact"))).toEqual([BUN_RULE]);
 });
 
 test("a folder with only `package.json` adds nothing", async ($: Engine, on: On) => {
 	lab(on, ["package.json"]);
 
-	expect((await start($)).additionalContext ?? []).toEqual([]);
+	expect(added(await start($))).toEqual([]);
 });
 
 test("a folder with only `bun.lock` adds nothing", async ($: Engine, on: On) => {
 	lab(on, ["bun.lock"]);
 
-	expect((await start($)).additionalContext ?? []).toEqual([]);
+	expect(added(await start($))).toEqual([]);
 });
 
 test(
@@ -59,6 +58,6 @@ test(
 	async ($: Engine, on: On) => {
 		lab(on, ["package.json", "bun.lock"]);
 
-		expect((await start($)).additionalContext ?? []).toEqual([]);
+		expect(added(await start($))).toEqual([]);
 	},
 );

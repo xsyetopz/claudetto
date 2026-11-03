@@ -16,14 +16,18 @@ export const USER_RULES = "/home/u/.claude/rules/claudetto-code.md";
 
 const SHIPPED_RULES = "/rules/claudetto-code.md";
 
-/** A home of `/home/u` whose settings file holds `held`, or is absent when `held` is `undefined`. */
+/** A home of `/home/u` whose settings file holds `held`, or is absent when `held` is `undefined`; each path of `others` holds its own text, or is absent at `undefined`. */
 export const userSettingsLab = (
 	on: On,
 	held: string | undefined,
 	rules?: RulesLab,
+	others: ReadonlyMap<string, string | undefined> = new Map(),
 ): Written[] => {
 	const files: Written[] = [];
 	const textAt = (path: string): string | undefined => {
+		if (others.has(path)) {
+			return others.get(path);
+		}
 		if (rules === undefined) {
 			return held;
 		}
