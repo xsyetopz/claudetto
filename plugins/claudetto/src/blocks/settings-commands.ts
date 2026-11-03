@@ -9,11 +9,12 @@ import { tierSnippet } from "../tiers/snippet.ts";
 import { linesOf } from "../tiers/starter/plan.ts";
 import { statusLineSnippet } from "../tiers/status-line.ts";
 import { SNIPPET_ROW } from "../tiers/tiers.ts";
-import { userClaudeMdFile, withSection } from "./general-rules/rules.ts";
+import { userClaudeMdFile } from "./general-rules/rules.ts";
 import { differencesOf, setupWrite } from "./setup-command/diff.ts";
 import {
 	GENERAL_RULES_ID,
 	generalDifference,
+	generalText,
 } from "./setup-command/general-rules.ts";
 import { NO, type ToolsIo, YES } from "./setup-command/optional/io.ts";
 import { toolsPart } from "./setup-command/optional/part.ts";
@@ -133,8 +134,12 @@ const generalReport = async (
 	path: string,
 	held: string | undefined,
 ): Promise<string> => {
+	const text = await generalText((q, options) => $.ui.ask(q, options), held);
+	if (text === undefined) {
+		return `Nothing was written to ${path}: the question was dismissed.`;
+	}
 	try {
-		await $.fs.write(path, withSection(held));
+		await $.fs.write(path, text);
 		return `Wrote ${path}.`;
 	} catch (error) {
 		return `Could not write ${path} (${String(error)}).`;

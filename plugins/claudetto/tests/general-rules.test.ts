@@ -1,9 +1,8 @@
+// The general rules reach a session only from the user's `CLAUDE.md`, where `/claudetto:setup` writes them.
+
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import {
-	GENERAL_RULES,
-	GENERAL_SECTION,
-} from "../src/blocks/general-rules/rules.ts";
+import { GENERAL_RULES } from "../src/blocks/general-rules/rules.ts";
 import { sessionStart, sessionStartStubs } from "./session-start-support.ts";
 
 const USER_MD = "/home/u/.claude/CLAUDE.md";
@@ -25,34 +24,22 @@ const lab = (on: On, userMd: string | undefined): void => {
 	sessionStartStubs(on, "/repo");
 };
 
-const start = (
-	$: Engine,
-	source: "startup" | "clear" | "compact" = "startup",
-) => sessionStart($, "/repo", source);
-
-test("a session whose user `CLAUDE.md` lacks the section gets the general rules", async ($: Engine, on: On) => {
+test("no session start, `clear`, or `compact` adds the rules text, with or without a user `CLAUDE.md`", async ($: Engine, on: On) => {
 	lab(on, "# Mine\n");
 
-	expect((await start($)).additionalContext).toEqual([GENERAL_RULES]);
+	const startup = await sessionStart($, "/repo", "startup");
+	const clear = await sessionStart($, "/repo", "clear");
+	const compact = await sessionStart($, "/repo", "compact");
+
+	expect(startup.additionalContext ?? []).not.toContain(GENERAL_RULES);
+	expect(clear.additionalContext ?? []).not.toContain(GENERAL_RULES);
+	expect(compact.additionalContext ?? []).not.toContain(GENERAL_RULES);
 });
 
-test("a session with no user `CLAUDE.md` gets the general rules", async ($: Engine, on: On) => {
+test("a session with no user `CLAUDE.md` gets no rules text", async ($: Engine, on: On) => {
 	lab(on, undefined);
 
-	expect((await start($)).additionalContext).toEqual([GENERAL_RULES]);
-});
+	const out = await sessionStart($, "/repo", "startup");
 
-test("`clear` and `compact` add the rules again", async ($: Engine, on: On) => {
-	lab(on, undefined);
-
-	expect((await start($, "clear")).additionalContext).toEqual([GENERAL_RULES]);
-	expect((await start($, "compact")).additionalContext).toEqual([
-		GENERAL_RULES,
-	]);
-});
-
-test("a user `CLAUDE.md` that holds the marked section adds nothing, since the session reads the rules there", async ($: Engine, on: On) => {
-	lab(on, `# Mine\n\n${GENERAL_SECTION}\n`);
-
-	expect((await start($)).additionalContext ?? []).toEqual([]);
+	expect(out.additionalContext ?? []).not.toContain(GENERAL_RULES);
 });

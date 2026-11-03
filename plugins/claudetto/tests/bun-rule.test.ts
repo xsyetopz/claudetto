@@ -1,7 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { BUN_RULE } from "../src/blocks/bun-rule/block.ts";
-import { GENERAL_RULES } from "../src/blocks/general-rules/rules.ts";
 import { sessionStart, sessionStartStubs } from "./session-start-support.ts";
 
 const CWD = "/repo";
@@ -19,11 +18,10 @@ const start = (
 	source: "startup" | "clear" | "compact" = "startup",
 ) => sessionStart($, CWD, source);
 
-/** The texts a start adds besides the general rules, which every session gets from their own block. */
+/** The texts a start adds. */
 const added = (out: {
 	additionalContext?: readonly string[];
-}): readonly string[] =>
-	(out.additionalContext ?? []).filter((text) => text !== GENERAL_RULES);
+}): readonly string[] => out.additionalContext ?? [];
 
 test("a folder with `package.json` and `bun.lock` adds the `bun` text", async ($: Engine, on: On) => {
 	lab(on, ["package.json", "bun.lock"]);
