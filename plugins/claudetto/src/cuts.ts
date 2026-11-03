@@ -16,7 +16,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 25_067;
+export const SHIPPED_TOTAL = 24_922;
 
 /**
  * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
@@ -24,7 +24,7 @@ export const SHIPPED_TOTAL = 25_067;
  * the Explore and Plan denies and the `Agent` denies with `agent listing` 182 each, the git switches with `handoff context` 27,
  * `main agent body` with `output style` -40, and 48 among the plugin pieces, which leaves about 47 of higher order.
  */
-export const UNEXPLAINED_RESIDUAL = 1797;
+export const UNEXPLAINED_RESIDUAL = 1805;
 
 export const SHIPPED_TOOL_COUNT = 8;
 
@@ -38,7 +38,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// Names only leave the deferred list. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68.
 	{ name: "deferred tool denies", chars: 24 },
 	// Read: the shipped arm with the `tool-describe` block detached from the catalog, less the shipped arm. Counts `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch`, 2947 of it for the first three.
-	{ name: "tool texts", chars: 9615 },
+	{ name: "tool texts", chars: 9653 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "docs skill", chars: -71 },
@@ -50,11 +50,11 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	},
 	{ name: "idleCompaction off", chars: 0 },
 	// The default body it replaces is the one the shipped settings already shortened.
-	{ name: "main agent body", chars: -1881 },
+	{ name: "main agent body", chars: -1790 },
 	// Takes the memory section out of the default body, so it reads only with `agents/main.md` moved aside.
 	{ name: "auto memory off", chars: 2138 },
 	// The four agents are delegation targets, so the harness lists them in the first message.
-	{ name: "agent listing", chars: -726 },
+	{ name: "agent listing", chars: -718 },
 	{ name: "handoff context", chars: -940 },
 	// A deferred tool adds its name to the tool list and an MCP instructions block to the same message.
 	{ name: "handoff tool listing", chars: -235 },

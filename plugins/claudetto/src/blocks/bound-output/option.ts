@@ -1,6 +1,6 @@
 import type { PluginOptions } from "claude-code";
 
-/** About 2,000 tokens: room for a runner's banner, its summary, and a few failures, and far under a 100,000-character log. */
+/** A chosen cap: room for a runner's banner, its summary, and a few failures. */
 export const DEFAULT_OUTPUT_CHARS = 8000;
 
 /** `0` is off; an unset or invalid value is the default. */

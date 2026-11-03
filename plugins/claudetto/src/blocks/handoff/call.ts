@@ -65,7 +65,7 @@ export const handOff = async (
 	input: Readonly<Record<string, unknown>>,
 ): Promise<string> => {
 	if (handingOff) {
-		return "A handoff is already in progress. Do nothing more.";
+		return "A handoff is already in progress. End your turn.";
 	}
 	const read = fieldsOf(input);
 	if ("missing" in read) {
@@ -91,5 +91,5 @@ export const handOff = async (
 		}
 	});
 	await endTurn(session);
-	return `The handoff is saved to \`${path}\`. The session clears when this turn ends. Do nothing more.`;
+	return `The handoff is saved to \`${path}\`. The session clears when this turn ends. End your turn.`;
 };

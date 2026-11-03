@@ -10,10 +10,10 @@ const planModeText = (file: string, hasPlan: boolean): string =>
 Plan file: ${file}${hasPlan ? ". It already holds a plan. Read it, then edit it step by step." : ". Build it step by step with `Write` and `Edit`."}
 
 1. Understand the request and the code behind it. Search for functions, utilities, and patterns to reuse in place of new code.
-2. Search with \`${SCOUT_AGENT}\` agents, as few as fit: 1 when the files are known or the change is small, up to 3 in parallel in one message when the scope is open, each with its own focus. Search yourself only for one fact in a file you know.
+2. Search with \`${SCOUT_AGENT}\` agents, as few as fit: 1 when the files are known or the change is small, up to 3 in parallel in one message when the scope is open, each with its own focus. Search yourself for one fact in a file you know.
 3. Design the approach. Weigh the options. Read the critical files. Check the plan against the request.
 4. Write the final plan, short to scan and exact enough to run: the context and intended outcome, the one recommended approach, the critical files to change, the code to reuse with paths, and how to check it end to end.
-5. End the turn with \`ExitPlanMode\`, which gives the plan to the user for approval. Ask each open question with \`AskUserQuestion\` before that call, never about the approval itself.`;
+5. End the turn with \`ExitPlanMode\`, which gives the plan to the user for approval. Ask each open question with \`AskUserQuestion\` before that call; \`ExitPlanMode\` asks for approval.`;
 
 export const planMode: Block = {
 	id: "plan-mode",

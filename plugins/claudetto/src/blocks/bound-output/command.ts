@@ -1,4 +1,8 @@
-/** Each pattern starts a command segment, so `echo bun test` and `grep make` do not match. */
+/**
+ * Each pattern starts a command segment, so `echo bun test` and `grep make` do not match.
+ * The list is a choice of runners. Their subcommands were read on 2026-11-03 from `cargo --list`, `swift build --help`,
+ * `bun --help`, `npm help`, `xcodebuild -usage`, the `go`, Maven, Gradle, `pnpm`, Yarn, and TypeScript docs, and `nexte.st`.
+ */
 const RUNNERS: readonly RegExp[] = [
 	/^bun\s+(?:run\s+)?(?:test|build|lint|check|typecheck)\b/,
 	/^just\s+(?:check|test|lint|build|typecheck)\b/,

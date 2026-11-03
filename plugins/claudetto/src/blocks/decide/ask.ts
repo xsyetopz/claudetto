@@ -59,6 +59,7 @@ export const askRequest = (
 			},
 		]),
 	);
+	// `choice` and `noul` are question types of https://docs.typesafe.ai/api/system-one.md.
 	const asked = picked.flatMap(({ q, i }) => [
 		[
 			`pick_${i}`,
@@ -101,6 +102,7 @@ export const sureAnswer = (
 	return pick;
 };
 
+/** A `choice` answer holds `choice` and `confidence`; a `noul` answer holds `noul`, the P(yes) (https://docs.typesafe.ai/api/system-one.md). */
 const asAnswer = (value: unknown): Answer | undefined => {
 	if (!isRecord(value)) {
 		return undefined;

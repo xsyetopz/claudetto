@@ -136,15 +136,15 @@ const WEEK = (percentUsed: number) => ({
 });
 
 for (const share of [90, 99]) {
-	test(`a prompt at a seven-day share of ${share}% tells the session to start no fan-out and no paid run, and names the share`, async ($: Engine, on: On) => {
+	test(`a prompt at a seven-day share of ${share}% tells the session to work in the main thread and use free evals, and names the share`, async ($: Engine, on: On) => {
 		lab(on, WEEK(share));
 
 		const out = await $.prompt.submit(PROMPT);
 
 		const text = (out.context ?? []).join("\n");
 		expect(text).toContain(`${share}%`);
-		expect(text).toContain("no subagent fan-out");
-		expect(text).toContain("no paid eval run");
+		expect(text).toContain("Work in the main thread");
+		expect(text).toContain("use free evals");
 		expect(text).toContain("more than 1%");
 	});
 }
