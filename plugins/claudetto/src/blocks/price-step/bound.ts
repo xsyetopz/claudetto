@@ -23,6 +23,10 @@ const promptOf = (usage: TurnUsage): number =>
 	usage.cache_creation_input_tokens +
 	usage.output_tokens;
 
+/** Whether a step's results can be withheld at all, from the model the request names, which may be the `haiku` alias. */
+export const boundable = (model: string): boolean =>
+	model === "haiku" || model.startsWith(HAIKU_MODEL);
+
 /** Bounds a result of `chars` against the step that made the call, after the `passed` tokens of that step's results that went through. */
 export const boundOf = (
 	usage: TurnUsage | null,
