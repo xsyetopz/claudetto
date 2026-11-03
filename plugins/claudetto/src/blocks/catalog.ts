@@ -2,6 +2,7 @@ import type { On, PluginOptions } from "claude-code";
 import { agentOffer, attachAgentOffer } from "./agent-offer/block.ts";
 import type { Block, BlockContext } from "./block.ts";
 import { attachBoundOutput, boundOutput } from "./bound-output/block.ts";
+import { attachBunRule, bunRule } from "./bun-rule/block.ts";
 import { attachClassify, classifyBlock } from "./classify/block.ts";
 import { attachCompaction, compaction } from "./compaction/block.ts";
 import { attachConfine, confine } from "./confine/block.ts";
@@ -40,6 +41,7 @@ export const CATALOG: readonly Block[] = [
 	versionFloor,
 	hygiene,
 	missingTool,
+	bunRule,
 	context7,
 	classifyBlock,
 	planMode,
@@ -68,6 +70,7 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachVersionFloor(on, context);
 	attachHygiene(on, context);
 	attachMissingTool(on, context);
+	attachBunRule(on, context);
 	attachContext7(on, context);
 	attachClassify(on, context);
 	attachPlanMode(on, context);
