@@ -8,7 +8,7 @@ export interface Rule {
 	/** The consent-bar slot of a soft rule, which the frame reads to decide what the user must name. */
 	readonly mustName?: string;
 	readonly text: string;
-	/** Built-in rules of `2.1.314` this rule replaces. */
+	/** Built-in rule or frame entries of `2.1.317` this rule replaces. */
 	readonly covers: readonly string[];
 }
 
@@ -211,7 +211,7 @@ export const ALLOW_RULES: readonly Rule[] = [
 	},
 ];
 
-/** Every other built-in fact is "None configured", which a field left out already means. */
+/** Replacing `environment` drops each built-in entry left out here; most of them read "None configured", which a field left out already means. */
 const TRUST_ENTRIES = [
 	"**Trusted internal domains**: The host of each remote of the trusted repo, and the public registry of each declared dependency.",
 	"**Sensitive remote targets**: Any host, namespace, or environment whose name carries `prod` or `production`.",

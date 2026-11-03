@@ -1,6 +1,7 @@
 import type { HookFor, On } from "claude-code";
 import type { Block, BlockContext } from "../block.ts";
 
+// The scopes, the layout, and the closing rule are the author's choices; the file names and `paths` frontmatter are the engine's.
 export const INTERVIEW_TEXT = `Write this project's memory files with the user, through an interview.
 
 1. Read the repository, its \`CLAUDE.md\`, \`AGENTS.md\`, \`CLAUDE.local.md\`, and \`.claude/rules/\`, and also \`~/.claude/CLAUDE.md\` and \`~/.claude/rules/\`.

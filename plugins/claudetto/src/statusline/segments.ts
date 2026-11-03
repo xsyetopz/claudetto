@@ -102,7 +102,7 @@ export const contextText = ({ input, paint }: Ctx): Text => {
 		.join(" ");
 };
 
-/** The dollars are a client-side list price, so a login that reports a subscription window did not pay them. */
+/** The dollars are a client-side estimate, so the line hides them (a choice) when `rate_limits` reports a window. */
 const onSubscription = (input: Rec): boolean =>
 	LIMITS.some((key) => sub(sub(input, "rate_limits"), key) !== undefined);
 

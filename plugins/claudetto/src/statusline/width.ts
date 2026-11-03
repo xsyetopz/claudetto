@@ -2,6 +2,7 @@ import { ELLIPSIS } from "./icons.ts";
 
 const ESC = String.fromCharCode(27);
 const BEL = String.fromCharCode(7);
+// A CSI sequence is `ESC [`, parameter bytes 0x30-0x3F, intermediate bytes 0x20-0x2F, and a final byte 0x40-0x7E (ECMA-48 5th ed., 5.4); an OSC string ends with `ESC \` (ECMA-48 8.3.89) or with `BEL` (XTerm Control Sequences, patch 411).
 const CSI = `${ESC}\\[[0-?]*[ -/]*[@-~]`;
 const OSC = `${ESC}\\][^${BEL}${ESC}]*(?:${BEL}|${ESC}\\\\)`;
 const ESCAPE = new RegExp(`${CSI}|${OSC}`, "g");
@@ -23,7 +24,7 @@ export const clean = (text: string): string =>
 	text.replace(INVISIBLE, "").replace(BREAKS, " ").replace(SPACES, " ").trim();
 
 const columnsOf = (cluster: string): number => {
-	// The wider of the two readings: a terminal that draws an ambiguous glyph wide then never overflows, and one that draws it narrow only leaves a column free.
+	// The wider of the two readings of an East Asian Ambiguous glyph (UAX #11), a choice: a terminal that draws it wide never overflows, and one that draws it narrow only leaves a column free.
 	const narrow = globalThis.Bun.stringWidth(cluster, {
 		ambiguousIsNarrow: true,
 	});

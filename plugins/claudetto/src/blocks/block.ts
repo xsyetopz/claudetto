@@ -20,7 +20,7 @@ export interface Block {
 	readonly id: string;
 	readonly kind: BlockKind;
 	readonly routes: readonly Route[];
-	/** The lowest Claude Code version whose routes the block's lab cases pin. */
+	/** The Claude Code version the block is held to: the floor the author chose (`MINIMUM_VERSION`), not the first release that holds its routes. */
 	readonly needs: string;
 }
 
