@@ -16,7 +16,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. Read on `2.1.317` with `just inventory`. */
-export const SHIPPED_TOTAL = 25_028;
+export const SHIPPED_TOTAL = 25_279;
 
 /**
  * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
@@ -62,7 +62,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// A deferred tool adds its name to the tool list and an MCP instructions block to the same message.
 	{ name: "handoff tool listing", chars: -235 },
 	// A style adds to the body instead of replacing it, and its reminder repeats on each user message.
-	{ name: "output style", chars: -1844 },
+	{ name: "output style", chars: -2095 },
 	// Setup writes the suite, but only the classifier call carries the lists.
 	{ name: "autoMode lists", chars: 0 },
 	// Repays its text: sandbox auto-allow precedes the classifier, so a sandboxed `Bash` call pays none.

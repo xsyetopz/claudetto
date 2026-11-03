@@ -477,6 +477,17 @@ Session `fb76fbd2` spawned 28 subagents as `claudetto:main`, against 63 `Hephaes
 - [ ] 43.4 Run `just check`, `just inventory`, and `just capture --arm plugin --shipped` in `-p` and `--interactive`, and report the root body and listing characters against the `0.2.0`-style `agent` route, with each command.
 - [ ] 43.5 Ask the user whether to add a worker agent for multi-step work with its own check, which `Hephaestus` does not take, with its listing cost measured by `just capture` and the fold-in criteria of `https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop`: context bloat, parallel fresh contexts, and conflicting instructions.
 
+## 44. An Open Item Names Its Blocker
+
+Session `fb76fbd2` ended a report on 2026-11-03 with a "Still open:" list of two gaps it could fix itself, the classifier's contradictory denials and the hang of `just capture --interactive`, and handed the user a next step. Both were fixed in `46e9782b` and `61d525bd` once the user objected. The user chose on 2026-11-03 to word the rule in `Concise.md`, test it with an eval case first, and keep a `Stop` hook as the fallback.
+
+- [x] 44.1 Add the case of "An Open Item Names Its Blocker" to `tools/evals/conduct/replies.ts`, with a fixture of two defects, one fixable with the session's tools and one whose check is a paid run, and a tree grader. Run `tools/evals/__tests__/conduct.spec.ts` before the case, where it fails and names the rule, and after it.
+  Done 2026-11-03: the case scores `parse.ts` and `rank.spec.ts` with a tree grader and a reply grader; its scenario describes the fixture, whose files the run of 44.3 seeds. `conduct.spec.ts` failed with "An Open Item Names Its Blocker: no eval case" before it, and passed 6 of 6 after.
+- [x] 44.2 Add to `<reporting_results>` of `output-styles/Concise.md`: "An item you can still do with your tools is work: do it before you end. End with an open item only when its blocker lies outside your reach, such as a denial, a paid run that waits for approval, or a step only the user can take, and name its blocker." Run `just check` and `just inventory`, and report the change in request characters.
+  Done 2026-11-03: `just check` passed with 1805, 347, and 42 tests. `just capture --arm plugin --shipped` reads 25,279, 251 more than 25,028, and 32,993 with `--interactive`; each settings row of `docs/surfaces.md` was read again and moved by the same 251. `SHIPPED_TOTAL` and the `output style` row of `cuts.ts` hold it, and `just inventory` holds every row.
+- [ ] 44.3 Ask the user before running the case, 3 runs on the old and the new text on `claude-opus-5-5`, about 0.44M tokens and 0.014% of the 3.20B weekly limit, estimated from the 72k tokens per session of 41.3. Report the passes per arm, the tokens, and the weekly share.
+- [ ] 44.4 Only if the new text fails the case: plan a `classic.Stop` check in `run-limits`, and ask the user before writing it.
+
 ## Workflow follow-up
 
 - Move each `ISSUES.md` entry to "Fixed" with the commit that fixes it, as its task closes.

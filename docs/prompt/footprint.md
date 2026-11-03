@@ -2,7 +2,7 @@
 
 A figure here is a reading of `just capture` on Claude Code `2.1.317`. It runs `claude -p` against a local fake Messages API and counts the characters of the first request. No model is called and no provider is reached. The unit is characters, not tokens. `docs/surfaces.md` holds the method and the request-size tables for settings.
 
-The totals: `just capture --arm plugin --shipped` reads 25,028 and `just capture --arm plain` reads 46,084. With `--interactive` they read 32,742 and 53,916. The working folder path is 34 characters under `-p` and 42 with `--interactive`.
+The totals: `just capture --arm plugin --shipped` reads 25,279 and `just capture --arm plain` reads 46,084. With `--interactive` they read 32,993 and 53,916. The working folder path is 34 characters under `-p` and 42 with `--interactive`.
 
 ## Main Prompt
 
@@ -27,7 +27,7 @@ A rule in `main.md` is in every request of every session, so it earns its place 
 
 ## Output Style
 
-`plugins/claudetto/output-styles/Concise.md` is 1,896 characters by `wc -m`. In the shipped arm it adds 1,906 to the request: the total reads 23,122 with `outputStyle` removed from the shipped settings, and 25,028 with it. The style body goes in the first system message of `messages`, under a header, so it is not part of `system`.
+`plugins/claudetto/output-styles/Concise.md` is 2,147 characters by `wc -m`. In the shipped arm it adds 2,157 to the request: the total reads 23,122 with `outputStyle` removed from the shipped settings, and 25,279 with it. The style body goes in the first system message of `messages`, under a header, so it is not part of `system`.
 
 Its five sections, in characters of text between the tags (`awk`):
 
@@ -102,6 +102,6 @@ A prompt edit is a pure function of its inputs: no time, no counter, and no usag
 
 ## Empty Interactive Session by Owner
 
-`just capture --arm plugin --shipped --interactive` reads `system` 5,343 with blocks of 70, 57, and 5,216, `tools` 7,114 for 6 tools (`Bash`, `Edit`, `Read`, `ToolSearch`, `DeferredToolPlaceholder`, `Write`), and `messages` 12,361, in a total of 32,742. The `plain` arm reads `system` 6,185 with blocks of 70, 57, and 6,058, `tools` 33,674 for 13 tools, and `messages` 11,648, in a total of 53,916.
+`just capture --arm plugin --shipped --interactive` reads `system` 5,343 with blocks of 70, 57, and 5,216, `tools` 7,114 for 6 tools (`Bash`, `Edit`, `Read`, `ToolSearch`, `DeferredToolPlaceholder`, `Write`), and `messages` 12,612, in a total of 32,993. The `plain` arm reads `system` 6,185 with blocks of 70, 57, and 6,058, `tools` 33,674 for 13 tools, and `messages` 11,648, in a total of 53,916.
 
 The owner of each piece follows from the removal readings in `docs/surfaces.md`: Claude Code owns the 6 tools and the first two `system` blocks, the shipped settings own the sandbox, deny, skill, and plugin pieces, and claudetto owns `agents/main.md`, `Concise.md`, and the tool descriptions above. A `/context all` reading in token units needs a live session with a model and is not part of this page.

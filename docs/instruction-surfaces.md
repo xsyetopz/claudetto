@@ -7,7 +7,7 @@ claudetto writes text on several surfaces. They differ in when the harness loads
 Put a rule on the cheapest surface that the harness loads whenever the rule applies, and never on a surface the user owns.
 
 - The main thread's agent body replaces the default body of `system` (`docs/prompt/overrides.md`). It is in every request of every session, so a rule there is paid even in a session that never needs it. In the shipped arm the body is 5,216 of the 5,352 characters of `system`, and `plugins/claudetto/agents/main.md` is 5,292 characters by `wc -m`.
-- An output style adds text to the first system message in `messages`. `plugins/claudetto/output-styles/Concise.md` is 1,896 characters by `wc -m` and adds 1,906 to the shipped request.
+- An output style adds text to the first system message in `messages`. `plugins/claudetto/output-styles/Concise.md` is 2,147 characters by `wc -m` and adds 2,157 to the shipped request.
 - An agent body is read only when that agent runs. `agents/Artemis.md` is 1,776 characters, `Athena.md` 2,899, `Hephaestus.md` 3,191, and `Hermes.md` 1,577.
 - A rule file with `paths` frontmatter is meant to load when a matching file is read. `plugins/claudetto/rules/claudetto-code.md` has that key. The load behavior is not measured here, because it needs a session that reads a file.
 

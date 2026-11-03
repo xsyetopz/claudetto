@@ -21,7 +21,7 @@ The `agent` setting makes an agent file the main thread, and the body of that fi
 | built-in `Proactive` | 47,607 | 5,973 | 11,467 |
 
 - A style swaps the first line of the default body for "You are an interactive agent that helps users according to your \"Output Style\"...", which grows the third `system` block from 5,799 to 5,837, and puts the style body under `# Output Style: NAME` in the first system message of `messages`.
-- Claudetto's `plugins/claudetto/output-styles/Concise.md` is 1,896 characters (`wc -m`). In the shipped arm it adds 1,906 to the request (`docs/surfaces.md`).
+- Claudetto's `plugins/claudetto/output-styles/Concise.md` is 2,147 characters (`wc -m`). In the shipped arm it adds 2,157 to the request (`docs/surfaces.md`).
 
 ## Built-in Agents
 

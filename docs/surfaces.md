@@ -100,27 +100,27 @@ Read with `just capture --arm plain --settings FILE`:
 
 `disableBundledSkills` alone raises the request by 11,029: `Workflow` inlines the workflow guidance that the skill listing no longer carries, so `tools` grows by 16,955 while `messages` falls by 5,926. With `Workflow` denied the growth has nowhere to land, so the two belong together. The twelve plugins off take 268 out of `messages`.
 
-In the shipped arm, removing `disableBundledSkills` from the shipped settings reads 30,350 (5,322 more than the 25,028 of the whole), and removing `enabledPlugins` reads 25,296 (268 more).
+In the shipped arm, removing `disableBundledSkills` from the shipped settings reads 30,601 (5,322 more than the 25,279 of the whole), and removing `enabledPlugins` reads 25,547 (268 more).
 
 ## The Shipped Arm
 
-`just capture --arm plugin --shipped` reads 25,028 characters: `system` 5,352 (blocks of 74, 62, and 5,216), `tools` 7,245 for 6 tools, and `messages` 11,788. That is 21,056 under the baseline. The same arm with `--interactive` reads 32,742, because the sandbox block, 6,675 characters of the first system message, appears only there.
+`just capture --arm plugin --shipped` reads 25,279 characters: `system` 5,352 (blocks of 74, 62, and 5,216), `tools` 7,245 for 6 tools, and `messages` 12,039. That is 20,805 under the baseline. The same arm with `--interactive` reads 32,993, because the sandbox block, 6,675 characters of the first system message, appears only there.
 
-Each piece removed from the shipped settings alone, read with `just capture --arm plugin --settings FILE` against the 25,028 whole:
+Each piece removed from the shipped settings alone, read with `just capture --arm plugin --settings FILE` against the 25,279 whole:
 
 | Piece removed from the shipped settings | Total | Piece adds or saves |
 | --- | --- | --- |
-| nothing | 25,028 | |
-| `outputStyle` | 23,122 | the style adds 1,906 |
-| `agent` | 23,238 | `agents/main.md` adds 1,790 over the default body it replaces |
-| `sandbox` | 17,808 | the sandbox settings add 7,220 |
-| `permissions.deny` | 32,687 | the deny list saves 7,659 |
-| `disableBundledSkills` | 30,350 | saves 5,322 |
-| `enabledPlugins` | 25,296 | saves 268 |
+| nothing | 25,279 | |
+| `outputStyle` | 23,122 | the style adds 2,157 |
+| `agent` | 23,489 | `agents/main.md` adds 1,790 over the default body it replaces |
+| `sandbox` | 18,059 | the sandbox settings add 7,220 |
+| `permissions.deny` | 32,938 | the deny list saves 7,659 |
+| `disableBundledSkills` | 30,601 | saves 5,322 |
+| `enabledPlugins` | 25,547 | saves 268 |
 
 ### Shipped Cuts
 
-`plugins/claudetto/src/cuts.ts` records each piece as a row read alone, so rows interact and do not match the table above. `tests/claudetto/cuts.test.ts` and `just inventory` hold the sum to the whole fall of 21,056 (46,084 less 25,028), with 1,805 characters of interaction that no row explains. A negative row is a piece the tree adds.
+`plugins/claudetto/src/cuts.ts` records each piece as a row read alone, so rows interact and do not match the table above. `tests/claudetto/cuts.test.ts` and `just inventory` hold the sum to the whole fall of 20,805 (46,084 less 25,279), with 1,805 characters of interaction that no row explains. A negative row is a piece the tree adds.
 
 | Row | Characters |
 | --- | --- |
