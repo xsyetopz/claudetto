@@ -3,6 +3,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Forwarded } from "../../../claudekit/api/split.ts";
 import { costOf } from "../../../claudekit/price/cost.ts";
+import { shareText, weeklyShare } from "../../../claudekit/price/share.ts";
 import { inlinePluginOptions } from "../../../claudekit/session/argv.ts";
 import type { CommandResult } from "../../../claudekit/session/command.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../../limits.ts";
@@ -13,9 +14,10 @@ import {
 	classifierMain,
 	parseClassifierArgs,
 	planClassifier,
+	priceLines,
 	reportLines,
 } from "../classifier/main.ts";
-import { armRequest, sessionUsd } from "../classifier/price.ts";
+import { armRequest, sessionTokens, sessionUsd } from "../classifier/price.ts";
 
 const FORWARDED: Forwarded = {
 	model: "claude-haiku-5-5",
@@ -119,6 +121,29 @@ describe("the classifier price", () => {
 				output_tokens: 2248,
 			}),
 			12,
+		);
+	});
+
+	test("counts every input token and every reply at its cap", () => {
+		const request = armRequest("sonnet");
+
+		expect(sessionTokens("sonnet")).toBe(Math.ceil(request.chars / 4) + 2248);
+	});
+
+	test("prints the weekly share of the planned tokens", () => {
+		const planned = planClassifier({
+			run: false,
+			arm: "sonnet",
+			runs: 2,
+			upstream: "",
+		});
+		const tokens = planned.length * sessionTokens("sonnet");
+
+		const last = priceLines(planned).at(-1);
+
+		expect(last).toContain(`${tokens.toLocaleString("en-US")} tokens`);
+		expect(last).toContain(
+			`${shareText(weeklyShare(tokens))} of the weekly limit`,
 		);
 	});
 });

@@ -42,6 +42,16 @@ export const armRequest = (arm: ClassifierArm): ArmRequest => {
 	};
 };
 
+/** The tokens one session of `arm` is estimated to spend, the unit the weekly limit counts. */
+export const sessionTokens = (arm: ClassifierArm): number => {
+	const request = armRequest(arm);
+	let tokens = 0;
+	for (const cap of request.outputTokens) {
+		tokens += Math.ceil(request.chars / CHARS_PER_TOKEN) + cap;
+	}
+	return tokens;
+};
+
 /** The dollars one session of `arm` is estimated to cost; the scripted agent is free. */
 export const sessionUsd = (arm: ClassifierArm): number => {
 	const request = armRequest(arm);

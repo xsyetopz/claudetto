@@ -77,6 +77,15 @@ describe("runAll weekly guard", () => {
 		await expect(run).rejects.toThrow("weekly limit");
 	});
 
+	// A default round costs about 5.7% of the week in tokens and 1.9% in dollars at $11.19 a percent.
+	test("refuses a default round at 95% used, since its tokens take more than the 5% left", async () => {
+		const root = await mkdtemp(path.join(tmpdir(), "round-"));
+
+		const run = runAll(root, never, { ...options, runs: 11, weeklyUsed: 95 });
+
+		await expect(run).rejects.toThrow("weekly limit");
+	});
+
 	test("goes on to the first call when the login reports no reading", async () => {
 		const root = await mkdtemp(path.join(tmpdir(), "round-"));
 
