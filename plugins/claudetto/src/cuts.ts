@@ -15,8 +15,8 @@ export interface Cut {
 	readonly cost?: CostReading;
 }
 
-/** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 25_314;
+/** The arm runs `planSetup`, so it carries the keys a user's settings carry. Read on `2.1.317` with `just inventory`. */
+export const SHIPPED_TOTAL = 25_358;
 
 /**
  * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
@@ -26,11 +26,13 @@ export const SHIPPED_TOTAL = 25_314;
  */
 export const UNEXPLAINED_RESIDUAL = 1805;
 
-export const SHIPPED_TOOL_COUNT = 8;
+/** The tools of the shipped arm's first request, `DeferredToolPlaceholder` among them: `just capture --arm plugin --shipped` on `2.1.317`, with and without `--interactive`. */
+export const SHIPPED_TOOL_COUNT = 6;
 
 export const SANDBOX_CHARS = 7220;
 
-export const CLASSIFIER_CALL_CHARS = 140_718;
+/** One classifier request of the default arm: `just capture --arm plain --classifier` on `2.1.317`, 34-character working folder path. The last system block carries the login name, so it differs between logins. */
+export const CLASSIFIER_CALL_CHARS = 141_962;
 
 export const SHIPPED_CUTS: readonly Cut[] = [
 	// `ScheduleWakeup` 4887 and `ReportFindings` 2178. `Workflow` reads 0 here, because `enableWorkflows: false` takes it out too.
@@ -38,9 +40,10 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// Names only leave the deferred list. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68.
 	{ name: "deferred tool denies", chars: 24 },
 	// Read: the shipped arm with the `tool-describe` block detached from the catalog, less the shipped arm. Counts `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch`, 2885 of it for the first three.
-	{ name: "tool texts", chars: 9591 },
+	{ name: "tool texts", chars: 9547 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
+	// `docs skill`, `setup command listing`, and `handoff command listing` were each read on `2.1.317` as the shipped arm with the piece moved aside in a clone, less the same arm with it.
 	{ name: "docs skill", chars: -71 },
 	// The window and the percentage move no request text, only the bill.
 	{

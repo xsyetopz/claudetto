@@ -28,6 +28,7 @@ export interface NeverDenyReading {
 	readonly why: string;
 }
 
+/** Each reading is `just capture --arm plain --deny NAME` on `2.1.317` against the baseline: `ToolSearch` loads 23 tools, `Skill` takes `Workflow` from 5,355 to 22,310, `Bash` falls out of the tool list. */
 export const NEVER_DENY: readonly NeverDenyReading[] = [
 	{
 		name: "ToolSearch",

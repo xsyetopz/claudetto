@@ -14,7 +14,10 @@ export interface BuiltinPlugin {
 	readonly why?: string;
 }
 
-/** A `false` for a plugin that did not load costs nothing; some load only on certain entrypoints. */
+/**
+ * A `false` for a plugin that did not load costs nothing; some load only on certain entrypoints.
+ * The `2.1.317` binary registers fourteen built-ins; `cc-plugin-privacy` is the one with no row, because a `false` for it moves the first request by 0 (`just capture --arm plain --settings FILE`).
+ */
 export const BUILTIN_PLUGINS: readonly BuiltinPlugin[] = [
 	// Reads only policy and trusted settings, so writing `false` would claim an effect we cannot have.
 	{

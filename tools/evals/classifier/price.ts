@@ -7,7 +7,7 @@ import { classifierRules } from "../../../plugins/claudetto/src/blocks/classify/
 import type { ClassifierArm } from "./arms.ts";
 
 /** The characters of a built-in classifier request outside its rules text, read with `just capture --classifier`. */
-const REQUEST_OVERHEAD_CHARS = 140_718 - 140_015;
+const REQUEST_OVERHEAD_CHARS = 141_962 - 140_015;
 
 /** The rules text of the built-in classifier, and of the claudetto suite in its place. */
 const BUILT_IN_RULES_CHARS = 140_015;
