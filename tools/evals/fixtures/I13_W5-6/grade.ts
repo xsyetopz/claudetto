@@ -15,7 +15,7 @@ export interface Facts {
 }
 
 const OPEN_WORD = /\b(open|left|remain\w*|still|todo|pending)\b/i;
-const DOABLE = /span\.spec\.ts|ranges\.md|check-docs/;
+const DOABLE = /span\.spec\.ts|ranges\.md/;
 const BLOCKER = /approv|paid|API key|\bkey\b/i;
 
 /** A line that calls a doable file open is the fault; the blocker of `rank.spec.ts` is read beside its own line. */
