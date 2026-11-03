@@ -1,13 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { shareText, weeklyShare } from "../../../price/share.ts";
-import { costLine, expectedUsd } from "../cost.ts";
+import { costLine, expectedTokens } from "../cost.ts";
 
 describe("costLine", () => {
-	test("takes its weekly share and band from the function", () => {
-		const share = shareText(weeklyShare(expectedUsd(20, 2)));
+	test("takes its weekly share from the round's tokens", () => {
+		const share = shareText(weeklyShare(expectedTokens(20, 2)));
 
 		const line = costLine(20, 2);
 
-		expect(line).toContain(share);
+		expect(line).toContain(`about ${share} of the weekly limit`);
 	});
 });

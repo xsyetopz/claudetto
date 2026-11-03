@@ -3,7 +3,7 @@ import path from "node:path";
 import { weeklyShare } from "../../price/share.ts";
 import { removeFolders } from "../../session/folders.ts";
 import { eachInOrder, mapInOrder } from "../fixture/ordered.ts";
-import { expectedUsd, FORK_USD } from "../plan/cost.ts";
+import { expectedTokens, FORK_USD } from "../plan/cost.ts";
 import { type Fork, plan } from "../plan/plan.ts";
 import type { Base } from "../transport/events.ts";
 import { measure } from "./measure.ts";
@@ -100,14 +100,13 @@ const roundIn = async (
 	o: Options,
 	made: string[],
 ): Promise<Round> => {
-	// The dearest end of the band, so a run that might not fit is not started on the hope that it does.
 	const tooDear = overWeekly(
 		weeklyShare(
-			expectedUsd(
+			expectedTokens(
 				o.baseOnly ? 0 : plan(o.runs, o.model, o.alt, o.sizes).length,
 				o.sizes.length,
 			),
-		).high,
+		),
 		o.weeklyUsed,
 	);
 	if (tooDear) {

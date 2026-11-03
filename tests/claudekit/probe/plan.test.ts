@@ -1,8 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { weeklyShare } from "../../../claudekit/price/share.ts";
 import {
+	BASE_TOKENS,
 	BASE_USD,
+	expectedTokens,
 	expectedUsd,
+	FORK_TOKENS,
 	FORK_USD,
 } from "../../../claudekit/probe/plan/cost.ts";
 import { envOf, plan } from "../../../claudekit/probe/plan/plan.ts";
@@ -124,7 +127,20 @@ describe("expectedUsd", () => {
 	test("a citable run of 20 forks stays inside the units of the plan that was approved", () => {
 		const usd = expectedUsd(20, 2);
 
-		expect(weeklyShare(usd).mid).toBeGreaterThan(0.1);
+		expect(weeklyShare(expectedTokens(20, 2))).toBeGreaterThan(0.1);
 		expect(usd).toBeLessThan(30.86);
+	});
+});
+
+describe("expectedTokens", () => {
+	test("adds the forks and the base sessions at their measured tokens", () => {
+		const tokens = expectedTokens(20, 1);
+
+		expect(tokens).toBe(20 * FORK_TOKENS + BASE_TOKENS);
+	});
+
+	// The citable 90k round of 2026-10-30 billed a base of 3,450,250 tokens and a mean fork of 8,156,977.
+	test("prices a default round of 22 forks and one base at more than 5% of the week", () => {
+		expect(weeklyShare(expectedTokens(22, 1))).toBeGreaterThan(5);
 	});
 });

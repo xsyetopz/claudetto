@@ -15,7 +15,7 @@ import {
 	isClassifierArm,
 } from "./arms.ts";
 import { CLASSIFIER_CASES, type ClassifierCase } from "./cases.ts";
-import { sessionUsd } from "./price.ts";
+import { sessionTokens, sessionUsd } from "./price.ts";
 import {
 	type ClassifierOutcome,
 	type ClassifierSession,
@@ -108,18 +108,25 @@ export const planClassifier = (options: Options): readonly Planned[] =>
 export const priceLines = (planned: readonly Planned[]): readonly string[] => {
 	const arms = CLASSIFIER_ARMS.map((arm) => {
 		const sessions = planned.filter((one) => one.session.arm === arm).length;
-		return { arm, sessions, usd: sessions * sessionUsd(arm) };
+		return {
+			arm,
+			sessions,
+			usd: sessions * sessionUsd(arm),
+			tokens: sessions * sessionTokens(arm),
+		};
 	}).filter((one) => one.sessions > 0);
 	let total = 0;
+	let tokens = 0;
 	for (const one of arms) {
 		total += one.usd;
+		tokens += one.tokens;
 	}
 	return [
 		...arms.map(
 			(one) =>
 				`arm ${one.arm}: ${one.sessions} sessions, at most $${one.usd.toFixed(2)}`,
 		),
-		`total: at most $${total.toFixed(2)}, ${shareText(weeklyShare(total))} of the weekly limit`,
+		`total: at most $${total.toFixed(2)} and ${tokens.toLocaleString("en-US")} tokens, ${shareText(weeklyShare(tokens))} of the weekly limit`,
 	];
 };
 

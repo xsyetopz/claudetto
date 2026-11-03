@@ -76,7 +76,7 @@ This is not a `/usage` paste. `sessionCost` of the pre-restart plugin, which the
 
 ## The Rate from Whole-Account Readings, 2026-11-02
 
-Both rates above set one session's cost against a meter that counts the whole account, so both run high. `METER_READINGS` of `claudekit/price/share.ts` now prices every call of the account over the meter's own span, with `claudekit/price/table.ts`, and the `claude-opus-5` calls are priced at the `claude-opus-5-5` row:
+Both rates above set one session's cost against a meter that counts the whole account, so both run high. The readings below price every call of the account over the meter's own span, with `claudekit/price/table.ts`, and the `claude-opus-5` calls are priced at the `claude-opus-5-5` row. `weeklyShare` of `claudekit/price/share.ts` no longer uses them: the limit is spent in tokens, so it counts tokens against the 3.20B of the week of 2026-10-27.
 
 | Date | Span | Dollars | Meter |
 | --- | --- | --- | --- |
