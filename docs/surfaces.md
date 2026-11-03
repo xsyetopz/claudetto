@@ -529,7 +529,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,084 baseline less every cut in it has to equal the 24,961 the shipped arm records, so a cut that
+46,084 baseline less every cut in it has to equal the 25,067 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -562,7 +562,7 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
 | The fall that no row above explains (`unexplained residual`) | 1,797 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
-The rows sum to 21,123, which is 46,084 less the 24,961 the shipped arm records. A negative row is a piece
+The rows sum to 21,017, which is 46,084 less the 25,067 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
@@ -584,7 +584,7 @@ the next removal. The readings, each as the arm without the piece less 27,960, e
 | `agent listing` | 27,234 | −726 | the four agent files moved aside |
 | `handoff context` | 27,020 | −940 | the `prompt.context` answer of the `handoff` block left without its block |
 | `handoff tool listing` | 27,725 | −235 | the `session.start` registration out |
-| `output style` | 26,222 | −1,738 | `outputStyle` out of the settings |
+| `output style` | 26,222 | −1,844 | `outputStyle` out of the settings. The positive rewrite of 2026-11-03 adds 106, read with `just inventory` |
 | `sandbox block` | 20,740 | −7,220 | `sandbox` out of the settings |
 | `setup command listing` | 27,912 | −48 | `commands/setup.md` moved aside |
 | `handoff command listing` | 27,899 | −61 | `commands/handoff.md` moved aside |

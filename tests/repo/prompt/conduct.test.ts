@@ -140,3 +140,26 @@ describe("the content events", () => {
 		expect(worded.flat()).toEqual([]);
 	});
 });
+
+/** A rule that names the act to avoid puts that act in the reader's mind, so each style rule names the act to take. */
+const NEGATIVE_WORD =
+	/\b(never|no|not|don't|do not|without|avoid|nothing|none|nor)\b/gi;
+
+describe("the output style", () => {
+	test("says what to do, with no `never`, `no`, `not`, `without`, or `avoid`", async () => {
+		const files = await filesIn(STYLES);
+		const hits = await Promise.all(
+			files.map(async (file) =>
+				(await readFile(join(ROOT, file), "utf8"))
+					.split("\n")
+					.flatMap((line, index) =>
+						[...line.matchAll(NEGATIVE_WORD)].map(
+							(match) => `${file}:${index + 1} ${match[0]}`,
+						),
+					),
+			),
+		);
+
+		expect(hits.flat()).toEqual([]);
+	});
+});

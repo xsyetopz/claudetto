@@ -220,11 +220,11 @@ const WORDING_CASES: readonly ConductCase[] = [
 		],
 	},
 	{
-		requirement: "The Output Style Names the Prose Forms to Avoid",
+		requirement: "The Output Style Names the Sentence Form to Use",
 		file: STYLE_FILE,
 		codes: ["W5-16"],
 		section: "sentence_style",
-		rule: "The actor is the subject: no inanimate subject with an animate verb.",
+		rule: "The actor is the subject, with its own verb.",
 		scenario:
 			"The session reports that a check failed on a missing case, which task 4.3 adds.",
 		passes: '"The check shows a gap. Task 4.3 fixes it."',
