@@ -4,6 +4,7 @@ import { type Engine, expect, test } from "claude-code/testing";
 const TIP = "b".repeat(40);
 const BASE = "a".repeat(40);
 const WORKTREE = "/repo/.claude/worktrees/agent-a1";
+const ENTERED = "/repo/.claude/worktrees/probe";
 
 interface Git {
 	readonly tip?: string;
@@ -49,7 +50,12 @@ const lab = (on: On, git: Git = {}): { logs: string[]; runs: string[][] } => {
 		return { value: undefined };
 	});
 	on("classic.SubagentStart", () => ({}));
-	on("classic.PostToolUse", () => ({}));
+	on("tool.call", (_$, e) => ({
+		result:
+			e.tool === "EnterWorktree"
+				? { worktreePath: ENTERED, worktreeBranch: "worktree-probe" }
+				: {},
+	}));
 	on("process.run", (_$, e) => {
 		runs.push([...e.argv]);
 		return answer(git, e.argv);
@@ -110,33 +116,28 @@ test("a `git` that fails leaves the agent's start as it was", async ($: Engine, 
 
 test("`EnterWorktree` into a worktree that lacks the tip is told the same", async ($: Engine, on: On) => {
 	const { logs } = lab(on);
-	const path = "/repo/.claude/worktrees/probe";
 
-	const out = await $.classic.PostToolUse({
-		tool_name: "EnterWorktree",
-		tool_input: { name: "probe" },
-		tool_response: { worktreePath: path, worktreeBranch: "worktree-probe" },
+	const out = await $.tool.call({
+		tool: "EnterWorktree",
 		tool_use_id: "t1",
-		cwd: path,
+		name: "probe",
 	});
 
-	const text = (out.additionalContext ?? []).join("\n");
+	const text = (out.context ?? []).join("\n");
 	expect(text).toContain("`git merge --ff-only bbbbbbb`");
 	expect(logs).toHaveLength(1);
-	expect(logs[0]).toContain(path);
+	expect(logs[0]).toContain(ENTERED);
 });
 
 test("another tool's result is left as it was", async ($: Engine, on: On) => {
 	const { runs } = lab(on);
 
-	const out = await $.classic.PostToolUse({
-		tool_name: "Edit",
-		tool_input: { file_path: "/repo/a.ts" },
-		tool_response: {},
+	const out = await $.tool.call({
+		tool: "Read",
 		tool_use_id: "t1",
-		cwd: WORKTREE,
+		file_path: "/repo/a.ts",
 	});
 
-	expect(out.additionalContext ?? []).toEqual([]);
+	expect(out.context ?? []).toEqual([]);
 	expect(runs).toEqual([]);
 });

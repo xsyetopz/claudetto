@@ -1,30 +1,17 @@
-import type { On } from "claude-code";
+import type { On, SessionCompactTrigger, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { HANDOFF_DIR, parseTail } from "../../src/blocks/handoff/handoff.ts";
+import { HANDOFF_DIR, readMessages } from "../../src/blocks/handoff/handoff.ts";
 import { sourceLine } from "../../src/blocks/handoff/read-back.ts";
-import { said, tailOf, turn } from "./transcript.ts";
+import { answered, type Line, logInto, said, used } from "./transcript.ts";
 
 const TRANSCRIPT = "/tmp/transcript.jsonl";
 
 const NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
 
-const WITH_WORK = tailOf(
+const WITH_WORK: readonly SessionMessage[] = [
 	said("user", "Rename `fetchUser` to `getUser`."),
-	turn("assistant", [
-		{ type: "text", text: "Renaming it." },
-		{ type: "tool_use", name: "Edit", input: { file_path: "src/api.ts" } },
-	]),
-);
-
-const ran = (stdout: string, exitCode = 0) => ({
-	value: {
-		exitCode,
-		stdout,
-		stderr: "",
-		isStdoutTruncated: false,
-		isStderrTruncated: false,
-	},
-});
+	used("Renaming it.", "Edit", { file_path: "src/api.ts" }),
+];
 
 const sink = (on: On): readonly { path: string; text: string }[] => {
 	const files: { path: string; text: string }[] = [];
@@ -35,23 +22,20 @@ const sink = (on: On): readonly { path: string; text: string }[] => {
 	});
 	on("ui.log", () => ({ value: undefined }));
 	on("classic.SessionEnd", () => ({}));
-	on("classic.PreCompact", () => ({}));
+	on("session.compact", () => ({ skip: "core ran" }));
 	return files;
 };
 
-const lab = (
-	on: On,
-	stdout: string,
-): readonly { path: string; text: string }[] => {
-	on("process.run", () => ran(stdout));
-	return sink(on);
-};
-
-const compact = ($: Engine) =>
-	$.classic.PreCompact({
-		trigger: "auto",
-		custom_instructions: null,
-		transcript_path: TRANSCRIPT,
+const compact = (
+	$: Engine,
+	messages: readonly SessionMessage[],
+	trigger: SessionCompactTrigger = "auto",
+	agentId?: string,
+) =>
+	$.session.compact({
+		trigger,
+		messages: [...messages],
+		...(agentId === undefined ? {} : { agentId }),
 	});
 
 // The event carries the path resolved against the working directory, so the folder matches inside it.
@@ -62,14 +46,18 @@ const handoffs = (
 		file.path.replaceAll("\\", "/").includes(`/${HANDOFF_DIR}/`),
 	);
 
-const writtenOn = async ($: Engine, on: On, stdout: string) => {
-	const files = lab(on, stdout);
-	await compact($);
+const writtenOn = async (
+	$: Engine,
+	on: On,
+	messages: readonly SessionMessage[],
+) => {
+	const files = sink(on);
+	await compact($, messages);
 	return handoffs(files);
 };
 
 test("a typed clear leaves no handoff file", async ($: Engine, on: On) => {
-	const files = lab(on, WITH_WORK);
+	const files = sink(on);
 
 	await $.classic.SessionEnd({ reason: "clear", transcript_path: TRANSCRIPT });
 
@@ -77,7 +65,7 @@ test("a typed clear leaves no handoff file", async ($: Engine, on: On) => {
 });
 
 test("a session that ends for another reason leaves none", async ($: Engine, on: On) => {
-	const files = lab(on, WITH_WORK);
+	const files = sink(on);
 
 	await $.classic.SessionEnd({ reason: "logout", transcript_path: TRANSCRIPT });
 
@@ -85,116 +73,59 @@ test("a session that ends for another reason leaves none", async ($: Engine, on:
 });
 
 test("a compaction leaves one handoff file", async ($: Engine, on: On) => {
-	const files = lab(on, WITH_WORK);
+	expect(await writtenOn($, on, WITH_WORK)).toHaveLength(1);
+});
 
-	await compact($);
+test("a `/compact` leaves one handoff file", async ($: Engine, on: On) => {
+	const files = sink(on);
+
+	await compact($, WITH_WORK, "manual");
 
 	expect(handoffs(files)).toHaveLength(1);
 });
 
+test("a `precompute` installs nothing, so it leaves no handoff file", async ($: Engine, on: On) => {
+	const files = sink(on);
+
+	await compact($, WITH_WORK, "precompute");
+
+	expect(handoffs(files)).toHaveLength(0);
+});
+
+test("a subagent's compaction leaves no handoff file, since the main conversation goes on", async ($: Engine, on: On) => {
+	const files = sink(on);
+
+	await compact($, WITH_WORK, "auto", "agent-1");
+
+	expect(handoffs(files)).toHaveLength(0);
+});
+
 test("a session with no user turn leaves no file and no error", async ($: Engine, on: On) => {
-	const files = lab(on, tailOf(said("assistant", "Nothing was asked.")));
-
-	await compact($);
-
-	expect(handoffs(files)).toHaveLength(0);
+	expect(
+		await writtenOn($, on, [said("assistant", "Nothing was asked.")]),
+	).toHaveLength(0);
 });
 
-test("a transcript that cannot be read leaves no file and no error", async ($: Engine, on: On) => {
-	on("process.run", () => {
-		throw new Error("tail: no such file");
-	});
-	const files = sink(on);
-
-	await compact($);
-
-	expect(handoffs(files)).toHaveLength(0);
-});
-
-test("a failing tail leaves no file and no error", async ($: Engine, on: On) => {
-	on("process.run", () => ran("", 1));
-	const files = sink(on);
-
-	await compact($);
-
-	expect(handoffs(files)).toHaveLength(0);
-});
-
-const told = (on: On): readonly { text: string; to: string }[] => {
-	const lines: { text: string; to: string }[] = [];
-	on("ui.log", (_$, e) => {
-		lines.push({ text: e.text, to: e.to });
-		return { value: undefined };
-	});
-	on("classic.PreCompact", () => ({}));
+const told = (on: On): readonly Line[] => {
+	const lines: Line[] = [];
+	logInto(on, lines);
+	on("session.compact", () => ({ skip: "core ran" }));
 	return lines;
-};
-
-const compacted = async ($: Engine, on: On) => {
-	const lines = told(on);
-	await compact($);
-	return lines;
-};
-
-const sinksAfterCompact = async ($: Engine, on: On) => {
-	on("fs.write", () => ({ value: undefined }));
-	const lines = await compacted($, on);
-	return lines.map((line) => line.to);
 };
 
 // Failures go to the `transcript` sink: it shows a dim row, while `debug` shows nothing.
-test("a transcript that cannot be read tells the user in one line", async ($: Engine, on: On) => {
-	on("process.run", () => {
-		throw new Error("tail: no such file");
-	});
-	expect(await sinksAfterCompact($, on)).toEqual(["transcript"]);
-});
-
-test("a tail that exits non-zero tells the user in one line", async ($: Engine, on: On) => {
-	on("process.run", () => ran("", 1));
-	expect(await sinksAfterCompact($, on)).toEqual(["transcript"]);
-});
-
 test("a write that fails tells the user in one line", async ($: Engine, on: On) => {
-	on("process.run", () => ran(WITH_WORK));
 	on("fs.write", () => {
 		throw new Error("EACCES: permission denied");
 	});
-	const lines = await compacted($, on);
+	const lines = told(on);
+
+	await compact($, WITH_WORK);
 
 	expect(lines).toHaveLength(1);
 	expect(lines[0]?.to).toBe("transcript");
 	// The line names the file as well as the cause, because the file is what the user would look for.
 	expect(lines[0]?.text).toContain(HANDOFF_DIR);
-});
-
-test("the read is bounded by bytes, whatever the transcript's size", async ($: Engine, on: On) => {
-	const argv: string[][] = [];
-	on("process.run", (_$, e) => {
-		argv.push([...e.argv]);
-		return ran(WITH_WORK);
-	});
-	sink(on);
-
-	await compact($);
-
-	expect(argv).toEqual([["tail", "-c", "262144", TRANSCRIPT]]);
-});
-
-// `next.budget.remainingMs` starts at the 10,000 ms hook budget and falls by the hook's own time before the read, so only the ceiling is exact.
-test("the read on a compaction is bounded by the budget the event reports, less the write reserve", async ($: Engine, on: On) => {
-	const bounds: number[] = [];
-	on("process.run", (_$, e) => {
-		bounds.push(e.init?.timeoutMs ?? Number.NaN);
-		return ran(WITH_WORK);
-	});
-	sink(on);
-
-	await compact($);
-
-	expect(bounds).toHaveLength(1);
-	expect(bounds[0]).toBeLessThanOrEqual(9600);
-	expect(bounds[0]).toBeGreaterThan(9000);
 });
 
 test("the handoff names the files the session touched", async ($: Engine, on: On) => {
@@ -217,43 +148,25 @@ test("the file is named handoff- and a UTC stamp", async ($: Engine, on: On) => 
 });
 
 test("a file Claude wrote is kept and no code-built one goes beside it", async ($: Engine, on: On) => {
-	const files = lab(
-		on,
-		tailOf(
-			said("user", "Write the handoff."),
-			turn("assistant", [
-				{
-					type: "tool_use",
-					name: "Write",
-					input: { file_path: `${HANDOFF_DIR}/handoff-2026-10-29T08-00-00.md` },
-				},
-			]),
-		),
-	);
+	const written = await writtenOn($, on, [
+		said("user", "Write the handoff."),
+		used("", "Write", {
+			file_path: `${HANDOFF_DIR}/handoff-2026-10-29T08-00-00.md`,
+		}),
+	]);
 
-	await compact($);
-
-	expect(handoffs(files)).toHaveLength(0);
+	expect(written).toHaveLength(0);
 });
 
 test("reading an old handoff is not writing one, so the fallback still runs", async ($: Engine, on: On) => {
-	const files = lab(
-		on,
-		tailOf(
-			said("user", "Go on with the work."),
-			turn("assistant", [
-				{
-					type: "tool_use",
-					name: "Read",
-					input: { file_path: `${HANDOFF_DIR}/handoff-2026-10-29T08-00-00.md` },
-				},
-			]),
-		),
-	);
+	const written = await writtenOn($, on, [
+		said("user", "Go on with the work."),
+		used("", "Read", {
+			file_path: `${HANDOFF_DIR}/handoff-2026-10-29T08-00-00.md`,
+		}),
+	]);
 
-	await compact($);
-
-	expect(handoffs(files)).toHaveLength(1);
+	expect(written).toHaveLength(1);
 });
 
 // A drifted marker would give both files the same line, so feed `sourceLine` the writer's own output.
@@ -264,68 +177,38 @@ test("the read-back line tells a code-built handoff from one Claude wrote", asyn
 
 Ship the writer.
 `;
-	const files = lab(on, WITH_WORK);
+	const files = await writtenOn($, on, WITH_WORK);
 
-	await compact($);
-
-	expect(sourceLine(handoffs(files)[0]?.text ?? "")).not.toBe(
-		sourceLine(written),
-	);
+	expect(sourceLine(files[0]?.text ?? "")).not.toBe(sourceLine(written));
 });
 
-// Tool results come as `{type:"text"}` parts (`Read`) or a plain string (commands); only the path is kept.
 const PLAN_PATH = "docs/plans/rename-fetch-user.md";
 
 const PLAN_READ = "Step 1: rename `fetchUser`. Step 2: update every caller.";
 
 const PLAN_GREP = "docs/plans/rename-fetch-user.md:7: Step 3: delete the shim.";
 
-const FROM_PLAN = tailOf(
+const FROM_PLAN: readonly SessionMessage[] = [
 	said("user", "Work from the plan."),
-	turn("assistant", [
-		{ type: "text", text: "Reading the plan." },
-		{ type: "tool_use", name: "Read", input: { file_path: PLAN_PATH } },
-	]),
-	turn("user", [
-		{
-			tool_use_id: "toolu_01",
-			type: "tool_result",
-			content: [{ type: "text", text: PLAN_READ }],
-		},
-	]),
-	turn("user", [
-		{ tool_use_id: "toolu_02", type: "tool_result", content: PLAN_GREP },
-	]),
-);
+	used("Reading the plan.", "Read", { file_path: PLAN_PATH }),
+	answered({ tool_use_id: "toolu_Read", text: PLAN_READ, isError: false }),
+	answered({ tool_use_id: "toolu_Grep", text: PLAN_GREP, isError: false }),
+];
 
 test("a session that worked from a plan gets its path and not its text", async ($: Engine, on: On) => {
-	const files = lab(on, FROM_PLAN);
+	const written = await writtenOn($, on, FROM_PLAN);
 
-	await compact($);
-
-	const text = handoffs(files)[0]?.text ?? "";
+	const text = written[0]?.text ?? "";
 	expect(text).toContain(PLAN_PATH);
 	expect(text).not.toContain(PLAN_READ);
 	expect(text).not.toContain("delete the shim");
 });
 
-test("a broken first line of the tail is dropped, not parsed", () => {
-	const tail = tailOf(said("user", "Keep this one."));
-
-	const { turns } = parseTail(tail);
-
-	expect(turns).toEqual([{ role: "user", text: "Keep this one." }]);
-});
-
 test("a tool call with no file path adds no path", () => {
-	const tail = tailOf(
+	const { paths } = readMessages([
 		said("user", "Run the tests."),
-		turn("assistant", [
-			{ type: "tool_use", name: "Bash", input: { command: "just check" } },
-		]),
-	);
-
-	const { paths } = parseTail(tail);
+		used("", "Bash", { command: "just check" }),
+	]);
 
 	expect(paths).toEqual([]);
 });

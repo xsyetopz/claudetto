@@ -4,7 +4,7 @@ import type { Block, BlockContext } from "../block.ts";
 export const worktreeBase: Block = {
 	id: "worktree-base",
 	kind: "session",
-	routes: ["classic.SubagentStart", "classic.PostToolUse", "process.run"],
+	routes: ["classic.SubagentStart", "tool.call", "process.run"],
 	needs: "2.1.314",
 };
 
@@ -89,44 +89,42 @@ const worktreeOf = (response: unknown): string | undefined =>
 		? response.worktreePath
 		: undefined;
 
-const told = <R extends { additionalContext?: string[] }>(
+/** Logs the bases for the user and returns the line for the model, or `undefined` when there is nothing to tell. */
+const tell = (
 	$: EngineInterface,
-	answer: R,
 	bases: Bases | undefined,
-): R => {
+): string | undefined => {
 	if (bases === undefined) {
-		return answer;
+		return undefined;
 	}
 	$.ui.log(logLine(bases));
-	return {
-		...answer,
-		additionalContext: [
-			...(answer.additionalContext ?? []),
-			contextLine(bases),
-		],
-	};
+	return contextLine(bases);
 };
 
 export const attachWorktreeBase = (on: On, _context: BlockContext): void => {
+	// `agent.spawn` cannot carry this: the worktree is made beneath its `next`, and it has no context to add.
 	on("classic.SubagentStart", async ($, e, next) => {
 		const answer = await next(e);
-		return told(
+		const line = tell(
 			$,
-			answer,
 			e.cwd === undefined ? undefined : await missingTip($, e.cwd),
 		);
+		return line === undefined
+			? answer
+			: {
+					...answer,
+					additionalContext: [...(answer.additionalContext ?? []), line],
+				};
 	});
-	on(
-		"classic.PostToolUse",
-		{ tool_name: "EnterWorktree" },
-		async ($, e, next) => {
-			const answer = await next(e);
-			const path = worktreeOf(e.tool_response);
-			return told(
-				$,
-				answer,
-				path === undefined ? undefined : await missingTip($, path),
-			);
-		},
-	);
+	on("tool.call", { tool: "EnterWorktree" }, async ($, e, next) => {
+		const answer = await next(e);
+		const path = answer.isError ? undefined : worktreeOf(answer.result);
+		const line = tell(
+			$,
+			path === undefined ? undefined : await missingTip($, path),
+		);
+		return line === undefined || answer.deny !== undefined
+			? answer
+			: { ...answer, context: [...(answer.context ?? []), line] };
+	});
 };

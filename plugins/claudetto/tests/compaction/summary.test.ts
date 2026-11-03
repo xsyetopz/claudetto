@@ -35,6 +35,9 @@ const lab = (on: On, answer: Answer): { core: number } => {
 	on("env.get", () => ({ value: "/home/me" }));
 	on("fs.read", () => ({ value: LOGIN }));
 	on("model.complete", (_$, e) => answer(e));
+	// The handoff block writes its file before a compaction.
+	on("session.root", () => ({ value: "/repo" }));
+	on("fs.write", () => ({ value: undefined }));
 	on("session.compact", () => {
 		seen.core += 1;
 		return { skip: "core ran" };
