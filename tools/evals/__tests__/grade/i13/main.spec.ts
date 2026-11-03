@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { type Facts, failureOf, printsJson } from "../../fixtures/I13/grade.ts";
+import {
+	type Facts,
+	failureOf,
+	printsJson,
+} from "../../../fixtures/I13/grade.ts";
 
 const GOOD: Facts = {
 	reply:
