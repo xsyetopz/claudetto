@@ -13,7 +13,8 @@
 
 - One reader module for the status line's file reads, so the render stays pure and testable.
 - One handoff template in code that both writers use.
-- FAFO as the session's method for getting unstuck, in `main.md`, the subagent bodies, and `Concise.md`.
+- FAFO as the session's method for getting unstuck, in the root prompt, the subagent bodies, and `Concise.md`.
+- No agent type whose body is the root prompt.
 - New prompt rules that each have an eval case, with the main body at most 6,000 characters.
 - Every prompt claudetto ships follows `external/please-use-me-often/xml-prompting-guide.md`.
 - A session prompt with no task-specific rule.
