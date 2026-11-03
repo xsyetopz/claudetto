@@ -467,6 +467,16 @@ The user ruled on 2026-11-03, through the `claudetto-05` session, that the repo 
 - [x] 42.2 Add the rule to `AGENTS.md`, and remove the decision-page requirement of `repo-gate`, whose pages were copies.
   Done 2026-11-03 on the user's approval of the exact `AGENTS.md` line.
 
+## 43. The Root Prompt Through `prompt.compose`
+
+Session `fb76fbd2` spawned 28 subagents as `claudetto:main`, against 63 `Hephaestus`, 15 `Artemis`, 5 `Hermes`, and 3 `Athena`, each running the root prompt, which addresses the user and names `AskUserQuestion`, a tool subagents do not get. The setup snippet denies `general-purpose` and `claude`, so `main` was the only listed type with every tool. The `agent-offer` block did not hide it on `2.1.316`, and the type left the listing after a `/reload-plugins`. Free probes on 2026-11-03 on `2.1.317` (fake Messages API, a throwaway mod with one agent, one `Agent` call) read: a `prompt.compose` hook changes the main loop's `system[2]` and never a subagent's, in `-p` (2 of 2 main requests, 0 of 1 subagent) and `--interactive` (3 of 3, 0 of 1); with the `agent` setting on, the body is the agent file alone and the hook has no effect; and `lean_body` is about 1,200 of the 5,799 characters of the default `claude-opus-5-5` body, the rest being session sections. Sources: `https://clawdipedia.cc/how-it-works/system-prompt.md` and `https://clawdipedia.cc/extend/mod-api/calls/turn-prompt.md`. The user chose the move on 2026-11-03.
+
+- [ ] 43.1 Write failing lab tests: the main loop's composed prompt is the root prompt alone, as one `shared` section; a subagent's prompt is untouched; no `claudetto:main` type is listed or dispatched; and `/claudetto:setup` removes an `agent` key that names `claudetto:main` and writes none.
+- [ ] 43.2 Read, free, what a session does when the `agent` setting names an agent that no longer exists, with `just capture --settings` on `2.1.317`, and record the reading in the setup step's migration text.
+- [ ] 43.3 Move the body of `agents/main.md` into a `prompt.compose` block that returns it as the whole section list. Remove `agents/main.md`, the `agent` setting from setup and its snippet, the `agent-offer` block, and `MAIN_AGENT` and `MAIN_AGENT_FILE` in `src/prompts.ts`. Update `docs/surfaces.md`, `README.md`, and `CHANGELOG.md`.
+- [ ] 43.4 Run `just check`, `just inventory`, and `just capture --arm plugin --shipped` in `-p` and `--interactive`, and report the root body and listing characters against the `0.2.0`-style `agent` route, with each command.
+- [ ] 43.5 Ask the user whether to add a worker agent for multi-step work with its own check, which `Hephaestus` does not take, with its listing cost measured by `just capture` and the fold-in criteria of `https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop`: context bloat, parallel fresh contexts, and conflicting instructions.
+
 ## Workflow follow-up
 
 - Move each `ISSUES.md` entry to "Fixed" with the commit that fixes it, as its task closes.

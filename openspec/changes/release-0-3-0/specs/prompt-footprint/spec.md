@@ -1,3 +1,21 @@
+## MODIFIED Requirements
+
+### Requirement: Byte Budget per Piece
+
+Each of the root prompt, `output-styles/Concise.md`, each skill `description:` line, and each text injected by a hook SHALL have a byte budget that a test checks. No budget value exists yet. Task 3.5 derives each budget from a measurement, which is the capture readings of tasks 2.3 and 3.1, and the only number fixed so far is the cap of the root prompt.
+
+#### Scenario: Over Budget
+
+- **WHEN** a piece grows past its budget
+- **THEN** the test fails and names the piece, its size, and its budget
+
+## REMOVED Requirements
+
+### Requirement: The Main Agent File Is Smaller Than the Body It Replaces
+
+**Reason**: No main agent file remains. The root prompt reaches the main loop through a `prompt.compose` hook, and its size is held by the 6,000-character cap of "Root Prompt with New Rules", which the user set on 2026-10-31.
+**Migration**: Read the root prompt's size in `system[2]` with `just capture --arm plugin --shipped`.
+
 ## ADDED Requirements
 
 ### Requirement: Empty Session Reading Is Recorded
@@ -16,7 +34,7 @@ Each row of the empty-session reading SHALL be split by owner: the engine, the r
 #### Scenario: Claudetto Pieces
 
 - **WHEN** the split is recorded
-- **THEN** it lists `agents/main.md`, `output-styles/Concise.md`, the tool texts, the agent listing, the skill listing, and each hook text, each with its size and command
+- **THEN** it lists the root prompt, `output-styles/Concise.md`, the tool texts, the agent listing, the skill listing, and each hook text, each with its size and command
 
 #### Scenario: Repository Rows
 
@@ -32,9 +50,9 @@ The tokens that claudetto adds to an empty session SHALL be lower after this cha
 - **WHEN** `/context all` and `just capture --shipped` are read after the cuts
 - **THEN** the claudetto share is below the `0.2.0` share
 
-#### Scenario: Main File with New Rules
+#### Scenario: Root Prompt with New Rules
 
-- **WHEN** `agents/main.md` is rewritten for the `agent-conduct` capability
+- **WHEN** the root prompt is rewritten for the `agent-conduct` capability
 - **THEN** its body, as the request carries it, is at most 6,000 characters, the cap the user set on 2026-10-31
 
 #### Scenario: Tokens Are Not Cost
