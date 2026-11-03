@@ -10,6 +10,7 @@ export const NO_READ = wordSet(
 );
 const COPIES = wordSet("cp mv ln");
 const TARGET_OPT = /^(?:--target-directory(?:=|$)|-[A-Za-z]*t)/;
+// `ugrep` is not installed here; its man page (github.com/Genivia/ugrep, man/ugrep.1) gives `-e`/`--regexp`, `-f`/`--file`, `-N`/`--neg-regexp`, `--and`, `--andnot`, `--not` and `--bool` a pattern or pattern file. Only `-e`, `-f` and their long forms are read below, so a `ugrep` pattern given by the others is read as a file name: that asks more often than needed and never less.
 export const PATTERNED = wordSet("grep egrep fgrep rg ugrep sed awk");
 const EXCLUDE_PATHSPEC = /^:(?:[!^]|\([^)]*\bexclude\b[^)]*\))/;
 const UPLOAD = /^(?:-[A-Za-z]|[^=@<]*=)?[@<](.+)$/;

@@ -13,6 +13,7 @@ const envFileHeld = new Map<
 >();
 
 let mutations = 0;
+// A call of one of these tools can change a file, so it ends the cached env-file scan. `Monitor` runs a shell command like `Bash` does (the gate reads both as shell in `gate.ts`), so it can write files. The set is a choice of the author; a tool not named here is taken as read-only.
 const MUTATING = new Set(["Bash", "Monitor", "Write", "Edit", "NotebookEdit"]);
 
 export const countCall = (tool: string): void => {

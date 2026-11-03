@@ -261,3 +261,20 @@ describe("the stricter of two decisions", () => {
 		}
 	});
 });
+
+describe("the bulk stage reason says what the command stages", () => {
+	for (const [command, scope] of [
+		["git add .", "under the path"],
+		["git commit -a -m x", "tracked"],
+	] as const) {
+		test(command, async () => {
+			const f = facts();
+			f.users.push("a.ts");
+			const v = await bash(command, f);
+
+			expect(v.decision).toBe("ask");
+			expect(v.reason).toContain(scope);
+			expect(v.reason).not.toContain("each change of the work tree");
+		});
+	}
+});

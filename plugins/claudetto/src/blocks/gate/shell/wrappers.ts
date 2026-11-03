@@ -8,18 +8,22 @@ export const words = (text: unknown): string[] =>
 		m[0].replace(QUOTED_PART, (_, a, b, c) => a ?? b ?? c),
 	);
 
-/** Options that take a value per wrapper; `env -S` is left out because its value holds the command. */
+/**
+ * Options that take a value per wrapper; `env -S` is left out because its value holds the command.
+ * A missed value option makes the gate read the value as the command, so the lists follow the man pages: macOS `sudo(8)`, `xargs(1)`, `env(1)`, `nice(1)`, `time(1)`, `caffeinate(8)`, `stdbuf` usage; GNU coreutils `stdbuf(1)` and `timeout(1)`, util-linux `ionice(1)` and `chrt(1)`, and OpenBSD `doas(1)`. Those last five are not installed on macOS and are listed from memory of their pages, unchecked.
+ * `sudo -h` is both help and `--host`; it is listed as taking a value, the stricter reading.
+ */
 const WRAPPERS: Record<string, string> = {
-	sudo: "--user --group --host --prompt --chdir --role --type -u -g -h -p -C -D -R -T -U -r -t",
+	sudo: "--user --group --host --prompt --chdir --role --type --close-from --chroot --other-user --command-timeout -u -g -h -p -C -D -R -T -U -r -t",
 	env: "-u -C -P --unset --chdir",
 	nice: "-n --adjustment",
 	timeout: "-s -k --signal --kill-after",
 	xargs:
-		"-n -I -L -P -s -E -d -a --max-args --max-lines --max-procs --max-chars --delimiter --arg-file --eof",
+		"-n -I -J -L -P -R -S -s -E -d -a --process-slot-var --max-args --max-lines --max-procs --max-chars --delimiter --arg-file --eof",
 	doas: "-u -C",
-	ionice: "-c -n -p -P -u --class --classdata",
+	ionice: "-c -n -p -P -u --class --classdata --pid --pgid --uid",
 	chrt: "-T -P -D",
-	stdbuf: "-i -o -e",
+	stdbuf: "-i -o -e --input --output --error",
 	exec: "-a",
 	time: "-f -o",
 	caffeinate: "-t -w",

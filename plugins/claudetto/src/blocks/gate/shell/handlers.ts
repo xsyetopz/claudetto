@@ -41,7 +41,7 @@ export const arithAt = (x: Ctx, f: Frame, i: number, c: string): number => {
 	return i;
 };
 
-// A `\0` ends the text of the quote, so the characters after it up to the quote are dropped.
+// A `\0` ends the text of the quote, so the characters after it up to the quote are dropped. Probed with `bash` 3.2.57: `printf %s $'a\0b'` prints `a`, and `$'echo\0x y'` as a command word runs `echo` alone.
 export const ansiAt = (
 	f: Frame,
 	text: string,

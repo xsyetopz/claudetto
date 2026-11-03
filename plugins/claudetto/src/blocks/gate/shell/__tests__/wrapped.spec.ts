@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { bash } from "../../__tests__/facts-stub.ts";
 import { parse } from "../shell.ts";
+import { stripWrappers } from "../wrappers.ts";
 
 const PUSH_REASON = "This push rewrites or deletes history on the remote.";
 
@@ -17,6 +18,12 @@ describe("Wrapped Push: each form of a force push asks for the same reason", () 
 		"chrt 10 git push --force",
 		"chrt --other git push --force",
 		"timeout 5 git push --force",
+		"git --exec-path push --force",
+		"xargs -J % git push --force",
+		"xargs -R 1 git push --force",
+		"xargs -S 255 git push --force",
+		"stdbuf --output L git push --force",
+		"ionice --pid 1 git push --force",
 	]) {
 		test(command, async () => {
 			const v = await bash(command);
@@ -60,4 +67,19 @@ describe("Fail closed on a command the reader cannot read", () => {
 
 		expect(v.decision).toBe("ask");
 	});
+});
+
+describe("Wrapper Options: a long option with a value does not hide the command", () => {
+	for (const option of [
+		"--chroot /x",
+		"--other-user bob",
+		"--close-from 5",
+		"--command-timeout 5",
+	]) {
+		test(`sudo ${option}`, () => {
+			expect(
+				stripWrappers(["sudo", ...option.split(" "), "git", "push"]),
+			).toStrictEqual(["git", "push"]);
+		});
+	}
 });
