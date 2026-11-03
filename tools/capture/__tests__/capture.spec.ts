@@ -155,6 +155,16 @@ describe("the `CLAUDE.md` of the working folder", () => {
 		expect(() => claudeMdChars(["--claude-md"])).toThrow();
 	});
 
+	test("`--user-claude-md` takes the count of the config folder's file, apart from `--claude-md`", () => {
+		expect(claudeMdChars(["--user-claude-md", "500"], "user-claude-md")).toBe(
+			500,
+		);
+		expect(
+			claudeMdChars(["--claude-md", "500"], "user-claude-md"),
+		).toBeUndefined();
+		expect(claudeMdChars(["--user-claude-md", "500"])).toBeUndefined();
+	});
+
 	test("the file is exactly that many characters, so the request grows by a known size", () => {
 		expect(claudeMdOf(0)).toBe("");
 		expect(claudeMdOf(1)).toHaveLength(1);
