@@ -35,7 +35,7 @@ request to the messages route and one to another route per arm, and the only hos
 
 | Arm | Settings | Total chars | `system` chars | `system` blocks | Tools | `tools` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `plain` | defaults, no file | 46,105 | 5,954 | 74, 62, 5,818 | 12 | 29,512 | 9,984 |
+| `plain` | defaults, no file | 46,084 | 5,935 | 74, 62, 5,799 | 12 | 29,512 | 9,984 |
 
 On 2026-10-28 a second row, the `plugin` arm with `--plugin-dir plugins/claudetto`, read equal to this
 one to the character, because the plugin was then one empty mod with no skill, no subagent, no
@@ -45,7 +45,7 @@ read under "The Shipped Combination" below. A tree that lands prompt text while 
 stays equal to `plain` is a finding to dig into and not a pass.
 
 The `plain` row read 42,687 with a `system` of 5,764 on 2026-10-28, 42,879 with 5,954 on 2026-10-30
-under `2.1.312`, and reads 46,105 with 5,954 on `2.1.314`, where `tools` grew 28,187 to 29,512
+under `2.1.312`, 46,105 with 5,954 on `2.1.314`, 46,007 with 5,858 on `2.1.316`, and reads 46,084 with 5,935 on `2.1.317`, where `tools` grew 28,187 to 29,512
 and `messages` 8,061 to 9,984 and `system` held. "The Baseline Has Drifted" below is the record of
 the first move, and "The Baseline Moved Again" the second.
 
@@ -99,20 +99,20 @@ change cites a figure from above this section.
 
 ## The Deny List of the New Tree
 
-Read on 2026-10-28 and again on 2026-10-30 with `just capture --arm plain --deny <names>` on Claude
+Read on 2026-10-28, again on 2026-10-30, and the rows below again on 2026-11-03 on `2.1.317`, with `just capture --arm plain --deny <names>` on Claude
 Code `2.1.312` and `2.1.314`, each row one run against the baseline above, with the same harness, the same 34-character working folder, and
 no other settings key. The harness writes the settings file itself from `--deny`, so a row cannot
 drift from a scratch file on disk.
 
 | Deny of the run | Total chars | Change | Tools | `tools` chars | `system` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- | --- |
-| nothing, the baseline | 46,105 | | 12 | 29,512 | 5,954 | 9,984 |
-| `Workflow` | 40,749 | −5,356 | 11 | 24,156 | 5,954 | 9,984 |
-| `ScheduleWakeup` | 41,218 | −4,887 | 11 | 24,625 | 5,954 | 9,984 |
-| `ReportFindings` | 43,927 | −2,178 | 11 | 27,334 | 5,954 | 9,984 |
-| all three | 33,684 | −12,421 | 9 | 17,091 | 5,954 | 9,984 |
-| `DesignSync` | 46,093 | −12 | 12 | 29,512 | 5,954 | 9,972 |
-| `Artifact`, `RemoteTrigger`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `mcp__computer-use` | 46,105 | 0 | 12 | 29,512 | 5,954 | 9,984 |
+| nothing, the baseline | 46,084 | | 12 | 29,512 | 5,935 | 9,984 |
+| `Workflow` | 40,728 | −5,356 | 11 | 24,156 | 5,935 | 9,984 |
+| `ScheduleWakeup` | 41,197 | −4,887 | 11 | 24,625 | 5,935 | 9,984 |
+| `ReportFindings` | 43,906 | −2,178 | 11 | 27,334 | 5,935 | 9,984 |
+| all three | 33,663 | −12,421 | 9 | 17,091 | 5,935 | 9,984 |
+| `DesignSync` | 46,072 | −12 | 12 | 29,512 | 5,935 | 9,972 |
+| `Artifact`, `RemoteTrigger`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `mcp__computer-use` | 46,084 | 0 | 12 | 29,512 | 5,935 | 9,984 |
 
 So the deny list claudetto writes is `Workflow`, `ScheduleWakeup`, and `ReportFindings`, which is
 12,421 characters of the first request for three tools this project does not use. The three rows are each the
@@ -195,7 +195,7 @@ Workflow,ScheduleWakeup,ReportFindings --tools 12`, both arms in the same run:
 
 | Arm | Total chars | Tools | `tools` chars | `system` chars | `messages` chars |
 | --- | --- | --- | --- | --- | --- |
-| `plain` | 33,586 | 9 | 17,091 | 5,858 | 9,984 |
+| `plain` | 33,663 | 9 | 17,091 | 5,935 | 9,984 |
 | `plugin` | 27,504 | 8 | 9,422 | 5,576 | 11,856 |
 
 So the shipped texts take 7,669 characters off the `tools` array, and the `plugin` arm's per-tool
@@ -305,6 +305,26 @@ the `dedupe` skill has gone, and the `handoff` tool is a small deferred one. On 
 arm read 28,527 and 26,591 with the file moved aside, so `main agent body` is −1,936. That reading predates
 `ListAgents` moving behind `ToolSearch`, which changes only the tool texts.
 
+### The Baseline Moved a Fourth Time
+
+Found on 2026-11-03 when the installed Claude Code went from `2.1.316` to `2.1.317` and `just inventory`
+failed: the `baseline` row read 46,084 against 46,007 recorded and the `deny list` row 33,663 against
+33,586, while the `shipped` row held at 24,961. The `plain` arm moved in `system` alone, 5,858 to 5,935,
+and the whole 77 is the third block, 5,722 to 5,799, in one sentence of the default body: "games in a genre"
+became "games in a genre or with similar mechanics", and "a specific existing game" became "a specific
+existing game (its name, characters, art, music, levels or look)". `tools` held at 29,512 and `messages` at
+9,984. The cause is the engine and not this tree, because the `plain` arm loads no plugin.
+
+Every `plain` row of `plugins/claudetto/src/deny.ts` and `builtins.ts` was read again with `just capture` and
+moved up 77, so each difference between them held to the character: `Workflow` 5,356, `ScheduleWakeup` 4,887,
+`ReportFindings` 2,178, `DesignSync` 12, `Skill` +8,720, and `Bash` −407. The shipped arm did not move, because
+`agents/main.md` replaces the default body, so `main agent body` is the one row of `plugins/claudetto/src/cuts.ts`
+that moved: the shipped arm with the file moved aside read 23,080 against 24,961, so the row is −1,881 and not
+−1,958. `built-in surface` (5,590) and `auto memory off` (2,138) read as before. `ToolSearch` is the exception to
+the 77: its deny now reads +37,936 and not +36,922, because `tools` read 67,844 against 66,830 once the deferred
+tools load, so a definition among them grew 1,014 on this version. The three shipped-tree rows of `BUILTIN_CUTS`
+(36,803, 36,535, and 31,213) are of a tree that has since changed, no command reproduces them, and they are left.
+
 ## The Two Switches
 
 `plugins/claudetto/src/builtins.ts` writes two settings, and both ship, through `tierSnippet` and
@@ -316,15 +336,15 @@ listing out of the request. `enabledPlugins` sets twelve built-in plugins to `fa
 `enabledFromTrustedSettingsOnly` and `enabledFromPolicyOnly`, so a user `false` does not decide it
 (`docs/gates.md:100`).
 
-Read on 2026-10-30 with `bun tools/capture/run.ts` against a fake Messages API on `127.0.0.1`, so no
+Read on 2026-10-30, with the `plain` rows read again on 2026-11-03 on `2.1.317`, with `bun tools/capture/run.ts` against a fake Messages API on `127.0.0.1`, so no
 provider was reached and no model call was billed. First the `plain` arm, which loads no plugin:
 
 | Settings of the run | Total | `system` | `tools` (count) | `messages` |
 | --- | --- | --- | --- | --- |
-| defaults | 46,105 | 5,954 | 29,512 (12) | 9,984 |
-| deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` | 33,684 | 5,954 | 17,091 (9) | 9,984 |
-| `disableBundledSkills` alone | 57,134 | 5,954 | 46,467 (12) | 4,058 |
-| `disableBundledSkills` with the deny of all three | 27,758 | 5,954 | 17,091 (9) | 4,058 |
+| defaults | 46,084 | 5,935 | 29,512 (12) | 9,984 |
+| deny of `Workflow`, `ScheduleWakeup`, `ReportFindings` | 33,663 | 5,935 | 17,091 (9) | 9,984 |
+| `disableBundledSkills` alone | 57,113 | 5,935 | 46,467 (12) | 4,058 |
+| `disableBundledSkills` with the deny of all three | 27,737 | 5,935 | 17,091 (9) | 4,058 |
 
 Then the `plugin` arm of the shipped tree, as it stood with the `dedupe` skill (since removed), one switch at a time:
 
@@ -337,7 +357,7 @@ Then the `plugin` arm of the shipped tree, as it stood with the `dedupe` skill (
 
 What the rows settle:
 
-- `disableBundledSkills` alone is a loss of 11,029 characters, 46,105 to 57,134. `Workflow` inlines the
+- `disableBundledSkills` alone is a loss of 11,029 characters, 46,084 to 57,113. `Workflow` inlines the
   workflow guidance that its listing no longer carries, so `tools` grows 29,512 to 46,467 against a
   fall of 5,926 in `messages`. A lever that looks like a cut can be a loss on its own.
 - With `Workflow` denied the growth has nowhere to land: `tools` is byte-identical at 17,091 in the
@@ -509,11 +529,11 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,007 baseline less every cut in it has to equal the 24,961 the shipped arm records, so a cut that
+46,084 baseline less every cut in it has to equal the 24,961 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
-the 192 characters, the 3,226, and then the 98 of drift above.
+the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 
 | Shipped cut | Characters off the first request | Cost reading |
 | --- | --- | --- |
@@ -524,7 +544,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | −1,958 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | −1,881 | None exists yet. A placebo run would price the prompt text |
 | `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text |
 | The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −726 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text |
@@ -542,7 +562,7 @@ the 192 characters, the 3,226, and then the 98 of drift above.
 | The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
 | The fall that no row above explains (`unexplained residual`) | 1,797 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
-The rows sum to 21,046, which is 46,007 less the 24,961 the shipped arm records. A negative row is a piece
+The rows sum to 21,123, which is 46,084 less the 24,961 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
@@ -554,12 +574,12 @@ the next removal. The readings, each as the arm without the piece less 27,960, e
 
 | Row | Arm without the piece | Row | How the piece was removed |
 | --- | --- | --- | --- |
-| `deny list` | 35,025 | 7,065 | `ScheduleWakeup` and `ReportFindings` out of `permissions.deny` (it was 12,421, the `plain` baseline of 46,007 less the deny arm of 33,586) |
+| `deny list` | 35,025 | 7,065 | `ScheduleWakeup` and `ReportFindings` out of `permissions.deny` (it was 12,421, the `plain` baseline of 46,084 less the deny arm of 33,663) |
 | `deferred tool denies` | 27,984 | 24 | `NotebookEdit` and `TaskStop` out of `permissions.deny` |
 | `tool texts` | 34,576 | 9,615 | the `tool-describe` block detached from the catalog; read again on 2026-11-03 against 24,961, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` |
 | `built-in surface` | 33,550 | 5,590 | `disableBundledSkills` and `enabledPlugins` out of the settings |
 | `docs skill` | 27,889 | −71 | `skills/docs/` moved out of the plugin |
-| `main agent body` | 25,950 | −1,958 | `agents/main.md` moved aside |
+| `main agent body` | 23,080 | −1,881 | `agents/main.md` moved aside |
 | `auto memory off` | 28,088 | 2,138 | `autoMemoryEnabled` out and `agents/main.md` moved aside, against 25,950 |
 | `agent listing` | 27,234 | −726 | the four agent files moved aside |
 | `handoff context` | 27,020 | −940 | the `prompt.context` answer of the `handoff` block left without its block |
@@ -594,7 +614,7 @@ and the `Explore`, `Plan`, and other `Agent` denies with `agent listing` +182 ea
 Those sum to 1,742. With the −40 and a gap of 48 inside the plugin pieces they come to 1,750, which leaves about 47 of higher order. The `Workflow` tool is the one large
 case: with `built-in surface` in place its removal reads 22,034, with that row out 5,333, so the two interact by 16,701 (10,923 together against 27,624 apart),
 because with the bundled skills off the `Workflow` definition carries the workflow guidance. It adds to every other row. Removing every piece together (the settings
-emptied, the plugin files and the `tool-describe` and `handoff` hooks out) reads 46,007, the baseline, so no piece is missing; the
+emptied, the plugin files and the `tool-describe` and `handoff` hooks out) reads 46,084, the baseline, so no piece is missing; the
 residual is the interaction of the rows.
 
 On 2026-10-31 on `2.1.316` every row was read again, each as the difference

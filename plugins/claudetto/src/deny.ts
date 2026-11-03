@@ -1,4 +1,4 @@
-export const BASELINE_TOTAL = 46_007;
+export const BASELINE_TOTAL = 46_084;
 
 export const BASELINE_TOOL_COUNT = 12;
 
@@ -13,12 +13,12 @@ export interface DenyReading {
 
 /** Each `chars` is one less than its `tools` difference, because a definition travels with a comma. */
 export const DENIED_TOOLS: readonly DenyReading[] = [
-	{ name: "Workflow", chars: 5355, total: 40_651, tools: 24_156 },
-	{ name: "ScheduleWakeup", chars: 4886, total: 41_120, tools: 24_625 },
-	{ name: "ReportFindings", chars: 2177, total: 43_829, tools: 27_334 },
+	{ name: "Workflow", chars: 5355, total: 40_728, tools: 24_156 },
+	{ name: "ScheduleWakeup", chars: 4886, total: 41_197, tools: 24_625 },
+	{ name: "ReportFindings", chars: 2177, total: 43_906, tools: 27_334 },
 ];
 
-export const DENIED_TOGETHER_TOTAL = 33_586;
+export const DENIED_TOGETHER_TOTAL = 33_663;
 
 export const DENIED_TOGETHER_TOOLS = 17_091;
 
@@ -31,7 +31,7 @@ export interface NeverDenyReading {
 export const NEVER_DENY: readonly NeverDenyReading[] = [
 	{
 		name: "ToolSearch",
-		chars: 36_922,
+		chars: 37_936,
 		why: "the deny loads every deferred tool into the request",
 	},
 	{
@@ -60,10 +60,10 @@ export const DROPPED_DENIES: readonly DroppedDeny[] = [
 			"TaskUpdate",
 			"mcp__computer-use",
 		],
-		total: 46_007,
+		total: 46_084,
 		tools: 29_512,
 	},
-	{ names: ["DesignSync"], total: 45_995, tools: 29_512 },
+	{ names: ["DesignSync"], total: 46_072, tools: 29_512 },
 ];
 
 export const denyList = (): readonly string[] =>
