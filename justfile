@@ -24,9 +24,10 @@ lint:
     # The range the `commitlint` job of CI reads; a clone without `origin/main`, such as the shallow one of the `check` job, skips it.
     @if git rev-parse -q --verify origin/main >/dev/null; then bunx commitlint --from "$(git merge-base origin/main HEAD)" --to HEAD; fi
 
-# Type-check against the vendored Claude Code types
+# Type-check against the vendored Claude Code types, once as the whole repository and once as the plugin project, which is what an editor uses for a file under `plugins/claudetto/`
 typecheck:
     bun check
+    bun check -p plugins/claudetto/tsconfig.json
 
 # Check agents, layout, JSDoc, literals, generated files, and manifests
 validate:
