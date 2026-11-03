@@ -1,7 +1,7 @@
 // Each arm gets an empty working folder, config folder, and fake API, so no two arms mix.
 
-import { realpath, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, realpath, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { cwd } from "node:process";
 import type { ToolCall } from "../../claudekit/api/answer.ts";
 import { type FakeApi, startFakeApi } from "../../claudekit/api/fake.ts";
@@ -75,6 +75,7 @@ const runArm = async (options: {
 	tempPrefix: string;
 	claudeMd: number | undefined;
 	userClaudeMd: number | undefined;
+	userFiles: readonly { path: string; text: string }[];
 }): Promise<{ code: number; stderr: string; work: string }> =>
 	// Only the exit status, the stderr, and the path length leave the root; the dump is written outside it.
 	withFolders(options.tempPrefix, options.settings, (folders) =>
@@ -91,6 +92,7 @@ const runIn = async (
 		extra: readonly string[];
 		claudeMd: number | undefined;
 		userClaudeMd: number | undefined;
+		userFiles: readonly { path: string; text: string }[];
 	},
 ): Promise<{ code: number; stderr: string; work: string }> => {
 	if (options.claudeMd !== undefined) {
@@ -102,6 +104,13 @@ const runIn = async (
 			claudeMdOf(options.userClaudeMd),
 		);
 	}
+	await Promise.all(
+		options.userFiles.map(async (file) => {
+			const target = join(config, file.path);
+			await mkdir(dirname(target), { recursive: true });
+			await writeFile(target, file.text);
+		}),
+	);
 	const argv = sessionArgv({
 		...options,
 		plugin: options.plugin ? join(cwd(), PLUGIN) : undefined,
@@ -146,6 +155,8 @@ export interface CaptureOptions {
 	readonly claudeMd?: number | undefined;
 	/** The characters of a `CLAUDE.md` placed in the config folder, as a user's own; none when absent. */
 	readonly userClaudeMd?: number | undefined;
+	/** Files written under the config folder at their relative paths, such as `rules/a.md`. */
+	readonly userFiles?: readonly { path: string; text: string }[];
 }
 
 /** `dump` is re-indented from the raw text, since `JSON.stringify` of the string would be one line. */
@@ -169,6 +180,7 @@ export const capture = async (
 			tempPrefix: options.tempPrefix ?? TEMP_PREFIX,
 			claudeMd: options.claudeMd,
 			userClaudeMd: options.userClaudeMd,
+			userFiles: options.userFiles ?? [],
 		});
 		const first = options.classifier
 			? api.bodies.find(isClassifier)

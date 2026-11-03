@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { mkdir } from "node:fs/promises";
+import { isAbsolute, normalize } from "node:path";
 import { argv } from "node:process";
 import { file as bunFile } from "bun";
 import type { ToolCall } from "../../claudekit/api/answer.ts";
@@ -40,6 +41,32 @@ export const claudeMdChars = (
 	return chars;
 };
 
+export interface UserFile {
+	/** Relative to the config folder, where a user's `~/.claude` is read. */
+	readonly path: string;
+	readonly source: string;
+}
+
+/** Each `--user-file PATH=SOURCE`, in order; a path that leaves the config folder is refused. */
+export const userFilesOf = (args: readonly string[]): UserFile[] =>
+	args.flatMap((arg, at) => {
+		if (arg !== "--user-file") {
+			return [];
+		}
+		const [path, source] = (args[at + 1] ?? "").split("=", 2);
+		if (
+			!path ||
+			!source ||
+			isAbsolute(path) ||
+			normalize(path).startsWith("..")
+		) {
+			throw new Error(
+				"--user-file takes PATH=SOURCE, with PATH inside the config folder, such as rules/a.md=/tmp/a.md",
+			);
+		}
+		return [{ path, source }];
+	});
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -60,6 +87,7 @@ export const callsOf = (text: string): ToolCall[] => {
 const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
   [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
   [--classifier] [--interactive] [--calls FILE] [--claude-md CHARS] [--user-claude-md CHARS]
+  [--user-file PATH=SOURCE]...
 
 --interactive runs each arm in a detached \`tmux\` session with no \`-p\`, so the request
 holds the tools of an interactive session. It needs \`tmux\` on the PATH.
@@ -69,6 +97,7 @@ Its last system block holds the login name, so it differs between logins.
 --claude-md CHARS puts a \`CLAUDE.md\` of that many characters in the working folder, so the
 request shows what a memory file costs. Without it the folder is empty.
 --user-claude-md CHARS puts one in the config folder, where a user's \`~/.claude/CLAUDE.md\` is read.
+--user-file PATH=SOURCE copies SOURCE to PATH in the config folder, such as rules/a.md=/tmp/a.md.
 With --dump each later request is written too, as ARM.1.json, ARM.2.json, and so on.`;
 
 const settingsOf = async (options: {
@@ -132,6 +161,12 @@ const main = async (): Promise<void> => {
 			: callsOf(await bunFile(callsFile).text());
 	const claudeMd = claudeMdChars(args);
 	const userClaudeMd = claudeMdChars(args, "user-claude-md");
+	const userFiles = await Promise.all(
+		userFilesOf(args).map(async ({ path, source }) => ({
+			path,
+			text: await bunFile(source).text(),
+		})),
+	);
 	if (dump !== undefined) {
 		await mkdir(dump, { recursive: true });
 	}
@@ -146,6 +181,7 @@ const main = async (): Promise<void> => {
 				calls,
 				claudeMd,
 				userClaudeMd,
+				userFiles,
 			}),
 		),
 	);
