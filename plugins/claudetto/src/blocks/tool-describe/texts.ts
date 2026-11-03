@@ -4,7 +4,7 @@
 export const AGENT_ROSTER =
 	"Use `Artemis` for a list of places across many files, `Athena` for a verdict on a diff, `Hephaestus` for an edit whose goal, files, and check you can name, and `Hermes` for an answer from the web.";
 
-const AGENT = `Starts an agent for a multi-step task or parallel work. \`subagent_type\` is a listed type that sets model, effort, and tools: leave \`model\` unset.
+const AGENT = `Starts an agent for a multi-step task or parallel work. Set \`subagent_type\` to a type from the session's agent list, which sets model, effort, and tools, and do the work yourself when none fits. Leave \`model\` unset.
 \`Artemis\` lists places across files, \`Athena\` judges a diff, \`Hephaestus\` makes an edit with goal, files, and check named, \`Hermes\` answers from the web.
 The brief is its only context: goal, ruled out, paths, report format, scope.
 The user sees no report: relay it. A background agent reports by notice.`;

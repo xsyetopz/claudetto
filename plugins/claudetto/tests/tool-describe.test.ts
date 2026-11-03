@@ -46,3 +46,15 @@ for (const tool of Object.keys(TOOL_TEXTS)) {
 		expect(first.description).toBe(TOOL_TEXTS[tool] ?? "");
 	});
 }
+
+test("the `Agent` text picks a type from the session's agent list, or does the work when none fits", async ($: Engine, on: On) => {
+	on("tool.describe", (_$, e) => e);
+
+	const out = await $.tool.describe({
+		...call("x".repeat(4000)),
+		tool: "Agent",
+	});
+
+	expect(out.description).toContain("from the session's agent list");
+	expect(out.description).toContain("do the work yourself when none fits");
+});
