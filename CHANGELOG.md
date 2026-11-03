@@ -8,6 +8,10 @@ After each update, do the steps in the "Update" section of the README.
 
 ## [Unreleased]
 
+### Added
+
+- `.github/workflows/release.yml` tags a release after `ci` passes on a push to `main`: `v<version>` for the repository, and `<plugin>--v<version>` for each plugin in `.claude-plugin/marketplace.json`. It skips a tag that exists, and it opens a GitHub release for the repository tag with its changelog section.
+
 ## [0.3.0] - 2026-11-03
 
 ### Changed
