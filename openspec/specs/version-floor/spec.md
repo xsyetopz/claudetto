@@ -1,7 +1,7 @@
 # version-floor Specification
 
 ## Purpose
-Keep Claude Code at or above `2.1.314`, the version every check of claudetto runs on.
+Keep Claude Code at or above `2.1.316`, the version every check of claudetto runs on.
 
 ## Requirements
 

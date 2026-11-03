@@ -1,161 +1,86 @@
 # Search Tools and Ignore Files
 
-What a session searches with on Claude Code `2.1.316`, which ignore files each search reads, and what
-the command-line tools `ast-grep`, `fd`, `difft`, and `universal-ctags` give against the tools they
-would replace. Every number on this page was read on 2026-11-03 on this repository. No model was called.
+What a session searches with on Claude Code `2.1.317`, which ignore files `rg` and `fd` read, and what `ast-grep`, `fd`, `difft`, and `universal-ctags` give against the tools they would replace. The sizes come from this repository's `plugins` folder and its commits, read with the commands named in each section. No model was called.
 
 ## The Tools a Session Has
 
-The root session and the `general-purpose` agent get no `Grep` and no `Glob` tool. A call to `Grep`
-returns "No such tool available: Grep. Grep is not available in this session — search file contents
-with `grep` via the Bash tool instead", and a call to `Glob` names `find`. Read with
-`just capture --calls FILE --dump DIR`, which runs against the fake Messages API.
+The root session gets no `Grep` and no `Glob` tool. `just capture --arm plain --calls FILE --dump DIR`, with a list of a `Grep` call and a `Glob` call, runs against the fake Messages API, and the tool results read:
 
-An agent whose frontmatter names them gets them. The `claudetto:Artemis` request lists `Read`, `Grep`,
-and `Glob`, and the two tool texts are 3,224 and 731 characters, so each subagent request that carries
-them pays 3,955 characters.
+- `Grep`: "No such tool available: Grep. Grep is not available in this session — search file contents with `grep` via the Bash tool instead."
+- `Glob`: "No such tool available: Glob. Glob is not available in this session — find files with `find` via the Bash tool instead."
 
-In `Bash`, `grep`, `find`, and `rg` are shell functions of the shell snapshot. `grep` runs the
-embedded `ugrep` 7.8.4 and `find` runs the embedded `bfs` 4.1.1. The stock system prompt says "Prefer
-the dedicated file/search tools over shell commands when one fits", and the `Bash` tool text names
-`cat`, `head`, `tail`, `sed`, `awk`, and `echo`, not `grep` or `find`.
+An agent whose frontmatter names `Grep` and `Glob`, such as `plugins/claudetto/agents/Artemis.md` (`tools: Read, Grep, Glob`), gets them. This request was not captured, so the size of their tool texts is not stated.
 
 ## Ignore Files
 
-Claude Code reads no `.claudeignore`. The string is in no part of the `2.1.317` binary. A free
-`--calls` run in a sandboxed folder held five files, each named in one of `.gitignore`, `.ignore`,
-`.rgignore`, and `.claudeignore`, and one named in none:
+`.claudeignore` is in no part of the `2.1.317` program (`strings` finds no match). In a folder holding `g.txt`, `i.txt`, `r.txt`, `c.txt`, and `n.txt`, with each of the first four named in `.gitignore`, `.ignore`, `.rgignore`, and `.claudeignore` in that order, and `n.txt` named in none:
 
-| Search | Skips the `.gitignore` entry | `.ignore` | `.rgignore` | `.claudeignore` |
-| --- | --- | --- | --- | --- |
-| `grep` in `Bash` (`ugrep`) | yes | no | no | no |
-| `rg` in `Bash` | yes | yes | yes | no |
-| `find` in `Bash` (`bfs`) | no | no | no | no |
+| Search | Files listed |
+| --- | --- |
+| `rg --files` | `c.txt`, `n.txt` |
+| `fd -t f` | `c.txt`, `n.txt`, `r.txt` |
+| `find . -name '*.txt'` | all five |
 
-The `@` file picker reads `.gitignore` while the `respectGitignore` setting is `true`, its default,
-and always reads `.ignore`, as the setting's own text in `2.1.317` says. Whether it reads `.rgignore`
-is unmeasured. No ignore file stops `Read`. A `Read` deny rule does stop it, and under the sandbox
-the `sandbox.filesystem.denyRead` list is "merged with paths from `Read(...)` deny permission rules"
-(the text of `2.1.317`), so a `Read` deny reaches `Bash` too. What that does to `cat bun.lock`,
-`bun install`, `bun test`, and `tsc` is unmeasured.
+So `rg` reads `.gitignore`, `.ignore`, and `.rgignore`, `fd` reads `.gitignore` and `.ignore`, and neither reads `.claudeignore`. The `grep` and `find` of `Bash` run inside the program and were not read. The `respectGitignore` setting is in the `2.1.317` program. What the `@` file picker reads is not measured. No ignore file stops `Read`.
 
-So a user who wants a path kept out of a session:
+So a user who wants a path kept out of searches:
 
-- puts a path that no tool should list, and git should not track, in `.gitignore`;
+- puts a path that git should not track in `.gitignore`;
 - puts a path that git tracks and searches should skip, such as a vendored folder, in `.ignore`;
-- gets both files filled from a template by `just setup` and `/claudetto:setup`, as below;
-- leaves a whole read of a lock, minified, map, or dependency file to the `read-guard` block, which
-  refuses it and passes a read with `limit`.
+- gets both files filled from a template by `just setup` and `/claudetto:setup`;
+- leaves a whole read of a lock, minified, map, or dependency file to the `read-guard` block (`plugins/claudetto/src/blocks/read-guard/block.ts`).
 
 ### The Block Setup Writes
 
-`just setup` and `/claudetto:setup` write one marked block in `.gitignore` and one in `.ignore` of a git repo,
-after a diff and a yes, in code with no model call:
+`just setup` and `/claudetto:setup` write one marked block in `.gitignore` and one in `.ignore` of a git repo, after a diff and a yes, in code with no model call (`plugins/claudetto/src/tiers/starter/ignore`):
 
 ```text
 # >>> claudetto: generated by /claudetto:setup, edit outside this block
 # <<< claudetto
 ```
 
-- A rerun replaces only the text between the markers. A file with no block gets it after one blank line.
-- `.gitignore` holds the paths no tool should list (`.DS_Store`, `Thumbs.db`, `*.swp`,
-  `.claude/settings.local.json`, `.claude/worktrees/`, `.claude/claudetto/`, `CLAUDE.local.md`) and the
-  untracked heavy folders of each detected family. `.ignore` holds a heavy folder that git tracks and the
-  lock or minified files of the family, since git tracks those.
-- A path your own lines already name, a negation `!path` included, stays out of the block, because the
-  last matching line wins and an appended line would undo the negation. Lines outside the block are never
-  changed or reordered.
-- `.rgignore` is not written: `rg` reads it and `.ignore` alike, and `fd` and the `@` picker read
-  `.ignore`, so `.rgignore` adds only an `rg`-only override that no template line needs.
+- A rerun replaces only the text between the markers. Lines outside the block are never changed.
+- `.gitignore` holds the fixed paths `.DS_Store`, `Thumbs.db`, `*.swp`, `.claude/settings.local.json`, `.claude/worktrees/`, `.claude/claudetto/`, and `CLAUDE.local.md`, and the heavy folders of each detected family that git does not track.
+- `.ignore` holds a heavy folder that git tracks and the lock or minified files of a family that git lists.
+- `.rgignore` is not written, because `rg` reads `.ignore` as well.
 
 ## Output Size by Tool
 
-`rg --json` is no saving. For the same 3 hits of `session\.messages\(` in `plugins/claudetto/src`,
-`rg --json` prints 1,875 characters and `rg -n` prints 317.
-
-File lists, whole tree:
+Each reading is from the `plugins` folder of this repository.
 
 | Command | Lines | Characters |
 | --- | --- | --- |
-| `find . -type f` | 7,235 | 564,392 |
-| `rg --files` | 905 | 37,530 |
-| `fd -t f` | 905 | 37,530 |
-| `git ls-files` | 941 | 38,911 |
+| `rg --files` | 359 | 14,800 |
+| `fd -t f` | 359 | 14,800 |
+| `git ls-files .` | 363 | 14,974 |
+| `find . -type f -not -path '*/node_modules/*'` | 368 | 15,969 |
 
-`fd` 10.5.0 prints the same list as `rg --files`, and for `*.spec.ts` it prints 130 files to the
-130 of `rg --files -g '*.spec.ts'`, against 728 for `find . -name '*.spec.ts'`. It adds nothing that
-`rg`, already in every session, lacks.
+`fd` 10.5.0 prints the same list as `rg --files`, and for `*.spec.ts` both print 60 files, as `find . -name '*.spec.ts'` does. It adds nothing that `rg` lacks.
 
-`ast-grep` 0.51.1 against `rg`, in `plugins`:
+`rg --json 'session\.messages\('` over `plugins/claudetto/src` prints 1,818 characters, and `rg -n` prints 293 for the same 3 hits.
 
-| Query | `ast-grep` matches | `rg` matches | Why they differ |
-| --- | --- | --- | --- |
-| `next(e)` | 50 | 51 | `rg` also counts a comment |
-| `JSON.stringify($A)` | 41 | 34 | `rg` cannot match nested parentheses |
-| `$.fs.write($A, $B)` | 7 | 3 | the same |
-| `try { $$$ } catch { return undefined; }` | 16 | 16 (`rg -U`) | none |
+`ast-grep` 0.51.1 against `rg -n`, in `plugins`:
 
-For the last query the default output of `ast-grep run` is 11,948 characters against 2,929 for
-`rg -nU`, since it prints each whole matched block, and `--files-with-matches` prints 607 characters
-for both. So `ast-grep` is the more precise search for a structural query, and its default output is
-larger.
+| Query | `ast-grep` matches | `rg` matches |
+| --- | --- | --- |
+| `next(e)` | 57 | 58 (`rg -F -n 'next(e)'`) |
+| `JSON.stringify($A)` | 43 | 42 (`rg -n 'JSON\.stringify\('`) |
+| `$.fs.write($A, $B)` | 10 | 10 (`rg -n '\$\.fs\.write\('`) |
 
-`ast-grep` has no limit on the match count, and in a pipe `--heading never`, `-C 0`, and
-`--color never` leave the output the same size. `--inspect summary` adds 1,444 characters on stderr.
-The cut that works is `--json=stream` through `jq`, run from `plugins`:
+A text search also counts a comment or a call with different arguments, so the counts differ in both directions. For `next(e)`, the default output of `ast-grep run` is 4,004 characters, against 4,278 for `rg -F -n`. The form `ast-grep run -l ts -p 'PATTERN' --json=stream PATH | jq -r '"\(.file):\(.range.start.line+1):\(.text|split("\n")[0][0:80])"'` prints 2,917, and `--files-with-matches` prints 1,207.
 
-| Query | Default | `--files-with-matches` | `jq` `file:line:` and the first 80 characters | `rg -n` |
+`ast-grep` is not bundled. The `Athena` and `Hephaestus` bodies name it only for use when it is installed. The `missing-tool` block (`plugins/claudetto/src/blocks/missing-tool/block.ts`) looks for `ast-grep` and `sg` on the `PATH` at session start and shows one line to the user, not to the model, once per pinned version. The option `missingToolNoticeEnabled` set to `false` turns it off. `/claudetto:setup` shows the install command and runs it only after a yes.
+
+`difft` 0.72.0 against `git diff`, on five commits that changed `plugins` (characters):
+
+| Commit | `git diff` | `git diff -U1` | `difft --display inline` | `difft --width 120` |
 | --- | --- | --- | --- | --- |
-| `next(e)` | 3,493 | 994 | 2,537 | 3,739 |
-| `JSON.stringify($A)` | 5,776 | 1,349 | 3,008 | 3,618 |
-| `$.fs.write($A, $B)` | 668 | 164 | 616 | 260 |
-| `try { $$$ } catch { return undefined; }` | 10,636 | 503 | 762 | 2,641 (`-U`) |
+| `48f0b426` | 9,174 | 7,718 | 9,194 | 8,437 |
+| `073b9530` | 16,091 | 11,680 | 20,027 | 28,787 |
+| `a8dedb46` | 26,505 | 22,076 | 29,792 | 34,198 |
+| `bb06d6b9` | 12,989 | 10,876 | 12,979 | 17,441 |
+| `2104ab14` | 8,776 | 6,733 | 9,628 | 15,500 |
 
-That form costs 48 to 88 characters per match against 73 to 165 for `rg -n`, and it keeps the
-matches that `rg` misses. The command is
-`ast-grep run -l ts -p 'PATTERN' --json=stream PATH | jq -r '"\(.file):\(.range.start.line+1):\(.text|split("\n")[0][0:80])"'`,
-with `| head -n N` for a cap.
+`difft` is larger than `git diff` on all five commits but one inline reading. The smaller form is `git diff -U1`.
 
-It is not bundled: the `ast-grep` file in the `0.51.1` release zip for macOS `aarch64` is 53,955,184 bytes, and the `Athena` and `Hephaestus` bodies name it
-only for use when `command -v ast-grep` finds it. It installs with `brew install ast-grep`, or from
-the release zips for Linux `x86_64` and `aarch64` (gnu only) and macOS `x86_64` and `aarch64`, since
-`brew info --json=v2 ast-grep` lists one bottle for `0.51.1`, `arm64_golden_gate`, and none for Intel macOS.
-
-Two paths offer it, and neither bundles it. A new session looks up `ast-grep` and `sg` in the `PATH`
-folders, with `$.fs.exists` and no process, and when neither is there it shows one line to you,
-which is not sent to the model. The line names `brew install ast-grep` where `brew` is on the `PATH`
-and has a bottle for the platform, and otherwise the release zip `app-<target>.zip` and the folder to
-unpack it to (`~/.local/bin`, or `%USERPROFILE%\bin` on Windows). The targets are
-`aarch64-apple-darwin`, `x86_64-apple-darwin`, `x86_64-unknown-linux-gnu`,
-`aarch64-unknown-linux-gnu`, `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc`, and
-`i686-pc-windows-msvc`. The line is shown once per pinned version, and the option
-`missingToolNoticeEnabled` set to `false` turns it off. `/claudetto:setup` shows the same command
-and runs it only after you pick Yes; a No records the choice so the launch line stays quiet. Where
-there is no package manager it shows the zip URL and the folder, and runs nothing. On Linux the check
-does not look for `sg`, since the shadow tools own that name there.
-
-`difft` 0.72.0 against `git diff`, on five commits of this repository:
-
-| Commit | `git diff` | `git diff -U1` | `difft --display inline` | `difft` side by side, width 120 |
-| --- | --- | --- | --- | --- |
-| `2b35d777` | 17,861 | 11,903 | 24,056 | 32,273 |
-| `a8ce7a2a` | 15,466 | 12,267 | 17,356 | 15,515 |
-| `d6a98510` | 25,477 | 22,164 | 28,639 | 25,088 |
-| `a29d0f6a` | 9,772 | 7,471 | 10,594 | 14,560 |
-| `c5a52de7` | 2,238 | 1,591 | 2,489 | 3,958 |
-
-`difft` is larger inline on all five. The cut is `git diff -U1`, 13% to 33% smaller than the default
-three lines of context.
-
-`universal-ctags` 6.2.1 against `rg`, for the definition of a symbol in `plugins/claudetto/src`: the
-tag line of `refusalFor` is 136 characters and `rg -n "const refusalFor\b"` prints 120, and the
-whole file is 2,416. The other three symbols read the same way, 94 to 136 against 79 to 120. The
-index is 418,737 bytes and goes stale on each edit, and `Artemis` has no `Bash` to run `readtags`.
-So the index saves nothing over a definition search.
-
-## Tools Left Out
-
-`semgrep`, `comby`, `tree-sitter`, `eza`, `yq`, `htmlq`, `procs`, and `xh` are not named in any
-prompt text. The `Bash` output of `ps`, `curl`, and `jq` over the transcripts of this account is
-unmeasured. `WebFetch` already turns HTML into text, and no claudetto hook runs a shell tool that
-these replace.
+`universal-ctags` 6.2.1 against `rg`, for the definition of `refusalFor` in `plugins/claudetto/src`: its tag line is 118 characters and `rg -n 'const refusalFor\b'` prints 102. The tag file is 394,409 bytes. The tag file goes stale on each edit, so the index saves nothing over a definition search.

@@ -40,7 +40,7 @@ Setup SHALL fill `autoMode.environment` with the facts of the project, such as t
 #### Scenario: Fact from a Proposal
 
 - **WHEN** an `/auto-mode-setup` proposal names a fact of the project and task 6.3 keeps it
-- **THEN** `environment` holds that fact, and `docs/auto-mode.md` cites the session it came from
+- **THEN** `environment` holds that fact
 
 ### Requirement: Review the Rules with the Built-in Critique
 
@@ -62,7 +62,7 @@ A call that a permission rule or a hook already settles SHALL NOT reach the clas
 
 ### Requirement: Narrow Rules Keep Calls from the Classifier
 
-Every tool call that claudetto can settle with a narrow allow rule MUST NOT reach the classifier, because one classifier request has a `system[1]` of `140,015` characters and `140,718` in all, which is larger than three first requests of `42,676` characters (`docs/prompt/machinery.md`, `docs/surfaces.md`).
+Every tool call that claudetto can settle with a narrow allow rule MUST NOT reach the classifier, because one classifier request has a `system[1]` of `140,015` characters and `141,962` in all on `2.1.317`, which is larger than three first requests of `46,084` characters (`docs/prompt/machinery.md`, `docs/surfaces.md`).
 
 #### Scenario: Routine Call with a Rule
 

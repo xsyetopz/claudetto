@@ -42,7 +42,7 @@ When `bwrap` is missing, the script prints `` `bwrap` is missing; install `bubbl
 
 ## Cost
 
-The prefix adds one process per call. Measured on macOS 27.2 with `time` over 20 runs: `true` under the prefix took 1.013 s in total (about 51 ms a call), plain `sh -c true` took 0.099 s (about 5 ms), and `claudetto-confine --check --` took 0.728 s (about 36 ms). The guard adds one `--check` process per call. The size of the first request with `confine` on and off is unmeasured here: `tools/capture/run.ts` was denied by the auto mode classifier in this session.
+The prefix adds one process per call. Measured on macOS 27.2 with `time` over 20 runs: `true` under the prefix took 1.083 s in total (about 54 ms a call), plain `sh -c true` took 0.109 s (about 5 ms), and `claudetto-confine --check --` took 0.788 s (about 39 ms). The guard adds one `--check` process per call. The effect of `confineEnabled` on the size of the first request is unmeasured.
 
 ## Check
 

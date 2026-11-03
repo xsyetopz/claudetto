@@ -39,7 +39,7 @@ The system SHALL switch to another path only when the arm shows a lower mean cos
 #### Scenario: A Bar Is Read
 
 - **WHEN** a report scores an arm against the bars
-- **THEN** it takes each definition from `docs/evidence/code-compaction-probe.md`, "The Bars", which names no file of a probe harness, so the rule outlives the harness that produced it
+- **THEN** it takes each definition from the requirement above, which names no file of a probe harness, so the rule outlives the harness that produced it
 
 #### Scenario: Cheaper but Worse
 
@@ -100,7 +100,7 @@ The model named is the constant `HAIKU_MODEL` of `src/tiers/tiers.ts` and not a 
 #### Scenario: The Engine's Own Compaction Is Priced
 
 - **WHEN** the cost of an engine-answered compaction is needed, to compare against a handler-answered one
-- **THEN** it is read from `$.session.usage()` deltas across the boundary and never from the transcript, because the transcript carries no `usage` record for the summarizer request at all: the summary arrives as a `user` message with `isCompactSummary` of `true` and no `usage` block, and no `assistant` record exists for that turn (measured over 35 real compactions, `docs/evidence/compaction/boundaries.md`)
+- **THEN** it is read from `$.session.usage()` deltas across the boundary and never from the transcript, because the transcript carries no `usage` record for the summarizer request at all: the summary arrives as a `user` message with `isCompactSummary` of `true` and no `usage` block, and no `assistant` record exists for that turn
 
 #### Scenario: The Saving Is Claimed
 

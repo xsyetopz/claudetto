@@ -36,7 +36,7 @@ A rebuild MUST ship under claudetto's own `MIT`, MUST NOT copy source code of th
 #### Scenario: The Observer Prompt
 
 - **WHEN** the original's observer prompt is offered as the starting text
-- **THEN** the rebuild writes its own instead, for size and not for licence: the original's fixed text is `33,015` characters plus a `985`-character no-tools frame, about `8,250` tokens on every check, and it instructs about artifacts, pages, and follow-up directions that the rebuild drops (`docs/keep/plugins/you-should-know-rebuild.txt`, the `COST OF ONE CHECK` line). Task 11.4 reports the character count of what ships
+- **THEN** the rebuild writes its own instead, for size and not for licence: the original's fixed text rides on every check, and it instructs about artifacts, pages, and follow-up directions that the rebuild drops. Task 11.4 reports the character count of what ships
 
 #### Scenario: A Licence Is Offered as a Grant
 

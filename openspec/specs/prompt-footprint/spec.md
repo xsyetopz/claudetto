@@ -7,7 +7,7 @@ The prompt text that claudetto adds stays small, stable, and measured. A test fa
 
 ### Requirement: Byte Budget per Piece
 
-Each of `agents/main.md`, `output-styles/Concise.md`, each skill `description:` line, and each text injected by a hook SHALL have a byte budget that a test checks. No budget value exists yet. Task 3.5 derives each budget from a measurement, which is the capture readings of tasks 2.3 and 3.1, and the only number fixed so far is the `5,627` of the next requirement.
+Each of `agents/main.md`, `output-styles/Concise.md`, each skill `description:` line, and each text injected by a hook SHALL have a byte budget that a test checks. No budget value exists yet. Task 3.5 derives each budget from a measurement, which is the capture readings of tasks 2.3 and 3.1, and the only number fixed so far is the body size of the next requirement.
 
 #### Scenario: Over Budget
 
@@ -26,7 +26,7 @@ Each of `agents/main.md`, `output-styles/Concise.md`, each skill `description:` 
 #### Scenario: Unset Config
 
 - **WHEN** the budget is read from a config without `autoMemoryEnabled: false`
-- **THEN** it is not the budget, because that config keeps the memory section and its body reads `5,627` (`docs/surfaces.md`, "The Baseline Moved a Third Time")
+- **THEN** it is not the budget, because that config keeps the memory section, so its body is larger
 
 ### Requirement: Budgets Fall
 

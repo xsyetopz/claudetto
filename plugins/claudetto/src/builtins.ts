@@ -23,7 +23,7 @@ export const BUILTIN_PLUGINS: readonly BuiltinPlugin[] = [
 	{
 		name: "sec-default",
 		off: false,
-		why: "It declares `enabledFromTrustedSettingsOnly` and `enabledFromPolicyOnly`, so a user `false` does not decide it (`docs/gates.md:100`).",
+		why: "It declares `enabledFromTrustedSettingsOnly` and `enabledFromPolicyOnly`, so a user `false` does not decide it (`docs/gates.md`).",
 	},
 	{ name: "agents-md", off: true },
 	{ name: "telemetry", off: true },

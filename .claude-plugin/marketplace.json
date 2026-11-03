@@ -12,7 +12,7 @@
 		{
 			"name": "claudetto",
 			"source": "./plugins/claudetto",
-			"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, skills, and an output style. It patches nothing. The tree is a rebuild in progress, and each capability lands with the measurement that decided its values. The one decided default is the compaction path, which stays the built-in compaction of Claude Code until a measured probe result beats it.",
+			"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, skills, and an output style. It patches nothing.",
 			"category": "productivity"
 		},
 		{

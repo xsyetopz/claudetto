@@ -4,14 +4,11 @@ Claudetto tunes Claude Code for coding at the lowest token cost.
 It works through the official extension points only: settings, hooks, skills, commands, and an output style.
 It patches nothing.
 
-Version `0.2.0`. The tree is a rebuild in progress, so the core plugin ships less than the older releases did.
-Each capability lands with the measurement that decided its values.
-
 The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), which ships the plugins `clawdipedia-docs` and `cc-inspect`, each with a skill and an MCP server.
 
 ## Features
 
-- A first request of 25,028 characters against 46,084 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
+- A first request of 25,028 characters against 46,084 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,886 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A `/claudetto:handoff` command that has the session call the `handoff` tool, plus a handoff written before a compaction.
 - A handoff reply that compacts the conversation to itself, with no summary call, so the next turn reads the cached prefix.
@@ -62,18 +59,18 @@ A later append replaces only that section. No session start adds the rules, so a
 
 A setup run takes no model turn: the dialogs open from the hook, and no tool schema or list of differences enters the request.
 A session with no one to ask, such as `claude -p`, writes nothing.
-Its row in the command listing costs 48 characters of the first request.
 
-### The Four Groups
+### The Five Groups
 
 | Group | What keeping it writes |
 | --- | --- |
 | Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. The deny list holds the measured tool denies, `DesignSync`, and the six built-in agents. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
-| Sandbox and auto mode | `sandbox`, with `allowUnsandboxedCommands` set to `false`, and `autoMode`. The sandbox costs characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs. `autoMode` replaces the built-in classifier rule lists with claudetto's shorter suite, which judged the scripted classifier cases as well as the built-in lists at about half the price per call. |
+| Sandbox and auto mode | `sandbox`, with `allowUnsandboxedCommands` set to `false`, and `autoMode`. The sandbox costs characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs. `autoMode` replaces the built-in classifier rule lists with claudetto's shorter suite. |
 | Models and windows | `model`, `effortLevel`, `autoCompactWindow`, `fallbackModel` (`claude-sonnet-5-5`), `modelSettings` (the Haiku window and the `maxEffortLevel` ceilings `high` for `claude-opus-5-5`, `medium` for `claude-sonnet-5-5`, and `high` for `claude-haiku-5-5`), `idleCompaction`, the `env` entries `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `CLAUDE_CODE_SUBAGENT_MODEL`, the `env` pins `ANTHROPIC_DEFAULT_MODEL` and `ANTHROPIC_DEFAULT_OPUS_MODEL` (`claude-opus-5-5`), `ANTHROPIC_DEFAULT_SONNET_MODEL` (`claude-sonnet-5-5`), and `ANTHROPIC_DEFAULT_HAIKU_MODEL` (`claude-haiku-5-5`), so that `default` and every alias resolve to these models, and the status line keys `statusLine` and `subagentStatusLine`. |
+| Worktrees | `worktree.baseRef` set to `head`, so a worktree that `EnterWorktree` or an agent with `isolation: "worktree"` makes starts at the current branch with its unpushed commits. Unset, Claude Code starts it at `origin/<default branch>`. |
 | Features off | `$schema`, the five `/config` switches (`workflowSizeGuideline`, `workflowKeywordTriggerEnabled`, `enableWorkflows`, `enableArtifact`, `remoteControlAtStartup`), the seven claude.ai and notification keys (`disableClaudeAiConnectors`, `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `autoUploadSessions`, `disableRemoteControl`, `inputNeededNotifEnabled`, `agentPushNotifEnabled`), the session features (`autoMemoryEnabled`, `autoDreamEnabled`, `promptSuggestionEnabled`, `awaySummaryEnabled`, `spinnerTipsEnabled`, `feedbackDrafts`, `feedbackSurveyRate`, `todoFeatureEnabled`, `voiceEnabled`), the prompt keys (`includeGitInstructions`, `showThinkingSummaries`, `attribution`), the behaviors (`autoContinueAtUsageLimit`, `switchModelsOnFlag`, `precomputeCompactionEnabled`, `showClearContextOnPlanAccept`, `useAutoModeDuringPlan`, `crossSessionInbound`, `prefersReducedMotion`), `minimumVersion`, and the feature `env` flags of `plugins/claudetto/src/tiers/env.ts`. |
 
-The tool gives each group's measured figures from `plugins/claudetto/src/cuts.ts` and `plugins/claudetto/src/deny.ts`, and `just inventory` checks them against a reading taken now.
+The tool gives each group's figures from `plugins/claudetto/src/cuts.ts` and `plugins/claudetto/src/deny.ts`, and `just inventory` checks them against a reading taken now.
 `minimumVersion` keeps the updater from moving below the version claudetto is checked on; it does not stop an older Claude Code from starting.
 
 A key you discard is not written, and the value you already have for it stays as it is.
@@ -81,7 +78,6 @@ A key you discard is not written, and the value you already have for it stays as
 The `autoMode` suite holds no fact of this repository, so its `environment` list names only how the classifier tells a trusted host from an external one.
 
 A plugin's own settings reach only `agent` and `subagentStatusLine`, so a settings file is the one way claudetto can give you permissions, environment variables, and models.
-A `settings.read` hook that answers them instead was built and dropped: it read 61,353 characters against 31,861 for the file, so the readers that build the first request do not take its answer.
 
 ### Setup from a Checkout
 
@@ -114,7 +110,7 @@ On any git repo, `just setup` and `/claudetto:setup` also offer a block in `.git
 
 | Part | Effect |
 | --- | --- |
-| Settings | `/claudetto:setup` writes the keys you keep from the four groups above, the sandbox switches, the code rules file, and the general rules section of `~/.claude/CLAUDE.md`. |
+| Settings | `/claudetto:setup` writes the keys you keep from the five groups above, the sandbox switches, the code rules file, and the general rules section of `~/.claude/CLAUDE.md`. |
 | Handoff | `/claudetto:handoff` has the session call the `handoff` tool, which writes the file, clears, and submits the next prompt. A handoff is also written before a compaction and read back on `resume`. See [Handoff](#handoff). |
 | Compaction | A reply that starts with `# Handoff` compacts the conversation to the first message, one assistant line, and that reply, with no model call. A turn that ends at 400,000 tokens of context or more gets its handoff from one fork of the conversation, which the cache serves, compacts the same way, and waits for the user's next prompt. Any other compaction is Claude Code's, with a handoff written before it. The option `cheapSummaryEnabled` set to `true` answers it with one bounded call on `claude-haiku-5-5`. |
 | Output style | The plugin ships `claudetto:Concise`, which the Smaller prompt group selects. |
@@ -127,6 +123,8 @@ On any git repo, `just setup` and `/claudetto:setup` also offer a block in `.git
 | Hygiene | `just hygiene` removes the stale temp folders and old handoffs that Claude Code never removes, and the saved outputs and hook heartbeats past a day, and takes `--dry-run`. The same sweep runs at each startup. `handoffCleanupPeriodDays`, `sessionTempCleanupPeriodDays`, and `probeCleanupPeriodMinutes` set the age per kind, 0 turns a kind off, and `hygieneEnabled` set to `false` starts no sweep. |
 | `/init` | The interview reads the repository, asks only what it does not show, and writes the memory files after a yes to each draft. |
 | Plan mode | A shorter plan mode reminder that names `claudetto:Artemis` for a search over many files. |
+| Worktree base | When an agent starts in a worktree, or `EnterWorktree` makes one, that lacks the tip of the main checkout's branch, the model is told both commits and `git merge --ff-only <tip>`, and you see one line naming `worktree.baseRef`. `just worktree-base` reproduces it against the fake API. |
+| Model row notice | One line, once per session and model, when a response names a model that claudetto's tier row does not. |
 | Version warning | One line at startup when Claude Code is older than `2.1.316`. |
 
 ### Run the Hygiene Sweep by Hand
@@ -209,12 +207,12 @@ Claude calls the `handoff` tool or writes the handoff as a reply, and `/claudett
 - A context block on `prompt.context` tells the session to call the tool when the work in hand is done and the conversation has grown long.
 - `/claudetto:handoff` is a prompt command whose file tells the session to call the tool, so you can ask for it before the session decides to. Code redacts the fields.
 - A typed `/clear` writes no file and reads none back.
-- `classic.PreCompact` writes a handoff before a compaction.
+- A `session.compact` hook writes a handoff from the conversation before a compaction of the main conversation, except a `precompute` and a handover.
 - `classic.SessionStart` reads the newest handoff back into the next session after a `resume`, once.
   A handoff older than seven days is named in one line and not injected.
-- A main-loop reply that starts with `# Handoff` is saved as a handoff file. Then `/compact` runs, and the hook answers it with the first message, kept whole, one assistant line, and the reply. So no summary call is made. The next request reads the tools and system prompt from cache and writes the rest again, about 4k tokens. Then the next prompt goes in: "Continue from the handoff above: take its next steps."
+- A main-loop reply that starts with `# Handoff` is saved as a handoff file. Then `/compact` runs, and the hook answers it with the first message, kept whole, one assistant line, and the reply. So no summary call is made. Then the next prompt goes in: "Continue from the handoff above: take its next steps."
   Claude Code's own system section that says no handoff is needed is left out.
-- A main-loop turn that ends with its context at `handoverThresholdTokens` or more, with no handoff reply, hands over through `$.model.fork`. At idle the fork repeats the last request and adds the final reply and one prompt for the handoff, so the cache serves the context: on the real API the fork read 33,568 tokens from cache and wrote 29. The handover then waits for the user's next prompt, because the turn already answered the user. A reply that starts with `# Handoff` goes the way above. Any other fork reply leaves the compaction to Claude Code, with one log line, and no turn's end forks again until a compaction has run. A turn after a handover that still ends at the size forks nothing, so the session never hands over in a loop.
+- A main-loop turn that ends with its context at `handoverThresholdTokens` or more, with no handoff reply, hands over through `$.model.fork`. At idle the fork repeats the last request and adds the final reply and one prompt for the handoff, so the cache can serve the context. The handover then waits for the user's next prompt, because the turn already answered the user. A reply that starts with `# Handoff` goes the way above. Any other fork reply leaves the compaction to Claude Code, with one log line, and no turn's end forks again until a compaction has run. A turn after a handover that still ends at the size forks nothing, so the session never hands over in a loop.
   Claude Code's own compaction stays for a turn that outgrows the window before it ends.
   When the session wrote a handoff file itself, the hooks write no file beside it.
 
@@ -222,7 +220,6 @@ The files are in `.claude/claudetto/handoffs`.
 
 Each model call reads the whole context again, so the size of the context sets the cost of each turn.
 A handoff reply starts a fresh context from the handoff.
-A model change rebuilds the prompt cache, and an effort change keeps it.
 
 Use OpenSpec for specs: `claudetto` has no spec store.
 When `openspec` is on `PATH` and the project has no `openspec/`, `just setup` runs `openspec init --tools claude --profile core`, which writes OpenSpec's six `core` workflow skills. Install the CLI with `bun add -g @fission-ai/openspec`.

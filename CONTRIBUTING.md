@@ -2,18 +2,22 @@
 
 ## Set Up
 
-1. Install Bun `1.4.4` (the `packageManager` field of `package.json`), `just`, and Claude Code `2.1.316`.
+1. Install Bun `1.4.4` (the `packageManager` field of `package.json`), `just`, and Claude Code `2.1.316` or later.
 2. Run `bun install` in the repository root.
 3. Run `just check`.
-   It runs the lint, the type check, the tests, the plugin validation, and the hook lab.
+   It runs `just lint`, `just typecheck`, `just test`, `just validate`, and `just lab`, each of which you can run alone.
    It must pass before you open a pull request.
+
+`just --list` names every recipe.
+`just test` takes the arguments of `bun test`, such as a file or `-t RE`.
+`bun run lint:fix` applies the `biome` fixes, and `bun run lint:md` lints the Markdown files.
 
 ## Layout
 
 - `plugins/claudetto/src/` holds the shared files and one folder for each slice, and `hooks/hooks.json` names the one hooks module `src/register.ts`.
 - `tools/` holds the scripts of `just check`, and `claudekit/` holds the paid and manual tools.
 - `tests/claudetto/` holds the unit tests of the core plugin, and a `__tests__/` folder beside a source counts as well.
-- `plugins/*/tests/` holds the hook labs, which only `claude plugin test` runs, because `bun test` skips them (`bunfig.toml:11`).
+- `plugins/*/tests/` holds the hook labs, which only `just lab` (`claude plugin test`) runs, because `bun test` skips them (`bunfig.toml:11`).
 - [`AGENTS.md`](AGENTS.md) has every rule of the repository, which `CLAUDE.md` imports.
 
 ## Rules
@@ -22,10 +26,9 @@
 In short:
 
 - Keep each file at 300 lines or less, and each test file at 500 lines or less.
-- Write docs in STE-flavored ASD-STE100, with no semicolons.
 - Put each code item in inline code.
-- Use only the documented extension points of Claude Code.
-- A plugin imports nothing from another plugin.
+- Use `bun` and `bunx` for every package step, never `npm` or `npx`.
+- Write no internal note in source: no task ID, no path into `openspec/`, no history.
 
 ## Tests First
 

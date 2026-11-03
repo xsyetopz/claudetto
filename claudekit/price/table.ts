@@ -23,9 +23,7 @@ export interface ModelPrice {
 }
 
 /**
- * The prices of the models the harnesses run, from the platform pricing page. The `claude-opus-5-5`
- * row and the `1h` writes of `claude-haiku-5-5` come from `docs/evidence/usage-evidence/usage-evidence.md`
- * and `docs/models.md`.
+ * The prices of the models the harnesses run, from the platform pricing page.
  */
 export const PRICES: Readonly<Record<string, ModelPrice>> = {
 	"claude-opus-5-5": {
