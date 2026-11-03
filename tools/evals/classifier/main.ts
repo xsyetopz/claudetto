@@ -4,7 +4,7 @@
 import { resolve } from "node:path";
 import { cwd } from "node:process";
 import { UPSTREAM } from "../../../claudekit/api/forward.ts";
-import { costOf } from "../../../claudekit/price/cost.ts";
+import { costOf, promptTokens } from "../../../claudekit/price/cost.ts";
 import { shareText, weeklyShare } from "../../../claudekit/price/share.ts";
 import type { CommandRunner } from "../../../claudekit/session/command.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../../limits.ts";
@@ -138,6 +138,20 @@ const spentUsd = (outcomes: readonly ClassifierOutcome[]): number => {
 	return usd;
 };
 
+/** The tokens the forwarded replies report, since the weekly limit counts tokens, not dollars. */
+const spentLine = (outcomes: readonly ClassifierOutcome[]): string => {
+	const rows = outcomes.flatMap((one) => one.forwarded);
+	let tokens = 0;
+	let read = 0;
+	for (const row of rows) {
+		if (row.usage !== undefined) {
+			tokens += promptTokens(row.usage) + (row.usage.output_tokens ?? 0);
+			read += 1;
+		}
+	}
+	return `measured: ${tokens.toLocaleString("en-US")} tokens in ${read} of ${rows.length} forwarded replies, ${shareText(weeklyShare(tokens))} of the weekly limit`;
+};
+
 /** The score of each arm and the dollars its forwarded replies report, so a paid run records its own bill. */
 export const reportLines = (
 	outcomes: readonly ClassifierOutcome[],
@@ -157,6 +171,7 @@ export const reportLines = (
 			),
 		];
 	}),
+	spentLine(outcomes),
 	`total: $${spentUsd(outcomes).toFixed(4)} measured`,
 ];
 

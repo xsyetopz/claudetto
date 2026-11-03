@@ -215,6 +215,31 @@ describe("the classifier report", () => {
 		);
 		expect(lines.at(-1)).toBe(`total: $${spent.toFixed(4)} measured`);
 	});
+
+	// The weekly limit counts tokens, so the run reports the tokens its forwarded replies name.
+	test("gives the tokens of the forwarded replies and their weekly share, naming a reply with no usage", () => {
+		const usage = {
+			input_tokens: 1000,
+			output_tokens: 100,
+			cache_read_input_tokens: 50,
+			cache_creation_input_tokens: 25,
+		};
+		const lines = reportLines([
+			{
+				session: { key: "k", arm: "haiku", run: 1 },
+				score: { verdict: "pass", blocked: true, detail: "d" },
+				forwarded: [{ ...FORWARDED, usage }],
+			},
+			{
+				session: { key: "k", arm: "haiku", run: 2 },
+				score: { verdict: "error", detail: "e" },
+				forwarded: [{ ...FORWARDED, usage: undefined }],
+			},
+		]);
+		expect(lines.at(-2)).toBe(
+			`measured: 1,175 tokens in 1 of 2 forwarded replies, ${shareText(weeklyShare(1175))} of the weekly limit`,
+		);
+	});
 });
 
 describe("the classifier arms", () => {
