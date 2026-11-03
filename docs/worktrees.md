@@ -18,17 +18,19 @@ Otherwise the base is `refs/remotes/origin/<default branch>`, fetched first when
 when that ref is missing and the fetch fails does it fall back to local `HEAD`. The settings schema documents
 the key with the default `"fresh"` at `docs/keep/settings/claude-code-managed-settings.schema.json:1132`.
 claudetto does not pick the base: it registers no `WorktreeCreate` hook. The setup before the `0.0.0`
-restart wrote `worktree: { baseRef: "head" }`, from commit `cb709ac5`. The `0.1.0` setup leaves the
-`worktree` setting unset, because none of its keys turns worktrees on or off, and since then nothing in
-claudetto sets the key.
+restart wrote `worktree: { baseRef: "head" }`, from commit `cb709ac5`. The setups of `0.1.0` to `0.2.x`
+left the key unset, so each new worktree started at `origin/<default branch>`.
 
 ## The Fix
 
-Set the key in the settings of a repo whose work happens on a long-lived branch:
+Setup writes the key, in the "Worktrees" group of its dialog, which names the key and what it does:
 
 ```json
 { "worktree": { "baseRef": "head" } }
 ```
+
+A user who already set `worktree.baseRef` keeps that value. `just setup` writes it only when it is unset,
+and the `/claudetto:setup` dialog does not offer it.
 
 The `worktree-base` block catches the case when the key is not set. When an agent starts in a folder under
 `.claude/worktrees/`, and when `EnterWorktree` returns one, it runs four `git` commands with no model call.
@@ -52,3 +54,12 @@ Measured on 2026-11-03 with `2.1.316`:
 | `agent --plugin-dir plugins/claudetto` | `7e4284a`, `origin/main` | `23f671d` | present |
 | `enter --plugin-dir plugins/claudetto` | `467336d`, `origin/main` | `494fb94` | present |
 | `agent head --plugin-dir plugins/claudetto` | `d2febcd`, the tip | `d2febcd` | none |
+
+With the `baseRef` that `just setup --settings FILE` wrote to a scratch file, `"head"`, measured on
+2026-11-03 with `2.1.317`:
+
+| Run | Worktree start | `feat` tip | Guard line |
+| --- | --- | --- | --- |
+| `agent head --plugin-dir plugins/claudetto` | `2fdf5d9`, the tip | `2fdf5d9` | none |
+| `enter head --plugin-dir plugins/claudetto` | `561f14d`, the tip | `561f14d` | none |
+| `agent --plugin-dir plugins/claudetto` | `957177e`, `origin/main` | `5036af9` | present |

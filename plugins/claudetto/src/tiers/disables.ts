@@ -46,6 +46,9 @@ export const BEHAVIOR_KEYS = {
 	prefersReducedMotion: true,
 } as const;
 
+/** Claude Code otherwise starts a new worktree at `origin/<default branch>`, without the commits of the current branch. */
+export const WORKTREE = { baseRef: "head" } as const;
+
 export const FALLBACK_MODELS: readonly string[] = ["claude-sonnet-5-5"];
 
 export const MAX_EFFORT: Readonly<Record<string, string>> = {

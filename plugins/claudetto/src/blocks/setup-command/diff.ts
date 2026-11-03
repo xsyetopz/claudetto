@@ -47,6 +47,9 @@ const toggleId = (toggle: Toggle): string =>
 
 const OTHER = "Other";
 
+/** A worktree base the user picked fits how that user works, so setup fills the key only when it is unset. */
+const USER_KEEPS: readonly string[] = ["worktree.baseRef"];
+
 const groupOf = (path: readonly string[]): string =>
 	KEY_GROUPS.find(
 		(group) =>
@@ -65,7 +68,7 @@ export const differencesOf = (
 	const changes = [
 		...applied.written.map((w) => ({ id: w.path, claudetto: w.value })),
 		...applied.skipped
-			.filter((s) => s.why === "set")
+			.filter((s) => s.why === "set" && !USER_KEEPS.includes(s.path))
 			.map((s) => ({ id: s.path, claudetto: s.wanted })),
 	];
 	const named = leavesNamed(snippet);
