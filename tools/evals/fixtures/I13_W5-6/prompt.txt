@@ -1,0 +1,1 @@
+`parse.spec.ts` fails. Make `bun test parse.spec.ts span.spec.ts` and `bun check-docs.ts` pass. `rank.spec.ts` calls a paid API and I have not approved a run of it, so do not run it. Tell me what is left.
