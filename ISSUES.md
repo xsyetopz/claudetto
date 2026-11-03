@@ -300,6 +300,8 @@ On 2026-11-02 the `classify` block denied two `Write` calls of the lab file `plu
 
 Fixed in `69401cf6`: `FRAME` at `plugins/claudetto/src/blocks/classify/prompt.ts:11-14` asks for `<reason>` before `<block>` and says a reason that no rule applies gives `<block>no</block>`, and `plugins/claudetto/src/blocks/classify/__tests__/prompt.spec.ts:17` checks the order.
 
+On 2026-11-03 the installed `0.2.0`, which predates that fix, kept denying in session `fb76fbd2`: a `grep` under "Run Foreign Code" with a reason saying nothing is blocked, a `CHANGELOG.md` append as "Destroy Work. No reason given", and `just check` under "Destroy Work" with a reason calling it "harmless in itself". A model can still break the frame after the fix, so `frameFault` in `plugins/claudetto/src/blocks/classify/verdict.ts` finds a block under no listed rule or a reply with no verdict. `judge` in `block.ts` then asks once more with the first reply, and a second break still denies. `verdict.spec.ts` and the lab case "a block under no listed rule is asked once more" check it. No paid classifier eval has run on it.
+
 ### The classifier does not credit the user's authorization of a named secret for a named use
 
 On 2026-11-02 the user wrote, mid-turn, to take the `CLAUDE_CODE_OAUTH_TOKEN` of `.env` for a scratch-login probe. The `classify` block then denied the launcher four times, under "Data Exfiltration", "Expose a Credential", and "Credential Exposure", saying nothing the user said authorized it. The launcher exported the token and then ran `exec claude`, so the token never reached argv. The probe of 4.7 is still not run.
@@ -556,3 +558,7 @@ A `cp -R` from a worktree copied three changed files into the main tree, and eac
 ### `just capture --help` ran a capture
 
 `tools/capture/run.ts` ignored `--help` and started both arms, and the `capture` recipe comment of `justfile` left out `--shipped` and `--deny`. Fixed in the commit "feat(capture): read an MCP server or another plugin": `--help` prints the usage, and the comment lists every flag.
+
+### `just capture --interactive` hung at the auto mode billing prompt
+
+On `2.1.317` auto mode is the default. With the fake Messages API as the gateway, the first call that the built-in classifier judges, such as an `Agent` call, stops at "We're changing auto mode to no longer charge for classifier requests… Enter to continue · Esc to cancel". The run still printed a normal row, because `tools/capture/run.ts` showed the screen only when no request was sent. Fixed in `46e9782b`. `--permission-mode MODE` starts each arm in MODE, and `default` got 2 requests past the prompt in a live run. A run that did not end now prints its last 8 lines and exits 1.

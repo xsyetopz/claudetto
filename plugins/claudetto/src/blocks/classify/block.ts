@@ -1,5 +1,7 @@
 import type {
 	EngineInterface,
+	ModelCompleteRequest,
+	ModelCompleteResult,
 	On,
 	PluginOptions,
 	PreToolUseResult,
@@ -23,10 +25,13 @@ import { transcriptOf } from "./transcript.ts";
 import {
 	actionOf,
 	denied,
+	frameFault,
 	jevQuestion,
 	jevVerdict,
 	READ_ONLY_TOOLS,
+	secondLook,
 	type Variant,
+	type VerdictRequest,
 	verdictOf,
 	verdictRequest,
 } from "./verdict.ts";
@@ -66,6 +71,40 @@ const askJev = async (
 	}
 };
 
+const complete = async (
+	$: EngineInterface,
+	request: ModelCompleteRequest,
+): Promise<ModelCompleteResult> => {
+	const reply = await $.model.complete(request);
+	// A failed write must not change the verdict, so it is logged and dropped.
+	try {
+		const made = classifyRowOf(request.model, reply, await $.clock.now());
+		const rows = classifyOf(await $.store.get(CLASSIFY_KEY));
+		await $.store.set(CLASSIFY_KEY, keepClassify(rows, made));
+	} catch (error) {
+		$.ui.log(`Failed to record the classify tokens (${error})`);
+	}
+	return reply;
+};
+
+/** A reply that breaks the frame gets one more ask; a second break still denies, and says why. */
+const judge = async (
+	$: EngineInterface,
+	request: VerdictRequest,
+): Promise<PreToolUseResult> => {
+	const reply = await complete($, request);
+	const fault = frameFault(reply);
+	if (fault === undefined || !reply.isAnswered) {
+		return verdictOf(reply);
+	}
+	const again = await complete($, secondLook(request, reply.text, fault));
+	const verdict = verdictOf(again);
+	const still = frameFault(again);
+	return still !== undefined && "deny" in verdict
+		? { deny: `${verdict.deny} The model broke the frame twice: ${still}.` }
+		: verdict;
+};
+
 /** A thrown hook is skipped and the hooks beneath decide, so every failure answers deny here. */
 export const classify = async (
 	$: EngineInterface,
@@ -88,17 +127,7 @@ export const classify = async (
 		if (jev !== undefined) {
 			return jev;
 		}
-		const request = verdictRequest(variant, transcript, action);
-		const reply = await $.model.complete(request);
-		// A failed write must not change the verdict, so it is logged and dropped.
-		try {
-			const made = classifyRowOf(request.model, reply, await $.clock.now());
-			const rows = classifyOf(await $.store.get(CLASSIFY_KEY));
-			await $.store.set(CLASSIFY_KEY, keepClassify(rows, made));
-		} catch (error) {
-			$.ui.log(`Failed to record the classify tokens (${error})`);
-		}
-		return verdictOf(reply);
+		return await judge($, verdictRequest(variant, transcript, action));
 	} catch (error) {
 		return denied(`the check failed (${error})`);
 	}
