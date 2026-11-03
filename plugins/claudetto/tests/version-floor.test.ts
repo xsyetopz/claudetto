@@ -32,6 +32,15 @@ test("`2.1.311` at startup adds one line naming it and the minimum version", asy
 	expect(lines[0]).toContain(MINIMUM_VERSION);
 });
 
+test("`2.1.315` at startup warns, since claudetto needs `2.1.316`", async ($: Engine, on: On) => {
+	const lines = lab(on, "2.1.315");
+
+	await $.classic.SessionStart({ source: "startup" });
+
+	expect(lines).toHaveLength(1);
+	expect(lines[0]).toContain("2.1.316 or later");
+});
+
 test("the minimum version at startup adds no line", async ($: Engine, on: On) => {
 	const lines = lab(on, MINIMUM_VERSION);
 

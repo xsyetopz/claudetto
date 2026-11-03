@@ -14,7 +14,6 @@ import {
 	tagOf,
 	turnRow,
 	turnsOf,
-	USD_KEY,
 } from "./window.ts";
 
 /** The loops running now, oldest first. It is the process's own: a restart has no loop running. */
@@ -126,9 +125,6 @@ const record = async (
 	$: EngineInterface,
 	input: Parameters<typeof measureRow>[0],
 ): Promise<void> => {
-	if (input.cost !== undefined) {
-		await $.store.set(USD_KEY, input.cost.usd);
-	}
 	const last = readingOf(await $.store.get(LAST_KEY));
 	const tag = {
 		...tagOf(running),

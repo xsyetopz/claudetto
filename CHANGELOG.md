@@ -108,6 +108,7 @@ After each update, do the steps in the "Update" section of the README.
 - The `handoff` tool's seven fields and its word-for-word quoting of the user's prompts. The tool keeps five fields; the model re-words the prompts.
 - The `tasks.md` loop, the `finish` block. It blocked a stop while an applied OpenSpec change had an open box, so it overrode a stopping point the user had set and repeated a block the agent had declined, ten stops in a row in one session. To keep a session working to a condition, use the built-in `/goal`.
 - The handoff written at `classic.SessionEnd` on `/clear`, and its read-back after a `clear`. A typed `/clear` now writes no file and reads none back. The handoff reply and `/claudetto:handoff` replace it, and `classic.PreCompact` still writes a handoff that a `resume` reads back.
+- The `window.usd` store key. `session.measure` wrote the session's dollars there, and nothing read them.
 
 ## [0.2.0] - 2026-10-31
 

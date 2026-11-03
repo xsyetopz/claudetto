@@ -4,7 +4,6 @@ import {
 	rowsOf as parseRows,
 	ROWS_KEY,
 	TURNS_KEY,
-	USD_KEY,
 } from "../../src/blocks/window/window.ts";
 
 const WINDOW = 200_000;
@@ -102,7 +101,7 @@ test("a subagent turn is tagged subagent and a main turn after it is tagged main
 	]);
 });
 
-test("a login with no rate-limit windows writes no row and keeps the cost in dollars", async ($: Engine, on: On) => {
+test("a login with no rate-limit windows writes no row", async ($: Engine, on: On) => {
 	await begin($, on);
 
 	await $.session.measure({
@@ -113,7 +112,6 @@ test("a login with no rate-limit windows writes no row and keeps the cost in dol
 	});
 
 	expect(rowsOf()).toBeUndefined();
-	expect(kept.get(USD_KEY)).toBe(0.42);
 });
 
 test("a window that reset between two readings leaves no row", async ($: Engine, on: On) => {

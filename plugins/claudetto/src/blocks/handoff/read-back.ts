@@ -14,10 +14,6 @@ export const sourceLine = (text: string): string =>
 		? `${READ_BACK_START}built by code from the transcript, so it holds no decisions and no reasons.`
 		: `${READ_BACK_START}written by Claude in the session that ended, so it holds its decisions.`;
 
-/** A prompt that opens with the source line is the injected handoff, not something the user typed. */
-export const isReadBack = (text: string): boolean =>
-	text.startsWith(READ_BACK_START);
-
 /** Keyed by project root: the store is one file for the whole login and stamps can collide. */
 export const readBackKey = (root: string): string => `handoff.readback:${root}`;
 
