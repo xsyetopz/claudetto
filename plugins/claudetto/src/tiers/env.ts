@@ -2,7 +2,7 @@ import { HAIKU_MODEL, OPUS_MODEL, SONNET_MODEL } from "./tiers.ts";
 
 export const SUBAGENT_MODEL_ENV = "CLAUDE_CODE_SUBAGENT_MODEL";
 
-/** `2.1.317`: `ANTHROPIC_DEFAULT_MODEL`, `_OPUS_MODEL`, `_SONNET_MODEL` and `_HAIKU_MODEL` are in `docs/keep/settings/env-documented.txt`. */
+/** `2.1.317`: `ANTHROPIC_DEFAULT_MODEL`, `_OPUS_MODEL`, `_SONNET_MODEL` and `_HAIKU_MODEL` are rows of the env-var pages, `https://clawdipedia.cc/configure/env-vars/models-and-effort.md`. */
 export const MODEL_PINS: Readonly<Record<string, string>> = {
 	ANTHROPIC_DEFAULT_MODEL: OPUS_MODEL,
 	ANTHROPIC_DEFAULT_OPUS_MODEL: OPUS_MODEL,

@@ -71,13 +71,6 @@
 			"formatter": {
 				"enabled": false
 			}
-		},
-		{
-			// The settings schemas are the bytes `clawdipedia.cc` publishes, vendored so that the gate needs no network and compared with the published copies by digest (`bun tools/settings-schema.ts --upstream`). Reformatting them would break that comparison, and no author chose their layout.
-			"includes": ["docs/keep/settings/*.schema.json"],
-			"formatter": {
-				"enabled": false
-			}
 		}
 	],
 	"plugins": [

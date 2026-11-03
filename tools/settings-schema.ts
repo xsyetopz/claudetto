@@ -1,31 +1,20 @@
 // Checked against the schema, not the binary: a byte search cannot tell a user key from a managed one.
-// Usage: bun tools/settings-schema.ts [--fetch|--upstream]
-
-import { join } from "node:path";
-import { file as bunFile, write as bunWrite, CryptoHasher } from "bun";
-
-export interface SchemaSource {
-	readonly url: string;
-	readonly path: string;
-}
+// Each lookup fetches the published original and keeps no copy, so a check never reads stale bytes.
+// Usage: bun tools/settings-schema.ts
 
 /** `managed` adds the keys only an administrator can set, which claudetto refuses but must name right. */
 export const SCHEMAS = {
-	settings: {
-		url: "https://clawdipedia.cc/schemas/claude-code-settings.json",
-		path: "docs/keep/settings/claude-code-settings.schema.json",
-	},
-	managed: {
-		url: "https://clawdipedia.cc/schemas/claude-code-managed-settings.json",
-		path: "docs/keep/settings/claude-code-managed-settings.schema.json",
-	},
-} as const satisfies Readonly<Record<string, SchemaSource>>;
+	settings: "https://clawdipedia.cc/schemas/claude-code-settings.json",
+	managed: "https://clawdipedia.cc/schemas/claude-code-managed-settings.json",
+} as const satisfies Readonly<Record<string, string>>;
 
 export type SchemaName = keyof typeof SCHEMAS;
 
-const ROOT = join(import.meta.dir, "..");
+/** The index page links one page per group of env vars, and each group page has one table row per name. */
+export const ENV_INDEX = "https://clawdipedia.cc/configure/env-vars.md";
 
 export interface SettingsSchema {
+	readonly id: string;
 	readonly title: string;
 	readonly keys: readonly string[];
 	/** The keys the schema flags `x-managed-only`, which Claude Code ignores outside managed settings. */
@@ -47,25 +36,48 @@ const parse = (text: string, where: string): SettingsSchema => {
 	if (!isRecord(doc)) {
 		throw new Error(`${where} is not a JSON object`);
 	}
-	const title = doc["title"];
-	const properties = doc["properties"];
-	if (typeof title !== "string" || !isRecord(properties)) {
+	const { $id: id, title, properties } = doc;
+	if (
+		typeof id !== "string" ||
+		typeof title !== "string" ||
+		!isRecord(properties)
+	) {
 		throw new Error(
-			`${where} has no title and properties of a settings schema`,
+			`${where} has no $id, title and properties of a settings schema`,
 		);
 	}
 	return {
+		id,
 		title,
 		keys: Object.keys(properties),
 		managedOnly: managedOnlyOf(properties),
 	};
 };
 
-/** A missing file throws, because a check that passes with no schema checks nothing. */
-export const schemaOf = async (name: SchemaName): Promise<SettingsSchema> => {
-	const source = SCHEMAS[name];
-	return parse(await bunFile(join(ROOT, source.path)).text(), source.path);
+/** A failed fetch throws, because a check that passes with no schema checks nothing. */
+const fetchText = async (url: string): Promise<string> => {
+	const answer = await fetch(url);
+	if (!answer.ok) {
+		throw new Error(`${url}: ${answer.status}`);
+	}
+	return answer.text();
 };
+
+const fetched = new Map<string, Promise<string>>();
+
+// One fetch per URL per process: the test files of one run share it, and nothing is written.
+const textOf = (url: string): Promise<string> => {
+	const known = fetched.get(url);
+	if (known !== undefined) {
+		return known;
+	}
+	const text = fetchText(url);
+	fetched.set(url, text);
+	return text;
+};
+
+export const schemaOf = async (name: SchemaName): Promise<SettingsSchema> =>
+	parse(await textOf(SCHEMAS[name]), SCHEMAS[name]);
 
 export const everyKey = async (): Promise<readonly string[]> => {
 	const [settings, managed] = await Promise.all([
@@ -82,82 +94,39 @@ export const keysMissing = async (
 	return names.filter((name) => !known.includes(name));
 };
 
-const fetchText = async (url: string): Promise<string> => {
-	const answer = await fetch(url);
-	if (!answer.ok) {
-		throw new Error(`${url}: ${answer.status}`);
+/** The group pages that the index links, each once. */
+export const pagesOf = (index: string): readonly string[] => [
+	...new Set(
+		index.match(
+			/https:\/\/clawdipedia\.cc\/configure\/env-vars\/[a-z0-9-]+\.md/g,
+		) ?? [],
+	),
+];
+
+/** A name is the first cell of a table row, so a name the prose only mentions is not one. */
+export const envNamesOf = (page: string): readonly string[] =>
+	[...page.matchAll(/^\| `([A-Z][A-Z0-9_]+)` \|/gm)].flatMap((match) =>
+		match[1] === undefined ? [] : [match[1]],
+	);
+
+export const documentedEnv = async (): Promise<readonly string[]> => {
+	const pages = pagesOf(await textOf(ENV_INDEX));
+	if (pages.length === 0) {
+		throw new Error(`${ENV_INDEX} links no group page`);
 	}
-	return answer.text();
-};
-
-const digest = (text: string): string =>
-	new CryptoHasher("sha256").update(text).digest("hex");
-
-const line = (schema: SettingsSchema, where: string): string =>
-	`${where}: ${schema.title}, ${schema.keys.length} keys`;
-
-const bothNames = (): readonly SchemaName[] => ["settings", "managed"];
-
-const fetchAll = async (): Promise<void> => {
-	const texts = await Promise.all(
-		bothNames().map((name) => fetchText(SCHEMAS[name].url)),
-	);
-	await Promise.all(
-		bothNames().map((name, at) => {
-			const text = texts[at] ?? "";
-			parse(text, SCHEMAS[name].url);
-			return bunWrite(join(ROOT, SCHEMAS[name].path), text);
-		}),
-	);
-	for (const [at, name] of bothNames().entries()) {
-		const text = texts[at] ?? "";
-		console.info(
-			`${line(parse(text, name), SCHEMAS[name].path)}, sha256 ${digest(text)}`,
-		);
-	}
-};
-
-const compareUpstream = async (): Promise<void> => {
-	const pairs = await Promise.all(
-		bothNames().map(async (name) => ({
-			name,
-			vendored: await bunFile(join(ROOT, SCHEMAS[name].path)).text(),
-			live: await fetchText(SCHEMAS[name].url),
-		})),
-	);
-	const stale = pairs.filter(
-		(pair) => digest(pair.vendored) !== digest(pair.live),
-	);
-	for (const pair of pairs) {
-		console.info(
-			line(parse(pair.vendored, pair.name), SCHEMAS[pair.name].path),
-		);
-		console.info(`  published: ${parse(pair.live, pair.name).title}`);
-	}
-	if (stale.length === 0) {
-		console.info("Each vendored copy is the published one.");
-		return;
-	}
-	throw new Error(
-		`${stale.map((pair) => SCHEMAS[pair.name].path).join(", ")} differ from the published schemas. Run \`just settings-schema --fetch\`.`,
-	);
+	const texts = await Promise.all(pages.map(textOf));
+	return [...new Set(texts.flatMap(envNamesOf))];
 };
 
 const main = async (): Promise<void> => {
-	const args = process.argv.slice(2);
-	if (args.includes("--fetch")) {
-		return fetchAll();
+	const names = ["settings", "managed"] as const;
+	const schemas = await Promise.all(names.map(schemaOf));
+	for (const [at, schema] of schemas.entries()) {
+		console.info(
+			`${SCHEMAS[names[at] ?? "settings"]}: ${schema.title}, ${schema.keys.length} keys`,
+		);
 	}
-	if (args.includes("--upstream")) {
-		return compareUpstream();
-	}
-	const schemas = await Promise.all(bothNames().map(schemaOf));
-	for (const [at, name] of bothNames().entries()) {
-		const schema = schemas[at];
-		if (schema !== undefined) {
-			console.info(line(schema, SCHEMAS[name].path));
-		}
-	}
+	console.info(`${ENV_INDEX}: ${(await documentedEnv()).length} env names`);
 };
 
 if (import.meta.main) {

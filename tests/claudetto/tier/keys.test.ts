@@ -43,7 +43,7 @@ const unknownIn = (
 ): readonly string[] => names.filter((name) => !keys.includes(name));
 
 describe("every settings key a row writes is one Claude Code reads", () => {
-	test("the vendored schema holds each of them", async () => {
+	test("the published schema holds each of them", async () => {
 		const { keys } = await schemaOf("settings");
 
 		expect(unknownIn(keys, namesOf(settingsKeyNames))).toEqual([]);
