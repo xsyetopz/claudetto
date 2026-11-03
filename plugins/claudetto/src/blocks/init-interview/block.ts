@@ -4,7 +4,7 @@ import type { Block, BlockContext } from "../block.ts";
 export const INTERVIEW_TEXT = `Write this project's memory files with the user, through an interview.
 
 1. Read the repository, its \`CLAUDE.md\`, \`AGENTS.md\`, \`CLAUDE.local.md\`, and \`.claude/rules/\`, and also \`~/.claude/CLAUDE.md\` and \`~/.claude/rules/\`.
-2. Ask the user with \`AskUserQuestion\` only what the files do not show: conventions, the reasons behind them, and what a new contributor gets wrong.
+2. Ask the user with \`AskUserQuestion\` what the files leave out: conventions, the reasons behind them, and what a new contributor gets wrong.
 3. Ask which scope each instruction belongs to:
    - global: \`~/.claude/CLAUDE.md\`, for every project of this user;
    - repo: \`AGENTS.md\`, shared through git;
@@ -15,7 +15,7 @@ export const INTERVIEW_TEXT = `Write this project's memory files with the user, 
 
 Repo layout: the text lives in \`AGENTS.md\`, and \`CLAUDE.md\` holds exactly the title \`# CLAUDE.md\`, a blank line, and the import \`@AGENTS.md\`.
 
-Each line is read in every session and costs tokens there. Keep a line only when it changes what Claude does.`;
+Each line is read in every session and costs tokens there. Keep a line that changes what Claude does.`;
 
 // A user's own skill named `init` is theirs to keep, so only the built-in is replaced.
 const onInitSkill: HookFor<"skill.prompt"> = async (_$, e, next) =>

@@ -13,8 +13,8 @@ export const HANDOVER_PROMPT =
 	"Continue from the handoff above: take its next steps.";
 
 /**
- * The handoff waiting for the compaction this plugin started. A plugin's own `$.session.compact` skips its own hook,
- * so the handover goes through `/compact`, and this marks that one apart from a typed or automatic compaction.
+ * The handoff waiting for the compaction this plugin started. `$.session.compact` fires `session.compact` with `trigger`
+ * `plugin` and runs every hook but the calling one (`claude-code.d.ts`), and this marks that one apart from a typed or automatic compaction.
  */
 let pending: string | undefined;
 
@@ -26,8 +26,7 @@ const COMPACTED = "The conversation was compacted. The handoff follows.";
 
 /**
  * Keeps the first message by its handle, so the request after the handover starts with the same bytes as the
- * session's first one. An assistant line stands between, because the engine joins two user messages into one and
- * edits the first. The API still answers that prefix uncached, so the line keeps the bytes equal and wins no read.
+ * session's first one. An assistant line stands between it and the handoff.
  */
 export const handOverTo = (
 	e: SessionCompactInput,
@@ -114,7 +113,7 @@ const HANDOVER_TOKENS = 400_000;
 
 export const FORK_PROMPT = `The context is large. Write the handoff now, as the whole reply, in the layout of the context management block, starting with \`${HANDOFF_TITLE}\`.`;
 
-/** Half of a small window, so a 200k model hands over before the engine compacts. */
+/** The set value, or the lesser of 400,000 and half the window. */
 export const handoverTokens = (
 	options: PluginOptions,
 	window: number,

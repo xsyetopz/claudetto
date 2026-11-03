@@ -43,7 +43,7 @@ export const ASK_PROTECTED = (v: { path: string }): string =>
 export const ASK_SHARED_TREE =
 	"A subagent runs this command. It changes the work tree or the processes that the main agent shares. The main agent can lose its changes or its running tasks.";
 export const ASK_BULK_STAGE = (v: { files: string }): string =>
-	`This command stages each change of the work tree. The user changed ${v.files}, and the user intends those changes. Stage only the files that you edited, by name.`;
+	`This command stages each change of the work tree. The user changed ${v.files}, and the user intends those changes. Stage the files that you edited, by name.`;
 export const ASK_WHOLE_TREE = (v: { verb: string; files: string }): string =>
 	`The command \`git ${v.verb}\` changes the whole work tree or the index. The user changed ${v.files}, and the user intends those changes. Run this command only when the user asked for it.`;
 export const ASK_DOWNLOAD =
@@ -54,15 +54,15 @@ export const ASK_UNKNOWN_PROGRAM =
 export const ASK_GIT_PROGRAM =
 	"This `git` call sets a config key or a variable. That setting makes `git` run a program, such as a pager, an editor, a hook, or a helper. The gate cannot read that program.";
 export const DENY_GATED = (v: { rule: string }): string =>
-	`The claudetto gate denied this call by this rule: ${v.rule}\nStop and report this to the user. Give the rule above. Do not send this call again, and do not look for another way to it.`;
+	`The claudetto gate denied this call by this rule: ${v.rule}\nReport this to the user. Give the rule above. Do not send this call again, and do not look for another way to it.`;
 export const DENY_REPEATED_CALL = (v: {
 	count: number;
 	reason: string;
 	rule: string;
 }): string =>
-	`Auto mode denied this same call ${v.count} times. The reason of the last denial: ${v.reason} Stop and report this to the user. Give the reason above and the rule that would allow the call: \`"${v.rule}"\` in \`permissions.allow\`. Do not send this call again, and do not look for another way to it.`;
+	`Auto mode denied this same call ${v.count} times. The reason of the last denial: ${v.reason} Report this to the user. Give the reason above and the rule that would allow the call: \`"${v.rule}"\` in \`permissions.allow\`. Do not send this call again, and do not look for another way to it.`;
 export const DENY_REPEATED_UNEXPLAINED = (v: {
 	count: number;
 	command: string;
 }): string =>
-	`Auto mode denied this same call ${v.count} times, and the classifier gave no reason, so there is no fact to act on. Stop and report this to the user: give the exact command as \`! ${v.command}\`, which the user can run in the TUI. Do not send this call again, and do not look for another way to it. Go on with the rest of the work.`;
+	`Auto mode denied this same call ${v.count} times, and the classifier gave no reason, so there is no fact to act on. Report this to the user: give the exact command as \`! ${v.command}\`, which the user can run in the TUI. Do not send this call again, and do not look for another way to it. Go on with the rest of the work.`;

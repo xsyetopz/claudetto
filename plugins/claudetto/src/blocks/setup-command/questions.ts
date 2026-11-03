@@ -7,7 +7,7 @@ import { CODE_RULES } from "./rules.ts";
 
 export const KEEP_MINE = "Keep mine";
 
-const KEEP_NOTE = "Change nothing in your settings for this key.";
+const KEEP_NOTE = "Keep your settings for this key as they are.";
 
 /** `$.ui.ask` as a closure, since the hook loader follows `$` only inside the file that holds the hook. */
 export type Asker = (

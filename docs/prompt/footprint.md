@@ -1,16 +1,19 @@
 # Prompt Footprint
 
-Measured with Claude Code `2.1.312`. Every figure is a reading of `just capture`, which runs
-`claude -p` against a local fake Messages API and counts the characters of the first request. No
-model is called and no provider is reached.
+A figure here is a reading of `just capture`, which runs `claude -p` against a local fake Messages
+API and counts the characters of the first request. No model is called and no provider is reached.
+Each figure names the date and Claude Code version it was read on. A figure that names neither was
+read before `2.1.317` and is unmeasured on it. On 2026-11-03, on `2.1.317`, `just capture --shipped`
+read the plugin arm at 24,984 characters and the plain arm at 28,886, and with `--interactive` 32,698
+and 42,016. The working folder path was 34 characters in the first run and 42 in the second.
 
 ## Main Prompt
 
-`plugins/claudetto/agents/main.md` is 5,385 characters on disk on 2026-11-03. On 2026-11-02, before the denial and scope lines were reworded, on Claude Code `2.1.316`,
+`plugins/claudetto/agents/main.md` is 5,292 characters on disk by `wc -m` on 2026-11-03. On 2026-11-02, before the denial and scope lines were reworded, on Claude Code `2.1.316`,
 `just capture --arm plugin --shipped` read the third `system` block at 5,951 characters, the body with
-its ends trimmed. As a JSON string the body is 5,349 characters on 2026-11-03, 651 under the cap `MAIN_BODY_CAP` of 6,000
+its ends trimmed. On 2026-11-03, on `2.1.317`, the same command read that block at 5,216. The body as a JSON string, the way `tests/repo/prompt/budget.test.ts` counts it, is 5,258 characters, 742 under the cap `MAIN_BODY_CAP` of 6,000
 in `tools/limits.ts`, which the user set. The cap stands above the earlier budget, the 3,678 characters of the
-default body that the file replaces (`DEFAULT_MAIN_BODY_CHARS`). An agent file used as the main thread replaces that body instead of adding to it
+default body that the file replaces (`DEFAULT_MAIN_BODY_CHARS`). On 2026-11-03 the plain arm's third `system` block read 3,519 characters with `-p` and 3,807 with `--interactive`, so 3,678 is not reproduced by either and is unmeasured. An agent file used as the main thread replaces that body instead of adding to it
 (`docs/prompt/overrides.md`, "What This Means for `main.md` and `Concise.md`"). The archived file was
 11,135 characters.
 
@@ -27,7 +30,7 @@ row is that piece's own cost. The rows are not nested, which matters: taking row
 the style at 1,213, and the style's own cost is 1,693. Re-read on 2026-10-30 with both pieces moved
 aside at once, the arm gave 22,434, and 480 plus 1,693 is the 2,173 that separates it from the first
 row, so the two pieces are additive and the first-row reading is the right one. Every arm carries both
-switches of `docs/surfaces.md` ("The Two Switches") and the `dedupe` skill.
+switches of `docs/surfaces.md` ("The Two Switches") and the `dedupe` skill, which the tree no longer ships (it ships `docs`).
 
 | Arm | Total | `system` | Blocks | `tools` | `messages` |
 | --- | --- | --- | --- | --- | --- |
@@ -150,7 +153,7 @@ The code rules file loads only after a session reads a file. Its `paths:` of `**
 the first request, and an unscoped rules file is in it. Claude Code `2.1.316` read this way on
 2026-11-02, with `claude -p` on a fake API and a `Read` call: a rule scoped to `inside/**` reached the
 request after a `Read` of `inside/a.ts` and not after one of `outside/b.ts`. In `tmux`, the session
-printed `Loaded ../config/rules/claudetto-code.md` under the `Read`. A plugin's own `rules/` folder is
+printed `Loaded ../config/rules/claudetto-code.md` under the `Read` (the `tmux` reading is not repeated on `2.1.317`). A plugin's own `rules/` folder is
 not loaded, so the file takes effect only once setup writes it.
 
 ## Rules and Cases
@@ -192,7 +195,7 @@ The denial line of `<harness_messages>` changed after these runs, and no case co
 The `main.md` arm of all eight cases was run again on 2026-11-02, after eval sessions stopped
 inheriting the running session's `CLAUDE_EFFORT` and `CLAUDE_CODE_SUBAGENT_MODEL`: 80 sessions at
 $6.37 and 4,992,343 tokens, 0.16% of the 3.20B-token week and 0.57% of the weekly limit at $11.19 a
-percent. Seven cases scored 10/10 as before, and `I13` scored 2/10, so the `main.md` scores stand.
+percent. These counts are the record of 2026-11-02 and are not re-read. Seven cases scored 10/10 as before, and `I13` scored 2/10, so the `main.md` scores stand.
 The default arm was not run again, so its scores are from sessions that inherited those variables.
 The `main.md` arm was run again on 2026-11-03, after the positive-form rewrites and the trim of
 `main.md`: 80 sessions, 71 pass. Seven cases scored 10/10 and `I13` scored 1/10, so the scores stand.
@@ -369,12 +372,11 @@ names above.
 A third check runs on a whole session. `bun claudekit/prefix/main.ts claudetto` drives a session
 against the fake Messages API, 4 and 7 requests in two runs because the scenario waits a fixed time, with the plugin, the shipped settings, the `Concise` style, the status
 line, a `Read` and `Edit` turn, and a plan-mode switch. Each request kept the earlier `tools`,
-`system`, and `messages` byte for byte, on Claude Code `2.1.316` on 2026-11-02. What claudetto adds is
+`system`, and `messages` byte for byte, on Claude Code `2.1.316` on 2026-11-02 (not repeated on `2.1.317`). What claudetto adds is
 appended: the `context_management` block sits in `messages[0]` from the start, and the style
 reminder and the budget line arrive as new `system`-role messages. The status line is in no request.
 So in `2.1.316` the cache-safe way to add context is a new message at the end. `system[0]` carries
-`cc_version` with a suffix taken from the first user message, so anything that replaces that message,
-a compaction or a `/clear`, changes `system[0]`.
+`cc_version`, which is `2.1.317.` and a suffix in `2.1.317`. That the suffix comes from the first user message, so that a compaction or a `/clear` changes `system[0]`, is unmeasured.
 
 ## Context Enters Once
 
@@ -409,7 +411,7 @@ The block takes one engine text out. Core's own `context_management` system sect
 that the context is summarized and that it need not "wrap up early or hand off mid-task", which
 contradicts the block. A `prompt.section` hook of the same block leaves it out, and system block 2
 fell from 5,760 to 5,478 characters in a session on the fake API on 2026-11-02
-(`/tmp/probe-shared/run.sh`).
+(a one-off script, not in the repo; not repeated).
 
 Two events carry per-message text, and the lab holds both.
 `plugins/claudetto/tests/handoff/prompt-quiet.test.ts` drives the shipped mod and fails for a hook that adds
@@ -439,9 +441,9 @@ names a behavior it changes and a check that would catch its absence. A piece th
 cut, and no piece is kept on the ground that it reads well.
 
 Two sources set the rule. A placebo study of 2026-10-12 (`claude-opus-5-5`, 15 tasks, 30 runs in each
-arm, 450 in all) found that "None of the 9 made Claude Code measurably cheaper than running with no
+arm, 450 in all; `docs/dossier/mid.md`) found that "None of the 9 made Claude Code measurably cheaper than running with no
 skill at all" and that "The placebo alone moved cost by +2% to +16%, so a good part of what a skill
-costs you is just its length". arXiv 2602.11988 found that "context files generally did not raise
+costs you is just its length". arXiv 2602.11988, as `docs/dossier/handbook.md` cites it and not read at the source (unverified, needs a web read), found that "context files generally did not raise
 success rates and added more than 20% inference cost. Content matters more than having a file."
 
 One piece failed that rule and is gone: the agent listing line for `claudetto:main`, 78 characters of
@@ -474,13 +476,13 @@ row; the behavior and check columns are not checked.
 | `<reporting_results>` | `output-styles/Concise.md` | 468 | Calls a piece working only after a check ran in the session, reports each experiment and its result, and keeps each failure in the reply | none |
 | `<requests_to_the_user>` | `output-styles/Concise.md` | 214 | Ends with a numbered list only for a step only the user can take, with the exact `! <command>` | none |
 | `Agent` | tool text | 449 | Briefs a subagent with the objective, the format, and the limits, reports its result only after it returns, and picks `Artemis` or `Athena` by what the task produces rather than by its topic | `plugins/claudetto/tests/tool-describe.test.ts`, and `tests/repo/agent-roster.test.ts` for the roster |
-| `AskUserQuestion` | tool text, interactive only | 829 | Asks only for a decision the request, the code, and sensible defaults leave open, and otherwise picks, says so, and goes on | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Bash` | tool text | 870 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `AskUserQuestion` | tool text, interactive only | 779 | Asks only for a decision the request, the code, and sensible defaults leave open, and otherwise picks, says so, and goes on | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Bash` | tool text | 838 | Writes a description a reader understands without the command, and uses the `timeout` parameter rather than a `sleep` | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Edit` | tool text | 243 | Reads a file in this conversation before editing it, and strips the `Read` line prefix from `old_string` so an edit does not fail on a line number | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `ListAgents` | tool text, deferred | 261 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Read` | tool text | 291 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `SendMessage` | tool text | 2,976 | Addresses a peer by the name its `ListAgents` row prints rather than looking for an address syntax, reads a successful send as delivery and not as agreement, waits for a reply on other work instead of looping on `ListAgents`, and refuses to hand a peer work this session denied | `plugins/claudetto/tests/tool-describe.test.ts` |
-| `Skill` | tool text | 195 | Starts a skill by name instead of restating its steps | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `ListAgents` | tool text, deferred | 256 | Sends to the name a row prints rather than looking for an address syntax, and reads a cloud session's answer in its own transcript instead of asking it to reply | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Read` | tool text | 286 | Reads a part of a large file instead of the whole, and trusts a successful edit | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `SendMessage` | tool text | 2,845 | Addresses a peer by the name its `ListAgents` row prints rather than looking for an address syntax, reads a successful send as delivery and not as agreement, waits for a reply on other work instead of looping on `ListAgents`, and refuses to hand a peer work this session denied | `plugins/claudetto/tests/tool-describe.test.ts` |
+| `Skill` | tool text | 200 | Starts a skill by name instead of restating its steps | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `ToolSearch` | tool text | 234 | Gets a deferred tool's schema before calling it | `plugins/claudetto/tests/tool-describe.test.ts` |
 | `Write` | tool text | 196 | Writes a whole file only for a new file or a full replacement, and uses `Edit` for a partial change | `plugins/claudetto/tests/tool-describe.test.ts` |
 
@@ -489,11 +491,11 @@ being the blank line between sections. The five `Concise.md` rows come to 1,578 
 seven upfront tool texts come to 3,307 against a stock sum of 10,016, a cut of 6,709. The `-p` request
 carries six of them, 2,478 against 7,933, because `AskUserQuestion` is in the interactive request only.
 
-Two rows of the table are not always loaded. `SendMessage` is 2,976 characters against a stock 4,259,
+Two rows of the table are not always loaded. `SendMessage` is 2,845 characters against a stock 4,259,
 so it cuts 1,283, and the harness defers the tool, so that cut is paid once at the `ToolSearch` call
 that loads the schema rather than on every request. `ListAgents` is upfront in stock, and the
 `tool.describe` answer of `plugins/claudetto/src/blocks/tool-describe/tools.ts:90` sets `isDeferred`
-on it, so its 261 characters are paid in a session that messages a peer and loads it beside
+on it, so its 256 characters are paid in a session that messages a peer and loads it beside
 `SendMessage`. Moving it took 633 characters off the interactive request, 40,344 to 39,711, and 641
 off the `-p` request, 28,527 to 27,886. `alwaysLoadedChars` leaves both out of the 3,307.
 
@@ -532,7 +534,7 @@ exists. That is the open end of this section, and the reason the table separates
 The largest open end is the placebo question, and it stays open by decision. Whether this text changes
 an outcome or only the bill was to be measured by running each case against a same-length placebo
 prompt: 7 cases, 2 arms, 10 runs per arm by the citable floor of `EVAL_MIN_RUNS_PER_ARM`, which is 140
-full-task sessions, about `$210` at `$1.50` a session, near 7% of the weekly limit of this login. The user declined that run
+full-task sessions. The price of `$1.50` a session and the weekly share are unmeasured: `$210` at that price is 19% at the `$11.19` a percent of 2026-11-02, not the 7% written on 2026-10-29. The user declined that run
 on 2026-10-29, at 7 cases, and the decline is recorded rather than the result. So every behavior in the
 table above rests on the recorded failure it was written against, and on no measurement of this
 prompt against a placebo. The two published results in the section opening are the nearest evidence
@@ -581,8 +583,7 @@ settings with `sandbox.enabled` set to `false`.
 | `plugin`, all shipped settings, sandbox off | 66,075 | 64,628 |
 
 A `-p` run now writes Claude Code's classifier billing notice to stderr whenever the base URL is not
-`*.anthropic.com`. The remote flag `tengu_velvet_heron` gates the notice. The notice does not
-stop the classifier, so it changes no reading.
+`*.anthropic.com`. The remote flag `tengu_velvet_heron` gates the notice (`2.1.317` reads it with a default of `true`), and the notice text says "Nothing breaks: auto mode keeps working", so it changes no reading. Whether a `-p` run writes it to stderr, and the base-URL condition, are unmeasured on `2.1.317`.
 
 ### Cuts of `0.1.0`
 
@@ -714,7 +715,7 @@ The sandbox block is not a lever: it is the sandbox itself, as
 "The Sandbox Block by Setting" below shows.
 
 `env.CLAUDE_CODE_DISABLE_CLAUDE_MDS=1` drops every `CLAUDE.md` and memory file from the request. For
-this repository's 1,904 characters of `CLAUDE.md` and `AGENTS.md` it saved 2,419 characters, about
+this repository's 1,904 characters of `CLAUDE.md` and `AGENTS.md` it saved 2,419 characters on 2026-11-02, not re-read, about
 1.27 request characters per character of memory file, in a capture whose working folder held those
 files. It is not a claudetto default, because it also drops the user's and the project's own
 instructions.
@@ -793,9 +794,9 @@ shape was chosen.
   `<task_continuity>`, `<user_steps>`) named no behavior they changed and no check that would catch
   their absence, which is the rule "Why Each Always-Loaded Piece Is There" now applies.
 - The archived tree sent two skill `description:` lines, `dedupe` and `find-docs`, that named a
-  behavior with no check on the trigger. The tree now ships one skill, `dedupe`, with a 151-character
-  `description:` line.
-- The archived tree had a `Write` tool text of 261 characters against a stock text of 240. Our text
+  behavior with no check on the trigger. The tree now ships one skill, `docs`, whose `description:` line is
+  51 characters by `wc` on 2026-11-03.
+- The archived tree had a `Write` tool text of 261 characters against a stock text of 240 (both unmeasured on `2.1.317`; the shipped `Write` text reads 199 on 2026-11-03). Our text
   is kept only while it is shorter than the stock text, so the harness always sent its own and the
   string was dropped, not shortened. `SendMessage` was counted as always loaded until the harness
   page showed it deferred, which took 2,096 bytes out of the total. Neither change altered a request.

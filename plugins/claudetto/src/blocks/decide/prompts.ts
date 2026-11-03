@@ -2,6 +2,7 @@ type Texts<K extends string> = Record<K, string>;
 
 export const DECIDE_TOOL = "decide";
 
+// `mcp__<plugin>__<name>` with plugin `claudetto` (Claude Code 2.1.317 declarations of `$.tool.register`).
 export const DECIDE_CALL = "mcp__claudetto__decide";
 
 /** `sureAnswer` compares its P(yes) with `APPROVAL_MAX` to refuse a pick on an irreversible step. */
@@ -25,7 +26,7 @@ export const DECIDE_YOURS =
 export const DECIDE_NO_PICK = `Jev gives no pick. Either no question held two or more options, or the request failed.
 ${DECIDE_YOURS}`;
 
-/** Same shape as the `questions` of `AskUserQuestion`, so one question text works for both. */
+/** A subset of the `questions` of `AskUserQuestion` (`question` and `options` with `label` and `description`; no `header`, no `multiSelect`; Claude Code 2.1.317 tool inputs). */
 export const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 	type: "object",
 	properties: {

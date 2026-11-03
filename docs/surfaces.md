@@ -124,13 +124,14 @@ cannot enter the list.
 
 What each deny costs, because a deny is a gate as well as a size lever. `Workflow` is Dynamic
 Workflows, which the spec already rules out for this project. `ReportFindings` renders code-review
-findings in a host UI, and the `/code-review` text itself tells the model not to use it unless the
-active instructions ask for it. `ScheduleWakeup` arms the autonomous `/loop` and the session crons
+findings in a host UI, and its tool text in `2.1.317` tells the model to use it only when the active
+code-review instructions say to. `ScheduleWakeup` arms the autonomous `/loop` and the session crons
 that `session_crons` of the `Stop` input reports. It is denied because the archived snippet also set
 `CLAUDE_CODE_DISABLE_CRON=1`, so the two agree, and because no claudetto code calls it: a search
-of the installed `claudetto` finds the name only in its own deny list. Dropping the deny does not
-bring `/loop` back, because `disableBundledSkills: true` removes the bundled skill, and typing
-`/loop` in a claudetto session gives "No commands match".
+of `plugins/claudetto/src` finds the name only in lists of tool names and text sizes (`deny.ts`,
+`cuts.ts`, and `blocks/tool-describe/tools.ts`). Whether dropping the deny brings
+`/loop` back, and what typing `/loop` in a claudetto session gives under `disableBundledSkills: true`,
+are unmeasured; the string "No commands match" is in the `2.1.317` binary.
 
 Two names of the archived snippet are dropped here, each on its own reading. `DesignSync` is a
 deferred tool, so denying it removes no definition; the 12 characters it saves are its name in the
@@ -176,18 +177,18 @@ therefore holds the smaller of the two, so a text that passes it is shorter in e
 
 | Tool | Stock, smaller reading | Claudetto | Saved |
 | --- | --- | --- | --- |
-| `Bash` | 1,267 | 870 | 397 |
+| `Bash` | 1,267 | 838 | 429 |
 | `Edit` | 360 | 243 | 117 |
-| `Read` | 790 | 291 | 499 |
+| `Read` | 790 | 286 | 504 |
 | `ToolSearch` | 953 | 234 | 719 |
 | `Write` | 240 | 196 | 44 |
-| total | 3,610 | 1,834 | 1,776 |
+| total | 3,610 | 1,797 | 1,813 |
 
 The table holds the upfront tools of the current tree. The capture below was read again on 2026-11-02
 on Claude Code `2.1.316`, before `Agent`, `AskUserQuestion`, and `Skill` moved behind `ToolSearch`.
 `DeferredToolPlaceholder`, 83 characters, has nothing to give. Five texts are not in this table because
-no first request carries them: `SendMessage`, 2,976 against a stock 4,259, which the harness defers, and
-`ListAgents` 261 against 777, `Agent` 449 against 2,906, `AskUserQuestion` 829 against 2,083, and `Skill` 195
+no first request carries them: `SendMessage`, 2,845 against a stock 4,259, which the harness defers, and
+`ListAgents` 256 against 777, `Agent` 449 against 2,906, `AskUserQuestion` 779 against 2,083, and `Skill` 200
 against 1,417, which the hook moves behind `ToolSearch` by answering with `isDeferred`.
 
 The effect on the request, read on 2026-11-02 on Claude Code `2.1.316` with `just capture --deny
@@ -233,7 +234,7 @@ the archived tree lost a `Write` text that way, 261 characters against a stock 2
 tool's text reaches no request until `ToolSearch` loads it, so counting it would overstate the
 always-loaded total. Eight of the ten shipped texts are for upfront tools, and the shipped
 always-loaded total is 3,307 characters that replace 10,016. `alwaysLoadedChars` leaves out the
-2,976 of `SendMessage` and the 261 of `ListAgents`, which reach a request only through `ToolSearch`.
+2,845 of `SendMessage` and the 256 of `ListAgents`, which reach a request only through `ToolSearch`.
 
 No cost reading exists for these texts yet, which is the gate of the cost readings below: a shorter request is a saving
 only when billed cost per finished task does not rise, and a tool description is also behavior, so
@@ -346,7 +347,7 @@ provider was reached and no model call was billed. First the `plain` arm, which 
 | `disableBundledSkills` alone | 57,113 | 5,935 | 46,467 (12) | 4,058 |
 | `disableBundledSkills` with the deny of all three | 27,737 | 5,935 | 17,091 (9) | 4,058 |
 
-Then the `plugin` arm of the shipped tree, as it stood with the `dedupe` skill (since removed), one switch at a time:
+Then the `plugin` arm of the shipped tree, as it stood with the `dedupe` skill (since removed), one switch at a time. The tree has changed since and no command reproduces these four rows, so they stay as the record of the older reading and are unmeasured on `2.1.317`:
 
 | Switches | Total | `system` | `tools` (count) | `messages` |
 | --- | --- | --- | --- | --- |
@@ -497,7 +498,8 @@ on a snippet that holds any of them. The list is in `plugins/claudetto/src/refus
 in the installed `2.1.312` on 2026-10-28, and the same test searches the program for every refused
 name, so the list cannot rot into names the harness no longer has. "Not Touched, with the Reason"
 below carries the same names from the `2.1.311` reading; these are their pins in the version the tree
-is built against.
+is built against. The module names and offsets are of `2.1.312` and are not re-read on `2.1.317`; each
+name below is present in the `2.1.317` binary.
 
 | Key | Kind | Module | Offset | What it would take away |
 | --- | --- | --- | --- | --- |
@@ -529,7 +531,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,084 baseline less every cut in it has to equal the 25,067 the shipped arm records, so a cut that
+46,084 baseline less every cut in it has to equal the 24,922 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -539,14 +541,14 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | --- | --- | --- |
 | Deny of `ScheduleWakeup` (4,887) and `ReportFindings` (2,178) (`deny list`). The `Workflow` deny reads 0 on its own, because `enableWorkflows: false` takes the tool out too | 7,065 | None exists yet |
 | Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
-| The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,615 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one |
+| The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,653 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | −1,881 | None exists yet. A placebo run would price the prompt text |
+| `agents/main.md` under the `agent` key (`main agent body`) | −1,790 | None exists yet. A placebo run would price the prompt text |
 | `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text |
-| The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −726 | None needed. It is a listing the harness builds from each file's `description` and tools |
+| The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −718 | None needed. It is a listing the harness builds from each file's `description` and tools |
 | The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text |
 | `output-styles/Concise.md` under the `outputStyle` key | −1,738 | None exists yet. A placebo run would price the prompt text |
 | The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
@@ -560,9 +562,9 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | The `general-purpose`, `claude`, and `statusline-setup` agent denies and the `DesignSync` deny (`built-in agent denies`) | 570 | None exists yet |
 | `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_CODE_FORK_SUBAGENT` (`cron and fork switches`) | 103 | None exists yet |
 | The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
-| The fall that no row above explains (`unexplained residual`) | 1,797 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
+| The fall that no row above explains (`unexplained residual`) | 1,805 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
-The rows sum to 21,017, which is 46,084 less the 25,067 the shipped arm records. A negative row is a piece
+The rows sum to 21,162, which is 46,084 less the 24,922 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
@@ -570,18 +572,18 @@ again that day against the shipped arm of 27,960, which `SHIPPED_TOTAL` records.
 `-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path (each character
 of the path adds one, and the real path counts, since `/tmp` resolves to `/private/tmp`), less the same arm
 with the piece removed in a clone of the same path length, one piece at a time. A clone was restored before
-the next removal. The readings, each as the arm without the piece less 27,960, except `main agent body`, read again on 2026-11-03 against 27,908 after the file was trimmed; the other rows were not read again:
+the next removal. The readings, each as the arm without the piece less 27,960, except `main agent body`, `tool texts`, and `agent listing`, read again on 2026-11-03 on `2.1.317` against 24,874, each copy at `/tmp/cutrows/<arm>` loaded as the only plugin with `just capture --arm plain --shipped --plugin-dir`; the other rows were not read again:
 
 | Row | Arm without the piece | Row | How the piece was removed |
 | --- | --- | --- | --- |
 | `deny list` | 35,025 | 7,065 | `ScheduleWakeup` and `ReportFindings` out of `permissions.deny` (it was 12,421, the `plain` baseline of 46,084 less the deny arm of 33,663) |
 | `deferred tool denies` | 27,984 | 24 | `NotebookEdit` and `TaskStop` out of `permissions.deny` |
-| `tool texts` | 34,576 | 9,615 | the `tool-describe` block detached from the catalog; read again on 2026-11-03 against 24,961, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` |
+| `tool texts` | 34,527 | 9,653 | the `tool-describe` block detached from the catalog, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` |
 | `built-in surface` | 33,550 | 5,590 | `disableBundledSkills` and `enabledPlugins` out of the settings |
 | `docs skill` | 27,889 | −71 | `skills/docs/` moved out of the plugin |
-| `main agent body` | 23,080 | −1,881 | `agents/main.md` moved aside |
+| `main agent body` | 23,084 | −1,790 | `agents/main.md` moved aside |
 | `auto memory off` | 28,088 | 2,138 | `autoMemoryEnabled` out and `agents/main.md` moved aside, against 25,950 |
-| `agent listing` | 27,234 | −726 | the four agent files moved aside |
+| `agent listing` | 24,156 | −718 | the four agent files moved aside |
 | `handoff context` | 27,020 | −940 | the `prompt.context` answer of the `handoff` block left without its block |
 | `handoff tool listing` | 27,725 | −235 | the `session.start` registration out |
 | `output style` | 26,222 | −1,844 | `outputStyle` out of the settings. The positive rewrite of 2026-11-03 adds 106, read with `just inventory` |
@@ -602,7 +604,7 @@ subtraction. Against the fourteen rows of the table above it was 9,611, up from 
 | The `Agent(general-purpose)`, `Agent(claude)`, and `Agent(statusline-setup)` denies, and the `DesignSync` deny | 570 | 311, 134, and 113 alone, and 12 |
 | `CLAUDE_CODE_DISABLE_CRON` (34) and `CLAUDE_CODE_FORK_SUBAGENT` (69) | 103 | Alone |
 | The `context_management` section, which the `handoff` block nulls | 285 | Read with `agents/main.md` moved aside, 26,235 against 25,950; it is 0 with the file in place, since the file replaces the body |
-| Interaction among the removals | 1,797 | The rest, read below |
+| Interaction among the removals | 1,805 | The rest, read below |
 
 The removals do not interact among the large rows. The 28 pairs of `deny list`, `built-in surface`, `sandbox block`,
 `main agent body`, `auto memory off`, `output style`, `tool texts`, and `handoff context` were each removed together and the fall
@@ -732,15 +734,15 @@ Env: `ENABLE_CLAUDEAI_MCP_SERVERS=false`, `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, `C
 
 Deny of a non-CLI tool: `Artifact`, `DesignSync`, `RemoteTrigger`, `Workflow`, `ScheduleWakeup`, `ReportFindings`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `mcp__computer-use`.
 
-## Candidates Not Yet Set, Each Verified In `2.1.311`
+## Candidates Not Yet Set, Each Listed In `2.1.311`
 
-Each name below was listed by `cc-inspect` `surface` for the installed version, with the module and offset given. None is adopted here. Each is to be measured with the probe above, and only the ones with a reading are to be added.
+Each name below was listed by `cc-inspect` `surface` for the installed version, with the module and offset given. None is adopted here. Each is to be measured with the probe above, and only the ones with a reading are to be added. The module and offset are of `2.1.311`, not re-read on `2.1.317`, where every name below is present in the binary.
 
 Settings, module `chunk-z1xn9dp7.js`: `workflowKeywordTriggerEnabled` (`:152021`, the "ultracode" keyword trigger), `channelsEnabled` (`:185759`, inbound channel messages from MCP servers), `voiceEnabled` (`:98163`, hold-to-talk dictation, gated), `agentPushNotifEnabled` (`:197989`) and `inputNeededNotifEnabled` (`:197871`, both mobile push), `disableDeepLinkRegistration` (`:97994`, the `claude-cli://` OS handler, gated), `disableArtifact` (`:150888`, marked deprecated in favor of `enableArtifact: false`, which the snippet already sets).
 
 Env, module `chunk-7srfhct1.js`: `CLAUDE_CODE_DISABLE_ARTIFACT` (`:9363`), `CLAUDE_CODE_DISABLE_WORKFLOWS` (`:12128`), `CLAUDE_CODE_DISABLE_WORKING_SYNC` (`:28299`) and `CLAUDE_CODE_DISABLE_WORKING_SYNC_WATCH` (`:28339`), `CLAUDE_CODE_DISABLE_CLAUDE_API_SKILL` (`:9937`) and `CLAUDE_CODE_DISABLE_CLAUDE_CODE_SKILL` (`:9981`), `CLAUDE_CODE_DISABLE_POLICY_SKILLS` (`:11471`), `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` (`:11120`), `CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL` (`:11272`), `CLAUDE_CODE_DISABLE_PROACTIVITY` (`:11605`), `CLAUDE_CODE_DISABLE_ORG_MEMORY` (`:11332`), `CLAUDE_CODE_DISABLE_LAUNCH_COMPOSER` (`:10516`), `DISABLE_TELEMETRY` (`:19298`), `DISABLE_GROWTHBOOK` (`:18924`), `DISABLE_BUG_COMMAND` (`:18740`).
 
-A `surface` listing of the installed version gives 123 environment variables whose name holds `DISABLE` and 14 settings whose name holds `disable`, so the list above is a selection by the CLI-only rule, not the whole set.
+A `surface` listing of `2.1.311` gave 123 environment variables whose name holds `DISABLE` and 14 settings whose name holds `disable`; those counts are unmeasured on `2.1.317`, so the list above is a selection by the CLI-only rule, not the whole set.
 
 Two of the environment variables above are per-skill levers, `CLAUDE_CODE_DISABLE_CLAUDE_API_SKILL` and `CLAUDE_CODE_DISABLE_CLAUDE_CODE_SKILL`. The user dropped `claude-api` on 2026-10-27, and the skills listing above prices it at `361` tokens, the second largest row. So at least one named skill can be dropped without taking the whole listing. Whether a lever exists for each of the other five the user dropped is unread.
 
@@ -776,9 +778,9 @@ The remaining 16 had no line anywhere in this page. Three are candidates and thi
 
 | Key | Offset | What the program says, and why it is a candidate |
 | --- | --- | --- |
-| `precomputeCompactionEnabled` | `chunk-ce589w22.js:192858` | "Precompute the compaction summary in the background before it is needed. Only applies when auto-compact is on." It defaults to on: `function SWr(){return Ks("precomputeCompactionEnabled",!0).value}` (`chunk-452kr8jw.js:1252`), and the settings row shows `value: r?.precomputeCompactionEnabled ?? !0` (`chunk-0d2nk7sh.js:21753`). It is the only key of the 39 that can spend a model call the session never uses. The spend needs four conditions together, `wGe(){if(!cp())return!1;if(!NF())return!1;if(!k("tengu_sepia_moth",!1))return!1;return SWr()}` (`chunk-r5cyd28m.js:2436138`), so auto-compact on, the remote swap supported, the GrowthBook gate `tengu_sepia_moth` on, and this key on. Turning auto-compact off already stops it, which the handover path does, so the key is insurance and not the main lever. |
-| `bashEditDiffEnabled` | `chunk-ce589w22.js:151259` | "Whether the Bash tool shows a diff of the files a Bash command changed (`PostToolUse` Bash hooks get the changed-file list in `tool_response`). Set to false to turn that off. Default: on when the Bash tool handles file edits." A diff of changed files is tool output that reaches the model, so it is context we pay for. CAUTION before adopting: the same sentence says the changed-file list arrives in `tool_response` for `PostToolUse` Bash hooks, and this plugin registers `work.bash-*` hooks, so turning it off may take a field those hooks read. Measure the hooks first. |
-| `disableWorkflows` | `chunk-ce589w22.js:148824` | The snippet already writes `enableWorkflows: false`, and this is a second, separate key. Its own description says Code Review on pull requests and `/ultrareview` "run in Anthropic's cloud and are not stopped by this setting", and that `CLAUDE_CODE_DISABLE_WORKFLOWS` set in the environment before start does disable Workflows. A user-settings value does count in the gate: `let o=e&&!i.CLAUDE_CODE_DISABLE_WORKFLOWS&&Ks("disableWorkflows",!1).source==="userSettings"` in `c4o()`, the function behind the `Workflow` tool's `isEnabled`. So the pair to write is the environment variable, with the setting as the local record. |
+| `precomputeCompactionEnabled` | `chunk-ce589w22.js:192858` | "Precompute the compaction summary in the background before it is needed. Only applies when auto-compact is on." It defaults to on: `function SWr(){return Ks("precomputeCompactionEnabled",!0).value}` (`chunk-452kr8jw.js:1252`), and the settings row shows `value: r?.precomputeCompactionEnabled ?? !0` (`chunk-0d2nk7sh.js:21753`). It is the only key of the 39 that can spend a model call the session never uses. The spend needs four conditions together, `wGe(){if(!cp())return!1;if(!NF())return!1;if(!k("tengu_sepia_moth",!1))return!1;return SWr()}` (`chunk-r5cyd28m.js:2436138`), so (the same four conditions stand in `IKe()` of `2.1.317`) auto-compact on, the remote swap supported, the GrowthBook gate `tengu_sepia_moth` on, and this key on. Turning auto-compact off already stops it, which the handover path does, so the key is insurance and not the main lever. |
+| `bashEditDiffEnabled` | `chunk-ce589w22.js:151259` | "Whether the Bash tool shows a diff of the files a Bash command changed (`PostToolUse` Bash hooks get the changed-file list in `tool_response`). Set to false to turn that off. Default: off, except in auto and bypassPermissions modes when the Bash tool handles file edits or the model's configuration turns it on. Only user, flag or policy settings can turn it on in other modes." (the text of `2.1.317`; `2.1.312` said "Default: on when the Bash tool handles file edits"). A diff of changed files is tool output that reaches the model, so it is context we pay for. CAUTION before adopting: the same sentence says the changed-file list arrives in `tool_response` for `PostToolUse` Bash hooks, and this plugin registers `work.bash-*` hooks, so turning it off may take a field those hooks read. Measure the hooks first. |
+| `disableWorkflows` | `chunk-ce589w22.js:148824` | The snippet already writes `enableWorkflows: false`, and this is a second, separate key. Its own description says Code Review on pull requests and `/ultrareview` "run in Anthropic's cloud and are not stopped by this setting", and that `CLAUDE_CODE_DISABLE_WORKFLOWS` set in the environment before start does disable Workflows. A user-settings value does count in the gate: `let o=e&&!i.CLAUDE_CODE_DISABLE_WORKFLOWS&&Ks("disableWorkflows",!1).source==="userSettings"` in `c4o()` of `2.1.312` (`Gas()` in `2.1.317`), the function behind the `Workflow` tool's `isEnabled`. So the pair to write is the environment variable, with the setting as the local record. |
 | `bashOutputMaxChars` | `chunk-ce589w22.js:151259` | Found while reading `bashEditDiffEnabled`, which sits in the same object. Not a `disable` or `enable` name, so it is outside that list, and it is recorded here because it is the largest plain context lever this reading turned up: "How many characters of a successful `Bash` or `PowerShell` command's output Claude receives inline (default 30000; values clamp to 4000-128000). Output past this is saved to a file and Claude receives a short preview plus the path." A lower cap is a per-call cut of tool output, and the overflow still reaches Claude as a path, so nothing is lost outright. It belongs in the tier rows once a reading prices it. |
 
 ### The Thirteen That Are Not Candidates, Each with Its Reason
@@ -803,7 +805,7 @@ The arithmetic of the 39 is: 23 already on this page, 3 new candidates, because 
 
 ## `cc-plugin-responsive-mode`, Priced at Zero
 
-Read on 2026-10-28 in the installed `2.1.312` with `cc-inspect` `code`. The dossier said this built-in plugin injects a 396-character reminder on every prompt, which would fight the concise output style of `plugins/claudetto/output-styles/Concise.md`. It injects two texts, not one, and it costs nothing today, because it is off by default and unavailable without a server gate. So no setup entry and no tier row is needed for it, and a golf reading on and off cannot differ on this machine.
+Read on 2026-10-28 in the installed `2.1.312` with `cc-inspect` `code`. The dossier said this built-in plugin injects a 396-character reminder on every prompt, which would fight the concise output style of `plugins/claudetto/output-styles/Concise.md`. It injects two texts, not one, and it costs nothing today, because it is off by default and unavailable without a server gate. So no setup entry and no tier row is needed for it, and a golf reading on and off cannot differ on this machine. The `2.1.312` reading is not re-read on `2.1.317`, where `focus_mode` and `typedByTheUser` are present in the binary, so the character counts, offsets, and "off by default" are unmeasured there.
 
 | Export | Characters | Where it enters the request | Offsets |
 | --- | --- | --- | --- |

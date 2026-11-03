@@ -36,7 +36,7 @@ export const SUMMARY_INSTRUCTIONS =
 	"Put first what the next turn needs most: the state of the work, what is unverified or uncommitted, and the next steps. " +
 	"Then the user's standing instructions and open questions. " +
 	"Name a file, commit, or plan by its path in place of restating what it holds, because the next turn can read it. " +
-	"Reply with the summary only.";
+	"Reply with the summary.";
 
 /** Not the row's `effort`, which is the main session's `effortLevel`. */
 export const SUMMARY_EFFORT: ModelEffort = "medium";

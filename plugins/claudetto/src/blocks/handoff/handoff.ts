@@ -266,4 +266,4 @@ export const contextManagementText = (): string =>
 ${layout("Written by Claude at <UTC time>.", () => []).replace(BLANK_LINES, "\n")}\`\`\`
 
 It saves \`${HANDOFF_DIR}/${HANDOFF_NAME_PATTERN}\`, clears the idle session, and starts the next turn from it and your next prompt. Without the tool, a reply that starts with \`${HANDOFF_TITLE}\` is saved the same way.
-Cite plans, specs, issues, commits, and diffs by path or URL, not pasted. Write \`[REDACTED]\` for a key or a token.`;
+Cite plans, specs, issues, commits, and diffs by path or URL. Write \`[REDACTED]\` for a key or a token.`;

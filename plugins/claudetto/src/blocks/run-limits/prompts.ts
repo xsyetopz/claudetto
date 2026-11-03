@@ -19,7 +19,7 @@ interface Failure {
 }
 
 export const DENY_FAILED = (v: Failure): string =>
-	`This same call failed ${v.count} times with the same error: ${v.error} Stop and report this to the user, with the error above. Do not send this call again. The user can change the limit \`maxIdenticalFailures\` (${v.limit}) in the options of claudetto.`;
+	`This same call failed ${v.count} times with the same error: ${v.error} Report this to the user, with the error above. Do not send this call again. The user can change the limit \`maxIdenticalFailures\` (${v.limit}) in the options of claudetto.`;
 
 export const STOP_TASKS = (v: { lines: readonly string[] }): string =>
 	`Background tasks still running at Stop:\n${v.lines.join("\n")}`;
