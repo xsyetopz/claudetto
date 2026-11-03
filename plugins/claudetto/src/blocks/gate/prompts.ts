@@ -27,6 +27,7 @@ export const ASK_DELETE_UNREAD = (v: { target: string }): string =>
 	`The gate cannot read the target \`${v.target}\` of this delete.`;
 export const ASK_DELETE_PIPED =
 	"This command deletes the paths that come from its input. The gate cannot read them.";
+// Probed in a temp repo with git 2.54.0: `checkout -- <file>`, `reset --hard` and `clean -f` discard edits or untracked files that no commit holds; `stash drop` leaves the commit unreachable but present (found only by `git fsck`); `reflog expire --expire=now --all` empties the reflog. `gc --prune=now` is from `git-gc(1)`.
 export const ASK_GIT_LOSS = (v: { verb: string }): string =>
 	`The command \`git ${v.verb}\` can delete work that no commit and no reflog keeps.`;
 export const ASK_PUSH = "This push rewrites or deletes history on the remote.";
@@ -42,8 +43,9 @@ export const ASK_PROTECTED = (v: { path: string }): string =>
 	`This call changes \`${v.path}\`. That file runs code, or it sets a permission or a secret. Tell the user what you change. Give the reason.`;
 export const ASK_SHARED_TREE =
 	"A subagent runs this command. It changes the work tree or the processes that the main agent shares. The main agent can lose its changes or its running tasks.";
+// Probed in a temp repo with git 2.54.0: `git add .` in a subfolder stages that folder only, and `git commit -a` leaves untracked files out.
 export const ASK_BULK_STAGE = (v: { files: string }): string =>
-	`This command stages each change of the work tree. The user changed ${v.files}, and the user intends those changes. Stage the files that you edited, by name.`;
+	`This command stages changes in bulk: every change under the path for \`git add\`, or every tracked change for \`git commit -a\`. The user changed ${v.files}, and the user intends those changes. Stage the files that you edited, by name.`;
 export const ASK_WHOLE_TREE = (v: { verb: string; files: string }): string =>
 	`The command \`git ${v.verb}\` changes the whole work tree or the index. The user changed ${v.files}, and the user intends those changes. Run this command only when the user asked for it.`;
 export const ASK_DOWNLOAD =

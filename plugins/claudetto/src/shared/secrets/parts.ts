@@ -30,6 +30,7 @@ const loose = (source: string): string =>
 		.replace(LETTER_PAIR, `$1${GAP}`)
 		.replace(OPTIONAL_SEPARATOR, `(?:[_-]${GAP})?`);
 
+// The keyword list is a choice of the author, not a standard: names of values that usually hold a secret. Entries such as `memory[_-]?request[_-]?mac` are likewise additions of the author.
 const NAME = loose(
 	"api[_-]?key|secret|token|password|passwd|credential|bearer|authorization|auth[_-]?header|memory[_-]?request[_-]?mac|cookie|session[_-]?(?:id|key)|connection[_-]?string|(?:private|ssh|encryption|signing|access|deploy|master|license)[_-]?key|client[_-]?secret",
 );
@@ -80,6 +81,7 @@ export const ESCAPED_QUOTE = /\\["']/;
 
 export const MASK_TAIL = `\\][^\\s"'>}|,;&${TICK})\\]]*`;
 
+// A compact JWS is `BASE64URL(header).BASE64URL(payload).BASE64URL(signature)` (RFC 7515 section 7.1; a JWT is one, RFC 7519 section 3). The header is a JSON object, so it starts with `{"`, which is `eyJ` in base64url (probed with `base64`). A header with a space after `{` starts `eyAi` and is not matched, as a choice. The minimum of 10 characters per segment is a choice of the author, to skip short dotted names; the RFCs set no length.
 const B64 = "[A-Za-z0-9_-]";
 const SEGMENT = `${B64}{10}${B64}*`;
 const TWO_SEGMENTS = `\\.${SEGMENT}\\.${SEGMENT}`;

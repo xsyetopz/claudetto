@@ -93,8 +93,9 @@ export type Aliases = ReadonlyMap<string, string>;
 
 const ENV_ALIAS = "!$CLAUDETTO_ALIAS_ENV";
 
+// Global options that take the next word as a value. `--exec-path` is not one: probed with git 2.54.0, `git --exec-path status` prints the path and exits, and only `--exec-path=<path>` gives a value, so the verb after a bare `--exec-path` is still read. `--super-prefix` is an unknown option on that git (it exits with usage); it stays here as the stricter reading, unverified.
 const VALUE_OPTS = new Set(
-	"-C -c --git-dir --work-tree --namespace --exec-path --super-prefix --config-env".split(
+	"-C -c --git-dir --work-tree --namespace --super-prefix --config-env".split(
 		" ",
 	),
 );

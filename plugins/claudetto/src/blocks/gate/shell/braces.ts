@@ -27,7 +27,10 @@ const plain = (text: string): Char[] =>
 
 const join = (w: Char[]): string => w.map((ch) => ch.c).join("");
 
-/** A number with a leading zero pads each term to the same number of digits (Bash manual 5.3, Brace Expansion); the width of the wider end is the gate's reading of that. */
+/**
+ * A number with a leading zero pads each term to the same number of digits (Bash manual 5.3, Brace Expansion); the width of the wider end is the gate's reading of that.
+ * A lone `0` does not start a padded number: probed with `zsh`, `{0..10}` and `{0..010}` give `0 1 ... 10` and `{00..10}` gives `00 01 ... 10`. The only `bash` here is 3.2.57, which pads nothing (`{00..10}` gives `0 ... 10`), so the padding rule rests on the manual and on `zsh`.
+ */
 const padOf = (numeric: boolean, a: string, b: string): number =>
 	numeric && [a, b].some((n) => LEADING_ZERO.test(n))
 		? Math.max(a.length, b.length)
