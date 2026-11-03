@@ -3,7 +3,7 @@
 import { describe, expect, test } from "bun:test";
 import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
-import { sessionArgv } from "../arm.ts";
+import { answeredAll, sessionArgv } from "../arm.ts";
 import { claudeMdOf } from "../memory.ts";
 import { callsOf, claudeMdChars, extraArgs, userFilesOf } from "../run.ts";
 import { scoreOf } from "../score.ts";
@@ -224,5 +224,11 @@ describe("the command line of one arm", () => {
 				extra: ["--x"],
 			}),
 		).toEqual(["claude", "--plugin-dir", "/p", "--x"]);
+	});
+
+	test("an interactive arm with tool calls ends only after the request that follows the last call", () => {
+		expect(answeredAll(0, 1)).toBe(true);
+		expect(answeredAll(1, 1)).toBe(false);
+		expect(answeredAll(1, 2)).toBe(true);
 	});
 });
