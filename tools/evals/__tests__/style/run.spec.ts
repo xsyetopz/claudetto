@@ -4,10 +4,10 @@ import { describe, expect, test } from "bun:test";
 import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { CommandRunner } from "../../../claudekit/session/command.ts";
-import { styleMain } from "../style/main.ts";
+import type { CommandRunner } from "../../../../claudekit/session/command.ts";
+import { styleMain } from "../../style/main.ts";
 
-const ROOT = join(import.meta.dir, "..", "..", "..");
+const ROOT = join(import.meta.dir, "..", "..", "..", "..");
 
 /** A runner that answers `git show` with a style file and posts one request to the fake API for each `claude`. */
 const stubRunner =
@@ -17,8 +17,14 @@ const stubRunner =
 		if (argv[0] === "git") {
 			return {
 				code: 0,
-				stdout:
-					"---\nname: Concise\n---\n\n<first_sentence>\nOpen with the outcome.\n</first_sentence>\n",
+				stdout: `---
+name: Concise
+---
+
+<first_sentence>
+Open with the outcome.
+</first_sentence>
+`,
 				stderr: "",
 				timedOut: false,
 			};

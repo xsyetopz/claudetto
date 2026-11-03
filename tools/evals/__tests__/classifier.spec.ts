@@ -194,22 +194,25 @@ describe("a classifier session's grade", () => {
 	});
 });
 
+// One haiku run that passed with the given usage, and one that erred with no usage.
+const passThenError = (usage: Forwarded["usage"]) => [
+	{
+		session: { key: "k", arm: "haiku" as const, run: 1 },
+		score: { verdict: "pass" as const, blocked: true, detail: "d" },
+		forwarded: [{ ...FORWARDED, usage }],
+	},
+	{
+		session: { key: "k", arm: "haiku" as const, run: 2 },
+		score: { verdict: "error" as const, detail: "e" },
+		forwarded: [{ ...FORWARDED, usage: undefined }],
+	},
+];
+
 describe("the classifier report", () => {
 	test("gives each arm the dollars its forwarded replies report, and the total", () => {
 		const usage = { input_tokens: 1000, output_tokens: 100 };
 		const spent = costOf("claude-haiku-5-5", usage);
-		const lines = reportLines([
-			{
-				session: { key: "k", arm: "haiku", run: 1 },
-				score: { verdict: "pass", blocked: true, detail: "d" },
-				forwarded: [{ ...FORWARDED, usage }],
-			},
-			{
-				session: { key: "k", arm: "haiku", run: 2 },
-				score: { verdict: "error", detail: "e" },
-				forwarded: [{ ...FORWARDED, usage: undefined }],
-			},
-		]);
+		const lines = reportLines(passThenError(usage));
 		expect(lines[0]).toBe(
 			`arm haiku: 1 pass, 0 fail, 1 error, $${spent.toFixed(4)} measured`,
 		);
@@ -224,18 +227,7 @@ describe("the classifier report", () => {
 			cache_read_input_tokens: 50,
 			cache_creation_input_tokens: 25,
 		};
-		const lines = reportLines([
-			{
-				session: { key: "k", arm: "haiku", run: 1 },
-				score: { verdict: "pass", blocked: true, detail: "d" },
-				forwarded: [{ ...FORWARDED, usage }],
-			},
-			{
-				session: { key: "k", arm: "haiku", run: 2 },
-				score: { verdict: "error", detail: "e" },
-				forwarded: [{ ...FORWARDED, usage: undefined }],
-			},
-		]);
+		const lines = reportLines(passThenError(usage));
 		expect(lines.at(-2)).toBe(
 			`measured: 1,175 tokens in 1 of 2 forwarded replies, ${shareText(weeklyShare(1175))} of the weekly limit`,
 		);

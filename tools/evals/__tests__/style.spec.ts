@@ -123,7 +123,10 @@ describe("the graders", () => {
 
 	test("`firstSentence` stops at a full stop or a line break", () => {
 		expect(firstSentence("One. Two.")).toBe("One.");
-		expect(firstSentence("One\nTwo.")).toBe("One");
+		expect(
+			firstSentence(`One
+Two.`),
+		).toBe("One");
 	});
 
 	test("`sentence-form` fails an animate verb after a thing and passes the actor as subject", () => {
