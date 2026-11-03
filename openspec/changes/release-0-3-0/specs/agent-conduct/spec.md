@@ -305,9 +305,14 @@ No prompt claudetto ships SHALL use the word "correction" or "corrects" for a us
 - **WHEN** a repository test searches `agents/*.md` and `output-styles/*.md`
 - **THEN** it finds no "correction" and no "corrects"
 
-### Requirement: The Output Style Names the Prose Forms to Avoid
+### Requirement: The Output Style Names the Sentence Form to Use
 
-The output style SHALL name the prose forms to avoid: an inanimate subject with an animate verb, stacked nouns, a verb made from a noun, and a reduced relative clause, so a reply can be checked against them.
+The output style SHALL name the sentence form to use: the actor is the subject, with its own verb, and each clause is spelled out, so a reply can be checked against it. Every rule of `output-styles/*.md` SHALL say what to do, with none of the words `never`, `no`, `not`, `don't`, `do not`, `without`, `avoid`, `nothing`, `none`, or `nor`, because naming the act to avoid puts it in the reader's mind.
+
+#### Scenario: Negative Word Search
+
+- **WHEN** a repository test searches `output-styles/*.md`
+- **THEN** it finds none of those words
 
 #### Scenario: Animate Verb
 

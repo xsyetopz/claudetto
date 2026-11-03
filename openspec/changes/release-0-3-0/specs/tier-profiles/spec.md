@@ -22,3 +22,17 @@ When a response of the main thread or a subagent names a model that the row does
 
 - **WHEN** the row names `claude-opus-5-5` and a response names `claude-opus-5`
 - **THEN** the user sees a line naming both, in the first turn it happens
+
+### Requirement: New Worktrees Start at the Branch Tip
+
+Setup SHALL write `worktree.baseRef: "head"` when the key is unset, in a dialog group that names the key and what it does. Setup SHALL NOT replace a `worktree.baseRef` the user set, nor offer to replace it.
+
+#### Scenario: Unset Key
+
+- **WHEN** the settings hold no `worktree.baseRef` and setup runs
+- **THEN** the settings hold `worktree.baseRef: "head"`, and a worktree that `EnterWorktree` or an agent with `isolation: "worktree"` makes starts at the tip of the current branch
+
+#### Scenario: The User's Own Value
+
+- **WHEN** the settings hold `worktree.baseRef: "fresh"` and setup runs
+- **THEN** the value stays `"fresh"`, and the setup dialog does not list `worktree.baseRef`

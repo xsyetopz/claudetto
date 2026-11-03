@@ -109,6 +109,10 @@ Probe rounds took 25.5% of the week's main-thread tokens, and one run cost 3.4 t
 
 `EnterWorktree` and `ExitWorktree` stay allowed and deferred. A deny would save 29 characters of the request, and the user keeps the tools.
 
+### Setup writes `worktree.baseRef: "head"`
+
+This reverses the `0.1.0` decision to leave the `worktree` setting unset, which held that none of its keys turns worktrees on or off. Claude Code `2.1.316` and `2.1.317` start a new worktree at `origin/<default branch>` unless `worktree.baseRef` is `"head"`, and the schema default is `"fresh"`. `just worktree-base` reproduced it, and two agents of this change started from `544088f7`, the `origin/main` of the day, and edited old code. Setup writes the key in a "Worktrees" group of its dialog, which names the key and what it does. A value the user set stays: `just setup` fills only an unset key, and the dialog does not offer to replace it.
+
 ### Hygiene stays code
 
 The collector is the `SessionStart` hook and `bin/claudetto-hygiene`: no model call, and no tool, command, or skill text, so the request does not grow. Each shipped kind has its own retention key, with 0 for off, and `hygieneEnabled` turns all of them off. The shipped rows cover only Claude Code's temp leftovers (`fswatch-probe-*` and dead session folders) and claudetto's handoffs. The dev tools remove their own `mkdtemp` roots, and a dev-only `just gc` in `claudekit/gc/` is the backstop, so the plugin ships no pattern under `/tmp`. Claude Code's temp folder is `/private/tmp/claude-501` here while `$TMPDIR` is under `/var/folders`, so the root is found from `CLAUDE_CODE_TMPDIR`, `/tmp`, and `os.tmpdir()`, not assumed.
