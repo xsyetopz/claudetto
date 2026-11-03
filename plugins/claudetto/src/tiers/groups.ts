@@ -12,7 +12,12 @@ import { MAIN_AGENT, STYLE } from "../prompts.ts";
 import { SECRET_PATHS } from "../sandbox/sandbox.ts";
 import { AGENT_DENIES, DEFERRED_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES } from "./allow.ts";
-import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
+import {
+	disablesSnippet,
+	FALLBACK_MODELS,
+	MAX_EFFORT,
+	WORKTREE,
+} from "./disables.ts";
 import { envFlags, MODEL_PINS, SUBAGENT_MODEL_ENV } from "./env.ts";
 import type { TierSnippet } from "./snippet.ts";
 import { STATUS_LINE_KEYS } from "./status-line.ts";
@@ -63,6 +68,11 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
 			"modelSettings",
 			...STATUS_LINE_KEYS,
 		],
+	},
+	{
+		label: "Worktrees",
+		why: `Sets \`worktree.baseRef\` to \`"${WORKTREE.baseRef}"\`, so a worktree that \`EnterWorktree\` or an agent with \`isolation: "worktree"\` makes starts at the current branch, with its unpushed commits. Unset, Claude Code starts it at \`origin/<default branch>\`, and an agent on a feature branch edits old code.`,
+		keys: ["worktree"],
 	},
 	{
 		label: "Features off",

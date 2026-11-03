@@ -111,13 +111,13 @@ describe("the keys setup writes", () => {
 	for (const row of TIERS) {
 		const snippet = tierSnippet(row, "darwin");
 
-		test(`${row.tier}: worktrees stay on and fast mode is off, since quality on a budget outranks speed`, () => {
+		test(`${row.tier}: worktrees stay on and start at the branch tip, and fast mode is off, since quality on a budget outranks speed`, () => {
 			const deny = denyRulesOf(snippet);
 
 			for (const tool of ["EnterWorktree", "ExitWorktree"]) {
 				expect(deny.filter((rule) => rule.startsWith(tool))).toEqual([]);
 			}
-			expect(snippet).not.toHaveProperty("worktree");
+			expect(snippet).toMatchObject({ worktree: { baseRef: "head" } });
 			expect(snippet).toMatchObject({
 				env: { CLAUDE_CODE_DISABLE_FAST_MODE: "1" },
 			});

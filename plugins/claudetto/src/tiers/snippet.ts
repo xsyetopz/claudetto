@@ -9,7 +9,12 @@ import { sandboxSnippet } from "../sandbox/sandbox.ts";
 import { pctFor } from "../threshold.ts";
 import { AGENT_DENIES, DEFERRED_DENIES, INTEGRATION_DENIES } from "./agents.ts";
 import { ALLOW_RULES, ruleFaults } from "./allow.ts";
-import { disablesSnippet, FALLBACK_MODELS, MAX_EFFORT } from "./disables.ts";
+import {
+	disablesSnippet,
+	FALLBACK_MODELS,
+	MAX_EFFORT,
+	WORKTREE,
+} from "./disables.ts";
 import { envFlags, MODEL_PINS, SUBAGENT_MODEL_ENV } from "./env.ts";
 import { statusLineSnippet } from "./status-line.ts";
 import { HAIKU_MODEL, type TierRow } from "./tiers.ts";
@@ -118,6 +123,7 @@ export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 	outputStyle: STYLE,
 	...autoModeBlock(),
 	...sandboxBlock(platform),
+	worktree: WORKTREE,
 	env: {
 		...envFlags(),
 		[AUTOCOMPACT_PCT_ENV]: pctFor(row.contextCap, row.handoffTokens).toFixed(4),

@@ -135,6 +135,18 @@ describe("keys the user already set", () => {
 
 		expect(plan.write?.["minimumVersion"]).toBe("2.1.320");
 	});
+
+	test("a `worktree.baseRef` of `fresh` stays, and a missing one is written as `head`", () => {
+		const kept = planSetup(
+			MAX_20X,
+			{ worktree: { baseRef: "fresh" } },
+			PLATFORM,
+		);
+		const filled = planSetup(MAX_20X, {}, PLATFORM);
+
+		expect(kept.write?.["worktree"]).toEqual({ baseRef: "fresh" });
+		expect(filled.write?.["worktree"]).toEqual({ baseRef: "head" });
+	});
 });
 
 describe("refusedPaths", () => {

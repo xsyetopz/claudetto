@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { KEY_GROUPS } from "../../../tiers/groups.ts";
 import { valueAt } from "../../../tiers/merge.ts";
 import { tierSnippet } from "../../../tiers/snippet.ts";
 import { SNIPPET_ROW } from "../../../tiers/tiers.ts";
@@ -51,6 +52,23 @@ describe("the differences between the snippet and the user settings", () => {
 		expect(
 			idsOf({ sandbox: { network: { allowLocalBinding: true } } }),
 		).not.toContain("sandbox.network.allowLocalBinding=true");
+	});
+
+	test("an unset `worktree.baseRef` is offered in a group that names the key and what it does", () => {
+		const found = differencesOf({}, snippet()).find(
+			(d) => d.id === "worktree.baseRef",
+		);
+		const why = KEY_GROUPS.find((g) => g.label === found?.group)?.why ?? "";
+
+		expect(found?.claudetto).toBe("head");
+		expect(why).toContain("`worktree.baseRef`");
+		expect(why).toContain("origin/<default branch>");
+	});
+
+	test("a `worktree.baseRef` the user already set is not offered, so the user keeps it", () => {
+		expect(idsOf({ worktree: { baseRef: "fresh" } })).not.toContain(
+			"worktree.baseRef",
+		);
 	});
 });
 
