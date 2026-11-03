@@ -20,7 +20,7 @@ The [Sonnet 5.5 prompting guide](https://platform.claude.com/docs/en/build-with-
 
 The [best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) have no guidance on sycophancy.
 For a preamble, they say to "strip [it] in post-processing".
-Claude Code shows the reply before a `Stop` hook runs, so a plugin cannot strip a preamble (Engine Facts).
+Claude Code shows the reply before a `Stop` hook runs, so a plugin cannot strip a preamble (unmeasured: no source read in this tree states the order of the reply and the `Stop` hook).
 
 ## The `claude-api` Skill
 
@@ -77,14 +77,14 @@ So Haiku can classify a reply, but it cannot verify work.
 ## Claude Code Docs
 
 - The [hooks guide](https://code.claude.com/docs/en/hooks-guide) gives the `Stop` input and the hook types.
-- The [tools reference](https://code.claude.com/docs/en/tools-reference) gives the time limits of a background `Bash` command.
-- Checkpoints do not track an edit that `Bash` makes.
+- The [tools reference](https://code.claude.com/docs/en/tools-reference) is said to give the time limits of a background `Bash` command (unverified, needs a web read).
+- Checkpoints do not track an edit that `Bash` makes (unverified, needs a web read; `docs/keep/settings/env-documented.txt` lists the `CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING` setting and says nothing of `Bash`).
 
 ## Effort, `ultrathink`, and `opusplan`
 
 These facts come from the program of Claude Code 2.1.310 and the [request and cache page](https://xsyetopz.github.io/claude-code-docs/how-it-works/request-and-cache).
 
-- The word `ultrathink` in a prompt adds one meta line that asks for deeper reasoning on that turn. It does not change the `effort` of the request (`uFr` in `chunk-31gxg38t.js`). It also fires on a quote of the word. A server flag gates it, and no setting turns it off. Use `/effort` or the `effort:` key of an agent or a skill to change the effort.
+- The word `ultrathink` in a prompt: the strings of `2.1.317` match it with `/\bultrathink\b/i`, describe `ultrathink_available` as "typing `ultrathink` runs the turn at xhigh effort" when the session is below `xhigh`, gate it with the flag `tengu_turtle_carbon`, and read `CLAUDE_CODE_DISABLE_ULTRATHINK` to turn it off. An earlier version of this line said the word changes no `effort` (`uFr` in `chunk-31gxg38t.js`) and that no setting turns it off; neither holds in `2.1.317`. Whether the word fires on a quote of it is unmeasured. Use `/effort` or the `effort:` key of an agent or a skill to change the effort.
 - A change of effort keeps the prompt cache on Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1, because these models take the effort with each message.
 - A change of model is a full cache miss, because each model has its own cache. `opusplan` changes the model when plan mode starts and when it ends. So each change sends the full context again as a cache write, unless the cache of that model from its last phase is still in its time to live.
 - Under `opusplan`, plan mode stays on Sonnet when the context is over 200k tokens (`wKr` in `chunk-27xjmczp.js`).

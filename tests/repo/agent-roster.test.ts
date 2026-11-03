@@ -176,7 +176,7 @@ describe("the declaration check", () => {
 			`---\nname: Athena\ntools: ${tools}\n---\nReview.\n`,
 		);
 
-	test("withholds Grep and Glob from an agent that has Bash", () => {
+	test("lists Grep and Glob declared beside Bash", () => {
 		expect(withheldBy(["Read", "Grep", "Glob", "Bash"])).toEqual([
 			"Grep",
 			"Glob",
@@ -188,6 +188,12 @@ describe("the declaration check", () => {
 		expect(agentFaults([athena("Read, Grep, Glob, Bash")])).toEqual([
 			expect.stringContaining("Athena.md: declares Grep and Glob beside Bash"),
 		]);
+	});
+
+	test("ties the withholding to the session, not to the agent's tools", () => {
+		const [line] = agentFaults([athena("Read, Grep, Glob, Bash")]);
+		expect(line).toContain("session");
+		expect(line).not.toContain("from an agent that has Bash");
 	});
 
 	test("passes the declaration without them", () => {

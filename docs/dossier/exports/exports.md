@@ -73,6 +73,6 @@ A number is quoted as the author wrote it. Two authors' numbers are never added 
 
 ## Coverage
 
-About 30 top-level threads were read in whole or in part. A thread with only praise or only complaint, and no number and no mechanism, was skipped and is not listed.
+The count of top-level threads read (about 30) is unmeasured. A thread with only praise or only complaint, and no number and no mechanism, was skipped and is not listed.
 Skipped by scope: the Gemini 3.6 Flash thread, because it is not a Claude model.
 Still unread at the end of the first pass: `Opus 5.5 Context Degradation`, `Six subagents on three different models`, `Opus 5.5 as a fleet orchestrator`, `Manual compact or Auto compact-`, `Are you manually compacting-handing off...`, `How often do you compact your sessions-`, `Output Style- Ultra Concise 5`, `CLAUDE.md for Opus 5.5 based on Anthropic's official platform docs`, `Claude Code Workflow Harness Change`, `Why token-saving plugins are costing you more money`, and `Two 5x sub or one 20x sub-`.

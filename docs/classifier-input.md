@@ -18,7 +18,7 @@ The API form of the captured slice merged four text blocks into one user message
 
 ## The Built-in Classifier
 
-The transcript builder sits near byte offset `263516608` of the `2.1.316` program. It walks the JSONL rows, not the API form, and gives each user row a frame:
+The `2.1.317` program holds the string `User answered AskUserQuestion` once, in the classifier prompt, at byte offset `265453939` (`LC_ALL=C grep -a -b -o -F`). The prompt says a user message prefixed `[User answered AskUserQuestion]:` is the user's answer and direct user intent. The old offset `263516608` was for `2.1.316` and does not reproduce on `2.1.317`. The builder bullets below come from the `2.1.316` read and were not re-read on `2.1.317`. The builder walks the JSONL rows, not the API form, and gives each user row a frame:
 
 - A typed row (`human` or `relay-human` frame) becomes a user message, so "Approved." after Stop hook feedback reaches it as the user's.
 - An `isMeta` row with no provenance is `invisible` and dropped, which is where the Stop hook feedback goes.

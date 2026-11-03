@@ -1,3 +1,4 @@
+/** The version CI installs (`tools/limits.ts`), a floor the author chose; every block `needs` sits at or below it. */
 export const MINIMUM_VERSION = "2.1.316";
 
 export const CONFIG_DISABLES = {
@@ -49,8 +50,10 @@ export const BEHAVIOR_KEYS = {
 /** Claude Code otherwise starts a new worktree at `origin/<default branch>`, without the commits of the current branch. */
 export const WORKTREE = { baseRef: "head" } as const;
 
+/** `2.1.317`: `fallbackModel` is an array of model names in the settings schema. */
 export const FALLBACK_MODELS: readonly string[] = ["claude-sonnet-5-5"];
 
+/** `2.1.317`: `modelSettings.<model>.maxEffortLevel` clamps a model, and the `claude-haiku-5-5` entry lists all five levels with `medium` as its default. The `high` ceilings are the author's choice. */
 export const MAX_EFFORT: Readonly<Record<string, string>> = {
 	"claude-opus-5-5": "high",
 	"claude-sonnet-5-5": "medium",

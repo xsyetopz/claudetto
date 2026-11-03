@@ -6,6 +6,7 @@ import {
 	HANDOFF_TRIGGER_TOKENS,
 } from "../threshold.ts";
 
+/** `2.1.317`: `default_claude_max_5x` and `default_claude_max_20x` are rate-limit tiers and `claude_pro` is an organization type in the bundle; the caps are the author's choice. */
 export const PLAN_CAPS = {
 	claude_pro: 3,
 	default_claude_max_5x: 4,

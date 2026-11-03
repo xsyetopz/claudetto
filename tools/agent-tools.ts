@@ -1,4 +1,4 @@
-// `Grep` and `Glob` are offered only where `Bash` is absent, so naming them beside `Bash` is a fault.
+// Claude Code `2.1.317` withholds `Grep` and `Glob` for the whole session when its shell search is on, so naming them beside `Bash` is a fault.
 // Usage: bun tools/agent-tools.ts
 
 import { readdir, readFile } from "node:fs/promises";
@@ -17,7 +17,7 @@ export const TOOL_NAMES = [
 	"WebSearch",
 ] as const;
 
-/** The names the runtime offers in place of `Bash` when it is denied. */
+/** The names Claude Code `2.1.317` withholds for a session whose shell search is on. */
 export const SWAPPED_FOR_BASH: readonly string[] = ["Grep", "Glob"];
 
 export interface Agent {
@@ -62,7 +62,7 @@ export const agentFaults = (agents: readonly Agent[]): string[] =>
 		const held = withheldBy(agent.tools ?? []);
 		if (held.length > 0) {
 			lines.push(
-				`${agent.file}: declares ${held.join(" and ")} beside Bash, and the runtime withholds them from an agent that has Bash`,
+				`${agent.file}: declares ${held.join(" and ")} beside Bash, and Claude Code 2.1.317 withholds them for the whole session when its shell search is on, not by the agent's tools`,
 			);
 		}
 		const named = bodyNamesWithheld(agent);

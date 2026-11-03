@@ -30,6 +30,7 @@ const positive = <T extends number | undefined>(
 
 /**
  * The subagent cap is Claude Code's own `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, which a user sets in the `env` setting.
+ * Claude Code `2.1.317` reads it as the cap on running subagents and uses 20 when it is unset (`dVt()` in its source).
  * A `subagentCap` stored before that option was dropped still counts when the env sets none.
  */
 export const limitsOf = (

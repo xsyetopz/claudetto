@@ -1,10 +1,10 @@
 # Dossier September A
 
-Scope: the 75 files in `external/2026-09-29`, `2026-09-29_p2`, `2026-09-29_p3`, `2026-09-30`, `2026-10-01` and `2026-10-01_p2`. Every file is a Reddit thread export. The project runs Claude Code `2.1.311`. Only two files name a version, `2.1.283` in the headless usage post and `2.1.277` in the wrap-up note, and the bullets carry them.
+Scope: the 75 files in `external/2026-09-29`, `2026-09-29_p2`, `2026-09-29_p3`, `2026-09-30`, `2026-10-01` and `2026-10-01_p2`. Every file is a Reddit thread export. Written when the project ran Claude Code `2.1.311`. That version is not installed on 2026-11-03; `claude --version` prints `2.1.317`. `grep -lr -E '\b2\.1\.[0-9]{2,3}\b'` over the six folders prints 3 files, not 2: `2.1.277` in two and `2.1.283` in one. The bullets carry them.
 
 Format of each bullet: the claim, the file path, the question number, the label, the author role. A Reddit post or comment is never promoted to `measured`, so every label is `self-report`. Where an author states a method, command or table, the bullet opens with "Method stated". Many quotes come from commenters and not from the post author, and the role field says which. A disagreement is recorded as a disagreement and no winner is picked. Two files are byte-identical copies of two others and the bullets name both paths.
 
-Two gaps. No file gives a numeric subagent turn limit or tool-call limit with a method. The one figure on the cost of a mid-session model switch is a commenter's own estimate under question 4.
+Two gaps. No file gives a numeric subagent turn limit or tool-call limit with a method. The one figure on the cost of a mid-session model switch is a commenter's own estimate under question 4. Checked: `grep -ilrE 'maxTurns|max.turns|turn limit|tool-call limit|turn cap'` over the folders on 2026-11-03 prints no file for the six folders. The second sentence is not rechecked. On `2.1.317`, `grep -a -c maxTurns` on the binary prints 56 and `grep -a -c -E '200[- ]turn'` prints 0.
 
 Dropped under the coding test: media picking, translation, research and other non-coding tasks, other vendors' models, and models before the Claude 5 family.
 
@@ -133,7 +133,7 @@ Dropped under the coding test: media picking, translation, research and other no
 
 ## 6. Subagents
 
-No numeric subagent turn limit or tool-call limit appears in the 75 files. The nearest items are below and none is a limit with a method.
+No numeric subagent turn limit or tool-call limit appears in the 75 files. The nearest items are below and none is a limit with a method. Checked: `grep -ilrE 'maxTurns|max.turns|turn limit|tool-call limit|turn cap'` over the folders on 2026-11-03 prints no file for these six folders. On `2.1.317`, `grep -a -c maxTurns` on the binary prints 56 and `grep -a -c -E '200[- ]turn'` prints 0.
 
 - A commenter writes "Fable is able to handle >4 concurrent sub-agents better without starting to forget steps in workflow" than Opus 5.5, and adds "The benchmarks technically say Opus 5.5 is better". `external/2026-09-29/export-Is Fable 5.1 needed any more -.jsonl`. Q6. `self-report`. `comment`.
 - A commenter keeps a `CLAUDE.md` rule that the main session is a coordinator and Opus agents "(`model: "opus"`)" do the bulk. The main session runs until "200-300K tokens usually" then hands off, and "I just checked my last 10 or so main sessions and they are mostly around 200K in context". `external/2026-09-29/export-Is Fable 5.1 needed any more -.jsonl`. Q6. `self-report`. `comment`.
@@ -176,7 +176,7 @@ No numeric subagent turn limit or tool-call limit appears in the 75 files. The n
 
 ## Coverage
 
-All 75 files were read in full. Cited in a bullet above: 54. Read with nothing found: 21. The two counts add to 75.
+`find` over the six folders finds 75 files on 2026-11-03 (20, 11, 2, 13, 21, and 8). The counts read in full (75), cited (54), and read with nothing found (21) were not recorded with a command, so they are unmeasured.
 
 ### Cited (54)
 

@@ -22,7 +22,7 @@ the dedicated file/search tools over shell commands when one fits", and the `Bas
 
 ## Ignore Files
 
-Claude Code reads no `.claudeignore`. The string is in no part of the `2.1.316` binary. A free
+Claude Code reads no `.claudeignore`. The string is in no part of the `2.1.317` binary. A free
 `--calls` run in a sandboxed folder held five files, each named in one of `.gitignore`, `.ignore`,
 `.rgignore`, and `.claudeignore`, and one named in none:
 
@@ -33,9 +33,11 @@ Claude Code reads no `.claudeignore`. The string is in no part of the `2.1.316` 
 | `find` in `Bash` (`bfs`) | no | no | no | no |
 
 The `@` file picker reads `.gitignore` while the `respectGitignore` setting is `true`, its default,
-and always reads `.ignore` and `.rgignore`. No ignore file stops `Read`. A `Read` deny rule does stop
-it, but under the sandbox each `Read` deny also joins the sandbox read-deny list, so `cat bun.lock` in
-`Bash` fails with "Operation not permitted", and `bun install`, `bun test`, and `tsc` break.
+and always reads `.ignore`, as the setting's own text in `2.1.317` says. Whether it reads `.rgignore`
+is unmeasured. No ignore file stops `Read`. A `Read` deny rule does stop it, and under the sandbox
+the `sandbox.filesystem.denyRead` list is "merged with paths from `Read(...)` deny permission rules"
+(the text of `2.1.317`), so a `Read` deny reaches `Bash` too. What that does to `cat bun.lock`,
+`bun install`, `bun test`, and `tsc` is unmeasured.
 
 So a user who wants a path kept out of a session:
 
@@ -114,10 +116,10 @@ matches that `rg` misses. The command is
 `ast-grep run -l ts -p 'PATTERN' --json=stream PATH | jq -r '"\(.file):\(.range.start.line+1):\(.text|split("\n")[0][0:80])"'`,
 with `| head -n N` for a cap.
 
-It is not bundled: the macOS `aarch64` binary is 53,955,184 bytes, and the `Athena` and `Hephaestus` bodies name it
+It is not bundled: the `ast-grep` file in the `0.51.1` release zip for macOS `aarch64` is 53,955,184 bytes, and the `Athena` and `Hephaestus` bodies name it
 only for use when `command -v ast-grep` finds it. It installs with `brew install ast-grep`, or from
 the release zips for Linux `x86_64` and `aarch64` (gnu only) and macOS `x86_64` and `aarch64`, since
-Homebrew has no Intel macOS bottle for 0.51.1.
+`brew info --json=v2 ast-grep` lists one bottle for `0.51.1`, `arm64_golden_gate`, and none for Intel macOS.
 
 Two paths offer it, and neither bundles it. A new session looks up `ast-grep` and `sg` in the `PATH`
 folders, with `$.fs.exists` and no process, and when neither is there it shows one line to you,
@@ -154,6 +156,6 @@ So the index saves nothing over a definition search.
 ## Tools Left Out
 
 `semgrep`, `comby`, `tree-sitter`, `eza`, `yq`, `htmlq`, `procs`, and `xh` are not named in any
-prompt text. `ps`, `curl`, and `jq` are each under 71,000 characters of `Bash` output over all the
-transcripts of this account, `WebFetch` already turns HTML into text, and no claudetto hook runs a
-shell tool that these replace.
+prompt text. The `Bash` output of `ps`, `curl`, and `jq` over the transcripts of this account is
+unmeasured. `WebFetch` already turns HTML into text, and no claudetto hook runs a shell tool that
+these replace.

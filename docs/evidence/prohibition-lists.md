@@ -3,7 +3,7 @@
 # Prohibition Lists
 
 A prohibition list is a paragraph of three or more sentences that start with `Do not`, `Don't`, `Never`, or `Avoid`.
-A list of what not to do anchors the failure that it forbids.
+Whether a list of what not to do anchors the failure that it forbids is unmeasured here; the claim comes from the prompting guide and is unverified (needs a web read).
 So `claudetto` keeps such a list only when its failure reproduces on the target model.
 
 ## The Rule

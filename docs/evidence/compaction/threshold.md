@@ -4,14 +4,14 @@
 This page asks the next two questions: which threshold would have been cheapest, and what does compacting cost in work that no bill shows.
 Both halves are free. No model call, no network, no paid run. Everything comes from the same three long transcripts.
 
-Every number here is printed by `bun claudekit/compaction-cost/main.ts`, which is in the tree behind `just compaction-cost`, so a later run checks this page against itself.
+The numbers of the replay are printed by `bun claudekit/compaction-cost/main.ts`, which is in the tree behind `just compaction-cost`.
 Run on 2026-10-28, Claude Code `2.1.312`: 3 sessions, 8,705 assistant requests, 36 compactions.
-The sample grows while the session that measures it runs, which is why the boundaries page records 35 compactions from an earlier hour of the same day and why re-running moves the last digits.
+The sample grows with the transcripts of this login: the same command on 2026-11-03 read 38 sessions, 47,575 requests, and 243 compactions, with a lost-work charge of 16.1 turns (`$0.87`) against the 20.1 below, and the lowest replay row at 120,000. So every figure on this page is the record of 2026-10-28 and is not reproduced by a later run. The probe records further down (the forks, the rounds of 2026-10-29 and 2026-10-30) came from paid runs and are unmeasured since.
 
 ## Result in Brief
 
 - **The cheapest threshold for this login's work is about 130,000, and the band within 1% of it runs from 110,000 to 135,000.** The bill plus the measured cost of lost work is `$501.70` at 130,000 against `$554.42` at the 224,999 the archived derivation produced, which is −9.5%.
-- The value set is **140,000**, not 130,000. It is the one value inside the robust band of every charge and summary model tested, and its derived settings come out exact: `AUTOCOMPACT_PCT` of `50.0000` fires at exactly 140,000, and a Haiku `autoCompactWindow` of 200,000 fires at exactly 90,000, the trigger Anthropic's own cost page supports.
+- The value set is **140,000**, not 130,000. It is the one value inside the robust band of every charge and summary model tested, and its derived settings come out exact: `AUTOCOMPACT_PCT` of `50.0000` fires at exactly 140,000, and a Haiku `autoCompactWindow` of 200,000 fires at exactly 90,000, the trigger that Anthropic's cost page is said to support (`references.md`; unverified, needs a web read).
 - A compaction costs **20.1 turns of steady-state work**, measured and not assumed: the edit rate over the first 40 turns after one is 0.0806 against a steady 0.1616, which is 116.7 edits that did not happen over 36 compactions, or `$1.22` each at `$0.0607` a turn.
 - That charge is **not** an artefact of context size, which was the one confound left. At a fixed prompt size of 60,000 to 100,000 tokens the edit rate is 0.091 within 40 turns of a compaction against 0.159 beyond it, 57%, and the steady rate barely moves with size at all (0.159, 0.160, 0.194, 0.134 across four size bands).
 - Compacting more often is **not** paid for in re-read files either. At four lookback depths the already-read share after a boundary sits 8 to 15 points *below* a control point of the same sessions.
@@ -152,7 +152,7 @@ So the charge survives the test it could have failed. What stays unmeasurable he
 | 224,999 | `$515.44` | `$38.98` | `$554.42` | base | — |
 | 267,000 | `$546.25` | `$32.89` | `$579.14` | +4.5% | 101.5 turns |
 
-The last column is how wrong the charge would have to be for the old 224,999 to win a row back: every row needs at least 2.2 times the measured 20.1 turns, and most need more than LangWatch's upper assumption of 55 steps.
+The last column is how wrong the charge would have to be for the old 224,999 to win a row back: every row needs at least 2.2 times the measured 20.1 turns, and most need more than LangWatch's upper assumption of 55 steps (as `references.md` records it; the article is unverified, needs a web read).
 The column is not monotone, because each entry is a ratio of two small differences and the compaction count is an integer.
 
 ## The Fine Sweep, and How Robust the Minimum Is
@@ -199,7 +199,9 @@ The derived values come out exact at 140,000, which is a second reason to prefer
 | `HAIKU_AUTOCOMPACT_WINDOW` | 200,000 | 213,846 |
 | which fires at | 90,000 | 89,999 |
 
-The Haiku row still clears its price step: 90,000 is under the 100,000 at which Haiku 5.5 input reprices, and 90,000 is the trigger Anthropic's own cost page supports (`references.md`).
+The table is arithmetic on the formulas of the `clawdipedia` route `how-it-works/context-and-compaction`. The "fires at" rows were not re-read on `2.1.317` and are unmeasured. The shipped settings set `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` to `50.0000` and the Haiku `autoCompactWindow` to `200000` (read from `just capture --shipped` on 2026-11-03).
+
+The Haiku row still clears its price step: 90,000 is under the 100,000 at which Haiku 5.5 input reprices, and 90,000 is the trigger that Anthropic's cost page is said to support (`references.md`; unverified, needs a web read).
 
 What would move it again. If the paid run of task 10.5 finds the charge is nearer 10 turns than 20, the value belongs near 100,000. If it finds 40, the value belongs near 170,000. Nothing in these rows supports going back above 200,000.
 

@@ -1,6 +1,6 @@
 # Dossier, Early October Gap B
 
-Scope is `external/2026-10-02`, `external/2026-10-03` and `external/2026-10-04`. Each bullet gives the claim, the file, the question number, `self-report` or `measured`, and `post` or `comment`. Nothing here was run or verified by the reader. The project runs Claude Code `2.1.311`. A version appears in a bullet only when the file names one.
+Scope is `external/2026-10-02`, `external/2026-10-03` and `external/2026-10-04`. Each bullet gives the claim, the file, the question number, `self-report` or `measured`, and `post` or `comment`. Nothing here was run or verified by the reader. Written when the project ran Claude Code `2.1.311`. That version is not installed on 2026-11-03; `claude --version` prints `2.1.317`. A version appears in a bullet only when the file names one.
 
 ## 1. Effort per Model
 
@@ -101,7 +101,7 @@ Scope is `external/2026-10-02`, `external/2026-10-03` and `external/2026-10-04`.
 
 ## 6. Subagents
 
-No harness turn or tool-call cap was found in these files. The numeric limits below are the authors' own rules.
+No harness turn or tool-call cap was found in these files. The numeric limits below are the authors' own rules. Checked: `grep -ilrE 'maxTurns|max.turns|turn limit|tool-call limit|turn cap'` over the folders on 2026-11-03 prints no file for `2026-10-02`, `2026-10-03`, and `2026-10-04`. On `2.1.317`, `grep -a -c maxTurns` on the binary prints 56 and `grep -a -c -E '200[- ]turn'` prints 0.
 
 - A numeric limit. A post says "Max 3 agents at once. With 5 or more we hit the usage limit and they all died mid task." The setup is `$100` Max. The OP says 5-6 agents hit the 5 hour limit 2-3 hours in, and 3 agents gave "usually over 90% usage by hour 4-5". No harness method. `external/2026-10-02/export-My Claude Code subagent setup- orchestrator, doers, reviewer, blind tester. What would you change-.jsonl`. Q6. `self-report`. `post`.
 - A numeric rule in a CLAUDE.md. "Under ~50k context: prefer inline work for tasks under ~5 tool calls. Over ~50k context: prefer subagents". Final responses stay under `2000` characters and never call `TaskOutput` twice for one subagent. No method. `external/2026-10-02/export-A system prompt that actually stops AI from doing that annoying -I removed it because you told me to.jsonl`. Q6. `self-report`. `comment`.
@@ -138,7 +138,7 @@ No harness turn or tool-call cap was found in these files. The numeric limits be
 
 ## Coverage
 
-The task listed 88 files. Counts: 46 cited, 39 read with nothing found, 3 skipped as already confirmed. 46 plus 39 plus 3 is 88. No shortfall.
+`find` over the three folders finds 88 files on 2026-11-03 (44, 21, and 23). The counts cited (46), read with nothing found (39), and skipped (3) were not recorded with a command, so they are unmeasured.
 
 Reading limits. Comments were read truncated to about 230 to 330 characters. Where a truncated comment held a number, the comment was re-read in full. Three giant threads were read by the post plus a keyword scan only, so comments with no keyword hit were not read: `export-Mmmkay. I didn't believe others at first, but something is suddenly off with Opus 5.5.jsonl`, `export-Opus 5.5 - seems like it has begun.jsonl` and the `2026-10-04` copy of `export-are you still creating fresh sessions or work in the same thread-.jsonl`. Some bullets above quote comments the reader saw only in a keyword hit.
 

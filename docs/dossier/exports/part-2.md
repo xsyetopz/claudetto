@@ -18,7 +18,7 @@ Each bullet starts with its question number. Q1 is effort per model. Q2 is what 
 - Q1. "At max effort, AA measured Opus 5.5 at around 119K output tokens per task, while Sol used about 31K and cost $1.06 per task to run the whole index." Sol is not a Claude model. `export-Opus 5.5 and GPT-6 Sol dropped on the same day, so I lined up every benchmark I could find.jsonl`, self-report of a third-party figure.
 - Q1. A disagreement on Sonnet against Opus 5.5 for coding. One reply: "sonnet is great for coding, as long as i have a plan for the code, first". Another: "Sonnet is considered the standard for implementing code from spec sheets, unit testing, writing commit messages, drafting pull requests". The Sonnet version is not named. `export-I feel like most people underestimate Sonnet for coding.jsonl`, self-report. Against it: "I used to delegate 99% of coding to sonnet, but I'm now just using Opus 5.5 for everything and it costs me less, is much quicker, and does a better job than Sonnet 5." `export-What am I missing by only using sonnet when it comes to coding-.jsonl`, self-report, from a user on API pricing.
 - Q1. "Opus 5.5 can fully replace sonnet at this point. Their cache read price is the same, only cache writes and in/out are more expensive for opus (2x). But cache read is like 95% of your spend". `export-What's the use case for Haiku-.jsonl`, self-report.
-- Q1. No `claude-haiku-5-5` effort or coding figure was found in the top-level files. The Haiku threads name Haiku 4.5 or no version, and they cover classification, not coding.
+- Q1. No `claude-haiku-5-5` effort or coding figure was found in the top-level files. The Haiku threads name Haiku 4.5 or no version, and they cover classification, not coding. Checked: `grep -il -E 'haiku[ -]5[.-]5' external/export-*.jsonl` prints 6 files, and each mention is an announcement or a wish (`Haiku 5.5 is on the way`) with no effort or coding figure. That the other Haiku threads name Haiku 4.5 or no version is not rechecked.
 
 ### Q2, What Reduces Usage
 
@@ -57,7 +57,7 @@ Each bullet starts with its question number. Q1 is effort per model. Q2 is what 
 - Q4. Idle past about five minutes, "the next message reprocesses the whole accumulated context from scratch". `export-large context, auto-compact and clearing context.jsonl`, self-report.
 - Q4. A usage listing from a commenter: `claude-opus-5-5:  76.6k input, 1.1m output, 370.4m cache read, 4.0m cache write ($123.15)`. The tool that printed it is not named. `export-Opus 5.5 is the default now so who still switches to Fable and why.jsonl`, self-report.
 - Q4. "every advisor call costs the full session's tokens *without* cache. There's a breakpoint where it becomes more expensive than just using the expensive model directly." Same file, self-report.
-- Q4. Mid-session model switch: no figure was found in any file read in this pass.
+- Q4. Mid-session model switch: no figure was found in any file read in this pass. Checked: `grep -il -E 'mid-session|switch(ing)? (the )?model|model switch' external/export-*.jsonl` prints 10 files. The one cost figure among them, `4x more` in `export-Would I save on usage by switching to a cheaper model ...jsonl`, is cited in `exports.md:51`. That pass 2 read the other nine is unmeasured.
 - Q4. "Set your autocompact to 262K. 1M is way too much for 99% of tasks and the cache reads will eat your usage." Another: auto compaction set "before the 1hr prompt cache TTL expires". `export-How often do you compact your sessions- What are some PRO compacting tips-.jsonl`, self-report.
 - Q4. A one-letter skill named `/w` that replies `W` is called "useful for keeping the cache warm". `export-What tasks are Haiku really great at-.jsonl`, self-report.
 - Q4. A changelog list, labelled "just theories". `v2.1.257` fixed "sessions with an advisor model set missing the prompt cache on background requests". `v2.1.260` fixed (Fable 5.1 only) "context attached after tool results wasn't cached". `export-Theories on the increased usage consumption + tips.jsonl`, self-report. The changelog lines are quoted, and the link to the burn is the author's theory.
@@ -89,7 +89,7 @@ Each bullet starts with its question number. Q1 is effort per model. Q2 is what 
 - Q6. One main loop against several agents: "I don't think we need parallel tasks anymore with Opus 5.5". A reply: "I actually had to introduce some limits because all the subagent use was blowing up my context window." `export-Opus 5.5 is so fast I barely use parallel tasks anymore.jsonl`, self-report.
 - Q6. Model choice by the orchestrator: "it will 95% of the time choose the same model as itself", and "makes the wrong call more than 70% of the time". A reply with a tier list in a skill: "90% of the time it picks the right level of agent". `export-The one thing LLMs still can't do.jsonl`, self-report. Recorded as differing reports.
 - Q6. A change in "subagent completion persistence": "If you track per-lane token costs from cache logs and your output tokens are suddenly reporting really low, this is why." `export-Claude Code Workflow Harness Change.jsonl`, self-report. The same thread says a workflow launch now yields "a harness pair of turns".
-- Q6. No new figure for the subagent turn limit, or for work lost at a window boundary, was found in this pass.
+- Q6. No new figure for the subagent turn limit, or for work lost at a window boundary, was found in this pass. Checked: `grep -il -E 'maxTurns|max.turns|turn limit|tool-call limit|turn cap' external/export-*.jsonl` prints 1 file, `export-What the hell is a turn limit (200-turn limit) ...jsonl`, which `exports.md:64` cites. On `2.1.317`, `grep -a -c maxTurns` on the binary prints 56 and `grep -a -c -E '200[- ]turn'` prints 0.
 
 ### Q7, Prompt and Harness Size
 
@@ -131,12 +131,10 @@ Each claim comes from the heading "Items Listed but Not Verified in This Pass" i
 
 ## Coverage
 
-Top-level `external/export-*.jsonl` files: 131 by the command `ls export-*.jsonl | wc -l`. The first pass covered 30 of them. This pass targeted the other 101.
-Files opened in this pass: 89. Of these, 20 were read in full, 13 were read as the first 14 non-blank lines, 9 were read as the first 7 non-blank lines, and 47 were read through a filter. The filter kept only lines that held a digit with a unit and a topic word, so a file read through the filter can hold unread material.
-Files that gave at least one bullet above: 40, counted as the distinct file names in the section "Threads of the Second Pass".
-Files skipped, meaning opened and holding nothing for the eight questions: 49, which is 89 less 40.
+Top-level `external/export-*.jsonl` files: 131 by the command `ls export-*.jsonl | wc -l`, run again on 2026-11-03. The counts of the first pass (30) and of this pass (101) were not recorded with a command, so they are unmeasured.
+The counts of files opened (89), read in full (20), read in part (13, 9, and 47), cited (40), and skipped (49) were not recorded with a command, so they are unmeasured and removed.
 Skipped by scope: `export-I ran Claude Code across all 89 tasks of Terminal-Bench 2.1 (267 container runs) to see if prompt sk.jsonl`, because the post says the model was "Gemini 3.6 Flash High". `export-Two 5x sub or one 20x sub-.jsonl`, because it covers plan pricing, with the plan ratio disputed and no coding lever.
-Unread, with no filter hit and not opened: 12 files, listed next. 89 plus 12 is 101, the files this pass targeted.
+Unread, with no filter hit and not opened: 12 files, listed next (12 names follow). The sum 89 + 12 = 101 rests on counts that are unmeasured.
 
 - `export-Ask me any questions before starting.jsonl`
 - `export-Be careful with Opus 5.5’s confidence.jsonl`

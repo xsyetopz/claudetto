@@ -17,7 +17,7 @@ import {
 	TOOL_DECIDE,
 } from "./prompts.ts";
 
-/** The env name is a literal, so the host can follow it. */
+/** The env name is a literal, so the host can follow it; `TYPESAFE_API_KEY` is the name in https://docs.typesafe.ai/introduction/quickstart.md. */
 const keyFor = (
 	$: EngineInterface,
 	options: PluginOptions,
@@ -38,7 +38,7 @@ const declare = async (
 	}
 };
 
-/** `$.tool.register` rejects until the session binds, so a refusal before `next` is retried after. */
+/** `$.tool.register` rejects until the session binds (Claude Code 2.1.317 declarations), so a refusal before `next` is retried after. */
 export const onSessionStart: WithOptions<HookFor<"session.start">> = async (
 	$,
 	e,
@@ -58,7 +58,7 @@ export const onSessionStart: WithOptions<HookFor<"session.start">> = async (
 	return started;
 };
 
-/** A matcher on the one tool keeps `AskUserQuestion` out of the hook, so that dialog reaches the user. */
+/** `mcp__<plugin>__<name>` is the full name of a registered tool (Claude Code 2.1.317 declarations). A matcher on the one tool keeps `AskUserQuestion` out of the hook, so that dialog reaches the user. */
 export const DECIDE_MATCH = { tool: [DECIDE_CALL] } as const;
 
 /** A question Jev is unsure about gets no pick and the reply says so, so the model takes it back. */

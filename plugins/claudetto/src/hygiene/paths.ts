@@ -1,7 +1,7 @@
 /** `temp` is Claude Code's temp root `claude-<uid>` (`/private/tmp/claude-<uid>` on macOS), and `project` is the project folder. */
 export type HygieneRoot = "temp" | "project";
 
-/** Minutes, or the user's `cleanupPeriodDays` (30 when unset), which is how long Claude Code keeps its own session files. */
+/** Minutes, or the user's `cleanupPeriodDays`, which the settings schema of Claude Code `2.1.317` describes as the days to retain chat transcripts (default: 30). */
 export type MaxAge = { readonly minutes: number } | "cleanupPeriodDays";
 
 /** One kind of file that Claude Code or claudetto leaves behind and never removes. */
@@ -23,9 +23,9 @@ export const STALE_PATHS: readonly StalePath[] = [
 		root: "temp",
 		pattern: "fswatch-probe-*",
 		maxAge: { minutes: 60 },
-		keep: "A probe younger than an hour, since a session may still be watching it.",
+		keep: "A probe younger than an hour, a chosen margin.",
 		source:
-			"A reading of `/private/tmp/claude-501` on macOS under Claude Code `2.1.314`, 2026-10-30: 130 probe folders made between 09:07 and 20:11 of one day, 120 of them older than an hour. No docs page names a sweep of them.",
+			"Claude Code `2.1.317` names the folders in its `[fs.watch probe]` code (`fswatch-probe-`). `ls -d /private/tmp/claude-501/fswatch-probe-*` listed 89 on macOS, 2026-11-03.",
 	},
 	{
 		id: "session-temp",
@@ -34,7 +34,7 @@ export const STALE_PATHS: readonly StalePath[] = [
 		maxAge: "cleanupPeriodDays",
 		keep: "The current session, and any session that a file in `~/.claude/sessions/` names.",
 		source:
-			"clawdipedia `how-it-works/sessions-and-storage` for `2.1.314`: the scratchpad is under `/private/tmp/claude-<uid>/<project>/<session-id>/`, and `claude purge` does not touch it. A reading of the same folder, 2026-10-30: 6,777 session folders over 3 days.",
+			"`ls /private/tmp/claude-501/<project>` on macOS, 2026-11-03, listed session-id folders. `claude purge --help` of `2.1.317` names transcripts, tasks, file history, and the `~/.claude.json` entry, and no scratchpad.",
 	},
 	{
 		id: "handoff",
@@ -43,15 +43,15 @@ export const STALE_PATHS: readonly StalePath[] = [
 		maxAge: "cleanupPeriodDays",
 		keep: "The newest handoff of the project, which a resume reads back.",
 		source:
-			"claudetto writes handoffs into `HANDOFF_DIR` under a UTC stamp, and its read-back takes only the newest name. A reading of the projects in `~/.claude/projects` that hold a handoffs folder, 2026-11-02: 27 handoffs in 5 projects, oldest 2026-10-29.",
+			"claudetto writes handoffs into `HANDOFF_DIR` under a UTC stamp, and its read-back takes only the newest name.",
 	},
 	{
 		id: "bound-output",
 		root: "project",
 		pattern: ".claude/claudetto/output/output-*.txt",
 		maxAge: { minutes: 1440 },
-		keep: "A file younger than a day, since the model may still read it back for the part of a log that was cut.",
+		keep: "A file younger than a day, a chosen margin: the model may read it back for the part of a log that was cut.",
 		source:
-			"claudetto writes the whole output of a test or build run into `BOUND_OUTPUT_DIR` when it cuts the text the model reads. Nothing reads the files after the session, so a day outlasts any session that cut them.",
+			"claudetto writes the whole output of a test or build run into `BOUND_OUTPUT_DIR` when it cuts the text the model reads.",
 	},
 ];

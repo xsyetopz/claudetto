@@ -3,7 +3,7 @@
 The mod compiles against the type packages under `plugins/claudetto/.claude-plugin/types/`:
 `claude-code`, `claude-code-tools`, and `claude-code-mcp`.
 
-**They came from Claude Code `2.1.316`**, which the first line of
+**They came from Claude Code `2.1.317`**, which the first line of
 `plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts` names.
 No test compares the two, so read that line after the engine rewrites the folder.
 
