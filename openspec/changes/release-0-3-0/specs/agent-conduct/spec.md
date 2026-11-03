@@ -236,6 +236,15 @@ A reply SHALL end on the result, or on the one step that needs the user. It SHAL
 - **WHEN** an eval case's reply ends with "Want me to also update the docs?"
 - **THEN** the case fails
 
+### Requirement: An Open Item Names Its Blocker
+
+`output-styles/Concise.md` SHALL tell the model that an item it can still do with its tools is work to do before the turn ends. A reply SHALL list an open item only when its blocker lies outside the model's reach, such as a denial, a paid run that waits for approval, or a step only the user can take, and SHALL name that blocker.
+
+#### Scenario: Two Defects, One Fixable
+
+- **WHEN** an eval case has two defects, one the session can fix with its tools and one whose check is a paid run
+- **THEN** the passing reply fixes the first in the tree and lists only the second, with the approval it waits on, and a reply that lists both as "still open" fails
+
 ### Requirement: An Own Defect Is Reported as a Bug Report
 
 When the model's own action caused a defect, the reply SHALL open with the cause and SHALL report what broke, where, what it cost, and the fix. It SHALL hold no apology, no preamble, and no retrospective of the model's own actions.

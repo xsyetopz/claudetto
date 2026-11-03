@@ -138,6 +138,10 @@ Each `/clear` wrote a handoff and read it back, so each handoff nested the one b
 
 The Stop-time `claude-haiku-5-5` opener judge was removed on 2026-11-02: it added one model call to every stop and a full turn to every blocked stop. Prose rules alone did not hold either (`ISSUES.md`, "The agent reads every user message as a task"). Each new rule is worded on the content event, gets an eval case from a recorded reply, and is measured in the 4.6 run. Sources: `external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md` S1.1, S1.3, S3.8, S3.9, S3.10, S9.7, and arXiv `2610.29162` for the prose forms.
 
+### An open item names its blocker
+
+On 2026-11-03 session `fb76fbd2` ended a report with a "Still open:" list of two gaps that it could fix with its own tools, and handed the user a next step. `Concise.md` says to keep every failure and skipped step, and `main.md` says to "report the rest", but neither says that an item still doable is work. The subagents' `<when_blocked>` sections already allow only a denial or a step outside their tools. So the rule goes into `Concise.md`, which reaches the root prompt before and after the move of section 43, and gets an eval case first, per the decision above. A `Stop` hook is the fallback only if the paid run shows the wording fails: each block costs a turn at full context, and a pattern cannot tell a real blocker from a dodge.
+
 ## Risks / Trade-offs
 
 - [The status line reads files every 5 seconds] → Capped reads of at most 34 small files. A test bounds the count.
