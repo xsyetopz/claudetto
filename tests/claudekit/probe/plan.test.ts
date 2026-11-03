@@ -121,10 +121,10 @@ describe("expectedUsd", () => {
 		expect(usd).toBeCloseTo(20 * FORK_USD + BASE_USD, 10);
 	});
 
-	// The user approved about 30.86 units for this round, so a citable run has to stay under that. The
-	// approval was in units, so the check reads units, and a new meter calibration cannot move it. The
-	// lower bound only catches a price set to nothing, which would make the cost line say zero before a paid call.
-	test("a citable run of 20 forks stays inside the units of the plan that was approved", () => {
+	// The cap of a citable run is about 30.86 units. It is set in units, so the check reads units, and a
+	// new meter calibration cannot move it. The lower bound only catches a price set to nothing, which
+	// would make the cost line say zero before a paid call.
+	test("a citable run of 20 forks stays inside the units of its cap", () => {
 		const usd = expectedUsd(20, 2);
 
 		expect(weeklyShare(expectedTokens(20, 2))).toBeGreaterThan(0.1);

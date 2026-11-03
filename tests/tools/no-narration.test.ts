@@ -2,6 +2,8 @@
 // over the real tree.
 
 import { describe, expect, test } from "bun:test";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
 	narrationLines,
@@ -62,6 +64,37 @@ describe("a comment that names the process", () => {
 	});
 });
 
+describe("a Markdown doc that names the process", () => {
+	test("refuses a task number on any line, since every line is prose", () => {
+		const text = "Task 9.2a of the restart.";
+
+		expect(narrations("docs/a.md", text)).toHaveLength(1);
+	});
+
+	test("refuses a path into a plan", () => {
+		const text = "(`openspec/changes/restart/specs/low-hitl/spec.md:108`).";
+
+		expect(narrations("README.md", text)).toHaveLength(1);
+	});
+
+	test("is found in a tree under `docs/`", async () => {
+		const root = await mkdtemp(join(tmpdir(), "narration-"));
+		await mkdir(join(root, "docs"));
+		await writeFile(
+			join(root, "docs", "a.md"),
+			`Kept.
+Task 6.5 added it.
+`,
+		);
+
+		const faults = await narrationsIn(root);
+
+		expect(narrationLines(faults)).toStrictEqual([
+			"docs/a.md:2: names a task or a group by number: Task 6.5 added it.",
+		]);
+	});
+});
+
 describe("a test name that names the process", () => {
 	test("refuses a task number in a test name", () => {
 		const text = named("the list is the six keys task 9.2 pinned");
@@ -77,6 +110,25 @@ describe("a test name that names the process", () => {
 });
 
 describe("what stays", () => {
+	test("allows a quoted session phrase and a count of tasks in a doc", () => {
+		const text =
+			'"Grep is not available in this session", and every task 100%.';
+
+		expect(narrations("docs/a.md", text)).toStrictEqual([]);
+	});
+
+	test("allows a hex byte run such as a JPEG signature", () => {
+		const text = "a `.jpg` opens with `FF D8 FF`";
+
+		expect(narrations("docs/a.md", text)).toStrictEqual([]);
+	});
+
+	test("allows a minified call such as `D3()`", () => {
+		const text = "`isEnabled(){return D3()}`";
+
+		expect(narrations("docs/a.md", text)).toStrictEqual([]);
+	});
+
 	test("allows a string that is data", () => {
 		const text = '\t"archive",';
 

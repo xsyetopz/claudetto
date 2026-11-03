@@ -2,7 +2,7 @@
 
 The eval cases of `tools/evals/main-rules.ts` now each name their grader, and six of the seven are
 decided by a command over the tree rather than by a model reading the session's reply. This page
-records why, because the change was made before the paid run of task 3.10 and the reason has to
+records why, because the change was made before a paid run of the shipped prompt and the reason has to
 outlive the decision.
 
 ## The Source
@@ -62,5 +62,5 @@ separates the two.
 The `check` of each tree grader is prose that a run has to implement; no runner exists yet, so no
 command has been executed against any case. The cost of a wrong grader is still unmeasured for our
 cases: the page's figures are from its own task and harnesses. Whether the shipped prompt beats the
-default body remains task 3.10's question, and this change only makes sure that run is scored by
+default body remains open, and this change only makes sure that run is scored by
 commands where commands can score it.

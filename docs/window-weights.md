@@ -1,6 +1,6 @@
 # Window Weights
 
-Task 9.2a of `openspec/changes/claudetto-restart`. This file records what `/usage` of Claude Code `2.1.311` already shows, so the window recorder (task group 9) adds only what it lacks.
+This file records what `/usage` of Claude Code `2.1.311` already shows, so the window recorder adds only what it lacks.
 
 ## Source
 
@@ -54,7 +54,7 @@ This is the first measured plan-limit rate in the change. Every figure is arithm
 
 - **About `$29.70` of API-equivalent cost per weekly percent.** The meter shows whole percents, so a 3-point move carries a rounding band of one point either way, giving `$22.28` to `$44.55` per percent. The week also covers every session on the account while this cost is one session, so other activity can only make the true dollars-per-percent lower.
 - **About `$8.10` per session percent**, over the five-hour window.
-- **Rebuilds outnumber misses five to one.** The 596 new requests brought 1 new miss and 5 new expected rebuilds, which the screen attributes to "compaction or tool-result clearing" (read from a screen paste of that day, not re-readable). So the cache writes that `D15` ranks as the top cost line are driven more by compaction and tool-result clearing than by invalidation. The one miss re-cached `233.0k` tokens, which at the `1h` write price of `$4` per MTok for Sonnet 5.5 in `claudekit/price/table.ts` is about `$0.93`. That makes a single miss cheap and the rebuild count the thing to watch, which points group 8 at compaction as a cache-write driver and not only as a context-length tool.
+- **Rebuilds outnumber misses five to one.** The 596 new requests brought 1 new miss and 5 new expected rebuilds, which the screen attributes to "compaction or tool-result clearing" (read from a screen paste of that day, not re-readable). So the cache writes that rank as the top cost line are driven more by compaction and tool-result clearing than by invalidation. The one miss re-cached `233.0k` tokens, which at the `1h` write price of `$4` per MTok for Sonnet 5.5 in `claudekit/price/table.ts` is about `$0.93`. That makes a single miss cheap and the rebuild count the thing to watch, which points at compaction as a cache-write driver and not only as a context-length tool.
 - The miss cause the screen names is a list and not one cause: "model changed, beta headers changed, effort changed, earlier messages changed". So the screen does not attribute a miss to one trigger, and no single invalidator can be blamed from this reading.
 
 ## Another Reading, from the Plugin's Own Usage Line
@@ -71,7 +71,7 @@ This is not a `/usage` paste. `sessionCost` of the pre-restart plugin, which the
 
 - **The rate from this line alone is about `$26.93` per weekly percent**: the whole session cost of `$107.72` against a 4-point rise, with a whole-percent band of `$21.54` to `$35.91`. It needs no other reading, because both numbers start at the beginning of the session.
 - Taken with the `$29.70` of the pair above, the two independent estimates overlap on `$22.28` to `$35.91`, and their point estimates sit `$2.77` apart. The week also carries every other session on the account, so the true dollars per weekly percent can only be lower than both.
-- The five-hour share fell by 6 points while the week rose, so that window reset inside the session. A five-hour delta is therefore not a cost rate unless both reads sit in one window, which is a constraint the recorder of task 9.3 has to hold: it drops a row whose window reset between its two reads.
+- The five-hour share fell by 6 points while the week rose, so that window reset inside the session. A five-hour delta is therefore not a cost rate unless both reads sit in one window, which is a constraint the window recorder has to hold: it drops a row whose window reset between its two reads.
 - The line is free and already in the code, so group 9 needs no new source for the plan share. What it needs is the per-turn tie to the token categories, which this line does not carry, and a share baseline per row rather than per session.
 
 ## The Rate from Whole-Account Readings, 2026-11-02
@@ -118,9 +118,9 @@ The user pasted `/usage` twice more on 2026-10-27, the second time from the TUI 
 | Plugins, % of usage | `claudetto` 34%, `cc-inspect` 11% |
 | MCP servers, % of usage | `plugin:cc-inspect:cc-inspect` 6%, `plugin:cc-docs:claude-code-…` 2% |
 
-- **The two reads of reading C sit seconds apart, so they settle nothing about a rate.** In particular they do not settle task 9.2d, which needs one pair of reads that brackets a headless run. The pair here brackets nothing.
-- **`claudetto:Hephaestus` is now both the top subagent, 21%, and the top recommendation, 98%.** The same lever as in reading B, where it was 25% and 97%. The recommendation has held the top slot across two readings hours apart, and the subagent share fell 4 points between them, so the recommendation does not track the share closely. Task 11.5 still decides the subagent model by a cost-per-task measurement.
-- **Reading C adds no row that reading B lacks.** The screen shows no `loops` row, no per-turn plan delta, and no tier comparison, which is the third reading in a row with none. That is three independent disconfirmations of the guess in task 9.2a that `/usage` already attributes a loop, so the recorder of group 9 still has to add it.
+- **The two reads of reading C sit seconds apart, so they settle nothing about a rate.** In particular they do not settle the cost of a headless run, which needs one pair of reads that brackets a headless run. The pair here brackets nothing.
+- **`claudetto:Hephaestus` is now both the top subagent, 21%, and the top recommendation, 98%.** The same lever as in reading B, where it was 25% and 97%. The recommendation has held the top slot across two readings hours apart, and the subagent share fell 4 points between them, so the recommendation does not track the share closely. A measurement of cost per task still decides the subagent model.
+- **Reading C adds no row that reading B lacks.** The screen shows no `loops` row, no per-turn plan delta, and no tier comparison, which is the third reading in a row with none. That is three independent disconfirmations of the guess that `/usage` already attributes a loop, so the window recorder still has to add it.
 - The week rose from 31% in reading B to 32% here. No cost figure came with reading C, so this point gives no dollars-per-percent and does not revise the `$22.28` to `$35.91` band above.
 - `claudetto` at 34% of usage is down from 41% in reading B, and `cc-inspect` at 11% is down from 14%. Both are shares of a moving total, so a fall can come from either side and neither is a measured reduction.
 
@@ -169,7 +169,7 @@ Two limits on this reading. The 47 responses already over 100,000 (the count of 
 
 ## The Engine's Second Ask for a Missing `<summary>` Block
 
-Task 10.7 asked whether the engine's second ask reaches a compaction that a hook answered, because that would double the saving of the `cheapSummary` handler or halve it. Read in `2.1.312` with `cc-inspect`. **It doubles it. The second ask exists, and a hook-answered compaction never reaches it.**
+The question was whether the engine's second ask reaches a compaction that a hook answered, because that would double the saving of the `cheapSummary` handler or halve it. Read in `2.1.312` with `cc-inspect`. **It doubles it. The second ask exists, and a hook-answered compaction never reaches it.**
 
 The ask is real and it is a whole second summarization call. At `chunk-r5cyd28m.js:2096878`, when the reply has neither a closed nor an opened `<summary>` block, the reactive path logs "Reactive compact: the reply has no `<summary>` block, asking for the summary once more" and calls `Ztn(...,!0)`, which appends the paragraph `Ytn` to the compaction prompt and queries the model again with `forkLabel:"reactive-compact"` (`chunk-r5cyd28m.js:2094424`). A second reply that also lacks the block ends the compaction with "no `<summary>` block in the second reply either". Two gates stand in front of it: `k9s()`, which reads the flag `tengu_dapper_fountain` with a default of `true` (`chunk-452kr8jw.js:2099`), and `compactionApiAttemptsLeft?.count !== 0`. The tag tests are `GJ`, the pattern `/<summary>([\s\S]*?)<\/summary>/` after `<analysis>` is stripped, and `owe`, an opening `<summary>` at the start of a line, so an unclosed tag passes (`chunk-r5cyd28m.js:2091137`). The bundled changelog says the same in plain words, in its `## 2.1.311` block: "Improved compaction: when the model's reply has no summary in it, Claude Code now usually asks for the summary once more before it replaces the conversation" (`chunk-zajfrx7d.js:11206`, heading at `chunk-zajfrx7d.js:3340`).
 
@@ -184,13 +184,13 @@ Found on the reactive path only. The auto and manual path at `chunk-r5cyd28m.js:
 
 ### The Price of the Handler, Measured
 
-The other half of task 10.7, the saving in window points and dollars, is **not recorded here and no figure is given**. Task 10.8 found that the summarizer request leaves no `usage` record in the transcript, so the figure has to come from `$.session.usage()` deltas across a compaction boundary in a live session with the window recorder running.
+The other half of that question, the saving in window points and dollars, is **not recorded here and no figure is given**. The transcript shows that the summarizer request leaves no `usage` record in the transcript, so the figure has to come from `$.session.usage()` deltas across a compaction boundary in a live session with the window recorder running.
 
 The recorder has now run, and a boundary has now been crossed under it. The store of the inline plugin, `~/.claude/plugins/store/claudetto_inline-42e2362bb3cf.json`, then held 97 measure rows and 50 turn rows, written by two earlier sessions and by the probe's own forks. Read on 2026-11-03, the file holds 1,093 `window.rows` and 3,082 `window.turns`, so those two counts are of the earlier reading and cannot be re-read.
 
 The row format was the first gap and it is closed. A row carries `afterCompaction` when it is the first one written once a compaction has ended, so the fall in `tokens` beside the row before it belongs to that compaction and not to a turn. It is set on the row after rather than on a row of `source` `compaction`, because whether `session.measure` fires inside a compaction is unread, while the row after it carries the window the compaction left. **It is verified against a real compaction and not only in the lab**: the probe's first fork to compact left exactly one marked row out of 97, in the right place (the file has since grown, so this count is unmeasured now).
 
-A whole probe fork could not give the figure, for a reason worth keeping: **the marked row of a fork holds `usd` `0.8295` against the `0.8392` that fork billed in total**, so its delta is the whole fork and isolates nothing, and its `tokens` of `81,149` is the context the fork ended at. **No turn row names the summarizer either**: all 50 turn rows are `source` `main` and none is `compaction`, so `turn.complete` does not fire for the summarizer request, which is task 10.8's transcript finding reached again from the engine's own usage.
+A whole probe fork could not give the figure, for a reason worth keeping: **the marked row of a fork holds `usd` `0.8295` against the `0.8392` that fork billed in total**, so its delta is the whole fork and isolates nothing, and its `tokens` of `81,149` is the context the fork ended at. **No turn row names the summarizer either**: all 50 turn rows are `source` `main` and none is `compaction`, so `turn.complete` does not fire for the summarizer request, which is the transcript finding reached again from the engine's own usage.
 
 `claudekit/compaction-price/` is the instrument that does give it, run as `bun claudekit/compaction-price/main.ts --run`. It pins the threshold low and runs a session as a series of short `claude -p` steps, so a step carries the compaction and a step on either side of it is the baseline to subtract. `--cheap-summary` turns the plugin's handler on for the run, and the two arms differ in that option alone.
 
@@ -234,7 +234,7 @@ A defect of the instrument that its first paid run found is worth recording, bec
 
 ## What It Lacks, So the Recorder Adds It
 
-- No row gives the plan-limit change per turn. The screen shows `28% used` for the week, and nothing says how much of it one turn, one cache read, or one output token moved. Task 9.3 takes the `five_hour` and `seven_day` `used_percentage` deltas from `$.session.usage()` after each turn and stores them with the token categories of that turn.
+- No row gives the plan-limit change per turn. The screen shows `28% used` for the week, and nothing says how much of it one turn, one cache read, or one output token moved. The window recorder takes the `five_hour` and `seven_day` `used_percentage` deltas from `$.session.usage()` after each turn and stores them with the token categories of that turn.
 - No row separates sources (main, subagent, headless, scheduled). The row format of the recorder keeps `source`.
 - No row prices a cache read, a cache write, and an output token in plan points. API dollars are shown, and `references.md` records that no Anthropic page gives the plan weights.
 - The week figure covers every session on the account, while the contribution part covers this machine only. The recorder works from deltas within one session, so it does not depend on the unseen part.
@@ -242,5 +242,5 @@ A defect of the instrument that its first paid run found is worth recording, bec
 
 ## Notes for Other Tasks
 
-- The `Give claudetto:Artemis subagents a cheaper model` row at `97%` and the `D10` rule (agent files carry no `model:` line, the model comes from the tier row through `CLAUDE_CODE_SUBAGENT_MODEL`) point at the same lever. Task 11.5 and the `tier-profiles` row decide the model by a measurement of cost per task, not by this recommendation alone.
+- The `Give claudetto:Artemis subagents a cheaper model` row at `97%` and the rule (agent files carry no `model:` line, the model comes from the tier row through `CLAUDE_CODE_SUBAGENT_MODEL`) point at the same lever. The `tier-profiles` row and a measurement decide the model by a measurement of cost per task, not by this recommendation alone.
 - The cache line confirms in this session that the main thread cache is `1h`, which agrees with the cache facts in `references.md`. It does not confirm a cause for the one miss. The screen names four causes together, "model changed, beta headers changed, effort changed, earlier messages changed", and a model change is one of them and the only one that reading B shows independently, which makes it the likely cause and not the measured one.

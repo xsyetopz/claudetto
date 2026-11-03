@@ -192,7 +192,7 @@ After each update, do the steps in the "Update" section of the README.
   The tree is a rebuild on `src` slices with the old tree in `archive/`, the project wiki is deleted, and all 21 release tags are deleted, so the old numbering described a tree that no longer ships.
   The six release sections of that numbering are removed from this file with the `## Older Releases` table, whose 30 links pointed at the deleted wiki.
   Their record stays in the git history and under `archive/`.
-- **BREAKING**: a `classic.PermissionRequest` whose input has no gated key is passed on with no `allow`, so a person sees the prompt (task 3.2, spec `permission-policy`, "Fail Closed").
+- **BREAKING**: a `classic.PermissionRequest` whose input has no gated key is passed on with no `allow`, so a person sees the prompt.
   Before, `onPermission` answered `allow` for every such input, which approved each `WebFetch`, each MCP call, and each `Skill` call that reached the prompt, none of which any rule of ours had read.
   The gated keys are `command`, `file_path`, `notebook_path`, `path`, `pattern`, and `glob` (`plugins/claudetto/src/gate/gate.ts:55`), so a `Bash`, `Read`, `Edit`, `Write`, `Glob`, `Grep`, or `Monitor` call still gets the verdict of the gate.
   `tool.check` is unchanged, so allow-by-default still holds for a call that no rule of ours matches.
@@ -203,7 +203,7 @@ After each update, do the steps in the "Update" section of the README.
   The requirements are now Claude Code and `git` alone, because setup runs inside Claude Code, and `bun` and `just` are named as development tools.
   A `settings.read` hook that would answer the settings in place of a file was built and dropped on a measurement: `just capture --arm plugin` read 61,353 characters and 12 tool schemas with the hook and no settings file, against 31,861 and 9 with the file, and the engine logged `an answer without deniedMcpServers: unset for the reader`, so the readers that build the first request do not take its answer.
   A plugin's own `settings` key reaches only `agent` and `subagentStatusLine`, so a real settings file is the one measured way to deliver permissions, environment variables, and models.
-- A handoff that Claude wrote itself is kept, and the code-built file steps aside (task 2.3a).
+- A handoff that Claude wrote itself is kept, and the code-built file steps aside.
   `classic.SessionEnd` and `classic.PreCompact` now skip the code-built write when a writing tool in the session's own transcript wrote a path under `.claude/claudetto/handoffs` (`wroteOwn`, `plugins/claudetto/src/handoff.ts:198`).
   The headings of the file are not read, so any write under that folder counts as Claude's own.
   The `context_management` text of the handoff state names the folder and the nine headings of `HANDOFF_SECTIONS` (`plugins/claudetto/src/handoff.ts:255`), which is the only place the model learns them, because neither hook makes a model call.
@@ -246,11 +246,11 @@ After each update, do the steps in the "Update" section of the README.
   No budget is invented for the other three pieces, since the spec records that no value is derived for them yet.
 - `just claude-version` prints the supported Claude Code version with every line that declares it, and a version argument moves all of them (`just claude-version 2.1.315`).
   `tools/claude-version.ts` holds a fixed table of the four declaring sites and fails when a row does not match exactly once, rather than searching the tree, because the version also appears in readings such as "read against `2.1.312`" and rewriting one of those would claim a reading nobody took.
-- A handoff holds no secret: a key, a token, or a value after a sensitive name is written as `[REDACTED]` (task 2.10).
+- A handoff holds no secret: a key, a token, or a value after a sensitive name is written as `[REDACTED]`.
   `redact` runs over the text of each user message, so the list of the user's values is clean, and over the whole assembled file, so a secret in a tool call or its result goes as well. The code-compacted head takes the same pass, because it stays in the context of each later resume.
   Each pattern is transcribed from the detector table of Claude Code `2.1.312` in `chunk-45pm9m17.js`: 41 key formats, the private key block, the 4 loose formats, and the 2 assignment entries. None is written from memory.
   The values of the credential env vars of the session are not covered, because the hooks runtime refuses a `$.env.get` call whose name is not a literal, so no mod can read the env by a computed name.
-- A call that auto mode denied twice is denied at `tool.check`, before the classifier, with the reason of the earlier denial and the rule that would allow it (task 10.4).
+- A call that auto mode denied twice is denied at `tool.check`, before the classifier, with the reason of the earlier denial and the rule that would allow it.
   `classic.PermissionDenied` counts each denial per call signature in one `$.state` value, so the main loop and each subagent count the same call together, and the hook answers `retry: true` only while the count is under the bound.
   The event cannot send text to the model, so the text reaches it in the deny: it says to stop and report, and it names `"Bash(<command>)"` or the bare tool name for `permissions.allow`, with no hint to work around the denial.
 - `docs/README.md` is an index of every page under `docs/`, with a link and one line each, grouped by folder, and a line that says what `docs/keep/` and `docs/dossier/` hold, because their names do not say it.
@@ -302,13 +302,13 @@ After each update, do the steps in the "Update" section of the README.
   `tools/citations.ts`, which the Removed section of this release deletes, read a backticked span only, and these sat in bare parentheses, so no check reported them.
 - The `[Unreleased]` entry on the gated keys cited `modules/gate/domain/gate.ts:40`, and `GATED_KEYS` is at `plugins/claudetto/src/gate/gate.ts:55`.
   `tools/citations.ts` skipped a path whose first segment is not an entry of the repo root, so a repo path written without its prefix was never resolved.
-- A `head` or `tail` of two files, and any reader of a glob, are no longer denied as the wrong tool (task 13.2).
+- A `head` or `tail` of two files, and any reader of a glob, are no longer denied as the wrong tool.
   The rule already exempted a `cat` of more than one file, because that "does what `Read` cannot", and `Read` likewise takes one literal path, so the exemption now covers the three programs and an operand the gate cannot resolve to one path.
   Over the 49 real denials of 2026-10-27 the denying parts fall from 62 to 53, and 6 of the 49 commands stop being denied (`docs/early-stops.md`).
-- The soft turn bound of `claudetto:Hermes` is 40 in place of 30, which stopped a third of its runs before their work was done (task 13.2).
+- The soft turn bound of `claudetto:Hermes` is 40 in place of 30, which stopped a third of its runs before their work was done.
   The old number came from a single run of 8 calls. The 18 `Hermes` runs of 2026-10-27 pile up at 30, 31, 32, 33, 33, 33, and three of them say in their report that the bound is why sources stayed unread.
   40 is a quarter above the largest count, the method the other three bounds use, and that 33 is itself a capped count, so 40 is a floor.
-- `Artemis.md` no longer tells the agent to fall back to `grep` in `Bash`, which its type does not have (task 13.3).
+- `Artemis.md` no longer tells the agent to fall back to `grep` in `Bash`, which its type does not have.
   One run reported "Bash is not available in this session" as a block, although nothing blocked it.
 - Seven claims in this file named code that the restart had already removed, found by checking every path and identifier the `[0.0.0]` section asserts still exists.
   `HEADING_NOTE` and `gate.gh-title` are in no file of the tree, and `Chicago` is in none under `plugins/`, so the deleted heading rewriter has no replacement.

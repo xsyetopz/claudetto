@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Usage: `bun tools/no-narration.ts`. It reads every checked `.ts` file, prints one `file:line: reason: text`
+// Usage: `bun tools/no-narration.ts`. It reads every checked `.ts` file and Markdown doc, prints one `file:line: reason: text`
 // per fault, and exits 1 when there is any. A comment says why and never what produced the code, because
 // the name of a task, a decision, a plan, or a session points at the process and leaves the reason out,
 // and the source is public while the plans are not shipped.
@@ -27,7 +27,7 @@ const SHAPES: { pattern: RegExp; reason: string }[] = [
 		reason: "names a task or a group by number",
 	},
 	{
-		pattern: /\bD\d{1,3}\b/,
+		pattern: /\bD\d{1,3}\b(?! [0-9A-F]{2}\b|\()/,
 		reason: "names a decision by ID",
 	},
 	{
@@ -41,28 +41,44 @@ const SHAPES: { pattern: RegExp; reason: string }[] = [
 	},
 ];
 
+/**
+ * The shapes for a doc, where a count of tasks and a quoted session phrase are prose: a task is named
+ * by a dotted number or as a task group.
+ */
+const DOC_SHAPES = [
+	{
+		pattern: /\btask\s+\d+\.\d+|\btask group\s+\d+\b/i,
+		reason: "names a task or a group by number",
+	},
+	...SHAPES.slice(1, 3),
+];
+
 /** A line with a `//` comment or a block comment body. */
 const COMMENT = /(?:^|\s)\/\/|^\s*\/?\*/;
 
 /** A line that opens a test or a suite with a quoted name. */
 const TEST_NAME = /\b(?:test|it|describe)(?:\.\w+)?\(\s*["'`]/;
 
-/** The faults of `text`, the content of `file`: a comment or a test name that narrates the process. */
+/** The docs that ship with the source, where every line is prose. */
+export const CHECKED_DOC_GLOBS = ["docs/**/*.md", "README.md", "CHANGELOG.md"];
+
+/** The faults of `text`, the content of `file`: a doc line, a comment, or a test name that narrates the process. */
 export const narrations = (file: string, text: string): Narration[] =>
 	text.split("\n").flatMap((raw, i) => {
 		const line = i + 1;
-		if (!(COMMENT.test(raw) || TEST_NAME.test(raw))) {
+		const prose = file.endsWith(".md");
+		if (!(prose || COMMENT.test(raw) || TEST_NAME.test(raw))) {
 			return [];
 		}
-		return SHAPES.filter(({ pattern }) => pattern.test(raw)).map(
-			({ reason }) => ({ file, line, reason, text: raw.trim() }),
-		);
+		return (prose ? DOC_SHAPES : SHAPES)
+			.filter(({ pattern }) => pattern.test(raw))
+			.map(({ reason }) => ({ file, line, reason, text: raw.trim() }));
 	});
 
 /** The faults of the checked files under `root`. */
 export const narrationsIn = async (
 	root: string,
-	globs: string[] = CHECKED_GLOBS,
+	globs: string[] = [...CHECKED_GLOBS, ...CHECKED_DOC_GLOBS],
 ): Promise<Narration[]> => {
 	const paths = new Set<string>();
 	for (const glob of globs) {

@@ -203,7 +203,7 @@ The table is arithmetic on the formulas of the `clawdipedia` route `how-it-works
 
 The Haiku row still clears its price step: 90,000 is under the 100,000 at which Haiku 5.5 input reprices, and 90,000 is the trigger that Anthropic's cost page is said to support (`references.md`; unverified, needs a web read).
 
-What would move it again. If the paid run of task 10.5 finds the charge is nearer 10 turns than 20, the value belongs near 100,000. If it finds 40, the value belongs near 170,000. Nothing in these rows supports going back above 200,000.
+What would move it again. If a paid run finds the charge is nearer 10 turns than 20, the value belongs near 100,000. If it finds 40, the value belongs near 170,000. Nothing in these rows supports going back above 200,000.
 
 No saving is claimed as delivered. The percentages are a replay of past work, not a bill, and 140,000 has not yet run a session.
 
@@ -363,7 +363,7 @@ The cost and turns bars are now read against a threshold that decided the compac
 The share bars are **unresolved**, not met: over the forks that saved one, `alt` reads 0.862 in follow-up 1 against `ref`'s 0.943, dragged by `alt` run 2 at 0.676, and two forks is below the floor either way.
 And the cache-write bar still goes against `alt` after the correction, by 3.6% rather than 98.3%, which three forks per arm cannot separate from noise.
 
-So the blocker that task 10.5 names is half cleared. The cache bars are equalized on the context each compaction left, which is what made the absolute comparison meaningless, and the false diagnosis is gone.
+So the blocker that the paid run answers is half cleared. The cache bars are equalized on the context each compaction left, which is what made the absolute comparison meaningless, and the false diagnosis is gone.
 What is not cleared is the run count: the share and cache-write bars both now turn on differences of a few percent, and only the citable 10 forks per arm can say whether they are real.
 
 ### The Citable Round: 100,000 Is Cheaper on Both Bars That Matter and Still Does Not Win

@@ -1,6 +1,6 @@
 # The Secret Redaction of the Handoff
 
-A handoff file crosses a context boundary as a file on disk, so the writer masks every secret before it writes (spec `session-handoff`, requirement "Handoff Points, Does Not Copy", task 4.8). None of the three prior-art repositories redacts anything (`handoff-prior-art.md`, "Redaction"), so no pattern here is this project's invention: they come from two rule sets that already exist, in two passes over the text.
+A handoff file crosses a context boundary as a file on disk, so the writer masks every secret before it writes (spec `session-handoff`, requirement "Handoff Points, Does Not Copy"). None of the three prior-art repositories redacts anything (`handoff-prior-art.md`, "Redaction"), so no pattern here is this project's invention: they come from two rule sets that already exist, in two passes over the text.
 
 | Pass | Source | Rules | Where it comes from |
 | --- | --- | --- | --- |
