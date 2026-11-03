@@ -47,8 +47,8 @@ When the user approves tasks of an OpenSpec change by number, the classifier SHA
 
 #### Scenario: Prompt Named by the Task
 
-- **WHEN** the user approved a task that says to replace the body of `agents/main.md` with a draft
-- **THEN** the copy of that draft over `agents/main.md` is not blocked as "Rewire the Agent"
+- **WHEN** the user approved a task that says to replace the root prompt with a draft
+- **THEN** the copy of that draft over the root prompt's source file is not blocked as "Rewire the Agent"
 
 ### Requirement: An AskUserQuestion Answer Is the User's Choice
 

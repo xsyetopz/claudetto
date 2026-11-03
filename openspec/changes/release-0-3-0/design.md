@@ -44,6 +44,10 @@ The OpenSpec part goes on the first row after the PR part, as `☰ release-0-3-0
 
 The session end checks every path Claude wrote under the handoff folder. A validly named file keeps today's behavior. A misnamed one is read with `$.fs.read` and written again under a valid name with `$.fs.write`, and the user sees one line. `$.fs` has no rename, so the old file stays. Rejected: loosening `HANDOFF_NAME` to accept any name, because the read-back sorts by name, and the mixed forms in the folder do not sort by time.
 
+### The root prompt is a `prompt.compose` hook, not a main-thread agent
+
+The `agent` setting put the root prompt in `agents/main.md`, which made `claudetto:main` an agent type, and session `fb76fbd2` spawned it 28 times as a subagent (`ISSUES.md`, "Subagents run as `claudetto:main`"). Free probes on `2.1.317` read the routes. A `prompt.compose` hook changes the main loop's `system[2]` and no subagent's, in `-p` and `--interactive`. With the `agent` setting on, the body is the agent file alone and the hook has no effect, so the two routes exclude each other. `lean_body` is about 1,200 of the default 5,799 characters, so the hook returns the root prompt as the whole section list, which drops the same core sections the `agent` route drops. `--system-prompt-file` was the other route, rejected because a plugin cannot pass a CLI flag. The `agent-offer` block goes with the type, since it hid the type only after the mod hooks attached.
+
 ### `main.md` is rewritten to the XML prompting guide
 
 The `0.2.0` body breaks the guide in `external/please-use-me-often/xml-prompting-guide.md`. Its tags are short handles (`<harness>`, `<asking>`), its rules are line lists with no reasons, many say what not to do, and several hold one task or one project. The new body is `drafts/main.md` in this change folder. Each tag names what its section holds, each section is prose, and each rule says what to do with its reason beside it (guide 2.5, 5.3, 5.4). It measures 5,985 characters with the method `JSON.stringify(body.trim()).length - 2`, under the cap of at most 6,000 characters that the user set on 2026-10-31. No test or constant holds that cap now.
@@ -142,6 +146,7 @@ The Stop-time `claude-haiku-5-5` opener judge was removed on 2026-11-02: it adde
 
 ## Migration Plan
 
+- `/claudetto:setup` removes the `agent` key that names `claudetto:main`, which `0.2.0` wrote. What a session does with the stale key before setup runs is read by task 43.2.
 - Existing handoff files are left as they are. Only new files follow the template.
 - Users get the new status line on the plugin update with no settings change, because the command path stays the same.
 - Rollback is a revert of the release commit.

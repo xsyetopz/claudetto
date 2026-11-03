@@ -4,6 +4,10 @@ Problems found while working in this repository. An open entry moves to "Fixed" 
 
 ## Open
 
+### Subagents run as `claudetto:main`
+
+Session `fb76fbd2` spawned 28 subagents as `claudetto:main` on `2.1.316`, against 63 `Hephaestus`, 15 `Artemis`, 5 `Hermes`, and 3 `Athena` (its `subagents/*.meta.json`), for multi-step tasks such as "Paid runs 11.2 and 7.2" and "Prune prose tests". Each ran the root prompt, which talks to the user and names `AskUserQuestion`, a tool subagents do not get. The setup snippet denies `general-purpose` and `claude`, so `main` was the only listed type with every tool. The `agent-offer` block that refuses the type did not hide it: the session's `agent_listing_delta` listed it from the first record, dispatch did not refuse it, and 2 of 17 sampled `2.1.316` sessions with a listing show it. Free captures on `2.1.317` list no `main`, and the type left this session's listing after a `/reload-plugins`, so the listing is likely built before the mod hooks attach at start. Task 43 of `release-0-3-0` removes the type.
+
 ### The classifier does not take an approval from the plan or an `AskUserQuestion` answer
 
 The user picked "Approve the allowance" in `AskUserQuestion` for the `silent.spec.ts` change, and later "Gated tasks, no paid runs", and the classifier blocked the named edits each time. Setting `DEFAULT_MAIN_BODY_CHARS` to the 6,000 cap that the change's proposal records as the user's value was blocked three times as "Weaken a Guard". Writing a spec delta that describes these fixes was blocked as "Rewire the Agent".
