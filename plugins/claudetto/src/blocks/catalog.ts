@@ -1,5 +1,4 @@
 import type { On, PluginOptions } from "claude-code";
-import { attachAgentOffer } from "./agent-offer/block.ts";
 import type { BlockContext } from "./block.ts";
 import { attachBoundOutput } from "./bound-output/block.ts";
 import { attachBunRule } from "./bun-rule/block.ts";
@@ -16,6 +15,7 @@ import { attachMissingTool } from "./missing-tool/block.ts";
 import { attachPlanMode } from "./plan-mode/block.ts";
 import { attachPriceStep } from "./price-step/block.ts";
 import { attachReadGuard } from "./read-guard/block.ts";
+import { attachRootPrompt } from "./root-prompt/block.ts";
 import { attachRunLimits } from "./run-limits/block.ts";
 import { attachSetupCommand } from "./setup-command/block.ts";
 import { attachStatusLine } from "./status-line/block.ts";
@@ -34,7 +34,7 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachInitInterview(on, context);
 	attachDecide(on, context);
 	attachToolDescribe(on, context);
-	attachAgentOffer(on, context);
+	attachRootPrompt(on, context);
 	attachHandoff(on, context);
 	attachGate(on, context);
 	attachRunLimits(on, context);

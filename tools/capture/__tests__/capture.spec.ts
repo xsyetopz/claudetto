@@ -30,7 +30,6 @@ describe("the settings of one run", () => {
 		// Read from the module rather than copied, so the plugin ids live in one place.
 		expect(settings).toMatchObject({
 			permissions: { deny: [...denyRules()] },
-			agent: "claudetto:main",
 			outputStyle: "claudetto:Concise",
 			...builtinSnippet(),
 		});

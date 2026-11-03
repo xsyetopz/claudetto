@@ -110,7 +110,6 @@ describe("the tier table", () => {
 			const snippet = tierSnippet(row, PLATFORM);
 
 			expect(snippet).toHaveProperty("permissions");
-			expect(snippet).toHaveProperty("agent");
 			expect(snippet).toHaveProperty("outputStyle");
 			expect(snippet).toHaveProperty("autoMode");
 			expect(snippet).toHaveProperty("sandbox");

@@ -10,6 +10,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Changed
 
+- The root prompt reaches the main loop through a `prompt.compose` hook, as one `shared` section, in place of `agents/main.md` under the `agent` setting. The request carries the same 5,216-character body (`just capture --arm plugin --shipped` reads 25,279 and `--interactive` 32,993, as before). `/claudetto:setup` removes an `agent` key that names `claudetto:main` and writes none. A session whose `agent` names a missing agent starts on the stock body (`just capture --arm plain --settings FILE` reads 46,084, the baseline).
 - The `Concise` output style tells the session that an item it can still do with its tools is work to do before it ends, and that an open item in a report names its blocker: a denial, a paid run that waits for approval, or a step only the user can take. It adds 251 characters to each request, read with `just capture --arm plugin --shipped` on `2.1.317`.
 - Three hooks move from classic events to the Mod API:
   - The handoff before a compaction is written in `session.compact`, from its `messages`, in place of `classic.PreCompact` and a `tail` of the transcript. A `precompute`, a subagent's compaction, and a handover write no code-built file.
@@ -110,6 +111,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Removed
 
+- The agent `claudetto:main`, `agents/main.md`, the `agent-offer` block, and the `agent` key of the setup step.
 - The `dedupe` skill, `skills/dedupe/`. It put 155 characters of listing into every first request. The `jscpd` step of `just lint` stays.
 - The `mcp__claudetto__setup` tool. `/claudetto:setup` is served by a `command.run` hook that opens one `$.ui.ask` dialog per group of differences, at most four keys each, with the `sandbox.enabled` pair as a single choice and `rules/claudetto-code.md` as a dialog of its own, then writes the keys you chose and reports. It takes no model turn, and the tool schema leaves every request. A dismissed dialog, or a session with no one to ask such as `claude -p`, writes nothing.
 - The `handoff` tool's seven fields and its word-for-word quoting of the user's prompts. The tool keeps five fields; the model re-words the prompts.

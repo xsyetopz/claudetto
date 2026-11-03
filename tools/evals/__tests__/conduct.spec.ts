@@ -28,7 +28,7 @@ text
 
 const caseOf = (requirement: string): ConductCase => ({
 	requirement,
-	file: "agents/main.md",
+	file: "src/blocks/root-prompt/body.ts",
 	codes: ["R1"],
 	section: "role",
 	rule: "a rule",

@@ -42,12 +42,12 @@ describe("the sessions of a plan", () => {
 		});
 
 		expect(plan.sessions.map((s) => `${s.key}|${s.arm}|${s.run}`)).toEqual([
-			"A1|main.md|1",
-			"A1|main.md|2",
+			"A1|root prompt|1",
+			"A1|root prompt|2",
 			"A1|the default body|1",
 			"A1|the default body|2",
-			"B1_B2|main.md|1",
-			"B1_B2|main.md|2",
+			"B1_B2|root prompt|1",
+			"B1_B2|root prompt|2",
 			"B1_B2|the default body|1",
 			"B1_B2|the default body|2",
 		]);
@@ -98,7 +98,7 @@ describe("the sessions of a plan", () => {
 
 describe("the arm names", () => {
 	test("accepts the two arms and nothing else", () => {
-		expect(isArm("main.md")).toBe(true);
+		expect(isArm("root prompt")).toBe(true);
 		expect(isArm("the default body")).toBe(true);
 		expect(isArm("plugin")).toBe(false);
 	});

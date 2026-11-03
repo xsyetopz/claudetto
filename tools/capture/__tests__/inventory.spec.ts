@@ -115,10 +115,10 @@ describe("the rows the capture reads", () => {
 		]);
 	});
 
-	test("the shipped row carries the main agent and the style, which the reading pays for", () => {
+	test("the shipped row carries the style and no agent, which the reading pays for", () => {
 		const settings = JSON.parse(byRow("shipped"));
 
-		expect(settings.agent).toBe("claudetto:main");
+		expect(settings).not.toHaveProperty("agent");
 		expect(settings.outputStyle).toBe("claudetto:Concise");
 	});
 

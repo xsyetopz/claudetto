@@ -4,10 +4,10 @@ A main-thread custom agent replaces the default body of `system`. An output styl
 
 ## Main-Thread Custom Agent
 
-The `agent` setting makes an agent file the main thread, and the body of that file takes the place of the default body, the third `system` block.
+A `prompt.compose` hook returns the root prompt as the whole section list of the main loop, and it takes the place of the default body, the third `system` block. A subagent's prompt is untouched. With the `agent` setting on, the body is the agent file alone and the hook has no effect.
 
-- The `plain` arm's third `system` block is 5,799 characters. With the shipped settings and `agent: claudetto:main`, it is the 5,216 characters of `plugins/claudetto/agents/main.md`, and `system` reads 5,352 in all.
-- Removing `agent` from the shipped settings (`just capture --arm plugin --settings FILE`) puts the default body back: `system` reads 3,576 and the total 23,238. The shipped settings turn off auto memory and git instructions, so that default body is already shorter than the 5,799 of the `plain` arm. The file adds 1,790 against it.
+- The `plain` arm's third `system` block is 5,799 characters. With the shipped settings, it is the 5,216 characters of the root prompt in `plugins/claudetto/src/blocks/root-prompt/`, and `system` reads 5,352 in all.
+- The shipped settings turn off auto memory and git instructions, so the default body they leave is 3,519 characters (`just capture --arm plain --shipped`), shorter than the 5,799 of the `plain` arm.
 - The tool list does not change with the agent: it reads 7,245 characters for 6 tools either way.
 
 ## Output Style
@@ -37,4 +37,4 @@ The listing of agents sits in `messages`, so each agent denied takes its line ou
 
 ## What This Means for the Files
 
-A rule in `agents/main.md` is in every request of every session. A rule that applies to one kind of work belongs in an agent body or a rule file, and `docs/instruction-surfaces.md` holds the placement rule.
+A rule in the root prompt is in every request of every session. A rule that applies to one kind of work belongs in an agent body or a rule file, and `docs/instruction-surfaces.md` holds the placement rule.

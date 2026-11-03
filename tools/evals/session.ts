@@ -1,5 +1,4 @@
 import {
-	agent,
 	allowedTools,
 	claudeArgv,
 	maxBudget,
@@ -15,7 +14,6 @@ import type {
 	CommandResult,
 	CommandRunner,
 } from "../../claudekit/session/command.ts";
-import { MAIN_AGENT } from "../../plugins/claudetto/src/prompts.ts";
 import type { Arm } from "./plan.ts";
 
 /** The plugin folder of the tree, relative to its root, loaded for the session only with `--plugin-dir`. */
@@ -33,7 +31,7 @@ export interface SessionOptions {
 	readonly maxBudgetUsd?: number;
 }
 
-/** `--setting-sources project,local` leaves user settings out, so the arms differ by `--agent` alone. */
+/** `--setting-sources project,local` leaves user settings out. Only the root prompt arm loads the plugin, whose `prompt.compose` hook is the root prompt, so the default arm keeps the stock body. */
 export const sessionArgv = (
 	arm: Arm,
 	options: SessionOptions,
@@ -46,8 +44,7 @@ export const sessionArgv = (
 		permissionMode("acceptEdits"),
 		["--permission-prompts", "none"],
 		allowedTools(ALLOWED_TOOLS),
-		pluginDir(options.pluginDir),
-		arm === "main.md" ? agent(MAIN_AGENT) : [],
+		arm === "root prompt" ? pluginDir(options.pluginDir) : [],
 		options.model === undefined ? [] : model(options.model),
 		options.maxBudgetUsd === undefined ? [] : maxBudget(options.maxBudgetUsd),
 	);

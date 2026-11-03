@@ -1,6 +1,7 @@
 import { tierReport } from "../../tiers/report.ts";
 import { UNKNOWN_PLATFORM } from "../../tiers/snippet.ts";
 import type { SetupWrite } from "./diff.ts";
+import { retiredLine } from "./retired.ts";
 
 export const SETUP_COMMAND = "claudetto:setup";
 
@@ -15,14 +16,19 @@ const UNAME_PLATFORMS: Readonly<Record<string, string>> = {
 export const platformNamed = (uname: string): string =>
 	UNAME_PLATFORMS[uname.trim().toLowerCase()] ?? UNKNOWN_PLATFORM;
 
-export const setupReport = (file: string, write: SetupWrite): string =>
+export const setupReport = (
+	file: string,
+	write: SetupWrite,
+	retired = false,
+): string =>
 	[
 		tierReport(undefined, write.applied),
 		...write.refused.map(
 			(id) =>
 				`Refused ${id}: it names no difference, or another id names the same key. It was not written.`,
 		),
-		write.applied.written.length === 0
+		...(retired ? [retiredLine(file)] : []),
+		write.applied.written.length === 0 && !retired
 			? `${file} was not changed.`
 			: `Wrote ${file}. Restart Claude Code: the keys are read when it starts.`,
 	].join("\n");

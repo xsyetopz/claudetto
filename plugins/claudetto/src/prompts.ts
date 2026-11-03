@@ -1,11 +1,7 @@
-// The `agent` setting is what makes `agents/main.md` replace the default system body.
-
 export const PLUGIN_NAME = "claudetto";
 
-/** The evals take their default prompt path from it, so they read the file the plugin ships. */
-export const MAIN_AGENT_FILE = "agents/main.md";
-
-export const MAIN_AGENT = `${PLUGIN_NAME}:main`;
+/** The evals check this file for the sections that their cases name. */
+export const ROOT_PROMPT_FILE = "src/blocks/root-prompt/body.ts";
 
 export const STYLE_FILE = "output-styles/Concise.md";
 

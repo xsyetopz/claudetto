@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { executeSession } from "../execute.ts";
 import { isSession, ok, stubRunner } from "./stub.ts";
 
-const SESSION = { key: "K", arm: "main.md", run: 1 } as const;
+const SESSION = { key: "K", arm: "root prompt", run: 1 } as const;
 
 let parent = "";
 let fixtures = "";

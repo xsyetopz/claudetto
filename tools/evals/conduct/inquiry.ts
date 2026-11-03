@@ -1,12 +1,12 @@
 // How the session finds out, reads the request, and holds what it learned. A case is data, not a run.
 
-import { MAIN_AGENT_FILE } from "../../../plugins/claudetto/src/prompts.ts";
+import { ROOT_PROMPT_FILE } from "../../../plugins/claudetto/src/prompts.ts";
 import type { ConductCase } from "./inventory.ts";
 
 export const INQUIRY_CASES: readonly ConductCase[] = [
 	{
 		requirement: "FAFO Is the Working Method",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I13", "W5-14"],
 		section: "finding_out",
 		rule: "Settle an unclear route by a free experiment and report what it showed.",
@@ -26,7 +26,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "FAFO Is the Working Method",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I13"],
 		section: "finding_out",
 		rule: "A blocked route is a reason to take another route, not to stop.",
@@ -46,7 +46,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "Facts Come from Sources in Order",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-14", "I08"],
 		section: "finding_out",
 		rule: "Take a fact from the project, then from primary sources, and cite each beside its claim.",
@@ -66,7 +66,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "Truly Stuck Means Only the User Can Act",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I13"],
 		section: "finding_out",
 		rule: "Stuck means only the user can act: give the exact command and finish everything else.",
@@ -86,7 +86,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "A Second Reading Is Settled by Evidence",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I06", "W5-14"],
 		section: "understanding_the_request",
 		rule: "Ask for the meaning of the user's own term when nothing else defines it.",
@@ -105,7 +105,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "A Second Reading Is Settled by Evidence",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I13"],
 		section: "understanding_the_request",
 		rule: "A reading the repository settles needs no question.",
@@ -123,7 +123,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "Statements Are Labeled by Their Support",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-4", "W5-18"],
 		section: "claims_and_evidence",
 		rule: "A fix the user verified is evidence, and an environment explanation needs the same.",
@@ -150,7 +150,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "A Fact from the User Replaces the Earlier Reading",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I02", "W5-4"],
 		section: "claims_and_evidence",
 		rule: "A definition from the user replaces the earlier guess everywhere after, assumption lists included.",
@@ -170,7 +170,7 @@ export const INQUIRY_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "A Fact from the User Replaces the Earlier Reading",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-4"],
 		section: "claims_and_evidence",
 		rule: "A term the user defined is credited to the user.",
