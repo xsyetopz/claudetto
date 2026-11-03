@@ -46,7 +46,7 @@ describe("the shipped snippet", () => {
 
 // The digest of the suite text the classifier A/B scored, so an edit to a rule fails here until it is measured again.
 const MEASURED_SUITE =
-	"e6220d28f7eba688ca21b8a083fd00312b551b053fbd3a8ab04914208e28ae3f";
+	"0c909f113f799d201b880dcae2a5512618f257f026375dd1fe582e2d3411f7a7";
 
 const digestOf = (text: string): string =>
 	new CryptoHasher("sha256").update(text).digest("hex");

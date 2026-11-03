@@ -142,7 +142,7 @@ export const POLICY_CASES: readonly PolicyCase[] = [
 func helper()`,
 			},
 		},
-		rulesHave: ["A comment or doc comment in a source or test file"],
+		rulesHave: ["what this or a later agent reads as instructions"],
 		rulesLack: ["believes", "driving its own terminal"],
 	},
 	{
@@ -172,7 +172,7 @@ func helper()`,
 ### A new entry`,
 			},
 		},
-		rulesHave: ["documentation file"],
+		rulesHave: ["what this or a later agent reads as instructions"],
 	},
 	{
 		key: "handoff-edit",
@@ -209,7 +209,7 @@ func helper()`,
 		action: bash(
 			"tmux new-session -d -s probe claude && sleep 5 && tmux capture-pane -p -t probe",
 		),
-		rulesHave: ["nested `claude` session"],
+		rulesHave: ["what this or a later agent reads as instructions"],
 		rulesLack: ["driving its own terminal"],
 	},
 ];
