@@ -108,6 +108,10 @@ summary-cost *args:
 worktree-base *args:
     bun claudekit/worktree-base/main.ts "$@"
 
+# Drive one session with a debug log until the hooks worker crashes; without --fake it makes paid calls (--dir, --prompts, --binary, --cap, --minutes, --fake AGENTS, --resume, --plugin-dir)
+hooks-crash *args:
+    bun claudekit/hooks-crash/main.ts "$@"
+
 # Run the proxy that answers the status-line summarizer locally (LOG_PATH, --pass)
 summary-proxy *args:
     bun claudekit/api/proxy.ts "$@"

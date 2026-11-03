@@ -34,10 +34,10 @@ export const tmuxArgv = (
 ): string[] => ["tmux", "-S", socket, ...args];
 
 // The folder only matters to `new-session`, which is given its own with `-c`.
-const tmux = (socket: string, ...args: readonly string[]) =>
+export const tmux = (socket: string, ...args: readonly string[]) =>
 	spawnCommand(tmuxArgv(socket, ...args), { cwd: "/" });
 
-const alive = (pid: number): boolean => {
+export const alive = (pid: number): boolean => {
 	try {
 		process.kill(pid, 0);
 		return true;
@@ -46,7 +46,7 @@ const alive = (pid: number): boolean => {
 	}
 };
 
-const waitFor = async (
+export const waitFor = async (
 	test: () => Promise<boolean> | boolean,
 	until: number,
 ): Promise<boolean> => {
@@ -72,6 +72,18 @@ export interface TmuxRun {
 	readonly timeoutMs: number;
 }
 
+/** Starts `argv` in a detached session named `claude` on the server at `socket`, on a 200 by 50 screen. */
+export const startTmux = (
+	run: Pick<TmuxRun, "argv" | "cwd" | "env" | "socket">,
+) => {
+	const env = Object.entries(run.env).flatMap(([k, v]) => ["-e", `${k}=${v}`]);
+	return tmux(
+		run.socket,
+		...["new-session", "-d", "-s", "claude", "-x", "200", "-y", "50"],
+		...["-c", run.cwd, ...env, ...run.argv],
+	);
+};
+
 export interface TmuxResult {
 	readonly code: number;
 	readonly stderr: string;
@@ -83,12 +95,7 @@ export interface TmuxResult {
 /** Starts `argv`, types `prompt` once the input box shows, and stops the server when `done` holds or the time runs out. */
 export const runInTmux = async (run: TmuxRun): Promise<TmuxResult> => {
 	const until = Date.now() + run.timeoutMs;
-	const env = Object.entries(run.env).flatMap(([k, v]) => ["-e", `${k}=${v}`]);
-	const started = await tmux(
-		run.socket,
-		...["new-session", "-d", "-s", "claude", "-x", "200", "-y", "50"],
-		...["-c", run.cwd, ...env, ...run.argv],
-	);
+	const started = await startTmux(run);
 	if (started.code !== 0) {
 		return {
 			code: started.code ?? 1,
