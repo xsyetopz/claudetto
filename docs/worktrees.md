@@ -7,7 +7,7 @@ edits old code.
 
 ## The Cause
 
-Claude Code `2.1.316` picks the base in the function that creates the worktree. It bases the worktree on
+Claude Code `2.1.317` picks the base in the function that creates the worktree. It bases the worktree on
 local `HEAD` only when the call asks for it or when the setting `worktree.baseRef` is `"head"`:
 
 ```js
@@ -16,10 +16,8 @@ b = s?.fromHead ?? (!s?.prNumber && settings().worktree?.baseRef === "head")
 
 Otherwise the base is `refs/remotes/origin/<default branch>`, fetched first when `FETCH_HEAD` is old. Only
 when that ref is missing and the fetch fails does it fall back to local `HEAD`. The settings schema documents
-the key with the default `"fresh"` at `docs/keep/settings/claude-code-managed-settings.schema.json:1132`.
-claudetto does not pick the base: it registers no `WorktreeCreate` hook. The setup before the `0.0.0`
-restart wrote `worktree: { baseRef: "head" }`, from commit `cb709ac5`. The setups of `0.1.0` to `0.2.x`
-left the key unset, so each new worktree started at `origin/<default branch>`.
+the key with the default `"fresh"` (`https://clawdipedia.cc/schemas/claude-code-managed-settings.json`).
+claudetto does not pick the base: it registers no `WorktreeCreate` hook.
 
 ## The Fix
 
@@ -46,20 +44,12 @@ A worktree that holds the tip, a folder outside `.claude/worktrees/`, and a `git
 
 `just worktree-base enter|agent [BASE_REF] [--plugin-dir DIR]` builds a repo whose `feat` is one commit
 ahead of `origin/main`, makes one worktree against the fake API, with no paid call, and prints its start.
-Measured on 2026-11-03 with `2.1.316`:
+Measured on 2026-11-03 with `2.1.317`, where the commits differ per run:
 
-| Run | Worktree start | `feat` tip | Guard line |
-| --- | --- | --- | --- |
-| `agent` | `f79e1a7`, `origin/main` | `f9132ae` | none, no plugin |
-| `agent --plugin-dir plugins/claudetto` | `7e4284a`, `origin/main` | `23f671d` | present |
-| `enter --plugin-dir plugins/claudetto` | `467336d`, `origin/main` | `494fb94` | present |
-| `agent head --plugin-dir plugins/claudetto` | `d2febcd`, the tip | `d2febcd` | none |
-
-With the `baseRef` that `just setup --settings FILE` wrote to a scratch file, `"head"`, measured on
-2026-11-03 with `2.1.317`:
-
-| Run | Worktree start | `feat` tip | Guard line |
-| --- | --- | --- | --- |
-| `agent head --plugin-dir plugins/claudetto` | `2fdf5d9`, the tip | `2fdf5d9` | none |
-| `enter head --plugin-dir plugins/claudetto` | `561f14d`, the tip | `561f14d` | none |
-| `agent --plugin-dir plugins/claudetto` | `957177e`, `origin/main` | `5036af9` | present |
+| Run | Worktree start | Guard line |
+| --- | --- | --- |
+| `agent` | `origin/main` | none, no plugin |
+| `agent --plugin-dir plugins/claudetto` | `origin/main` | present |
+| `enter --plugin-dir plugins/claudetto` | `origin/main` | present |
+| `agent head --plugin-dir plugins/claudetto` | the `feat` tip | none |
+| `enter head --plugin-dir plugins/claudetto` | the `feat` tip | none |

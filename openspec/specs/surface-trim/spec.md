@@ -58,12 +58,12 @@ The system SHALL use `permissions.deny` of a tool name as a size lever, not only
 
 ### Requirement: No Deny for a Tool Whose Removal Raises the Request
 
-The system MUST NOT add a `permissions.deny` entry for a tool whose removal was measured to raise the request. Measured in tokens on 2026-10-27 (`docs/surfaces.md`): removing `ToolSearch` costs `+15,898`, removing `Skill` costs `+5,599`, and removing `Bash` costs `+384`.
+The system MUST NOT add a `permissions.deny` entry for a tool whose removal was measured to raise the request. Measured in characters on `2.1.317` (`NEVER_DENY` in `plugins/claudetto/src/deny.ts`, `docs/surfaces.md`): removing `ToolSearch` costs `+37,936` and removing `Skill` costs `+8,720`. Removing `Bash` saves `407` and takes the shell away, so it is not denied either.
 
 #### Scenario: Deny of `ToolSearch`
 
 - **WHEN** a change adds `ToolSearch` to `permissions.deny`
-- **THEN** the setup test fails and names the measured `+15,898` tokens
+- **THEN** the setup test fails and names the measured `+37,936` characters
 
 ### Requirement: Every Key Is Verified and Every Combination Is Read
 

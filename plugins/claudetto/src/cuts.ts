@@ -45,11 +45,11 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	// `docs skill`, `setup command listing`, and `handoff command listing` were each read on `2.1.317` as the shipped arm with the piece moved aside in a clone, less the same arm with it.
 	{ name: "docs skill", chars: -71 },
-	// The window and the percentage move no request text, only the bill.
+	// The window and the percentage move no request text, only the bill. Read with `just compaction-cost --thresholds 140000,224999`: the replay bills a 140,000 trigger 13.7% below 224,999 over the sessions of this login.
 	{
 		name: "compaction pair",
 		chars: 0,
-		cost: { shift: -14.2, source: "docs/evidence/compaction/threshold.md" },
+		cost: { shift: -13.7, source: "just compaction-cost" },
 	},
 	{ name: "idleCompaction off", chars: 0 },
 	// The default body it replaces is the one the shipped settings already shortened.

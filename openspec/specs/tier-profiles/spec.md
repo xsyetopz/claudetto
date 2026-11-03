@@ -22,7 +22,7 @@ The system SHALL define a row for each of `claude_pro`, `default_claude_max_5x`,
 #### Scenario: Handoff Threshold
 
 - **WHEN** a row sets the handoff threshold of a model that is not a Haiku model
-- **THEN** it SHALL be 140,000, and the row SHALL cite the sweep of this login's own sessions, which priced the real work at every threshold between 60,000 and 280,000 and put the cheapest at 130,000 with the band within 1% of it running from 110,000 to 135,000 (`docs/evidence/compaction/threshold.md`)
+- **THEN** it SHALL be 140,000, and the row SHALL cite `just compaction-cost`, the replay of this login's own sessions that prices the real work at each threshold
 - **AND** the value SHALL be 140,000 rather than the 130,000 minimum, because 140,000 is the only threshold inside the within-1% band of every lost-work charge from the measured 20.1 turns to twice it under both summary models
 - **AND** the derived `AUTOCOMPACT_PCT` SHALL be `50.0000`, so the engine compacts at exactly 140,000 of the 280,000 effective window
 

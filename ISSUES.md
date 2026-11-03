@@ -256,7 +256,7 @@ Cost of this session: 35,542 tokens (6 input, 34 output, 26,308 cache read, 9,19
 
 ### A handover costs half of a core compaction at 166k tokens
 
-Measured on 2026-11-02 on one session shape, run in two arms (`docs/evidence/handover-vs-compaction.md`, `/tmp/probe-148`): seven `Read` results of about 21,200 tokens each, a turn that ends at 166,011 tokens of context, then a compaction and one prompt. Counted free first on the fake API (888,236 and 890,150 tokens against 8,000,000 allowed), then paid.
+Measured on 2026-11-02 on one session shape, run in two arms: seven `Read` results of about 21,200 tokens each, a turn that ends at 166,011 tokens of context, then a compaction and one prompt. Counted free first on the fake API (888,236 and 890,150 tokens against 8,000,000 allowed), then paid.
 
 | Per compaction cycle | Handover | Core `/compact` |
 | --- | --- | --- |
