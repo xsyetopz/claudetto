@@ -4,7 +4,7 @@
 
 - The status line render is pure: `statusOf` in `plugins/claudetto/src/statusline/main.ts` takes the stdin text, the env, and the clock. `src/statusline/__tests__/silent.spec.ts` fails on `Bun.file`, `Bun.spawn`, `fetch`, and `node:fs` in any statusline source.
 - `newestHandoff` in `plugins/claudetto/src/blocks/handoff/read-back.ts` accepts only `handoff-YYYY-MM-DDTHH-MM-SS.md`. `wroteOwn` in `handoff.ts` skips the code-built file when Claude wrote any path under the handoff folder, so a misnamed Claude file is never read back, and the next session injects an older file.
-- `agents/main.md` is 3,614 bytes with frontmatter, and its budget is `3,678` characters as the request carries it (`DEFAULT_MAIN_BODY_CHARS` in `tools/limits.ts:14`). On 2026-10-31 the user set a cap of at most 6,000 characters instead of a fixed number.
+- `agents/main.md` is 3,614 bytes with frontmatter, and its budget was 3,678 characters as the request carried it, which was not reproduced on 2026-11-03: the plain arm's third `system` block read 3,519 with `-p` and 3,807 with `--interactive`. On 2026-10-31 the user set a cap of at most 6,000 characters instead of a fixed number.
 - The `/context all` reading of 2026-10-31 is in `proposal.md`. Of its rows, memory files (550) and the seven `openspec-*` skills (about 690) belong to this repository, not to claudetto.
 
 ## Goals / Non-Goals
@@ -46,7 +46,7 @@ The session end checks every path Claude wrote under the handoff folder. A valid
 
 ### `main.md` is rewritten to the XML prompting guide
 
-The `0.2.0` body breaks the guide in `external/please-use-me-often/xml-prompting-guide.md`. Its tags are short handles (`<harness>`, `<asking>`), its rules are line lists with no reasons, many say what not to do, and several hold one task or one project. The new body is `drafts/main.md` in this change folder. Each tag names what its section holds, each section is prose, and each rule says what to do with its reason beside it (guide 2.5, 5.3, 5.4). It measures 5,985 characters with the budget test's method, `JSON.stringify(body.trim()).length - 2`, under the cap of at most 6,000 characters that the user set on 2026-10-31. `MAIN_BODY_CAP` in `tools/limits.ts` holds that cap beside the measured `DEFAULT_MAIN_BODY_CHARS`, and the test message calls it a cap.
+The `0.2.0` body breaks the guide in `external/please-use-me-often/xml-prompting-guide.md`. Its tags are short handles (`<harness>`, `<asking>`), its rules are line lists with no reasons, many say what not to do, and several hold one task or one project. The new body is `drafts/main.md` in this change folder. Each tag names what its section holds, each section is prose, and each rule says what to do with its reason beside it (guide 2.5, 5.3, 5.4). It measures 5,985 characters with the method `JSON.stringify(body.trim()).length - 2`, under the cap of at most 6,000 characters that the user set on 2026-10-31. No test or constant holds that cap now.
 
 | `0.2.0` section | Flaw the user named on 2026-10-31 | New section |
 | --- | --- | --- |
