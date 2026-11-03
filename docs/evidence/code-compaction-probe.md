@@ -320,11 +320,11 @@ Each value below is the mean of 3 forks, from `results.jsonl` of the run. The `U
 
 The `next` column is 0 for all 18 forks, against 1 for all 30 forks of round 6.
 The measure is literal: `measure.ts` sets it from `[x] 1.4` in the fixture's `tasks.md`, and no fork of this round ticked that box.
-The gate of claudetto ticks a box only after a passed check, so a 0 means that the fork did not finish task 1.4 with a passing `bun test`.
+The gate of claudetto ticks a box only after a passed check, so a 0 means that the fork did not finish item `1.4` of the fixture's `tasks.md` with a passing `bun test`.
 Six of the 18 forks also left a planted constraint untested, which happens when the file the check needs does not exist, against 0 of the 30 forks of round 6.
 
 The work tree of the last fork of the round, H at `80k`, is the one tree the run left on disk.
-In it task `1.5` is ticked and task `1.4` is not, `src/server.ts` and `test/server.test.ts` are new, and `src/banner.ts` of task 1.4 is absent.
+In it item `1.5` of the fixture's `tasks.md` is ticked and item `1.4` is not, `src/server.ts` and `test/server.test.ts` are new, and `src/banner.ts` of item `1.4` is absent.
 So that fork skipped the task its handoff named and did the one after it.
 This is one fork's end state and not a mean, because a fork resets the tree.
 
@@ -356,7 +356,7 @@ Against the rate measured in `docs/window-weights.md`, about `$29.70` of API-equ
 
 The full pass at `--runs 10` on `claude-haiku-5-5` is not worth paying for.
 It would cost about `$2.47`, from this round's own figures: 60 forks at the mean of 0.0203 per fork is 1.22, and the two base sessions cost 0.3921 and 0.8552 again, which is small, but it would buy no arm comparison, because the `next` bar and the constraint checks are already dead on this model at 3 forks and more forks of the same failure add nothing.
-Either the full pass runs on `claude-sonnet-5-5`, where round 6 showed every bar alive, or the fixture is made easy enough that Haiku 5.5 finishes task 1.4, and then the result speaks about an easier fixture.
+Either the full pass runs on `claude-sonnet-5-5`, where round 6 showed every bar alive, or the fixture is made easy enough that Haiku 5.5 finishes item `1.4` of the fixture's `tasks.md`, and then the result speaks about an easier fixture.
 A third reading is that this round is itself the answer to the cheap-model question that the shakedown asked: a cheap model cannot run the arms of this probe.
 
 ## Round 8, the Full Pass on Sonnet
@@ -509,5 +509,5 @@ Three results are new.
 
 - **The cheapest path measured so far is the built-in compaction with a cheap summarizer, at 0.1469 and 0.1752.** H is cheaper still, at 0.1220 and 0.1416, which is 17.0% and 19.2% below B, but H reads 3.4 and 2.9 files again against 0.8 and 0.6 for B, so it fails the rereads bar at both sizes as in every round before.
 - **A cheap summarizer costs no measured quality in the built-in path.** That is the question round 9 asked, and round 7 could not ask it, because on Haiku throughout no fork finished the next task. Here the follow-ups ran on Sonnet and all 60 forks did.
-- **None of these savings is a live saving, and no document may cite them as one.** Arm B got its cheap summary from a separate `claude -p --model claude-haiku-5-5` process that the harness ran for the compaction step (`archive/dev/probe/plan.ts:40-84`, the `--compact-model` flag). A live session has no such step: it bills the summary on the model the session runs. The live counterpart is the `session.compact` handler of task 10.6, which is off in every row, and its price belongs in `docs/window-weights.md` from `$.session.usage()` deltas of a real session.
+- **None of these savings is a live saving, and no document may cite them as one.** Arm B got its cheap summary from a separate `claude -p --model claude-haiku-5-5` process that the harness ran for the compaction step (`archive/dev/probe/plan.ts:40-84`, the `--compact-model` flag). A live session has no such step: it bills the summary on the model the session runs. The live counterpart is the `session.compact` handler, which is off in every row, and its price belongs in `docs/window-weights.md` from `$.session.usage()` deltas of a real session.
 - **The compaction call is now 22% of a B fork at `80k` and 33% at `200k`**, against 35% and 43% on Sonnet in round 6. Round 7 measured the opposite shape, 65% and 74%, because there the follow-ups were cheap too. So moving the summary alone to a cheap model shrinks the one expensive turn and leaves the follow-ups where they were.

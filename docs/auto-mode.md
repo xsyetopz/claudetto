@@ -239,7 +239,7 @@ every answer below can be checked against what was said.
 
 ## What the New Tree Writes
 
-The sections above record the archived tree. This one records `plugins/claudetto/src/automode/automode.ts` of the new tree, tasks 6.1, 6.2, 6.4, 6.6, and 6.10 of `openspec/changes/claudetto-restart/tasks.md`. Each route in the table was read for `2.1.312` and holds the behavior its row claims. The key names are checked as well, by a test that searches the installed program for each name.
+The sections above record the archived tree. This one records `plugins/claudetto/src/automode/automode.ts` of the new tree. Each route in the table was read for `2.1.312` and holds the behavior its row claims. The key names are checked as well, by a test that searches the installed program for each name.
 
 | Key | Value | Behavior it changes | Route |
 | --- | --- | --- | --- |
@@ -257,7 +257,7 @@ The broad-rule source is `permission-modes` on `code.claude.com`, the page the s
 
 ## The Facts of `autoMode.environment`
 
-Setup no longer writes these facts: since D39 of `openspec/changes/release-0-1-0/decisions.md` it writes the suite, whose `environment` list holds no fact of one repository, and `plugins/claudetto/src/automode/environment.ts` was removed. The list was `ENVIRONMENT_FACTS` of that file. Each fact names
+Setup no longer writes these facts: it now writes the suite, whose `environment` list holds no fact of one repository, and `plugins/claudetto/src/automode/environment.ts` was removed. The list was `ENVIRONMENT_FACTS` of that file. Each fact names
 the field it fills, the text the classifier reads, and what was read for it. The session column below
 is the one thing the code does not carry: a date in a value the classifier reads would be narration,
 so it lives here.

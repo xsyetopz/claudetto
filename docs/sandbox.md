@@ -1,7 +1,6 @@
 # Sandbox
 
-Change `claudetto-restart`, task 6.5, the sandbox half of the `low-hitl` capability
-(`openspec/changes/claudetto-restart/specs/low-hitl/spec.md:108`). The keys below were read from
+This file records the sandbox keys that the plugin sets and checks. The keys below were read from
 `clawdipedia` route `configure/permissions/sandbox` for Claude Code `2.1.312`. The table is in
 `plugins/claudetto/src/sandbox/sandbox.ts`, the snippet is `sandboxSnippet()`, and the checks are
 `sandboxFaults()` in `plugins/claudetto/src/sandbox/faults.ts`.

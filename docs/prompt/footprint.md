@@ -322,7 +322,7 @@ files and the handoff context block were added.
 | The same skill without the flag | 29,150 | 9,824 | the line `- claudetto:probe-auto: PROBEAUTOMARKER, a skill the model may call.` in the skill listing |
 
 So a listed skill costs its name, its description, and 14 characters of markup, and a skill with the
-flag costs nothing. This also settles the figure of D11 in `architecture.md`, which counted the ten
+flag costs nothing. This also settles the figure in `architecture.md`, which counted the ten
 `description:` lines of the archived tree at 1,720 characters: the listing those lines would have
 written is larger than 1,720, by 14 plus the name of each skill.
 

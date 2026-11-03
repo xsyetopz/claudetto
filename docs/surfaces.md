@@ -543,7 +543,7 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
 | The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,653 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
-| The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 (D35 of `openspec/changes/release-0-1-0/decisions.md`) |
+| The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
 | `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
 | `agents/main.md` under the `agent` key (`main agent body`) | −1,790 | None exists yet. A placebo run would price the prompt text |

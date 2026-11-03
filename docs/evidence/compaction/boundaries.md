@@ -112,7 +112,7 @@ The summarizer request itself carries no `usage` record anywhere in the transcri
 The summary arrives as a `user` message, which has no `usage` block at all, and no `assistant` record exists for the compaction turn.
 So the transcript gives the tokens the compaction read and the tokens it produced, and it never gives what the compaction was billed.
 
-Every money figure below is therefore derived from the measured token counts and the published prices of `openspec/changes/claudetto-restart/references.md`, "Official Prices", and none of it is a bill.
+Every money figure below is therefore derived from the measured token counts and the published prices, read on 2026-10-27 from `https://platform.claude.com/docs/en/about-claude/pricing` and `https://platform.claude.com/docs/en/build-with-claude/prompt-caching`, and none of it is a bill.
 The derivation is the sum of three terms: the whole context read once, the summary as output, and the cache write that the next request pays on the new prefix.
 The first term has two cases, because a context read from a live cache entry is billed at the cache-read price and a context read after the entry expired is billed at the full input price.
 
@@ -159,7 +159,7 @@ It settled, on the sample of 2026-10-28, that a compaction on this login read ab
 Those numbers were measured on that sample and are not reproduced by the larger one: on 2026-11-03 the same transcripts gave a mean of 165,782 tokens before, 11,548 after, and 84.1 s of duration over 243 compactions. The cache rebuild and the live cache are unmeasured on it.
 
 It does not settle the price of a compaction, for the reason above, and it does not settle whether another path is cheaper.
-That comparison needs the billed cost of a compaction, which only `$.session.usage()` deltas across the boundary can give, and that is what task 10.7 exists for.
+That comparison needs the billed cost of a compaction, which only `$.session.usage()` deltas across the boundary can give.
 
 It does not settle whether the moment is right for the work, only that the cache state is not the problem.
 
@@ -167,6 +167,6 @@ It also does not support any claim about the Claude Code default threshold, beca
 
 ## Sources
 
-The external sources that prompted this page, with what each is worth, are in `openspec/changes/claudetto-restart/references.md` under "Compaction Cost Claims (Read 2026-10-28)".
-The `jq` method over `compact_boundary` is from the Reddit post recorded there.
+The external sources that prompted this page are listed here.
+The `jq` method over `compact_boundary` is from a Reddit post: r/ClaudeCode, "Auto-compact read 970k tokens of context to keep 12k", by `Drasezv`, 2026-09-24. Its value is the method, not its numbers.
 The formulas for the levels are from `clawdipedia` route `how-it-works/context-and-compaction` (a web page, not re-read: unverified, needs a web read).

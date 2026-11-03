@@ -30,7 +30,7 @@ import { boundTokens, type Measured, measureArms } from "./measure.ts";
 export const STYLE_USAGE =
 	"usage: just eval --style [--run] [--case KEY] [--arm old|new] [--runs N]";
 
-/** The tokens the user approved for a full run; a plan above it does not start. */
+/** The token cap of a full run, set when the run is approved; a plan above it does not start. */
 export const TOKEN_CAP = 1_900_000;
 
 const SESSION_MS = 300_000;
