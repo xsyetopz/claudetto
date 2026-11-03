@@ -256,6 +256,25 @@ for (const variant of VARIANTS) {
 	);
 
 	test(
+		`${variant.option}: a block under no listed rule is asked once more, and the second reply decides`,
+		options,
+		async ($: Engine, on: On) => {
+			const { state, out } = await called($, on, (n) =>
+				says(
+					n === 1
+						? "<reason>Local work that changes nothing.</reason><block>yes</block>"
+						: "<reason>No rule applies.</reason><rule></rule><block>no</block>",
+				)(),
+			);
+
+			expect(state.asked).toHaveLength(2);
+			expect(state.asked[1]?.prompt).toContain("it blocks under no rule");
+			expect(out.isError).not.toBe(true);
+			expect(state.ran).toEqual(["Bash"]);
+		},
+	);
+
+	test(
 		`${variant.option}: a failed Jev reply goes to the model`,
 		options,
 		async ($: Engine, on: On) => {

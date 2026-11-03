@@ -1,6 +1,11 @@
 import { expect, test } from "bun:test";
 import type { ModelCompleteResult } from "claude-code";
-import { verdictOf, verdictRequest } from "../verdict.ts";
+import {
+	frameFault,
+	secondLook,
+	verdictOf,
+	verdictRequest,
+} from "../verdict.ts";
 
 const USAGE = {
 	input_tokens: 0,
@@ -106,4 +111,70 @@ test("the `haiku` verdict asks for `medium` effort, since its thinking cannot be
 
 test("`no` allows", () => {
 	expect(verdictOf(reply("<block>no</block>"))).toStrictEqual({ allow: true });
+});
+
+test("a block under a rule of a block list keeps the frame", () => {
+	expect(
+		frameFault(
+			reply(
+				"<reason>the push targets main</reason><rule>Destroy Work</rule><block>yes</block>",
+			),
+		),
+	).toBeUndefined();
+});
+
+test("an allow keeps the frame", () => {
+	expect(frameFault(reply("<block>no</block>"))).toBeUndefined();
+});
+
+test("a block under no rule breaks the frame, since a call no rule matches is allowed", () => {
+	expect(
+		frameFault(
+			reply(
+				"<reason>the action only reads a test file and changes nothing</reason><block>yes</block>",
+			),
+		),
+	).toBe("it blocks under no rule");
+});
+
+test("a block under a rule of the allow list breaks the frame", () => {
+	expect(
+		frameFault(
+			reply(
+				"<reason>read-only</reason><rule>Local Work</rule><block>yes</block>",
+			),
+		),
+	).toBe("it blocks under Local Work, which is on neither block list");
+});
+
+test("a reply with no verdict breaks the frame", () => {
+	expect(frameFault(reply("<reason>fine</reason>"))).toBe(
+		"it holds no verdict",
+	);
+});
+
+test("an unanswered call is no frame fault, since asking again cannot mend an outage", () => {
+	expect(
+		frameFault({ isAnswered: false, reason: "aborted", usage: USAGE }),
+	).toBeUndefined();
+});
+
+test("the second look keeps the request and adds the first reply and its fault", () => {
+	const first = verdictRequest("haiku", "User: hi", "Bash {}");
+	const again = secondLook(
+		first,
+		"<block>yes</block>",
+		"it blocks under no rule",
+	);
+
+	expect(again).toMatchObject({
+		model: first.model,
+		effort: first.effort,
+		system: first.system,
+	});
+	expect(again.prompt.startsWith(first.prompt)).toBe(true);
+	expect(again.prompt).toContain(`<first_reply>
+<block>yes</block>
+</first_reply>`);
+	expect(again.prompt).toContain("it blocks under no rule");
 });

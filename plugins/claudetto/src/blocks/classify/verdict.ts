@@ -7,6 +7,7 @@ import type {
 	PreToolUseResult,
 	ToolCallEnvelope,
 } from "claude-code";
+import { HARD_RULES, SOFT_RULES } from "../../automode/rules.ts";
 import { capOf } from "../../shared/thinking.ts";
 import { answersOf } from "../decide/ask.ts";
 import { classifierRules } from "./prompt.ts";
@@ -62,11 +63,14 @@ export const actionOf = (e: ToolCallEnvelope): string => {
 	return callLine(tool, args);
 };
 
+/** A string prompt, so a second ask can extend it as text. */
+export type VerdictRequest = ModelCompleteRequest & { readonly prompt: string };
+
 export const verdictRequest = (
 	variant: Variant,
 	transcript: string,
 	action: string,
-): ModelCompleteRequest => ({
+): VerdictRequest => ({
 	...VARIANTS[variant],
 	maxTokens: VERDICT_MAX_TOKENS,
 	timeoutMs: VERDICT_TIMEOUT_MS,
@@ -112,6 +116,41 @@ export const verdictOf = (reply: ModelCompleteResult): PreToolUseResult => {
 		? denied(reason, rule)
 		: denied("the model's reply held no verdict");
 };
+
+const BLOCK_RULES: ReadonlySet<string> = new Set(
+	[...HARD_RULES, ...SOFT_RULES].map((rule) => rule.name.toLowerCase()),
+);
+
+/**
+ * What a reply does against the frame, which allows every call that no block rule matches.
+ * Haiku 5.5 has blocked calls whose reason said the call was local and changed nothing.
+ */
+export const frameFault = (reply: ModelCompleteResult): string | undefined => {
+	if (!reply.isAnswered) {
+		return undefined;
+	}
+	const block = BLOCK.exec(reply.text)?.[1]?.toLowerCase();
+	if (block === undefined) {
+		return "it holds no verdict";
+	}
+	const rule = RULE.exec(reply.text)?.[1]?.trim() ?? "";
+	if (block === "no" || BLOCK_RULES.has(rule.toLowerCase())) {
+		return undefined;
+	}
+	return rule === ""
+		? "it blocks under no rule"
+		: `it blocks under ${rule}, which is on neither block list`;
+};
+
+/** The same request with the first reply and its fault, so the model mends the reply and does not start over. */
+export const secondLook = (
+	request: VerdictRequest,
+	first: string,
+	fault: string,
+): VerdictRequest => ({
+	...request,
+	prompt: `${request.prompt}\n\n<first_reply>\n${first}\n</first_reply>\n\nYour first reply breaks the frame: ${fault}. Block only under a HARD BLOCK or SOFT BLOCK rule, named in <rule>, and otherwise reply <block>no</block>. Reply again with the three tags.`,
+});
 
 export const jevQuestion = (transcript: string, action: string) => ({
 	state: { rules: classifierRules(), transcript, action },
