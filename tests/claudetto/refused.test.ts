@@ -71,7 +71,7 @@ describe("the snippet claudetto writes holds no refused key", () => {
 
 describe("every refused key is a real key", () => {
 	// Two of them are `x-managed-only`, so the user schema alone would reject them.
-	test("a vendored schema holds every refused settings key", async () => {
+	test("a published schema holds every refused settings key", async () => {
 		const names = REFUSED_KEYS.filter((row) => row.kind !== "env").map(
 			(row) => row.name,
 		);

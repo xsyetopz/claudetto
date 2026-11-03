@@ -1,23 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { join } from "node:path";
-import { file } from "bun";
+import { schemaOf } from "../../../../../tools/settings-schema.ts";
 import { MINIMUM_VERSION } from "../disables.ts";
 import { denyRulesOf } from "../keys.ts";
 import { tierSnippet } from "../snippet.ts";
 import { SNIPPET_ROW, TIERS } from "../tiers.ts";
-
-const SCHEMA = join(
-	import.meta.dir,
-	"..",
-	"..",
-	"..",
-	"..",
-	"..",
-	"docs",
-	"keep",
-	"settings",
-	"claude-code-settings.schema.json",
-);
 
 const ENV = {
 	CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1",
@@ -181,12 +167,11 @@ describe("the keys setup writes", () => {
 		});
 	}
 
-	test("$schema is the vendored schema's $id", async () => {
-		const schema: unknown = await file(SCHEMA).json();
+	test("$schema is the published schema's $id", async () => {
+		const { id } = await schemaOf("settings");
 
 		const snippet = tierSnippet(SNIPPET_ROW, "darwin");
 
-		expect(snippet["$schema"]).toBeString();
-		expect(schema).toMatchObject({ $id: snippet["$schema"] });
+		expect(snippet["$schema"]).toBe(id);
 	});
 });

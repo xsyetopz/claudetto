@@ -15,7 +15,7 @@ import { keysMissing } from "../../tools/settings-schema.ts";
 const PROGRAM = (await installedProgram()) ?? "";
 
 describe("every compaction key is one Claude Code reads", () => {
-	test("a vendored schema holds each settings key", async () => {
+	test("a published schema holds each settings key", async () => {
 		const names = COMPACTION_KEYS.filter((row) => row.kind !== ENV).map(
 			(row) => row.name,
 		);

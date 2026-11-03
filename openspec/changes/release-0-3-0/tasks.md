@@ -458,6 +458,15 @@ The user ruled on 2026-11-03 that no `SessionStart` block adds the general rules
 - [x] 41.5 Run the same five kinds of change in a Python repo with `make` targets and `unittest`, the old rule against a broad rule 1 that names no runtime or file, 3 runs each, paid on the user's approval of 2026-11-03, and report the checks run per kind, the tokens, and the weekly share. Done 2026-11-03, `claude-opus-5-5`: full-suite runs fell from 19 to 6 over 15 sessions per arm (typo 2 to 0, comment 0 to 0, docs 0 to 0, one-function fix 7 to 3, cross-package change 10 to 3), with single test modules in their place; every docs session in both arms ran the one-package command its README line names. Every session left `make test` and `make lint` passing. 30 sessions read 2,169,248 tokens, $2.70, 0.068% of the 3.20B weekly limit.
 - [x] 41.4 Put the redrafted rule 1 in `GENERAL_RULES` once the user approves its text, and run `just check`. Done 2026-11-03 on the user's approval of the broad text: `GENERAL_RULES`, `README.md`, and `CHANGELOG.md` hold it. `just check` passed and `just inventory` read the shipped arm at 25,028, unchanged. The 124 characters first recorded above measured a 44-byte marker line, not the section: `just capture --arm plain --user-file CLAUDE.md=...` reads 46,494 for a short `CLAUDE.md`, 46,786 with the old section, and 46,920 with the new one, so the section adds 426 per request, and `CHANGELOG.md` now says so.
 
+## 42. No Copy of Claude Docs or Schemas
+
+The user ruled on 2026-11-03, through the `claudetto-05` session, that the repo keeps no copy of the `clawdipedia` schemas, settings, or docs, and no cache of them. A check reads the original through `clawdipedia-docs` or its URL.
+
+- [x] 42.1 Delete `docs/keep/settings/claude-code-settings.schema.json`, `claude-code-managed-settings.schema.json`, and `env-documented.txt`, and point `tools/settings-schema.ts` and the five tests that read them at the published URLs, fetched in memory and written nowhere.
+  Done 2026-11-03. The user chose live fetches over deleting the checks. The env names come from the table rows of the pages that `https://clawdipedia.cc/configure/env-vars.md` links, and all 393 kept names were in them. The six test files pass, 68 tests.
+- [x] 42.2 Add the rule to `AGENTS.md`, and remove the decision-page requirement of `repo-gate`, whose pages were copies.
+  Done 2026-11-03 on the user's approval of the exact `AGENTS.md` line.
+
 ## Workflow follow-up
 
 - Move each `ISSUES.md` entry to "Fixed" with the commit that fixes it, as its task closes.

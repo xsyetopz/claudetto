@@ -48,9 +48,9 @@ lab:
     claude plugin test plugins/claudetto
     claude plugin test plugins/claudetto-you-should-know
 
-# Show the vendored settings schemas (--fetch, --upstream)
-settings-schema *args:
-    bun tools/settings-schema.ts "$@"
+# Show the key counts of the published settings schemas and env-var pages
+settings-schema:
+    bun tools/settings-schema.ts
 
 # Show the supported Claude Code version, or move it with a version argument
 claude-version *args:

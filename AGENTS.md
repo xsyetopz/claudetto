@@ -4,6 +4,7 @@
 - Use `bun` for every package step, in code, docs, and messages: `bun add`, `bun add -g`, `bunx`. Never `node`, `npm`, `npx`, `yarn`, or `pnpm`, because the lockfile is `bun.lock`.
 - Write no internal note in source: no decision or task ID such as `D27` or `2.1`, no path into `openspec/` or a plan, no history. The source is public, and the reasons live in `openspec/`.
 - Put debug or probe code in `claudekit/`, the in-house tool library, once it is used more than once and is useful, such as a fake Messages API, a forwarding proxy, or a request reader. Reuse what `claudekit/` already holds before you write a new one, and leave a one-off probe in `/tmp`.
+- Read Claude docs and schemas through `clawdipedia-docs` or their URL, and keep no copy of them in the repo or in a cache.
 - Never patch the Claude Code CLI binary or its npm package, although it is minified JavaScript that you can read.
 - Run a paid model call or eval by asking first, and report its cost and the weekly share after the run.
 - Count, price, and look up only `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, because they are the models this account runs. Measure the weekly limit in tokens.
