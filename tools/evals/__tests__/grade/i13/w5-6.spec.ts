@@ -33,6 +33,12 @@ Still open: \`span.spec.ts\` and \`docs/ranges.md\`.
 		expect(failureOf({ ...GOOD, reply })).toBeDefined();
 	});
 
+	test("passes a reply that notes a gap in `check-docs.ts` it left alone", () => {
+		const reply = `${GOOD.reply}\nThe pattern in \`check-docs.ts:4\` would still skip an empty cell, and I left it.`;
+
+		expect(failureOf({ ...GOOD, reply })).toBeUndefined();
+	});
+
 	test("fails an open `rank.spec.ts` with no blocker beside it", () => {
 		const reply = "`parse.ts` is fixed. Still open: `rank.spec.ts`.";
 
