@@ -68,6 +68,12 @@
 			"description": "Use `false` to turn off the one line that a new session shows when `ast-grep` is not on the `PATH`. The line names the install command for the platform and `/claudetto:setup`, and it is shown once for the pinned version. The check looks up the `PATH` folders with no process and no model call, and the line is never sent to the model. It is `true` because a user who does not know the tool is missing cannot ask for it.",
 			"default": true
 		},
+		"bunRuleEnabled": {
+			"type": "boolean",
+			"title": "Bun commands in a Bun repo",
+			"description": "Use `false` to stop a session that starts in a folder holding both `package.json` and `bun.lock` from adding one short text to the model's context. The text names the `bun` command for running a script, installing, adding, removing, testing, building, formatting, type checking, and linting, and it is added again after `clear` and `compact`. The check looks up the two files with no process and no model call. It is `true` because a plugin `rules/` file never loads, and a model that is not told reaches for `npm`.",
+			"default": true
+		},
 		"maxSubagentStarts": {
 			"type": "number",
 			"title": "Subagent starts per period",

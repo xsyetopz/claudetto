@@ -33,6 +33,7 @@ const OPTIONS: readonly string[] = [
 	"confineEnabled",
 	"readGuardEnabled",
 	"missingToolNoticeEnabled",
+	"bunRuleEnabled",
 	"maxSubagentStarts",
 	"limitPeriodSeconds",
 	"maxHeavyToolCalls",
