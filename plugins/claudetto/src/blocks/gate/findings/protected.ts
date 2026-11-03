@@ -3,6 +3,7 @@ import { ENV_FILE } from "../paths.ts";
 import * as T from "../prompts.ts";
 import { verdict } from "./finding.ts";
 
+// A choice of the author: the paths of files that run code or set a permission, so a change to one asks.
 const PROTECTED_PATHS = [
 	/\/\.git\/hooks\//,
 	/\/\.husky\//,
@@ -10,6 +11,7 @@ const PROTECTED_PATHS = [
 	/\/\.claude\/settings[\w.-]*\.json$/,
 ];
 const MANIFEST = /\/package\.json$/;
+// A choice of the author: the script names of `package.json` that the gate takes to run on an install, so a change to one asks.
 const INSTALL_SCRIPT = /"(?:pre|post)?install"\s*:|"prepare"\s*:/;
 const TEXT_KEYS = ["new_string", "content", "new_source", "edits"];
 

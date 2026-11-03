@@ -6,5 +6,5 @@ export const BRACE_WORDS_MAX = 256;
 /** A command over the bound is unreadable. */
 export const SHELL_VARIANTS_MAX = 32;
 
-/** A chain over the bound is unreadable; `git` itself stops at a loop. */
+/** A chain over the bound is unreadable; the bound is a choice of the author. */
 export const ALIAS_DEPTH_MAX = 8;

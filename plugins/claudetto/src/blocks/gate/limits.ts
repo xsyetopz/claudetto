@@ -1,5 +1,7 @@
+// A choice of the author: each bound in this file is a limit that the gate sets, not a value of a tool.
 export const GLOB_WORD_MAX = 256;
 
+// A choice of the author: the `git` verbs that the gate takes as known without reading the config; each is a command that `git --list-cmds=main,nohelpers,others,alias` gives for Git 2.54.0.
 export const GIT_COMMON_COMMANDS = [
 	"add",
 	"am",

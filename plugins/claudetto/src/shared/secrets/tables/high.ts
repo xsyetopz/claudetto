@@ -1,4 +1,12 @@
 // Run after the `low` rows by `redact.ts`.
+//
+// Rows with a Gitleaks `v8.30.1` rule of the same id keep its pattern, with inline flag groups written
+// out as classes. Three kinds are the author's choice and not sourced from that release: a wider match
+// than its rule (`gcp-api-key`, `openai-api-key`, the `gitlab-*` bodies, `slack-user-token`,
+// `slack-webhook-url`), a dropped trailing guard (`sentry-org-token`), and rows with no rule of that id (`google-oauth-client-secret`,
+// `anthropic-oauth-token`, `openai-legacy-api-key`, `supabase-*`, `gitlab-pipeline-trigger-token`,
+// `gitlab-scim-oauth-token`, `gitlab-ci-build-token`, `slack-rotation-token`, `slack-workflow-token`).
+// A wider match masks more, so a choice here errs toward redaction.
 
 import { BOUND, type Entry, GITLAB_BODY } from "../parts.ts";
 

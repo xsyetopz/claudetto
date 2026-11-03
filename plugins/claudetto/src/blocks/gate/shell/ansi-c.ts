@@ -25,7 +25,7 @@ const OCTAL = /^[0-7]{1,3}/;
 const charOf = (code: number): string =>
 	code <= 0x10_ff_ff ? String.fromCodePoint(code) : "";
 
-/** An octal escape gives one byte; an escape the shells do not know keeps its backslash. */
+/** An octal escape gives one eight-bit character (Bash manual 5.3, ANSI-C Quoting). The manual lists no other escape, so the gate keeps the backslash and the letter of one: that is a choice of the author. */
 export const ansiEscape = (
 	text: string,
 	at: number,

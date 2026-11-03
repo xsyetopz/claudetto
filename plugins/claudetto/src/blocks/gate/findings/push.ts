@@ -1,4 +1,4 @@
-// A name is resolved by `git` from the config or read as a local path, so only an address can reach a new host.
+// `<repository>` is a URL or the name of a remote (`git-push(1)`); a name is resolved by `git` from the config or read as a local path (`git-clone(1)` URLS), so only an address can reach a new host.
 
 import type { Facts, Verdict } from "../gate.ts";
 import { pushTarget } from "../loss.ts";

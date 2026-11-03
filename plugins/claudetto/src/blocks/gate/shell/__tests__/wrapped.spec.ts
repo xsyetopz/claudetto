@@ -14,6 +14,9 @@ describe("Wrapped Push: each form of a force push asks for the same reason", () 
 		"sh -c 'git -C . push --force'",
 		'eval "git push --force"',
 		"git -c alias.yolo='push --force' yolo",
+		"chrt 10 git push --force",
+		"chrt --other git push --force",
+		"timeout 5 git push --force",
 	]) {
 		test(command, async () => {
 			const v = await bash(command);

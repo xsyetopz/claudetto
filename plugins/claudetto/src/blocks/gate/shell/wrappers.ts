@@ -29,6 +29,7 @@ const WRAPPERS: Record<string, string> = {
 };
 
 const ASSIGNMENT = /^\w+=/;
+const DIGITS = /^\d+$/;
 
 export const baseName = (word: string): string =>
 	word.replace(LEADING_PATH, "");
@@ -76,8 +77,12 @@ const dropOperands = (head: string, rest: string[]): void => {
 	if (head === "coproc" && rest[0] === "{") {
 		rest.shift();
 	}
-	// `timeout` takes the duration, and `chrt` the priority, as its first plain word.
-	if ((head === "timeout" || head === "chrt") && rest.length > 0) {
+	// `timeout [OPTION]... DURATION COMMAND` takes the duration as its first plain word (coreutils `timeout(1)`).
+	if (head === "timeout" && rest.length > 0) {
+		rest.shift();
+	}
+	// `chrt [options] [priority] command`: the priority is optional (util-linux `chrt(1)`), so only a number is dropped.
+	if (head === "chrt" && DIGITS.test(rest[0] ?? "")) {
 		rest.shift();
 	}
 	while (head === "env" && ASSIGNMENT.test(rest[0] ?? "")) {

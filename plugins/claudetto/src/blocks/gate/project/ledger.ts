@@ -35,7 +35,7 @@ export const hash64 = (text: string): string => {
 
 const TRAILING_SLASHES = /\/+$/;
 const DIRECTORY_PREFIX = /^.*\//;
-/** A key of the store is at most 256 characters. */
+/** A choice: a key name is cut to 100 characters, and the hash that follows keeps it unique. */
 const KEY_NAME_MAX = 100;
 const RENAME_OR_COPY = /[RC]/;
 

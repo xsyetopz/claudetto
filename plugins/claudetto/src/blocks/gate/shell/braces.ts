@@ -27,7 +27,7 @@ const plain = (text: string): Char[] =>
 
 const join = (w: Char[]): string => w.map((ch) => ch.c).join("");
 
-/** A number with a leading zero pads each number to the widest of the two ends. */
+/** A number with a leading zero pads each term to the same number of digits (Bash manual 5.3, Brace Expansion); the width of the wider end is the gate's reading of that. */
 const padOf = (numeric: boolean, a: string, b: string): number =>
 	numeric && [a, b].some((n) => LEADING_ZERO.test(n))
 		? Math.max(a.length, b.length)
