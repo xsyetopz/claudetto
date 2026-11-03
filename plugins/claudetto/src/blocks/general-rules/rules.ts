@@ -3,7 +3,7 @@
 
 import { SETTINGS_FILE } from "../../settings-file.ts";
 
-export const GENERAL_RULES = `Run each build, test, lint, type check, and package step through the repo's own script in \`package.json\` or the \`justfile\`.
+export const GENERAL_RULES = `Check each change with the narrowest check the repo's own scripts provide: one test file or one package for a code change. A comment, typo, or docs edit needs no test or build run. Run the full suite once, before the report, when the change alters behavior.
 Take each flag, option, and version from \`--help\` or the versioned docs read in this session.
 Read the source or run a probe before you state a fact about a tool.`;
 

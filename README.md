@@ -56,7 +56,7 @@ Setup also offers claudetto's code rules as the file `~/.claude/rules/claudetto-
 Its `paths:` of `**/*` keeps it out of a session until the session reads a file, so a session that only talks does not carry it.
 Claude Code does not load a plugin's own `rules/` folder, so the file takes effect only once setup writes it.
 
-Setup also offers three general rules as a section of `~/.claude/CLAUDE.md`, between `<!-- claudetto:start -->` and `<!-- claudetto:end -->`: run each build, test, lint, type check, and package step through the repo's own script, take each flag and version from `--help` or the versioned docs, and read the source or run a probe before stating a fact about a tool.
+Setup also offers three general rules as a section of `~/.claude/CLAUDE.md`, between `<!-- claudetto:start -->` and `<!-- claudetto:end -->`: check each change with the narrowest check the repo's own scripts provide, with no test or build run for a comment, typo, or docs edit and one full suite run before the report when behavior changes, take each flag and version from `--help` or the versioned docs, and read the source or run a probe before stating a fact about a tool.
 The dialog shows the whole text, and a yes writes it. When the file holds other text, a second question shows the section again and asks whether to append it, keeping the rest of the file, or to replace the file with the section alone.
 A later append replaces only that section. No session start adds the rules, so a session carries them only from the file.
 
