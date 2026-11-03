@@ -439,8 +439,10 @@ A free probe on `2.1.317` found that an agent `tools:` line keeps only tool name
 
 - [x] 40.1 Measure whether `Artemis` gets a working `Grep` and `Glob` in a session that withholds them from the main thread, with a free `just capture --dump` of an `Artemis` request. If it does, stop here: the change has no benefit.
   Done 2026-11-03 on `2.1.317`, free: `just capture --arm plugin --shipped --calls` with `ToolSearch`, a foreground `Agent` call to `claudetto:Artemis`, and `Grep`. The main thread's tools are `Bash`, `Edit`, `Read`, `ToolSearch`, and `Write`, and a `Grep` call there is refused with "No such tool available: Grep". The `Artemis` request on `claude-sonnet-5-5` carries `Read`, `Grep`, and `Glob`, and its `Grep` call ran and returned "No files found". So `Artemis` already has both tools, and 40.2 and 40.3 are not run.
-- [ ] 40.2 Write a failing lab test: a `PreToolUse` `Bash` call with `agent_type` `Artemis` passes for `rg` with read-only flags, `head`, `wc`, and `ls`, alone or in a pipe, and is denied for any other part.
-- [ ] 40.3 Add `Bash` to `Artemis.md` and the hook. Report the change in request characters, and run `just check` and `just inventory`.
+- [x] 40.2 Write a failing lab test: a `PreToolUse` `Bash` call with `agent_type` `Artemis` passes for `rg` with read-only flags, `head`, `wc`, and `ls`, alone or in a pipe, and is denied for any other part.
+  Dropped 2026-11-03 by the user: 40.1 found `Artemis` already holds a working `Grep` and `Glob`.
+- [x] 40.3 Add `Bash` to `Artemis.md` and the hook. Report the change in request characters, and run `just check` and `just inventory`.
+  Dropped 2026-11-03 by the user, with 40.2.
 
 ## Workflow follow-up
 
