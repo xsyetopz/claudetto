@@ -6,9 +6,10 @@ const SQL_DESTRUCTIVE = /\b(?:drop\s+(?:database|schema|table)|truncate)\b/i;
 const SQL_DELETE_FROM = /\bdelete\s+from\b/i;
 const SQL_WHERE = /\bwhere\b/i;
 const DB_FILE_EXTENSION = /\.(?:sqlite3?|db)$/;
-const DISK_ERASE_VERB = /^(?:erase|zero|secureErase|partition|reformat)/i;
+const DISK_ERASE_VERB =
+	/^(?:erase|zero|random|secureErase|partition|reformat)/i;
 const PROTECTION_DISABLE_FLAG = /^--(?:master|global)-disable$/;
-const NVRAM_FLAG = /^-[dcf]$/;
+const NVRAM_FLAG = /^-[dcfr]$/;
 const MKFS_NAME = /^(?:mkfs(?:\..+)?|newfs.*)$/;
 const FIND_EXPRESSION_START = /^[-(!]/;
 const SHORT_FLAG_CLUSTER = /^-[A-Za-z]+$/;
@@ -215,10 +216,7 @@ const stashesTree = (args: string[]): boolean => {
 				return !namesPath(args, 1, STASH_VALUE_OPTS);
 			}
 	}
-	return (
-		(verb === "apply" || verb === "pop") &&
-		!args.some((a) => a === "--index" || a === "-i")
-	);
+	return (verb === "apply" || verb === "pop") && !args.includes("--index");
 };
 
 const resetsIndex = (args: string[]): boolean =>

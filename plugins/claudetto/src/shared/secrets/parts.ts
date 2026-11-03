@@ -10,9 +10,14 @@ export interface Entry {
 	readonly run?: string;
 }
 
+/**
+ * The code points that render as nothing: each is in `\p{Default_Ignorable_Code_Point}` (checked with `bun`), except `\u2800` (Braille blank) and `\ufff9-\ufffb` (category `Cf`), which are a choice of the author.
+ * `\uDB40-\uDB43` and `\uDC00-\uDFFF` are the UTF-16 halves of U+E0000-U+E0FFF, also default-ignorable.
+ */
 const HIDDEN =
 	"\\u00ad\\u034f\\u061c\\u115f\\u1160\\u17b4\\u17b5\\u180b-\\u180f\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u206f\\u2800\\u3164\\ufe00-\\ufe0f\\uffa0\\ufff0-\\ufffb\\uDC00-\\uDFFF\\uDB40-\\uDB43";
 
+/** Each is in the Unicode category `Cf` (checked with `bun`). */
 const FORMAT = "\\u0600-\\u0605\\u06dd\\u070f\\u0890\\u0891\\u08e2";
 
 const GAP = `[${HIDDEN}${FORMAT}\\ufeff]*`;

@@ -40,6 +40,7 @@ const compile = (entry: Entry): Rule => {
 	};
 };
 
+// The `BEGIN` and `END` lines follow the `private-key` rule of Gitleaks v8.30.1; `KEY_GAP` is the `{64,}` body length of that rule.
 const BEGIN_KEY = /-----BEGIN[ A-Z0-9_-]{0,100}?PRIVATE KEY(?: BLOCK)?-----/gi;
 const END_KEY = /-----END[ A-Z0-9_-]{0,100}?PRIVATE KEY(?: BLOCK)?-----/gi;
 const KEY_GAP = 64;
@@ -98,7 +99,7 @@ export const redactTable = (text: string): string => {
 	return out;
 };
 
-/** Gitleaks runs last over masked text and only adds, since `[REDACTED]` matches none of its rules. */
+/** Gitleaks runs last, over the text that the table has masked. */
 export const redact = (text: string): string =>
 	gitleaksRedact(redactTable(text));
 

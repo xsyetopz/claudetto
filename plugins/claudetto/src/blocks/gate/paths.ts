@@ -8,10 +8,13 @@ export interface Places {
 	temps: readonly string[];
 }
 
+// A choice of the author: the macOS folders that the gate takes as system folders; `SYSTEM_OPEN` lists a folder inside them that stays open.
 export const SYSTEM_DIRS = ["/System", "/Library", "/usr"];
 export const SYSTEM_OPEN = ["/usr/local"];
+// A choice of the author: the names that the gate takes as an env file; the name that ends in `example`, `sample`, or `template` after `.env` is left out.
 export const ENV_FILE =
 	/^(?:\.env(?:[._-](?!(?:example|sample|template)$)[\w.-]+)?|[\w.-]*\.env|\.envrc)$/;
+// A choice of the author: the paths under the home folder that the gate takes as secrets.
 export const HOME_SECRETS = [
 	".ssh/",
 	".gnupg/",
@@ -37,6 +40,7 @@ const homeOf = (name: string, at: Places): string => {
 		case baseName(at.home):
 			return at.home;
 		case "root":
+			// The home folder of `root` on macOS (`dscl . -read /Users/root NFSHomeDirectory` gives `/var/root`).
 			return "/var/root";
 	}
 	const parent = at.home.slice(0, at.home.lastIndexOf("/")) || "/home";
@@ -98,6 +102,7 @@ const homeRel = (path: string, at: Places): string | undefined => {
 	return m === null ? undefined : (m[1] ?? "");
 };
 
+// A choice of the author: the folder names of build output and caches that a tool rebuilds, so the gate does not take them as files of the user.
 const REBUILT = new Set([
 	"node_modules",
 	"dist",

@@ -25,7 +25,7 @@ export const escapeAt = (f: Frame, text: string, i: number): number => {
 	return i + 1;
 };
 
-// Only the substitutions of an arithmetic text are commands.
+// Only the substitutions of an arithmetic text are commands: its tokens undergo command substitution (Bash manual 5.3, Arithmetic Expansion).
 export const arithAt = (x: Ctx, f: Frame, i: number, c: string): number => {
 	if (c === "$" && x.text[i + 1] === "(") {
 		return openDollar(x, f, i);
@@ -156,7 +156,7 @@ const separatorAt = (x: Ctx, f: Frame, i: number, c: string): void => {
 };
 
 const wordCharAt = (f: Frame, text: string, i: number, c: string): void => {
-	// An unquoted brace or comma can expand, except the brace of `${`.
+	// An unquoted brace or comma can expand, except the brace of `${` (Bash manual 5.3, Brace Expansion).
 	if (c === "$") {
 		f.dollars.push((f.word ?? "").length);
 	}

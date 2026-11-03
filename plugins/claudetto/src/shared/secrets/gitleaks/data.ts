@@ -1,4 +1,4 @@
-// `paths` and `path` are dropped: a transcript is not a file, so neither can match.
+// `paths` of an allowlist and `path` of a rule are dropped: a transcript has no file path. In Gitleaks v8.30.1 (`detect/detect.go`) a rule with `path` skips a fragment whose path does not match, and an allowlist is not read for a fragment with no path and no commit, so `gitleaksDropped` lists the rule that needs a path.
 
 export interface Pattern {
 	readonly source: string;

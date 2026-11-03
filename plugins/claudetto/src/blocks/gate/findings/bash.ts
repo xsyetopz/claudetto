@@ -28,6 +28,7 @@ const LITERAL_DOC =
 	/\$\(\s*cat\s+<<-?\s*(['"])(\w+)\1[ \t]*\n(?:(?!\t*\2\n)[^\n]*\n)*\t*\2\n\s*\)/g;
 const SUBSTITUTION_START = /\$\(|`/;
 const DYNAMIC_CHAR = /[$`]/;
+const STACK_INDEX = /^[+-]\d+$/;
 
 const nextDir = (
 	rest: string[],
@@ -35,10 +36,22 @@ const nextDir = (
 	f: Facts,
 ): string | null | undefined => {
 	const name = nameOf(rest);
-	if (name !== "cd" && name !== "pushd") {
+	if (name !== "cd" && name !== "pushd" && name !== "popd") {
 		return undefined;
 	}
+	// `popd` moves to the next entry of a stack the gate does not track (Bash manual 5.3, `popd`).
+	if (name === "popd") {
+		return null;
+	}
 	const target = operands(rest.slice(1))[0];
+	// `pushd` with no `DIR`, with `+N` or `-N`, or with `-n` rotates or leaves the stack, so the new directory is unknown (Bash manual 5.3, `pushd`).
+	if (
+		name === "pushd" &&
+		(target === undefined || STACK_INDEX.test(target) || rest.includes("-n"))
+	) {
+		return null;
+	}
+	// `cd` with no `DIR` goes to `HOME` (Bash manual 5.3, `cd`).
 	if (target === undefined) {
 		return f.home;
 	}

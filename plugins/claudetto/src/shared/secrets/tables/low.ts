@@ -1,4 +1,4 @@
-// Run before the `high` rows: a masked head leaves a tail that three of them clean up.
+// Run before the `high` rows: a masked head leaves a tail that the rows with `[REDACTED]` in their source clean up.
 
 import {
 	ASSIGN,
@@ -12,6 +12,7 @@ import {
 	TICK,
 } from "../parts.ts";
 
+// Each row is a loose pattern chosen by the author, not a rule of a vendor or of Gitleaks, so a row may mask more than a secret.
 export const LOW_ENTRIES: readonly Entry[] = [
 	{
 		id: "url-userinfo",

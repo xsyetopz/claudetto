@@ -6,9 +6,13 @@ export interface GitCall {
 	args: string[];
 }
 
-/** The `-c` keys that never run a program; a `pager.*` key is one only with the value `false`. */
+/**
+ * The `-c` keys that run no program, from the `git-config(1)` entries of Git 2.54.0; a `pager.*` key is one only with the value `false`.
+ * `log.showSignature` is left out because it runs `gpg`, and a `%G` placeholder of `format.pretty` does too (`git-log(1)`).
+ */
 const SAFE_KEY =
-	/^(?:color\..+|core\.quotepath|user\.(?:name|email)|advice\..+|init\.defaultbranch|log\..+|format\.pretty|diff\.noprefix)$/;
+	/^(?:color\..+|core\.quotepath|user\.(?:name|email)|advice\..+|init\.defaultbranch|log\.(?:abbrevcommit|date|decorate|initialdecorationset|excludedecoration|diffmerges|follow|graphcolors|showroot|mailmap)|format\.pretty|diff\.noprefix)$/;
+const SIGNATURE_PLACEHOLDER = /%G/;
 
 const PROGRAM_VARS = new Set(
 	"GIT_PAGER GIT_EDITOR GIT_SSH GIT_SSH_COMMAND GIT_EXTERNAL_DIFF GIT_ASKPASS GIT_SEQUENCE_EDITOR GIT_PROXY_COMMAND SSH_ASKPASS EDITOR VISUAL PAGER".split(
@@ -33,7 +37,10 @@ export const isGitEnv = (name: string): boolean =>
 const configRuns = (entry: string): boolean => {
 	const at = entry.indexOf("=");
 	const key = (at < 0 ? entry : entry.slice(0, at)).toLowerCase();
-	if (key.startsWith("alias.") || SAFE_KEY.test(key)) {
+	if (
+		key.startsWith("alias.") ||
+		(SAFE_KEY.test(key) && !SIGNATURE_PLACEHOLDER.test(entry))
+	) {
 		return false;
 	}
 	return !(

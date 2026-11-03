@@ -9,6 +9,8 @@ const DATA_OPTS = wordSet(
 );
 const FILE_OPTS = wordSet("-T --upload-file");
 const FILE_VALUE = /^(?:[^=@<]*=)?[@<](.+)$/;
+/** `man curl` for `--data-urlencode`: `name@filename` reads the file as `@filename` does. */
+const URLENCODE_NAMED_FILE = /^[^=@<]+@(.+)$/;
 const JOINED = /^(?:-[dF]|--(?:data[\w-]*|form|json)=)(?:[^=@<]*=)?[@<](.+)$/;
 const URL_HOST = /^[a-z][a-z0-9+.-]*:\/\/(?:[^/@]*@)?(\[[^\]]+\]|[^/:?#]+)/i;
 const LOCAL_HOST = /^(?:localhost|127(?:\.\d+){3}|\[::1\]|[^.]+\.local)$/i;
@@ -22,7 +24,11 @@ const sentFiles = (rest: string[]): string[] =>
 		if (FILE_OPTS.has(w)) {
 			return [rest[i + 1] ?? ""];
 		}
-		const value = DATA_OPTS.has(w) ? FILE_VALUE.exec(rest[i + 1] ?? "") : null;
+		const next = rest[i + 1] ?? "";
+		const value = DATA_OPTS.has(w)
+			? (FILE_VALUE.exec(next) ??
+				(w === "--data-urlencode" ? URLENCODE_NAMED_FILE.exec(next) : null))
+			: null;
 		return value?.[1] === undefined ? [] : [value[1]];
 	});
 

@@ -13,7 +13,7 @@ export interface Filled {
 	unknown: boolean;
 }
 
-/** A word cannot hold a NUL, so the stand-in is never a word character. */
+/** A choice of the author: the marker of a literal character is a NUL, which the gate takes not to occur in a command. */
 const LIT = "\0";
 
 export const mask = (
