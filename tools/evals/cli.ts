@@ -27,6 +27,7 @@ import {
 } from "./plan.ts";
 import { reportLines } from "./report.ts";
 import { PLUGIN_DIR } from "./session.ts";
+import { styleMain } from "./style/main.ts";
 
 export const USAGE =
 	"usage: bun tools/evals/cli.ts [--run] [--case KEY] [--arm ARM] [--runs N] [--model NAME] [--budget USD]";
@@ -107,6 +108,9 @@ export const main = async (
 ): Promise<number> => {
 	if (args[0] === "--classifier") {
 		return classifierMain(args.slice(1), io);
+	}
+	if (args[0] === "--style") {
+		return styleMain(args.slice(1), io);
 	}
 	const options = parseArgs(args);
 	if ("error" in options) {

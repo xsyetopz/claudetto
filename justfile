@@ -80,7 +80,7 @@ window-report:
 capture *args:
     bun tools/capture/run.ts "$@"
 
-# Plan the eval sessions; --run makes paid calls (--case, --arm, --runs, --model, --budget; --classifier, --upstream URL)
+# Plan the eval sessions; --run makes paid calls (--case, --arm, --runs, --model, --budget; --classifier, --upstream URL; --style for the `Concise` A/B)
 eval *args:
     bun tools/evals/cli.ts "$@"
 
