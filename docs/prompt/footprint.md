@@ -6,7 +6,7 @@ The totals: `just capture --arm plugin --shipped` reads 25,279 and `just capture
 
 ## Main Prompt
 
-`plugins/claudetto/agents/main.md` is 5,292 characters on disk by `wc -m`. In the shipped arm the third `system` block is the body without its front matter, 5,216 characters, and `system` reads 5,352 in all. The default body it replaces is 5,799 characters in the `plain` arm (`docs/default-body-gap.md` lists its items).
+In the shipped arm the third `system` block is the root prompt, 5,216 characters, and `system` reads 5,352 in all. The default body it replaces is 5,799 characters in the `plain` arm (`docs/default-body-gap.md` lists its items).
 
 The ten sections of `main.md`, in characters of text between the tags (`awk`):
 

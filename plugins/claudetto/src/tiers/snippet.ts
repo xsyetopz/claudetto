@@ -3,7 +3,7 @@ import { autoModeFaults } from "../automode/faults.ts";
 import { builtinSnippet } from "../builtins.ts";
 import { denyFaults, denyList } from "../deny.ts";
 import { AUTOCOMPACT_PCT_ENV, compactionSnippet, type Value } from "../keys.ts";
-import { MAIN_AGENT, STYLE } from "../prompts.ts";
+import { STYLE } from "../prompts.ts";
 import { sandboxFaults } from "../sandbox/faults.ts";
 import { sandboxSnippet } from "../sandbox/sandbox.ts";
 import { pctFor } from "../threshold.ts";
@@ -119,7 +119,6 @@ export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 	...disablesSnippet(),
 	...compactionSnippet().settings,
 	permissions: { ...allowBlock(), ...denyBlock() },
-	agent: MAIN_AGENT,
 	outputStyle: STYLE,
 	...autoModeBlock(),
 	...sandboxBlock(platform),

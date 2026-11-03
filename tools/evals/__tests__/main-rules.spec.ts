@@ -29,7 +29,9 @@ describe("the check reports a case that holds nothing", () => {
 
 		const faults = await caseFaults(cases);
 
-		expect(faults).toEqual(["R1: agents/main.md has no <nosuch> section"]);
+		expect(faults).toEqual([
+			"R1: src/blocks/root-prompt/body.ts has no <nosuch> section",
+		]);
 	});
 
 	test("a case with an empty field is named", async () => {

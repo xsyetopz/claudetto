@@ -6,7 +6,7 @@ claudetto writes text on several surfaces. They differ in when the harness loads
 
 Put a rule on the cheapest surface that the harness loads whenever the rule applies, and never on a surface the user owns.
 
-- The main thread's agent body replaces the default body of `system` (`docs/prompt/overrides.md`). It is in every request of every session, so a rule there is paid even in a session that never needs it. In the shipped arm the body is 5,216 of the 5,352 characters of `system`, and `plugins/claudetto/agents/main.md` is 5,292 characters by `wc -m`.
+- The root prompt replaces the default body of `system` (`docs/prompt/overrides.md`). It is in every request of every session, so a rule there is paid even in a session that never needs it. In the shipped arm the body is 5,216 of the 5,352 characters of `system`.
 - An output style adds text to the first system message in `messages`. `plugins/claudetto/output-styles/Concise.md` is 2,147 characters by `wc -m` and adds 2,157 to the shipped request.
 - An agent body is read only when that agent runs. `agents/Artemis.md` is 1,776 characters, `Athena.md` 2,899, `Hephaestus.md` 3,191, and `Hermes.md` 1,577.
 - A rule file with `paths` frontmatter is meant to load when a matching file is read. `plugins/claudetto/rules/claudetto-code.md` has that key. The load behavior is not measured here, because it needs a session that reads a file.
@@ -15,7 +15,7 @@ Put a rule on the cheapest surface that the harness loads whenever the rule appl
 
 | Surface | When it is in the request | What belongs there |
 | --- | --- | --- |
-| `agents/main.md` under the `agent` setting | Every request, as the body of `system` | A rule that applies to every turn whatever the session touches |
+| The root prompt, from a `prompt.compose` hook | Every request, as the body of `system` | A rule that applies to every turn whatever the session touches |
 | `output-styles/Concise.md` under the `outputStyle` setting | Every request, in `messages` | The shape of a reply, and nothing about how to do the work |
 | An agent body, such as `agents/Athena.md` | Only when that agent runs | How one kind of delegated work is done |
 | An agent description | Every request, in the agent listing | Only what the main thread needs to choose the agent, its refusals included |
@@ -31,4 +31,4 @@ The plugin manifest has no key for an instruction file or a rule. `strings` of t
 
 ## Why Not the System Prompt
 
-A rule that applies only while one kind of work is done costs every request if it sits in `agents/main.md`. Put it in an agent body, a skill, or a rule file with `paths`, and keep one line of principle in the body.
+A rule that applies only while one kind of work is done costs every request if it sits in the root prompt. Put it in an agent body, a skill, or a rule file with `paths`, and keep one line of principle in the body.

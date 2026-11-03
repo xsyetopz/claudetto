@@ -22,7 +22,7 @@ export const SHIPPED_TOTAL = 25_279;
  * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
  * The pairs read: the git switches with `tool texts` 674, the cron and fork switches with `tool texts` 327 and with `built-in surface` 350,
  * the Explore and Plan denies and the `Agent` denies with `agent listing` 182 each, the git switches with `handoff context` 27,
- * `main agent body` with `output style` -40, and 48 among the plugin pieces, which leaves about 47 of higher order.
+ * `root prompt` with `output style` -40, and 48 among the plugin pieces, which leaves about 47 of higher order.
  */
 export const UNEXPLAINED_RESIDUAL = 1805;
 
@@ -53,8 +53,8 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	},
 	{ name: "idleCompaction off", chars: 0 },
 	// The default body it replaces is the one the shipped settings already shortened.
-	{ name: "main agent body", chars: -1790 },
-	// Takes the memory section out of the default body, so it reads only with `agents/main.md` moved aside.
+	{ name: "root prompt", chars: -1790 },
+	// Takes the memory section out of the default body, so it reads only with the root prompt left out.
 	{ name: "auto memory off", chars: 2138 },
 	// The four agents are delegation targets, so the harness lists them in the first message.
 	{ name: "agent listing", chars: -718 },
@@ -80,7 +80,7 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "built-in agent denies", chars: 570 },
 	// `CLAUDE_CODE_DISABLE_CRON` 34 and `CLAUDE_CODE_FORK_SUBAGENT` 69.
 	{ name: "cron and fork switches", chars: 103 },
-	// The `handoff` block nulls the section of the default body, so it reads only with `agents/main.md` moved aside.
+	// The `handoff` block nulls the section of the default body, so it reads only with the root prompt left out.
 	{ name: "context management section", chars: 285 },
 	// Not a reading: the difference between the fall of the shipped arm and the rows above.
 	{ name: "unexplained residual", chars: UNEXPLAINED_RESIDUAL },

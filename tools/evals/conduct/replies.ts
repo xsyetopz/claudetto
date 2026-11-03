@@ -1,13 +1,13 @@
 // How the session reads a message, bounds its work, and words its reply. Each failing text is a recorded reply from `ISSUES.md`.
 
-import { MAIN_AGENT_FILE } from "../../../plugins/claudetto/src/prompts.ts";
+import { ROOT_PROMPT_FILE } from "../../../plugins/claudetto/src/prompts.ts";
 import { CODE_RULES_FILE, STYLE_FILE } from "./actions.ts";
 import type { ConductCase } from "./inventory.ts";
 
 const READING_CASES: readonly ConductCase[] = [
 	{
 		requirement: "A Message Is Classified before It Is Acted On",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-11", "I07"],
 		section: "understanding_the_request",
 		rule: "A rhetorical question is context, so the reply answers it and starts no work.",
@@ -25,7 +25,7 @@ const READING_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "A Message Is Classified before It Is Acted On",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-11", "W5-7"],
 		section: "understanding_the_request",
 		rule: "Pasted reference material is context, not a task.",
@@ -44,7 +44,7 @@ const READING_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "A Free Check Runs before a Claim Is Reported",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-10", "I04"],
 		section: "claims_and_evidence",
 		rule: "A free check that can settle a claim runs before the claim is reported.",
@@ -64,7 +64,7 @@ const READING_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "Truly Stuck Means Only the User Can Act",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["I13"],
 		section: "finding_out",
 		rule: "A step the user authorized with a token in `.env` is the session's own step.",
@@ -86,7 +86,7 @@ const READING_CASES: readonly ConductCase[] = [
 const SCOPE_CASES: readonly ConductCase[] = [
 	{
 		requirement: "Work Stays inside What the Task Names",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-11", "I07"],
 		section: "understanding_the_request",
 		rule: "A habit of the repository, such as an `off` switch beside each paid option, is not part of the task.",
@@ -105,7 +105,7 @@ const SCOPE_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "Work Stays inside What the Task Names",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-6", "I07"],
 		section: "understanding_the_request",
 		rule: "The last task the user set ends the session's work.",
@@ -123,7 +123,7 @@ const SCOPE_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "Work Stays inside What the Task Names",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-11"],
 		section: "fixing_defects",
 		rule: "A defect in a file the task does not name is reported with its place, not edited.",
@@ -209,7 +209,7 @@ const WORDING_CASES: readonly ConductCase[] = [
 	},
 	{
 		requirement: "An Own Defect Is Reported as a Bug Report",
-		file: MAIN_AGENT_FILE,
+		file: ROOT_PROMPT_FILE,
 		codes: ["W5-4", "W5-16"],
 		section: "fixing_defects",
 		rule: "A defect the session caused is reported cause first, with no apology and no retrospective.",

@@ -11,7 +11,7 @@ import { isSession, ok, stubRunner } from "./stub.ts";
 
 const outcome = (
 	verdict: "pass" | "fail" | "error",
-	arm: "main.md" | "the default body" = "main.md",
+	arm: "root prompt" | "the default body" = "root prompt",
 ): Outcome => ({
 	session: { key: "K", arm, run: 1 },
 	score: { verdict, detail: "" },
@@ -48,7 +48,7 @@ describe("the arguments", () => {
 			"--case",
 			"I13",
 			"--arm",
-			"main.md",
+			"root prompt",
 			"--runs",
 			"4",
 			"--model",
@@ -59,7 +59,7 @@ describe("the arguments", () => {
 
 		expect(options).toEqual({
 			run: true,
-			request: { only: "I13", arm: "main.md", runs: 4 },
+			request: { only: "I13", arm: "root prompt", runs: 4 },
 			model: "sonnet",
 			maxBudgetUsd: 1.5,
 		});
@@ -194,7 +194,7 @@ describe("the report", () => {
 		]);
 
 		expect(rows).toEqual([
-			{ key: "K", arm: "main.md", pass: 1, fail: 1, error: 1 },
+			{ key: "K", arm: "root prompt", pass: 1, fail: 1, error: 1 },
 			{ key: "K", arm: "the default body", pass: 1, fail: 0, error: 0 },
 		]);
 	});

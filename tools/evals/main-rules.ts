@@ -1,7 +1,7 @@
 // A case is data, not a run: a run calls a model.
 
 import { file as bunFile } from "bun";
-import { MAIN_AGENT_FILE } from "../../plugins/claudetto/src/prompts.ts";
+import { ROOT_PROMPT_FILE } from "../../plugins/claudetto/src/prompts.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../limits.ts";
 
 export interface TreeGrader {
@@ -189,7 +189,7 @@ export const RULE_CASES: readonly RuleCase[] = [
 	},
 ];
 
-export const RULE_CASE_ARMS = ["main.md", "the default body"] as const;
+export const RULE_CASE_ARMS = ["root prompt", "the default body"] as const;
 
 export const plannedRuns = (cases: readonly RuleCase[] = RULE_CASES): number =>
 	cases.length * RULE_CASE_ARMS.length * EVAL_MIN_RUNS_PER_ARM;
@@ -246,7 +246,7 @@ const graderFaults = (row: RuleCase, name: string): readonly string[] => {
 /** A case with an empty field scores nothing; a section the file dropped names a missing rule. */
 export const caseFaults = async (
 	cases: readonly RuleCase[] = RULE_CASES,
-	path = MAIN_AGENT_FILE,
+	path = ROOT_PROMPT_FILE,
 	root = "plugins/claudetto",
 ): Promise<readonly string[]> => {
 	const sections = sectionsOf(await bunFile(`${root}/${path}`).text());

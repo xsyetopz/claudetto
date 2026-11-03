@@ -14,11 +14,16 @@ import { differencesOf, setupWrite } from "./setup-command/diff.ts";
 import {
 	GENERAL_RULES_ID,
 	generalDifference,
-	generalText,
 } from "./setup-command/general-rules.ts";
 import { NO, type ToolsIo, YES } from "./setup-command/optional/io.ts";
 import { toolsPart } from "./setup-command/optional/part.ts";
 import { askKept } from "./setup-command/questions.ts";
+import {
+	generalReport,
+	type RulesFiles,
+	rulesReport,
+} from "./setup-command/reports.ts";
+import { withoutRetiredAgent } from "./setup-command/retired.ts";
 import {
 	CODE_RULES,
 	rulesDifference,
@@ -96,12 +101,6 @@ const textOf = async (
 	}
 };
 
-interface RulesFiles {
-	readonly path: string;
-	readonly held: string | undefined;
-	readonly shipped: string | undefined;
-}
-
 const rulesFiles = async (
 	$: EngineInterface,
 	settingsFile: string,
@@ -112,38 +111,6 @@ const rulesFiles = async (
 		held: await textOf($, path),
 		shipped: await textOf($, `${$.plugin.root}/${CODE_RULES}`),
 	};
-};
-
-const rulesReport = async (
-	$: EngineInterface,
-	{ path, held, shipped }: RulesFiles,
-): Promise<string> => {
-	if (shipped === undefined || held === shipped) {
-		return `${path} already holds the shipped code rules. It was not written.`;
-	}
-	try {
-		await $.fs.write(path, shipped);
-		return `Wrote ${path}. A new session loads it after its first file read.`;
-	} catch (error) {
-		return `Could not write ${path} (${String(error)}).`;
-	}
-};
-
-const generalReport = async (
-	$: EngineInterface,
-	path: string,
-	held: string | undefined,
-): Promise<string> => {
-	const text = await generalText((q, options) => $.ui.ask(q, options), held);
-	if (text === undefined) {
-		return `Nothing was written to ${path}: the question was dismissed.`;
-	}
-	try {
-		await $.fs.write(path, text);
-		return `Wrote ${path}.`;
-	} catch (error) {
-		return `Could not write ${path} (${String(error)}).`;
-	}
 };
 
 const GIT_MS = 5000;
@@ -204,12 +171,14 @@ const toolsIo = ($: EngineInterface): ToolsIo => ({
 
 /** The merge stays in code, so the model never edits the settings file by hand. */
 const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
-	const { file, held } = await userSettings($);
-	if (held === undefined) {
+	const { file, held: read } = await userSettings($);
+	if (read === undefined) {
 		return {
 			text: `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP_COMMAND} again.`,
 		};
 	}
+	const held = withoutRetiredAgent(read);
+	const retired = held !== read;
 	const snippet = tierSnippet(SNIPPET_ROW, platformNamed(await unameOf($)));
 	const rules = await rulesFiles($, file);
 	const userMd = userClaudeMdFile(file);
@@ -219,13 +188,16 @@ const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
 		generalDifference(userMdHeld),
 	].filter((offer) => offer !== undefined);
 	const differences = [...differencesOf(held, snippet), ...offers];
-	if (differences.length === 0) {
+	if (differences.length === 0 && !retired) {
 		return { text: nothingToAsk(file) };
 	}
-	const ids = await askKept(
-		(question, options) => $.ui.ask(question, options),
-		differences,
-	);
+	const ids =
+		differences.length === 0
+			? []
+			: await askKept(
+					(question, options) => $.ui.ask(question, options),
+					differences,
+				);
 	if (ids === undefined) {
 		return {
 			text: `Nothing was written: a question was dismissed, or this session has no one to answer. ${file} was not changed.`,
@@ -237,17 +209,29 @@ const settingsPart = async ($: EngineInterface): Promise<{ text: string }> => {
 		ids.filter((id) => id !== CODE_RULES && id !== GENERAL_RULES_ID),
 	);
 	const failed =
-		write.applied.written.length === 0
+		write.applied.written.length === 0 && !retired
 			? undefined
 			: await writeFailure($, file, write.applied.settings);
 	const rulesLine = [
-		...(ids.includes(CODE_RULES) ? [await rulesReport($, rules)] : []),
+		...(ids.includes(CODE_RULES)
+			? [await rulesReport((path, text) => $.fs.write(path, text), rules)]
+			: []),
 		...(ids.includes(GENERAL_RULES_ID)
-			? [await generalReport($, userMd, userMdHeld)]
+			? [
+					await generalReport(
+						(path, text) => $.fs.write(path, text),
+						(q, options) => $.ui.ask(q, options),
+						userMd,
+						userMdHeld,
+					),
+				]
 			: []),
 	];
 	return {
-		text: [failed?.text ?? setupReport(file, write), ...rulesLine].join("\n"),
+		text: [
+			failed?.text ?? setupReport(file, write, retired),
+			...rulesLine,
+		].join("\n"),
 	};
 };
 

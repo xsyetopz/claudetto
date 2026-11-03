@@ -112,7 +112,6 @@ Each piece removed from the shipped settings alone, read with `just capture --ar
 | --- | --- | --- |
 | nothing | 25,279 | |
 | `outputStyle` | 23,122 | the style adds 2,157 |
-| `agent` | 23,489 | `agents/main.md` adds 1,790 over the default body it replaces |
 | `sandbox` | 18,059 | the sandbox settings add 7,220 |
 | `permissions.deny` | 32,938 | the deny list saves 7,659 |
 | `disableBundledSkills` | 30,601 | saves 5,322 |
@@ -131,7 +130,7 @@ Each piece removed from the shipped settings alone, read with `just capture --ar
 | `docs skill` | -71 |
 | `compaction pair` | 0 |
 | `idleCompaction off` | 0 |
-| `main agent body` | -1,790 |
+| `root prompt` | -1,790 |
 | `auto memory off` | 2,138 |
 | `agent listing` | -718 |
 | `handoff context` | -940 |
@@ -149,7 +148,7 @@ Each piece removed from the shipped settings alone, read with `just capture --ar
 | `context management section` | 285 |
 | `unexplained residual` | 1,805 |
 
-Two rows depend on another: `built-in surface` needs the deny list, since with `Workflow` offered `disableBundledSkills` raises the request, and `auto memory off` and `context management section` read only with `agents/main.md` moved aside, because the body replaces the section they remove.
+Two rows depend on another: `built-in surface` needs the deny list, since with `Workflow` offered `disableBundledSkills` raises the request, and `auto memory off` and `context management section` read only with the root prompt left out, because the body replaces the section they remove.
 
 `risingCuts` of `cuts.ts` is empty: a row whose bill rose is reverted, and a row with a `cost` records a replay of the bill.
 

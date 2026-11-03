@@ -150,7 +150,7 @@ describe("executing a session", () => {
 
 		const outcome = await executeSession(deps(root, run), {
 			key: "K",
-			arm: "main.md",
+			arm: "root prompt",
 			run: 1,
 		});
 
@@ -169,7 +169,11 @@ describe("executing a session", () => {
 			return argv[0] === "claude" ? ok({ stdout: "line one\n" }) : ok();
 		};
 
-		await executeSession(deps(root, run), { key: "K", arm: "main.md", run: 1 });
+		await executeSession(deps(root, run), {
+			key: "K",
+			arm: "root prompt",
+			run: 1,
+		});
 
 		expect(seen).toBe("line one\n");
 	});
@@ -182,7 +186,7 @@ describe("executing a session", () => {
 
 		const outcome = await executeSession(deps(root, run), {
 			key: "K",
-			arm: "main.md",
+			arm: "root prompt",
 			run: 1,
 		});
 
@@ -196,7 +200,7 @@ describe("executing a session", () => {
 
 		const outcome = await executeSession(deps(root, run), {
 			key: "MISSING",
-			arm: "main.md",
+			arm: "root prompt",
 			run: 1,
 		});
 

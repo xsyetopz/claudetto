@@ -4,7 +4,6 @@ import type {
 	CommandResult,
 	CommandRunner,
 } from "../../claudekit/session/command.ts";
-import { MAIN_AGENT } from "../../plugins/claudetto/src/prompts.ts";
 import { scoreTree } from "../../tools/evals/score.ts";
 import { runSession, sessionArgv } from "../../tools/evals/session.ts";
 
@@ -19,47 +18,47 @@ const result = (patch: Partial<CommandResult> = {}): CommandResult => ({
 });
 
 describe("the argv of a session", () => {
-	test("the shipped arm selects the main agent with `--agent`", () => {
-		const argv = sessionArgv("main.md", OPTIONS);
+	test("the root prompt arm loads the plugin folder, whose hook is the root prompt", () => {
+		const argv = sessionArgv("root prompt", OPTIONS);
 
-		const at = argv.indexOf("--agent");
-		expect(argv[at + 1]).toBe(MAIN_AGENT);
-	});
-
-	test("the default arm carries no `--agent`", () => {
-		const argv = sessionArgv("the default body", OPTIONS);
-
+		expect(argv[argv.indexOf("--plugin-dir") + 1]).toBe("/p/claudetto");
 		expect(argv).not.toContain("--agent");
 	});
 
-	test("the two arms differ in the agent selection and in nothing else", () => {
-		const shipped = sessionArgv("main.md", OPTIONS);
+	test("the default arm loads no plugin and selects no agent", () => {
+		const argv = sessionArgv("the default body", OPTIONS);
+
+		expect(argv).not.toContain("--plugin-dir");
+		expect(argv).not.toContain("--agent");
+	});
+
+	test("the two arms differ in the plugin folder and in nothing else", () => {
+		const shipped = sessionArgv("root prompt", OPTIONS);
 		const stock = sessionArgv("the default body", OPTIONS);
 
 		const without = shipped.filter(
-			(word) => word !== "--agent" && word !== MAIN_AGENT,
+			(word) => word !== "--plugin-dir" && word !== OPTIONS.pluginDir,
 		);
 		expect(without).toEqual([...stock]);
 	});
 
-	test("both arms load the plugin folder and skip the user settings", () => {
-		for (const arm of ["main.md", "the default body"] as const) {
+	test("both arms skip the user settings", () => {
+		for (const arm of ["root prompt", "the default body"] as const) {
 			const argv = sessionArgv(arm, OPTIONS);
 
-			expect(argv[argv.indexOf("--plugin-dir") + 1]).toBe("/p/claudetto");
 			expect(argv[argv.indexOf("--setting-sources") + 1]).toBe("project,local");
 		}
 	});
 
 	test("puts the prompt straight after `-p`", () => {
-		const argv = sessionArgv("main.md", OPTIONS);
+		const argv = sessionArgv("root prompt", OPTIONS);
 
 		expect(argv.slice(0, 3)).toEqual(["claude", "-p", "do the thing"]);
 	});
 
 	test("adds the model and the budget only when they are given", () => {
-		const bare = sessionArgv("main.md", OPTIONS);
-		const full = sessionArgv("main.md", {
+		const bare = sessionArgv("root prompt", OPTIONS);
+		const full = sessionArgv("root prompt", {
 			...OPTIONS,
 			model: "sonnet",
 			maxBudgetUsd: 2,
@@ -80,10 +79,10 @@ describe("running a session", () => {
 			return Promise.resolve(result({ stdout: "out" }));
 		};
 
-		const got = await runSession(run, "main.md", { ...OPTIONS, cwd: "/w" });
+		const got = await runSession(run, "root prompt", { ...OPTIONS, cwd: "/w" });
 
 		expect(calls).toHaveLength(1);
-		expect(calls[0]?.argv).toEqual([...sessionArgv("main.md", OPTIONS)]);
+		expect(calls[0]?.argv).toEqual([...sessionArgv("root prompt", OPTIONS)]);
 		expect(calls[0]?.options.cwd).toBe("/w");
 		expect(got.stdout).toBe("out");
 	});
