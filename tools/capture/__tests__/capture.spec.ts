@@ -5,7 +5,7 @@ import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { sessionArgv } from "../arm.ts";
 import { claudeMdOf } from "../memory.ts";
-import { callsOf, claudeMdChars, extraArgs } from "../run.ts";
+import { callsOf, claudeMdChars, extraArgs, userFilesOf } from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
 
@@ -163,6 +163,30 @@ describe("the `CLAUDE.md` of the working folder", () => {
 			claudeMdChars(["--claude-md", "500"], "user-claude-md"),
 		).toBeUndefined();
 		expect(claudeMdChars(["--user-claude-md", "500"])).toBeUndefined();
+	});
+
+	test("`--user-file` pairs a path in the config folder with a source file, once per flag", () => {
+		expect(
+			userFilesOf([
+				"--user-file",
+				"rules/a.md=/tmp/a.md",
+				"--arm",
+				"plain",
+				"--user-file",
+				"CLAUDE.md=/tmp/b.md",
+			]),
+		).toEqual([
+			{ path: "rules/a.md", source: "/tmp/a.md" },
+			{ path: "CLAUDE.md", source: "/tmp/b.md" },
+		]);
+		expect(userFilesOf(["--arm", "plain"])).toEqual([]);
+	});
+
+	test("a `--user-file` path that leaves the config folder or has no source is refused", () => {
+		expect(() => userFilesOf(["--user-file", "../x.md=/tmp/a.md"])).toThrow();
+		expect(() => userFilesOf(["--user-file", "/etc/x.md=/tmp/a.md"])).toThrow();
+		expect(() => userFilesOf(["--user-file", "rules/a.md"])).toThrow();
+		expect(() => userFilesOf(["--user-file"])).toThrow();
 	});
 
 	test("the file is exactly that many characters, so the request grows by a known size", () => {
