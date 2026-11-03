@@ -19,7 +19,7 @@ import { EVAL_MODEL } from "../../limits.ts";
 import { PLUGIN_DIR } from "../session.ts";
 
 /** The text of `Concise` before the commit that rewrote each rule as an action. */
-export const OLD_STYLE_COMMIT = "405ef771";
+export const OLD_STYLE_COMMIT = "8fce10c8";
 
 export const STYLE_FILE = "output-styles/Concise.md";
 
