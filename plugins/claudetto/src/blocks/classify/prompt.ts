@@ -1,4 +1,4 @@
-// The frame is ours, so the request carries only what this judge reads and none of the built-in's 58,000 characters.
+// The frame is ours, so the request carries only what this judge reads and none of the 63,147 characters that the built-in classifier sends as its system block with these lists on `2.1.317` (140,015 with the stock lists).
 
 import {
 	ALLOW_RULES,

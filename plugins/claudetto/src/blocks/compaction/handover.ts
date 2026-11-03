@@ -71,7 +71,7 @@ const save = async (session: Session, text: string): Promise<void> => {
 
 /**
  * A handoff reply comes mid-task, so its next steps go on with no one typing. A fork runs after the turn answered the
- * user, so the handover waits for the user: a prompt then makes the model act on next steps that wait for the user.
+ * user, so the handover waits for the user instead of submitting a prompt. A choice of the author; its effect on the model is unmeasured.
  */
 const handOver = async (
 	session: Session,
@@ -108,7 +108,7 @@ const handOver = async (
 	}
 };
 
-/** The size from which a turn's end hands over, when `handoverThresholdTokens` is unset. */
+/** The size from which a turn's end hands over, when `handoverThresholdTokens` is unset. A choice of the author. */
 const HANDOVER_TOKENS = 400_000;
 
 export const FORK_PROMPT = `The context is large. Write the handoff now, as the whole reply, in the layout of the context management block, starting with \`${HANDOFF_TITLE}\`.`;

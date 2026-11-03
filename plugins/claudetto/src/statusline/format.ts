@@ -1,6 +1,6 @@
 import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits.ts";
 
-// ICU puts a no-break space before the meridiem in some versions.
+// Some ICU versions put a narrow no-break space (U+202F) before the meridiem, and others a plain space.
 const MERIDIAN_GAP = /[   ]([AP]M)/i;
 const PATH_SEPARATOR = /[\\/]/;
 
@@ -45,7 +45,7 @@ export const clock = (sec: number, nowMs: number): string => {
 	if (d.getFullYear() !== new Date(nowMs).getFullYear()) {
 		date.year = "numeric";
 	}
-	// The date and the time are formatted apart, because ICU versions join them with ` at ` or `, `.
+	// The date and the time are formatted apart, so the join is the same on every ICU version.
 	return `${d.toLocaleDateString("en-US", date)} at ${time}`;
 };
 

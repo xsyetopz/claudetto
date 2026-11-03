@@ -14,7 +14,7 @@ export interface Fault {
 	readonly where: string;
 }
 
-/** The env var that moves the classifier model, which stays unset while no measurement exists. */
+/** The env var that moves the classifier model, which claudetto leaves unset by choice. */
 export const CLASSIFIER_MODEL_ENV = "CLAUDE_CODE_AUTO_MODE_MODEL";
 
 /** Broad allow rules are dropped on entering auto mode, so one in our snippet never takes effect. */
@@ -45,7 +45,7 @@ export const isBroadAllow = (rule: string): boolean => {
 const sameList = (a: readonly string[], b: readonly string[]): boolean =>
 	a.length === b.length && a.every((entry, i) => entry === b[i]);
 
-/** A list may replace the built-ins only with the suite the classifier A/B measured. */
+/** A list may replace the built-ins only with claudetto's own suite. */
 export const listsWithoutDefaults = (
 	snippet: AutoModeSnippet,
 ): readonly string[] => {

@@ -27,7 +27,7 @@ export interface Files {
 
 export const NO_LOCAL: Local = { changes: [] };
 
-/** The line refreshes every few seconds, so each read is capped and the walk to the repository root is bounded. */
+/** The caps on each read, on the walk to the repository root, and on the changes listed; choices that bound the work per refresh. */
 const HEAD_CAP = 4096;
 const TASKS_CAP = 256 * 1024;
 const MAX_PARENTS = 32;

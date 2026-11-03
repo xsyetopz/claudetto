@@ -30,7 +30,7 @@ export const AUTO_MODE_KEYS: readonly AutoModeKey[] = [
 		kind: SETTING,
 		route: "configure/permissions/auto-mode",
 	},
-	// Each list replaces the built-in rules with claudetto's suite, which the classifier A/B scored as high at about half the price.
+	// Each list replaces the built-in rules with claudetto's suite.
 	...AUTO_MODE_LISTS.map(
 		(name): AutoModeKey => ({
 			name: `autoMode.${name}`,
@@ -45,7 +45,7 @@ export const AUTO_MODE_KEYS: readonly AutoModeKey[] = [
 		kind: SETTING,
 		route: "configure/permissions/auto-mode",
 	},
-	// Unset: a cheaper classifier model may block differently, and a server-configured model wins.
+	// Unset by choice: a server-configured classifier model takes priority over this variable.
 	{
 		name: "CLAUDE_CODE_AUTO_MODE_MODEL",
 		kind: ENV,

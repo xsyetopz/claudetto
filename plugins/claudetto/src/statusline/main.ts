@@ -7,7 +7,7 @@ import { taskRows } from "./subagents.ts";
 
 type Env = Readonly<Record<string, string | undefined>>;
 
-/** Printed when the input is not a JSON object or holds nothing to show, since empty output would blank the line. */
+/** Printed when the input is not a JSON object or holds nothing to show, a choice so the line is never empty. */
 const FALLBACK = "claudetto: no status";
 
 const columnsOf = (env: Env): number => {
@@ -51,7 +51,7 @@ export const statusWithFiles = async (
 	return statusOf(raw, env, now, local);
 };
 
-/** The JSON lines of the subagent status line, or `""` so Claude Code keeps its default rows. The width is `columns` of the input, since this command gets no `COLUMNS`. */
+/** The JSON lines of the subagent status line, or `""` for no rows. The width is `columns` of the input, which the subagent input carries. */
 export const subagentsOf = (raw: string, env: Env, now: number): string => {
 	const input = parse(raw);
 	if (!input) {
@@ -64,7 +64,7 @@ export const subagentsOf = (raw: string, env: Env, now: number): string => {
 		.join("\n");
 };
 
-/** Reads stdin and prints. It never throws and the exit code is always 0, because a non-zero exit blanks the line. */
+/** Reads stdin and prints. It never throws and the exit code is always 0, as a choice: a non-zero exit of the subagent command is logged as an error and its rows are dropped. */
 export const main = async (args: readonly string[]): Promise<number> => {
 	let raw = "";
 	try {

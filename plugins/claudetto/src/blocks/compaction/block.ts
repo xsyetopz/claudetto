@@ -20,7 +20,7 @@ const loginRow = async ($: EngineInterface): Promise<TierRow | undefined> => {
 	}
 };
 
-/** Every failure goes on to `next(e)`, because a compaction that does not happen ends the turn. */
+/** Every failure goes on to `next(e)`, so the engine's own compaction answers in place of a hook that failed. */
 export const onCompact: WithOptions<HookFor<"session.compact">> = (
 	$,
 	e,

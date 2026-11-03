@@ -1,14 +1,14 @@
-/** Seconds in the 5 hour window of the subscription. */
+/** Seconds in the 5 hour window of `rate_limits.five_hour`. */
 export const FIVE_HOUR_S = /* 5 * 60 * 60 */ 18_000;
-/** Seconds in the 7 day window of the subscription. */
+/** Seconds in the 7 day window of `rate_limits.seven_day`. */
 export const SEVEN_DAY_S = /* 7 * 24 * 60 * 60 */ 604_800;
 /** The rows the line can show: place, session, limits, cache. */
 export const MAX_ROWS = 4;
-/** The width when `COLUMNS` is absent or not a positive integer; a narrow guess cannot overflow a wide terminal. */
+/** The width when `COLUMNS` is absent or not a positive integer; a choice, 80 being the classic terminal width. */
 export const DEFAULT_COLUMNS = 80;
-/** Columns kept free at the right edge: Claude Code adds its own spacing and the `padding` setting adds more, and a row that reaches the edge wraps. */
+/** Columns kept free at the right edge, a choice that leaves room for the `padding` of the `statusLine` setting. */
 export const COLUMNS_MARGIN = 4;
-/** The most subagent rows shown, since the panel is small. */
+/** The most subagent rows shown, a choice. */
 export const SUBAGENT_ROWS_MAX = 20;
 export const SPEC_CHANGES_SHOWN = 2;
 /** The gap between two items of a row. */

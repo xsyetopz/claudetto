@@ -7,11 +7,12 @@ import {
 type Style = (text: string) => string;
 type Rgb = readonly [number, number, number];
 
+// The SGR codes `1` bold, `2` faint, `0` normal, and `38;2;r;g;b` direct color are in XTerm Control Sequences, patch 411; the colors below are choices.
 const GREEN: Rgb = [78, 186, 101];
 const AMBER: Rgb = [255, 193, 7];
 const RED: Rgb = [255, 107, 128];
 
-/** Color is off when `NO_COLOR` is set and not empty. */
+/** Color is off when `NO_COLOR` is set and not empty (no-color.org). */
 export const colorOff = (
 	env: Readonly<Record<string, string | undefined>>,
 ): boolean => (env["NO_COLOR"] ?? "") !== "";
@@ -46,6 +47,7 @@ export const paintOf = (color: boolean) => {
 	const rgb = (c: Rgb) => style(`38;2;${c.join(";")}`);
 	const [ok, warn, limit] = [rgb(GREEN), rgb(AMBER), rgb(RED)];
 	const inactive = style("38;2;153;153;153");
+	// A choice: the color of each `pr.review_state`.
 	const reviews: Readonly<Record<string, Style>> = {
 		approved: ok,
 		pending: warn,

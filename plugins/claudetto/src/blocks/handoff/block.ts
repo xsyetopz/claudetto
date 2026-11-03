@@ -62,7 +62,7 @@ const copyMisnamed = async (
 	return undefined;
 };
 
-/** Never throws: each failure is one `notWritten` line, because a hook that throws is dropped silently. */
+/** Never throws: each failure is one `notWritten` line, because a hook that throws is skipped. */
 const writeHandoff = async (
 	$: EngineInterface,
 	occasion: Occasion,
@@ -71,7 +71,7 @@ const writeHandoff = async (
 	if (transcriptPath === "") {
 		return;
 	}
-	// `SessionEnd` really gets less than `next.budget.remainingMs` reports, so each caller passes its own cut.
+	// `session.end` shares one short wall-clock bound across its chain, so each caller passes its own cut.
 	const forTail = Math.min(remainingMs - WRITE_RESERVE_MS, 10_000);
 	if (forTail <= 0) {
 		notWritten($, why, "no time was left of the bound the event gives");
@@ -129,7 +129,7 @@ const writeHandoff = async (
 /** A `clear` gets none, so a typed `/clear` keeps its meaning. */
 const CONTINUED = ["resume"];
 
-/** Submits outside the hook: `$.prompt.submit` is refused inside `classic.SessionStart`. */
+/** Submits from a timer: `$.prompt.submit` is a turn of its own, run once the session is idle. */
 const submitReadBack = async (
 	$: EngineInterface,
 	name: string,
@@ -249,7 +249,7 @@ export const attachHandoff = (on: On, _context: BlockContext): void => {
 		const answer = await next(e);
 		return { ...answer, blocks: [...answer.blocks, handoffBlock] };
 	});
-	// Core's section says no handoff is needed, which contradicts the block above.
+	// Core's `context_management` section would sit beside the block above; its text is unmeasured.
 	on("prompt.section", { name: ["context_management"] }, () => ({
 		text: null,
 	}));

@@ -18,18 +18,18 @@ export const isCheapSummaryOn = (
 	options["cheapSummary"] === "on" ||
 	row?.cheapSummary === true;
 
-/** The summary's length, which every turn after the compaction carries. */
+/** The summary's length, which every turn after the compaction carries. A choice of the author. */
 export const SUMMARY_MAX_CHARS = 4000;
 
-/** Above the character limit in tokens. The thinking shares the cap, so a reply can still reach it. */
+/** Above the character limit in tokens. A choice of the author. */
 export const SUMMARY_MAX_TOKENS = 2000;
 
 const SUMMARY_CAP = capOf(SUMMARY_MAX_TOKENS);
 
-/** How long the call may take before the engine's own compaction answers instead. */
+/** How long the call may take before the engine's own compaction answers instead. A choice of the author. */
 export const SUMMARY_TIMEOUT_MS = 90_000;
 
-/** The fixed instructions ride a `cache: true` block, so a call within five minutes reads them. */
+/** The fixed instructions ride a `cache: true` block, so a later call within the cache's lifetime reads them. */
 export const SUMMARY_INSTRUCTIONS =
 	"Summarize the conversation that follows so that work can continue from the summary alone. " +
 	`Write at most ${SUMMARY_MAX_CHARS} characters, in short lines. ` +
@@ -74,7 +74,7 @@ const withinLimit = (text: string): string => {
 	return text.slice(0, end < 0 ? SUMMARY_MAX_CHARS : end).trimEnd();
 };
 
-/** No `usage`: that is how the engine knows a hook answered, not core. */
+/** No `usage`: `SessionCompacted.usage` is absent when a hook answered in core's place. */
 export const summaryCompaction = (summary: string): SessionCompacted => ({
 	messages: [{ role: "user", text: summary, toolUses: [] }],
 });
