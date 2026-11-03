@@ -5,7 +5,13 @@ import { builtinSnippet } from "../../../plugins/claudetto/src/builtins.ts";
 import { denyRules } from "../../../plugins/claudetto/src/tiers/snippet.ts";
 import { answeredAll, sessionArgv } from "../arm.ts";
 import { claudeMdOf } from "../memory.ts";
-import { callsOf, claudeMdChars, extraArgs, userFilesOf } from "../run.ts";
+import {
+	callsOf,
+	claudeMdChars,
+	extraArgs,
+	stoppedNote,
+	userFilesOf,
+} from "../run.ts";
 import { scoreOf } from "../score.ts";
 import { denySettings, shippedSettings } from "../settings.ts";
 
@@ -110,6 +116,35 @@ describe("the extra flags of each run", () => {
 
 	test("`--classifier` runs in auto mode, so a tool call reaches the classifier", () => {
 		expect(extraArgs(["--classifier"])).toEqual(["--permission-mode", "auto"]);
+	});
+
+	test("`--permission-mode` passes its mode, so an interactive run in auto mode can skip the classifier's billing prompt", () => {
+		expect(
+			extraArgs(["--interactive", "--permission-mode", "default"]),
+		).toEqual(["--permission-mode", "default"]);
+	});
+
+	test("`--classifier` with a mode other than `auto` is refused, since the classifier runs only in auto mode", () => {
+		expect(() =>
+			extraArgs(["--classifier", "--permission-mode", "default"]),
+		).toThrow("--classifier runs in auto mode");
+	});
+
+	test("a run that sent a request but did not end names its exit and shows the last lines it printed", () => {
+		const screen = `a
+
+b
+Enter to continue · Esc to cancel`;
+
+		expect(stoppedNote("plain", 1, screen, 2)).toBe(
+			`  plain: the session did not end (exit 1). The last lines it printed:
+    b
+    Enter to continue · Esc to cancel`,
+		);
+	});
+
+	test("a run that ended has no stop note", () => {
+		expect(stoppedNote("plain", 0, "a", 2)).toBeUndefined();
 	});
 
 	test("a run with neither flag passes nothing extra", () => {

@@ -6,7 +6,7 @@ import { argv } from "node:process";
 import { file as bunFile } from "bun";
 import type { ToolCall } from "../../claudekit/api/answer.ts";
 import { count } from "../../plugins/claudetto/src/format.ts";
-import { ARMS, type Arm, capture, PROMPT } from "./arm.ts";
+import { ARMS, type Arm, capture, PROMPT, type Reading } from "./arm.ts";
 import type { Score } from "./score.ts";
 import { denySettings, shippedSettings } from "./settings.ts";
 
@@ -19,10 +19,18 @@ const argOf = (args: readonly string[], name: string): string | undefined => {
 export const extraArgs = (args: readonly string[]): string[] => {
 	const mcp = argOf(args, "mcp-config");
 	const plugin = argOf(args, "plugin-dir");
+	const asked = argOf(args, "permission-mode");
+	const classifier = args.includes("--classifier");
+	if (classifier && asked !== undefined && asked !== "auto") {
+		throw new Error(
+			`--classifier runs in auto mode, so it cannot take --permission-mode ${asked}`,
+		);
+	}
+	const mode = classifier ? "auto" : asked;
 	return [
 		...(mcp === undefined ? [] : ["--mcp-config", mcp, "--strict-mcp-config"]),
 		...(plugin === undefined ? [] : ["--plugin-dir", plugin]),
-		...(args.includes("--classifier") ? ["--permission-mode", "auto"] : []),
+		...(mode === undefined ? [] : ["--permission-mode", mode]),
 	];
 };
 
@@ -67,6 +75,27 @@ export const userFilesOf = (args: readonly string[]): UserFile[] =>
 		return [{ path, source }];
 	});
 
+/** A run cut at its time limit still has its first request, so without this note a stuck prompt reads as a normal run. */
+export const stoppedNote = (
+	arm: string,
+	code: number,
+	screen: string,
+	lines: number,
+): string | undefined => {
+	if (code === 0) {
+		return undefined;
+	}
+	const last = screen
+		.split("\n")
+		.filter((line) => line.trim() !== "")
+		.slice(-lines)
+		.map((line) => `    ${line.trimEnd()}`);
+	return [
+		`  ${arm}: the session did not end (exit ${code}). The last lines it printed:`,
+		...last,
+	].join("\n");
+};
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -87,10 +116,13 @@ export const callsOf = (text: string): ToolCall[] => {
 const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
   [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
   [--classifier] [--interactive] [--calls FILE] [--claude-md CHARS] [--user-claude-md CHARS]
-  [--user-file PATH=SOURCE]...
+  [--user-file PATH=SOURCE]... [--permission-mode MODE]
 
 --interactive runs each arm in a detached \`tmux\` session with no \`-p\`, so the request
 holds the tools of an interactive session. It needs \`tmux\` on the PATH.
+--permission-mode MODE starts each arm in MODE. Auto mode is the default mode, and in an
+interactive run the first call its classifier judges stops at a prompt about billing the
+classifier through the fake as a gateway; \`default\` passes it.
 --classifier reads the auto mode classifier request in place of the first request.
 Its last system block holds the login name, so it differs between logins.
 --calls FILE makes the fake answer with each tool call of the JSON list in turn, then "ok".
@@ -116,10 +148,34 @@ const settingsOf = async (options: {
 		: await bunFile(options.file).text();
 };
 
+/** Enough of the screen to show the prompt that held a session up and its keys. */
+const SCREEN_LINES = 8;
+
 const row = (arm: Arm, score: Score): void => {
 	console.info(
 		`  ${arm.padEnd(6)} | total ${count(score.total).padStart(7)} | system ${count(score.system).padStart(7)} | tools ${count(score.tools).padStart(7)} (${score.toolCount}) | messages ${count(score.messages).padStart(6)}`,
 	);
+};
+
+const rowOrStop = (reading: Reading): void => {
+	if (reading.score === undefined) {
+		console.error(
+			`  ${reading.arm}: no request was sent (exit ${reading.code}). ${reading.stderr}`,
+		);
+		process.exitCode = 1;
+		return;
+	}
+	row(reading.arm, reading.score);
+	const stopped = stoppedNote(
+		reading.arm,
+		reading.code,
+		reading.stderr,
+		SCREEN_LINES,
+	);
+	if (stopped !== undefined) {
+		console.error(stopped);
+		process.exitCode = 1;
+	}
 };
 
 const intro = (interactive: boolean, settings: string | undefined): void => {
@@ -189,14 +245,7 @@ const main = async (): Promise<void> => {
 		`\nThe characters of the ${args.includes("--classifier") ? "classifier" : "first"} request:`,
 	);
 	for (const reading of readings) {
-		if (reading.score === undefined) {
-			console.error(
-				`  ${reading.arm}: no request was sent (exit ${reading.code}). ${reading.stderr}`,
-			);
-			process.exitCode = 1;
-			continue;
-		}
-		row(reading.arm, reading.score);
+		rowOrStop(reading);
 	}
 	for (const reading of readings) {
 		if (reading.score === undefined) {
