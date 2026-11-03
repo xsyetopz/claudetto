@@ -13,6 +13,8 @@ export interface Change {
 export interface Local {
 	branch?: string;
 	changes: readonly Change[];
+	/** Whether claudetto's hooks stopped while the session went on, read by `hooksOff`. */
+	hooksOff?: boolean;
 }
 
 /** The file calls of the reader, so a test can record each path. */

@@ -54,4 +54,13 @@ export const STALE_PATHS: readonly StalePath[] = [
 		source:
 			"claudetto writes the whole output of a test or build run into `BOUND_OUTPUT_DIR` when it cuts the text the model reads.",
 	},
+	{
+		id: "heartbeat",
+		root: "project",
+		pattern: ".claude/claudetto/heartbeat/*.txt",
+		maxAge: { minutes: 1440 },
+		keep: "A file younger than a day, a chosen margin: the status line of a live session compares it with the transcript.",
+		source:
+			"The hooks write the time of each model request into `HEARTBEAT_DIR`, so the status line can tell when the CLI turned them off.",
+	},
 ];

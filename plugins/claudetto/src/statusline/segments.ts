@@ -25,6 +25,12 @@ export type Text = string | undefined;
 
 const LIMITS = ["five_hour", "seven_day"] as const;
 
+/** The CLI unloads a plugin whose hooks crash its worker and says that `/reload-plugins` brings it back. */
+export const hooksOffText = ({ local, paint }: Ctx): Text =>
+	local.hooksOff
+		? paint.limit(`${ICON.error} claudetto hooks off: /reload-plugins`)
+		: undefined;
+
 export const folderText = ({ input, paint }: Ctx): Text => {
 	const dir =
 		str(sub(input, "workspace")?.["current_dir"]) ?? str(input["cwd"]);

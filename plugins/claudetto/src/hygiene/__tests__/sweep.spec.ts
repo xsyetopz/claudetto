@@ -88,6 +88,21 @@ test("a saved output past a day goes, and a younger one and other files stay", a
 	expect(await exists(other)).toBe(true);
 });
 
+test("a heartbeat past a day goes, and a younger one and other files stay", async () => {
+	const dir = join(roots.project, ".claude/claudetto/heartbeat");
+	await mkdir(dir, { recursive: true });
+	const old = await file(join(dir, `${DEAD}.txt`), 25 * 60 * 60_000);
+	const young = await file(join(dir, `${LIVE}.txt`), 23 * 60 * 60_000);
+	const other = await file(join(dir, "notes.md"), 90 * DAY_MS);
+
+	const report = await sweep(roots);
+
+	expect(await exists(old)).toBe(false);
+	expect(await exists(young)).toBe(true);
+	expect(await exists(other)).toBe(true);
+	expect(report.removed.map((entry) => entry.row)).toEqual(["heartbeat"]);
+});
+
 test("old handoffs go and the newest stays, even when it is old too", async () => {
 	const dir = join(roots.project, ".claude/claudetto/handoffs");
 	const oldest = await file(

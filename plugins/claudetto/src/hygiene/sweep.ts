@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { BOUND_OUTPUT_DIR } from "../blocks/bound-output/block.ts";
 import { HANDOFF_DIR } from "../blocks/handoff/handoff.ts";
 import { newestHandoff } from "../blocks/handoff/read-back.ts";
+import { HEARTBEAT_DIR } from "../blocks/heartbeat/path.ts";
 import { type Refusal, refusal } from "./guard.ts";
 
 const DAY_MS = 86_400_000;
@@ -12,7 +13,8 @@ const SESSION_ID =
 const HANDOFF = /^handoff-.*\.md$/;
 const PROBE = /^fswatch-probe-/;
 const BOUND_OUTPUT = /^output-.*\.txt$/;
-const BOUND_OUTPUT_MINUTES = 1440;
+const HEARTBEAT = /^[\w-]+\.txt$/;
+const DAY_MINUTES = 1440;
 
 /** `temps` are the roots `claude-<uid>`, `sessions` is `~/.claude/sessions/`, and `current` is the running session's id. A limit of 0 turns its kind off. */
 export interface SweepRoots {
@@ -159,14 +161,14 @@ const handoffs = async (
 	return all.filter((entry) => entry.name !== read && entry.mtime < cutoff);
 };
 
-const boundOutputs = async (
-	project: string,
+const dayOld = async (
+	dir: string,
+	name: RegExp,
 	roots: SweepRoots,
 ): Promise<Entry[]> => {
-	const cutoff = roots.now - BOUND_OUTPUT_MINUTES * MINUTE_MS;
-	return (await entriesOf(join(project, BOUND_OUTPUT_DIR))).filter(
-		(entry) =>
-			!entry.isDir && BOUND_OUTPUT.test(entry.name) && entry.mtime < cutoff,
+	const cutoff = roots.now - DAY_MINUTES * MINUTE_MS;
+	return (await entriesOf(join(roots.project, dir))).filter(
+		(entry) => !entry.isDir && name.test(entry.name) && entry.mtime < cutoff,
 	);
 };
 
@@ -188,7 +190,11 @@ export const sweep = async (roots: SweepRoots): Promise<SweepReport> => {
 		["handoff", projectRefusal ? [] : await handoffs(roots.project, roots)],
 		[
 			"bound-output",
-			projectRefusal ? [] : await boundOutputs(roots.project, roots),
+			projectRefusal ? [] : await dayOld(BOUND_OUTPUT_DIR, BOUND_OUTPUT, roots),
+		],
+		[
+			"heartbeat",
+			projectRefusal ? [] : await dayOld(HEARTBEAT_DIR, HEARTBEAT, roots),
 		],
 	];
 	const removed = await Promise.all(
