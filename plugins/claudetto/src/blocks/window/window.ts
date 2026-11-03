@@ -6,8 +6,6 @@ export const TURNS_KEY = "window.turns";
 
 export const LAST_KEY = "window.last";
 
-export const USD_KEY = "window.usd";
-
 const FIVE_HOUR = "five_hour";
 
 const SEVEN_DAY = "seven_day";
