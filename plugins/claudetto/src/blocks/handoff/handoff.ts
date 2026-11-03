@@ -1,4 +1,4 @@
-import type { SessionMessage } from "claude-code";
+import type { BuiltinToolName, SessionMessage } from "claude-code";
 import { redact } from "../../shared/secrets/redact.ts";
 
 export const HANDOFF_DIR = ".claude/claudetto/handoffs";
@@ -47,7 +47,11 @@ const pathOf = (input: unknown): string | undefined => {
 	);
 };
 
-const WRITING_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
+const WRITING_TOOLS: readonly string[] = [
+	"Write",
+	"Edit",
+	"NotebookEdit",
+] satisfies readonly BuiltinToolName[];
 
 interface Touch {
 	readonly path: string;
