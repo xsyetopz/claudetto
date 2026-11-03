@@ -444,6 +444,15 @@ A free probe on `2.1.317` found that an agent `tools:` line keeps only tool name
 - [x] 40.3 Add `Bash` to `Artemis.md` and the hook. Report the change in request characters, and run `just check` and `just inventory`.
   Dropped 2026-11-03 by the user, with 40.2.
 
+## 41. General Rules Through Setup Only
+
+The user ruled on 2026-11-03 that no `SessionStart` block adds the general rules. `/claudetto:setup` writes them as a marked section of `~/.claude/CLAUDE.md`, and writes the file when it is absent. When the file exists, setup shows the exact text first and asks whether to append the section or replace the whole file, then does what the user chose. Read with `just capture --user-file` on `2.1.317`: a `~/.claude/rules/` file with no `paths:` and the user `CLAUDE.md` each load in `-p` and in `--interactive`, a `paths:` rule does not load at start, and the section costs 124 characters per request inside an existing `CLAUDE.md`, against 260 as its own rules file. The user rejected rule 1 as drafted, because it runs the whole suite for a typo fix: the redraft scales the check to the change, and ships only after the user approves its text.
+
+- [ ] 41.1 Write failing lab tests: setup with an existing `~/.claude/CLAUDE.md` asks to append or replace after showing the exact text, an append keeps the held text, a replace writes the section alone, and a session start adds no rules text.
+- [ ] 41.2 Remove the `general-rules` `SessionStart` block and add the replace choice to the setup step. Update the `general rules` row of `cuts.ts` and `docs/surfaces.md`, and `CHANGELOG.md`. Run `just check` and `just inventory`.
+- [ ] 41.3 Write eval fixtures for five kinds of change: a typo, a docs edit, a comment, a one-function fix, and a behavior change across packages. Run the old and the redrafted rule 1, 3 runs each, paid on the user's approval of 2026-11-03, and report the checks run per kind, the tokens, and the weekly share.
+- [ ] 41.4 Put the redrafted rule 1 in `GENERAL_RULES` once the user approves its text, and run `just check`.
+
 ## Workflow follow-up
 
 - Move each `ISSUES.md` entry to "Fixed" with the commit that fixes it, as its task closes.
