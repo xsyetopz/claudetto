@@ -10,6 +10,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Changed
 
+- `run-limits` blocks a `Stop` once per turn when the final reply lists, under a heading such as `Still open` or `What's left`, an item that names no blocker outside the session's reach (an approval, a denial, a paid run, a key, or a step only the user takes). The block names the items and asks the session to do each or name its blocker. A `Stop` that a hook already continued (`stop_hook_active`) or that another hook blocked is left alone.
 - The root prompt reaches the main loop through a `prompt.compose` hook, as one `shared` section, in place of `agents/main.md` under the `agent` setting. The request carries the same 5,216-character body (`just capture --arm plugin --shipped` reads 25,279 and `--interactive` 32,993, as before). `/claudetto:setup` removes an `agent` key that names `claudetto:main` and writes none. A session whose `agent` names a missing agent starts on the stock body (`just capture --arm plain --settings FILE` reads 46,084, the baseline).
 - The `Concise` output style tells the session that an item it can still do with its tools is work to do before it ends, and that an open item in a report names its blocker: a denial, a paid run that waits for approval, or a step only the user can take. It adds 251 characters to each request, read with `just capture --arm plugin --shipped` on `2.1.317`.
 - Three hooks move from classic events to the Mod API:

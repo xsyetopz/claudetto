@@ -5,6 +5,7 @@ import { tasksKey, tasksText } from "./background.ts";
 import { budgetBand, budgetLine, slowText } from "./budget.ts";
 import { withFailure } from "./failures.ts";
 import { changeLedger } from "./ledger.ts";
+import { openItemsAsk, unblockedItems } from "./open-items.ts";
 import { type Limits, limitsOf } from "./settings.ts";
 import { admitStart, crowded, runningCount } from "./spawn.ts";
 import { STALL_ASK, STALL_BLOCKS, STALL_LINE, WRITERS } from "./stall.ts";
@@ -181,6 +182,13 @@ export const onStop: HookFor<"classic.Stop"> = async ($, e, next) => {
 	const asked = looped
 		? { ...answer, block: `${answer.block}\n${STALL_ASK}` }
 		: answer;
+	const open =
+		e.stop_hook_active === true || asked.block !== undefined
+			? []
+			: unblockedItems(e.last_assistant_message ?? "");
+	if (open.length > 0) {
+		return { ...asked, block: openItemsAsk(open) };
+	}
 	return added === undefined
 		? asked
 		: {
