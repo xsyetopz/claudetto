@@ -64,6 +64,10 @@ export const sessionArgv = (options: {
 		options.extra,
 	);
 
+/** The fake answers each call with one request, so the request after the last call is the one past their count. */
+export const answeredAll = (calls: number, requests: number): boolean =>
+	requests > calls;
+
 const runArm = async (options: {
 	api: FakeApi;
 	plugin: boolean;
@@ -90,6 +94,7 @@ const runIn = async (
 		prompt: string;
 		interactive: boolean;
 		extra: readonly string[];
+		calls: number;
 		claudeMd: number | undefined;
 		userClaudeMd: number | undefined;
 		userFiles: readonly { path: string; text: string }[];
@@ -129,7 +134,7 @@ const runIn = async (
 			env,
 			socket: join(root, "tmux.sock"),
 			prompt: options.prompt,
-			done: () => options.api.bodies.length > 0,
+			done: () => answeredAll(options.calls, options.api.bodies.length),
 			timeoutMs: RUN_MS,
 		});
 		return { code: ran.code, stderr: ran.stderr || ran.screen, work: real };
