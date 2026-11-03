@@ -11,7 +11,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Features
 
-- A first request of 25,358 characters against 46,084 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
+- A first request of 25,028 characters against 46,084 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A `/claudetto:handoff` command that has the session call the `handoff` tool, plus a handoff written before a compaction.
 - A handoff reply that compacts the conversation to itself, with no summary call, so the next turn reads the cached prefix.
@@ -57,8 +57,8 @@ Its `paths:` of `**/*` keeps it out of a session until the session reads a file,
 Claude Code does not load a plugin's own `rules/` folder, so the file takes effect only once setup writes it.
 
 Setup also offers three general rules as a section of `~/.claude/CLAUDE.md`, between `<!-- claudetto:start -->` and `<!-- claudetto:end -->`: run each build, test, lint, type check, and package step through the repo's own script, take each flag and version from `--help` or the versioned docs, and read the source or run a probe before stating a fact about a tool.
-The dialog shows the whole text, and a yes writes it. The rest of the file stays as it was, and a later run replaces only that section.
-Until the file holds the section, each session start, `clear`, and `compact` adds the same text to the model's context, 330 characters of the first request.
+The dialog shows the whole text, and a yes writes it. When the file holds other text, a second question shows the section again and asks whether to append it, keeping the rest of the file, or to replace the file with the section alone.
+A later append replaces only that section. No session start adds the rules, so a session carries them only from the file.
 
 A setup run takes no model turn: the dialogs open from the hook, and no tool schema or list of differences enters the request.
 A session with no one to ask, such as `claude -p`, writes nothing.

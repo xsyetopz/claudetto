@@ -1,5 +1,5 @@
-// The general rules reach a session from one of two places: the user's `CLAUDE.md` once setup wrote
-// them there, or the `SessionStart` text, so a session never carries them twice.
+// The general rules reach a session only from the user's `CLAUDE.md`, which every session reads, so the
+// user sees and chooses each word that `/claudetto:setup` writes there.
 
 import { SETTINGS_FILE } from "../../settings-file.ts";
 

@@ -12,7 +12,11 @@ import {
 	SECTION_END,
 	SECTION_START,
 } from "../../src/blocks/general-rules/rules.ts";
-import { GENERAL_RULES_ID } from "../../src/blocks/setup-command/general-rules.ts";
+import {
+	APPEND,
+	GENERAL_RULES_ID,
+	REPLACE,
+} from "../../src/blocks/setup-command/general-rules.ts";
 import { answering, processResult, run } from "./support.ts";
 
 const USER_MD = "/home/u/.claude/CLAUDE.md";
@@ -23,12 +27,24 @@ const lab = (on: On, userMd: string | undefined): readonly Written[] => {
 	return userSettingsLab(on, "{}", undefined, new Map([[USER_MD, userMd]]));
 };
 
-/** Keeps `GENERAL_RULES_ID` when `keep` and it is offered, and nothing otherwise; returns the questions asked. */
-const answeringRules = (on: On, keep: boolean): string[] => {
+/** The question that asks whether to append the section or replace the whole file. */
+const isHowQuestion = (question: string): boolean =>
+	question.includes(APPEND) && question.includes(REPLACE);
+
+/**
+ * Keeps `GENERAL_RULES_ID` when `keep` and it is offered, answers the append or replace question with `how`,
+ * and nothing otherwise; returns the questions asked.
+ */
+const answeringRules = (on: On, keep: boolean, how = APPEND): string[] => {
 	const asked: string[] = [];
-	answering(on, asked, (question) =>
-		keep && question.includes(`- ${GENERAL_RULES_ID}:`) ? GENERAL_RULES_ID : "",
-	);
+	answering(on, asked, (question) => {
+		if (isHowQuestion(question)) {
+			return how;
+		}
+		return keep && question.includes(`- ${GENERAL_RULES_ID}:`)
+			? GENERAL_RULES_ID
+			: "";
+	});
 	return asked;
 };
 
@@ -71,12 +87,13 @@ test("a yes appends the section and keeps the text the file held", async ($: Eng
 	expect(text).toContain(`Wrote ${USER_MD}.`);
 });
 
-test("a yes with no `CLAUDE.md` writes the section alone", async ($: Engine, on: On) => {
+test("a yes with no `CLAUDE.md` writes the section alone, without asking to append or replace", async ($: Engine, on: On) => {
 	const files = lab(on, undefined);
-	answeringRules(on, true);
+	const asked = answeringRules(on, true);
 
 	await run($);
 
+	expect(asked.some(isHowQuestion)).toBe(false);
 	expect(userMdWrites(files)).toEqual([
 		{ path: USER_MD, text: `${GENERAL_SECTION}\n` },
 	]);
@@ -101,5 +118,40 @@ test("a `CLAUDE.md` that already holds the shipped section is not offered", asyn
 	await run($);
 
 	expect(asked.some((q) => q.includes(`- ${GENERAL_RULES_ID}:`))).toBe(false);
+	expect(userMdWrites(files)).toEqual([]);
+});
+
+test("a yes with a `CLAUDE.md` that holds other text asks to append or replace, and shows the exact section", async ($: Engine, on: On) => {
+	lab(on, HELD);
+	const asked = answeringRules(on, true);
+
+	await run($);
+
+	expect(asked.find(isHowQuestion)).toContain(GENERAL_SECTION);
+});
+
+test("a replace writes the section alone in place of the text the file held", async ($: Engine, on: On) => {
+	const files = lab(on, HELD);
+	answeringRules(on, true, REPLACE);
+
+	const text = await run($);
+
+	expect(userMdWrites(files)).toEqual([
+		{ path: USER_MD, text: `${GENERAL_SECTION}\n` },
+	]);
+	expect(text).toContain(`Wrote ${USER_MD}.`);
+});
+
+test("a dismissed append or replace question writes nothing to `CLAUDE.md`", async ($: Engine, on: On) => {
+	const files = lab(on, HELD);
+	answering(on, [], (question) => {
+		if (isHowQuestion(question)) {
+			throw new Error("dismissed");
+		}
+		return question.includes(`- ${GENERAL_RULES_ID}:`) ? GENERAL_RULES_ID : "";
+	});
+
+	await run($);
+
 	expect(userMdWrites(files)).toEqual([]);
 });

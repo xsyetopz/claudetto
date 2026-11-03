@@ -16,7 +16,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. Read on `2.1.317` with `just inventory`. */
-export const SHIPPED_TOTAL = 25_358;
+export const SHIPPED_TOTAL = 25_028;
 
 /**
  * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
@@ -82,8 +82,6 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "cron and fork switches", chars: 103 },
 	// The `handoff` block nulls the section of the default body, so it reads only with `agents/main.md` moved aside.
 	{ name: "context management section", chars: 285 },
-	// The capture has no user `CLAUDE.md`, so the `SessionStart` text carries the rules. Once setup writes them there, the file carries them instead.
-	{ name: "general rules", chars: -330 },
 	// Not a reading: the difference between the fall of the shipped arm and the rows above.
 	{ name: "unexplained residual", chars: UNEXPLAINED_RESIDUAL },
 ];
