@@ -153,6 +153,52 @@ test("a call that throws leaves no wait behind for a later call of the same id",
 	expect(later.result).toBe("x".repeat(400));
 });
 
+/** Starts a step on `model` and one call of it while the step still streams. */
+const callMidStep = async (
+	$: Engine,
+	step: { asked: Promise<void> },
+	model: string,
+) => {
+	const drained = Array.fromAsync(
+		$.turn.step({ turnId: "t1", index: 0, model, messageCount: 1 }),
+	);
+	await step.asked;
+	return {
+		drained,
+		answer: $.tool.call({ tool: "mcp__s__read", tool_use_id: "c1" }),
+	};
+};
+
+test("another model's call answers while its step still streams", async ($: Engine, on: On) => {
+	const step = lab(
+		on,
+		{ usage: usageOf("claude-sonnet-5-5", 10), calls: ["c1"] },
+		{ c1: 5 },
+	);
+
+	const { drained, answer } = await callMidStep($, step, "claude-sonnet-5-5");
+
+	expect((await answer).result).toBe("xxxxx");
+	step.release();
+	await drained;
+});
+
+test("a Haiku call whose step streams past the call's budget passes its result before the budget ends", async ($: Engine, on: On) => {
+	const clock = mock.clock(on);
+	const step = lab(
+		on,
+		{ usage: usageOf(HAIKU_MODEL, 99_900), calls: ["c1"] },
+		{ c1: 400 },
+	);
+	const { drained, answer } = await callMidStep($, step, HAIKU_MODEL);
+
+	await clock.advance(9000);
+
+	expect((await answer).result).toBe("x".repeat(400));
+	step.release();
+	await drained;
+});
+
 /** The session and the clock the heartbeat reads, and each file it writes. */
 const heartbeatLab = (on: On, write: (path: string, text: string) => void) => {
 	on("session.id", () => ({ value: "s-1" }));

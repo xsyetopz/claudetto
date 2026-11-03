@@ -45,6 +45,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- Claude Code turned claudetto's hooks off in a session with parallel subagents. Each tool call waited for its step's stop chunk, so a step that streamed past 10 seconds held its calls' `tool.call` hooks over their budget, and two overruns in a row unloaded the plugin. A call of a step on a model other than Haiku 5.5 now waits for nothing. A Haiku call waits at most until 1 second before its budget ends, then passes its result without the bound.
 - `just setup --dry-run` reported each settings key as `Wrote`, though it writes none. It now reports `Would write`.
 - `just eval --run` removed each session's folder with its output, so a run kept no record of its cost. Its report now ends with a `Spend:` line of the tokens and dollars of the sessions, read from each session's `result` first.
 - The classifier read the words a user typed after `Stop` hook feedback as the hook's, because the harness puts both in one message. It now reads them as the user's, and the feedback as hook text, which authorizes nothing.
