@@ -1,0 +1,74 @@
+name: release
+
+# Tags a release after `ci` passes on a push to the default branch, and only then.
+# `workflow_run` fires when `ci` ends, and the job runs only for a `success` on a push to `main`, so a red or
+# a cancelled `ci`, a pull request, and a feature branch tag nothing.
+# The tags are `v<version>` for the repository, from `package.json`, and `<plugin>--v<version>` for each plugin
+# in `.claude-plugin/marketplace.json`, from its own `plugin.json`. A tag that exists is left alone, so a run
+# with no version bump does nothing.
+on:
+  workflow_run:
+    workflows: [ci]
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # The commit `ci` passed on, not the tip of `main`, which a later push can have moved.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+      - name: Tag the repository and every plugin
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          tags=()
+          root=$(jq -er .version package.json)
+          tags+=("v$root")
+          while read -r name source; do
+            version=$(jq -er .version "$source/.claude-plugin/plugin.json")
+            tags+=("$name--v$version")
+          done < <(jq -r '.plugins[] | "\(.name) \(.source)"' .claude-plugin/marketplace.json)
+
+          created=()
+          for tag in "${tags[@]}"; do
+            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+              echo "$tag exists, skipped"
+              continue
+            fi
+            git tag -a "$tag" "$SHA" -m "$tag"
+            created+=("$tag")
+          done
+
+          if [ "${#created[@]}" -eq 0 ]; then
+            echo "nothing to tag"
+            exit 0
+          fi
+          git push origin "${created[@]/#/refs/tags/}"
+
+          # The notes of the repository release are its section of the changelog.
+          if printf '%s\n' "${created[@]}" | grep -qx "v$root"; then
+            awk -v v="$root" '
+              $0 ~ "^## \\[" v "\\]" { on = 1; next }
+              on && /^## \[/ { exit }
+              on { print }
+            ' CHANGELOG.md > /tmp/notes.md
+            gh release create "v$root" --title "v$root" --verify-tag --notes-file /tmp/notes.md
+          fi
