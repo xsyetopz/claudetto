@@ -16,7 +16,7 @@ export interface Cut {
 }
 
 /** The arm runs `planSetup`, so it carries the keys a user's settings carry. */
-export const SHIPPED_TOTAL = 24_922;
+export const SHIPPED_TOTAL = 24_984;
 
 /**
  * The fall of the shipped arm that no row accounts for: the gaps where removals interact, since each row is read alone.
@@ -37,8 +37,8 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	{ name: "deny list", chars: 7065 },
 	// Names only leave the deferred list. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68.
 	{ name: "deferred tool denies", chars: 24 },
-	// Read: the shipped arm with the `tool-describe` block detached from the catalog, less the shipped arm. Counts `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch`, 2947 of it for the first three.
-	{ name: "tool texts", chars: 9653 },
+	// Read: the shipped arm with the `tool-describe` block detached from the catalog, less the shipped arm. Counts `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch`, 2885 of it for the first three.
+	{ name: "tool texts", chars: 9591 },
 	// Needs the deny list: with `Workflow` offered, `disableBundledSkills` raises the request.
 	{ name: "built-in surface", chars: BUILTIN_CHARS },
 	{ name: "docs skill", chars: -71 },

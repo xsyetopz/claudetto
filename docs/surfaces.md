@@ -188,7 +188,7 @@ The table holds the upfront tools of the current tree. The capture below was rea
 on Claude Code `2.1.316`, before `Agent`, `AskUserQuestion`, and `Skill` moved behind `ToolSearch`.
 `DeferredToolPlaceholder`, 83 characters, has nothing to give. Five texts are not in this table because
 no first request carries them: `SendMessage`, 2,845 against a stock 4,259, which the harness defers, and
-`ListAgents` 256 against 777, `Agent` 449 against 2,906, `AskUserQuestion` 779 against 2,083, and `Skill` 200
+`ListAgents` 256 against 777, `Agent` 519 against 2,906, `AskUserQuestion` 779 against 2,083, and `Skill` 200
 against 1,417, which the hook moves behind `ToolSearch` by answering with `isDeferred`.
 
 The effect on the request, read on 2026-11-02 on Claude Code `2.1.316` with `just capture --deny
@@ -531,7 +531,7 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,084 baseline less every cut in it has to equal the 24,922 the shipped arm records, so a cut that
+46,084 baseline less every cut in it has to equal the 24,984 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
@@ -541,7 +541,7 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | --- | --- | --- |
 | Deny of `ScheduleWakeup` (4,887) and `ReportFindings` (2,178) (`deny list`). The `Workflow` deny reads 0 on its own, because `enableWorkflows: false` takes the tool out too | 7,065 | None exists yet |
 | Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
-| The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,653 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one |
+| The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,591 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one |
 | `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
 | The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
@@ -564,7 +564,7 @@ the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 | The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
 | The fall that no row above explains (`unexplained residual`) | 1,805 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
 
-The rows sum to 21,162, which is 46,084 less the 24,922 the shipped arm records. A negative row is a piece
+The rows sum to 21,100, which is 46,084 less the 24,984 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
@@ -578,7 +578,7 @@ the next removal. The readings, each as the arm without the piece less 27,960, e
 | --- | --- | --- | --- |
 | `deny list` | 35,025 | 7,065 | `ScheduleWakeup` and `ReportFindings` out of `permissions.deny` (it was 12,421, the `plain` baseline of 46,084 less the deny arm of 33,663) |
 | `deferred tool denies` | 27,984 | 24 | `NotebookEdit` and `TaskStop` out of `permissions.deny` |
-| `tool texts` | 34,527 | 9,653 | the `tool-describe` block detached from the catalog, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` |
+| `tool texts` | 34,527 | 9,591 | the `tool-describe` block detached from the catalog, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` |
 | `built-in surface` | 33,550 | 5,590 | `disableBundledSkills` and `enabledPlugins` out of the settings |
 | `docs skill` | 27,889 | −71 | `skills/docs/` moved out of the plugin |
 | `main agent body` | 23,084 | −1,790 | `agents/main.md` moved aside |
