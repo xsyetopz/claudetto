@@ -7,6 +7,7 @@ import {
 	TRIES,
 } from "./limits.ts";
 
+// `POST /v1/systemone` and the model alias `jev-latest`: https://docs.typesafe.ai/api/system-one.md
 export const JEV_API = "https://api.typesafe.ai/v1/systemone";
 export const JEV_MODEL = "jev-latest";
 
@@ -46,13 +47,14 @@ export const isRecord = (x: unknown): x is Record<string, unknown> =>
 export const isProbability = (x: unknown): x is number =>
 	typeof x === "number" && x >= 0 && x <= 1;
 
+/** `model`, `state`, and `questions` are the required fields of the request (https://docs.typesafe.ai/api/system-one.md). */
 export const jevBody = (state: object, questions: object) => ({
 	state,
 	model: JEV_MODEL,
 	questions,
 });
 
-/** A 429 or 529 waits `BACKOFF_MS`, doubled per retry, up to `TRIES` tries. */
+/** A 429 or 529 waits `BACKOFF_MS`, doubled per retry, up to `TRIES` tries; the docs name both for exponential backoff (https://docs.typesafe.ai/api/errors.md). */
 const retried = (
 	once: () => Promise<JevReply>,
 	sleep: (ms: number) => Promise<unknown>,
@@ -80,7 +82,7 @@ const timeout = async (
 	throw new Error("The TypeSafe API did not answer in time.");
 };
 
-/** `HttpInit` has no timeout, so the work is raced against `ATTEMPT_TIMEOUT_MS`. */
+/** `HttpInit` has no timeout (Claude Code 2.1.317 declarations), so the work is raced against `ATTEMPT_TIMEOUT_MS`. */
 const bounded = async <T>(work: Promise<T>, sleep: JevSleep): Promise<T> => {
 	const stop = new AbortController();
 	try {
@@ -90,7 +92,7 @@ const bounded = async <T>(work: Promise<T>, sleep: JevSleep): Promise<T> => {
 	}
 };
 
-/** The key goes only in the `authorization` header. */
+/** The key goes only in the `authorization: Bearer` header (https://docs.typesafe.ai/api/system-one.md). */
 export const postJev = async (
 	key: string,
 	body: object,
@@ -109,5 +111,6 @@ export const postJev = async (
 			),
 		(ms) => transport.sleep(ms),
 	);
+	// `answers` is keyed by the question names sent (https://docs.typesafe.ai/api/system-one.md).
 	return isRecord(reply) ? reply["answers"] : undefined;
 };

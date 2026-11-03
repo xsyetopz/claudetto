@@ -52,7 +52,7 @@ This is the vendor's own benchmark, so read it as the best case for raising effo
 
 One source disagrees. `measured`, Pascal Reischl, 2026-09-27, using the Artificial Analysis Intelligence Index: tasks solved of 100 rise with effort, `low` 42, `medium` 51, `high` 54, `xhigh` 56, `max` 58, at `0.4x`, `1x`, `1.4x`, `2.6x`, and `4.5x` the usage of `medium`. <https://pascalreischl.com/en/blog/claude-effort-levels/> That is a general intelligence index, not a repository coding task, and the two repository-shaped benchmarks above both show the opposite. For this project, which only does repository work, the repository benchmarks win.
 
-The pre-restart snippet wrote `maxEffortLevel: "high"` for `claude-opus-5-5`, which satisfied the ruling. The tier snippet of the new tree (`plugins/claudetto/src/tiers/snippet.ts:36`) writes no `maxEffortLevel`, so no key enforces the ruling today. It writes `effortLevel` from the row (`plugins/claudetto/src/tiers/snippet.ts:49`), and every row carries `medium` (`plugins/claudetto/src/tiers/tiers.ts:78`), which is where a model starts and not a ceiling.
+The pre-restart snippet wrote `maxEffortLevel: "high"` for `claude-opus-5-5`, which satisfied the ruling. The tier snippet of the new tree writes the same ceiling: `modelSettingsOf` (`plugins/claudetto/src/tiers/snippet.ts:100-113`) writes `modelSettings.<model>.maxEffortLevel` from `MAX_EFFORT` (`plugins/claudetto/src/tiers/disables.ts:57-61`), which holds `high` for `claude-opus-5-5`, `medium` for `claude-sonnet-5-5`, and `high` for `claude-haiku-5-5`. `plugins/claudetto/src/tiers/__tests__/snippet.spec.ts:161-164` pins the three. It also writes `effortLevel` from the row, and every row carries `medium` from `SHARED` (`plugins/claudetto/src/tiers/tiers.ts:46`), which is where a model starts.
 
 ## Sonnet 5.5: `medium`, and `max` Is Not Worth It
 
@@ -106,9 +106,9 @@ A report the user relayed says Haiku 5.5 at `low` beats anything else on token e
 
 So the claim holds only if cost per task is the whole measure and the result does not have to be right. This project's acceptance measure is billed cost per finished task, and an unfinished task costs more than a cheap one, so the claim does not transfer.
 
-The claim is now also contradicted by our own data, which is the stronger answer, because it is this project's agents on this project's work. All 80 transcripts under `~/.claude/projects` were read on 2026-10-27 and de-duplicated by `message.id`, giving 1,938 responses. Output tokens per response, by model and by the effort recorded on the turn: `claude-haiku-5-5` at `low` 1,798 over 216 responses, `claude-sonnet-5-5` at `medium` 1,028 over 1,101, `claude-opus-5-5` at `low` 904 over 87, `claude-opus-5` at `high` 790 over 484, and `claude-opus-5-5` at `medium` 743 over 59. So Haiku at `low` wrote the most output per response of every configuration this machine has run, 75% above Sonnet at `medium`. The within-model pair points the same way, because Opus 5.5 at `low` wrote more per response than at `medium`. The method and the full tables are in `openspec/changes/claudetto-restart/references.md`. This is `self-report` on sample design, because each row carries its own workload and the effort level is not isolated, but it is our own count and not a relayed figure.
+Our own data pointed against the claim on 2026-10-27, but the counts were not reproduced for `0.3.0` and are unmeasured here. All 80 transcripts under `~/.claude/projects` were read on 2026-10-27 and de-duplicated by `message.id`, giving 1,938 responses. Output tokens per response, by model and by the effort recorded on the turn: `claude-haiku-5-5` at `low` 1,798 over 216 responses, `claude-sonnet-5-5` at `medium` 1,028 over 1,101, `claude-opus-5-5` at `low` 904 over 87, `claude-opus-5` at `high` 790 over 484, and `claude-opus-5-5` at `medium` 743 over 59. So Haiku at `low` wrote the most output per response of every configuration this machine has run, 75% above Sonnet at `medium`. The within-model pair points the same way, because Opus 5.5 at `low` wrote more per response than at `medium`. The method and the full tables are in `openspec/changes/claudetto-restart/references.md`. The counts below are the 2026-10-27 reading. This is `self-report` on sample design, because each row carries its own workload and the effort level is not isolated, but it is our own count and not a relayed figure.
 
-That matters more than a token share suggests. Priced at Anthropic's official rates, output is 28.2% of the cost of this traffic while being 1.12% of its tokens. A configuration that writes more output is expensive even when it moves few tokens, so the output-per-response row above is a cost row and not only a quality row.
+That matters more than a token share suggests. On 2026-10-27, priced at Anthropic's official rates, output was 28.2% of the cost of this traffic and 1.12% of its tokens. That reading was not reproduced for `0.3.0` and is unmeasured. A configuration that writes more output is expensive even when it moves few tokens, so the output-per-response row above is a cost row and not only a quality row.
 
 ### The Price Cliff
 
@@ -122,16 +122,15 @@ Two details of that quote tighten the cap. The threshold counts cache reads and 
 
 `official`: the context window is `1M` tokens with up to `128k` output, and the tokenizer counts the same text as about `30%` more tokens than Haiku 4.5. Thinking is on by default and counts toward `max_tokens`, and earlier thinking blocks stay in context. <https://platform.claude.com/docs/en/models/haiku-5-5/whats-new-haiku-5-5>
 
-Together those two facts mean a long Haiku subagent run drifts toward the cliff on its own, because retained thinking grows the prompt. So a Haiku agent in this project needs a prompt budget under `100k` tokens, which is a cap to set and measure, not a hope.
+Inference, not measured: together those two facts mean a long Haiku subagent run drifts toward the cliff on its own, because retained thinking grows the prompt. So a Haiku agent in this project needs a prompt budget under `100k` tokens, which is a cap to set and measure, not a hope.
 
-`official`: `thinking: {"type": "disabled"}` works only at `high` or below and returns a 400 at `xhigh` and `max`. Same for Sonnet 5.5's `between_tools` setting. So a configuration that disables thinking and sets a high effort level is an error, not a preference.
+`official`: the `whats-new-haiku-5-5` page (fetched 2026-11-03) says "you can still turn thinking off with thinking: {"type": "disabled"} at high effort or below". The earlier claims that it returns a 400 at `xhigh` and `max`, and the same for Sonnet 5.5's `between_tools` setting, are not on that page and are removed.
 
 ### What Haiku 5.5 Fails At
 
-- Complex agentic and multi-step terminal coding. `Terminal-Bench 4.0` is `39.2%` against `70.6%` for Sonnet 5.5. `official`.
-- `AutomationBench-AA` at `35%` against `53%` to `60%` for rivals, which Artificial Analysis says is likely understated by over-refusal and plans to re-run. `AA-Omniscience` accuracy `36%` with a `40%` hallucination rate. `measured`.
-- Safety classifiers can return `stop_reason: "refusal"` with no server-side fallback, and penetration testing is blocked. `official`. This project reads program internals, so a refusal path needs handling.
-- A user message sent mid-task inside a `tool_result` can be treated as untrusted and ignored. `official`. That is exactly how this session's own messages arrive, so a Haiku agent may miss a mid-run instruction.
+- Complex agentic and multi-step terminal coding. `Terminal-Bench 4.0` is `39.2%` against `70.6%` for Sonnet 5.5. `official`: the launch page <https://www.anthropic.com/claude-haiku-5-5> (fetched 2026-11-03) lists `39.2%` for Haiku 5.5 and `70.6%` for Sonnet 5.5.
+- `AutomationBench-AA` at `35%` and `AA-Omniscience` accuracy `36%` with a `40%` hallucination rate: unverified. Neither figure is on the launch page or the `whats-new-haiku-5-5` page fetched 2026-11-03.
+- Safety classifiers can return `stop_reason: "refusal"` with no server-side fallback, and penetration testing is blocked. `official`: the `whats-new-haiku-5-5` page says "Safety classifiers can decline a request ... Handle stop_reason: "refusal" in your client. Server-side fallback isn't available." The launch page says "they still block penetration testing". This project reads program internals, so a refusal path needs handling.
 - Picking the next task up after a compaction or a handover, on our own fixture. `measured`, 2026-10-27, round 7 of `docs/evidence/code-compaction-probe.md`. Across all 18 forks of the three arms, built-in `/compact`, code compaction, and handover, not one fork finished the fixture's next task with a passing check, against all 30 forks of round 6 on `claude-sonnet-5-5`, which all did. Six of the 18 also left a planted constraint untested, against none of the 30. The effort level was the CLI default and not pinned, so this measures the default configuration and not a level.
 
 ## The Delegation Pattern
@@ -152,7 +151,7 @@ If that holds, cheapening the subagent model is close to pointless, and the savi
 
 No source measured what a Haiku summary loses against a larger one. A cost model gives a 400k-token session at `$0.16` for Sonnet 5.5 with a warm cache, `$0.23` for Haiku in one shot, and about `$0.061` for Haiku in five chunks plus a merge, while warning that chunking loses cross-chunk references. With a cold cache Haiku wins. All modeled.
 
-`official`, and it bears on the handoff design: editing earlier turns or the system prompt invalidates replay of thinking blocks, so a resumed session should start fresh from the summary rather than replaying. This project's handoff already works that way.
+`official`: the `whats-new-haiku-5-5` page says "Changing earlier turns invalidates thinking blocks" and "Keep conversations append-only if you send thinking blocks back". It bears on the handoff design. Whether this project's handoff meets it is unmeasured.
 
 ## Where the Level Must Be Written, and the Cache
 

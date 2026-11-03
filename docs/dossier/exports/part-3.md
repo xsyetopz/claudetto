@@ -9,7 +9,7 @@ Each bullet gives the claim, the file, the question number, the label, and wheth
 ## Effort per Model
 
 - Opus 5.5 defaults to "medium", so the subagents it launches inherit that level, and the commenter advises setting "at least 'high' in the definitions of the subagents that use the Sonnet model". `export-Opus 5.5 in Claude Code is crazy fast, especially at spotting UI bugs.jsonl`, Q1, self-report, comment.
-- "5.5 in High used roughly 28% of my 5H over 90-ish minutes of work." Same file, Q1, self-report, comment. Another commenter there says users "need to download Claude Code version 2.1.280" for Opus 5.5. The project runs `2.1.311`.
+- "5.5 in High used roughly 28% of my 5H over 90-ish minutes of work." Same file, Q1, self-report, comment. Another commenter there says users "need to download Claude Code version 2.1.280" for Opus 5.5. The project ran `2.1.311` when this was written; that version is not installed on 2026-11-03, and `claude --version` prints `2.1.317`.
 - Opus 5.5 on medium as an orchestrator "only sipped 2 percent of usage" over a night, and "that same job done by previous models would suck down 25 percent in less time". "Bumping to High or Xhigh starts to guzzle tokens." `export-Opus 5.5 at Medium is cheaper and faster than Opus4.6-Fable5.1 at high.jsonl`, Q1, self-report, comment. A reply disagrees: "Cheaper but it works 10x time on something!"
 - "I changed it to xhigh and the usage went to the roof." A reply says Anthropic recommends medium as the default, and that higher efforts give "marginally better results while consuming much more usage". Another: "im sticking with high, seemed to last forever". `export-What is wrong with Opus 5.5-.jsonl`, Q1, self-report, comment.
 - "High is the new xhigh with 5.5. xhigh was 'I intend max but I can't reasonably afford it'." `export-Token optimization from Anthropic- choosing the right effort level to the task.jsonl`, Q1, self-report, comment. The post body is empty and links to an article that is not in the file.
@@ -18,7 +18,7 @@ Each bullet gives the claim, the file, the question number, the label, and wheth
 - A commenter plans with Opus and implements with Sonnet, and is "starting to use Opus 5.5 on low effort instead because it's faster and I trust it more". `export-Low-effort Opus 5.5 appreciation post.jsonl`, Q1, self-report, comment.
 - A disagreement on Sonnet against Opus for coding, with no Sonnet 5.5 named. One: "Default-to-Sonnet and escalate-on-failure burns way less usage than starting every session on Opus." Another: "api cost by task for sonnet is higher than for opus". `export-Is Sonnet actually good enough for Claude Code, or do you mostly stick with Opus-.jsonl`, Q1, self-report, comment.
 - On the same question with Opus 5.5 on medium: "it's costs way too much to fix and keep rechecking" with Sonnet 5, against "let Opus 5.5 run entirely on medium". Another: "cheaper than sonnet 5 so no need for me to use any other agents". `export-Opus 5.5 for everything, or mixing models across plan - implement - review-.jsonl`, Q1, self-report, comment. The Sonnet is 5, not 5.5.
-- No `claude-haiku-5-5` effort figure and no `claude-sonnet-5-5` effort figure was found in these files.
+- No `claude-haiku-5-5` effort figure and no `claude-sonnet-5-5` effort figure was found in these files. Checked: `grep -il -E 'haiku[ -]5[.-]5' external/export-*.jsonl` prints 6 files, and each mention is an announcement or a wish (`Haiku 5.5 is on the way`) with no effort or coding figure. `grep -il -E 'sonnet[ -]5[.-]5' external/export-*.jsonl` prints 4 files; whether any holds an effort figure is not rechecked.
 
 ## What Reduces Usage
 
@@ -43,7 +43,7 @@ Each bullet gives the claim, the file, the question number, the label, and wheth
 - "Explore agents are limited to haiku and they’re only allowed max of 2 each cause otherwise my budget is shot." `export-How do you keep up with 5+ agents at the same time-.jsonl`, Q6, self-report, comment. This is a number of subagents per agent, not a turn or tool-call limit.
 - A disagreement on one loop against several agents. One calls Opus 5.5 "too eager to reach for subagents". Another: "I always use subagents". `export-What is wrong with Opus 5.5-.jsonl`, Q6, self-report, comment.
 - On reviews: a fresh reviewer subagent "that only gets the claim and the evidence, not the whole conversation" because "in the same context it mostly agrees with itself". Another keeps the reviewer persistent with its own notes file. `export-Be careful with Opus 5.5’s confidence.jsonl`, Q6, self-report, comment.
-- No numeric subagent turn or tool-call limit was found in these files. No figure for work lost at a window boundary was found.
+- No numeric subagent turn or tool-call limit was found in these files. No figure for work lost at a window boundary was found. Checked: `grep -il -E 'maxTurns|max.turns|turn limit|tool-call limit|turn cap' external/export-*.jsonl` prints 1 file, the `200-turn limit` thread, which `exports.md:64` cites. The window-boundary claim is not rechecked. On `2.1.317`, `grep -a -c maxTurns` on the binary prints 56 and `grep -a -c -E '200[- ]turn'` prints 0.
 
 ## Prompt and Harness Size
 
@@ -55,8 +55,8 @@ Each bullet gives the claim, the file, the question number, the label, and wheth
 
 ## Coverage
 
-Top-level `external/export-*.jsonl` files: 131, by `ls -1 export-*.jsonl | wc -l`. The coverage list of `docs/dossier/exports/part-2.md` names the 12 unread files and gives only a count for the 47 filter-read files. It does not name them. So this pass read every top-level file with no bullet in either earlier dossier, which is 48 files, plus the 12 named unread files. That is 60 files.
-Cited: 16. Read with nothing found: 44.
+Top-level `external/export-*.jsonl` files: 131, by `ls -1 export-*.jsonl | wc -l`, run again on 2026-11-03. The count of 60 files read (48 plus the 12 named unread) and of 44 read with nothing found were not recorded with a command, so they are unmeasured.
+Cited: 16, which is the 16 names in the list below; each exists in `external/` (checked on 2026-11-03).
 The two scope exclusions were each opened once. `export-I ran Claude Code across all 89 tasks of Terminal-Bench 2.1 ...jsonl` states "Gemini 3.6 Flash High" in its post. `export-Two 5x sub or one 20x sub-.jsonl` is plan choice. Neither holds a Claude 5 number. They were not counted among the 60.
 Method: for each of the 60 files I read the post and every comment that held a number with a unit or a topic word, cut to 380 characters. A file with only chatter could hold an unread comment.
 Cited files:
@@ -78,5 +78,5 @@ Cited files:
 - `export-How do you keep up with 5+ agents at the same time-.jsonl`
 - `export-OPUS 5.5 IS THE NEW 4.6!.jsonl`
 
-Read with nothing found: 44 files, being the other 44 of the 60. They hold praise, complaint, or topics off the eight questions. Two were read and set aside for a stated reason. `export--Claude reached its tool-use limit- ...jsonl` gives "roughly 20 tool calls", but it is about the `claude.ai` chat and not Claude Code. `export-Those of you actually using Haiku regularly- what am I missing-.jsonl` names no Haiku version and no effort setting.
+Read with nothing found: 44 files, being the other 44 of the 60 (both counts unmeasured). They hold praise, complaint, or topics off the eight questions. Two were read and set aside for a stated reason. `export--Claude reached its tool-use limit- ...jsonl` gives "roughly 20 tool calls", but it is about the `claude.ai` chat and not Claude Code. `export-Those of you actually using Haiku regularly- what am I missing-.jsonl` names no Haiku version and no effort setting.
 Top-level files still unread: none. Every top-level file has now been opened. The top level is not fully read, because the 60 files of this pass were read through the filter above.

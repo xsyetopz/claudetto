@@ -149,24 +149,24 @@ The one external source with a real sample reports a flat optimum, "anything bet
 A lower trigger buys a cheaper request and pays for it in more compactions and more discarded context, and no row here prices that trade.
 
 The moment inside the work is the real one, and it is unmeasured here.
-The harness picks the moment by token count alone and knows nothing about whether a task is half done, and each firing discards about 92% of the conversation.
+The harness picks the moment by token count alone and knows nothing about whether a task is half done, and each firing discards about 92% of the conversation (on 2026-11-03, `bun claudekit/compaction-cost/main.ts` read a mean kept share of 7.27% over 243 compactions, so 93%).
 The cost of that shows up as re-reading, which `docs/evidence/code-compaction-probe.md` measured in the probe arms rather than in real sessions.
 Nothing in a `compact_boundary` record says whether the work survived.
 
 ## What This Does and Does Not Settle
 
-It settles that a compaction on this login reads about 226,000 tokens to keep about 18,000, that it costs about 2.5 minutes of waiting, that the request after it rebuilds about 32,000 tokens of cache, and that it fires on a live cache.
-Those numbers are measured.
+It settled, on the sample of 2026-10-28, that a compaction on this login read about 226,000 tokens to keep about 18,000, cost about 2.5 minutes of waiting, was followed by a request that rebuilt about 32,000 tokens of cache, and fired on a live cache.
+Those numbers were measured on that sample and are not reproduced by the larger one: on 2026-11-03 the same transcripts gave a mean of 165,782 tokens before, 11,548 after, and 84.1 s of duration over 243 compactions. The cache rebuild and the live cache are unmeasured on it.
 
 It does not settle the price of a compaction, for the reason above, and it does not settle whether another path is cheaper.
 That comparison needs the billed cost of a compaction, which only `$.session.usage()` deltas across the boundary can give, and that is what task 10.7 exists for.
 
 It does not settle whether the moment is right for the work, only that the cache state is not the problem.
 
-It also does not support any claim about the Claude Code default threshold, because this login does not run it.
+It also does not support any claim about the Claude Code default threshold, because the threshold this login runs is unmeasured here (the shipped settings set `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` to `50.0000`).
 
 ## Sources
 
 The external sources that prompted this page, with what each is worth, are in `openspec/changes/claudetto-restart/references.md` under "Compaction Cost Claims (Read 2026-10-28)".
 The `jq` method over `compact_boundary` is from the Reddit post recorded there.
-The formulas for the levels are from `clawdipedia` route `how-it-works/context-and-compaction`.
+The formulas for the levels are from `clawdipedia` route `how-it-works/context-and-compaction` (a web page, not re-read: unverified, needs a web read).

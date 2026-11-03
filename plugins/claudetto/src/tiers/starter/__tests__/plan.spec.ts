@@ -132,6 +132,47 @@ describe("table", () => {
 	});
 });
 
+describe("unsourced table entries", () => {
+	// No doc, `--help`, or probe of 2026-11-03 names these, so a generated file must not hold them.
+	const unsourced: readonly {
+		id: string;
+		heavy: readonly string[];
+		bulky: readonly string[];
+		markers: readonly string[];
+	}[] = [
+		{ id: "c", heavy: ["build/", "cmake-build-*/"], bulky: [], markers: [] },
+		{ id: "dotnet", heavy: ["packages/"], bulky: [], markers: [] },
+		{ id: "js", heavy: [], bulky: ["*.min.js", "*.map"], markers: [] },
+		{ id: "ruby", heavy: ["tmp/", "log/"], bulky: [], markers: [] },
+		{
+			id: "swift",
+			heavy: [],
+			bulky: ["Package.resolved"],
+			markers: ["*.xcodeproj", "*.xcworkspace"],
+		},
+		{
+			id: "web",
+			heavy: [],
+			bulky: ["*.min.css", "*.min.js", "*.map"],
+			markers: ["index.html"],
+		},
+	];
+
+	test("no family lists an entry that no source names", () => {
+		for (const entry of unsourced) {
+			const family = FAMILIES.find((candidate) => candidate.id === entry.id);
+			const held = [
+				...(family?.heavy ?? []),
+				...(family?.bulky ?? []),
+				...(family?.markers ?? []),
+			];
+			const banned = [...entry.heavy, ...entry.bulky, ...entry.markers];
+
+			expect(held.filter((name) => banned.includes(name))).toEqual([]);
+		}
+	});
+});
+
 describe("linesOf and previewOf", () => {
 	test("linesOf drops blank lines", () => {
 		expect(

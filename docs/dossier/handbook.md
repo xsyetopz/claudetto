@@ -184,7 +184,7 @@ The core claim of the pack is an enforcement ladder: prose, rules files, per-tur
 
 ## Coverage
 
-All 13 files were read in full, with no part left unread. Line counts are from `wc -l`.
+`wc -l` on the 13 files on 2026-11-03 prints the line counts in the table below. That all 13 were read in full is unmeasured.
 
 | File | Lines |
 | --- | --- |

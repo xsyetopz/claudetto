@@ -34,7 +34,7 @@ export const slowText = (
 	const share = used(usage, "seven_day");
 	return share === undefined || share < SLOW_AT
 		? undefined
-		: `Seven-day limit: ${share}% used. Start no subagent fan-out and no paid eval run. With each reply that spent more than 1% of the week, say how much of it remains.`;
+		: `Seven-day limit: ${share}% used. Work in the main thread and use free evals. With each reply that spent more than 1% of the week, say how much of it remains.`;
 };
 
 const bandOf = (percent: number | undefined): string =>

@@ -2,6 +2,7 @@ import { HAIKU_MODEL, OPUS_MODEL, SONNET_MODEL } from "./tiers.ts";
 
 export const SUBAGENT_MODEL_ENV = "CLAUDE_CODE_SUBAGENT_MODEL";
 
+/** `2.1.317`: `ANTHROPIC_DEFAULT_MODEL`, `_OPUS_MODEL`, `_SONNET_MODEL` and `_HAIKU_MODEL` are in `docs/keep/settings/env-documented.txt`. */
 export const MODEL_PINS: Readonly<Record<string, string>> = {
 	ANTHROPIC_DEFAULT_MODEL: OPUS_MODEL,
 	ANTHROPIC_DEFAULT_OPUS_MODEL: OPUS_MODEL,
@@ -43,7 +44,7 @@ export const UNOFFICIAL_ENV: readonly UnofficialFlag[] = [
 		name: "CLAUDE_CODE_THRIFTY_SONIC",
 		value: "0",
 		source:
-			"`qvn()` of the `2.1.314` binary returns it before the `tengu_cozy_teapot` gate.",
+			"`2.1.317`: `_xn()` returns it, as a tri-state boolean, before the `tengu_thrifty_sonic` gate.",
 	},
 ];
 

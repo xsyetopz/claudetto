@@ -34,7 +34,7 @@ Rows by cause: our own turn bound 4 (3 alone, 1 with a read limit), a tool or fe
 
 ## The Turn Bound Is the Only Cause in Our Own Code
 
-`TURN_BOUNDS` in `plugins/claudetto/modules/session/prompt/limits.ts` injects a line asking the agent to stop and report. The phrase "You have made many tool calls in this run" is in 11 of the 90 transcripts: 6 of the 18 `Hermes` runs, 4 of the 39 `Hephaestus` runs, and 1 of the 30 `Artemis` runs.
+`TURN_BOUNDS` in `plugins/claudetto/modules/session/prompt/limits.ts` (archived: the file is read with `git show 199a3de8^:plugins/claudetto/modules/session/prompt/limits.ts`; no `TURN_BOUNDS` or "many tool calls" text is in `plugins/claudetto/src` now) injected a line asking the agent to stop and report. The phrase "You have made many tool calls in this run" is in 11 of the 90 transcripts: 6 of the 18 `Hermes` runs, 4 of the 39 `Hephaestus` runs, and 1 of the 30 `Artemis` runs.
 
 Tool calls per run, each `tool_use_id` once:
 
@@ -46,13 +46,13 @@ Tool calls per run, each `tool_use_id` once:
 | `claudetto:Athena` | 2 | 21, 24 | 65 | 0 |
 | `claudetto:Apollo` | 1 | 3 | 120 | 0 |
 
-The `Hermes` bound of 30 came from a single run of 8 calls on 2026-10-26, which is the whole `Hermes` sample that `limits.ts` had. The new counts pile up at 30, 31, 32, 33, 33, 33 and stop there, so a third of the runs of the type ended at the bound rather than at the work, and three of them say so in the text above. It was raised to 40, a quarter above the largest count, which is the method the other three bounds already use. The 33 is itself a capped count, so 40 is a floor.
+The `Hermes` bound of 30 came from a single run of 8 calls on 2026-10-26, which is the whole `Hermes` sample that the archived `limits.ts` had. The new counts pile up at 30, 31, 32, 33, 33, 33 and stop there, so a third of the runs of the type ended at the bound rather than at the work, and three of them say so in the text above. It was raised to 40, a quarter above the largest count, which is the method the other three bounds already use. The 33 is itself a capped count, so 40 is a floor.
 
 `Hephaestus` and `Artemis` crossed their bounds in 5 runs, and none of those 5 reports open work, so neither bound moved. The reasoning is that a bound changes only with a row that it would have fixed.
 
 ## Denied Tool Calls Inside a Run
 
-The gate denied 50 `Bash` calls of 27 runs, each with a text that starts "Permission to use Bash denied by plugin claudetto". 49 are the wrong-tool rule of `plugins/claudetto/modules/gate/domain/wrongtool.ts`, by program `cat` 28, `head` 14, `tail` 7. The 50th is the classifier, which stopped `git checkout plugins/claudetto/tests/prompt-size.test.ts` because the file held uncommitted edits, and that denial is correct.
+The gate denied 50 `Bash` calls of 27 runs, each with a text that starts "Permission to use Bash denied by plugin claudetto". 49 are the wrong-tool rule of `plugins/claudetto/modules/gate/domain/wrongtool.ts` (archived, read with `git show 199a3de8^:plugins/claudetto/modules/gate/domain/wrongtool.ts`; no wrong-tool file is in the tree now), by program `cat` 28, `head` 14, `tail` 7. The 50th is the classifier, which stopped `git checkout plugins/claudetto/tests/prompt-size.test.ts` because the file held uncommitted edits, and that denial is correct.
 
 Every one of the 49 was a compound command, and the rule reads each top-level part, so one part with the wrong tool denies the whole call. All 49 reproduce on the rule as it stood before the fix.
 
@@ -61,7 +61,7 @@ The 49 commands hold 62 parts that deny. By shape:
 | Shape | Parts | Can one `Read` call do it | Verdict |
 | --- | --- | --- | --- |
 | A plain read of one file, such as `cat prd.md` | 20 | Yes | Correct. The agent should have used `Read`. |
-| The reader feeds a pipe, such as `cat -n /tmp/rest.txt \| cut -c1-140` | 21 | No, but the gate denies it by a decision of the user of 2026-10-27, pinned by the case `tail -20 a.txt \| grep x` in `tests/claudetto/gate/wrongtool.test.ts` | Kept. Not ours to change. |
+| The reader feeds a pipe, such as `cat -n /tmp/rest.txt \| cut -c1-140` | 21 | No, but the gate denies it by a decision of the user of 2026-10-27, pinned by the case `tail -20 a.txt \| grep x` in `tests/claudetto/gate/wrongtool.test.ts` (archived the same way) | Kept. Not ours to change. |
 | Two files in one call, such as `tail -n 4 docs/keep/skills/find-docs.txt docs/keep/tools/ListAgents.txt` | 8 | No. `Read` takes one path | Defect. Fixed. |
 | A glob, such as `head -c 1500 2026-10-26/reddit.com-r-programming-comments-1xfszv3*` | 6 | No. `Read` cannot expand a pattern | Defect. Fixed. |
 | A reader inside a loop body, such as `do cat h_$k.txt` | 1 | Yes, one call for each name | Correct. |
@@ -73,12 +73,12 @@ After the fix the 49 commands hold 53 denying parts in place of 62, and 6 of the
 
 ## What Changed in an Agent File
 
-A dump of the six agent files of `plugins/claudetto/agents/` compared the tools each body names in backticks against the `tools` list of its frontmatter. One file disagreed: `Artemis.md` said "Find the place with `Grep` (or with `grep` in `Bash` when a native build has no `Grep`)", and the type is `tools: Read, Grep, Glob`, with no `Bash`. The row `agent-a935e8a5` above is that instruction reaching a run: its `blocks` tag opens with "Bash is not available in this session, so no shell checks were run", which reads as a block although nothing blocked it. The parenthetical is gone.
+A dump of the six agent files of `plugins/claudetto/agents/` (before the rebuild; the folder holds four now) compared the tools each body names in backticks against the `tools` list of its frontmatter. One file disagreed: `Artemis.md` said "Find the place with `Grep` (or with `grep` in `Bash` when a native build has no `Grep`)", and the type is `tools: Read, Grep, Glob`, with no `Bash`. The row `agent-a935e8a5` above is that instruction reaching a run: its `blocks` tag opens with "Bash is not available in this session, so no shell checks were run", which reads as a block although nothing blocked it. The parenthetical is gone.
 
-The fact inside it is kept here rather than in the file: if a build of Claude Code ships without the `Grep` tool, `Artemis` would need `Bash` in its `tools` list to search at all. No row of the table above shows such a build, so the list is unchanged.
+The fact inside it is kept here rather than in the file, and it is unmeasured: if a build of Claude Code ships without the `Grep` tool, `Artemis` would need `Bash` in its `tools` list to search at all. No row of the table above shows such a build, so the list is unchanged.
 
 The other causes are not ours to change in an agent file:
 
 - A brief that asks for every file of a folder set (`agent-a935e8a5`, `agent-aac97347`) or that names a file which does not exist (`agent-a0a9f58e`) is a defect of the brief, which the parent writes for one run. `Artemis.md` already ends each run with a report of what is open, and both runs did exactly that, so the file behaved as written.
-- A run that stops with no block and open files (`agent-a24cb4ee`) reported the open files and handed the decision to the parent, which is what line 21 of `Artemis.md` asks for.
-- A read limit, a `Glob` cut at 100 results, a `WebFetch` cut at 100,000 characters, a timeout, and a GitHub 403 are limits outside this repository.
+- A run that stops with no block and open files (`agent-a24cb4ee`) reported the open files and handed the decision to the parent, which `Artemis.md` now asks for in `<when_blocked>` and `<report_format>` (line 21 is the opening tag of `<when_blocked>`).
+- A read limit, a `Glob` cut at 100 results, a `WebFetch` cut at 100,000 characters, a timeout, and a GitHub 403 are limits outside this repository. Checked on `2.1.317`: the `Glob` output schema says "Whether results were truncated (limited to 100 files)" (strings dump). The `2.1.317` changelog names 100,000 characters only for a PDF in Cowork cloud sessions, so a `WebFetch` cut at 100,000 is unmeasured. The read limit, the timeout, and the GitHub 403 are unmeasured.

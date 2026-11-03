@@ -23,7 +23,7 @@ The text of a block was also checked.
 This section keeps no result of the eval.
 
 - The repeated reply can pass, because the prompt answers `ok` when `stop_hook_active` is `true`.
-- The hook adds one model request of about 6,914 input tokens to each turn.
+- The hook adds one model request to each turn. The figure of about 6,914 input tokens is the reading of the run recorded here and is unmeasured on `2.1.317`.
 - A command hook cannot judge a claim in free text.
 
 ## Facts from the Binary

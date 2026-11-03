@@ -1,6 +1,6 @@
 # Dossier of the Mid Exports
 
-This file mines the folders `external/2026-10-11`, `external/2026-10-12`, `external/2026-10-12_p2`, `external/2026-10-12_p3`, and `external/2026-10-13`. Every source is a Reddit thread of October 2026. A thread is a `self-report` unless the author gives a method, a command, or a table, and then it is `measured`. The project runs `2.1.311`. A version that a file names is given in the bullet. Where authors disagree, both claims stay and no winner is picked.
+This file mines the folders `external/2026-10-11`, `external/2026-10-12`, `external/2026-10-12_p2`, `external/2026-10-12_p3`, and `external/2026-10-13`. Every source is a Reddit thread of October 2026. A thread is a `self-report` unless the author gives a method, a command, or a table, and then it is `measured`. Written when the project ran Claude Code `2.1.311`. That version is not installed on 2026-11-03; `claude --version` prints `2.1.317`. A version that a file names is given in the bullet. Where authors disagree, both claims stay and no winner is picked.
 
 ## Effort per Model
 
@@ -97,7 +97,7 @@ This file mines the folders `external/2026-10-11`, `external/2026-10-12`, `exter
 
 - One research prompt made 394 subagent calls and pushed 84M tokens through the API in ten minutes. The first request of each was about 29k tokens, so starts were about 10M, an eighth of the total. The main conversation made only 2 of the calls. `external/2026-10-12_p2/export-Claude Code's subagent limits are per session, so I built a mod that counts across all of them.jsonl`. `measured`
 - The author states that Claude Code stops a session at 20 subagents running at once and three levels of nesting, with no count across sessions. The mod needs `2.1.287`. `external/2026-10-12_p2/export-Claude Code's subagent limits are per session, so I built a mod that counts across all of them.jsonl`. `self-report`
-- No file in these folders states a turn limit for a subagent.
+- No file in these folders states a turn limit for a subagent. Checked on 2026-11-03: `grep -ilrE 'maxTurns|max.turns|turn limit|tool-call limit|turn cap'` over the five folders prints no file. On `2.1.317`, `grep -a -c maxTurns` on the binary prints 56 and `grep -a -c -E '200[- ]turn'` prints 0.
 - Subagent file reads and search output stay in its own context and only a summary comes back, so the main context grows more slowly. A subagent file in `.claude/agents` with `model: haiku` in the frontmatter does it. `external/2026-10-11/export-How much more effective-better is using Opus 5.5 w-haiku subagents than just opus 5.5.jsonl`. `self-report`
 - Three subagents running the same search are "three contexts paying for it". Splitting by area of the code stops most of it. `external/2026-10-11/export-How much more effective-better is using Opus 5.5 w-haiku subagents than just opus 5.5.jsonl`. `self-report`
 - An audit found Opus 5.5 used its own model and effort for launched subagents "far more often than not", so the author sets models per task in `CLAUDE.md`. `external/2026-10-11/export-How much more effective-better is using Opus 5.5 w-haiku subagents than just opus 5.5.jsonl`. `self-report`
@@ -138,8 +138,7 @@ This file mines the folders `external/2026-10-11`, `external/2026-10-12`, `exter
 
 ## Coverage
 
-- Files read: 133 (132 `.jsonl` threads and 1 `.md`), each at least by its first record. 42 of them hold a cited item.
-- Files skipped: 91. Each holds opinion, a non-coding topic (policy, reverse engineering, credentials, writing style), or a tool promotion with no number and no mechanism for the eight questions.
-- Files that could not be read: none. The one `.md` file, `external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md`, was read and skipped as an opinion.
+- Files in the five folders: 133 (132 `.jsonl` and 1 `.md`). `find external/2026-10-11 external/2026-10-12 external/2026-10-12_p2 external/2026-10-12_p3 external/2026-10-13 -type f` finds 24, 50, 25, 28, and 6 files on 2026-11-03.
+- The counts of files read, cited (42), and skipped (91) were not recorded with a command, so they are unmeasured and removed. The one `.md` file is `external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md`, which exists; that it was read and skipped is unmeasured.
 - Two files that ran an experiment were left out for their sample: `external/2026-10-12_p2/export-I tested a popular Claude Code debugging skill against a same-length placebo. Claude never used it o.jsonl` (the sample is 1 bug task) and `external/2026-10-12/export-I Tested Haiku 5.5 vs Luna vs DeepSeek Flash vs Gemini 3.8 Flash on real-ish work stuff. Basically a.jsonl` (it compares other vendors).
 - Fable 5.1 claims in several threads were left out, because the eight questions name only Opus, Sonnet, and Haiku.

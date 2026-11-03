@@ -1,6 +1,6 @@
 #!/bin/sh
 # Runs the shell command string it is given in the shell of the session, with writes confined to the project, the temp folders, and the tool caches.
-# `CLAUDE_CODE_SHELL_PREFIX` names this file, so Claude Code calls it with the whole command after its permission check.
+# `CLAUDE_CODE_SHELL_PREFIX` names this file, so Claude Code calls it with the whole command as one quoted argument (Claude Code `2.1.317` builds `PREFIX 'COMMAND'` in its embedded `Yhe`).
 # Usage: claudetto-confine COMMAND | claudetto-confine --check --
 # `--check --` starts the sandbox on a command that does nothing and exits 0 when it runs, or 126 with the reason when it does not. It takes two arguments, because a call with the command always has one, so a command string `--check` is run and never taken for the check.
 
@@ -23,7 +23,7 @@ if [ $# -eq 2 ] && [ "$1" = --check ] && [ "$2" = -- ]; then
 fi
 cmd=${1-}
 
-# A root that is the home folder or holds it makes the whole home writable, `~/.ssh` included.
+# A root that is the home folder or holds it makes the whole home writable, `~/.ssh` included (probe on macOS 27.2: `sandbox-exec` with `ROOT` as the home wrote `.ssh/k`, and with a subfolder as `ROOT` it failed with "Operation not permitted").
 homephys=$(cd "$home" 2>/dev/null && pwd -P) || homephys=$home
 case "$homephys/" in
 "${root%/}/"*) refuse "the project folder \`$root\` is the home folder or holds it." ;;
@@ -33,9 +33,11 @@ $check || [ $# -eq 1 ] || refuse "it takes one command string."
 
 case $(uname -s) in
 Darwin)
+	# `sandbox-exec [-f profile-file] [-D key=value ...] command` is in `man sandbox-exec` on macOS 27.2, which marks it DEPRECATED.
 	[ -x /usr/bin/sandbox-exec ] || refuse "\`sandbox-exec\` is missing."
 	[ -r "$profile" ] || refuse "its profile is missing."
 	# The system tools keep their caches in the user folder of the system, whatever `TMPDIR` is.
+	# `getconf DARWIN_USER_TEMP_DIR` printed `/var/folders/.../T/` on macOS 27.2, so its parent is the user folder.
 	tmpuser=$(getconf DARWIN_USER_TEMP_DIR 2>/dev/null) || tmpuser=$tmp
 	tmpuser=$(cd "$tmpuser/.." 2>/dev/null && pwd -P) || tmpuser=$tmp
 	set -- -f "$profile" -D "ROOT=$root" -D "TMP=$tmp" -D "TMPUSER=$tmpuser" -D "HOME=$home"
@@ -48,7 +50,9 @@ Darwin)
 	;;
 Linux)
 	command -v bwrap >/dev/null 2>&1 ||
+		# `apt install` is in `apt(8)` of Debian trixie, and `packages.debian.org/stable/bubblewrap` lists `bubblewrap` 0.12.0.
 		refuse "\`bwrap\` is missing; install \`bubblewrap\` (\`apt install bubblewrap\`) or set \`confineEnabled\` to \`false\`."
+	# `--ro-bind`, `--dev`, `--proc`, `--die-with-parent`, and `--new-session` are in `bwrap.xml` of bubblewrap 0.13.2 (`containers/bubblewrap`).
 	# `--check` takes the same flags as the call, so a flag that fails the call fails the guard first.
 	set -- --ro-bind / / --dev /dev --proc /proc --die-with-parent --new-session
 	if $check; then
@@ -58,13 +62,13 @@ Linux)
 	fi
 	set -- "$@" --bind "$root" "$root" --bind /tmp /tmp
 	[ "$tmp" = /tmp ] || set -- "$@" --bind "$tmp" "$tmp"
-	# macOS allows these folders by path, so they are made here to be bound, because a bind needs the folder.
+	# `profile.sb` allows these folders by path on macOS, so they are made here to be bound, because a bind needs the folder.
 	for d in "$home/.bun" "$home/.cache"; do
 		[ -d "$home" ] && mkdir -p "$d" 2>/dev/null
 		[ -d "$d" ] && set -- "$@" --bind "$d" "$d"
 	done
 	if [ -d "$root/.git" ] && [ ! -L "$root/.git" ]; then
-		# A folder that is bound cannot be renamed or removed, so `mv .git .git.x; git init` fails. The hooks folder and the config are bound read-only and made first, so the sandbox cannot create them.
+		# A bound folder is a mount point, and `rename(2)` documents `EBUSY` for one (man7.org), so `mv .git .git.x; git init` fails. The hooks folder and the config are bound read-only and made first, so the sandbox cannot create them.
 		mkdir -p "$root/.git/hooks" 2>/dev/null
 		[ -e "$root/.git/config" ] || : >"$root/.git/config" 2>/dev/null
 		set -- "$@" --bind "$root/.git" "$root/.git"

@@ -1,6 +1,6 @@
 # Dossier Late: Cost Findings from the 2026-10-14, 2026-10-17, and 2026-10-21 Folders
 
-Every bullet is one claim, then the file path, then `self-report` or `measured`. A forum post or a comment is a self-report. `measured` marks an author who gives a method, a command, or a table. It is not a verified result. Versions are named where the file names one. The project runs `2.1.311`.
+Every bullet is one claim, then the file path, then `self-report` or `measured`. A forum post or a comment is a self-report. `measured` marks an author who gives a method, a command, or a table. It is not a verified result. Versions are named where the file names one. Written when the project ran Claude Code `2.1.311`. That version is not installed on 2026-11-03; `claude --version` prints `2.1.317`.
 
 Paths below start at `external/`. A dated folder name is followed by the file name.
 
@@ -148,7 +148,6 @@ Paths below start at `external/`. A dated folder name is followed by the file na
 
 ## Coverage
 
-- Files read: 124 of 124, each at least by its first record. The three folders hold 16, 60, and 48 files. Long threads were read through a filter on numbers and keywords, not comment by comment.
-- Files cited in a bullet: 51. Files skipped, as opinion with no number and no mechanism or as non-coding: 73.
-- Files I could not read: none.
+- Files in the three folders: 124. `find external/2026-10-14 external/2026-10-17 external/2026-10-21 -type f` finds 16, 60, and 48 files on 2026-11-03.
+- The counts of files read, cited (51), skipped (73), and not readable were not recorded with a command, so they are unmeasured and removed.
 - Skipped by the coding rule, for example: `external/2026-10-14/export-attention-sound- A Claude Code mod that plays a sound when Claude needs you, so you can do other thi.jsonl` (sound mod, no cost figure), `external/2026-10-17/export-Skills list constantly repeating throughout context and triggering compaction.jsonl` (Cowork, not Claude Code), and `external/2026-10-14/export-Haiku + skills beat Opus at 15× lower cost.jsonl` (founder writing tasks, not coding).

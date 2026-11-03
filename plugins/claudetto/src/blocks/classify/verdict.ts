@@ -12,7 +12,7 @@ import { answersOf } from "../decide/ask.ts";
 import { classifierRules } from "./prompt.ts";
 import { callLine } from "./transcript.ts";
 
-// Haiku 5.5 cannot turn thinking off, so `$.model.complete` adds only 2048 tokens of room for it: at `high` the thinking can fill the cap and leave no text.
+// Claude Code `2.1.317` lists `rejects_disabled_thinking` for `claude-haiku-5-5` in its model catalog, and `[void 0, 2048]` is what it returns for such a model: no `thinking` setting and 2048 tokens of room. The catalog gives `claude-haiku-5-5` and `claude-sonnet-5-5` the `default_effort` `medium`.
 export const VARIANTS = {
 	haiku: { model: "claude-haiku-5-5", effort: "medium" },
 	sonnet: { model: "claude-sonnet-5-5", effort: "medium" },
@@ -23,7 +23,7 @@ export const VARIANTS = {
 
 export type Variant = keyof typeof VARIANTS;
 
-/** Tools that read and change nothing, which the built-in classifier also never sees. */
+/** Tools that read and change nothing. */
 export const READ_ONLY_TOOLS: ReadonlySet<string> = new Set([
 	"Read",
 	"Glob",
@@ -37,7 +37,7 @@ export const READ_ONLY_TOOLS: ReadonlySet<string> = new Set([
 export const JEV_ALLOW_MAX = 0.05;
 export const JEV_BLOCK_MIN = 0.95;
 
-// Haiku 5.5 thinks inside this cap with no budget of its own, so the cap leaves room past the verdict. A cap far larger lets a long thinking run reach `VERDICT_TIMEOUT_MS`.
+// The cap is a chosen value. Haiku 5.5 gets no `thinking` setting from `$.model.complete` (`2.1.317`), so its thinking runs inside the cap with no budget of its own.
 const VERDICT_MAX_TOKENS = 1000;
 
 const VERDICT_CAP = capOf(VERDICT_MAX_TOKENS);

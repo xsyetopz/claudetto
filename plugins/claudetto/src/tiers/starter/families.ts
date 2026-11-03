@@ -1,5 +1,8 @@
-// Each command carries only flags read from the tool's `--help` or its docs. A tool whose bounding flags are
-// unconfirmed is left out of `commands` and named in `omitted`, so a generated file never holds a guess.
+// Read on 2026-11-03. Flags: the installed `--help` of `bun`, `biome`, `uv`, `ruff`, `shellcheck`, `cargo`, `swift`,
+// and `make`; the docs or source of the other tools. Marker, `heavy`, and `bulky` names: a doc page, an installed
+// `man` page, or the files that `swift package init`, `cargo init`, `uv init`, and `bundle init` wrote in a new
+// folder. An entry no source named is not in the table. A tool whose bounding flags are unconfirmed is left out of
+// `commands` and named in `omitted`, so a generated file never holds a guess.
 
 export type Kind = "test" | "build" | "lint" | "types";
 
@@ -76,8 +79,6 @@ export const FAMILIES: readonly Family[] = [
 			"package-lock.json",
 			"yarn.lock",
 			"pnpm-lock.yaml",
-			"*.min.js",
-			"*.map",
 		],
 		omitted: ["prettier", "tsc", "yarn"],
 	},
@@ -127,7 +128,7 @@ export const FAMILIES: readonly Family[] = [
 		label: "Ruby",
 		markers: ["Gemfile", "*.gemspec", "Rakefile"],
 		commands: [{ kind: "test", run: "rspec --fail-fast", when: [".rspec"] }],
-		heavy: ["vendor/bundle/", "coverage/", "tmp/", "log/"],
+		heavy: ["vendor/bundle/", "coverage/"],
 		bulky: ["Gemfile.lock"],
 		omitted: ["rubocop", "bundler"],
 	},
@@ -149,7 +150,7 @@ export const FAMILIES: readonly Family[] = [
 	{
 		id: "web",
 		label: "HTML/CSS",
-		markers: ["index.html", "*.css", ".stylelintrc*", "stylelint.config.*"],
+		markers: ["*.css", ".stylelintrc*", "stylelint.config.*"],
 		commands: [
 			{
 				kind: "lint",
@@ -158,7 +159,6 @@ export const FAMILIES: readonly Family[] = [
 			},
 		],
 		heavy: [],
-		bulky: ["*.min.css", "*.min.js", "*.map"],
 		omitted: ["htmlhint"],
 	},
 	{
@@ -179,7 +179,7 @@ export const FAMILIES: readonly Family[] = [
 			{ kind: "build", run: "ninja --quiet", when: ["build.ninja"] },
 			{ kind: "build", run: "make -s", when: ["Makefile"] },
 		],
-		heavy: ["build/", "cmake-build-*/", "*.o", "*.a", "*.so", "*.dylib"],
+		heavy: ["*.o", "*.a", "*.so", "*.dylib"],
 		omitted: ["cmake --build", "conan", "xmake"],
 	},
 	{
@@ -202,13 +202,12 @@ export const FAMILIES: readonly Family[] = [
 	{
 		id: "swift",
 		label: "Swift",
-		markers: ["Package.swift", "*.xcodeproj", "*.xcworkspace"],
+		markers: ["Package.swift"],
 		commands: [
 			{ kind: "test", run: "swift test -q", when: ["Package.swift"] },
 			{ kind: "build", run: "swift build -q", when: ["Package.swift"] },
 		],
 		heavy: [".build/", "DerivedData/", "Pods/"],
-		bulky: ["Package.resolved"],
 		omitted: ["xcodebuild", "xcbeautify"],
 	},
 	{
@@ -244,7 +243,7 @@ export const FAMILIES: readonly Family[] = [
 			{ kind: "build", run: "dotnet build -v q --nologo --tl:off" },
 			{ kind: "lint", run: "dotnet format --verify-no-changes" },
 		],
-		heavy: ["bin/", "obj/", "packages/"],
+		heavy: ["bin/", "obj/"],
 		omitted: ["dotnet test"],
 	},
 	{

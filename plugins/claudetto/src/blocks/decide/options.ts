@@ -10,6 +10,7 @@ export const modeOf = (options: PluginOptions): Mode =>
 		(m) => m === optionOverDefault(options, "decideProvider", "decide", "jev"),
 	) ?? "off";
 
+// `TYPESAFE_API_KEY` is the env name the TypeSafe docs use (https://docs.typesafe.ai/introduction/quickstart.md).
 export const keyOf = (options: PluginOptions): string => {
 	const key = optionOf(options, "typesafeApiKey", "TYPESAFE_API_KEY");
 	return typeof key === "string" ? key : "";

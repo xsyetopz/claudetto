@@ -1,6 +1,6 @@
 # Handoff Prior Art
 
-Read on 2026-10-27 from a shallow clone of each repo (`git clone --depth 1`). No code from them was run. Every claim cites `file:line` of that clone, and a claim with no citation was not read. The clones are deleted, so the line numbers refer to the default branch head of that day.
+Read on 2026-10-27 from a shallow clone of each repo (`git clone --depth 1`). No code from them was run. Every claim cites `file:line` of that clone, and a claim with no citation was not read. The clones are deleted, so the line numbers refer to the default branch head of that day and cannot be re-checked in this session. Every `file:line` below is unverified for `0.3.0`.
 
 ## Table
 
@@ -42,7 +42,7 @@ Read on 2026-10-27 from a shallow clone of each repo (`git clone --depth 1`). No
 
 ## Behaviour at Compaction
 
-- `compact-handoff-plugin` answers `session.compact` without `next` when live, so the harness summariser never runs (`hooks/module.js:4-6`). It tries a fork first and reads a file written between turns as the fallback (`:599-605`). It records that a hook dispatch is cut off after about ten seconds, measured at 2.1.269 (`:10-14`). Our `classic.SessionEnd` writer must stay well inside that.
+- `compact-handoff-plugin` answers `session.compact` without `next` when live, so the harness summariser never runs (`hooks/module.js:4-6`). It tries a fork first and reads a file written between turns as the fallback (`:599-605`). Its comment (`:10-14`) says a hook dispatch is cut off after about ten seconds, measured at 2.1.269 by the author; this was not reproduced here, so the ten-second figure is unmeasured.
 - `handoff-compact` forks at `session.compact` and replaces the conversation with one message (`hooks/register.js:305-311`). If the fork fails it hands back to the harness with the outline as instructions (`:306-309`, header `:24-26`). Its outline is nine sections (`:35-45`).
 - `compaction-handoff` can block an auto `PreCompact` with `{"decision": "block"}` while the handoff is missing (`scripts/compaction_recovery.py:715-718`). Otherwise it writes a `final` digest (`:719-720`).
 
@@ -86,4 +86,4 @@ Do not copy:
 
 - `SessionEnd` and `Stop` are not used by any of the three, so none shows whether `$.session.messages` and `$.fs.write` work in `classic.SessionEnd` for reason `clear`. That stays with probe 2.1.
 - I did not read the `bench/`, `evals/`, or test files of `compact-handoff-plugin`, and I read only the parts of `hooks/module.js` cited above (3154 lines). I did not read `hooks/lib.js` beyond a grep for redaction. Claims about it are limited to that grep.
-- The `compact-handoff-plugin` claim "dispatch is cut off after about ten seconds" is the author's measurement in a comment (`hooks/module.js:10-14`). I did not reproduce it.
+- The `compact-handoff-plugin` claim "dispatch is cut off after about ten seconds" is the author's measurement in a comment (`hooks/module.js:10-14`). It was not reproduced, and the clone is gone, so it stays unmeasured.

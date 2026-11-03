@@ -1,6 +1,6 @@
 # Latest Dossier Findings
 
-Scope: the folders `external/2026-10-22`, `2026-10-23`, `2026-10-25`, `2026-10-25_p2`, `2026-10-26`, `2026-10-27` and `please-use-me-often`. The files are Reddit thread captures in `.md` form, not `.jsonl`. Every forum claim is a `self-report` unless the author gives a method, a command, or a table. The project runs Claude Code `2.1.311`. A version in a bullet is the one the author named.
+Scope: the folders `external/2026-10-22`, `2026-10-23`, `2026-10-25`, `2026-10-25_p2`, `2026-10-26`, `2026-10-27` and `please-use-me-often`. The files are Reddit thread captures in `.md` form, not `.jsonl`. Every forum claim is a `self-report` unless the author gives a method, a command, or a table. Written when the project ran Claude Code `2.1.311`. That version is not installed on 2026-11-03; `claude --version` prints `2.1.317`. A version in a bullet is the one the author named.
 
 Paths below start at `external/`.
 
@@ -148,14 +148,12 @@ Paths below start at `external/`.
 
 - Idle compaction: a 2026-10-08 comment doubted `"idleCompaction": false` was real. The 2026-10-15 update in the same thread says `2.1.299` lists it. The later update wins. `2026-10-25_p2/reddit.com-r-claudecode-comments-1x0omjh-i-built-conpact-claude-code-co-20261025T162222Z.md`
 - `/autocompact` in VS Code: the 2026-10-11 reply says it works in settings, the asker says it does not show in VS Code, and the second reply says the shared `settings.json` still applies. `2026-10-25_p2/reddit.com-r-claude-comments-1x3lq3k-advice-needed-to-save-n-conversati-20261025T161730Z.md`
-- I read no folder outside my set, so I cannot say which older-folder claims these overturn.
+- Which claims of the older folders these overturn is unmeasured, because the older folders were not compared.
 
 ## Coverage
 
-- Files in my folders: 111 (`2026-10-22` 16, `2026-10-23` 5, `2026-10-25` 30, `2026-10-25_p2` 26, `2026-10-26` 9, `2026-10-27` 12, `please-use-me-often` 13).
-- Files opened with `Read`, some only in part: 36.
-- Files scanned only by keyword `grep` and not opened: 18.
-- Files skipped and not read: 57. Most are quality or opinion threads with no number or mechanism visible in a title scan.
+- Files in the six dated folders: 98. `find` finds 16, 5, 30, 26, 9, and 12 files on 2026-11-03. `external/please-use-me-often` holds 40 files besides `.DS_Store`; the 13 that the first count added are not backed by a command.
+- The counts of files opened with `Read` (36), scanned by `grep` (18), and skipped (57) were not recorded with a command, so they are unmeasured and removed.
 - Not opened and named: `please-use-me-often/code-readability-for-humans-and-ai-agents.md`, `please-use-me-often/swe-best-practices.md`, `please-use-me-often/swe-worst-practices.md`. A keyword scan found no token, cache, or effort lines. The user asked for them to be read in full, and that was not done.
 - Partial reads: `please-use-me-often/xml-prompting-guide.md` (about lines 179-200 plus a keyword scan), and the `2026-10-25_p2` and `2026-10-22` threads for `1xdwquj`, `1x5qbp9`, `1xbxoza`, `1xbfly6`.
 - Not relevant to coding and skipped: `2026-10-26/reddit.com-r-programming-comments-1xfszv3` (CI build time), `2026-10-25/reddit.com-r-howtohack-comments-1icc6sw`, the `1xaqse6` and `1xd77e8` files, and the `r-nextjs` file.

@@ -1,14 +1,14 @@
-// The block sits at `E - 3000`, so moving the window moves the block too; it is a poor threshold lever.
+// `2.1.317`: `R5e()` blocks at the effective window less `3000`, so moving the window moves the block too; it is a poor threshold lever.
 
 export const CONTEXT_WINDOW = 300_000;
 
-/** The smallest `autoCompactWindow` that reaches Haiku's trigger. */
+/** The Haiku window at the shared percentage: `windowFor(90_000, 50)`. `windowForFloor(90_000)` is 123,000, but it holds only when no percentage is set. */
 export const HAIKU_CONTEXT_WINDOW = 200_000;
 
-/** `XHr`: the largest output reserve the harness subtracts from the window. */
+/** `2.1.317`: `Ree()` subtracts `Math.min(maxOutputTokens, pVr)` from the window, and `pVr` is `20000` in the bundle. */
 export const COMPACT_OUTPUT_RESERVE = 20_000;
 
-/** The harness's own floor below the effective window, which caps the threshold. */
+/** `2.1.317`: `PZ()` returns the effective window less `13000`, and the percentage can only lower it. */
 export const COMPACT_FLOOR_RESERVE = 13_000;
 
 export const HANDOFF_TRIGGER_TOKENS = 140_000;
@@ -21,7 +21,7 @@ export const effectiveWindow = (
 	maxOutputTokens = COMPACT_OUTPUT_RESERVE,
 ): number => window - Math.min(maxOutputTokens, COMPACT_OUTPUT_RESERVE);
 
-/** A `pct` outside `0 < pct <= 100`, or none, leaves the harness its own floor alone. */
+/** `2.1.317`: `PZ()` takes a percentage only when `0 < pct <= 100`; any other leaves its own floor alone. */
 export const compactAt = (
 	window: number,
 	pct?: number,
@@ -35,6 +35,7 @@ export const compactAt = (
 	return Math.min(Math.floor((effective * pct) / 100), floor);
 };
 
+/** `2.1.317`: `R5e()` blocks at `effectiveWindow - 3000`. */
 export const BLOCK_RESERVE = 3000;
 
 export const blockAt = (
@@ -46,7 +47,7 @@ export const blockAt = (
 export const windowForFloor = (trigger: number): number =>
 	trigger + COMPACT_FLOOR_RESERVE + COMPACT_OUTPUT_RESERVE;
 
-/** Truncated to the four decimals the key takes. */
+/** Truncated to four decimals. */
 export const pctFor = (window: number, trigger: number): number =>
 	Math.floor((trigger / effectiveWindow(window)) * 1e6) / 1e4;
 
@@ -55,5 +56,5 @@ export const windowFor = (trigger: number, pct: number): number =>
 
 export const AUTOCOMPACT_PCT = pctFor(CONTEXT_WINDOW, HANDOFF_TRIGGER_TOKENS);
 
-/** Four decimals as a string, because the harness parses the string. */
+/** Four decimals are the author's choice; `2.1.317` reads the env value with `parseFloat`. */
 export const autocompactPctText = (): string => AUTOCOMPACT_PCT.toFixed(4);

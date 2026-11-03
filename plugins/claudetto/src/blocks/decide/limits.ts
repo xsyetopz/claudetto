@@ -7,7 +7,7 @@ export const TRIES = 3;
 
 export const BACKOFF_MS = 1000;
 
-/** `HttpInit` has no timeout, so the call is raced with `$.clock`. */
+/** `HttpInit` has no timeout (Claude Code 2.1.317 declarations), so the call is raced with `$.clock`. */
 export const ATTEMPT_TIMEOUT_MS = 12_000;
 
 export const ERROR_BODY_MAX = 200;

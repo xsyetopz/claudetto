@@ -36,7 +36,7 @@ const MAX_CHANGES = 32;
 const REF_PREFIX = "ref: refs/heads/";
 const HASH = /^[0-9a-f]{40,64}$/;
 const GITDIR = /^gitdir:\s*(.+)$/m;
-/** The task line pattern of OpenSpec `1.16.0` (`utils/task-progress.js`), so the counts match `openspec list`. */
+/** The task line pattern of OpenSpec `1.16.0` (`dist/utils/task-progress.js:53`, `openspec --version` printed `1.16.0`), so the counts match `openspec list`. */
 const TASK_LINE =
 	/^\s*(?:[-*+]|\d{1,9}[.)])\s*\[(?:\s*([^\]\s]?)\s*\](?![([])|\s+\])\s*(.*)/;
 

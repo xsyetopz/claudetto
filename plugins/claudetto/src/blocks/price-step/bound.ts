@@ -1,7 +1,7 @@
 import type { TurnUsage } from "claude-code";
 import { HAIKU_MODEL, HAIKU_PRICE_STEP } from "../../tiers/tiers.ts";
 
-// Haiku 5.5 counts about 30% more tokens than Haiku 4.5 for the same text, so 3 errs toward withholding where 4 would let a result cross.
+// The Haiku 5.5 page `whats-new-haiku-5-5` of the platform docs says the same text counts as about 30 percent more tokens than on Haiku 4.5 (read 2026-11-03), so 3 errs toward withholding where 4 would let a result cross.
 const CHARS_PER_TOKEN = 3;
 
 /** A result's tokens as estimated from its characters. */

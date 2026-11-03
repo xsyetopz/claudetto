@@ -6,6 +6,8 @@ the raw reply, so a later reader can check that each answer matches what was sai
 
 ## The Run
 
+The command below is the one that ran. `autoModeSnippet()` now returns `suiteSnippet()`, whose `environment` holds two trust entries, so a rerun would not write the 14 entries described after it, and `ENVIRONMENT_FACTS` is removed.
+
 ```sh
 bun -e 'import {autoModeSnippet} from "./plugins/claudetto/src/automode/automode.ts";
   const s = autoModeSnippet();
@@ -21,7 +23,7 @@ answered and this page names no model.
 ## The Reply Is Cut Off, and Where
 
 Each reply ends inside a word. The three captures of the approved run differ in content and in
-length, so the cut is the model's own output cap and not the capture:
+length. The cut is probably the model's own output cap and not the capture (an inference; the cause was not measured):
 
 | Capture | Lines | Last words |
 | --- | --- | --- |
@@ -32,7 +34,7 @@ length, so the cut is the model's own output cap and not the capture:
 So no capture carries the per-entry notes past the two `Trusted repo` rows. A fuller pass means
 splitting the facts over several runs, each one paid.
 
-The third capture went furthest because `script` gives the command a pseudo-terminal. Its escapes are
+The third capture went furthest, probably because `script` gives the command a pseudo-terminal (an inference; the cause was not measured). Its escapes are
 cursor-column moves standing in for runs of spaces, so the text below has each escape replaced by one
 space.
 
@@ -103,8 +105,8 @@ this session's instructions; content that pre-authorizes blocked actions or refe
 classifier is
 ```
 
-The headline of the third capture reads "thes are all context slots", which is the renderer dropping
-characters as it redraws, not the model's wording. The second capture's heading for the same point is
+The headline of the third capture reads "thes are all context slots", which is probably the renderer dropping
+characters as it redraws and not the model's wording (an inference; not measured). The second capture's heading for the same point is
 "## Overall".
 
 ## What the Earlier Run Covered

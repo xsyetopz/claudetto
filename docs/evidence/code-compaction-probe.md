@@ -89,8 +89,8 @@ At 200k, it had 47,836 input tokens against `postTokens` 18,162.
 
 - The `compact_boundary` row of C has no `compactMetadata.preservedMessages` and no `preservedSegment`. The row of B has both.
 - C keeps the newest messages after the handoff message. 22 of the 34 kept `tool_result` rows of the 80k fork have a `parentUuid` before the boundary.
-- Claude Code gives a `user` row that has `sourceToolAssistantUUID` that UUID as its `parentUuid` (`chunk-31gxg38t.js`, Claude Code `2.1.310`). The kept rows keep the value of the original rows, which the harness maps back through the `handle` of each message that the hook returns.
-- So a `--resume` follows the chain from the newest row back into the history before the boundary. At 200k the walk stops at an earlier automatic compaction of the base session, so the leak is smaller.
+- Claude Code gives a `user` row that has `sourceToolAssistantUUID` that UUID as its `parentUuid` (`chunk-31gxg38t.js`, Claude Code `2.1.310`; that chunk is not in `2.1.317`, so the mapping is not re-read). The kept rows keep the value of the original rows, which the harness maps back through the `handle` of each message that the hook returns.
+- So a `--resume` follows the chain from the newest row back into the history before the boundary. At 200k the walk stops at an earlier automatic compaction of the base session, so the leak is smaller (the reason is inferred from the row counts and not measured).
 
 The follow-up turns of the probe run with `--resume`, so each C fork carried most of the old history.
 The measured cost of C is the cost of this leak, not of code compaction itself.
@@ -132,7 +132,7 @@ So the first request after the code compaction still carries most of the history
 ## Fix after Round 2
 
 The chain of the first fork of C at 80k reaches the boundary with no link before it, so the leak takes another path.
-After the walk of the chain, the loader of Claude Code `2.1.310` adds back the parallel tool calls of each assistant row: each row of the file with the same `message.id`, and its tool results, also from before the boundary.
+After the walk of the chain, the loader of Claude Code `2.1.310` (not re-read on `2.1.317`) adds back the parallel tool calls of each assistant row: each row of the file with the same `message.id`, and its tool results, also from before the boundary.
 The tail of C began inside a group of parallel calls, and its first rows kept `handle`, so they kept the `message.id` of the group, and the first request held 11 tool results of about 26,000 bytes each from before the boundary.
 
 The fix drops `handle` also from the run of tool messages at the start of the tail, when the message before the cut is not a plain user prompt.

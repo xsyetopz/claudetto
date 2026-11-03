@@ -9,9 +9,13 @@ Change `claudetto-restart`, task 6.5, the sandbox half of the `low-hitl` capabil
 Setup writes the `sandbox` block to the user settings file only, which is the one scope setup owns for
 this login. The route names user settings as a scope a `false` of
 `sandbox.allowUnsandboxedCommands` holds from, and it counts an `excludedCommands` entry from no scope
-other than managed, `--settings`, and user settings. Whether a `false` from a project file also holds
-was not established: the route puts the key in every scope, and the program's scope-merge table marks
-`false` as the restrictive value of it, which points the other way.
+other than managed, `--settings`, and user settings (route not re-readable: `clawdipedia` is not
+installed). The versioned schema `docs/keep/settings/claude-code-settings.schema.json` (`2.1.312`) settles
+the project-file question for `allowUnsandboxedCommands`: "A false in managed, --settings or user settings
+holds whatever project settings (.claude/settings.json and .claude/settings.local.json) say (false there
+still applies)." So a `false` from a project file also applies. The same file says an `excludedCommands`
+value from a project file is ignored when managed settings or a `--settings` file set
+`allowUnsandboxedCommands: false`. The "scope-merge table" claim is removed: it was not re-read.
 
 ## Keys
 
@@ -37,16 +41,17 @@ this task.
 
 ## Live Finding
 
-Measured in the session of this task: `sandbox.enabled` is in none of the three settings files of this
-login (`~/.claude/settings.json`, `.claude/settings.json`, `.claude/settings.local.json`), and there is
-no managed settings file. By its documented default `false` the sandbox is off, so the
-`sandbox.filesystem.denyRead` and `denyWrite` lists in the user file are inert today. The
-`Read(~/.ssh/**)` deny rules of `permissions.deny` still hold, but the route says such a rule "still
-applies to the file tools", so it covers `Read` and not a `cat` of the same file: a `Bash` read of a
-secret path in this login is stopped by claudetto's own gate and by nothing else.
+Measured on 2026-11-03 with a `python3 -I` read of the three files. `~/.claude/settings.json` holds
+`sandbox` with `enabled: false`, `allowUnsandboxedCommands: false`, `network.allowLocalBinding: true`, and
+`filesystem.denyRead` of `~/.ssh`, `~/.gnupg`, `~/.aws/credentials`, `~/.netrc`, and `~/.docker/config.json`.
+`.claude/settings.json` holds `sandbox` with `network.allowLocalBinding: true` only, and
+`.claude/settings.local.json` holds no `sandbox`. No managed settings folder exists at
+`/Library/Application Support/ClaudeCode`. With `enabled: false` the sandbox is off, so the
+`filesystem.denyRead` list is inert today. The earlier finding (no `sandbox.enabled` in any file, and
+`allowUnsandboxedCommands` unset) no longer holds for the user file. Whether a `Read(~/.ssh/**)` deny rule
+covers a `cat` of the same file was not re-read: the quoted route text is unmeasured.
 
-The user decided to leave `sandbox.allowUnsandboxedCommands` unset in the live file. That decision is
-about the live file only. The snippet still carries `false`, because the spec requires setup to write it.
+The earlier decision to leave `sandbox.allowUnsandboxedCommands` unset in the live file no longer matches the file, which holds `false`. The snippet carries `false`, because the spec requires setup to write it.
 
 ## Not Checked
 

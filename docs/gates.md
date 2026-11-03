@@ -1,6 +1,6 @@
 # Tool Gates and Settings Read from the Program
 
-Read on 2026-10-27 from Claude Code `2.1.311` at `/Users/krystian/.local/share/claude/versions/2.1.311`, unless a line names another source. Reading the program for evidence is allowed by `AGENTS.md`. Nothing here was patched.
+Read on 2026-10-27 from Claude Code `2.1.311` at `/Users/krystian/.local/share/claude/versions/2.1.311`, unless a line names another source. Reading the program for evidence is allowed by `AGENTS.md`. Nothing here was patched. Items re-read on `2.1.317` (`~/.local/share/claude/versions/2.1.317`, strings dump from `LC_ALL=C strings -n 40`) say so beside them. The `2.1.311` program is not installed, so its byte offsets and minified names (`$Xe`, `i0e`, `kp`, `WR`) do not reproduce; the same logic has other names in `2.1.317`.
 
 ## How the Program Was Read
 
@@ -33,7 +33,7 @@ if(!V7n.includes(e))return!0
 return $Xe()}
 ```
 
-The pieces, each read in its own module:
+The pieces, each read in its own module (offsets are `2.1.311`). Re-read on `2.1.317`: `function Zet(){let e=tP("allow_plugin_skill_search");if(e==="org_denied"||e==="latched"||e==="unregistered"||e!==null&&Cs("hipaa"))return!1;if($Le())return!0;return Xp()&&Dn()&&o.read()}`, `$Le` is `i.CLAUDE_CODE_REMOTE&&Dn()`, `Dn` is `Ce()==="firstParty"`, `Xp` is `btn()&&!n().childSession`, `btn` tests the entrypoint against the same three names, and `tP` returns `"unregistered"` with no verdict. That is the same logic as the list below. `cp()` (the entrypoint) and `o.read()` were not read in `2.1.317`, and `i` as the environment object is still unconfirmed.
 
 - `i0e()` is `function i0e(){return i.CLAUDE_CODE_REMOTE&&Un()}` (offset 243129831). `i` is read here as the environment object, which was not confirmed.
 - `Un()` of this module is `function Un(){return Ce()==="firstParty"}` (offset 217490953). It is true only for the first-party API provider.
@@ -67,7 +67,7 @@ The three helpers:
 - `Ok()` is `n().host.launchOptions.permissionPromptToolName()` (offset 217081612).
 - `Dde(e)` is `function Dde(e){return e!==void 0&&e!=="none"}` (offset 226627654). It sits in the module that also holds `MCe`, with no module boundary between them.
 
-For an interactive session `_e()` is false, so both `if` tests are skipped and `isEnabled()` returns true. Plan mode is on for a normal interactive CLI session, by this code. What `isInteractive()` returns for a given launch was not read. Not run: a live session.
+For an interactive session `_e()` is false, so both `if` tests are skipped and `isEnabled()` returns true. Plan mode is on for a normal interactive CLI session, by this code. Re-read on `2.1.317`: `ExitPlanMode` has `isEnabled(){if(ob().length>0&&ge())return!1;if(ge()&&!tfe(TC()))return!1;return!0}`, the same two tests. The names of `Enter` and the callers were not re-read. What `isInteractive()` returns for a given launch was not read. Not run: a live session (unmeasured).
 
 For a non-interactive run the tool is off when channels are allowed, or when no permission prompt tool is named.
 
@@ -97,7 +97,7 @@ return{enabled:o,disabled:t}}
 
 So a built-in plugin does not load by another path. Its `enabledPlugins` entry in settings is read, and `false` moves the plugin to the `disabled` list. The default is `defaultEnabled??true`. `jwn(e)` (offset 218816829) walks the settings sources and reads `PX(fe(r)?.enabledPlugins,e)`. `PX` also maps short aliases, so the key can be written under an alias that `nO` knows.
 
-Two exceptions exist in the code. A plugin with `enabledFromPolicyOnly` reads only the policy settings and the flag settings (`Nn`), and one with `enabledFromTrustedSettingsOnly` reads only a fixed list of trusted sources (`air`). Only `cc-plugin-sec-default` was seen with both flags (offset 256774428, text `enabledFromTrustedSettingsOnly:!0,enabledFromPolicyOnly:!0`). A user `false` for `cc-plugin-sec-default@builtin` is therefore not what decides it. The flags of the other built-ins were not all read. `cc-plugin-telemetry` at offset 256800851 showed `name`, `description`, and `isAvailable:F` (`F=()=>!k_()`), and no policy flag in the text read.
+Two exceptions exist in the code. A plugin with `enabledFromPolicyOnly` reads only the policy settings and the flag settings (`Nn`), and one with `enabledFromTrustedSettingsOnly` reads only a fixed list of trusted sources (`air`). Re-read on `2.1.317`: the loop over `builtinPlugins` computes `enabledFromPolicyOnly ? policy : enabledFromTrustedSettingsOnly ? trusted : settings value`, then `defaultEnabled ?? true`, the same logic. Only `cc-plugin-sec-default` was seen with both flags (offset 256774428, text `enabledFromTrustedSettingsOnly:!0,enabledFromPolicyOnly:!0`). A user `false` for `cc-plugin-sec-default@builtin` is therefore not what decides it. The flags of the other built-ins were not all read. `cc-plugin-telemetry` at offset 256800851 showed `name`, `description`, and `isAvailable:F` (`F=()=>!k_()`), and no policy flag in the text read.
 
 For the key in the task, `"cc-plugin-you-should-know@builtin": false`:
 
@@ -106,7 +106,7 @@ For the key in the task, `"cc-plugin-you-should-know@builtin": false`:
 
 For `cc-plugin-telemetry@builtin`, `false` makes `lz()` return it as disabled, by the code read. What was not read is each caller of `lz().enabled`, so whether every part of the telemetry plugin stops (its hooks module, `Xj(r,n.hooksModule)`) was not confirmed from code.
 
-The one experiment that would settle the rest: put `"enabledPlugins": {"cc-plugin-telemetry@builtin": false}` in a settings file, start a session, and run `/plugin` to see whether the entry is listed as disabled. Not run.
+The one experiment that would settle the rest: put `"enabledPlugins": {"cc-plugin-telemetry@builtin": false}` in a settings file, start a session, and run `/plugin` to see whether the entry is listed as disabled. Not run (unmeasured on `2.1.311` and `2.1.317`).
 
 ## Can `tool.describe` Shrink a Tool Definition
 
@@ -149,9 +149,9 @@ where `io=n.isRedescribed===!0&&jxi(e.name)` and `jxi` is `isRewrittenByHook`.
 
 What the code shows: the hook's `description` becomes `xo.description`, and `xo` is the base of the tool object that has `name`, `description`, `input_schema`, `defer_loading`, and `cache_control`. That is the Messages API tool shape. So the hook changes what the request carries, not only what the user sees. One condition: when a recorded entry (`vn`) or `n.recordedDescription` exists and the tool was not redescribed after a hook rewrote it, the recorded description is used in place of the new one. That looks like a guard for prompt-cache stability on resumed or recorded requests. It was not tested.
 
-This fits the project's own use. `plugins/claudetto/src/blocks/tool-describe/block.ts:14` registers one `tool.describe` hook for the names in `describedTools()` (`plugins/claudetto/src/blocks/tool-describe/tools.ts:65`), and the hook keeps our text only when `shorterText` (`plugins/claudetto/src/blocks/tool-describe/tools.ts:68`) finds it shorter. The pre-restart plugin registered a second hook for `AskUserQuestion`; the new tree describes it through the same hook. `docs/levers.md` states that the handler uses our text only when it is shorter. So a built-in definition can shrink through this hook, by the code read.
+This fits the project's own use. `plugins/claudetto/src/blocks/tool-describe/block.ts:14` registers one `tool.describe` hook for the names in `describedTools()` (`plugins/claudetto/src/blocks/tool-describe/tools.ts:76`), and the hook keeps our text only when `shorterText` (`plugins/claudetto/src/blocks/tool-describe/tools.ts:79`) finds it shorter. Re-read on `2.1.317`: `resolveToolDescription:async(O,L,B)=>{...let G=await(e.get()?.(O,L,B)??Promise.resolve({description:L,isDeferred:B}));...return G}` calls the registered hook. `docs/levers.md` states that the handler uses our text only when it is shorter. So a built-in definition can shrink through this hook, by the code read.
 
-The measurement that would confirm it was run on 2026-10-28 in the new tree, with `just capture --deny Workflow,ScheduleWakeup,ReportFindings --tools 12`: the `plain` arm carries the harness's `Bash` description at 1,267 characters and the `plugin` arm carries ours at 1,090, and the same holds for `Agent` (2,906 to 868), `Read` (790 to 538), `Skill` (1,417 to 1,023), and `ToolSearch` (953 to 727). The first request falls from 30,521 to 27,403 characters, all of it in `tools`, 16,021 to 12,903. So the hook changes the request body on the wire, not only the screen, and the code read above is confirmed by a reading (`docs/surfaces.md`, "The Tool Texts of the New Tree (Task 2.6)"). The conclusion is what stands here; the figures are of that date and the `Agent` text has been edited twice since, so a re-run of the same command on 2026-10-29 reads `Agent` at 973 and `tools` at 13,009.
+The measurement that would confirm it was run on 2026-10-28 in the new tree, with `just capture --deny Workflow,ScheduleWakeup,ReportFindings --tools 12`: the `plain` arm carries the harness's `Bash` description at 1,267 characters and the `plugin` arm carries ours at 1,090, and the same holds for `Agent` (2,906 to 868), `Read` (790 to 538), `Skill` (1,417 to 1,023), and `ToolSearch` (953 to 727). The first request falls from 30,521 to 27,403 characters, all of it in `tools`, 16,021 to 12,903. So the hook changes the request body on the wire, not only the screen, and the code read above is confirmed by a reading (`docs/surfaces.md`, "The Tool Texts of the New Tree (Task 2.6)"). The conclusion is what stands here; the figures are of that date and the `Agent` text has been edited twice since, so a re-run of the same command on 2026-10-29 reads `Agent` at 973 and `tools` at 13,009. These figures were not repeated on `2.1.317`: `tools/capture/run.ts` was denied by the auto mode classifier in this session, so they are unmeasured for `0.3.0`.
 
 ## Not Read
 

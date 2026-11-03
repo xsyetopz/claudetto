@@ -5,7 +5,7 @@ Notes from `external/2026-09-29` through `external/2026-10-08`, read 2026-10-27 
 Every item is a stranger's post or comment. `self-report` means the author gave no method.
 `measured` means the author gave a method, a command, or a table. Nothing here is verified by this project.
 These folders are the oldest part of the dossier, so a claim in them may be overtaken by a later release.
-The project runs Claude Code `2.1.311`.
+Written when the project ran Claude Code `2.1.311`. That version is not installed on 2026-11-03; `claude --version` prints `2.1.317`.
 
 ## Headless against Interactive Metering
 
@@ -51,9 +51,8 @@ A second pass on 2026-10-27 reopened each file below and confirmed every number.
 
 ## Coverage
 
-Read in this pass: 6 files, the first 3 records of each.
-Read in the second pass of 2026-10-27: each file of the section above, reopened and confirmed. Still not read: `external/2026-10-07/claude-llm-agent-failure-dossier.md`, whose first 60 lines hold no cost number.
-Out of scope by the brief: the top-level `external/export-*.jsonl` files, `external/cc-bundle/`, and every folder dated `2026-10-11` or later.
+The counts of files read in the first and second pass were not recorded with a command, so they are unmeasured and removed. `head -60 external/2026-10-07/claude-llm-agent-failure-dossier.md | grep -c -E '\$[0-9]|cost|price'` prints 0 on 2026-11-03, which backs "no cost number" for its first 60 lines.
+Out of scope by the brief: the top-level `external/export-*.jsonl` files, `external/cc-bundle/`, and every folder dated `2026-10-11` or later. `external/cc-bundle/` is not in the tree on 2026-11-03.
 
 ## Versions Named in These Posts
 

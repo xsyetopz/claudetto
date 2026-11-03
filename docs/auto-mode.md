@@ -193,7 +193,7 @@ Two things that cost a false start, recorded so the next run skips them.
 - `CLAUDE_CONFIG_DIR` pointed at a throwaway folder does not work for this command. The rules are read, and then the call fails with "Could not resolve authentication method", because the login does not live in the config folder on this machine, there is no `~/.claude/.credentials.json`. So the real config folder is needed for the call and `--settings` is the way to feed it our rules without touching `~/.claude/settings.json`.
 - A copy of the `autoMode` section written into `.claude/settings.local.json` of this repository did not appear in `claude auto-mode config` at all. So `autoMode` is read from the user scope only, which settles the open question the writer left, and `autoModeFor` keeps dropping the key for the project scope.
 
-What the call cost is not in its output: the command prints no model name and no figure. The approval was given on one request capped at `4,096` output tokens, about `$0.08` at the Opus 5.5 output price, and under a tenth of a weekly percent. The reply came back cut off in the middle of a word, which is what hitting that cap looks like, so the run is consistent with the approved figure. No `--model` was passed, so the session default answered and this page names no model.
+What the call cost is not in its output: the command prints no model name and no figure. The approval was given on one request capped at `4,096` output tokens. At the Opus 5.5 output price of `$20` per million tokens in the price table of `claudekit/price`, that cap is `$0.082`, a ceiling and not a reading. The weekly share quoted with the approval (under a tenth of a percent) is unmeasured. The reply came back cut off in the middle of a word, which is what hitting that cap looks like, so the run is consistent with the approved figure. No `--model` was passed, so the session default answered and this page names no model.
 
 ### The Findings, and the Reply to Each
 
@@ -244,7 +244,7 @@ The sections above record the archived tree. This one records `plugins/claudetto
 | Key | Value | Behavior it changes | Route |
 | --- | --- | --- | --- |
 | `autoMode` | written to the user settings file only | The program reads it from user settings, `--settings`, and managed settings, so a project, local, or plugin file would hold a key that is never in effect. A key in `.claude/settings.json` or `.claude/settings.local.json` is dropped with the log `tengu_settings_auto_mode_untrusted_source_ignored`. | `configure/permissions/auto-mode` |
-| `autoMode.allow` | the `allow` list of `suiteSnippet` in `plugins/claudetto/src/automode/rules.ts` | A list without `$defaults` replaces the built-in rules. The classifier A/B of `just eval --classifier` scored the suite as high as the built-in lists at about half the price per call. | `configure/permissions/auto-mode-rules` |
+| `autoMode.allow` | the `allow` list of `suiteSnippet` in `plugins/claudetto/src/automode/rules.ts` | A list without `$defaults` replaces the built-in rules. The classifier A/B of `just eval --classifier` scored an earlier suite 120 of 120, as the built-in lists did, at `1.1557` against `1.95` for the 120 runs (2026-10-30, `2.1.314`). The current 17-rule suite is unmeasured by that eval. | `configure/permissions/auto-mode-rules` |
 | `autoMode.soft_deny` | the `soft_deny` list of `suiteSnippet` | Same as `autoMode.allow`. | `configure/permissions/auto-mode-rules` |
 | `autoMode.hard_deny` | the `hard_deny` list of `suiteSnippet` | Same as `autoMode.allow`. | `configure/permissions/auto-mode-rules` |
 | `autoMode.environment` | the two trust entries of `suiteSnippet` | It replaces the 21 built-in field entries and holds no fact of one repository, because `autoMode` is read in every repository. The facts of the next section are no longer written. | `configure/permissions/auto-mode-rules` |
@@ -265,8 +265,11 @@ so it lives here.
 Each entry is written in the `**Field**: text` shape the built-in entries use, because an entry of
 ours is **added beside** the built-in entry for the same field and does not replace it. Measured with
 `claude --settings <file> auto-mode config` over the snippet: the built-in `environment` list is 21
-entries, and the written list is 34, which is those 21 plus one per fact. The other three lists stay
-at 17 allow, 72 soft deny, and 1 hard deny, so nothing of `$defaults` is lost.
+entries, and the written list is 34, which is those 21 plus one per fact. The other three lists stayed
+at 17 allow, 72 soft deny, and 1 hard deny, so nothing of `$defaults` was lost. These counts are the
+reading of that session and cannot be repeated, since the file was removed. On 2026-11-03,
+`claude auto-mode defaults` on `2.1.317` printed 16 `allow`, 72 `soft_deny`, 1 `hard_deny`, and 21
+`environment` entries.
 
 | Field | What was read | Session |
 | --- | --- | --- |
@@ -300,11 +303,11 @@ not a subcommand: `claude auto-mode --help` lists `config`, `critique`, `default
 `reset`, and no `setup`. So the run was `claude -p "/auto-mode-setup --wizard posture=open-source
 scope=project depth=both --propose"`, approved for its cost beforehand. The program refuses a
 one-shot apply with "One-shot --apply isn't available (it would write model output with no review).
-Use --propose, show the result to the user, then --apply-file &lt;path&gt;", so the proposal is model
+Use --propose, show the result to the user, then --apply-file &lt;path&gt;" (the text is in the strings of `2.1.317`, with a full stop after `<path>`), so the proposal is model
 output and nothing of it was applied by the program; each item below was taken only after a reading
 of this tree confirmed it.
 
-The proposal answered `{"ok": true}` with 23 `environment` entries, no `allow`, `soft_deny`, or
+In that session the proposal answered `{"ok": true}` with 23 `environment` entries (unmeasured since: the run is not repeated), no `allow`, `soft_deny`, or
 `hard_deny` rule, `"mode": "append"`, which is the append behavior measured above, and
 `"remove_from_permissions_allow": []`. Its own notes say org-wide repo recon, sibling repos, and
 cross-project usage were **not** gathered, because the scope was this project.

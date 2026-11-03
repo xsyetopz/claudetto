@@ -19,17 +19,17 @@ API list prices per million tokens, checked on 2026-10-13 (official, `https://pl
 
 - A long task on Haiku 5.5 can reach the higher price.
   `claudetto` has no rule that moves a task to another model.
-- Anthropic publishes no subscription multiplier.
+- Anthropic publishes no subscription multiplier (unverified, needs a web read).
 
 ## Fable Limit
 
 Fable draws from the regular weekly limit, not from an extra pool.
-These facts come from the Anthropic help pages and are not checked again.
+These facts come from the Anthropic help pages and are unverified here (needs a web read), except the last, which is read from the binary.
 
 - On Max and on premium Team or Enterprise seats, Fable can use up to 50% of the weekly limit.
 - On Pro and standard Team or Enterprise seats, Fable runs on usage credits.
-- The binary labels `seven_day_overage_included` as the Fable limit.
-- A Fable figure of 0% gives no free headroom.
+- The binary labels `seven_day_overage_included` as the Fable limit: in the strings of `2.1.317` the labels `5-hour limit`, `weekly limit`, `Opus limit`, `Sonnet limit`, `Fable limit`, and `usage credit limit` stand in the order of the keys `five_hour`, `seven_day`, `seven_day_opus`, `seven_day_sonnet`, `seven_day_overage_included`, and `overage`, so the pairing is by order and not by an explicit map.
+- A Fable figure of 0% gives no free headroom (unmeasured).
 
 ## Cache and Effort
 
@@ -40,18 +40,20 @@ These facts come from the Anthropic help pages and are not checked again.
 | The main conversation cache lives 1 hour on a subscription and 5 minutes on credits or an API key | official, not checked again |
 | Subagents use 5 minutes | official, not checked again |
 | A prompt or `/compact` after the TTL writes the whole context again | official |
-| From `2.1.287`, the `SessionStart` input for `resume` and `fork` has `prompt_cache_likely_expired` | binary, not checked again |
-| From `2.1.251`, the `SessionStart` input for `resume` and `fork` has `seconds_since_last_response`, which the cold-cache offer uses as the pause | official (`extend/hooks/events`) |
+| The `SessionStart` input for `resume` and `fork` has `prompt_cache_likely_expired` (the version it began in, `2.1.287`, is unmeasured) | types and strings of `2.1.317`, read on 2026-11-03 |
+| The `SessionStart` input for `resume` and `fork` has `seconds_since_last_response` (the version it began in, `2.1.251`, is unmeasured) | types of `2.1.317`, read on 2026-11-03 |
 | Claude Code defaults Opus 5.5 and Sonnet 5.5 to `medium` effort | official, not checked again |
-| No hook event fires on an effort change | binary |
+| No hook event fires on an effort change | types of `2.1.317`: `ClassicHookEvent` lists `PreModelSwitch` and `PostModelSwitch` and none for effort |
+
+A row marked `official` is read from an Anthropic page and is unverified here (needs a web read). The rows read from types and strings name the engine types of this tree and the `2.1.317` binary.
 
 A plugin that switches the model at plan mode, as `opusplan` does, pays a cache write at each switch.
 
 ## Model Aliases
 
-- `haiku` resolves to Haiku 5.5 on the Anthropic API and to Haiku 4.5 on Bedrock, Vertex, and Foundry (documents only).
-- A full model ID such as `claude-haiku-5-5` works in the `agent.spawn` hook.
-- `maxEffortLevel: max` causes no clamp.
+- `haiku` resolves to Haiku 5.5 on the Anthropic API and to Haiku 4.5 on Bedrock, Vertex, and Foundry (documents only; unverified, needs a web read).
+- A full model ID such as `claude-haiku-5-5` works in the `agent.spawn` hook (a probe of an earlier version; unmeasured on `2.1.317`).
+- `maxEffortLevel: max` causes no clamp (a probe of an earlier version; unmeasured on `2.1.317`).
   An effort of `max` set by a hook arrives as `xhigh`, probably due to an account limit for each model (unverified).
 
 ## The Measured Week
@@ -99,7 +101,7 @@ The `usage` report of 0.1.0 scanned local transcripts, and it is not in 0.2.0.
 
 - Each model turn reads the context again, so the number of turns sets the cost.
 - Independent tool calls in one response take one turn, and the same calls in sequence take one turn each.
-- Claude Code has no general tool that runs several tools in one call (binary).
+- The first request of 2026-11-03 on `2.1.317` carried `Bash`, `Edit`, `Read`, `ToolSearch`, and `Write`, and none of them runs several tools in one call. The tools that `ToolSearch` defers are unmeasured here.
 
 ## Guard Denies of Read-Only Commands
 
