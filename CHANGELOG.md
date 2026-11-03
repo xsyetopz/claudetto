@@ -8,6 +8,8 @@ After each update, do the steps in the "Update" section of the README.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-03
+
 ### Changed
 
 - `run-limits` blocks a `Stop` once per turn when the final reply lists, under a heading such as `Still open` or `What's left`, an item that names no blocker outside the session's reach (an approval, a denial, a paid run, a key, or a step only the user takes). The block names the items and asks the session to do each or name its blocker. A `Stop` that a hook already continued (`stop_hook_active`) or that another hook blocked is left alone.
