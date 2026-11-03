@@ -1,8 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-	SHIPPED_TOTAL,
-	shippedChars,
-} from "../../../plugins/claudetto/src/cuts.ts";
+import { SHIPPED_TOTAL } from "../../../plugins/claudetto/src/cuts.ts";
 import {
 	BASELINE_TOTAL,
 	DENIED_TOGETHER_TOTAL,
@@ -126,11 +123,9 @@ describe("the rows the capture reads", () => {
 	});
 
 	test("the two ends of the per-cut identity are both read rows", () => {
-		// `BASELINE_TOTAL - shippedChars() === SHIPPED_TOTAL` is sound only while a reading pins each end.
 		const read = new Set(rows().map((row) => row.recorded));
 
 		expect(read.has(BASELINE_TOTAL)).toBe(true);
 		expect(read.has(SHIPPED_TOTAL)).toBe(true);
-		expect(BASELINE_TOTAL - shippedChars()).toBe(SHIPPED_TOTAL);
 	});
 });

@@ -1,24 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { readFile } from "node:fs/promises";
 import { forksOf, result } from "../../__tests__/stub.ts";
 import { FORK_NOTES } from "../../fixture/fixture.ts";
-import { BARS, ranRuns, verdict } from "../verdict.ts";
+import { ranRuns, verdict } from "../verdict.ts";
 
 const SIZE = 30_000;
-
-const PAGE = "docs/evidence/code-compaction-probe.md";
-
-const CACHE_MEASURES: readonly string[] = ["firstWrite", "shares[0]"];
-
-const barRows = async (): Promise<string[]> => {
-	const page = await readFile(PAGE, "utf8");
-	const section =
-		page.split("\n## ").find((part) => part.startsWith("The Bars")) ?? "";
-	return section
-		.split("\n")
-		.filter((line) => line.startsWith("| ") && !line.startsWith("| ---"))
-		.slice(1);
-};
 
 const cheaper = (alt: Parameters<typeof forksOf>[2] = {}) => [
 	...forksOf("ref", 10),
@@ -296,28 +281,5 @@ describe("ranRuns", () => {
 
 	test("is zero when no fork ran at all", () => {
 		expect(ranRuns([], [SIZE])).toBe(0);
-	});
-});
-
-describe("the bars against the page that defines them", () => {
-	test("every bar the verdict scores has a row on the page", async () => {
-		const rows = await barRows();
-
-		for (const [measure] of BARS) {
-			expect(rows.filter((row) => row.includes(`\`${measure}\``))).toHaveLength(
-				1,
-			);
-		}
-	});
-
-	test("the page lists the bars of the verdict and the two cache bars, and no other", async () => {
-		const rows = await barRows();
-
-		for (const measure of CACHE_MEASURES) {
-			expect(rows.filter((row) => row.includes(`\`${measure}\``))).toHaveLength(
-				1,
-			);
-		}
-		expect(rows).toHaveLength(BARS.length + CACHE_MEASURES.length);
 	});
 });

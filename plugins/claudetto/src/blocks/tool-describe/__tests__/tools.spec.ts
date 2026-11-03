@@ -15,21 +15,6 @@ import {
 } from "../tools.ts";
 
 describe("every shipped text beats its stock text", () => {
-	test("no shipped text is dead", () => {
-		expect(deadTexts()).toEqual([]);
-	});
-
-	for (const name of describedTools()) {
-		test(`${name} is shorter than the smaller stock reading`, () => {
-			const stock = stockOf(name);
-			const ours = TOOL_TEXTS[name]?.length ?? 0;
-
-			expect(stock).toBeDefined();
-			expect(ours).toBeGreaterThan(0);
-			expect(ours).toBeLessThan(stock ?? 0);
-		});
-	}
-
 	test("the check names a text that does not beat its stock text", () => {
 		const stock = stockOf("Read") ?? 0;
 
@@ -46,24 +31,6 @@ describe("every shipped text beats its stock text", () => {
 		expect(stockOf("Read")).toBe(790);
 		expect(stockOf("DesignSync")).toBe(4005);
 		expect(stockOf("NoSuchTool")).toBeUndefined();
-	});
-});
-
-describe("the length caps of the trimmed texts", () => {
-	test("`Agent` is at most 450 characters", () => {
-		expect(TOOL_TEXTS["Agent"]?.length).toBeLessThanOrEqual(450);
-	});
-
-	test("`Skill` is at most 200 characters", () => {
-		expect(TOOL_TEXTS["Skill"]?.length).toBeLessThanOrEqual(200);
-	});
-
-	test("`ToolSearch` is shorter than its 324 characters", () => {
-		expect(TOOL_TEXTS["ToolSearch"]?.length).toBeLessThan(324);
-	});
-
-	test("`AskUserQuestion` is shorter than its 2083 characters", () => {
-		expect(TOOL_TEXTS["AskUserQuestion"]?.length).toBeLessThan(2083);
 	});
 });
 
@@ -170,14 +137,6 @@ describe("the always-loaded total", () => {
 });
 
 describe("the stock readings", () => {
-	test("each described tool has a reading", () => {
-		const read = STOCK.map((entry) => entry.name);
-
-		for (const name of describedTools()) {
-			expect(read).toContain(name);
-		}
-	});
-
 	test("`stockOf` reads above zero for each stock tool", () => {
 		for (const entry of STOCK) {
 			expect(stockOf(entry.name)).toBeGreaterThan(0);

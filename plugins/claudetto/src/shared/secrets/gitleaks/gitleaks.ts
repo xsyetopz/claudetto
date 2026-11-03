@@ -181,9 +181,6 @@ export const gitleaksSource = (): { ref: string; sha256: string } => ({
 	sha256: DATA.sha256,
 });
 
-export const gitleaksIds = (): readonly string[] =>
-	DATA.rules.map((rule) => rule.id);
-
 export const gitleaksDropped = (): readonly (readonly [string, string])[] =>
 	DATA.dropped;
 

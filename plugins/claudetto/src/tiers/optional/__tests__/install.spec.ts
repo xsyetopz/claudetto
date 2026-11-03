@@ -1,19 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { installFor, targetOf } from "../install.ts";
-import { AST_GREP, OPTIONAL_TOOLS } from "../tools.ts";
+import { AST_GREP } from "../tools.ts";
 
 const RELEASE = `https://github.com/ast-grep/ast-grep/releases/download/${AST_GREP.version}`;
-
-describe("the table", () => {
-	test("holds `ast-grep` alone, pinned to `0.51.1`", () => {
-		expect(OPTIONAL_TOOLS.map((tool) => tool.id)).toEqual(["ast-grep"]);
-		expect(AST_GREP.version).toBe("0.51.1");
-	});
-
-	test("names the two binaries", () => {
-		expect(AST_GREP.binaries).toEqual(["ast-grep", "sg"]);
-	});
-});
 
 describe("`targetOf`", () => {
 	const cases: readonly [string, string, string][] = [

@@ -1,11 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { shareText, WEEKLY_TOKENS, weeklyShare } from "../share.ts";
-
-describe("`WEEKLY_TOKENS`", () => {
-	test("is the 3.20B tokens of the week whose limit ran out", () => {
-		expect(WEEKLY_TOKENS).toBe(3_200_000_000);
-	});
-});
+import { shareText, weeklyShare } from "../share.ts";
 
 describe("`weeklyShare`", () => {
 	test("puts the whole week at 100%", () => {

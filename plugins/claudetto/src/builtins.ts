@@ -42,9 +42,6 @@ export const builtinId = (name: string): string =>
 export const pluginsOff = (): readonly BuiltinPlugin[] =>
 	BUILTIN_PLUGINS.filter((row) => row.off);
 
-export const pluginsKept = (): readonly BuiltinPlugin[] =>
-	BUILTIN_PLUGINS.filter((row) => !row.off);
-
 export const enabledPlugins = (): Readonly<Record<string, boolean>> =>
 	Object.fromEntries(pluginsOff().map((row) => [builtinId(row.name), false]));
 
@@ -59,48 +56,4 @@ export const builtinSnippet = (): BuiltinSnippet => ({
 	[ENABLED_PLUGINS_KEY]: enabledPlugins(),
 });
 
-export interface BuiltinReading {
-	readonly settings: string;
-	readonly total: number;
-	readonly tools: number;
-	readonly messages: number;
-}
-
-export const BUILTIN_CUTS: readonly BuiltinReading[] = [
-	{ settings: "the defaults", total: 46_084, tools: 29_512, messages: 9984 },
-	{
-		settings: "`disableBundledSkills` alone",
-		total: 57_113,
-		tools: 46_467,
-		messages: 4058,
-	},
-	{
-		settings: "`disableBundledSkills` with the deny list",
-		total: 27_737,
-		tools: 17_091,
-		messages: 4058,
-	},
-	{
-		settings: "the shipped combination",
-		total: 36_803,
-		tools: 13_504,
-		messages: 17_178,
-	},
-	{
-		settings: "the shipped combination with the built-in plugins off",
-		total: 36_535,
-		tools: 13_504,
-		messages: 16_910,
-	},
-	{
-		settings: "the shipped combination with both switches",
-		total: 31_213,
-		tools: 13_504,
-		messages: 11_588,
-	},
-];
-
 export const BUILTIN_CHARS = 5590;
-
-/** A switch that took claudetto's own skills would be a loss, not a cut. */
-export const PLUGIN_SKILLS_SURVIVE = true;

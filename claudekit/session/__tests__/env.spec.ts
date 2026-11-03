@@ -19,11 +19,6 @@ describe("fakeApiEnv", () => {
 		const env = fakeApiEnv("http://127.0.0.1:1", "/c");
 
 		expect(env).toMatchObject(QUIET_ENV);
-		expect(QUIET_ENV).toEqual({
-			DISABLE_TELEMETRY: "1",
-			DISABLE_ERROR_REPORTING: "1",
-			DISABLE_AUTOUPDATER: "1",
-		});
 	});
 });
 

@@ -1,55 +1,28 @@
 import type { On, PluginOptions } from "claude-code";
-import { agentOffer, attachAgentOffer } from "./agent-offer/block.ts";
-import type { Block, BlockContext } from "./block.ts";
-import { attachBoundOutput, boundOutput } from "./bound-output/block.ts";
-import { attachBunRule, bunRule } from "./bun-rule/block.ts";
-import { attachClassify, classifyBlock } from "./classify/block.ts";
-import { attachCompaction, compaction } from "./compaction/block.ts";
-import { attachConfine, confine } from "./confine/block.ts";
-import { attachContext7, context7 } from "./context7/block.ts";
-import { attachDecide, decide } from "./decide/block.ts";
-import { attachGate, gateBlock } from "./gate/block.ts";
-import { attachHandoff, handoff } from "./handoff/block.ts";
-import { attachHygiene, hygiene } from "./hygiene/block.ts";
-import { attachInitInterview, initInterview } from "./init-interview/block.ts";
-import { attachMissingTool, missingTool } from "./missing-tool/block.ts";
-import { attachPlanMode, planMode } from "./plan-mode/block.ts";
-import { attachPriceStep, priceStep } from "./price-step/block.ts";
-import { attachReadGuard, readGuard } from "./read-guard/block.ts";
-import { attachRunLimits, runLimits } from "./run-limits/block.ts";
-import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
-import { attachStatusLine, statusLine } from "./status-line/block.ts";
-import { attachToolDescribe, toolDescribe } from "./tool-describe/block.ts";
-import { attachVersionFloor, versionFloor } from "./version-floor/block.ts";
-import { attachWindow, windowBlock } from "./window/block.ts";
-import { attachWorktreeBase, worktreeBase } from "./worktree-base/block.ts";
-
-/** One row per block, in the order `attachBlocks` calls them, which is the hook chain order. */
-export const CATALOG: readonly Block[] = [
-	priceStep,
-	setupCommand,
-	statusLine,
-	initInterview,
-	decide,
-	toolDescribe,
-	agentOffer,
-	handoff,
-	gateBlock,
-	runLimits,
-	windowBlock,
-	compaction,
-	versionFloor,
-	hygiene,
-	missingTool,
-	bunRule,
-	context7,
-	classifyBlock,
-	planMode,
-	confine,
-	readGuard,
-	boundOutput,
-	worktreeBase,
-];
+import { attachAgentOffer } from "./agent-offer/block.ts";
+import type { BlockContext } from "./block.ts";
+import { attachBoundOutput } from "./bound-output/block.ts";
+import { attachBunRule } from "./bun-rule/block.ts";
+import { attachClassify } from "./classify/block.ts";
+import { attachCompaction } from "./compaction/block.ts";
+import { attachConfine } from "./confine/block.ts";
+import { attachContext7 } from "./context7/block.ts";
+import { attachDecide } from "./decide/block.ts";
+import { attachGate } from "./gate/block.ts";
+import { attachHandoff } from "./handoff/block.ts";
+import { attachHygiene } from "./hygiene/block.ts";
+import { attachInitInterview } from "./init-interview/block.ts";
+import { attachMissingTool } from "./missing-tool/block.ts";
+import { attachPlanMode } from "./plan-mode/block.ts";
+import { attachPriceStep } from "./price-step/block.ts";
+import { attachReadGuard } from "./read-guard/block.ts";
+import { attachRunLimits } from "./run-limits/block.ts";
+import { attachSetupCommand } from "./setup-command/block.ts";
+import { attachStatusLine } from "./status-line/block.ts";
+import { attachToolDescribe } from "./tool-describe/block.ts";
+import { attachVersionFloor } from "./version-floor/block.ts";
+import { attachWindow } from "./window/block.ts";
+import { attachWorktreeBase } from "./worktree-base/block.ts";
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
 export const attachBlocks = (on: On, options: PluginOptions): void => {

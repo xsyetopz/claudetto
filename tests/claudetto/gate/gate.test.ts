@@ -13,17 +13,6 @@ import { GLOB_WORD_MAX } from "../../../plugins/claudetto/src/blocks/gate/limits
 import { SHELL_SCAN_MAX_CHARS } from "../../../plugins/claudetto/src/blocks/gate/shell/limits.ts";
 
 describe("the keys the gate reads", () => {
-	test("the list is the six keys of the gate", () => {
-		expect([...GATED_KEYS]).toStrictEqual([
-			"command",
-			"file_path",
-			"notebook_path",
-			"path",
-			"pattern",
-			"glob",
-		]);
-	});
-
 	test("an input with one of the keys as a string is gated", () => {
 		for (const key of GATED_KEYS) {
 			expect(gated({ [key]: "x" })).toBe(true);

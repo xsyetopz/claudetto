@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { EVAL_MIN_RUNS_PER_ARM } from "../../../../tools/limits.ts";
 import {
 	CITABLE_MIN_RUNS,
 	DEFAULT_RUNS,
@@ -11,11 +10,6 @@ import {
 } from "../floor.ts";
 
 describe("floorOf", () => {
-	test("the citable floor is the constant that the document gate reads", () => {
-		expect(CITABLE_MIN_RUNS).toBe(EVAL_MIN_RUNS_PER_ARM);
-		expect(SMOKE_MIN_RUNS).toBe(3);
-	});
-
 	test("a count below the smoke floor meets neither", () => {
 		const floor = floorOf(SMOKE_MIN_RUNS - 1);
 

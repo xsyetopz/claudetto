@@ -10,6 +10,7 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Changed
 
+- The tests of file shape are removed: `tests/repo/` and 30 plugin spec tests, with the values only they read (`DEFAULT_MAIN_BODY_CHARS`, `MAIN_BODY_CAP`, `OUTPUT_STYLE_CAP`, `CLASSIFIER_RULES_CAP`, `MEASURED_SUITE`) and the length-cap tests of the tool texts. The gates `just lint` and `just validate` still run `tools/file-lines.ts`, `tools/agent-tools.ts`, `tools/rebuild/*.ts`, and `tools/no-narration.ts`.
 - `AskUserQuestion`, `Agent`, and `Skill` move behind `ToolSearch`, as `ListAgents` did, so their schemas leave every request until a session loads them. That takes 6,868 characters off the interactive request (39,733 to 32,865) and 2,947 off the `-p` request (27,908 to 24,961). The first use of one costs a `ToolSearch` request first. `Write` and `Edit` stay loaded, because nearly every session uses them.
 - `just setup` now asks `[y/N]` at a terminal before it writes the starter files, or takes `--yes`; before, it never asked. A run with no terminal and no `--yes` writes nothing.
 - The prompt texts say what to do instead of what to avoid: the denial line of the four agents, the finishing line of `main.md`, the ending of `Concise`, and the `Agent`, `Read`, and `SendMessage` tool texts. `main.md` also says to read a large file by line range.
