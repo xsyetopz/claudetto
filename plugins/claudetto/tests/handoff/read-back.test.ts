@@ -2,6 +2,7 @@ import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 import { HANDOFF_DIR } from "../../src/blocks/handoff/handoff.ts";
 import { STALE_MS, sourceLine } from "../../src/blocks/handoff/read-back.ts";
+import { type Line, logInto } from "./transcript.ts";
 
 const DAY_MS = 86_400_000;
 
@@ -21,11 +22,6 @@ const WRITTEN = `# Handoff
 Ship the read-back.
 `;
 
-interface Line {
-	readonly text: string;
-	readonly to: string;
-}
-
 /** `mtimeMs` 0 makes the clock's `now` the age of every handoff. */
 const listed = (name: string) => ({
 	name,
@@ -38,11 +34,7 @@ const listed = (name: string) => ({
 /** The store, the root, and a log that fills `lines`, for a case that sets its own folder. */
 const quiet = (on: On, lines: Line[]): void => {
 	mock.store(on);
-	on("session.root", () => ({ value: "/repo" }));
-	on("ui.log", (_$, e) => {
-		lines.push({ text: e.text, to: e.to });
-		return { value: undefined };
-	});
+	logInto(on, lines);
 	on("classic.SessionStart", () => ({}));
 };
 

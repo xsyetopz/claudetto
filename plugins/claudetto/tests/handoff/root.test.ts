@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { HANDOFF_DIR } from "../../src/blocks/handoff/handoff.ts";
-import { said, tailOf } from "./transcript.ts";
+import { said } from "./transcript.ts";
 
 const ROOT = "/repo";
 
@@ -15,28 +15,15 @@ const moved = (on: On): void => {
 test("writes the handoff under the project root after a shell `cd`", async ($: Engine, on: On) => {
 	const paths: string[] = [];
 	moved(on);
-	on("process.run", () => ({
-		value: {
-			exitCode: 0,
-			stdout: tailOf(
-				said("user", "Rename `fetchUser`."),
-				said("assistant", "Done."),
-			),
-			stderr: "",
-			isStdoutTruncated: false,
-			isStderrTruncated: false,
-		},
-	}));
 	on("fs.write", (_$, e) => {
 		paths.push(e.path.replaceAll("\\", "/"));
 		return { value: undefined };
 	});
-	on("classic.PreCompact", () => ({}));
+	on("session.compact", () => ({ skip: "core ran" }));
 
-	await $.classic.PreCompact({
+	await $.session.compact({
 		trigger: "auto",
-		custom_instructions: null,
-		transcript_path: "/tmp/transcript.jsonl",
+		messages: [said("user", "Rename `fetchUser`."), said("assistant", "Done.")],
 	});
 
 	expect(paths.filter((path) => path.includes(HANDOFF_DIR))).toEqual([

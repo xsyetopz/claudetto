@@ -7,7 +7,7 @@ import { withFailure } from "./failures.ts";
 import { changeLedger } from "./ledger.ts";
 import { type Limits, limitsOf } from "./settings.ts";
 import { admitStart, crowded, runningCount } from "./spawn.ts";
-import { STALL_ASK, STALL_BLOCKS, STALL_LINE, writesFile } from "./stall.ts";
+import { STALL_ASK, STALL_BLOCKS, STALL_LINE, WRITERS } from "./stall.ts";
 
 const startsRef = { plugin: "claudetto", key: "starts" } as const;
 
@@ -148,12 +148,15 @@ const countBlock = async (
 	}
 };
 
-/** `classic.PostToolUse`: a file written between the blocks is progress, so the count starts again. */
-export const onWritten: HookFor<"classic.PostToolUse"> = async ($, e, next) => {
-	if (writesFile(e.tool_name)) {
+/** A file written between the blocks is progress, so the count starts again; a call that errored or was refused wrote nothing. */
+/** A write that ran resets the run of blocks, and a denied or failed one does not. */
+const onWritten = async (
+	$: EngineInterface,
+	answer: { readonly deny?: string | undefined; readonly isError?: unknown },
+): Promise<void> => {
+	if (answer.deny === undefined && answer.isError === undefined) {
 		await countBlock($, false);
 	}
-	return next(e);
 };
 
 /**
@@ -219,7 +222,7 @@ export const runLimits: Block = {
 	routes: [
 		"agent.spawn",
 		"classic.PostToolUseFailure",
-		"classic.PostToolUse",
+		"tool.call",
 		"classic.Stop",
 		"prompt.submit",
 	],
@@ -231,7 +234,11 @@ export const attachRunLimits = (on: On, context: BlockContext): void => {
 	on("classic.PostToolUseFailure", ($, e, next) =>
 		onFailed($, e, next, context.options),
 	);
-	on("classic.PostToolUse", onWritten);
+	on("tool.call", { tool: WRITERS }, async ($, e, next) => {
+		const answer = await next(e);
+		await onWritten($, answer);
+		return answer;
+	});
 	on("classic.Stop", onStop);
 	// Rides the prompt, which costs a request already; `classic.Stop` would cost its own.
 	on("prompt.submit", onSubmitBudget);

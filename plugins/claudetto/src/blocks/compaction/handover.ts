@@ -18,6 +18,9 @@ export const HANDOVER_PROMPT =
  */
 let pending: string | undefined;
 
+/** True while the next compaction is to install a handoff already saved. */
+export const isHandingOver = (): boolean => pending !== undefined;
+
 /** A reply whose first line is the template's title is a handoff, so no tool call is needed to announce one. */
 export const isHandoff = (answer: string): boolean =>
 	answer.trimStart().startsWith(`${HANDOFF_TITLE}\n`);

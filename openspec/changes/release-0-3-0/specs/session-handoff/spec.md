@@ -23,6 +23,20 @@ The system SHALL inject the handoff that the handoff tool wrote in the first tur
 - **WHEN** the handoff was injected in the first turn
 - **THEN** no later turn of that session carries it again
 
+### Requirement: Handoff before a Compaction
+
+The system SHALL write a handoff file in a `session.compact` hook, from the event's `messages`, before an automatic, manual, or plugin compaction of the main conversation runs. A `precompute` installs nothing, a subagent's compaction (`agentId`) leaves the main conversation as it was, and a handover installs Claude's own handoff, so none of the three gets a code-built file.
+
+#### Scenario: Auto Compaction
+
+- **WHEN** an automatic or manual compaction of the main conversation starts
+- **THEN** a handoff file exists before the compaction runs
+
+#### Scenario: No File for a Precompute or a Subagent
+
+- **WHEN** the compaction is a `precompute`, or it carries an `agentId`
+- **THEN** no handoff file is written
+
 ### Requirement: Handoff Content
 
 Every handoff SHALL have one layout, whether Claude or code wrote it. The layout is a fixed title line `# Handoff`, then a fixed source line, then the nine `##` sections of `samzilverberg/claude-handoff` (MIT) in this order: Goal, Standing instructions, Decisions log, Current state, In progress, Next steps, Key files and symbols, Gotchas and dead ends, Open questions. No other `#` or `##` heading SHALL appear. The code-built fallback fills only what code can read from the messages (`who96/claude-code-context-handoff`, MIT): the recent turns go under Current state, and the touched file paths go under Key files and symbols. Each section that code cannot fill SHALL hold one fixed line that says code could not read it.
@@ -45,7 +59,7 @@ Every handoff SHALL have one layout, whether Claude or code wrote it. The layout
 
 ### Requirement: Claudetto Names the Nine Sections
 
-Claudetto SHALL show the whole handoff template in the injected `context_management` text of the handoff state: the file name pattern, the title line, and the nine headings at their level. The template SHALL come from the same code the fallback writer uses, so the two cannot differ. No hook can write the file for Claude, because `classic.SessionEnd` and `classic.PreCompact` make no model call (requirement "Writer Cost"), and code reads no decision and no reason out of a transcript.
+Claudetto SHALL show the whole handoff template in the injected `context_management` text of the handoff state: the file name pattern, the title line, and the nine headings at their level. The template SHALL come from the same code the fallback writer uses, so the two cannot differ. No hook can write the file for Claude, because the compaction writer makes no model call (requirement "Writer Cost"), and code reads no decision and no reason out of a transcript.
 
 #### Scenario: Nudge in the Surface
 
@@ -56,6 +70,13 @@ Claudetto SHALL show the whole handoff template in the injected `context_managem
 
 - **WHEN** a heading of the template changes in code
 - **THEN** both the `context_management` text and the code-built file change with it, and a test shows they match
+
+## REMOVED Requirements
+
+### Requirement: Fits the End Bound
+
+**Reason**: No writer runs at session end: a typed `/clear` writes no file, and the compaction writer reads `messages` with no `tail` read to bound.
+**Migration**: None needed. The handoff tool and the compaction writer write the file.
 
 ## ADDED Requirements
 

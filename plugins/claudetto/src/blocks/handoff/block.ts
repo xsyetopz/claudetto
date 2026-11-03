@@ -1,5 +1,6 @@
-import type { EngineInterface, On } from "claude-code";
+import type { EngineInterface, On, SessionMessage } from "claude-code";
 import type { Block, BlockContext } from "../block.ts";
+import { isHandingOver } from "../compaction/handover.ts";
 import { declareAfterStart, type ToolSpec } from "../declare-after-start.ts";
 import { handOff, holdTurn, type Session } from "./call.ts";
 import {
@@ -10,8 +11,7 @@ import {
 	handoffPath,
 	handoffText,
 	ownHandoffs,
-	parseTail,
-	tailArgv,
+	readMessages,
 } from "./handoff.ts";
 import {
 	isStale,
@@ -23,15 +23,6 @@ import {
 } from "./read-back.ts";
 import { atRoot } from "./root.ts";
 import { HANDOFF_INPUT_SCHEMA, HANDOFF_MATCH, TOOL_HANDOFF } from "./tool.ts";
-
-/** Wall clock to leave for the write itself, so a slow `tail` cannot eat the whole budget. */
-const WRITE_RESERVE_MS = 400;
-
-interface Occasion {
-	readonly transcriptPath: string;
-	readonly remainingMs: number;
-	readonly why: string;
-}
 
 /** A dropped write is the one failure the user can act on, so it takes the visible sink. */
 const notWritten = ($: EngineInterface, why: string, cause: string): void => {
@@ -65,31 +56,11 @@ const copyMisnamed = async (
 /** Never throws: each failure is one `notWritten` line, because a hook that throws is skipped. */
 const writeHandoff = async (
 	$: EngineInterface,
-	occasion: Occasion,
+	messages: readonly SessionMessage[],
+	why: string,
 ): Promise<void> => {
-	const { transcriptPath, remainingMs, why } = occasion;
-	if (transcriptPath === "") {
-		return;
-	}
-	// `session.end` shares one short wall-clock bound across its chain, so each caller passes its own cut.
-	const forTail = Math.min(remainingMs - WRITE_RESERVE_MS, 10_000);
-	if (forTail <= 0) {
-		notWritten($, why, "no time was left of the bound the event gives");
-		return;
-	}
 	try {
-		const read = await $.process.run(tailArgv(transcriptPath), {
-			timeoutMs: forTail,
-		});
-		if (read.exitCode !== 0) {
-			notWritten(
-				$,
-				why,
-				`the transcript could not be read, and tail exited ${read.exitCode}`,
-			);
-			return;
-		}
-		const tail = parseTail(read.stdout);
+		const tail = readMessages(messages);
 		const own = ownHandoffs(tail);
 		if (own.valid) {
 			// Skip the code-built file when Claude wrote its own; it would be the poorer of the two.
@@ -202,8 +173,8 @@ export const handoff: Block = {
 	id: "handoff",
 	kind: "session",
 	routes: [
-		"classic.PreCompact",
 		"classic.SessionStart",
+		"session.compact",
 		"session.start",
 		"tool.call",
 		"turn.start",
@@ -214,15 +185,17 @@ export const handoff: Block = {
 };
 
 export const attachHandoff = (on: On, _context: BlockContext): void => {
-	// The `PreCompact` cut is unmeasured; the writer's 10,000 ms cap bounds the read either way.
-	on("classic.PreCompact", async ($, e, next) => {
-		await writeHandoff($, {
-			transcriptPath: e.transcript_path,
-			remainingMs: next.budget.remainingMs,
-			why: `PreCompact ${e.trigger}`,
-		});
-		return next(e);
-	});
+	// A `precompute` installs nothing, a subagent's compaction leaves the main conversation as it was, and a handover installs Claude's own handoff.
+	on(
+		"session.compact",
+		{ trigger: ["manual", "auto", "plugin"] },
+		async ($, e, next) => {
+			if (e.agentId === undefined && !isHandingOver()) {
+				await writeHandoff($, e.messages, `compaction ${e.trigger}`);
+			}
+			return next(e);
+		},
+	);
 	on("session.start", { isInteractive: [true, false] }, ($, e, next) =>
 		declareAfterStart(
 			(tool) => $.tool.register(tool),

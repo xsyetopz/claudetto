@@ -2,7 +2,6 @@ import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 import { registeredTools } from "../../src/blocks/__tests__/lab-support.ts";
 import { HANDOFF_DIR } from "../../src/blocks/handoff/handoff.ts";
-import { said, tailOf } from "./transcript.ts";
 
 const TOOL = "mcp__claudetto__handoff";
 
@@ -16,8 +15,6 @@ const ARGS = {
 };
 
 const GITHUB_TOKEN = `ghp_${"b".repeat(36)}`;
-
-const FIRST_PROMPT = "Add a CSV export.";
 
 interface Seen {
 	readonly written: { path: string; text: string }[];
@@ -185,15 +182,6 @@ test("a failed clear submits nothing and says so", async ($: Engine, on: On) => 
 
 test("a typed `/clear` writes no file and takes no handoff in", async ($: Engine, on: On) => {
 	const { seen, clock } = lab(on);
-	on("process.run", () => ({
-		value: {
-			exitCode: 0,
-			stdout: tailOf(said("user", FIRST_PROMPT)),
-			stderr: "",
-			isStdoutTruncated: false,
-			isStderrTruncated: false,
-		},
-	}));
 	on("classic.SessionEnd", () => ({}));
 	on("classic.SessionStart", () => ({}));
 	on("fs.exists", () => ({ value: true }));

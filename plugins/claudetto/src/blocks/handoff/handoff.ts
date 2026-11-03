@@ -1,9 +1,7 @@
+import type { SessionMessage } from "claude-code";
 import { redact } from "../../shared/secrets/redact.ts";
 
 export const HANDOFF_DIR = ".claude/claudetto/handoffs";
-
-/** Taken by bytes: `$.fs.read` rejects over 4 MiB and a transcript grows past that, hence `tail`. */
-export const TAIL_BYTES = 262_144;
 
 const TURNS = 12;
 
@@ -13,13 +11,6 @@ const CUT = 600;
 
 /** The session-end reason that asks for a handoff: the conversation ends and the process goes on. */
 export const CLEAR = "clear";
-
-export const tailArgv = (transcriptPath: string): readonly string[] => [
-	"tail",
-	"-c",
-	String(TAIL_BYTES),
-	transcriptPath,
-];
 
 export interface Turn {
 	readonly role: string;
@@ -41,23 +32,6 @@ interface ToolInput {
 	readonly path?: unknown;
 }
 
-interface Part {
-	readonly type?: unknown;
-	readonly text?: unknown;
-	readonly name?: unknown;
-	readonly input?: unknown;
-}
-
-interface Message {
-	readonly role?: unknown;
-	readonly content?: unknown;
-}
-
-interface Line {
-	readonly type?: unknown;
-	readonly message?: unknown;
-}
-
 const isObject = <T>(value: unknown): value is T =>
 	typeof value === "object" && value !== null;
 
@@ -73,20 +47,6 @@ const pathOf = (input: unknown): string | undefined => {
 	);
 };
 
-const partsOf = (content: unknown): readonly Part[] =>
-	Array.isArray(content) ? content.filter((part) => isObject<Part>(part)) : [];
-
-const textOf = (content: unknown): string => {
-	if (typeof content === "string") {
-		return content;
-	}
-	return partsOf(content)
-		.map((part) => (part.type === "text" ? part.text : undefined))
-		.filter((text): text is string => typeof text === "string")
-		.join(" ")
-		.trim();
-};
-
 const WRITING_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
 
 interface Touch {
@@ -94,48 +54,21 @@ interface Touch {
 	readonly wrote: boolean;
 }
 
-const touchesIn = (content: unknown): readonly Touch[] =>
-	partsOf(content)
-		.filter((part) => part.type === "tool_use")
-		.map((part) => {
-			const path = pathOf(part.input);
+const touchesIn = (message: SessionMessage): readonly Touch[] =>
+	message.toolUses
+		.map((use) => {
+			const path = pathOf(use.input);
 			return path === undefined
 				? undefined
-				: { path, wrote: WRITING_TOOLS.includes(String(part.name)) };
+				: { path, wrote: WRITING_TOOLS.includes(use.tool) };
 		})
 		.filter((touch): touch is Touch => touch !== undefined);
 
-const turnOf = (
-	line: string,
-): { role: string; content: unknown } | undefined => {
-	let parsed: unknown;
-	try {
-		parsed = JSON.parse(line);
-	} catch {
-		// A byte-bounded read starts and ends inside a line, and a broken line carries no meaning.
-		return undefined;
-	}
-	if (!isObject<Line>(parsed) || !isObject<Message>(parsed.message)) {
-		return undefined;
-	}
-	const role = asText(parsed.message.role) ?? asText(parsed.type);
-	return role === "user" || role === "assistant"
-		? { role, content: parsed.message.content }
-		: undefined;
-};
-
 /** Redacts at the read; `written` is the exception, as a redacted path could break `wroteOwn`. */
-export const parseTail = (text: string): Tail => {
-	const read = text
-		.split("\n")
-		.slice(1)
-		.map(turnOf)
-		.filter(
-			(turn): turn is { role: string; content: unknown } => turn !== undefined,
-		);
-	const touches = read.flatMap((turn) => touchesIn(turn.content));
-	const turns = read
-		.map((turn) => ({ role: turn.role, text: redact(textOf(turn.content)) }))
+export const readMessages = (messages: readonly SessionMessage[]): Tail => {
+	const touches = messages.flatMap(touchesIn);
+	const turns = messages
+		.map((message) => ({ role: message.role, text: redact(message.text) }))
 		.filter((turn) => turn.text !== "");
 	return {
 		turns,

@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import {
 	handoffText,
-	parseTail,
+	readMessages,
 } from "../../plugins/claudetto/src/blocks/handoff/handoff.ts";
 import { REDACTED } from "../../plugins/claudetto/src/shared/secrets/mask.ts";
 import {
@@ -10,8 +10,7 @@ import {
 } from "../../plugins/claudetto/src/shared/secrets/redact.ts";
 import {
 	said,
-	tailOf,
-	turn,
+	used,
 } from "../../plugins/claudetto/tests/handoff/transcript.ts";
 
 const ANTHROPIC = `sk-ant-api03-${"a".repeat(93)}AA`;
@@ -117,11 +116,9 @@ test("all eleven GitLab tokens are covered, which the display rules alone would 
 });
 
 test("the values read from a transcript hold no secret", () => {
-	const tail = tailOf(
+	const { turns } = readMessages([
 		said("user", `Deploy with PASSWORD=${PASSWORD} and ${ANTHROPIC}.`),
-	);
-
-	const { turns } = parseTail(tail);
+	]);
 
 	expect(turns).toEqual([
 		{
@@ -132,26 +129,18 @@ test("the values read from a transcript hold no secret", () => {
 });
 
 test("a path that holds a secret is redacted too", () => {
-	const tail = tailOf(
+	const { paths } = readMessages([
 		said("user", "Read the token file."),
-		turn("assistant", [
-			{
-				type: "tool_use",
-				name: "Read",
-				input: { file_path: `/tmp/${GITHUB}/notes.md` },
-			},
-		]),
-	);
-
-	const { paths } = parseTail(tail);
+		used("", "Read", { file_path: `/tmp/${GITHUB}/notes.md` }),
+	]);
 
 	expect(paths).toEqual([`/tmp/${REDACTED}/notes.md`]);
 });
 
 test("the assembled file holds neither the planted key nor the planted password", () => {
-	const tail = parseTail(
-		tailOf(said("user", `Use ${ANTHROPIC} with PASSWORD=${PASSWORD}.`)),
-	);
+	const tail = readMessages([
+		said("user", `Use ${ANTHROPIC} with PASSWORD=${PASSWORD}.`),
+	]);
 
 	const text = handoffText(tail, "2026-10-29T10:00:00.000Z");
 

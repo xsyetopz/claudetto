@@ -5,9 +5,7 @@ import {
 	HANDOFF_DIR,
 } from "../../src/blocks/handoff/handoff.ts";
 import { newestHandoff } from "../../src/blocks/handoff/read-back.ts";
-import { said, tailOf, turn } from "./transcript.ts";
-
-const TRANSCRIPT = "/tmp/transcript.jsonl";
+import { said, used } from "./transcript.ts";
 
 const VALID = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
 
@@ -22,34 +20,23 @@ Written by Claude at 2026-10-31T14:01:00Z.
 Ship the status line.
 `;
 
-const WROTE_MISNAMED = tailOf(
+const WROTE_MISNAMED = [
 	said("user", "Write the handoff."),
-	turn("assistant", [
-		{ type: "tool_use", name: "Write", input: { file_path: MISNAMED } },
-	]),
-);
+	used("", "Write", { file_path: MISNAMED }),
+];
 
 interface Run {
 	readonly files: { path: string; text: string }[];
 	readonly lines: string[];
 }
 
-/** A compaction whose tail shows Claude writing `MISNAMED`, with `read` as the stub reply of `$.fs.read`. A stub that throws is skipped by the lab, so a failed read is a `deny`. */
+/** A compaction whose messages show Claude writing `MISNAMED`, with `read` as the stub reply of `$.fs.read`. A stub that throws is skipped by the lab, so a failed read is a `deny`. */
 const compactAfterMisnamed = async (
 	$: Engine,
 	on: On,
 	read: { value: string } | { deny: string },
 ): Promise<Run> => {
 	const run: Run = { files: [], lines: [] };
-	on("process.run", () => ({
-		value: {
-			exitCode: 0,
-			stdout: WROTE_MISNAMED,
-			stderr: "",
-			isStdoutTruncated: false,
-			isStderrTruncated: false,
-		},
-	}));
 	on("fs.read", () => read);
 	on("session.root", () => ({ value: "/repo" }));
 	on("fs.write", (_$, e) => {
@@ -60,12 +47,8 @@ const compactAfterMisnamed = async (
 		run.lines.push(e.text);
 		return { value: undefined };
 	});
-	on("classic.PreCompact", () => ({}));
-	await $.classic.PreCompact({
-		trigger: "auto",
-		custom_instructions: null,
-		transcript_path: TRANSCRIPT,
-	});
+	on("session.compact", () => ({ skip: "core ran" }));
+	await $.session.compact({ trigger: "auto", messages: WROTE_MISNAMED });
 	return run;
 };
 
