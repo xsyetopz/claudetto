@@ -4,7 +4,7 @@ A figure here is a reading of `just capture`, which runs `claude -p` against a l
 API and counts the characters of the first request. No model is called and no provider is reached.
 Each figure names the date and Claude Code version it was read on. A figure that names neither was
 read before `2.1.317` and is unmeasured on it. On 2026-11-03, on `2.1.317`, `just capture --shipped`
-read the plugin arm at 24,984 characters and the plain arm at 28,886, and with `--interactive` 32,698
+read the plugin arm at 25,314 characters and the plain arm at 28,886, and with `--interactive` 33,028
 and 42,016. The working folder path was 34 characters in the first run and 42 in the second.
 
 ## Main Prompt

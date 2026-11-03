@@ -11,7 +11,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Features
 
-- A first request of 24,984 characters against 46,084 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
+- A first request of 25,314 characters against 46,084 for a stock session, read with `just capture --arm plugin --shipped` and `just capture`. The shipped settings alone read 28,809 with `just capture --arm plain --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A `/claudetto:handoff` command that has the session call the `handoff` tool, plus a handoff written before a compaction.
 - A handoff reply that compacts the conversation to itself, with no summary call, so the next turn reads the cached prefix.
@@ -55,6 +55,10 @@ Setup also offers two sandbox switches that are not in the groups: `sandbox.enab
 Setup also offers claudetto's code rules as the file `~/.claude/rules/claudetto-code.md`: write the least code that does the task, guard only at a trust boundary, name the edge cases you handled, and write a comment only for a reason the code cannot show.
 Its `paths:` of `**/*` keeps it out of a session until the session reads a file, so a session that only talks does not carry it.
 Claude Code does not load a plugin's own `rules/` folder, so the file takes effect only once setup writes it.
+
+Setup also offers three general rules as a section of `~/.claude/CLAUDE.md`, between `<!-- claudetto:start -->` and `<!-- claudetto:end -->`: run each build, test, lint, type check, and package step through the repo's own script, take each flag and version from `--help` or the versioned docs, and read the source or run a probe before stating a fact about a tool.
+The dialog shows the whole text, and a yes writes it. The rest of the file stays as it was, and a later run replaces only that section.
+Until the file holds the section, each session start, `clear`, and `compact` adds the same text to the model's context, 330 characters of the first request.
 
 A setup run takes no model turn: the dialogs open from the hook, and no tool schema or list of differences enters the request.
 A session with no one to ask, such as `claude -p`, writes nothing.
@@ -110,7 +114,7 @@ On any git repo, `just setup` and `/claudetto:setup` also offer a block in `.git
 
 | Part | Effect |
 | --- | --- |
-| Settings | `/claudetto:setup` writes the keys you keep from the four groups above, the sandbox switches, and the code rules file. |
+| Settings | `/claudetto:setup` writes the keys you keep from the four groups above, the sandbox switches, the code rules file, and the general rules section of `~/.claude/CLAUDE.md`. |
 | Handoff | `/claudetto:handoff` has the session call the `handoff` tool, which writes the file, clears, and submits the next prompt. A handoff is also written before a compaction and read back on `resume`. See [Handoff](#handoff). |
 | Compaction | A reply that starts with `# Handoff` compacts the conversation to the first message, one assistant line, and that reply, with no model call. A turn that ends at 400,000 tokens of context or more gets its handoff from one fork of the conversation, which the cache serves, compacts the same way, and waits for the user's next prompt. Any other compaction is Claude Code's, with a handoff written before it. The option `cheapSummaryEnabled` set to `true` answers it with one bounded call on `claude-haiku-5-5`. |
 | Output style | The plugin ships `claudetto:Concise`, which the Smaller prompt group selects. |
