@@ -12,7 +12,7 @@
 
 - `plugins/claudetto/src/` holds the shared files and one folder for each slice, and `hooks/hooks.json` names the one hooks module `src/register.ts`.
 - `tools/` holds the scripts of `just check`, and `claudekit/` holds the paid and manual tools.
-- `tests/claudetto/` holds the unit tests of the core plugin, `tests/repo/` holds the tests of the rules of the repository, and a `__tests__/` folder beside a source counts as well.
+- `tests/claudetto/` holds the unit tests of the core plugin, and a `__tests__/` folder beside a source counts as well.
 - `plugins/*/tests/` holds the hook labs, which only `claude plugin test` runs, because `bun test` skips them (`bunfig.toml:11`).
 - [`AGENTS.md`](AGENTS.md) has every rule of the repository, which `CLAUDE.md` imports.
 

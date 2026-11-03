@@ -6,7 +6,7 @@ placement rule and the reading behind it.
 
 Load behavior is from the Claude Code docs for `2.1.312`, page `configure/memory-and-rules`. Sizes
 are from `just capture`, which reads the first Messages request against a local fake API with no
-model call. `docs/prompt/footprint.md` holds the per-piece figures. The docs page cannot be re-read here, and the sizes were not re-captured for `0.3.0` (`tools/capture/run.ts` was denied by the auto mode classifier in this session), so every size on this page is unmeasured for `0.3.0`. The figures that can be read from files now are these: `wc -m` gives 5,292 for `plugins/claudetto/agents/main.md` and 1,896 for `plugins/claudetto/output-styles/Concise.md`, and `tools/limits.ts` sets `MAIN_BODY_CAP` to 6000 and `OUTPUT_STYLE_CAP` to 1936.
+model call. `docs/prompt/footprint.md` holds the per-piece figures. The docs page cannot be re-read here, and the sizes were not re-captured for `0.3.0` (`tools/capture/run.ts` was denied by the auto mode classifier in this session), so every size on this page is unmeasured for `0.3.0`. The figures that can be read from files now are these: `wc -m` gives 5,292 for `plugins/claudetto/agents/main.md` and 1,896 for `plugins/claudetto/output-styles/Concise.md`, and the caps the user set are 6000 for the body and 1936 for the output style.
 
 ## The Rule
 
@@ -48,7 +48,7 @@ The body of `system` has a hard bound that the other surfaces do not. The harnes
 body when no agent setting is set, 3,645 characters under the shipped settings on `2.1.316` (unmeasured since), so an
 agent file above that size makes every request of every session larger, which is a loss and not a
 trim. The body travels as JSON and ours has more line breaks than the default text, each escaped, so
-the bound was 3,678 as the request carried it. `tests/repo/prompt/budget.test.ts` reads `MAIN_BODY_CAP` (6000) from `tools/limits.ts` now.
+the bound was 3,678 as the request carried it. The cap is 6000 now, and no test checks it.
 
 That bound is the reason a rule needs a reason to be there. A rule about writing a comment applies
 only while code is being written, and a `paths` rule covers exactly that case for nothing, so the

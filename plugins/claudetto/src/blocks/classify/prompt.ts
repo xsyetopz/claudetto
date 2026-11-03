@@ -33,9 +33,6 @@ const entryOf = (rule: Rule): string =>
 const section = (title: string, entries: readonly string[]): string =>
 	`## ${title}\n${entries.map((entry) => `- ${entry}`).join("\n")}`;
 
-/** Every call that is not read-only sends these rules, so their length is paid on each one. */
-export const CLASSIFIER_RULES_CAP = 5600;
-
 export const classifierRules = (): string =>
 	[
 		FRAME,

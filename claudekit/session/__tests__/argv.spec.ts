@@ -3,7 +3,6 @@ import {
 	claudeArgv,
 	inlinePluginOptions,
 	maxBudget,
-	NO_SESSION_PERSISTENCE,
 	outputFormat,
 	permissionMode,
 	pluginDir,
@@ -56,10 +55,6 @@ describe("the flag parts", () => {
 	test("keeps a budget given as text exactly as written", () => {
 		expect(maxBudget("1.20")).toEqual(["--max-budget-usd", "1.20"]);
 		expect(maxBudget(2)).toEqual(["--max-budget-usd", "2"]);
-	});
-
-	test("names the flag that stops a session from being stored", () => {
-		expect(NO_SESSION_PERSISTENCE).toEqual(["--no-session-persistence"]);
 	});
 
 	test("writes the settings object as one JSON word with the plugin options inside", () => {

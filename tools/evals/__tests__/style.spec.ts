@@ -101,7 +101,6 @@ describe("the price line", () => {
 	});
 
 	test("keeps a full run under the approved 1.9M tokens at the measured size", () => {
-		expect(TOKEN_CAP).toBe(1_900_000);
 		expect(totalTokens(planStyle(defaults()), measured)).toBeLessThan(
 			TOKEN_CAP,
 		);

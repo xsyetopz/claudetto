@@ -3,8 +3,6 @@ import { settingsFileIn } from "../settings-file.ts";
 import { suiteSnippet } from "./rules.ts";
 
 /** User settings only: the program reads `autoMode` from user, `--settings`, and managed settings. */
-export const AUTO_MODE_TARGET = "user";
-
 export const autoModeTargetFile = (configDir: string): string =>
 	settingsFileIn(configDir);
 

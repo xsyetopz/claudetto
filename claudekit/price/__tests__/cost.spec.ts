@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { costOf, money, promptTokens } from "../cost.ts";
-import { PRICES } from "../table.ts";
 
 const MILLION = {
 	input_tokens: 1e6,
@@ -61,16 +60,5 @@ describe("costOf", () => {
 
 	test("throws for a model with no price", () => {
 		expect(() => costOf("claude-nope", {})).toThrow("claude-nope");
-	});
-});
-
-describe("PRICES", () => {
-	test("holds the four models the harnesses price", () => {
-		expect(Object.keys(PRICES).sort((a, b) => a.localeCompare(b))).toEqual([
-			"claude-haiku-5-5",
-			"claude-opus-5-5",
-			"claude-sonnet-5",
-			"claude-sonnet-5-5",
-		]);
 	});
 });

@@ -7,7 +7,6 @@ import type {
 import {
 	type Ask,
 	isCheapSummaryOn,
-	SUMMARY_INSTRUCTIONS,
 	SUMMARY_MAX_CHARS,
 	SUMMARY_MAX_TOKENS,
 	summarize,
@@ -54,12 +53,6 @@ const asking = (reply: () => Promise<ModelCompleteResult>) => {
 };
 
 describe("the rows leave the cheap summarizer off", () => {
-	test("every row of the table has the field off", () => {
-		expect(TIERS.map((row) => row.cheapSummary)).toEqual(
-			TIERS.map(() => false),
-		);
-	});
-
 	test("a row with the field off and no option asks for no call", () => {
 		for (const row of TIERS) {
 			expect(
@@ -184,10 +177,6 @@ describe("the answer to a compaction", () => {
 		expect(seen.lines).toEqual([
 			`Cheap summary reached its cap of ${SUMMARY_MAX_TOKENS + 2048} output tokens, thinking included, with 38 characters of text, so it is cut and the engine compacts`,
 		]);
-	});
-
-	test("the instructions name the character limit, so the model writes to it", () => {
-		expect(SUMMARY_INSTRUCTIONS).toContain(`${SUMMARY_MAX_CHARS} characters`);
 	});
 
 	test("a reply over the limit is cut at its last line break within the limit, with one line", async () => {

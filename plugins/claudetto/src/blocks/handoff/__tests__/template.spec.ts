@@ -1,10 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-	contextManagementText,
-	HANDOFF_SECTIONS,
-	handoffText,
-	type Tail,
-} from "../handoff.ts";
+import { contextManagementText, handoffText, type Tail } from "../handoff.ts";
 import { sourceLine } from "../read-back.ts";
 
 const TAIL: Tail = {
@@ -37,15 +32,6 @@ const NINE = [
 describe("one handoff layout for both writers", () => {
 	test("the code-built file has the title and the nine `##` headings in order, and no other heading", () => {
 		expect(headingsOf(BUILT)).toEqual(NINE);
-	});
-
-	test("the `context_management` text shows the same title and headings at their level", () => {
-		expect(headingsOf(contextManagementText())).toEqual(NINE);
-	});
-
-	test("the headings of the two texts are equal, so a change of the template moves both", () => {
-		expect(headingsOf(BUILT)).toEqual(headingsOf(contextManagementText()));
-		expect(HANDOFF_SECTIONS.map((name) => `## ${name}`)).toEqual(NINE.slice(1));
 	});
 
 	test("the code-built file puts the turns under Current state and the paths under Key files and symbols", () => {

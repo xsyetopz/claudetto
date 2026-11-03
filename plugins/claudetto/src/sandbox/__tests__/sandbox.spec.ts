@@ -6,7 +6,6 @@ import {
 import { reopensSecret, sandboxFaults } from "../faults.ts";
 import {
 	SANDBOX_KEYS,
-	SANDBOX_TARGET,
 	type SandboxBlock,
 	type SandboxSnippet,
 	SECRET_PATHS,
@@ -60,7 +59,6 @@ describe("the shipped snippet", () => {
 	test("goes to the user settings file and to no project or local file", () => {
 		const file = sandboxTargetFile("/home/u/.claude");
 
-		expect(SANDBOX_TARGET).toBe("user");
 		expect(file).toBe("/home/u/.claude/settings.json");
 		expect(file).not.toContain("settings.local.json");
 	});

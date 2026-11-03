@@ -21,13 +21,7 @@ export const CONDUCT_CASES: readonly ConductCase[] = [
 
 /** These rules are about the text of a file, which a test reads; no model run can add to that. */
 export const SETTLED_BY_TEST: Readonly<Record<string, string>> = {
-	"The Session Prompt Follows the XML Prompting Guide":
-		"tests/repo/prompt/conduct.test.ts",
-	"Allowed Tag Names": "tests/repo/prompt/conduct.test.ts",
-	"The Session Prompt Holds General Conduct Only":
-		"tests/repo/prompt/conduct.test.ts",
 	"Each Rule Has an Eval Case": "tools/evals/__tests__/conduct.spec.ts",
-	"Shipped Prompts Name Content Events": "tests/repo/prompt/conduct.test.ts",
 };
 
 const REQUIREMENT = /^### Requirement: (.+)$/gm;

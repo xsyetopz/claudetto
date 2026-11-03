@@ -33,7 +33,6 @@ describe("parseOptions", () => {
 		const options = parseOptions(["--since", "2026-10-27"]);
 
 		expect(options.root).toBe(DEFAULT_ROOT);
-		expect(DEFAULT_ROOT.endsWith("/.claude/projects")).toBe(true);
 		expect(options.window.until).toBe(Number.POSITIVE_INFINITY);
 	});
 

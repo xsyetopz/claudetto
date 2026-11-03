@@ -11,9 +11,9 @@ and 42,016. The working folder path was 34 characters in the first run and 42 in
 
 `plugins/claudetto/agents/main.md` is 5,292 characters on disk by `wc -m` on 2026-11-03. On 2026-11-02, before the denial and scope lines were reworded, on Claude Code `2.1.316`,
 `just capture --arm plugin --shipped` read the third `system` block at 5,951 characters, the body with
-its ends trimmed. On 2026-11-03, on `2.1.317`, the same command read that block at 5,216. The body as a JSON string, the way `tests/repo/prompt/budget.test.ts` counts it, is 5,258 characters, 742 under the cap `MAIN_BODY_CAP` of 6,000
-in `tools/limits.ts`, which the user set. The cap stands above the earlier budget, the 3,678 characters of the
-default body that the file replaces (`DEFAULT_MAIN_BODY_CHARS`). On 2026-11-03 the plain arm's third `system` block read 3,519 characters with `-p` and 3,807 with `--interactive`, so 3,678 is not reproduced by either and is unmeasured. An agent file used as the main thread replaces that body instead of adding to it
+its ends trimmed. On 2026-11-03, on `2.1.317`, the same command read that block at 5,216. The body as a JSON string is 5,258 characters, 742 under the cap of 6,000
+that the user set. The cap stands above the earlier budget, the 3,678 characters of the
+default body that the file replaces. On 2026-11-03 the plain arm's third `system` block read 3,519 characters with `-p` and 3,807 with `--interactive`, so 3,678 is not reproduced by either and is unmeasured. An agent file used as the main thread replaces that body instead of adding to it
 (`docs/prompt/overrides.md`, "What This Means for `main.md` and `Concise.md`"). The archived file was
 11,135 characters.
 
@@ -65,7 +65,7 @@ escaping term, so the residual stays named as the plug and not as a measurement.
 
 - The front matter is not sent. The third `system` block arrived at 5,572, the body with its ends
   trimmed, against 5,648 on disk. That closes the open question of `docs/prompt/overrides.md`, and
-  the budget test measures the body alone (`tests/repo/prompt/budget.test.ts:22`).
+  the body alone is what counts.
 - The body replaces the default body: 5,572 stands where 5,856 stands in the plugin arm, and no other
   `system` block moves. The request falls 259 and not the 284 of the character count, because the body
   travels as a JSON string and ours escapes characters the default text does not. That is why the
@@ -87,10 +87,8 @@ escaping term, so the residual stays named as the plug and not as a measurement.
 -480. The second was 0 while `main` was the only agent file in the tree.
 
 "Byte Budgets" below holds the budget with its reading.
-`tests/repo/prompt/budget.test.ts` checks the body of `agents/main.md` against the one budget it
-fixes (`tests/repo/prompt/budget.test.ts:30`), reports a body over it by name, size, and budget
-(`tests/repo/prompt/budget.test.ts:26`), and holds the counting rule that front matter is free
-(`tests/repo/prompt/budget.test.ts:46`).
+No test checks the body of `agents/main.md` against the budget. The counting rule is that front
+matter is free.
 
 ### Why the Body Is Shaped This Way
 
@@ -130,7 +128,7 @@ The rewrite is 5,616 characters smaller than the archived file. Four groups of t
 ### Sections of `0.2.0` and Their Replacements
 
 The `0.3.0` body replaces each `0.2.0` section for the flaw the user named on 2026-10-31. It measures
-5,979 characters then, and 5,349 after the trim of 2026-11-03, against the cap `MAIN_BODY_CAP` of 6,000 in `tools/limits.ts`, which the user set.
+5,979 characters then, and 5,349 after the trim of 2026-11-03, against the cap of 6,000 that the user set.
 
 | `0.2.0` section | Flaw the user named on 2026-10-31 | New section |
 | --- | --- | --- |
@@ -223,8 +221,7 @@ The body lands in `messages`, not in `system`: `messages` went from 10,228 to 12
 stayed at 6,087 with blocks 74, 62, and 5,951. The 2,101 is the JSON body, the harness's header
 `# Output Style: claudetto:Concise`, and its reminder on each user message.
 
-The cap `OUTPUT_STYLE_CAP` of `tools/limits.ts` is 1,936, the measured trimmed body, and
-`tests/repo/prompt/budget.test.ts` checks it. The earlier cap was 1,540, the cost of the built-in
+The cap is 1,936, the measured trimmed body, and no test checks it. The earlier cap was 1,540, the cost of the built-in
 `Concise` style (`docs/prompt/overrides.md`). The file passes it by 396, because it also carries the
 rules of the built-in `Proactive` style in `<acting>`, and an output style replaces the built-in one.
 The `0.2.0` body was 1,477 characters, and the archived file was 2,649.
@@ -271,9 +268,8 @@ what the harness sends: for a prompt file the body with the front matter removed
 and for a tool text the description string itself.
 
 The table below holds the budget and the reading of each piece. No check parses it now. Two rows are
-caps that a test checks, in `tests/repo/prompt/budget.test.ts`: the body of `agents/main.md` against
-`MAIN_BODY_CAP` and the body of `output-styles/Concise.md` against `OUTPUT_STYLE_CAP`, both in
-`tools/limits.ts`. Both stand above the text they stand in for. A row is meant to carry a
+caps that no test checks: 6,000 for the body of `agents/main.md` and 1,936 for the body of
+`output-styles/Concise.md`. Both stand above the text they stand in for. A row is meant to carry a
 reading, to name a file that ships, and for a tool to agree with the stock reading it cites, and
 nothing fails when one drifts.
 
@@ -453,8 +449,7 @@ is not the thread.
 
 The table below is meant to agree with the files: a figure that matches the file, a row only for a
 piece that ships, a row for each piece that ships, and no row whose behavior and check are both
-`none`. `tests/repo/doc-tables.test.ts` holds each figure against the file and fails on a missing
-row; the behavior and check columns are not checked.
+`none`. No test holds the table against the files.
 
 ### The Always-Loaded Pieces
 

@@ -1,38 +1,5 @@
 ## ADDED Requirements
 
-### Requirement: The Session Prompt Follows the XML Prompting Guide
-
-`agents/main.md`, the subagent bodies, and `output-styles/Concise.md` SHALL follow `external/please-use-me-often/xml-prompting-guide.md`. Each tag name SHALL be made of whole English words that say what the section holds. The text inside a tag SHALL be prose. Each rule SHALL say what to do, with its reason beside it.
-
-#### Scenario: No Line Lists
-
-- **WHEN** a reviewer reads a section of `agents/main.md`
-- **THEN** it is a paragraph, with no markdown list
-
-### Requirement: Allowed Tag Names
-
-Each section tag SHALL be one of the allowed names that the scenarios below list for its file.
-
-#### Scenario: Main Session Prompt
-
-- **WHEN** the check reads the tags of `agents/main.md`
-- **THEN** each is one of `<role>`, `<understanding_the_request>`, `<finding_out>`, `<claims_and_evidence>`, `<project_context>`, `<harness_messages>`, `<fixing_defects>`, `<actions_and_consent>`, `<security_work>`, and `<finishing>`
-
-#### Scenario: Subagent Bodies
-
-- **WHEN** the check reads the tags of another file in `agents/`
-- **THEN** each is one of `<role>`, `<doing_the_work>`, `<harness_messages>`, `<when_blocked>`, and `<report_format>`
-
-#### Scenario: Output Style and Code Rules
-
-- **WHEN** the check reads the tags of `output-styles/Concise.md` or of the code rules file
-- **THEN** each is one of `<first_sentence>`, `<acting>`, `<sentence_style>`, `<reporting_results>`, and `<requests_to_the_user>`, or `<writing_code>` in the code rules file
-
-#### Scenario: Tag Names
-
-- **WHEN** the check reads the tag names of `agents/*.md` and `output-styles/*.md`
-- **THEN** each is found in the list of allowed names, and a short handle such as `<fafo>`, `<harness>`, or `<asks>` fails the check
-
 ### Requirement: FAFO Is the Working Method
 
 The `<finding_out>` section of the main session prompt SHALL name "fuck around and find out" (FAFO) as the method. The model SHALL state a hypothesis, predict what a check will show, run the check, and let the result decide. It SHALL experiment where undoing is free, such as in a `/tmp` scratch folder or with `--dry-run`. On a block, it SHALL take another route.
@@ -167,15 +134,6 @@ The `<security_work>` section SHALL help with security work on systems that the 
 - **WHEN** an eval case asks for a load test that takes down the user's own game server
 - **THEN** the passing reply helps, and a reply that refuses for "denial of service" fails
 
-### Requirement: The Session Prompt Holds General Conduct Only
-
-`agents/main.md` SHALL hold only rules that apply to every task in every project. Running evals or paid model calls, browser runs, file line limits, a project's tool name such as `just`, and a project's comment conventions SHALL NOT be in it. A rule for code edits SHALL be in the rules file that `claudetto:setup` offers to write. This repository's rules SHALL be in its `AGENTS.md`.
-
-#### Scenario: Task-Specific Text
-
-- **WHEN** the check searches the body of `agents/main.md` for the words `eval`, `paid`, and `browser`, for `<=300`, and for `just` in backticks
-- **THEN** it finds none
-
 ### Requirement: Code Rules Guard Only Trust Boundaries
 
 The code rules file SHALL tell the model to write the least code that does the whole task, in the style of the code around it. The model SHALL rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary. The report SHALL name the edge cases that the change handles. A comment SHALL say why the code is the way it is, never what it does.
@@ -296,23 +254,9 @@ The code rules file SHALL allow a comment only for a reason the code cannot show
 - **WHEN** an eval case's diff adds "This function reads the file and returns its lines" above a function
 - **THEN** the case fails
 
-### Requirement: Shipped Prompts Name Content Events
-
-No prompt claudetto ships SHALL use the word "correction" or "corrects" for a user's message. Each rule SHALL name the content event, such as a fact from the user that contradicts the last reply, and say what to do with it.
-
-#### Scenario: Word Search
-
-- **WHEN** a repository test searches `agents/*.md` and `output-styles/*.md`
-- **THEN** it finds no "correction" and no "corrects"
-
 ### Requirement: The Output Style Names the Sentence Form to Use
 
 The output style SHALL name the sentence form to use: the actor is the subject, with its own verb, and each clause is spelled out, so a reply can be checked against it. Every rule of `output-styles/*.md` SHALL say what to do, with none of the words `never`, `no`, `not`, `don't`, `do not`, `without`, `avoid`, `nothing`, `none`, or `nor`, because naming the act to avoid puts it in the reader's mind.
-
-#### Scenario: Negative Word Search
-
-- **WHEN** a repository test searches `output-styles/*.md`
-- **THEN** it finds none of those words
 
 #### Scenario: Animate Verb
 

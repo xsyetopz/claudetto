@@ -38,7 +38,7 @@ below are unmeasured for `0.3.0`: this page did not re-read the dumped message f
 On Sonnet 5.5 the default `system[2]` is 5,627 characters (`clawdipedia` route
 `prompts/defaults/default-sonnet`, read 2026-10-29). `agents/main.md` was 5,584 characters sent, in
 eleven sections in `0.2.0`: `<role>`, `<security>`, `<harness>`, `<project>`, `<tools>`, `<scope>`,
-`<defects>`, `<code>`, `<asking>`, `<actions>`, `<claims>`. Those names are stale (see the top of this page). Its bound was 5,600 characters; `MAIN_BODY_CAP` in `tools/limits.ts` is 6,000 now, and on 2026-11-03 the body reads 5,216 characters in the third `system` block of `just capture --shipped` and 5,258 as the budget test counts it, so the headroom is 742 to 784 characters. The default body of 5,627 characters is the reading of 2026-10-29 and is unmeasured on `2.1.317`; the plain arm's third `system` block read 3,519 characters on 2026-11-03 under the shipped settings.
+`<defects>`, `<code>`, `<asking>`, `<actions>`, `<claims>`. Those names are stale (see the top of this page). Its bound was 5,600 characters; the cap is 6,000 now, and on 2026-11-03 the body reads 5,216 characters in the third `system` block of `just capture --shipped` and 5,258 as a JSON string, so the headroom is 742 to 784 characters. The default body of 5,627 characters is the reading of 2026-10-29 and is unmeasured on `2.1.317`; the plain arm's third `system` block read 3,519 characters on 2026-11-03 under the shipped settings.
 
 The `Where it is now` column rests on a reading of `plugins/claudetto/agents/main.md`,
 `plugins/claudetto/output-styles/Concise.md`, `plugins/claudetto/.claude-plugin/plugin.json`,
@@ -70,7 +70,7 @@ summarized-and-carried half of context management.
 ## What the Headroom Means
 
 In `0.2.0`, `agents/main.md` was 5,584 characters sent against a bound of 5,600, which left 16. In
-`0.3.0` the cap is 6,000 and the body reads 5,258 as the budget test counts it, which leaves 742. The
+`0.3.0` the cap is 6,000 and the body reads 5,258 as a JSON string, which leaves 742. The
 bound exists because the body travels as JSON. A restatement of a dropped item has to fit in 742
 characters or be paid for by removing text already in the file, and the cost of each is the length of the
 sentence minus 742, or nothing when it is shorter.

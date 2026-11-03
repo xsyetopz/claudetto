@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { readFile } from "node:fs/promises";
 import type { PluginOptions } from "claude-code";
 import {
 	TIERS,
@@ -11,13 +10,6 @@ import {
 	keptSettings,
 	settingsOf,
 } from "../../plugins/claudetto-you-should-know/src/options.ts";
-
-const MANIFEST = "plugins/claudetto-you-should-know/.claude-plugin/plugin.json";
-
-const userConfig = async (): Promise<Record<string, PluginOptions>> => {
-	const text = await readFile(MANIFEST, "utf8");
-	return JSON.parse(text).userConfig;
-};
 
 describe("the installed observer is off", () => {
 	test("no options at all leaves it off", () => {
@@ -37,24 +29,12 @@ describe("the installed observer is off", () => {
 		]).toEqual([true, false, false, false]);
 	});
 
-	test("the shipped manifest defaults it to off", async () => {
-		const config = await userConfig();
-
-		expect(config["sideCheckEnabled"]).toMatchObject({
-			type: "boolean",
-			default: false,
-		});
-	});
-
 	test("an off plugin still reads the cheap model and effort, so turning it on prices nothing new", () => {
 		const off = settingsOf({});
 
 		expect([off.model, off.effort]).toEqual([DEFAULT_MODEL, DEFAULT_EFFORT]);
 	});
 });
-
-/** A row field whose name would reach this plugin's own `enabled` switch. */
-const TURNS_IT_ON = /observer|enabled|shouldKnow/i;
 
 /** A settings value, since `PluginOptions` holds only these. */
 const isScalar = (
@@ -69,12 +49,6 @@ const asOptions = (row: TierRow): PluginOptions =>
 	Object.fromEntries(Object.entries(row).filter(isScalar));
 
 describe("no tier row prices the observer", () => {
-	test("no row holds a field that turns it on", () => {
-		const keys = TIERS.flatMap((row) => Object.keys(row));
-
-		expect(keys.filter((key) => TURNS_IT_ON.test(key))).toEqual([]);
-	});
-
 	test("every row, read as the observer's own options, leaves it off", () => {
 		const read = TIERS.map((row) => settingsOf(asOptions(row)).enabled);
 

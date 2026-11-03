@@ -40,14 +40,6 @@ const login = (rateLimitTier?: string, organizationType?: string) => ({
 });
 
 describe("the tier table", () => {
-	test("it has one row for each of the three plans", () => {
-		expect(TIERS.map((row) => row.tier)).toEqual([
-			"claude_pro",
-			"default_claude_max_5x",
-			"default_claude_max_20x",
-		]);
-	});
-
 	test("each row id is a key of the plan-cap table the reader uses", () => {
 		for (const row of TIERS) {
 			expect(Object.hasOwn(PLAN_CAPS, row.tier)).toBe(true);

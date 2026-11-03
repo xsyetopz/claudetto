@@ -2,8 +2,6 @@ import { type Kind, SETTING } from "../keys.ts";
 import { settingsFileIn } from "../settings-file.ts";
 
 /** User settings only: the one scope setup owns, and where a `false` of `allowUnsandboxedCommands` holds. */
-export const SANDBOX_TARGET = "user";
-
 export const sandboxTargetFile = (configDir: string): string =>
 	settingsFileIn(configDir);
 

@@ -323,8 +323,8 @@ moved up 77, so each difference between them held to the character: `Workflow` 5
 that moved: the shipped arm with the file moved aside read 23,080 against 24,961, so the row is −1,881 and not
 −1,958. `built-in surface` (5,590) and `auto memory off` (2,138) read as before. `ToolSearch` is the exception to
 the 77: its deny now reads +37,936 and not +36,922, because `tools` read 67,844 against 66,830 once the deferred
-tools load, so a definition among them grew 1,014 on this version. The three shipped-tree rows of `BUILTIN_CUTS`
-(36,803, 36,535, and 31,213) are of a tree that has since changed, no command reproduces them, and they are left.
+tools load, so a definition among them grew 1,014 on this version. The three shipped-tree readings
+(36,803, 36,535, and 31,213) are of a tree that has since changed, and no command reproduces them.
 
 ## The Two Switches
 

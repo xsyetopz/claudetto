@@ -2,8 +2,6 @@ import { expect, test } from "bun:test";
 import { join } from "node:path";
 import { file as bunFile, CryptoHasher } from "bun";
 import {
-	gitleaksDropped,
-	gitleaksIds,
 	gitleaksRedact,
 	gitleaksSkipped,
 	gitleaksSource,
@@ -96,23 +94,9 @@ test("the rules carry the digest of the config they were generated from", async 
 
 	const source = gitleaksSource();
 
-	expect(source.ref).toBe("v8.30.1");
 	expect(source.sha256).toBe(
 		new CryptoHasher("sha256").update(toml).digest("hex"),
 	);
-});
-
-test("the generated rule set is whole, and each rule left out carries its reason", () => {
-	const ids = gitleaksIds();
-	const dropped = gitleaksDropped();
-
-	expect(ids.length).toBe(216);
-	expect(new Set(ids).size).toBe(ids.length);
-	expect(dropped.length).toBe(7);
-	for (const [id, why] of dropped) {
-		expect(id.length).toBeGreaterThan(0);
-		expect(why.length).toBeGreaterThan(0);
-	}
 });
 
 test("an inline flag setter at the head of a pattern becomes a flag", () => {

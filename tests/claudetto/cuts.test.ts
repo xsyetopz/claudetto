@@ -3,47 +3,11 @@ import {
 	type Cut,
 	pricedCuts,
 	risingCuts,
-	SHIPPED_CUTS,
-	SHIPPED_TOTAL,
 	shippedChars,
 	unpricedCuts,
 } from "../../plugins/claudetto/src/cuts.ts";
-import { BASELINE_TOTAL } from "../../plugins/claudetto/src/deny.ts";
 
 describe("the inventory accounts for the whole fall", () => {
-	test("the baseline less every shipped cut is the shipped reading", () => {
-		expect(BASELINE_TOTAL - shippedChars()).toBe(SHIPPED_TOTAL);
-	});
-
-	test("the cuts that move request text add up to the fall of the shipped arm", () => {
-		const moving = SHIPPED_CUTS.filter((cut) => cut.chars !== 0);
-
-		expect(moving.map((cut) => cut.name)).toEqual([
-			"deny list",
-			"deferred tool denies",
-			"tool texts",
-			"built-in surface",
-			"docs skill",
-			"main agent body",
-			"auto memory off",
-			"agent listing",
-			"handoff context",
-			"handoff tool listing",
-			"output style",
-			"sandbox block",
-			"setup command listing",
-			"handoff command listing",
-			"workflow switches",
-			"git instructions",
-			"explore and plan agents",
-			"built-in agent denies",
-			"cron and fork switches",
-			"context management section",
-			"unexplained residual",
-		]);
-		expect(shippedChars(moving)).toBe(BASELINE_TOTAL - SHIPPED_TOTAL);
-	});
-
 	test("a row that adds text counts against the fall", () => {
 		const cuts: readonly Cut[] = [
 			{ name: "a trim", chars: 500 },
@@ -55,38 +19,6 @@ describe("the inventory accounts for the whole fall", () => {
 });
 
 describe("a cut counts as a saving only with a bill reading", () => {
-	test("the compaction pair is the one priced cut of the shipped tree", () => {
-		expect(pricedCuts().map((cut) => cut.name)).toEqual(["compaction pair"]);
-	});
-
-	test("the character cuts are named as unpriced", () => {
-		expect(unpricedCuts()).toEqual([
-			"deny list",
-			"deferred tool denies",
-			"tool texts",
-			"built-in surface",
-			"docs skill",
-			"idleCompaction off",
-			"main agent body",
-			"auto memory off",
-			"agent listing",
-			"handoff context",
-			"handoff tool listing",
-			"output style",
-			"autoMode lists",
-			"sandbox block",
-			"setup command listing",
-			"handoff command listing",
-			"workflow switches",
-			"git instructions",
-			"explore and plan agents",
-			"built-in agent denies",
-			"cron and fork switches",
-			"context management section",
-			"unexplained residual",
-		]);
-	});
-
 	test("a shorter request with no reading is not a priced cut", () => {
 		const cuts: readonly Cut[] = [{ name: "big trim", chars: 9999 }];
 

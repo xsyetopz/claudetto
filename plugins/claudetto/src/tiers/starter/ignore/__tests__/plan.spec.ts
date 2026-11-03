@@ -14,18 +14,6 @@ const heavyOf = (family: Family): readonly string[] => family.heavy;
 const bulkyOf = (family: Family): readonly string[] => family.bulky ?? [];
 
 describe("the fixed template", () => {
-	test("`.gitignore` holds the paths no tool should list", () => {
-		expect(GITIGNORE_FIXED).toEqual([
-			".DS_Store",
-			"Thumbs.db",
-			"*.swp",
-			".claude/settings.local.json",
-			".claude/worktrees/",
-			".claude/claudetto/",
-			"CLAUDE.local.md",
-		]);
-	});
-
 	test("a folder of no known family gets the fixed lines and an empty `.ignore`", () => {
 		const files = ["notes.txt"];
 

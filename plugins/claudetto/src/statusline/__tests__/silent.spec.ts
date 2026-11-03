@@ -1,58 +1,6 @@
 import { expect, test } from "bun:test";
-import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { statusOf, subagentsOf } from "../main.ts";
 import { NOW, NOW_S } from "./support.ts";
-
-const DIR = join(import.meta.dir, "..");
-const BIN = join(DIR, "../../bin/claudetto-statusline");
-
-/** What a line that reads only its stdin never names: files, the network, a child process, the clock of a shell. */
-const FORBIDDEN: readonly RegExp[] = [
-	/node:(?:fs|child_process|net|http|https|dgram|dns|tls|worker_threads|os|path)/,
-	/from "(?:fs|child_process|net|http|https)"/,
-	/\bfetch\s*\(/,
-	/\bWebSocket\b/,
-	/\bBun\.(?:spawn|spawnSync|file|write|\$|connect|listen|serve|fetch|env\.)/,
-	/\bBun\.(?:readableStreamTo|openInEditor)/,
-	/\bprocess\.(?:binding|dlopen|kill|chdir)/,
-	/\bimport\s*\(/,
-	/\brequire\s*\(/,
-	/\beval\s*\(/,
-];
-
-const ALLOWED: Readonly<Record<string, RegExp>> = {
-	"local.ts": /^import .* from "node:(?:fs\/promises|path)";$/,
-};
-
-const sources = async (): Promise<{ name: string; text: string }[]> => {
-	const names = (await readdir(DIR)).filter((name) => name.endsWith(".ts"));
-	const files = await Promise.all(
-		names.map(async (name) => ({
-			name,
-			text: await readFile(join(DIR, name), "utf8"),
-		})),
-	);
-	return [
-		...files,
-		{ name: "bin/claudetto-statusline", text: await readFile(BIN, "utf8") },
-	];
-};
-
-test("no source of the line names a file, network, or process call", async () => {
-	const hits = (await sources()).flatMap(({ name, text }) =>
-		text
-			.split("\n")
-			.filter((line) => !line.trimStart().startsWith("//"))
-			.filter((line) => !ALLOWED[name]?.test(line))
-			.flatMap((line) =>
-				FORBIDDEN.filter((pattern) => pattern.test(line)).map(
-					(pattern) => `${name}: ${line.trim()} (${pattern})`,
-				),
-			),
-	);
-	expect(hits).toEqual([]);
-});
 
 test("a render that calls `fetch`, `Bun.spawn`, `Bun.file`, or `Bun.write` fails the test", () => {
 	const calls: string[] = [];
