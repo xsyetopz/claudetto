@@ -415,10 +415,14 @@ A re-read of `AGENTS.md` and `CLAUDE.md` on 2026-11-03 against this release's tr
 
 The user asked on 2026-11-03 for a few general rules that reach every session: through a `SessionStart` block when the plugin is installed, and through `/claudetto:setup`, which appends them as a marked section to `~/.claude/CLAUDE.md` only after the user confirms the exact text, keeping the existing text. The rules reuse the `Concise` and `bun-rule` wording and repeat neither. The rule text ships only after the user approves it.
 
-- [ ] 39.1 Probe with `just capture --dump` that a user `~/.claude/CLAUDE.md` reaches the request, and measure the characters per request of the `SessionStart` text and of the memory wrapper.
-- [ ] 39.2 Write a failing lab test: on `SessionStart` the block adds the rules, and adds nothing when `~/.claude/CLAUDE.md` holds the marked section.
-- [ ] 39.3 Write a failing test: `/claudetto:setup` shows the section, appends it only after a yes, keeps the existing text, and replaces only its own marked section on a re-run.
-- [ ] 39.4 Write the block and the setup step with the approved text. Report its characters, and run `just check` and `just inventory`.
+- [x] 39.1 Probe with `just capture --dump` that a user `~/.claude/CLAUDE.md` reaches the request, and measure the characters per request of the `SessionStart` text and of the memory wrapper.
+  Done 2026-11-03 on `2.1.317`, free against the fake API. `just capture` gained `--user-claude-md CHARS`, which writes the file in the config folder. The shipped arm read 24,984, and 26,378 with a file of 1,000: 1,017 for the escaped file and 377 for the wrapper. A `SessionStart` text of 100 characters grew the request by 115, as "SessionStart hook additional context" in a system-role message.
+- [x] 39.2 Write a failing lab test: on `SessionStart` the block adds the rules, and adds nothing when `~/.claude/CLAUDE.md` holds the marked section.
+  Done 2026-11-03. `plugins/claudetto/tests/general-rules.test.ts`: 3 of 4 failed before the block, and `claude plugin test plugins/claudetto` then passed 342. The `bun-rule` tests now filter the rules out of `additionalContext`, since every start now adds them.
+- [x] 39.3 Write a failing test: `/claudetto:setup` shows the section, appends it only after a yes, keeps the existing text, and replaces only its own marked section on a re-run.
+  Done 2026-11-03. `plugins/claudetto/tests/setup-command/general-rules.test.ts`, 6 tests: the file failed to load before the setup step existed, and it passes now.
+- [x] 39.4 Write the block and the setup step with the approved text. Report its characters, and run `just check` and `just inventory`.
+  Done 2026-11-03. The rules are 286 characters and add 330 to the first request: `just inventory` read 25,314 against 24,984, and `--interactive` 33,028 against 32,698. `SHIPPED_TOTAL` and the `general rules` row moved together. `just check` exit 0, and `just inventory` "Every row holds within the slack."
 
 ## 40. Scoped `Bash` for `Artemis`
 
