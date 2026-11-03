@@ -25,14 +25,17 @@ export const extraArgs = (args: readonly string[]): string[] => {
 	];
 };
 
-/** The size of the `CLAUDE.md` that `--claude-md` asks for, or `undefined` when the flag is absent. */
-export const claudeMdChars = (args: readonly string[]): number | undefined => {
-	if (!args.includes("--claude-md")) {
+/** The size of the `CLAUDE.md` that `--FLAG` asks for, or `undefined` when the flag is absent. */
+export const claudeMdChars = (
+	args: readonly string[],
+	flag: "claude-md" | "user-claude-md" = "claude-md",
+): number | undefined => {
+	if (!args.includes(`--${flag}`)) {
 		return undefined;
 	}
-	const chars = Number(argOf(args, "claude-md"));
+	const chars = Number(argOf(args, flag));
 	if (!Number.isInteger(chars) || chars < 0) {
-		throw new Error("--claude-md takes a count of characters, such as 2000");
+		throw new Error(`--${flag} takes a count of characters, such as 2000`);
 	}
 	return chars;
 };
@@ -56,7 +59,7 @@ export const callsOf = (text: string): ToolCall[] => {
 
 const USAGE = `Usage: just capture [--arm plain|plugin] [--shipped | --deny A,B | --settings FILE]
   [--mcp-config FILE] [--plugin-dir DIR] [--tools N] [--dump DIR] [--prompt TEXT]
-  [--classifier] [--interactive] [--calls FILE] [--claude-md CHARS]
+  [--classifier] [--interactive] [--calls FILE] [--claude-md CHARS] [--user-claude-md CHARS]
 
 --interactive runs each arm in a detached \`tmux\` session with no \`-p\`, so the request
 holds the tools of an interactive session. It needs \`tmux\` on the PATH.
@@ -65,6 +68,7 @@ Its last system block holds the login name, so it differs between logins.
 --calls FILE makes the fake answer with each tool call of the JSON list in turn, then "ok".
 --claude-md CHARS puts a \`CLAUDE.md\` of that many characters in the working folder, so the
 request shows what a memory file costs. Without it the folder is empty.
+--user-claude-md CHARS puts one in the config folder, where a user's \`~/.claude/CLAUDE.md\` is read.
 With --dump each later request is written too, as ARM.1.json, ARM.2.json, and so on.`;
 
 const settingsOf = async (options: {
@@ -127,6 +131,7 @@ const main = async (): Promise<void> => {
 			? undefined
 			: callsOf(await bunFile(callsFile).text());
 	const claudeMd = claudeMdChars(args);
+	const userClaudeMd = claudeMdChars(args, "user-claude-md");
 	if (dump !== undefined) {
 		await mkdir(dump, { recursive: true });
 	}
@@ -140,6 +145,7 @@ const main = async (): Promise<void> => {
 				interactive,
 				calls,
 				claudeMd,
+				userClaudeMd,
 			}),
 		),
 	);

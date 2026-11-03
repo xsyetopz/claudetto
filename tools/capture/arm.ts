@@ -74,6 +74,7 @@ const runArm = async (options: {
 	calls: number;
 	tempPrefix: string;
 	claudeMd: number | undefined;
+	userClaudeMd: number | undefined;
 }): Promise<{ code: number; stderr: string; work: string }> =>
 	// Only the exit status, the stderr, and the path length leave the root; the dump is written outside it.
 	withFolders(options.tempPrefix, options.settings, (folders) =>
@@ -89,10 +90,17 @@ const runIn = async (
 		interactive: boolean;
 		extra: readonly string[];
 		claudeMd: number | undefined;
+		userClaudeMd: number | undefined;
 	},
 ): Promise<{ code: number; stderr: string; work: string }> => {
 	if (options.claudeMd !== undefined) {
 		await writeFile(join(work, "CLAUDE.md"), claudeMdOf(options.claudeMd));
+	}
+	if (options.userClaudeMd !== undefined) {
+		await writeFile(
+			join(config, "CLAUDE.md"),
+			claudeMdOf(options.userClaudeMd),
+		);
 	}
 	const argv = sessionArgv({
 		...options,
@@ -136,6 +144,8 @@ export interface CaptureOptions {
 	readonly tempPrefix?: string;
 	/** The characters of a `CLAUDE.md` placed in the working folder; none when absent. */
 	readonly claudeMd?: number | undefined;
+	/** The characters of a `CLAUDE.md` placed in the config folder, as a user's own; none when absent. */
+	readonly userClaudeMd?: number | undefined;
 }
 
 /** `dump` is re-indented from the raw text, since `JSON.stringify` of the string would be one line. */
@@ -158,6 +168,7 @@ export const capture = async (
 			calls: options.calls?.length ?? 0,
 			tempPrefix: options.tempPrefix ?? TEMP_PREFIX,
 			claudeMd: options.claudeMd,
+			userClaudeMd: options.userClaudeMd,
 		});
 		const first = options.classifier
 			? api.bodies.find(isClassifier)
