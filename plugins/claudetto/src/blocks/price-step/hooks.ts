@@ -1,11 +1,26 @@
 import type { HookFor } from "claude-code";
+import { atRoot } from "../handoff/root.ts";
+import { heartbeatPath } from "../heartbeat/path.ts";
 import { boundOf } from "./bound.ts";
 import { WITHHELD } from "./prompts.ts";
 import { newStep, takeStep, waitFor } from "./steps.ts";
 
-/** The engine runs a tool while its step still streams, so a call can finish before the stop chunk; each call waits on its own step's chunk. */
-export const onStep: HookFor<"turn.step"> = async function* (_$, e, next) {
+/** The engine runs a tool while its step still streams, so a call can finish before the stop chunk; each call waits on its own step's chunk. It also writes the heartbeat, since the hook loader takes one `turn.step` hook without a matcher. */
+export const onStep: HookFor<"turn.step"> = async function* ($, e, next) {
+	const beat = async (): Promise<void> => {
+		try {
+			const [session, root, now] = await Promise.all([
+				$.session.id(),
+				$.session.root(),
+				$.clock.now(),
+			]);
+			await $.fs.write(atRoot(root, heartbeatPath(session)), String(now));
+		} catch {
+			// The request goes on; the status line reads a missing or old heartbeat as hooks that stopped.
+		}
+	};
 	const step = newStep();
+	await beat();
 	const stream = next(e);
 	try {
 		for await (const chunk of stream) {
@@ -15,6 +30,7 @@ export const onStep: HookFor<"turn.step"> = async function* (_$, e, next) {
 					break;
 				case "stop":
 					step.settle(chunk.usage);
+					await beat();
 					break;
 				default:
 					break;

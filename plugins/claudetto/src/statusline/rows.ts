@@ -8,6 +8,7 @@ import {
 	contextText,
 	costText,
 	folderText,
+	hooksOffText,
 	limitTexts,
 	modelText,
 	prText,
@@ -22,7 +23,13 @@ const join = (items: readonly Text[]): string =>
 /** The rows in order: place, session, limits, cache. Each row is its items joined by one gap, with no shared column, so an item never waits for a wider item of another row. Empty rows are dropped. */
 const rowsOf = (ctx: Ctx): string[] =>
 	[
-		[folderText(ctx), branchText(ctx), prText(ctx), specText(ctx)],
+		[
+			hooksOffText(ctx),
+			folderText(ctx),
+			branchText(ctx),
+			prText(ctx),
+			specText(ctx),
+		],
 		[modelText(ctx), contextText(ctx), costText(ctx)],
 		limitTexts(ctx),
 		[cacheText(ctx)],

@@ -1,5 +1,5 @@
 import type { On, TurnUsage } from "claude-code";
-import { type Engine, expect, test } from "claude-code/testing";
+import { type Engine, expect, mock, test } from "claude-code/testing";
 import { HAIKU_MODEL } from "../src/tiers/tiers.ts";
 
 /** A stand-in MCP tool, declared so a generated `McpToolInputs` does not reject its name. */
@@ -54,11 +54,12 @@ const lab = (
 	return { asked: asked.promise, release: held.resolve };
 };
 
-/** Starts the calls before the stop chunk, as the engine runs a tool while its step streams, and reads each answer once the step ended. */
+/** Starts the calls before the stop chunk, as the engine runs a tool while its step streams, runs `beforeStop`, and reads each answer once the step ended. */
 const run = async (
 	$: Engine,
 	step: { asked: Promise<void>; release: () => void },
 	calls: readonly string[],
+	beforeStop: () => void = () => undefined,
 ) => {
 	const drained = Array.fromAsync(
 		$.turn.step({ turnId: "t1", index: 0, model: "haiku", messageCount: 1 }),
@@ -67,6 +68,7 @@ const run = async (
 	const answers = calls.map((id) =>
 		$.tool.call({ tool: "mcp__s__read", tool_use_id: id }),
 	);
+	beforeStop();
 	step.release();
 	await drained;
 	const settled = await Promise.allSettled(answers);
@@ -149,4 +151,51 @@ test("a call that throws leaves no wait behind for a later call of the same id",
 	expect(thrown).toBeUndefined();
 	expect(later.deny).toBeUndefined();
 	expect(later.result).toBe("x".repeat(400));
+});
+
+/** The session and the clock the heartbeat reads, and each file it writes. */
+const heartbeatLab = (on: On, write: (path: string, text: string) => void) => {
+	on("session.id", () => ({ value: "s-1" }));
+	on("session.root", () => ({ value: "/work" }));
+	mock.clock(on, { now: 1000 });
+	on("fs.write", (_$, e) => {
+		write(e.path, e.text);
+		return { value: undefined };
+	});
+};
+
+test("a step writes the session's heartbeat when it starts and again on its stop chunk", async ($: Engine, on: On) => {
+	const files: [string, string][] = [];
+	heartbeatLab(on, (path, text) => files.push([path, text]));
+	const step = lab(
+		on,
+		{ usage: usageOf(HAIKU_MODEL, 10), calls: ["c1"] },
+		{ c1: 1 },
+	);
+	let beforeStop = -1;
+
+	await run($, step, ["c1"], () => {
+		beforeStop = files.length;
+	});
+
+	expect(beforeStop).toBe(1);
+	expect(files).toEqual([
+		["/work/.claude/claudetto/heartbeat/s-1.txt", "1000"],
+		["/work/.claude/claudetto/heartbeat/s-1.txt", "1000"],
+	]);
+});
+
+test("a heartbeat that cannot be written leaves the step and its results as they were", async ($: Engine, on: On) => {
+	heartbeatLab(on, () => {
+		throw new Error("read-only");
+	});
+	const step = lab(
+		on,
+		{ usage: usageOf(HAIKU_MODEL, 10), calls: ["c1"] },
+		{ c1: 5 },
+	);
+
+	const [answer] = await run($, step, ["c1"]);
+
+	expect(answer?.result).toBe("xxxxx");
 });

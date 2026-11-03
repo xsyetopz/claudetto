@@ -1,4 +1,5 @@
 import { colorOff, paintOf } from "./color.ts";
+import { hooksOff } from "./hooks-off.ts";
 import { num, parse, type Rec, str, sub } from "./input.ts";
 import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "./limits.ts";
 import { type Local, NO_LOCAL, readLocal } from "./local.ts";
@@ -47,8 +48,14 @@ export const statusWithFiles = async (
 ): Promise<string> => {
 	const input = parse(raw);
 	const dir = input ? projectDirOf(input) : undefined;
-	const local = dir ? await readLocal(dir) : NO_LOCAL;
-	return statusOf(raw, env, now, local);
+	if (!(input && dir)) {
+		return statusOf(raw, env, now, NO_LOCAL);
+	}
+	const [local, off] = await Promise.all([
+		readLocal(dir),
+		hooksOff(input, dir, now),
+	]);
+	return statusOf(raw, env, now, off ? { ...local, hooksOff: true } : local);
 };
 
 /** The JSON lines of the subagent status line, or `""` for no rows. The width is `columns` of the input, which the subagent input carries. */
