@@ -83,7 +83,7 @@ Size, from the `## Size` table:
 
 The page also says this prompt is `+124,997` characters against its "Default, Lean Prompt" baseline.
 
-Local reading on `2.1.314`, 2026-10-30, with `just capture --classifier`: the fake API answers the first main request with a `Bash` call of `git push origin main`, which auto mode sends to the classifier. The classifier request carries no tools and system blocks of `74`, `140,015`, and `248`, so `system[1]` equals the page's figure. The `248` block holds the login name, so it differs between logins. The fake's `ok` is no verdict, so the program retried the request ten times and then blocked the call. Both arms read the same, so the plugin adds nothing to this request.
+Local reading on `2.1.314`, 2026-10-30, with `just capture --classifier`: the fake API answers the first main request with a `Bash` call of `git push origin main`, which auto mode sends to the classifier. The classifier request carries no tools and system blocks of `74`, `140,015`, and `248`, so `system[1]` equals the page's figure. The `248` block holds the login name, so it differs between logins. The fake's `ok` is no verdict, so the program retried the request ten times and then blocked the call. Both arms read the same, so the plugin adds nothing to this request. On `2.1.317`, 2026-11-03, the same capture reads `141,962` characters in all, with the same three system blocks.
 
 ### Env Names That Change the Classifier Request
 

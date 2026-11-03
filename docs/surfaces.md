@@ -323,8 +323,7 @@ moved up 77, so each difference between them held to the character: `Workflow` 5
 that moved: the shipped arm with the file moved aside read 23,080 against 24,961, so the row is −1,881 and not
 −1,958. `built-in surface` (5,590) and `auto memory off` (2,138) read as before. `ToolSearch` is the exception to
 the 77: its deny now reads +37,936 and not +36,922, because `tools` read 67,844 against 66,830 once the deferred
-tools load, so a definition among them grew 1,014 on this version. The three shipped-tree readings
-(36,803, 36,535, and 31,213) are of a tree that has since changed, and no command reproduces them.
+tools load, so a definition among them grew 1,014 on this version.
 
 ## The Two Switches
 
@@ -335,7 +334,9 @@ listing out of the request. `enabledPlugins` sets twelve built-in plugins to `fa
 `mermaid`, `responsive-mode`, `diff`, `you-should-know`, `easel`, `claude-platform`, and
 `claude-test`. The thirteenth built-in, `cc-plugin-sec-default`, is left alone on purpose: it declares
 `enabledFromTrustedSettingsOnly` and `enabledFromPolicyOnly`, so a user `false` does not decide it
-(`docs/gates.md:100`).
+(`docs/gates.md:100`). The `2.1.317` binary registers a fourteenth, `cc-plugin-privacy`, which has no row:
+`enabledPlugins` set to `false` for it read 46,084 on the `plain` arm, the same as the defaults, in
+`just capture --arm plain --settings FILE` on 2026-11-03.
 
 Read on 2026-10-30, with the `plain` rows read again on 2026-11-03 on `2.1.317`, with `bun tools/capture/run.ts` against a fake Messages API on `127.0.0.1`, so no
 provider was reached and no model call was billed. First the `plain` arm, which loads no plugin:
@@ -531,41 +532,41 @@ A shorter request is not a saving. The requirement this table serves cites a stu
 between the two reductions (arXiv 2607.12161), so the character score and the bill are two
 measurements and the bill is the one that decides. The inventory is
 `plugins/claudetto/src/cuts.ts` and `tests/claudetto/cuts.test.ts` holds it to the capture: the
-46,084 baseline less every cut in it has to equal the 25,314 the shipped arm records, so a cut that
+46,084 baseline less every cut in it has to equal the 25,358 the shipped arm records, so a cut that
 ships without a row breaks the check. That identity holds among three constants of one file, so it
 catches a row that does not add up and not a tree that has moved away from all three; `just inventory`
 is the check that re-reads each total from a capture, and it is the one that found the 12 characters,
 the 192 characters, the 3,226, and the 98, and the 77 of drift above.
 
-| Shipped cut | Characters off the first request | Cost reading |
-| --- | --- | --- |
-| Deny of `ScheduleWakeup` (4,887) and `ReportFindings` (2,178) (`deny list`). The `Workflow` deny reads 0 on its own, because `enableWorkflows: false` takes the tool out too | 7,065 | None exists yet |
-| Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 |
-| The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,591 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one |
-| `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it, per "The Two Switches" |
-| The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 |
-| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) |
-| `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL |
-| `agents/main.md` under the `agent` key (`main agent body`) | −1,790 | None exists yet. A placebo run would price the prompt text |
-| `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text |
-| The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −718 | None needed. It is a listing the harness builds from each file's `description` and tools |
-| The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text |
-| `output-styles/Concise.md` under the `outputStyle` key | −1,738 | None exists yet. A placebo run would price the prompt text |
-| The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. The suite scored as high as the built-in lists at about half the measured price per call (`just eval --classifier --run`) |
-| The `sandbox` block | −7,220 | None exists yet. A sandboxed `Bash` call never pays a classifier call |
-| The `handoff` tool in the deferred list and the MCP instructions block that names the plugin | −235 | None exists yet. The tool entry itself, 728 characters of JSON, is paid only in a session that fetches it |
-| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists. A run of the command pays nothing in a request: the hook opens the dialogs and answers with `text` alone, and no tool or deferred name stands behind it |
-| The `/claudetto:handoff` row in the command listing | −61 | None needed. It tells the model the command exists; its file is the request that has the model call the `handoff` tool |
-| The `Workflow` tool, out through the `Workflow` deny and `enableWorkflows: false` (`workflow switches`) | 5,333 | None exists yet. Read with `built-in surface` out, below |
-| The `Bash` git text, out through `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `includeGitInstructions`, and `attribution` (`git instructions`) | 612 | None exists yet |
-| `Explore` and `Plan`, out through two `Agent(...)` denies and `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` (`explore and plan agents`) | 911 | None exists yet |
-| The `general-purpose`, `claude`, and `statusline-setup` agent denies and the `DesignSync` deny (`built-in agent denies`) | 570 | None exists yet |
-| `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_CODE_FORK_SUBAGENT` (`cron and fork switches`) | 103 | None exists yet |
-| The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside |
-| The three general rules that the `general-rules` block adds at `SessionStart` while the user's `CLAUDE.md` lacks the section (`general rules`) | −330 | None exists yet. Read on 2026-11-03 on `2.1.317` with `just inventory`, the shipped arm with the block less the 24,984 it recorded without it. A user `CLAUDE.md` of 1,000 characters added 1,394, read with `just capture --user-claude-md 1000`: 1,017 for the file as escaped JSON and 377 for the wrapper that names it, which the file pays once |
-| The fall that no row above explains (`unexplained residual`) | 1,805 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below |
+| Shipped cut | Characters off the first request | Cost reading | Version and command |
+| --- | --- | --- | --- |
+| Deny of `ScheduleWakeup` (4,887) and `ReportFindings` (2,178) (`deny list`). The `Workflow` deny reads 0 on its own, because `enableWorkflows: false` takes the tool out too | 7,065 | None exists yet | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| Deny of `NotebookEdit` and `TaskStop`, two deferred tools (`deferred tool denies`) | 24 | None exists yet. In the interactive request each rule also adds its `permissions.deny` entry to `safeguards`, 92 characters for the two, so that request grows by 68 | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `tool.describe` texts, and `AskUserQuestion`, `Agent`, `Skill`, and `ListAgents` moved behind `ToolSearch` (`tool texts`) | 9,547 | None exists yet. A deferred tool costs one `ToolSearch` request on first use: a deferred `Agent` went from 2 requests and 56,717 characters to 3 and 83,421. The three moved in this row take 2,947 off the `-p` request and 6,868 off the interactive one | `2.1.317`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `disableBundledSkills` with the twelve plugins off (`built-in surface`) | 5,590 | None exists yet. Plugin skills survive it: `claudetto:docs`, `claudetto:handoff`, and `claudetto:setup` are listed with `disableBundledSkills: true` in `just capture --arm plugin --settings FILE --plugin-dir DIR` on `2.1.317` | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `docs` skill, which runs the Context7 CLI `ctx7` | −71 | None needed. It stands in for the Context7 MCP server, which reads 907 | `2.1.317`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` with `autoCompactWindow` (`compaction pair`) | 0 | −14.2% of the bill at a 140,000 trigger, replayed over 3 sessions and 8,705 real requests (`docs/evidence/compaction/threshold.md`) | `2.1.312`, a replay of recorded sessions, not a capture |
+| `idleCompaction: false` | 0 | None exists yet. Its evidence is the gap rows: 2 of 8,702 gaps exceed the `1h` cache TTL | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `agents/main.md` under the `agent` key (`main agent body`) | −1,790 | None exists yet. A placebo run would price the prompt text | `2.1.317`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `autoMemoryEnabled: false`, which shortens the default body only (`auto memory off`) | 2,138 | None needed. With `agents/main.md` in place it moves no request text | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The agent listing of `Artemis`, `Athena`, `Hephaestus`, and `Hermes` | −718 | None needed. It is a listing the harness builds from each file's `description` and tools | `2.1.317`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The handoff context block of `src/blocks/handoff/handoff.ts` | −940 | None exists yet. A placebo run would price the prompt text | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `output-styles/Concise.md` under the `outputStyle` key | −1,844 | None exists yet. A placebo run would price the prompt text | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `autoMode` lists | 0 | The classifier reads them, so the classifier call is where they are paid. With the suite, the classifier's system block is 63,147 characters, against 140,015 with the built-in lists (`just capture --classifier`, `2.1.317`), and the final suite scored 120 of 120 on the `suite`, `sonnet`, and `haiku` arms of `just eval --classifier --run` on 2026-11-03 | `2.1.316`, `just eval --classifier --run` for the price; the characters are 0 in the request |
+| The `sandbox` block | −7,220 | None exists yet. A sandboxed `Bash` call never pays a classifier call | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `handoff` tool in the deferred list and the MCP instructions block that names the plugin | −235 | None exists yet. The tool entry itself, 728 characters of JSON, is paid only in a session that fetches it | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `/claudetto:setup` row in the command listing | −48 | None needed. It tells the model the command exists. A run of the command pays nothing in a request: the hook opens the dialogs and answers with `text` alone, and no tool or deferred name stands behind it | `2.1.317`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `/claudetto:handoff` row in the command listing | −61 | None needed. It tells the model the command exists; its file is the request that has the model call the `handoff` tool | `2.1.317`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `Workflow` tool, out through the `Workflow` deny and `enableWorkflows: false` (`workflow switches`) | 5,333 | None exists yet. Read with `built-in surface` out, below | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `Bash` git text, out through `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `includeGitInstructions`, and `attribution` (`git instructions`) | 612 | None exists yet | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `Explore` and `Plan`, out through two `Agent(...)` denies and `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` (`explore and plan agents`) | 911 | None exists yet | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `general-purpose`, `claude`, and `statusline-setup` agent denies and the `DesignSync` deny (`built-in agent denies`) | 570 | None exists yet | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_CODE_FORK_SUBAGENT` (`cron and fork switches`) | 103 | None exists yet | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone |
+| The `context_management` section of the default body, which the `handoff` block nulls (`context management section`) | 285 | None exists yet. Read with `agents/main.md` moved aside | `2.1.316`, `just capture --arm plain --shipped --plugin-dir DIR` on a clone, with `agents/main.md` moved aside |
+| The three general rules that the `general-rules` block adds at `SessionStart` while the user's `CLAUDE.md` lacks the section (`general rules`) | −330 | None exists yet. Read on 2026-11-03 on `2.1.317` with `just inventory`, the shipped arm with the block less the 24,984 it recorded without it. A user `CLAUDE.md` of 1,000 characters added 1,394, read with `just capture --user-claude-md 1000`: 1,017 for the file as escaped JSON and 377 for the wrapper that names it, which the file pays once | `2.1.317`, `just inventory` |
+| The fall that no row above explains (`unexplained residual`) | 1,805 | Not a measurement. It is the difference between the fall of the shipped arm and the sum of the rows, and it is the interaction of the removals, read below | a subtraction, not a reading |
 
-The rows sum to 20,770, which is 46,084 less the 25,314 the shipped arm records. A negative row is a piece
+The rows sum to 20,726, which is 46,084 less the 25,358 the shipped arm records. A negative row is a piece
 the tree adds.
 
 Which values were read and which were not, as of this tree on `2.1.316` on 2026-11-02. Every row was read
@@ -573,15 +574,15 @@ again that day against the shipped arm of 27,960, which `SHIPPED_TOTAL` records.
 `-p` arm of a clone of this tree at a path of 47 characters, the length of the checkout path (each character
 of the path adds one, and the real path counts, since `/tmp` resolves to `/private/tmp`), less the same arm
 with the piece removed in a clone of the same path length, one piece at a time. A clone was restored before
-the next removal. The readings, each as the arm without the piece less 27,960, except `main agent body`, `tool texts`, and `agent listing`, read again on 2026-11-03 on `2.1.317` against 24,874, each copy at `/tmp/cutrows/<arm>` loaded as the only plugin with `just capture --arm plain --shipped --plugin-dir`; the other rows were not read again:
+the next removal. The readings, each as the arm without the piece less 27,960, except `main agent body`, `tool texts`, and `agent listing`, read again on 2026-11-03 on `2.1.317` against 24,874, and `docs skill`, `setup command listing`, and `handoff command listing`, read on that day against 25,332, the shipped arm of a clone at a path of 47 characters, each copy at `/tmp/cutrows/<arm>` loaded as the only plugin with `just capture --arm plain --shipped --plugin-dir`; the other rows were not read again:
 
 | Row | Arm without the piece | Row | How the piece was removed |
 | --- | --- | --- | --- |
 | `deny list` | 35,025 | 7,065 | `ScheduleWakeup` and `ReportFindings` out of `permissions.deny` (it was 12,421, the `plain` baseline of 46,084 less the deny arm of 33,663) |
 | `deferred tool denies` | 27,984 | 24 | `NotebookEdit` and `TaskStop` out of `permissions.deny` |
-| `tool texts` | 34,527 | 9,591 | the `tool-describe` block detached from the catalog, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch` |
+| `tool texts` | 34,527 | 9,547 | the `tool-describe` block detached from the catalog, with `AskUserQuestion`, `Agent`, and `Skill` behind `ToolSearch`; the row is 44 less than the reading, because the `Bash` text grew by 44 after it, which `just inventory` read on 2026-11-03 on `2.1.317` |
 | `built-in surface` | 33,550 | 5,590 | `disableBundledSkills` and `enabledPlugins` out of the settings |
-| `docs skill` | 27,889 | −71 | `skills/docs/` moved out of the plugin |
+| `docs skill` | 25,261 | −71 | `skills/docs/` moved out of the plugin |
 | `main agent body` | 23,084 | −1,790 | `agents/main.md` moved aside |
 | `auto memory off` | 28,088 | 2,138 | `autoMemoryEnabled` out and `agents/main.md` moved aside, against 25,950 |
 | `agent listing` | 24,156 | −718 | the four agent files moved aside |
@@ -589,8 +590,8 @@ the next removal. The readings, each as the arm without the piece less 27,960, e
 | `handoff tool listing` | 27,725 | −235 | the `session.start` registration out |
 | `output style` | 26,222 | −1,844 | `outputStyle` out of the settings. The positive rewrite of 2026-11-03 adds 106, read with `just inventory` |
 | `sandbox block` | 20,740 | −7,220 | `sandbox` out of the settings |
-| `setup command listing` | 27,912 | −48 | `commands/setup.md` moved aside |
-| `handoff command listing` | 27,899 | −61 | `commands/handoff.md` moved aside |
+| `setup command listing` | 25,284 | −48 | `commands/setup.md` moved aside |
+| `handoff command listing` | 25,271 | −61 | `commands/handoff.md` moved aside |
 | `compaction pair`, `idleCompaction off`, `autoMode lists` | 27,960 | 0 | their keys out of the settings |
 
 The cost reading of the `compaction pair` is not from a capture. The `unexplained residual` is still set by
