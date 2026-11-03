@@ -81,7 +81,7 @@ The `0.2.0` capture (`just capture --shipped --interactive --dump /tmp/cap-0-2-0
 
 ### `/loop` is removed from the docs only
 
-`/loop` is not reachable: the user typed it on 2026-10-31 and got "No commands match". No code of claudetto names it. `docs/surfaces.md` drops the sentence that offers it back, and `docs/keep/skills/loop.txt` is deleted. `docs/keep/commands/built-in-commands.txt` is a dated reading of `2.1.311` and keeps its list.
+`/loop` is not reachable: the user typed it on 2026-10-31 and got "No commands match". No code of claudetto names it. `docs/surfaces.md` drops the sentence that offers it back, and `docs/keep/skills/loop.txt` is deleted.
 
 ### A handover replaces most compactions
 
