@@ -1,3 +1,0 @@
-# The generated Claude Code types, which git ignores and `just typecheck` needs.
-.claude-plugin/types/
-plugins/*/.claude-plugin/types/
