@@ -1,0 +1,43 @@
+{
+	"steps": [
+		{
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "Agent",
+						"input": {
+							"description": "Find widgets",
+							"prompt": "SUBTASK find widgets",
+							"subagent_type": "claudetto:Artemis",
+							"run_in_background": true
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		},
+		{
+			"match": {
+				"lastUserIncludes": "SUBTASK"
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "text",
+						"text": "found none"
+					}
+				],
+				"delayMs": 15000
+			}
+		}
+	],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

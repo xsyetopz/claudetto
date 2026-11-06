@@ -1,0 +1,11 @@
+{
+	"steps": [],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

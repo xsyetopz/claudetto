@@ -1,0 +1,289 @@
+2026-11-06T15:54:19.244Z [DEBUG] MDM settings load completed in 0ms
+2026-11-06T15:54:19.248Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.248Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.249Z [DEBUG] Reading through symlink: /tmp/probe-122/cfg/remote-settings.json -> /private/tmp/probe-122/cfg/remote-settings.json
+2026-11-06T15:54:19.249Z [DEBUG] Reading through symlink: /tmp/probe-122/cfg/remote-settings.json -> /private/tmp/probe-122/cfg/remote-settings.json
+2026-11-06T15:54:19.250Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.250Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.250Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:19.251Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:19.251Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-11-06T15:54:19.254Z [DEBUG] [init] configureGlobalMTLS starting
+2026-11-06T15:54:19.254Z [DEBUG] [init] configureGlobalMTLS complete
+2026-11-06T15:54:19.254Z [DEBUG] [init] configureGlobalAgents starting
+2026-11-06T15:54:19.254Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-11-06T15:54:19.254Z [DEBUG] CA certs: Loaded 118 bundled root certificates
+2026-11-06T15:54:19.301Z [DEBUG] CA certs: Loaded 7 system CA certificates
+2026-11-06T15:54:19.306Z [DEBUG] CA certs: Dropped blocked certificate 40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 from bundled
+2026-11-06T15:54:19.315Z [DEBUG] CA certs: Dropped 1 certificate(s) that do not chain to a root in the CA list
+2026-11-06T15:54:19.315Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-11-06T15:54:19.316Z [DEBUG] [init] configureGlobalAgents complete
+2026-11-06T15:54:19.320Z [DEBUG] Error log sink initialized
+2026-11-06T15:54:19.320Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-11-06T15:54:19.332Z [DEBUG] [ToolSearch:optimistic] mode=tst, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-11-06T15:54:19.355Z [DEBUG] [claudeai-mcp] Disabled via env var
+2026-11-06T15:54:19.355Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-11-06T15:54:19.356Z [DEBUG] [STARTUP] Running setup()...
+2026-11-06T15:54:19.372Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/tmp/probe-122/cfg/skills, project=[]
+2026-11-06T15:54:19.375Z [DEBUG] Failed to stat directory /tmp/probe-122/cfg/commands: ENOENT: no such file or directory, stat '/tmp/probe-122/cfg/commands'
+2026-11-06T15:54:19.375Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/commands: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/commands'
+2026-11-06T15:54:19.378Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-11-06T15:54:19.378Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-11-06T15:54:19.378Z [DEBUG] Failed to stat directory /tmp/probe-122/cfg/agents: ENOENT: no such file or directory, stat '/tmp/probe-122/cfg/agents'
+2026-11-06T15:54:19.379Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/agents: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/agents'
+2026-11-06T15:54:19.386Z [DEBUG] --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto is one plugin: .claude-plugin at its top marks it
+2026-11-06T15:54:19.395Z [DEBUG] Read hooks.json for plugin claudetto (enabled=true): /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/hooks.json
+2026-11-06T15:54:19.396Z [INFO] [uds-messaging] Listening: /tmp/cc-socks/49841.sock
+2026-11-06T15:54:19.397Z [DEBUG] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-socks/49841.sock
+2026-11-06T15:54:19.402Z [DEBUG] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-11-06T15:54:19.403Z [DEBUG] Error log sink initialized
+2026-11-06T15:54:19.406Z [DEBUG] Wrote per-PID lock for 2.1.318 (PID 49841)
+2026-11-06T15:54:19.421Z [DEBUG] Cannot acquire lock for 2.1.318 - held by PID 19521
+2026-11-06T15:54:19.422Z [DEBUG] Loaded settings from settings.json for plugin claudetto
+2026-11-06T15:54:19.422Z [DEBUG] Loaded inline plugin from path: claudetto
+2026-11-06T15:54:19.422Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-11-06T15:54:19.423Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-11-06T15:54:19.423Z [DEBUG] Cached plugin settings with keys: subagentStatusLine
+2026-11-06T15:54:19.424Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-11-06T15:54:19.424Z [DEBUG] Checking plugin claudetto: skillsPath=exists, skillsPaths=0 paths
+2026-11-06T15:54:19.424Z [DEBUG] Attempting to load skills from plugin claudetto default skillsPath: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/skills
+2026-11-06T15:54:19.424Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-11-06T15:54:19.424Z [DEBUG] Checking plugin cc-plugin-privacy: skillsPath=none, skillsPaths=0 paths
+2026-11-06T15:54:19.424Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-11-06T15:54:19.424Z [DEBUG] Total plugin workflows loaded: 0
+2026-11-06T15:54:19.424Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.424Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:19.425Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:19.425Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.427Z [DEBUG] [STARTUP] setup() completed in 71ms
+2026-11-06T15:54:19.427Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T15:54:19.427Z [DEBUG] Cleared proxy agent cache
+2026-11-06T15:54:19.430Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-11-06T15:54:19.431Z [DEBUG] plugin claudetto: no pluginConfigs["claudetto" or "claudetto@inline"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-11-06T15:54:19.444Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/projects/-private-tmp-probe-142-ws/memory/'
+2026-11-06T15:54:19.449Z [DEBUG] Loaded 3 agents from plugin claudetto default directory
+2026-11-06T15:54:19.449Z [DEBUG] Total plugin agents loaded: 3
+2026-11-06T15:54:19.450Z [DEBUG] Loaded 2 commands from plugin claudetto default directory
+2026-11-06T15:54:19.450Z [DEBUG] Total plugin commands loaded: 2
+2026-11-06T15:54:19.454Z [DEBUG] Loaded 1 skills from plugin claudetto default directory
+2026-11-06T15:54:19.454Z [DEBUG] Total plugin skills loaded: 1 (0 duplicate/user-owned entries skipped)
+2026-11-06T15:54:19.455Z [DEBUG] getSkills returning: 0 skill dir commands, 1 plugin skills, 31 bundled skills, 1 builtin plugin skills
+2026-11-06T15:54:19.458Z [DEBUG] Auto mode classifier: ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5 cannot serve as the classifier; using the Sonnet 5 default instead
+2026-11-06T15:54:19.459Z [DEBUG] [STARTUP] Commands and agents loaded in 29ms
+2026-11-06T15:54:19.462Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-11-06T15:54:19.462Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-11-06T15:54:19.462Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-11-06T15:54:19.462Z [DEBUG] Starting background startup prefetches
+2026-11-06T15:54:19.463Z [DEBUG] [Bootstrap] Fetching
+2026-11-06T15:54:19.471Z [DEBUG] [STARTUP] MCP configs resolved in 76ms (awaited at +116ms)
+2026-11-06T15:54:19.471Z [DEBUG] Artifacts MCP server not added: artifact_tool_off (login)
+2026-11-06T15:54:19.473Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T15:54:19.473Z [DEBUG] Cleared proxy agent cache
+2026-11-06T15:54:19.473Z [DEBUG] [3P telemetry] Waiting for remote managed settings fetch before telemetry init
+2026-11-06T15:54:19.474Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-11-06T15:54:19.476Z [DEBUG] Fast mode unavailable: Fast mode is not available in the Agent SDK
+2026-11-06T15:54:19.477Z [DEBUG] [MCP] --mcp-config servers running fully async (nonblocking)
+2026-11-06T15:54:19.477Z [DEBUG] [MCP] claude.ai connectors running fully async (nonblocking)
+2026-11-06T15:54:19.477Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-11-06T15:54:19.477Z [DEBUG] [servedCatalog] off (not_claude_ai_auth)
+2026-11-06T15:54:19.489Z [DEBUG] Plugin autoupdate: skipped (auto-updater disabled)
+2026-11-06T15:54:19.490Z [DEBUG] Total LSP servers loaded: 0
+2026-11-06T15:54:19.491Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-11-06T15:54:19.491Z [DEBUG] LSP manager initialized with 0 servers
+2026-11-06T15:54:19.491Z [DEBUG] LSP server manager initialized successfully
+2026-11-06T15:54:19.491Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-11-06T15:54:19.493Z [DEBUG] [sessionRegistry] sweep permitted (domain darwin)
+2026-11-06T15:54:19.506Z [DEBUG] Watching for changes in setting files /tmp/probe-122/cfg/settings.json, /private/tmp/probe-142/ws/.claude/settings.json, /private/tmp/probe-142/ws/.claude/settings.local.json...
+2026-11-06T15:54:19.636Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.636Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:19.636Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:19.636Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.636Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T15:54:19.636Z [DEBUG] Cleared proxy agent cache
+2026-11-06T15:54:19.647Z [DEBUG] Programmatic settings change notification for policySettings
+2026-11-06T15:54:19.647Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.647Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.648Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:19.648Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:19.648Z [DEBUG] Plugin hooks: skipping reload, plugin-affecting settings unchanged
+2026-11-06T15:54:19.648Z [DEBUG] Settings changed from policySettings, updating app state
+2026-11-06T15:54:19.664Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.664Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.664Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:19.665Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all allow rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all deny rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all ask rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all allow rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all deny rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all ask rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all allow rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all deny rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all ask rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all allow rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all deny rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all ask rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all allow rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all deny rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T15:54:19.665Z [DEBUG] Replacing all ask rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T15:54:19.666Z [DEBUG] [3P telemetry] Remote managed settings fetch settled, initializing telemetry
+2026-11-06T15:54:19.666Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T15:54:19.666Z [DEBUG] Cleared proxy agent cache
+2026-11-06T15:54:19.667Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-11-06T15:54:19.667Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-11-06T15:54:19.670Z [DEBUG] Policy limits: Using cached restrictions (304)
+2026-11-06T15:54:19.670Z [DEBUG] Policy limits: Cache still valid (304 Not Modified)
+2026-11-06T15:54:19.878Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-11-06T15:54:19.879Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-11-06T15:54:19.880Z [DEBUG] Org fast mode: enabled
+2026-11-06T15:54:19.881Z [DEBUG] [Bootstrap] Fetch ok
+2026-11-06T15:54:19.881Z [DEBUG] [Bootstrap] Cache unchanged, skipping write
+2026-11-06T15:54:19.907Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-11-06T15:54:19.946Z [DEBUG] [mcp-registry] Loaded 294 official MCP URLs (legacy)
+2026-11-06T15:54:19.960Z [DEBUG] hooks module claudetto@inline loaded (worker, environment 1, tier user); events: turn.step,tool.call,agent.spawn,classic.PostToolUseFailure,tool.check,classic.Stop,classic.SubagentStop,prompt.submit,command.run,command.describe,skill.prompt,classic.SessionStart,prompt.compose,tool.describe,prompt.attachment,settings.read,agent.offer,session.compact,session.start,turn.start,prompt.context,prompt.section,turn.complete,classic.StopFailure,classic.PermissionRequest,classic.PermissionDenied
+2026-11-06T15:54:19.960Z [DEBUG] hooks native host made (for the plugins the binary carries)
+2026-11-06T15:54:19.961Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-11-06T15:54:19.962Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-11-06T15:54:19.962Z [DEBUG] hooks module cc-plugin-privacy@builtin loaded (native, environment 4, tier builtin); events: tool.check
+2026-11-06T15:54:19.964Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for claudetto,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-privacy
+2026-11-06T15:54:19.969Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-11-06T15:54:19.970Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-11-06T15:54:19.970Z [DEBUG] plugin.register: cc-plugin-privacy (builtin, cc-plugin-privacy@builtin), judged by core alone: admitted
+2026-11-06T15:54:19.970Z [DEBUG] plugin.register: claudetto (user, claudetto@inline), judged by core alone: admitted
+2026-11-06T15:54:19.974Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-11-06T15:54:19.975Z [DEBUG] hooks module claudetto@inline: settings.read nested in
+2026-11-06T15:54:19.983Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-142/ws/.claude/skills failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-142/ws/.claude/skills'
+2026-11-06T15:54:19.983Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-142/ws/.claude/commands failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-142/ws/.claude/commands'
+2026-11-06T15:54:19.983Z [DEBUG] $.fs.list (claudetto): /tmp/probe-122/cfg/skills failed: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/skills'
+2026-11-06T15:54:19.983Z [DEBUG] $.fs.list (claudetto): /tmp/probe-122/cfg/commands failed: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/commands'
+2026-11-06T15:54:19.985Z [DEBUG] hooks module claudetto@inline settings.read settled in 9.5ms (worker hop, next() included)
+2026-11-06T15:54:19.986Z [DEBUG] settings.read: the engine's merge was raised (the loaded plugins changed) in 12.3 ms; 1 keys answered otherwise than the files.
+2026-11-06T15:54:19.986Z [DEBUG] Programmatic settings change notification for policySettings
+2026-11-06T15:54:19.987Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:19.987Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:19.987Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:19.987Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:19.988Z [DEBUG] Plugin hooks: skipping reload, plugin-affecting settings unchanged
+2026-11-06T15:54:19.988Z [DEBUG] Settings changed from policySettings, updating app state
+2026-11-06T15:54:20.010Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T15:54:20.011Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/probe-122/cfg/settings.json
+2026-11-06T15:54:20.011Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.json
+2026-11-06T15:54:20.011Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-142/ws/.claude/settings.local.json
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all allow rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all deny rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all ask rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all allow rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all deny rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all ask rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all allow rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all deny rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all ask rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all allow rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all deny rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all ask rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all allow rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all deny rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T15:54:20.011Z [DEBUG] Replacing all ask rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T15:54:20.012Z [DEBUG] hooks module claudetto@inline: settings.read nested in
+2026-11-06T15:54:20.015Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-142/ws/.claude/skills failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-142/ws/.claude/skills'
+2026-11-06T15:54:20.015Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-142/ws/.claude/commands failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-142/ws/.claude/commands'
+2026-11-06T15:54:20.015Z [DEBUG] $.fs.list (claudetto): /tmp/probe-122/cfg/skills failed: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/skills'
+2026-11-06T15:54:20.015Z [DEBUG] $.fs.list (claudetto): /tmp/probe-122/cfg/commands failed: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/commands'
+2026-11-06T15:54:20.016Z [DEBUG] hooks module claudetto@inline settings.read settled in 3.4ms (worker hop, next() included)
+2026-11-06T15:54:20.016Z [DEBUG] settings.read: the engine's merge was raised (the settings changed) in 3.8 ms; 1 keys answered otherwise than the files.
+2026-11-06T15:54:20.018Z [DEBUG] $.session (claudetto): no session bound; id, cwd and model answered from the process
+2026-11-06T15:54:20.018Z [DEBUG] $.session (claudetto): no session bound; id, cwd and model answered from the process
+2026-11-06T15:54:20.019Z [DEBUG] hooks module claudetto@inline: settings.read nested in claudetto#45
+2026-11-06T15:54:20.020Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-142/ws/.claude/skills failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-142/ws/.claude/skills'
+2026-11-06T15:54:20.020Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-142/ws/.claude/commands failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-142/ws/.claude/commands'
+2026-11-06T15:54:20.020Z [DEBUG] $.fs.list (claudetto): /tmp/probe-122/cfg/skills failed: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/skills'
+2026-11-06T15:54:20.020Z [DEBUG] $.fs.list (claudetto): /tmp/probe-122/cfg/commands failed: ENOENT: no such file or directory, scandir '/tmp/probe-122/cfg/commands'
+2026-11-06T15:54:20.021Z [DEBUG] hooks module claudetto@inline settings.read settled in 2.0ms (worker hop, next() included)
+2026-11-06T15:54:20.023Z [DEBUG] $.process.run (claudetto): /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/bin/claudetto-hygiene with 4 args in /private/tmp/probe-142/ws (pid 49863)
+2026-11-06T15:54:20.024Z [DEBUG] hooks module claudetto@inline classic.SessionStart settled in 48.1ms (worker hop, next() included)
+2026-11-06T15:54:20.032Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-11-06T15:54:20.033Z [DEBUG] session.start: raised (surface none, not interactive)
+2026-11-06T15:54:20.041Z [DEBUG] installPluginsForHeadless: starting
+2026-11-06T15:54:20.042Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 0.6ms (native link, next() included)
+2026-11-06T15:54:20.044Z [ERROR] hook failed: claudetto: errorKind=HooksError errorChars=135 (session.start; skipped; its last next() run's result stands)
+2026-11-06T15:54:20.044Z [ERROR] claudetto: session.start hook skipped: threw claudetto: $.tool.register: "ask-user-question" refused: this session has no built-in tools (--tools ""), so it takes...
+2026-11-06T15:54:20.045Z [DEBUG] hooks module claudetto@inline session.start settled in 11.2ms (worker hop, next() included)
+2026-11-06T15:54:20.049Z [DEBUG] Total plugin workflows loaded: 0
+2026-11-06T15:54:20.050Z [DEBUG] getSkills returning: 0 skill dir commands, 1 plugin skills, 31 bundled skills, 1 builtin plugin skills
+2026-11-06T15:54:20.050Z [DEBUG] Failed to stat directory /tmp/probe-122/cfg/output-styles: ENOENT: no such file or directory, stat '/tmp/probe-122/cfg/output-styles'
+2026-11-06T15:54:20.057Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/output-styles: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/output-styles'
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.6ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.6ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.5ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.5ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.4ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.3ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 5.1ms (worker hop, next() included)
+2026-11-06T15:54:20.059Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.6ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.5ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.5ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.3ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.3ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.2ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.1ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.1ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.0ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.0ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.9ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.9ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.8ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.7ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.2ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.1ms (worker hop, next() included)
+2026-11-06T15:54:20.060Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.1ms (worker hop, next() included)
+2026-11-06T15:54:20.062Z [DEBUG] Loaded 1 output styles from plugin claudetto default directory
+2026-11-06T15:54:20.063Z [DEBUG] Total plugin output styles loaded: 1
+2026-11-06T15:54:20.065Z [DEBUG] claudetto (user) answered prompt.compose without next() in 0.3ms; nothing beneath it ran for this dispatch
+2026-11-06T15:54:20.065Z [DEBUG] hooks module claudetto@inline prompt.compose settled in 2.5ms (worker hop, next() included)
+2026-11-06T15:54:20.116Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-11-06T15:54:20.160Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-11-06T15:54:20.161Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 103.6ms (native link, next() included)
+2026-11-06T15:54:20.165Z [DEBUG] hooks module claudetto@inline prompt.context settled in 115.2ms (worker hop, next() included)
+2026-11-06T15:54:20.168Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-11-06T15:54:20.195Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): user_prompt
+2026-11-06T15:54:20.200Z [DEBUG] Fast mode unavailable: Fast mode is not available in the Agent SDK
+2026-11-06T15:54:20.200Z [DEBUG] [session-notices] advertise=false mode=default flag=false(disabled) pollChannel=false ownEventsOnly=false remote=false remoteEnv=false nonInteractive=true
+2026-11-06T15:54:20.216Z [DEBUG] [engine] turn 1 start
+2026-11-06T15:54:20.218Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 24.4ms (native link, next() included)
+2026-11-06T15:54:20.220Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-11-06T15:54:20.223Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.1ms (native link, next() included)
+2026-11-06T15:54:20.223Z [DEBUG] hooks module claudetto@inline prompt.submit settled in 53.1ms (worker hop, next() included)
+2026-11-06T15:54:20.224Z [DEBUG] hooks module claudetto@inline turn.start settled in 8.1ms (worker hop, next() included)
+2026-11-06T15:54:20.225Z [DEBUG] $.store.set (cc-plugin-agents-md@builtin): usage-rows-queued
+2026-11-06T15:54:20.226Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.cef; cc_entrypoint=sdk-cli; cch=00000;
+2026-11-06T15:54:20.227Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=e2a3bc33-0fc6-4c84-bb86-e7e719dd0c99 source=side_query
+2026-11-06T15:54:20.228Z [DEBUG] $.process.run (claudetto): /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/bin/claudetto-hygiene exited 0 in 206ms, 32 + 0 chars
+2026-11-06T15:54:20.228Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-142/ws/.claude/claudetto/heartbeat/ff33c763-9cde-41fc-b462-9e3e1d92d692.txt (13 bytes)
+2026-11-06T15:54:20.233Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.eaa; cc_entrypoint=sdk-cli; cch=00000; cc_prompt_id=7ecb3736-6579-4950-a2b4-7a1931871870; cc_turn_origin=sdk; cc_prompt_index=0; cc_turn_index=1;
+2026-11-06T15:54:20.233Z [DEBUG] Fast mode unavailable: Fast mode is not available in the Agent SDK
+2026-11-06T15:54:20.235Z [DEBUG] Fast mode unavailable: Fast mode is not available in the Agent SDK
+2026-11-06T15:54:20.235Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-11-06T15:54:20.236Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=9246c523-6301-40b9-9282-39b19515308d source=sdk
+2026-11-06T15:54:21.587Z [DEBUG] Stream started - received first chunk
+2026-11-06T15:54:21.587Z [DEBUG] [API:timing] first byte after 1353ms
+2026-11-06T15:54:24.188Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-142/ws/.claude/claudetto/heartbeat/ff33c763-9cde-41fc-b462-9e3e1d92d692.txt (13 bytes)
+2026-11-06T15:54:24.190Z [DEBUG] hooks module claudetto@inline turn.step stream settled in 3966.0ms (worker hop, next() included)
+2026-11-06T15:54:24.196Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.b81; cc_entrypoint=sdk-cli; cch=00000;
+2026-11-06T15:54:24.196Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=49a94980-ea3a-43c3-9272-92257682aec9 source=side_query
+2026-11-06T15:54:24.489Z [DEBUG] settings.read: the engine's merge is not raised again (a retention sweep starts): neither the loaded plugins nor the settings changed.
+2026-11-06T15:54:25.085Z [DEBUG] $.model.complete (claudetto): claude-haiku-5-5 answered in 4861ms, 185 chars
+2026-11-06T15:54:26.230Z [DEBUG] Protecting locked version from cleanup: 2.1.319
+2026-11-06T15:54:27.258Z [DEBUG] $.model.complete (claudetto): claude-haiku-5-5 answered in 3062ms, 13 chars
+2026-11-06T15:54:27.258Z [DEBUG] hooks module claudetto@inline classic.Stop settled in 3065.6ms (worker hop, next() included)
+2026-11-06T15:54:27.259Z [DEBUG] [engine] turn 1 end (turns=1 usage in=2 out=276 cost=$0.0091 api=3956ms stop=end_turn resultLen=269)
+2026-11-06T15:54:27.259Z [DEBUG] Fast mode unavailable: Fast mode is not available in the Agent SDK
+2026-11-06T15:54:27.261Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.1ms (native link, next() included)
+2026-11-06T15:54:27.262Z [DEBUG] hooks module claudetto@inline turn.complete settled in 1.4ms (worker hop, next() included)
+2026-11-06T15:54:27.264Z [DEBUG] [uds-messaging] Shutting down
+2026-11-06T15:54:27.266Z [DEBUG] LSP server manager shut down successfully

@@ -1,0 +1,49 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113731-a5c8e3/config ANTHROPIC_BASE_URL=http://127.0.0.1:63329 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113731-a5c8e3/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113731-a5c8e3/goal10.tty.debug
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Haiku 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113731-a5c8e3/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113731-a5c8e3/goal10.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏸ manual mode on · ? for shortcuts · ← for agents[>0q
+        
+ ▐▛▛█ 
+·▜██████·
+~~
+▗▟▛███▛█▄
+▜███▘
+ ▝▝   ▝▝ 
+ ▐ 
+▝▀
+        
+ ▐▛▛█ 
+·▜██████·
+~~
+▗▟▛███▛█▄
+▜███▘
+ ▝▝   ▝▝ 
+ ▐ 
+▝▀
+/goalthefilenever-made.txtexists 
+
+❯ /goal the file never-made.txt exists                                                                                                                          
+✶Hyperspacing… 
+◐ medium · /effort· ◎ /goal active
+❯  
+ · esc to interrupt · ← for agents
+ 
+  ⎿  Goalset:thefilenever-made.txtexists
+⏺OK
+Scampering… 
+(running Stop hook · 0s)
+⏺Ran1stophook
+⎿  AStophookblockedandnofilechangedsincethelaststop,sotheturnendshere:[thefilenever-made.txtexists]:never-made.txtdoesnot
+exist.Ifagoalkeepsthesessiongoing,`/goalclear`dropsit.
+⏺Goal paused · a hook ended the turn · send a message to continue
+✻Brewed for 0s · done 11:37 AM
+
+❯ 
+? for shortcuts · ← for agents

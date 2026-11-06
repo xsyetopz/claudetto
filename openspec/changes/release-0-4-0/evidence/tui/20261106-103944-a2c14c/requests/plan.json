@@ -1,0 +1,42 @@
+{
+	"steps": [
+		{
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "AskUserQuestion",
+						"input": {
+							"questions": [
+								{
+									"question": "Pick one?",
+									"header": "P",
+									"multiSelect": false,
+									"options": [
+										{
+											"label": "Alpha",
+											"description": "a"
+										},
+										{
+											"label": "Beta",
+											"description": "b"
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		}
+	],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

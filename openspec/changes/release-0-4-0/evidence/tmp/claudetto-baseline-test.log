@@ -1,0 +1,262 @@
+env -u CLAUDE_CODE_SESSION_ID bun test "$@"
+bun test v1.4.4 (38afee6c8)
+Traceback (most recent call last):
+  File "/private/tmp/claudetto-baseline/claudekit/summary-cost/pty.py", line 82, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/private/tmp/claudetto-baseline/claudekit/summary-cost/pty.py", line 51, in main
+    pid, master = pty.fork()
+                  ~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.10/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pty.py", line 78, in fork
+    master_fd, slave_fd = openpty()
+                          ~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.10/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pty.py", line 34, in openpty
+    master_fd, slave_name = _open_terminal()
+                            ~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.10/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pty.py", line 58, in _open_terminal
+    raise OSError('out of pty devices')
+OSError: out of pty devices
+
+claudekit/summary-cost/__tests__/pty.spec.ts:
+28 | 		);
+29 | 		const late = setTimeout(() => run.kill("SIGKILL"), 15_000);
+30 | 		await run.exited;
+31 | 		clearTimeout(late);
+32 | 		expect(Date.now() - started).toBeLessThan(15_000);
+33 | 		expect(await readFile(capture, "utf8")).toEndWith("BYE");
+                    ^
+ENOENT: no such file or directory, open '/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudetto-tests-yAVQw6/pty-spec-Xj6veV/capture.txt'
+    path: "/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudetto-tests-yAVQw6/pty-spec-Xj6veV/capture.txt",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/private/tmp/claudetto-baseline/claudekit/summary-cost/__tests__/pty.spec.ts:33:16)
+(fail) the deadline ends a child that writes to its terminal on SIGTERM [75.78ms]
+
+claudekit/summary-cost/__tests__/arena.spec.ts:
+104 | 		const out = await ran(
+105 | 			"10",
+106 | 			"import sys; print('tty' if sys.stdout.isatty() else 'pipe')",
+107 | 		);
+108 | 
+109 | 		expect(out.capture).toContain("tty");
+                            ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "tty"
+Received: ""
+
+      at <anonymous> (/private/tmp/claudetto-baseline/claudekit/summary-cost/__tests__/arena.spec.ts:109:23)
+(fail) pty.py > gives the session a tty, so `enableSummarization` can be true [57.60ms]
+113 | 		const out = await ran(
+114 | 			"10",
+115 | 			"print('\\x1b[2K[AgentSummary] Timer fired for agent agt_1')",
+116 | 		);
+117 | 
+118 | 		expect(out.capture).toContain("[AgentSummary] Timer fired");
+                            ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "[AgentSummary] Timer fired"
+Received: ""
+
+      at <anonymous> (/private/tmp/claudetto-baseline/claudekit/summary-cost/__tests__/arena.spec.ts:118:23)
+(fail) pty.py > writes what the session drew, which is where the counts are read from [53.76ms]
+119 | 	});
+120 | 
+121 | 	test("stops a session that does not exit, so an arm cannot run past its deadline", async () => {
+122 | 		const out = await ran("2", "import time; print('up'); time.sleep(60)");
+123 | 
+124 | 		expect(out.code).toBe(0);
+                         ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/private/tmp/claudetto-baseline/claudekit/summary-cost/__tests__/arena.spec.ts:124:20)
+(fail) pty.py > stops a session that does not exit, so an arm cannot run past its deadline [57.62ms]
+
+claudekit/probe/__tests__/weekly.spec.ts:
+weekly limit: the round is priced at 5.7% of the seven-day limit and 100.0% is used, which leaves 0.0%, so no call is made. Wait for the window to reset or shrink the round with --runs or --sizes.
+
+claudekit/probe/__tests__/main.spec.ts:
+Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--alt-threshold T] [--sizes A,B] [--max-total-usd U] [--dir D]
+With no --run it is a dry run: it prints the plan and the expected cost, and makes no call.
+--base-only stops after the base sessions and runs no fork, which exercises the paid path and measures the base context for the price of one base.
+--report reads the forks that --dir already holds in results.jsonl and reports them, free and with no call, which is how a round stopped by its cost cap is still reported.
+--run makes the paid calls. N is a whole number of at least 3 (default 11, the citable floor of 10 and a spare, so a fork lost to a transient failure does not cost the round its citability), M is one of claude-sonnet-5-5, claude-haiku-5-5, claude-opus-5-5 (default claude-sonnet-5-5), T is the candidate threshold in tokens (default 100000, and the reference arm is 140000), A,B are base sizes in tokens (default 90000), and U is a cost above 0 that stops the round (default 26).
+No fork was read from /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudetto-tests-yAVQw6/probe-test-rMIXEt/results.jsonl, so there is nothing to report.
+Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--alt-threshold T] [--sizes A,B] [--max-total-usd U] [--dir D]
+With no --run it is a dry run: it prints the plan and the expected cost, and makes no call.
+--base-only stops after the base sessions and runs no fork, which exercises the paid path and measures the base context for the price of one base.
+--report reads the forks that --dir already holds in results.jsonl and reports them, free and with no call, which is how a round stopped by its cost cap is still reported.
+--run makes the paid calls. N is a whole number of at least 3 (default 11, the citable floor of 10 and a spare, so a fork lost to a transient failure does not cost the round its citability), M is one of claude-sonnet-5-5, claude-haiku-5-5, claude-opus-5-5 (default claude-sonnet-5-5), T is the candidate threshold in tokens (default 100000, and the reference arm is 140000), A,B are base sizes in tokens (default 90000), and U is a cost above 0 that stops the round (default 26).
+Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--alt-threshold T] [--sizes A,B] [--max-total-usd U] [--dir D]
+With no --run it is a dry run: it prints the plan and the expected cost, and makes no call.
+--base-only stops after the base sessions and runs no fork, which exercises the paid path and measures the base context for the price of one base.
+--report reads the forks that --dir already holds in results.jsonl and reports them, free and with no call, which is how a round stopped by its cost cap is still reported.
+--run makes the paid calls. N is a whole number of at least 3 (default 11, the citable floor of 10 and a spare, so a fork lost to a transient failure does not cost the round its citability), M is one of claude-sonnet-5-5, claude-haiku-5-5, claude-opus-5-5 (default claude-sonnet-5-5), T is the candidate threshold in tokens (default 100000, and the reference arm is 140000), A,B are base sizes in tokens (default 90000), and U is a cost above 0 that stops the round (default 26).
+Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--alt-threshold T] [--sizes A,B] [--max-total-usd U] [--dir D]
+With no --run it is a dry run: it prints the plan and the expected cost, and makes no call.
+--base-only stops after the base sessions and runs no fork, which exercises the paid path and measures the base context for the price of one base.
+--report reads the forks that --dir already holds in results.jsonl and reports them, free and with no call, which is how a round stopped by its cost cap is still reported.
+--run makes the paid calls. N is a whole number of at least 3 (default 11, the citable floor of 10 and a spare, so a fork lost to a transient failure does not cost the round its citability), M is one of claude-sonnet-5-5, claude-haiku-5-5, claude-opus-5-5 (default claude-sonnet-5-5), T is the candidate threshold in tokens (default 100000, and the reference arm is 140000), A,B are base sizes in tokens (default 90000), and U is a cost above 0 that stops the round (default 26).
+Usage: bun claudekit/probe/main.ts [--run] [--base-only] [--report] [--runs N] [--model M] [--alt-threshold T] [--sizes A,B] [--max-total-usd U] [--dir D]
+With no --run it is a dry run: it prints the plan and the expected cost, and makes no call.
+--base-only stops after the base sessions and runs no fork, which exercises the paid path and measures the base context for the price of one base.
+--report reads the forks that --dir already holds in results.jsonl and reports them, free and with no call, which is how a round stopped by its cost cap is still reported.
+--run makes the paid calls. N is a whole number of at least 3 (default 11, the citable floor of 10 and a spare, so a fork lost to a transient failure does not cost the round its citability), M is one of claude-sonnet-5-5, claude-haiku-5-5, claude-opus-5-5 (default claude-sonnet-5-5), T is the candidate threshold in tokens (default 100000, and the reference arm is 140000), A,B are base sizes in tokens (default 90000), and U is a cost above 0 that stops the round (default 26).
+base 110k: context 115000 tokens is at or over the lowest threshold 100000, so both arms would compact at the first request, and no fork runs
+
+claudekit/session/__tests__/tmux.spec.ts:
+46 | 				prompt: "",
+47 | 				done: () => true,
+48 | 				timeoutMs: 10_000,
+49 | 			});
+50 | 
+51 | 			expect(await file(late).exists()).toBe(true);
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/private/tmp/claudetto-baseline/claudekit/session/__tests__/tmux.spec.ts:51:38)
+(fail) runInTmux > returns only after the pane process has exited, so a write it makes on hangup lands before the caller removes its folder [31.56ms]
+6 steps on claude-sonnet-5-5, compacting at a threshold calibrated from one extra step, 2 steps of growth above the context it reads, summarized by the engine's own compaction.
+Expected cost 0.33 in the units of total_cost_usd.
+No call made. Add --run to make the paid calls.
+6 steps on claude-sonnet-5-5, compacting at a threshold calibrated from one extra step, 2 steps of growth above the context it reads, summarized by the engine's own compaction.
+Expected cost 0.33 in the units of total_cost_usd.
+The run billed 0.18 in total.
+4 rows of the run, context 20000 tokens before the compaction and 20000 after.
+The step that compacted cost 0.0600 against 0.0100 for a plain step, so the compaction cost at most 0.0500 in the units of total_cost_usd: the context did not fall across the mark, so the step worked on past its boundary and that work is in the figure.
+Points: 1 against 1.00 plain, so 0.00 of the five-hour window, at a resolution of one point.
+
+plugins/claudetto/src/blocks/confine/__tests__/script.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+23 | 	}
+24 | };
+25 | 
+26 | /** A scratch folder in the home folder, because the temp folders are writable by design and prove nothing about a block. */
+27 | export const makeScratch = async () => {
+28 | 	const scratch = await mkdtemp(join(homedir(), ".confine-spec-"));
+                            ^
+EPERM: operation not permitted, mkdtemp '/Users/krystian/.confine-spec-aeaGQx'
+    path: "/Users/krystian/.confine-spec-aeaGQx",
+ syscall: "mkdtemp",
+   errno: -1,
+    code: "EPERM"
+
+      at async <anonymous> (/private/tmp/claudetto-baseline/plugins/claudetto/src/blocks/confine/__tests__/harness.ts:28:24)
+-------------------------------
+
+
+plugins/claudetto/src/blocks/confine/__tests__/wrapper.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+23 | 	}
+24 | };
+25 | 
+26 | /** A scratch folder in the home folder, because the temp folders are writable by design and prove nothing about a block. */
+27 | export const makeScratch = async () => {
+28 | 	const scratch = await mkdtemp(join(homedir(), ".confine-spec-"));
+                            ^
+EPERM: operation not permitted, mkdtemp '/Users/krystian/.confine-spec-V7p0pc'
+    path: "/Users/krystian/.confine-spec-V7p0pc",
+ syscall: "mkdtemp",
+   errno: -1,
+    code: "EPERM"
+
+      at async <anonymous> (/private/tmp/claudetto-baseline/plugins/claudetto/src/blocks/confine/__tests__/harness.ts:28:24)
+-------------------------------
+
+
+plugins/claudetto/src/tiers/starter/__tests__/cli.spec.ts:
++++ AGENTS.md
++# AGENTS.md
++
++- Run the tests with `cargo test -q`.
++- Build the code with `cargo build -q --message-format short`.
++++ CLAUDE.md
++# CLAUDE.md
++
++@AGENTS.md
++++ AGENTS.md
++# AGENTS.md
++
++- Run the tests with `cargo test -q`.
++- Build the code with `cargo build -q --message-format short`.
++++ CLAUDE.md
++# CLAUDE.md
++
++@AGENTS.md
+
+plugins/claudetto/src/tiers/starter/ignore/__tests__/cli.spec.ts:
++++ .gitignore
++# >>> claudetto: generated by /claudetto:setup, edit outside this block
++.DS_Store
++Thumbs.db
++*.swp
++.claude/settings.local.json
++.claude/worktrees/
++.claude/claudetto/
++CLAUDE.local.md
++vendor/
++# <<< claudetto
++++ .gitignore
++
++# >>> claudetto: generated by /claudetto:setup, edit outside this block
++.DS_Store
++*.swp
++.claude/settings.local.json
++.claude/worktrees/
++.claude/claudetto/
++CLAUDE.local.md
++vendor/
++# <<< claudetto
++++ .gitignore
++# >>> claudetto: generated by /claudetto:setup, edit outside this block
++.DS_Store
++Thumbs.db
++*.swp
++.claude/settings.local.json
++.claude/worktrees/
++.claude/claudetto/
++CLAUDE.local.md
++vendor/
++# <<< claudetto
++++ .gitignore
++# >>> claudetto: generated by /claudetto:setup, edit outside this block
++.DS_Store
++Thumbs.db
++*.swp
++.claude/settings.local.json
++.claude/worktrees/
++.claude/claudetto/
++CLAUDE.local.md
++vendor/
++# <<< claudetto
++++ .gitignore
++# >>> claudetto: generated by /claudetto:setup, edit outside this block
++.DS_Store
++Thumbs.db
++*.swp
++.claude/settings.local.json
++.claude/worktrees/
++.claude/claudetto/
++CLAUDE.local.md
++vendor/
++# <<< claudetto
+
+ 1776 pass
+ 7 fail
+ 2 errors
+ 3219 expect() calls
+Ran 1783 tests across 170 files. [12.33s]
+error: recipe `test` failed on line 15 with exit code 1

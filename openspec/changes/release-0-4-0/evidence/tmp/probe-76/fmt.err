@@ -1,0 +1,18 @@
+/Users/krystian/CodeProjects/xsyetopz/claudetto/node_modules/.bun/biome-json@github+xsyetopz+biome.jsonc+387e04c+6896990797d7a805/node_modules/biome-json/templates/strict.jsonc:11:13 deserialize ━━━━━━━━━━
+
+  i The configuration schema version does not match the CLI version 2.6.5
+  
+     9 │ //   (React, Next.js, and others) keep their own severity, which can be "warn".
+    10 │ {
+  > 11 │ 	"$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
+       │ 	           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 │ 	"vcs": {
+    13 │ 		"enabled": true,
+  
+  i   Expected:                     2.6.5
+      Found:                        2.6.3
+  
+  
+  i Run the command biome migrate to migrate the configuration file.
+  
+

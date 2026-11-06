@@ -1,0 +1,38 @@
+{"file":"hooks/gate/rules.ts","id":"291","mutator":"Regex","line":22,"original":"/(^|\\/)plugins\\/[^/]+\\/hooks(\\/|$)/","replacement":"/(^|\\/)plugins\\/[^/]\\/hooks(\\/|$)/","status":"killed","ms":878}
+{"file":"hooks/gate/rules.ts","id":"293","mutator":"Regex","line":22,"original":"/(^|\\/)plugins\\/[^/]+\\/hooks(\\/|$)/","replacement":"/(^|\\/)plugins\\/[^/]+\\/hooks(\\/)/","status":"killed","ms":676}
+{"file":"hooks/gate/rules.ts","id":"304","mutator":"ConditionalExpression","line":25,"original":"path === d","replacement":"false","status":"killed","ms":711}
+{"file":"hooks/gate/rules.ts","id":"309","mutator":"StringLiteral","line":28,"original":"\"--\"","replacement":"\"\"","status":"killed","ms":771}
+{"file":"hooks/gate/rules.ts","id":"311","mutator":"MethodExpression","line":29,"original":"args\n\t\t.slice(0, end < 0 ? args.length : end)","replacement":"args","status":"killed","ms":1024}
+{"file":"hooks/gate/rules.ts","id":"312","mutator":"ConditionalExpression","line":30,"original":"end < 0","replacement":"true","status":"killed","ms":771}
+{"file":"hooks/gate/rules.ts","id":"313","mutator":"ConditionalExpression","line":30,"original":"end < 0","replacement":"false","status":"killed","ms":881}
+{"file":"hooks/gate/rules.ts","id":"314","mutator":"EqualityOperator","line":30,"original":"end < 0","replacement":"end <= 0","status":"killed","ms":807}
+{"file":"hooks/gate/rules.ts","id":"315","mutator":"EqualityOperator","line":30,"original":"end < 0","replacement":"end >= 0","status":"killed","ms":731}
+{"file":"hooks/gate/rules.ts","id":"322","mutator":"ConditionalExpression","line":31,"original":"a !== \"-\"","replacement":"true","status":"survived","ms":927}
+{"file":"hooks/gate/rules.ts","id":"324","mutator":"StringLiteral","line":31,"original":"\"-\"","replacement":"\"\"","status":"survived","ms":965}
+{"file":"hooks/gate/rules.ts","id":"327","mutator":"StringLiteral","line":33,"original":"\"--\"","replacement":"\"\"","status":"killed","ms":665}
+{"file":"hooks/gate/rules.ts","id":"332","mutator":"MethodExpression","line":35,"original":"a.slice(1)","replacement":"a","status":"survived","ms":706}
+{"file":"hooks/gate/rules.ts","id":"342","mutator":"EqualityOperator","line":43,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":669}
+{"file":"hooks/gate/rules.ts","id":"443","mutator":"LogicalOperator","line":76,"original":"name === \"sed\" && flagsOf(args).includes(\"-i\")","replacement":"name === \"sed\" || flagsOf(args).includes(\"-i\")","status":"killed","ms":816}
+{"file":"hooks/gate/rules.ts","id":"444","mutator":"ConditionalExpression","line":76,"original":"name === \"sed\"","replacement":"true","status":"killed","ms":769}
+{"file":"hooks/gate/rules.ts","id":"469","mutator":"UnaryOperator","line":80,"original":"-1","replacement":"+1","status":"killed","ms":781}
+{"file":"hooks/gate/rules.ts","id":"471","mutator":"MethodExpression","line":83,"original":"c.redirects.filter((r) => r.op !== \"<\")","replacement":"c.redirects","status":"killed","ms":669}
+{"file":"hooks/gate/rules.ts","id":"473","mutator":"ConditionalExpression","line":83,"original":"r.op !== \"<\"","replacement":"true","status":"killed","ms":744}
+{"file":"hooks/gate/rules.ts","id":"476","mutator":"StringLiteral","line":83,"original":"\"<\"","replacement":"\"\"","status":"killed","ms":674}
+{"file":"hooks/gate/rules.ts","id":"513","mutator":"ArrowFunction","line":121,"original":"(v) => v.decision === \"deny\"","replacement":"() => undefined","status":"killed","ms":735}
+{"file":"hooks/gate/rules.ts","id":"514","mutator":"ConditionalExpression","line":121,"original":"v.decision === \"deny\"","replacement":"true","status":"killed","ms":930}
+{"file":"hooks/gate/rules.ts","id":"515","mutator":"ConditionalExpression","line":121,"original":"v.decision === \"deny\"","replacement":"false","status":"killed","ms":679}
+{"file":"hooks/gate/rules.ts","id":"516","mutator":"EqualityOperator","line":121,"original":"v.decision === \"deny\"","replacement":"v.decision !== \"deny\"","status":"killed","ms":731}
+{"file":"hooks/gate/rules.ts","id":"517","mutator":"StringLiteral","line":121,"original":"\"deny\"","replacement":"\"\"","status":"killed","ms":666}
+{"file":"hooks/gate/upstream.ts","id":"174","mutator":"StringLiteral","line":21,"original":"\"'\\\\''\"","replacement":"\"\"","status":"killed","ms":734}
+{"file":"hooks/gate/upstream.ts","id":"178","mutator":"ConditionalExpression","line":29,"original":"f.type === \"PathExists\"","replacement":"false","status":"survived","ms":883}
+{"file":"hooks/gate/upstream.ts","id":"180","mutator":"StringLiteral","line":29,"original":"\"PathExists\"","replacement":"\"\"","status":"survived","ms":700}
+{"file":"hooks/gate/upstream.ts","id":"181","mutator":"ArrayDeclaration","line":30,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":870}
+{"file":"hooks/gate/upstream.ts","id":"206","mutator":"ConditionalExpression","line":54,"original":"i < args.length","replacement":"true","status":"survived","ms":688}
+{"file":"hooks/gate/upstream.ts","id":"207","mutator":"EqualityOperator","line":54,"original":"i < args.length","replacement":"i <= args.length","status":"survived","ms":782}
+{"file":"hooks/gate/upstream.ts","id":"211","mutator":"StringLiteral","line":54,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":787}
+{"file":"hooks/gate/upstream.ts","id":"214","mutator":"AssignmentOperator","line":55,"original":"i += GIT_VALUED.has(args[i] ?? \"\") ? 2 : 1","replacement":"i -= GIT_VALUED.has(args[i] ?? \"\") ? 2 : 1","status":"killed","ms":729}
+{"file":"hooks/gate/upstream.ts","id":"216","mutator":"StringLiteral","line":55,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":768}
+{"file":"hooks/gate/upstream.ts","id":"234","mutator":"ConditionalExpression","line":71,"original":"i > end","replacement":"true","status":"killed","ms":774}
+{"file":"hooks/gate/upstream.ts","id":"235","mutator":"EqualityOperator","line":71,"original":"i > end","replacement":"i >= end","status":"killed","ms":671}
+{"file":"hooks/gate/upstream.ts","id":"239","mutator":"StringLiteral","line":71,"original":"`./${w}`","replacement":"``","status":"killed","ms":710}
+{"file":"hooks/gate/upstream.ts","id":"249","mutator":"ArrayDeclaration","line":77,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":724}

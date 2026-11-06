@@ -1,0 +1,55 @@
+{"file":"hooks/gate/denials.ts","id":"535","mutator":"StringLiteral","line":13,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"killed","ms":2538}
+{"file":"hooks/gate/denials.ts","id":"544","mutator":"Regex","line":24,"original":"/\\(it gave no explanation\\)|^\\s*$/i","replacement":"/\\(it gave no explanation\\)|^\\s$/i","status":"killed","ms":2441}
+{"file":"hooks/gate/denials.ts","id":"545","mutator":"Regex","line":24,"original":"/\\(it gave no explanation\\)|^\\s*$/i","replacement":"/\\(it gave no explanation\\)|^\\S*$/i","status":"killed","ms":2786}
+{"file":"hooks/gate/env.ts","id":"1767","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","status":"killed","ms":2592}
+{"file":"hooks/gate/env.ts","id":"1768","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)/","status":"killed","ms":2621}
+{"file":"hooks/gate/env.ts","id":"1770","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/^(?:[^\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","status":"killed","ms":2833}
+{"file":"hooks/gate/env.ts","id":"1771","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/^(?:[\\W-]*\\.env|\\.env\\.[\\w.-]+)$/","status":"killed","ms":2935}
+{"file":"hooks/gate/env.ts","id":"1772","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-])$/","status":"killed","ms":2951}
+{"file":"hooks/gate/env.ts","id":"1773","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/^(?:[\\w-]*\\.env|\\.env\\.[^\\w.-]+)$/","status":"killed","ms":3647}
+{"file":"hooks/gate/env.ts","id":"1774","mutator":"Regex","line":1,"original":"/^(?:[\\w-]*\\.env|\\.env\\.[\\w.-]+)$/","replacement":"/^(?:[\\w-]*\\.env|\\.env\\.[\\W.-]+)$/","status":"killed","ms":3155}
+{"file":"hooks/gate/env.ts","id":"1775","mutator":"ArrayDeclaration","line":4,"original":"[\"A_B1=v4lue-9 x\", \"Zz=a=b c\", \"export K_2=v\"]","replacement":"[]","status":"killed","ms":3120}
+{"file":"hooks/gate/env.ts","id":"1776","mutator":"StringLiteral","line":4,"original":"\"A_B1=v4lue-9 x\"","replacement":"\"\"","status":"killed","ms":3390}
+{"file":"hooks/gate/env.ts","id":"1777","mutator":"StringLiteral","line":4,"original":"\"Zz=a=b c\"","replacement":"\"\"","status":"killed","ms":2930}
+{"file":"hooks/gate/env.ts","id":"1778","mutator":"StringLiteral","line":4,"original":"\"export K_2=v\"","replacement":"\"\"","status":"killed","ms":3345}
+{"file":"hooks/gate/env.ts","id":"1786","mutator":"MethodExpression","line":13,"original":"SAMPLES.every((line) =>\n\t\t\t[...line.matchAll(re)].every(\n\t\t\t\t(m) => m.index + m[0].length <= line.indexOf(\"=\") + 1,\n\t\t\t),\n\t\t)","replacement":"SAMPLES.some(line => [...line.matchAll(re)].every(m => m.index + m[0].length <= line.indexOf(\"=\") + 1))","status":"killed","ms":4029}
+{"file":"hooks/gate/env.ts","id":"1789","mutator":"ArrayDeclaration","line":14,"original":"[...line.matchAll(re)]","replacement":"[]","status":"killed","ms":2881}
+{"file":"hooks/gate/env.ts","id":"1791","mutator":"ConditionalExpression","line":15,"original":"m.index + m[0].length <= line.indexOf(\"=\") + 1","replacement":"true","status":"killed","ms":2840}
+{"file":"hooks/gate/env.ts","id":"1795","mutator":"ArithmeticOperator","line":15,"original":"m.index + m[0].length","replacement":"m.index - m[0].length","status":"killed","ms":2946}
+{"file":"hooks/gate/env.ts","id":"1799","mutator":"BooleanLiteral","line":19,"original":"false","replacement":"true","status":"killed","ms":2717}
+{"file":"hooks/gate/env.ts","id":"1798","mutator":"BlockStatement","line":18,"original":"{\n\t\treturn false;\n\t}","replacement":"{}","status":"killed","ms":2838}
+{"file":"hooks/gate/env.ts","id":"1800","mutator":"Regex","line":23,"original":"/^(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","replacement":"/(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","status":"killed","ms":3157}
+{"file":"hooks/gate/env.ts","id":"1801","mutator":"Regex","line":23,"original":"/^(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","replacement":"/^(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)/","status":"killed","ms":4645}
+{"file":"hooks/gate/env.ts","id":"1803","mutator":"Regex","line":23,"original":"/^(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","replacement":"/^(\\S*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","status":"killed","ms":4296}
+{"file":"hooks/gate/env.ts","id":"1805","mutator":"Regex","line":23,"original":"/^(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","replacement":"/^(\\s*(?:export\\s)?[\\w.-]+\\s*=)(.*)$/","status":"killed","ms":4846}
+{"file":"hooks/gate/env.ts","id":"1811","mutator":"Regex","line":23,"original":"/^(\\s*(?:export\\s+)?[\\w.-]+\\s*=)(.*)$/","replacement":"/^(\\s*(?:export\\s+)?[\\w.-]+\\S*=)(.*)$/","status":"killed","ms":3683}
+{"file":"hooks/gate/env.ts","id":"1822","mutator":"MethodExpression","line":32,"original":"line.trim()","replacement":"line","status":"killed","ms":3283}
+{"file":"hooks/gate/env.ts","id":"1825","mutator":"MethodExpression","line":32,"original":"line.trimStart()","replacement":"line.trimEnd()","status":"killed","ms":2800}
+{"file":"hooks/gate/packages.ts","id":"1031","mutator":"StringLiteral","line":9,"original":"\"bun remove\"","replacement":"\"\"","status":"killed","ms":3238}
+{"file":"hooks/gate/packages.ts","id":"1032","mutator":"StringLiteral","line":10,"original":"\"bun remove\"","replacement":"\"\"","status":"killed","ms":3105}
+{"file":"hooks/gate/packages.ts","id":"1033","mutator":"StringLiteral","line":11,"original":"\"bun remove\"","replacement":"\"\"","status":"killed","ms":3571}
+{"file":"hooks/gate/packages.ts","id":"1035","mutator":"StringLiteral","line":13,"original":"\"bun update\"","replacement":"\"\"","status":"killed","ms":3928}
+{"file":"hooks/gate/packages.ts","id":"1036","mutator":"StringLiteral","line":14,"original":"\"bun update\"","replacement":"\"\"","status":"killed","ms":4504}
+{"file":"hooks/gate/packages.ts","id":"1039","mutator":"StringLiteral","line":17,"original":"\"bun run\"","replacement":"\"\"","status":"killed","ms":2527}
+{"file":"hooks/gate/packages.ts","id":"1040","mutator":"StringLiteral","line":18,"original":"\"bun run test\"","replacement":"\"\"","status":"killed","ms":9021}
+{"file":"hooks/gate/packages.ts","id":"1041","mutator":"StringLiteral","line":19,"original":"\"bun run test\"","replacement":"\"\"","status":"killed","ms":3987}
+{"file":"hooks/gate/packages.ts","id":"1042","mutator":"StringLiteral","line":20,"original":"\"bunx\"","replacement":"\"\"","status":"killed","ms":3200}
+{"file":"hooks/gate/packages.ts","id":"1043","mutator":"StringLiteral","line":21,"original":"\"bunx\"","replacement":"\"\"","status":"killed","ms":2453}
+{"file":"hooks/gate/packages.ts","id":"1046","mutator":"StringLiteral","line":24,"original":"\"bun info\"","replacement":"\"\"","status":"killed","ms":2485}
+{"file":"hooks/gate/packages.ts","id":"1049","mutator":"StringLiteral","line":27,"original":"\"bun.lockb\"","replacement":"\"\"","status":"killed","ms":2873}
+{"file":"hooks/gate/packages.ts","id":"1052","mutator":"StringLiteral","line":28,"original":"\"deno.jsonc\"","replacement":"\"\"","status":"killed","ms":2908}
+{"file":"hooks/gate/packages.ts","id":"1053","mutator":"StringLiteral","line":28,"original":"\"deno.lock\"","replacement":"\"\"","status":"killed","ms":2920}
+{"file":"hooks/gate/packages.ts","id":"1061","mutator":"StringLiteral","line":30,"original":"\"install\"","replacement":"\"\"","status":"killed","ms":2997}
+{"file":"hooks/gate/packages.ts","id":"1063","mutator":"StringLiteral","line":30,"original":"\"remove\"","replacement":"\"\"","status":"killed","ms":2803}
+{"file":"hooks/gate/packages.ts","id":"1078","mutator":"StringLiteral","line":36,"original":"\"makefile\"","replacement":"\"\"","status":"killed","ms":2912}
+{"file":"hooks/gate/packages.ts","id":"1079","mutator":"StringLiteral","line":36,"original":"\"GNUmakefile\"","replacement":"\"\"","status":"killed","ms":2963}
+{"file":"hooks/gate/packages.ts","id":"1083","mutator":"StringLiteral","line":39,"original":"\"conanfile.py\"","replacement":"\"\"","status":"killed","ms":3513}
+{"file":"hooks/gate/packages.ts","id":"1087","mutator":"StringLiteral","line":46,"original":"\"xmake.lua\"","replacement":"\"\"","status":"killed","ms":2865}
+{"file":"hooks/gate/packages.ts","id":"1088","mutator":"ArrowFunction","line":47,"original":"(x) => x.own","replacement":"() => undefined","status":"killed","ms":2853}
+{"file":"hooks/gate/packages.ts","id":"1101","mutator":"MethodExpression","line":54,"original":"args.filter((a) => !a.startsWith(\"-\"))","replacement":"args","status":"killed","ms":3080}
+{"file":"hooks/gate/packages.ts","id":"1104","mutator":"MethodExpression","line":54,"original":"a.startsWith(\"-\")","replacement":"a.endsWith(\"-\")","status":"killed","ms":2979}
+{"file":"hooks/gate/packages.ts","id":"1107","mutator":"StringLiteral","line":55,"original":"\"install\"","replacement":"\"\"","status":"killed","ms":2911}
+{"file":"hooks/gate/packages.ts","id":"1119","mutator":"StringLiteral","line":58,"original":"\"the matching `bun` command (`bun --help`)\"","replacement":"\"\"","status":"killed","ms":3183}
+{"file":"hooks/gate/packages.ts","id":"1124","mutator":"MethodExpression","line":68,"original":"a.startsWith(\"-\")","replacement":"a.endsWith(\"-\")","status":"killed","ms":2947}
+{"file":"hooks/gate/packages.ts","id":"1126","mutator":"StringLiteral","line":68,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":2976}
+{"file":"hooks/gate/packages.ts","id":"1156","mutator":"StringLiteral","line":80,"original":"\"xmake.lua\"","replacement":"\"\"","status":"killed","ms":2977}

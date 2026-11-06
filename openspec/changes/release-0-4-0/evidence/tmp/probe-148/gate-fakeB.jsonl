@@ -1,0 +1,11 @@
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":1,"tools":[],"resultChars":[],"usage":{"input_tokens":122,"output_tokens":1},"n":123,"total":123}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":2,"tools":["Read"],"resultChars":[],"usage":{"input_tokens":19682,"output_tokens":1},"n":19683,"total":19806}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":4,"tools":["Read"],"resultChars":[49671],"usage":{"input_tokens":38915,"output_tokens":1},"n":38916,"total":58722}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":6,"tools":["Read"],"resultChars":[49732],"usage":{"input_tokens":58749,"output_tokens":1},"n":58750,"total":117472}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":8,"tools":["Read"],"resultChars":[49605],"usage":{"input_tokens":78534,"output_tokens":1},"n":78535,"total":196007}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":10,"tools":["Read"],"resultChars":[49742],"usage":{"input_tokens":98371,"output_tokens":1},"n":98372,"total":294379}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":13,"tools":["Read"],"resultChars":[49529],"usage":{"input_tokens":118201,"output_tokens":1},"n":118202,"total":412581}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":15,"tools":["Read"],"resultChars":[49760],"usage":{"input_tokens":138036,"output_tokens":1},"n":138037,"total":550618}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":17,"tools":[],"resultChars":[49508],"usage":{"input_tokens":157783,"output_tokens":1},"n":157784,"total":708402}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":19,"tools":[],"resultChars":[],"usage":{"input_tokens":157865,"output_tokens":1},"n":157866,"total":866268}
+{"arm":"fakeB","status":200,"model":"claude-sonnet-5-5","msgs":4,"tools":[],"resultChars":[],"usage":{"input_tokens":19414,"output_tokens":1},"n":19415,"total":885683}

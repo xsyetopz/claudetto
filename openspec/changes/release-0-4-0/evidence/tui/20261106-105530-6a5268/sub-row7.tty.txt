@@ -1,0 +1,129 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-105530-6a5268/config ANTHROPIC_BASE_URL=http://127.0.0.1:62476 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-105530-6a5268/settings.json --plugin-dir /tmp/probe-tui/plug --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-105530-6a5268/sub-row7.tty.debug
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Haiku 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-105530-6a5268/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-105530-6a5268/sub-row7.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏸ manual mode on · ? for shortcuts · ← for agents[>0q
+        
+ ▐▛▛█ 
+▝▜██████▀
+▗▟▛███▛█▄
+▜███▘
+ ▝▝▁▁▁▝▝ 
+  ▐▛▜  
+ ▐  
+ ▝▝ 
+go 
+
+ ▐█ 
+ ▐ 
+  
+▐██
+▐██
+▝▝
+▐██
+▝▜██▀
+▝  ▝
+ ▐ 
+  ▐  
+ ▝▝ 
+ ▐ 
+ ▐ 
+  
+❯ go                                                                                                                                                            
+✽Blanching… 
+ 
+ · ? for shortcuts · ← for agents
+▐▜▛█
+▐██
+▝▝
+cn
+▗▟▛██▛█▄
+▜██▘
+▝▁▁▝
+         
+▐▛▛█ 
+·▜██████·
+✻ni
+~~
+ ▐▛███▛█
+▝▜███▀
+ ▝▝   ▝▝ 
+✶ah
+✳
+✢lc
+·Bn
+❯ 
+esc to interrupt · ← for agents
+a
+✢l
+✳B
+✶
+✻
+✽
+Metamorphosing… 
+t
+⏺claudetto:Artemis(Findwidgets)
+(1s · ↓9 tokens)
+  ⎿  Initializing…
+✻Me16 tokens)
+⏺
+Backgrounded agent (↓ to manage · ctrl+o to expand)
+✻Metamorphosing… (1s · ↓16 tokens)
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏸ manual mode on · esc to interrupt · ← for agents · ↓ to manage
+
+  ⏺ main
+  ◯cladett:Artemis  Findwidgets                 0s
+✶25
+31
+✳2
+✢4
+·Metamorphosing…6
+7
+Metamorphosing…
+⏵ Artemis sonnet-5-5 · ◔ 0s · Find widgets
+⏺OK
+29
+40
+Metamorphosing…
+✢3
+Metamorphosing…
+⏺OK
+✳4
+Metamorphosing…
+✻Waiting for 1 background agent to finish
+
+❯ 
+? for shortcuts · ← for agents · ↓ to manage
+
+↓t mnage
+5
+10s · Find widgets
+5
+✽ Scurrying… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏸manual mode on · /tasks to seesubagents · esc to interrupt
+⏺Agent"Findwidgets"finished · 15s
+⏺OK
+Scurrg…
+✻Cooked for 16s · done 10:55 AM
+
+
+❯ 
+
+Press Ctrl-C againto exit[<u[>4m[>4m[<u78[>4m[<u78
+Resume this session with:
+claude --resume 2fec35d4-505e-4a4f-82f2-a64cad366b3a

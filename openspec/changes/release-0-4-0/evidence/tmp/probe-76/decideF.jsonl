@@ -1,0 +1,49 @@
+{"file":"hooks/decide/judge.ts","id":"41","mutator":"ArrowFunction","line":46,"original":"(i: number): string =>\n\t`Does question ${i} ask the user to approve money, a push, a release, a delete, or a step with no undo?`","replacement":"() => undefined","status":"killed","ms":2377}
+{"file":"hooks/decide/judge.ts","id":"42","mutator":"StringLiteral","line":47,"original":"`Does question ${i} ask the user to approve money, a push, a release, a delete, or a step with no undo?`","replacement":"``","status":"killed","ms":2829}
+{"file":"hooks/decide/judge.ts","id":"57","mutator":"ArrayDeclaration","line":66,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":2376}
+{"file":"hooks/decide/judge.ts","id":"61","mutator":"StringLiteral","line":66,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"killed","ms":2702}
+{"file":"hooks/decide/judge.ts","id":"62","mutator":"ObjectLiteral","line":69,"original":"{ question: q.question }","replacement":"{}","status":"killed","ms":2621}
+{"file":"hooks/decide/judge.ts","id":"67","mutator":"ObjectLiteral","line":76,"original":"{\n\t\t\t\t\t\ttype: \"choice\",\n\t\t\t\t\t\tinstructions: `Which option is the best answer to question ${i}?`,\n\t\t\t\t\t\tcriteria: Object.fromEntries(\n\t\t\t\t\t\t\t(q.options ?? []).map((o) => [o.label, o.description || o.label]),\n\t\t\t\t\t\t),\n\t\t\t\t\t}","replacement":"{}","status":"killed","ms":2641}
+{"file":"hooks/decide/judge.ts","id":"68","mutator":"StringLiteral","line":77,"original":"\"choice\"","replacement":"\"\"","status":"killed","ms":3075}
+{"file":"hooks/decide/judge.ts","id":"69","mutator":"StringLiteral","line":78,"original":"`Which option is the best answer to question ${i}?`","replacement":"``","status":"killed","ms":2479}
+{"file":"hooks/decide/judge.ts","id":"71","mutator":"ArrayDeclaration","line":80,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":2655}
+{"file":"hooks/decide/judge.ts","id":"70","mutator":"LogicalOperator","line":80,"original":"q.options ?? []","replacement":"q.options && []","status":"killed","ms":2270}
+{"file":"hooks/decide/judge.ts","id":"73","mutator":"ArrayDeclaration","line":80,"original":"[o.label, o.description || o.label]","replacement":"[]","status":"killed","ms":2820}
+{"file":"hooks/decide/judge.ts","id":"74","mutator":"ConditionalExpression","line":80,"original":"o.description || o.label","replacement":"true","status":"killed","ms":3436}
+{"file":"hooks/decide/judge.ts","id":"75","mutator":"ConditionalExpression","line":80,"original":"o.description || o.label","replacement":"false","status":"killed","ms":3610}
+{"file":"hooks/decide/judge.ts","id":"76","mutator":"LogicalOperator","line":80,"original":"o.description || o.label","replacement":"o.description && o.label","status":"killed","ms":4474}
+{"file":"hooks/decide/judge.ts","id":"79","mutator":"ObjectLiteral","line":86,"original":"{\n\t\t\t\t\t\ttype: \"noul\",\n\t\t\t\t\t\tinstructions: `Is the answer to question ${i} yes?`,\n\t\t\t\t\t}","replacement":"{}","status":"killed","ms":3736}
+{"file":"hooks/decide/judge.ts","id":"80","mutator":"StringLiteral","line":87,"original":"\"noul\"","replacement":"\"\"","status":"killed","ms":3670}
+{"file":"hooks/decide/judge.ts","id":"81","mutator":"StringLiteral","line":88,"original":"`Is the answer to question ${i} yes?`","replacement":"``","status":"killed","ms":2863}
+{"file":"hooks/decide/judge.ts","id":"84","mutator":"ObjectLiteral","line":91,"original":"{ type: \"noul\", instructions: APPROVAL(i) }","replacement":"{}","status":"killed","ms":3222}
+{"file":"hooks/decide/judge.ts","id":"85","mutator":"StringLiteral","line":91,"original":"\"noul\"","replacement":"\"\"","status":"killed","ms":2395}
+{"file":"hooks/decide/judge.ts","id":"88","mutator":"ConditionalExpression","line":97,"original":"typeof x === \"number\" && x >= 0 && x <= 1","replacement":"true","status":"killed","ms":3728}
+{"file":"hooks/decide/judge.ts","id":"90","mutator":"LogicalOperator","line":97,"original":"typeof x === \"number\" && x >= 0 && x <= 1","replacement":"typeof x === \"number\" && x >= 0 || x <= 1","status":"killed","ms":2345}
+{"file":"hooks/decide/judge.ts","id":"91","mutator":"ConditionalExpression","line":97,"original":"typeof x === \"number\" && x >= 0","replacement":"true","status":"killed","ms":2275}
+{"file":"hooks/decide/judge.ts","id":"93","mutator":"ConditionalExpression","line":97,"original":"typeof x === \"number\"","replacement":"true","status":"killed","ms":2914}
+{"file":"hooks/decide/judge.ts","id":"92","mutator":"LogicalOperator","line":97,"original":"typeof x === \"number\" && x >= 0","replacement":"typeof x === \"number\" || x >= 0","status":"killed","ms":3533}
+{"file":"hooks/decide/judge.ts","id":"96","mutator":"ConditionalExpression","line":97,"original":"x >= 0","replacement":"true","status":"killed","ms":2452}
+{"file":"hooks/decide/judge.ts","id":"97","mutator":"EqualityOperator","line":97,"original":"x >= 0","replacement":"x > 0","status":"killed","ms":2103}
+{"file":"hooks/decide/judge.ts","id":"99","mutator":"ConditionalExpression","line":97,"original":"x <= 1","replacement":"true","status":"killed","ms":2520}
+{"file":"hooks/decide/judge.ts","id":"100","mutator":"EqualityOperator","line":97,"original":"x <= 1","replacement":"x < 1","status":"killed","ms":2636}
+{"file":"hooks/decide/judge.ts","id":"106","mutator":"ConditionalExpression","line":104,"original":"!isRecord(answer) || !isRecord(answer[\"probabilities\"])","replacement":"false","status":"killed","ms":2698}
+{"file":"hooks/decide/judge.ts","id":"107","mutator":"LogicalOperator","line":104,"original":"!isRecord(answer) || !isRecord(answer[\"probabilities\"])","replacement":"!isRecord(answer) && !isRecord(answer[\"probabilities\"])","status":"killed","ms":3488}
+{"file":"hooks/decide/judge.ts","id":"111","mutator":"BlockStatement","line":104,"original":"{\n\t\treturn undefined;\n\t}","replacement":"{}","status":"killed","ms":2678}
+{"file":"hooks/decide/judge.ts","id":"113","mutator":"ConditionalExpression","line":109,"original":"typeof choice === \"string\"","replacement":"true","status":"survived","ms":2914}
+{"file":"hooks/decide/judge.ts","id":"123","mutator":"ConditionalExpression","line":112,"original":"typeof choice === \"string\" &&\n\t\tp !== undefined","replacement":"true","status":"survived","ms":2685}
+{"file":"hooks/decide/judge.ts","id":"125","mutator":"ConditionalExpression","line":112,"original":"typeof choice === \"string\"","replacement":"true","status":"survived","ms":2641}
+{"file":"hooks/decide/judge.ts","id":"128","mutator":"ConditionalExpression","line":113,"original":"p !== undefined","replacement":"true","status":"survived","ms":2834}
+{"file":"hooks/decide/judge.ts","id":"135","mutator":"ArrayDeclaration","line":115,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":2719}
+{"file":"hooks/decide/judge.ts","id":"144","mutator":"ConditionalExpression","line":122,"original":"p === undefined","replacement":"false","status":"survived","ms":2702}
+{"file":"hooks/decide/judge.ts","id":"146","mutator":"BlockStatement","line":122,"original":"{\n\t\treturn undefined;\n\t}","replacement":"{}","status":"survived","ms":2698}
+{"file":"hooks/decide/judge.ts","id":"160","mutator":"ArithmeticOperator","line":128,"original":"1 - p","replacement":"1 + p","status":"killed","ms":2658}
+{"file":"hooks/decide/judge.ts","id":"167","mutator":"ConditionalExpression","line":138,"original":"!isAskable(q) || approval === undefined","replacement":"false","status":"killed","ms":2811}
+{"file":"hooks/decide/judge.ts","id":"168","mutator":"LogicalOperator","line":138,"original":"!isAskable(q) || approval === undefined","replacement":"!isAskable(q) && approval === undefined","status":"killed","ms":2858}
+{"file":"hooks/decide/judge.ts","id":"170","mutator":"ConditionalExpression","line":138,"original":"approval === undefined","replacement":"false","status":"killed","ms":2957}
+{"file":"hooks/decide/judge.ts","id":"197","mutator":"MethodExpression","line":166,"original":"verdicts.every((v) => v !== undefined)","replacement":"verdicts.some(v => v !== undefined)","status":"killed","ms":3056}
+{"file":"hooks/decide/judge.ts","id":"198","mutator":"ArrowFunction","line":166,"original":"(v) => v !== undefined","replacement":"() => undefined","status":"killed","ms":2736}
+{"file":"hooks/decide/judge.ts","id":"199","mutator":"ConditionalExpression","line":166,"original":"v !== undefined","replacement":"true","status":"killed","ms":2797}
+{"file":"hooks/decide/judge.ts","id":"200","mutator":"ConditionalExpression","line":166,"original":"v !== undefined","replacement":"false","status":"killed","ms":2465}
+{"file":"hooks/decide/judge.ts","id":"201","mutator":"EqualityOperator","line":166,"original":"v !== undefined","replacement":"v === undefined","status":"killed","ms":2705}
+{"file":"hooks/decide/judge.ts","id":"202","mutator":"StringLiteral","line":167,"original":"\"\\n\"","replacement":"\"\"","status":"killed","ms":2613}
+{"file":"hooks/decide/judge.ts","id":"204","mutator":"StringLiteral","line":168,"original":"\"\\n\"","replacement":"\"\"","status":"killed","ms":3022}

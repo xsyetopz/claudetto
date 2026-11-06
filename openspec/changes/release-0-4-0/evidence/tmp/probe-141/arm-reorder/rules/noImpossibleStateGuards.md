@@ -1,0 +1,6 @@
+---
+paths:
+  - "**/*"
+---
+
+Rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary: a check for a state the code makes impossible is code the reader must disprove, and it hides the real edge cases.

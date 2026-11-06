@@ -1,0 +1,48 @@
+{"file":"hooks/setup/settings.ts","id":"293","mutator":"StringLiteral","line":23,"original":"\"Status line\"","replacement":"\"\"","status":"survived","ms":32012}
+{"file":"hooks/setup/settings.ts","id":"294","mutator":"StringLiteral","line":24,"original":"\"Shows the model, effort, context window, usage limits, and cache countdown.\"","replacement":"\"\"","status":"survived","ms":28109}
+{"file":"hooks/setup/settings.ts","id":"297","mutator":"StringLiteral","line":27,"original":"\"command\"","replacement":"\"\"","status":"survived","ms":28517}
+{"file":"hooks/setup/settings.ts","id":"321","mutator":"StringLiteral","line":61,"original":"\"Smaller prompt\"","replacement":"\"\"","status":"survived","ms":27932}
+{"file":"hooks/setup/settings.ts","id":"322","mutator":"StringLiteral","line":62,"original":"`Turns off the bundled skills and most built-in plugins, denies ${DENIED_TOOLS.join(\", \")}, allows read-only git, and selects the claudetto:Concise output style, so the first request is smaller.`","replacement":"``","status":"survived","ms":28873}
+{"file":"hooks/setup/settings.ts","id":"323","mutator":"StringLiteral","line":62,"original":"\", \"","replacement":"\"\"","status":"survived","ms":28978}
+{"file":"hooks/setup/settings.ts","id":"331","mutator":"ArrayDeclaration","line":69,"original":"[\n\t\t\t\t\t\"Bash(git status *)\",\n\t\t\t\t\t\"Bash(git diff)\",\n\t\t\t\t\t\"Bash(git log)\",\n\t\t\t\t\t\"Bash(git show)\",\n\t\t\t\t]","replacement":"[]","status":"survived","ms":28421}
+{"file":"hooks/setup/settings.ts","id":"332","mutator":"StringLiteral","line":70,"original":"\"Bash(git status *)\"","replacement":"\"\"","status":"survived","ms":28150}
+{"file":"hooks/setup/settings.ts","id":"333","mutator":"StringLiteral","line":71,"original":"\"Bash(git diff)\"","replacement":"\"\"","status":"survived","ms":28757}
+{"file":"hooks/setup/settings.ts","id":"334","mutator":"StringLiteral","line":72,"original":"\"Bash(git log)\"","replacement":"\"\"","status":"survived","ms":29581}
+{"file":"hooks/setup/settings.ts","id":"335","mutator":"StringLiteral","line":73,"original":"\"Bash(git show)\"","replacement":"\"\"","status":"survived","ms":28143}
+{"file":"hooks/setup/settings.ts","id":"336","mutator":"StringLiteral","line":77,"original":"\"claudetto:Concise\"","replacement":"\"\"","status":"survived","ms":28043}
+{"file":"hooks/setup/settings.ts","id":"339","mutator":"StringLiteral","line":82,"original":"\"Replaces the built-in autoMode rule lists with a shorter set, so the auto-mode classifier reads fewer rules.\"","replacement":"\"\"","status":"survived","ms":29292}
+{"file":"hooks/setup/settings.ts","id":"338","mutator":"StringLiteral","line":81,"original":"\"Auto mode\"","replacement":"\"\"","status":"survived","ms":29061}
+{"file":"hooks/setup/settings.ts","id":"340","mutator":"ObjectLiteral","line":83,"original":"{ autoMode: AUTO_MODE }","replacement":"{}","status":"survived","ms":28429}
+{"file":"hooks/setup/settings.ts","id":"343","mutator":"StringLiteral","line":87,"original":"`Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, and the context windows with the compaction trigger the handoff is written against.`","replacement":"``","status":"survived","ms":28431}
+{"file":"hooks/setup/settings.ts","id":"342","mutator":"StringLiteral","line":86,"original":"\"Models and windows\"","replacement":"\"\"","status":"survived","ms":29814}
+{"file":"hooks/setup/settings.ts","id":"345","mutator":"StringLiteral","line":90,"original":"\"medium\"","replacement":"\"\"","status":"survived","ms":30221}
+{"file":"hooks/setup/settings.ts","id":"347","mutator":"ObjectLiteral","line":92,"original":"{\n\t\t\t\t[OPUS]: { maxEffortLevel: \"high\" },\n\t\t\t\t[SONNET]: { maxEffortLevel: \"medium\" },\n\t\t\t\t[HAIKU]: { maxEffortLevel: \"high\", autoCompactWindow: 200_000 },\n\t\t\t}","replacement":"{}","status":"survived","ms":30174}
+{"file":"hooks/setup/settings.ts","id":"346","mutator":"ArrayDeclaration","line":91,"original":"[SONNET]","replacement":"[]","status":"survived","ms":30418}
+{"file":"hooks/setup/settings.ts","id":"348","mutator":"ObjectLiteral","line":93,"original":"{ maxEffortLevel: \"high\" }","replacement":"{}","status":"survived","ms":31018}
+{"file":"hooks/setup/settings.ts","id":"349","mutator":"StringLiteral","line":93,"original":"\"high\"","replacement":"\"\"","status":"survived","ms":30519}
+{"file":"hooks/setup/settings.ts","id":"351","mutator":"StringLiteral","line":94,"original":"\"medium\"","replacement":"\"\"","status":"survived","ms":33927}
+{"file":"hooks/setup/settings.ts","id":"350","mutator":"ObjectLiteral","line":94,"original":"{ maxEffortLevel: \"medium\" }","replacement":"{}","status":"survived","ms":30628}
+{"file":"hooks/setup/settings.ts","id":"352","mutator":"ObjectLiteral","line":95,"original":"{ maxEffortLevel: \"high\", autoCompactWindow: 200_000 }","replacement":"{}","status":"survived","ms":29322}
+{"file":"hooks/setup/settings.ts","id":"353","mutator":"StringLiteral","line":95,"original":"\"high\"","replacement":"\"\"","status":"survived","ms":29303}
+{"file":"hooks/setup/settings.ts","id":"364","mutator":"StringLiteral","line":116,"original":"\"Features off\"","replacement":"\"\"","status":"survived","ms":28197}
+{"file":"hooks/setup/settings.ts","id":"365","mutator":"StringLiteral","line":117,"original":"\"Turns off workflows, artifacts, Remote Control, the claude.ai integrations, push notifications, auto memory, prompt suggestions, tips, voice, the to-do list, cron, fast mode, the advisor tool, telemetry, error reporting, git instructions, commit attribution, and the feedback prompts; sets the version floor.\"","replacement":"\"\"","status":"survived","ms":27923}
+{"file":"hooks/setup/settings.ts","id":"367","mutator":"StringLiteral","line":119,"original":"\"https://clawdipedia.cc/schemas/claude-code-settings.json\"","replacement":"\"\"","status":"survived","ms":33902}
+{"file":"hooks/setup/settings.ts","id":"368","mutator":"StringLiteral","line":121,"original":"\"unrestricted\"","replacement":"\"\"","status":"survived","ms":59459}
+{"file":"hooks/setup/settings.ts","id":"369","mutator":"BooleanLiteral","line":122,"original":"false","replacement":"true","status":"survived","ms":57447}
+{"file":"hooks/setup/settings.ts","id":"370","mutator":"BooleanLiteral","line":123,"original":"false","replacement":"true","status":"survived","ms":61500}
+{"file":"hooks/setup/settings.ts","id":"371","mutator":"BooleanLiteral","line":124,"original":"false","replacement":"true","status":"survived","ms":57417}
+{"file":"hooks/setup/settings.ts","id":"372","mutator":"BooleanLiteral","line":125,"original":"false","replacement":"true","status":"survived","ms":54416}
+{"file":"hooks/setup/settings.ts","id":"373","mutator":"BooleanLiteral","line":126,"original":"true","replacement":"false","status":"survived","ms":59677}
+{"file":"hooks/setup/settings.ts","id":"374","mutator":"BooleanLiteral","line":127,"original":"false","replacement":"true","status":"survived","ms":60139}
+{"file":"hooks/setup/settings.ts","id":"375","mutator":"BooleanLiteral","line":128,"original":"false","replacement":"true","status":"survived","ms":60053}
+{"file":"hooks/setup/settings.ts","id":"376","mutator":"BooleanLiteral","line":129,"original":"false","replacement":"true","status":"timeout","ms":74529}
+{"file":"hooks/setup/settings.ts","id":"377","mutator":"BooleanLiteral","line":130,"original":"true","replacement":"false","status":"survived","ms":54508}
+{"file":"hooks/setup/settings.ts","id":"378","mutator":"BooleanLiteral","line":131,"original":"false","replacement":"true","status":"survived","ms":58380}
+{"file":"hooks/setup/settings.ts","id":"379","mutator":"BooleanLiteral","line":132,"original":"false","replacement":"true","status":"survived","ms":59556}
+{"file":"hooks/setup/settings.ts","id":"380","mutator":"BooleanLiteral","line":133,"original":"false","replacement":"true","status":"survived","ms":57402}
+{"file":"hooks/setup/settings.ts","id":"381","mutator":"BooleanLiteral","line":134,"original":"false","replacement":"true","status":"survived","ms":27683}
+{"file":"hooks/setup/settings.ts","id":"382","mutator":"BooleanLiteral","line":135,"original":"false","replacement":"true","status":"survived","ms":27061}
+{"file":"hooks/setup/settings.ts","id":"383","mutator":"BooleanLiteral","line":136,"original":"false","replacement":"true","status":"survived","ms":34496}
+{"file":"hooks/setup/settings.ts","id":"384","mutator":"BooleanLiteral","line":137,"original":"false","replacement":"true","status":"survived","ms":29978}
+{"file":"hooks/setup/settings.ts","id":"386","mutator":"BooleanLiteral","line":140,"original":"false","replacement":"true","status":"survived","ms":27744}
+{"file":"hooks/setup/settings.ts","id":"385","mutator":"StringLiteral","line":138,"original":"\"off\"","replacement":"\"\"","status":"survived","ms":27751}

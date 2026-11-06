@@ -1,0 +1,38 @@
+#!/usr/bin/env -S bun --no-env-file
+
+import { readFile } from "node:fs/promises";
+import { homedir, tmpdir } from "node:os";
+import { join } from "node:path";
+import type { PluginOptions } from "claude-code";
+import { numberOption } from "../hooks/options.ts";
+import { parseArgs, reportText, sweep } from "../hooks/hygiene/sweep.ts";
+
+const home = process.env["HOME"] || homedir();
+const configDir =
+	process.env["CLAUDE_CONFIG_DIR"] || join(home, ".claude");
+const settings: PluginOptions = await readFile(
+	join(configDir, "settings.json"),
+	"utf8",
+)
+	.then((text) => JSON.parse(text) ?? {})
+	.catch(() => ({}));
+const days = numberOption(settings, "cleanupPeriodDays", 30);
+
+try {
+	const args = parseArgs(process.argv.slice(2));
+	const report = await sweep(args, {
+		cwd: process.cwd(),
+		home,
+		now: Date.now(),
+		uid: process.getuid?.() ?? 0,
+		days,
+		tempBases: [process.env["CLAUDE_CODE_TMPDIR"] ?? "", "/tmp", tmpdir()].filter(
+			Boolean,
+		),
+		configDir,
+	});
+	console.log(reportText(report, args.dryRun));
+} catch (error) {
+	console.error(String(error));
+	process.exitCode = 1;
+}

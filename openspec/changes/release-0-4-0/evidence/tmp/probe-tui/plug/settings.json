@@ -1,0 +1,6 @@
+{
+	"subagentStatusLine": {
+		"type": "command",
+		"command": "tee -a /tmp/probe-tui/sub-in.jsonl | bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/bin/claudetto-statusline\" --subagent | tee -a /tmp/probe-tui/sub-out.txt"
+	}
+}

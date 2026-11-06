@@ -1,0 +1,34 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-101056-926444/config ANTHROPIC_BASE_URL=http://127.0.0.1:60673 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-101056-926444/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto
+78
+Claude Codev2.1.319
+Haiku 5.5 · API Usage Billing
+/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-101056-926444/work
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏵⏵ auto mode on (shift+tab to cycle) · ← for agents[>0q
+ ▝▝   ▝▝ 
+▜██████▘
+ ▝▝   ▝▝ 
+▗▟▛▛█▄
+▜██████▘
+ ▝▝   ▝▝ 
+         
+▐▛▛█ 
+·▜██████·
+~~
+ ▐▛███▛█
+▝▜███▀
+ ▝▝   ▝▝ 
+▂▂
+▛▛
+❯ /help                       Show help and available commands
+/help 
+
+▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◐ medium · /effort ▔
+Help General CommandsCustomcommands
+Claudeunderstandsyourcodebase,makeseditswithyourpermission,andexecutescommands—rightfromyourterminal.
+New here? Run /powerup to learn the features most people miss.
+Shortcuts
+!forshellmodedoubletapesctoclearinp

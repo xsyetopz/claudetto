@@ -1,0 +1,2 @@
+{"file":"hooks/limits/open-items.ts","mutant":{"id":"56","mutatorName":"OptionalChaining","replacement":"lines.findLast(line => line.trim() !== \"\").trim","status":"Survived","testsCompleted":1,"duration":10,"location":{"end":{"column":65,"line":35},"start":{"column":15,"line":35}}}}
+{"file":"hooks/limits/open-items.ts","mutant":{"id":"83","mutatorName":"OptionalChaining","replacement":"last.endsWith","status":"Survived","testsCompleted":1,"duration":10,"location":{"end":{"column":32,"line":44},"start":{"column":18,"line":44}}}}
