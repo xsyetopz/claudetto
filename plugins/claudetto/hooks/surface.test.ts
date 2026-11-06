@@ -42,6 +42,18 @@ test("the /init interview fits 1,144 chars, names the claudetto ask-user-questio
 	expect(INTERVIEW_TEXT).not.toContain("AGENTS.md");
 });
 
+test("DEFERRED_TOOLS is Read, Write, Skill, Workflow, ScheduleWakeup, ReportFindings, and ListAgents stays loaded (18.18)", () => {
+	expect([...DEFERRED_TOOLS]).toEqual([
+		"Read",
+		"Write",
+		"Skill",
+		"Workflow",
+		"ScheduleWakeup",
+		"ReportFindings",
+	]);
+	expect(DEFERRED_TOOLS).not.toContain("ListAgents");
+});
+
 test("the ListAgents text is 304 chars", () => {
 	expect(TOOL_TEXTS["ListAgents"]?.length).toBe(304);
 });

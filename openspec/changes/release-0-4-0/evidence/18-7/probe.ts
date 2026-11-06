@@ -16,12 +16,14 @@ const { createRun } = await import(`${K}/src/workspace/workspace.ts`);
 const { resultUsage } = await import(`${K}/probes/opener/probe.ts`);
 const { fisher } = await import(`${K}/probes/narration/narration.ts`);
 
+// 18.18 reruns this probe for one tool and another scratch root: PROBE_ROOT and PROBE_TOOLS (comma list) override the defaults.
 const PROBE = "reach-18-7";
-const ROOT = "/tmp/probe-18-7";
+const ROOT = process.env.PROBE_ROOT ?? "/tmp/probe-18-7";
 const PLUGIN = join(import.meta.dir, "../../../../../plugins/claudetto");
 const TOKEN = "CLAUDE_CODE_OAUTH_TOKEN";
 const MODEL = MODELS.sonnet;
-const CASES = (await Bun.file(join(import.meta.dir, "cases.json")).json()) as { id: string; tool: string; prompt: string; files: Record<string, string> }[];
+const ONLY = process.env.PROBE_TOOLS?.split(",");
+const CASES = ((await Bun.file(join(import.meta.dir, "cases.json")).json()) as { id: string; tool: string; prompt: string; files: Record<string, string> }[]).filter((c) => !ONLY || ONLY.includes(c.tool));
 
 const arm = (name: string, plugins: { dir: string }[]) => ({
 	name, plugins, model: MODEL, expect: {},
