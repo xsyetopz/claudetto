@@ -1,7 +1,7 @@
 import { basename, join } from "node:path";
 import { parseArgs } from "node:util";
 import { planExperiment, runExperiment, type Experiment, type Session, type SessionResult } from "../../src/ab/ab.ts";
-import { launchArm } from "../../src/ab/session.ts";
+import { cappedRun, launchArm } from "../../src/ab/session.ts";
 import { type Arm, assertArm } from "../../src/arm/arm.ts";
 import { mainRequests, readRequests } from "../../src/fake/fake.ts";
 import { runFiles } from "../../src/launcher/launcher.ts";
@@ -96,6 +96,7 @@ export const judgeRun = async (arm: Arm, run: Run): Promise<SessionResult> => {
 		runId: run.id,
 		model: MODEL,
 		usage: resultUsage(stdout) ?? { input_tokens: 0, output_tokens: 0 },
+		...(await cappedRun(run)),
 		verdict: opener.grade(sentence),
 		armCheck: { ok: diff.length === 0, diff },
 	};

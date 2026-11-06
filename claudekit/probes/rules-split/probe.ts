@@ -2,7 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { type Experiment, planExperiment, runExperiment, type Session, type SessionResult } from "../../src/ab/ab.ts";
-import { launchArm } from "../../src/ab/session.ts";
+import { cappedRun, launchArm } from "../../src/ab/session.ts";
 import { type Arm, assertArm } from "../../src/arm/arm.ts";
 import { mainRequests, readRequests } from "../../src/fake/fake.ts";
 import { type Fixture, loadFixtures } from "../../src/fixture/fixture.ts";
@@ -141,6 +141,7 @@ const replySession = (start: number) => async (s: Session<Arm, ReplyCase>): Prom
 		runId: run.id,
 		model,
 		usage: resultUsage(stdout) ?? { input_tokens: 0, output_tokens: 0 },
+		...(await cappedRun(run)),
 		verdict: { pass: true, label: "reply", evidence: "" },
 		armCheck: { ok: diff.length === 0, diff },
 	};
@@ -195,6 +196,7 @@ const judgeSession = (start: number) => async (s: Session<Arm, JudgeCase>): Prom
 		runId: run.id,
 		model: judgeModel,
 		usage: resultUsage(stdout) ?? { input_tokens: 0, output_tokens: 0 },
+		...(await cappedRun(run)),
 		verdict: { pass: o === "better" || o === "same", label: o, evidence: answer },
 		armCheck: { ok: diff.length === 0, diff },
 	};

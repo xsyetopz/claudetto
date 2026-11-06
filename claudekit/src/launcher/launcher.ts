@@ -1,6 +1,7 @@
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import type { Message } from "../fixture/fixture.ts";
+import { RUN_CAP_TOKENS, sumTokens, tokensOf, type Usage } from "../ledger/ledger.ts";
 import { seedTranscript } from "../replay/replay.ts";
 import { isRecord } from "../shared/record.ts";
 import {
@@ -40,6 +41,8 @@ export interface LaunchSpec {
 	// Writes the session transcript under the config folder, for a hook that reads `transcript_path`.
 	persist?: boolean;
 	timeoutMs?: number;
+	// Tokens after which a stream-json run is killed; the ledger's per-run cap by default.
+	capTokens?: number;
 	arm?: string;
 	case?: string;
 	pluginTreeHashes?: Record<string, string>;
@@ -65,6 +68,7 @@ export interface LaunchResult {
 	run: Run;
 	exitCode: number | null;
 	timedOut: boolean;
+	capped: boolean;
 	durationMs: number;
 	files: RunFiles;
 	record: RunRecord;
@@ -218,6 +222,11 @@ export const launch = async (
 			`bad plugin options:\n${errors.map((e) => `  ${e.plugin}.${e.option}: ${e.message}`).join("\n")}`,
 		);
 	}
+	if (!spec.baseUrl && spec.mode !== "stream-json") {
+		throw new Error(
+			`mode "${spec.mode}" with no baseUrl reaches the real API: the ${RUN_CAP_TOKENS} token cap needs mode "stream-json"`,
+		);
+	}
 	const base = buildLaunch(spec, run);
 	await prepare(spec, base);
 	// The login reads the default config folder (F17), so a login run's seed goes there and is removed after the run.
@@ -241,34 +250,99 @@ const spawnRun = async (spec: LaunchSpec, run: Run, l: Launch, seed: string | un
 		env: l.env,
 		cwd: l.cwd,
 		stdin: "ignore",
-		stdout: Bun.file(l.files.stdout),
+		stdout: "pipe",
 		stderr: Bun.file(l.files.stderr),
 	});
 	record.pid = proc.pid;
 	await writeRecord(run, record);
 	let timedOut = false;
+	let capped = false;
+	const meter = new UsageMeter();
+	const pumped = pumpStdout(proc.stdout, l.files.stdout, spec.mode === "stream-json" ? (line) => {
+		if (meter.add(line) > (spec.capTokens ?? RUN_CAP_TOKENS) && !capped) {
+			capped = true;
+			killPid(proc.pid);
+		}
+	} : undefined);
 	const timer = setTimeout(() => {
 		timedOut = true;
 		killPid(proc.pid);
 	}, spec.timeoutMs ?? 300_000);
-	const exitCode = await proc.exited;
+	const [exitCode] = await Promise.all([proc.exited, pumped]);
 	clearTimeout(timer);
 	const done = {
 		...record,
 		endedAt: new Date().toISOString(),
 		exitCode,
 		timedOut,
+		...(capped ? { capped, usage: meter.usage() } : {}),
 	};
 	await writeRecord(run, done);
 	return {
 		run,
 		exitCode,
 		timedOut,
+		capped,
 		durationMs: performance.now() - started,
 		files: l.files,
 		record: done,
 	};
 };
+
+// Copies the child's stdout to the run's file and hands each complete line to onLine as it arrives.
+const pumpStdout = async (
+	stdout: ReadableStream<Uint8Array>,
+	file: string,
+	onLine?: (line: string) => void,
+): Promise<void> => {
+	const sink = Bun.file(file).writer();
+	const decoder = new TextDecoder();
+	let rest = "";
+	for await (const chunk of stdout) {
+		sink.write(chunk);
+		const lines = (rest + decoder.decode(chunk, { stream: true })).split("\n");
+		rest = lines.pop() ?? "";
+		for (const line of lines) {
+			onLine?.(line);
+		}
+	}
+	await sink.end();
+};
+
+// Sums each API request's usage from the assistant events of a stream-json run. One request is
+// streamed as several events with the same message id, so the last one per id counts. An event's
+// output_tokens is a partial count (1 in the real stream); the prompt side is what moves the sum.
+class UsageMeter {
+	private readonly byId = new Map<string, Usage>();
+
+	add(line: string): number {
+		let event: unknown;
+		try {
+			event = JSON.parse(line);
+		} catch {
+			return this.total();
+		}
+		if (isRecord(event) && event.type === "assistant" && isRecord(event.message) && isRecord(event.message.usage)) {
+			this.byId.set(String(event.message.id), event.message.usage as unknown as Usage);
+		}
+		return this.total();
+	}
+
+	usage(): Usage {
+		const sum: Usage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 };
+		for (const u of this.byId.values()) {
+			sum.input_tokens += u.input_tokens;
+			sum.output_tokens += u.output_tokens;
+			sum.cache_read_input_tokens = (sum.cache_read_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0);
+			sum.cache_creation_input_tokens = (sum.cache_creation_input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0);
+		}
+		return sum;
+	}
+
+	private total(): number {
+		return sumTokens(tokensOf(this.usage()));
+	}
+}
 
 // Stops only the pid this kit recorded in run.json, never by a name pattern.
 export const stop = async (run: Run): Promise<boolean> => {

@@ -3,8 +3,9 @@ import { type Arm, materializeArm } from "../arm/arm.ts";
 import type { Message } from "../fixture/fixture.ts";
 import { startFake } from "../fake/fake.ts";
 import type { Plan } from "../fake/plan.ts";
+import type { SessionResult } from "./ab.ts";
 import { launch, type LaunchResult, type LaunchSpec } from "../launcher/launcher.ts";
-import { createRun, type Run } from "../workspace/workspace.ts";
+import { createRun, readRecord, type Run } from "../workspace/workspace.ts";
 
 export interface ArmLaunch {
 	probe: string;
@@ -23,6 +24,12 @@ export interface ArmRun {
 	// The fake's saved requests, read with `readRequests`.
 	requests: string;
 }
+
+// A capped run has no result event, so its usage and capped flag come from the run record.
+export const cappedRun = async (run: Run): Promise<Pick<SessionResult, "capped" | "usage"> | undefined> => {
+	const { capped, usage } = await readRecord(run.dir);
+	return capped && usage ? { capped, usage } : undefined;
+};
 
 // One session of an arm against its own fake, which stops even when the launch throws.
 export const launchArm = async (arm: Arm, c: { name: string; prompt: string; prefix?: Message[] }, opts: ArmLaunch): Promise<ArmRun> => {

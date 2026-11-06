@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { planExperiment, runExperiment, type Experiment, type Session, type SessionResult } from "../../src/ab/ab.ts";
-import { launchArm } from "../../src/ab/session.ts";
+import { cappedRun, launchArm } from "../../src/ab/session.ts";
 import { type Arm, assertArm } from "../../src/arm/arm.ts";
 import { mainRequests, readRequests } from "../../src/fake/fake.ts";
 import { type Fixture, loadFixtures } from "../../src/fixture/fixture.ts";
@@ -67,6 +67,7 @@ const session = async (s: Session<Arm, Case>): Promise<SessionResult> => {
 		runId: run.id,
 		model,
 		usage: resultUsage(stdout) ?? { input_tokens: 0, output_tokens: 0 },
+		...(await cappedRun(run)),
 		verdict: { pass: read.label === "ok", label: read.label, evidence: read.reading },
 		armCheck: { ok: diff.length === 0, diff },
 	};

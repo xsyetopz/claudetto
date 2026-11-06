@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdir } from "node:fs/promises";
+import { chmod, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { mainRequests, readRequests, startFake } from "../fake/fake.ts";
 import { DEFAULT_MODEL } from "../shared/model.ts";
@@ -237,6 +237,48 @@ describe("launch against the fake", () => {
 			expect(timed.timedOut).toBe(true);
 		} finally {
 			await fake.stop();
+		}
+	});
+
+	test("a launch with no baseUrl and mode json throws before spawning, naming the cap and stream-json", async () => {
+		const run = await createRun({ probe: "unit", root: await root(), quiet: true });
+		await expect(launch({ prompt: "hi", mode: "json", model: DEFAULT_MODEL }, run)).rejects.toThrow(
+			/mode "json".*300000 token cap needs mode "stream-json"/,
+		);
+		expect(await Bun.file(join(run.dir, "run.json")).exists()).toBe(false);
+		expect(await Bun.file(join(run.dir, "stdout.txt")).exists()).toBe(false);
+	});
+
+	test("a stream-json run is killed once its streamed usage passes the cap, and the record says so", async () => {
+		const bin = await tempDir("fake-claude");
+		await Bun.write(
+			join(bin, "claude"),
+			`#!/bin/sh
+[ "$1" = "--version" ] && { echo "0.0.0 (fake)"; exit 0; }
+for i in 1 2 3 4 5 6 7 8; do
+  echo '{"type":"assistant","message":{"id":"msg_'$i'","usage":{"input_tokens":100000,"output_tokens":1}}}'
+  sleep 0.5
+done
+echo '{"type":"result"}'
+`,
+		);
+		await chmod(join(bin, "claude"), 0o755);
+		const run = await createRun({ probe: "unit", root: await root(), quiet: true });
+		const path = process.env.PATH;
+		process.env.PATH = `${bin}:${path}`;
+		try {
+			const result = await launch({ prompt: "hi", mode: "stream-json", model: DEFAULT_MODEL }, run);
+			expect(result.capped).toBe(true);
+			expect(result.timedOut).toBe(false);
+			expect(result.exitCode).not.toBe(0);
+			const stdout = await Bun.file(result.files.stdout).text();
+			expect(stdout).not.toContain('"type":"result"');
+			expect(stdout.split("\n").filter((l) => l.includes("assistant")).length).toBe(3);
+			const record = await readRecord(run.dir);
+			expect(record.capped).toBe(true);
+			expect(record.usage?.input_tokens).toBe(300_000);
+		} finally {
+			process.env.PATH = path;
 		}
 	});
 

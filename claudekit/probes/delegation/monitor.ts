@@ -85,6 +85,6 @@ for (const r of all) {
 		seen.add(n.split(":")[0] ?? "");
 	}
 	console.info(`request ${r.n}: new tools ${fresh.join(", ") || "-"}`);
-	const last = r.body.messages.at(-1);
+	const last = r.body.messages?.at(-1);
 	console.info(`  last message: ${JSON.stringify(last).slice(0, 700)}`);
 }

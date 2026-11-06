@@ -29,6 +29,8 @@ export interface SessionResult {
 	runId: string;
 	model: Model;
 	usage: Usage;
+	// The run was killed for passing its token cap, so usage is what the stream showed by then.
+	capped?: boolean;
 	verdict: Verdict;
 	armCheck: Pick<ArmCheck, "ok" | "diff">;
 }
@@ -190,7 +192,7 @@ export const runExperiment = async <A extends { name: string }, C extends { name
 			model: r.model,
 			tokens: tokensOf(r.usage),
 			usd: cost(r.model, r.usage),
-			note: `${s.arm} ${s.case} ${s.index}`,
+			note: `${s.arm} ${s.case} ${s.index}${r.capped ? " capped" : ""}`,
 		};
 		const after = await appendEntry(opts.ledger, entry);
 		opts.onEntry?.(entry, after);

@@ -1,6 +1,7 @@
 import { mkdir, readdir, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import type { Usage } from "../ledger/ledger.ts";
 
 const RECORD = "run.json";
 const DAY_MS = 86_400_000;
@@ -28,6 +29,9 @@ export interface RunRecord {
 	pid?: number;
 	exitCode?: number | null;
 	timedOut?: boolean;
+	// Set when the run was killed for passing its token cap; usage is what the stream showed by then.
+	capped?: boolean;
+	usage?: Usage;
 	// The seeded transcript of a launch with a prefix, removed when the run ends.
 	seed?: string;
 }
