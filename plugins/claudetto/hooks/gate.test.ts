@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { scanner } from "./secrets.mock.ts";
+import { scanned, scanner } from "./secrets.mock.ts";
 
 const REASON = "[Data Exfiltration] the call sends a file out";
 const FETCH = { url: "https://example.com/u?d=1", prompt: "go" };
@@ -162,6 +162,7 @@ test("a denial with no reason is not retried", async ($: Engine, on: On) => {
 
 test("a message from the person lets the same call reach its check again", async ($: Engine, on: On) => {
 	allowing(on);
+	on("session.cwd", () => ({ value: "/repo" }));
 	await denied($);
 	await denied($);
 
@@ -422,11 +423,88 @@ test("`.env` as text in a pattern or a quoted name is not read as an env-file re
 	expect(verdicts.map((v) => v.decision)).toEqual(["allow", "allow"]);
 });
 
-const vanishing = (on: On, files: Set<string>) => {
-	scanner(on);
+interface Past {
+	tool: string;
+	input: Record<string, unknown>;
+	isError?: true;
+	inFlight?: true;
+}
+
+// A path with no extension is a folder that always exists; `aliases` maps a folder spelling to where it lands, as `/tmp` lands in `/private/tmp`.
+const FILE_NAME = /\.\w+$/;
+
+const vanishing = (
+	on: On,
+	files: Set<string>,
+	{
+		aliases = {},
+		history = [],
+	}: { aliases?: Record<string, string>; history?: Past[] } = {},
+) => {
+	const landed = (path: string) => {
+		const from = Object.keys(aliases).find(
+			(a) => path === a || path.startsWith(`${a}/`),
+		);
+		return from === undefined
+			? path
+			: `${aliases[from]}${path.slice(from.length)}`;
+	};
+	const there = (path: string) =>
+		files.has(landed(path)) || !FILE_NAME.test(path);
+	on("process.run", (_$, e, next) =>
+		e.argv[0] === "printenv"
+			? {
+					value: {
+						exitCode: 0,
+						stdout: "/home/u\n",
+						stderr: "",
+						isStdoutTruncated: false,
+						isStderrTruncated: false,
+					},
+				}
+			: (scanned(e) ?? next(e)),
+	);
 	on("session.cwd", () => ({ value: "/p" }));
 	on("clock.now", () => ({ value: 0 }));
-	on("fs.exists", (_$, e) => ({ value: files.has(e.path) }));
+	on("fs.exists", (_$, e) => ({ value: there(e.path) }));
+	on("fs.stat", (_$, e) => {
+		if (!there(e.path)) {
+			throw new Error("ENOENT");
+		}
+		return {
+			value: {
+				kind: "file",
+				size: 0,
+				mtimeMs: 0,
+				isLink: false,
+				realPath: landed(e.path),
+			},
+		};
+	});
+	on("fs.list", (_$, e) => ({
+		value: [...files]
+			.filter((f) => f.startsWith(`${landed(e.path)}/`))
+			.map((f) => ({
+				name: f.slice(landed(e.path).length + 1),
+				kind: "file",
+				size: 0,
+				mtimeMs: 0,
+				isLink: false,
+			})),
+	}));
+	on("session.messages", () => ({
+		value: [
+			{
+				role: "assistant",
+				text: "",
+				toolUses: history.map(({ inFlight, ...h }, i) => ({
+					tool_use_id: `${i}`,
+					...(inFlight ? {} : { text: "ok" }),
+					...h,
+				})),
+			},
+		],
+	}));
 	on("tool.check", () => ({ decision: "allow" }));
 	on("tool.call", () => ({ result: "ok" }));
 };
@@ -463,6 +541,7 @@ test("recreating a file after the session's own rm passes", async ($: Engine, on
 	await read($, "/p/a.txt");
 	await run($, "Bash", { command: "rm a.txt" });
 	files.delete("/p/a.txt");
+	await $.tool.call({ tool: "Bash", command: "rm a.txt" });
 
 	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
 
@@ -500,6 +579,173 @@ test("an rm and a cp of the same path in one command passes", async ($: Engine, 
 	const verdict = await run($, "Bash", {
 		command: "rm -f a.txt && cp /tmp/src.txt a.txt",
 	});
+
+	expect(verdict.decision).toBe("allow");
+});
+
+test("a file seen through a symlinked folder and recreated by its real path asks", async ($: Engine, on: On) => {
+	const files = new Set(["/private/tmp/a.txt", "/p/src.txt"]);
+	vanishing(on, files, { aliases: { "/tmp": "/private/tmp" } });
+	await read($, "/tmp/a.txt");
+	files.delete("/private/tmp/a.txt");
+
+	const verdict = await run($, "Write", { file_path: "/private/tmp/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a file seen by its real path and recreated through a symlinked folder asks", async ($: Engine, on: On) => {
+	const files = new Set(["/private/tmp/a.txt", "/p/src.txt"]);
+	vanishing(on, files, { aliases: { "/tmp": "/private/tmp" } });
+	await read($, "/private/tmp/a.txt");
+	files.delete("/private/tmp/a.txt");
+
+	const verdict = await run($, "Bash", { command: "cp src.txt /tmp/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a copy to a `~` path of a file the session saw that is gone now asks", async ($: Engine, on: On) => {
+	const files = new Set(["/home/u/n.txt", "/p/src.txt"]);
+	vanishing(on, files);
+	await read($, "/home/u/n.txt");
+	files.delete("/home/u/n.txt");
+
+	const verdict = await run($, "Bash", { command: "cp src.txt ~/n.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a `~` operand the session saw and a Write of its absolute path that is gone now asks", async ($: Engine, on: On) => {
+	const files = new Set(["/home/u/n.txt"]);
+	vanishing(on, files);
+	await run($, "Bash", { command: "stat ~/n.txt" });
+	files.delete("/home/u/n.txt");
+
+	const verdict = await run($, "Write", { file_path: "/home/u/n.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+const gonePath = (on: On) => {
+	const files = new Set(["/p/a.txt", "/p/src.txt"]);
+	vanishing(on, files);
+	return files;
+};
+
+test("a `touch` of a file the session saw that is gone now asks", async ($: Engine, on: On) => {
+	const files = gonePath(on);
+	await read($, "/p/a.txt");
+	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Bash", { command: "touch a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("an `ln -s` over a file the session saw that is gone now asks", async ($: Engine, on: On) => {
+	const files = gonePath(on);
+	await read($, "/p/a.txt");
+	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Bash", { command: "ln -s src.txt a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+// `sed -i` on a missing file exits 1 and creates nothing (probe /tmp/probe-17-1-sh2).
+test("`sed -i` over a file that is gone now passes", async ($: Engine, on: On) => {
+	const files = new Set(["/p/a.txt"]);
+	vanishing(on, files);
+	await read($, "/p/a.txt");
+	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Bash", { command: "sed -i s/a/b/ a.txt" });
+
+	expect(verdict.decision).toBe("allow");
+});
+
+test("a file seen only in an `ls` of its folder and gone now asks on a copy", async ($: Engine, on: On) => {
+	const files = new Set(["/p/sub/a.txt", "/p/src.txt"]);
+	vanishing(on, files);
+	await $.tool.call({ tool: "Bash", command: "ls sub" });
+	files.delete("/p/sub/a.txt");
+
+	const verdict = await run($, "Bash", { command: "cp src.txt sub/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a file seen only in an `ls` of the working folder and gone now asks on a copy", async ($: Engine, on: On) => {
+	const files = new Set(["/p/a.txt", "/p/src.txt"]);
+	vanishing(on, files);
+	await $.tool.call({ tool: "Bash", command: "ls -la" });
+	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Bash", { command: "cp src.txt a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("an rm that left the file in place is no removal", async ($: Engine, on: On) => {
+	const files = new Set(["/p/a.txt"]);
+	vanishing(on, files);
+	await read($, "/p/a.txt");
+	await run($, "Bash", { command: "rm a.txt" });
+	await $.tool.call({ tool: "Bash", command: "rm a.txt" });
+	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a file read before a resume and gone now asks on a Write", async ($: Engine, on: On) => {
+	const files = new Set(["/p/a.txt"]);
+	vanishing(on, files, {
+		history: [{ tool: "Read", input: { file_path: "/p/a.txt" } }],
+	});
+	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a file removed by the session before a resume passes on a Write", async ($: Engine, on: On) => {
+	const files = new Set<string>();
+	vanishing(on, files, {
+		history: [
+			{ tool: "Read", input: { file_path: "/p/a.txt" } },
+			{ tool: "Bash", input: { command: "rm a.txt" } },
+		],
+	});
+
+	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
+
+	expect(verdict.decision).toBe("allow");
+});
+
+test("a Read that failed before a resume does not make the file seen", async ($: Engine, on: On) => {
+	vanishing(on, new Set(), {
+		history: [
+			{ tool: "Read", input: { file_path: "/p/a.txt" }, isError: true },
+		],
+	});
+
+	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
+
+	expect(verdict.decision).toBe("allow");
+});
+
+test("a call of the transcript still in flight does not make its file seen", async ($: Engine, on: On) => {
+	vanishing(on, new Set(), {
+		history: [
+			{ tool: "Write", input: { file_path: "/p/a.txt" }, inFlight: true },
+		],
+	});
+
+	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
 
 	expect(verdict.decision).toBe("allow");
 });

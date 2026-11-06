@@ -8,7 +8,7 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
-import { newRecreation, recreates, saw } from "./gate/recreate.ts";
+import { type Host, newRecreation, recreates, saw } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
 import { deny, fieldOf, type Verdict } from "./gate/verdict.ts";
 import { redactAll, redactWith, secretsIn } from "./secrets.ts";
@@ -29,6 +29,17 @@ const presentFiles = async ($: EngineInterface): Promise<Set<string>> => {
 	);
 	return new Set(found.filter((f) => f !== undefined));
 };
+
+const hostOf = ($: EngineInterface): Host => ({
+	cwd: () => $.session.cwd(),
+	exists: (path) => $.fs.exists(path),
+	realPath: async (path) =>
+		(await $.fs.stat(path, { resolve: true }).catch(() => undefined))?.realPath,
+	list: (path) => $.fs.list(path),
+	// `$.process` has no environment of its own; the shell that runs a command expands `~` from this one.
+	home: async () => (await $.process.run(["printenv", "HOME"])).stdout,
+	past: async () => (await $.session.messages()).flatMap((m) => m.toolUses),
+});
 
 const ownVerdict = async (
 	$: EngineInterface,
@@ -62,13 +73,7 @@ export const gate = (on: On): void => {
 			return deny(refused);
 		}
 		// Computed before `next`, so a throw leaves `next` uncalled and the `.catch` asks in its place.
-		const recreated = await recreates(
-			files,
-			() => $.session.cwd(),
-			(path) => $.fs.exists(path),
-			e.tool,
-			e.input,
-		);
+		const recreated = await recreates(hostOf($), files, e.tool, e.input);
 		const own = (await ownVerdict($, e.tool, e.input)) ?? recreated;
 		const found = await next(e);
 		// The engine's text for a rule denial does not name the rule, so a model reads it as unexplained.
@@ -118,7 +123,7 @@ export const gate = (on: On): void => {
 			return answer;
 		}
 		if (!answer.isError) {
-			saw(files, e.tool, e);
+			await saw(hostOf($), files, e.tool, e);
 		}
 		const seen =
 			answer.text ??
