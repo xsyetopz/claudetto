@@ -1,0 +1,12 @@
+plan: 64 sessions, bound 19200000 tokens; ledger 0 tokens, $0.0000
+{
+	"rejected": [],
+	"usd": 1.3314408999999994
+}
+change	reached 24/32 (0.579-0.867)	called 24/32 (0.579-0.867)	ToolSearch named tool 23/32 (0.546-0.844)	tokens 709171	$0.5237	largest 36024	capped 0
+base	reached 32/32 (0.893-1.000)	called 32/32 (0.893-1.000)	ToolSearch named tool 0/32 (0.000-0.107)	tokens 1054658	$0.8077	largest 33065	capped 0
+Fisher two-sided reached p=0.0048	called p=0.0048
+Read	change 8/8 (0.676-1.000)	base 8/8 (0.676-1.000)
+Write	change 8/8 (0.676-1.000)	base 8/8 (0.676-1.000)
+Skill	change 8/8 (0.676-1.000)	base 8/8 (0.676-1.000)
+ListAgents	change 0/8 (0.000-0.324)	base 8/8 (0.676-1.000)
