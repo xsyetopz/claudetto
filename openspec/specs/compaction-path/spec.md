@@ -77,9 +77,7 @@ The probe SHALL count the uncached input of a summarizer call that uses another 
 
 ### Requirement: The Summarizer Model Is Named, Not Inherited
 
-The expensive turn of the built-in path is the summarizer request, which the engine bills on the model the session runs. Claudetto SHALL be able to answer `session.compact` with one bounded `$.model.complete` call on a model it names itself, and SHALL ship that handler off until rows price it. The engine's own compaction stays the fallback on every failure, because a compaction that does not happen ends the turn.
-
-The model named is the constant `HAIKU_MODEL` of `src/tiers/tiers.ts` and not a field of the tier row. A row field would offer a choice that nothing decides: the point of the handler is that the summarizer runs on the cheapest model whatever the session runs, and every plan reaches the same one. The row carries the switch alone, `cheapSummary`, which is off in every row.
+Claudetto SHALL be able to answer `session.compact` with one bounded `$.model.complete` call on a model it names itself, and SHALL ship that handler off until rows price it. The engine's own compaction SHALL stay the fallback on every failure.
 
 #### Scenario: The Handler Answers
 
@@ -105,6 +103,18 @@ The model named is the constant `HAIKU_MODEL` of `src/tiers/tiers.ts` and not a 
 
 - **WHEN** a document states the saving of the cheap summarizer
 - **THEN** it cites rows of a real session and not round 9 of the probe, because round 9 made the summary cheap by running `/compact` as its own `claude -p --model claude-haiku-5-5` process (`archive/dev/probe/plan.ts:40-84`), which no live session does, and the cost it measured, 22 percent of a fork at `80k` and 33 percent at `200k`, was billed on `claude-sonnet-5-5` and not on the Opus row of this login
+
+#### Scenario: The Engine Bills the Session Model
+
+- **WHEN** the engine answers a compaction itself
+- **THEN** the summarizer request is the expensive turn of the built-in path, and it is billed on the model the session runs
+- **AND** the engine's own compaction stays the fallback because a compaction that does not happen ends the turn
+
+#### Scenario: The Model Is a Constant
+
+- **WHEN** the handler picks its model
+- **THEN** it uses the constant `HAIKU_MODEL` of `src/tiers/tiers.ts` and not a field of the tier row
+- **AND** the row carries the switch alone, `cheapSummary`, which is off in every row, because a row field would offer a choice that nothing decides: the summarizer runs on the cheapest model whatever the session runs, and every plan reaches the same one
 
 ### Requirement: Runs Repeat
 

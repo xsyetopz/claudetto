@@ -21,9 +21,7 @@ The system MUST NOT answer `allow` to a `PermissionRequest` whose input has no g
 
 ### Requirement: Denied Calls Stop
 
-After a `PermissionDenied`, the system SHALL tell the model to stop and report, with the reason and the rule that denied the call, and SHALL NOT tell it to look for another way.
-
-The rule reported is the gate's own rule, not an `permissions.allow` rule to add, because no allow rule lifts a denial of this gate: the gate stops a call that loses bytes for good, tampers with the system, or reads a secret, and a person lifts such a denial by changing the request. "The exact rule to add", as this requirement first read, describes a denial by a settings rule and not by the gate.
+After a `PermissionDenied`, the system SHALL tell the model to stop and report, with the reason and the rule that denied the call, and SHALL NOT tell it to look for another way. The rule reported SHALL be the gate's own rule.
 
 #### Scenario: Denied Push
 
@@ -39,6 +37,13 @@ The rule reported is the gate's own rule, not an `permissions.allow` rule to add
 
 - **WHEN** the engine's own verdict is already `deny`
 - **THEN** the engine's reason is passed through unchanged, because the denial is not ours to explain
+
+#### Scenario: The Rule Reported Is the Gate's
+
+- **WHEN** the gate denies a call
+- **THEN** the rule reported is the gate's own and not a `permissions.allow` rule to add, because no allow rule lifts a denial of this gate
+- **AND** the gate stops a call that loses bytes for good, tampers with the system, or reads a secret, and a person lifts such a denial by changing the request
+- **AND** "the exact rule to add", as this requirement first read, describes a denial by a settings rule and not by the gate
 
 ### Requirement: Hard Deny on Parsed Commands
 

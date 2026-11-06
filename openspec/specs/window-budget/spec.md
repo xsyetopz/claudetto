@@ -7,9 +7,7 @@ The five-hour and weekly windows are a budget that claudetto measures, so that e
 
 ### Requirement: Record Window Change per Turn
 
-The system SHALL record the change of the five-hour and the weekly `used_percentage`, and the input, cache write, cache read, and output tokens of each turn with the model that spent them. This depends on task 7.3 showing where the token fields come from.
-
-The two halves are two series and not one row, because the engine reports them at two different moments. `session.measure` carries a rate-limit reading and the context size of the session at that instant, and it names no model; `turn.complete` carries the four token counts of one completed turn and the model it ran on, and it carries no rate-limit reading. So `window.rows` holds `WindowRow`, with the points moved, the context `tokens`, and the dollars, and `window.turns` holds `TurnRow`, with the model and the four counts (`src/window/window.ts`). Both carry `at`, `task`, and `source`, which is what joins them: the weight of a token is the points of one series over the tokens of the other for the same task.
+The system SHALL record the change of the five-hour and the weekly `used_percentage`, and the input, cache write, cache read, and output tokens of each turn with the model that spent them, as two series joined on `task`. This depends on task 7.3 showing where the token fields come from.
 
 #### Scenario: Token Fields Not Shown
 
@@ -27,6 +25,13 @@ The two halves are two series and not one row, because the engine reports them a
 
 - **WHEN** the login has no rate-limit windows, as with an API key
 - **THEN** the system records the cost in dollars and writes no window row
+
+#### Scenario: Two Series, Not One Row
+
+- **WHEN** the engine reports a turn
+- **THEN** `session.measure` carries a rate-limit reading and the context size at that instant and names no model, and `turn.complete` carries the four token counts of one completed turn and the model it ran on and no rate-limit reading
+- **AND** `window.rows` holds `WindowRow`, with the points moved, the context `tokens`, and the dollars, and `window.turns` holds `TurnRow`, with the model and the four counts (`src/window/window.ts`)
+- **AND** both carry `at`, `task`, and `source`, which joins them: the weight of a token is the points of one series over the tokens of the other for the same task
 
 ### Requirement: Report from Many Turns
 

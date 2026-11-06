@@ -155,7 +155,7 @@ The compaction summary call on Haiku 5.5 SHALL use effort `high`, apart from the
 
 ### Requirement: A Tool Result Does Not Carry a Haiku Request Past the Price Step
 
-A tool result SHALL be withheld when it would take the next request of a Haiku 5.5 loop over 100,000 prompt tokens, since the handoff trigger is checked between calls (`docs/window-weights.md`). The prompt SHALL be read from the `usage` of the step that made the call, and the result's size estimated from its text. A step whose request names another model SHALL be left alone, with no wait. The wait on the step's `usage` SHALL end at least 1 s before the call hook's 10 s budget, because a hook that runs past its budget twice unloads the plugin.
+A tool result SHALL be withheld when it would take the next request of a Haiku 5.5 loop over 100,000 prompt tokens.
 
 #### Scenario: Result Would Cross the Step
 
@@ -186,6 +186,17 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** a Haiku 5.5 step still streams when less than 1 s of the call hook's 10 s budget is left
 - **THEN** the result reaches the model unchanged, and the hook ends inside its budget
+
+#### Scenario: The Prompt Is Read from the Step
+
+- **WHEN** the sum is computed
+- **THEN** the prompt is read from the `usage` of the step that made the call, and the result's size is estimated from its text
+- **AND** the check is needed because the handoff trigger is checked between calls (`docs/window-weights.md`)
+
+#### Scenario: The Wait Ends before the Hook Budget
+
+- **WHEN** the hook waits on the step's `usage`
+- **THEN** the wait ends at least 1 s before the call hook's 10 s budget, because a hook that runs past its budget twice unloads the plugin
 
 ### Requirement: Every Alias and the Default Resolve to the Row's Models
 

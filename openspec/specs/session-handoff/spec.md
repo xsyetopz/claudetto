@@ -35,7 +35,7 @@ The system SHALL write a handoff file in a `session.compact` hook, from the even
 
 ### Requirement: Handoff Content
 
-Every handoff SHALL have one layout, whether Claude or code wrote it. The layout is a fixed title line `# Handoff`, then a fixed source line, then the nine `##` sections of `samzilverberg/claude-handoff` (MIT) in this order: Goal, Standing instructions, Decisions log, Current state, In progress, Next steps, Key files and symbols, Gotchas and dead ends, Open questions. No other `#` or `##` heading SHALL appear. The code-built fallback fills only what code can read from the messages (`who96/claude-code-context-handoff`, MIT): the recent turns go under Current state, and the touched file paths go under Key files and symbols. Each section that code cannot fill SHALL hold one fixed line that says code could not read it.
+Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed title line `# Handoff`, a fixed source line, then the nine `##` sections in the order Goal, Standing instructions, Decisions log, Current state, In progress, Next steps, Key files and symbols, Gotchas and dead ends, Open questions. No other `#` or `##` heading SHALL appear.
 
 #### Scenario: Claude Wrote One
 
@@ -52,6 +52,17 @@ Every handoff SHALL have one layout, whether Claude or code wrote it. The layout
 
 - **WHEN** a code-built file and a Claude-written file are compared
 - **THEN** their headings, as a list of lines starting with `#`, are equal
+
+#### Scenario: The Sections Come from a Named Template
+
+- **WHEN** the nine sections are cited
+- **THEN** they are those of `samzilverberg/claude-handoff` (MIT)
+
+#### Scenario: The Code-Built Fallback Fills What Code Can Read
+
+- **WHEN** code builds the handoff from the messages (`who96/claude-code-context-handoff`, MIT)
+- **THEN** the recent turns go under Current state and the touched file paths go under Key files and symbols
+- **AND** each section that code cannot fill holds one fixed line that says code could not read it
 
 ### Requirement: Claudetto Names the Nine Sections
 

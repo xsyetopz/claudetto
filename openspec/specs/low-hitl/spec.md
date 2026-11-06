@@ -104,13 +104,7 @@ The recorder of `window-budget` SHALL tag classifier requests with the source `c
 
 ### Requirement: Use Narrow Allow Rules
 
-Allow rules that setup writes SHALL be narrow, such as `Bash(npm test)`, and setup SHALL refuse a broad one.
-
-The rationale first written here, that auto mode drops broad rules on entry (`Bash(*)`, wildcarded interpreters, package-manager run commands, `Agent` and `Monitor`) and only narrow rules stay, is NOT in the `permission-modes` page of `code.claude.com` as that page read on 2026-10-30, so it is withdrawn rather than cited. What the page states is that modes set the baseline and permission rules layer on top to pre-approve specific tools, and that allow rules have no effect in `bypassPermissions`.
-
-The requirement stands on its own reason: a broad allow rule pre-approves a whole tool or interpreter for every call, which is a permission the person did not grant per command. A rule that ships to every install SHALL also be true of every machine, which is why the list is read-only `git` and nothing that depends on a project's package manager, interpreter, or test runner.
-
-A rule SHALL also be narrow in what the command may do once allowed. A rule cannot exclude a flag, so a wildcard over a command that writes a file with a flag pre-approves that write. Measured in this checkout: `git diff --output=F HEAD~1`, `git log -1 --output=F`, and `git show --output=F HEAD` each exited `0` and left `F` on disk, where `git status --output=F` exited `129` and wrote nothing. Only a command that refuses such a flag may carry a wildcard; the rest are named bare, which holds no `*` and so matches that text alone (`configure/permissions/rules`, `2.1.314`).
+Allow rules that setup writes SHALL be narrow, such as `Bash(npm test)`, and setup SHALL refuse a broad one. A rule SHALL be narrow in what the command may do once allowed, and a rule that ships to every install SHALL be true of every machine.
 
 #### Scenario: Broad Rule
 
@@ -128,6 +122,29 @@ A rule SHALL also be narrow in what the command may do once allowed. A rule cann
 - **WHEN** setup writes `permissions.allow`
 - **THEN** the list is `Bash(git status *)`, `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, each of which passes both checks
 - **AND** a user's own `allow` list is kept whole and reported as skipped
+
+#### Scenario: The Withdrawn Rationale
+
+- **WHEN** a document gives the reason for narrow rules
+- **THEN** it does not say that auto mode drops broad rules on entry (`Bash(*)`, wildcarded interpreters, package-manager run commands, `Agent` and `Monitor`), because the `permission-modes` page of `code.claude.com` as read on 2026-10-30 does not state it, so it is withdrawn and not cited
+- **AND** what the page states is that modes set the baseline, permission rules layer on top to pre-approve specific tools, and allow rules have no effect in `bypassPermissions`
+
+#### Scenario: A Broad Rule Is a Grant Per Call
+
+- **WHEN** the reason for refusing a broad rule is asked
+- **THEN** the answer is that a broad allow rule pre-approves a whole tool or interpreter for every call, a permission the person did not grant per command
+
+#### Scenario: The List Is True of Every Machine
+
+- **WHEN** a rule ships to every install
+- **THEN** it is read-only `git` and nothing that depends on a project's package manager, interpreter, or test runner
+
+#### Scenario: A Rule Cannot Exclude a Flag
+
+- **WHEN** a wildcard covers a command that writes a file with a flag
+- **THEN** the rule pre-approves that write
+- **AND** measured in this checkout, `git diff --output=F HEAD~1`, `git log -1 --output=F`, and `git show --output=F HEAD` each exited `0` and left `F` on disk, where `git status --output=F` exited `129` and wrote nothing
+- **AND** only a command that refuses such a flag may carry a wildcard, and the rest are named bare, which holds no `*` and so matches that text alone (`configure/permissions/rules`, `2.1.314`)
 
 ### Requirement: Let the Sandbox Settle Shell Commands
 
