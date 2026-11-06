@@ -1,0 +1,6 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
+	"name": "denial",
+	"version": "0.0.0",
+	"description": "Records which classic hook events fire around a denied or cancelled tool call"
+}
