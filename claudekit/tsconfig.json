@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"exactOptionalPropertyTypes": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"noEmit": true,
+		"noImplicitOverride": true,
+		"noUncheckedIndexedAccess": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ESNext",
+		"types": ["bun-types"],
+		"verbatimModuleSyntax": true
+	},
+	"include": ["bin/**/*.ts", "src/**/*.ts", "probes/**/*.ts"],
+	"exclude": ["probes/*/plugin/**"]
+}

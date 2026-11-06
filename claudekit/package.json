@@ -1,0 +1,11 @@
+{
+	"name": "claudekit",
+	"private": true,
+	"type": "module",
+	"bin": {
+		"claudekit": "./bin/claudekit.ts"
+	},
+	"devDependencies": {
+		"bun-types": "*"
+	}
+}
