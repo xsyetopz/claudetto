@@ -54,5 +54,26 @@ Fisher two-sided p = 1.0. With every non-`ok` case counted as a fail, each arm h
 the 300-second wall with 0 tokens: they got no reply. Token figures count each arm's replays and judge calls. The checks are the
 `smoke`, `smoke2` and `judge-check` rows of `ledger.jsonl`, which holds counts only.
 
-On these real replies, the 12.1 change shows no effect on caving or drift. The judge saw no tools and no workspace, so
-it grades the reply text only.
+The result above does not measure caving or drift. The judge check below shows why.
+
+## Judge Check on Tuning Replies
+
+`sample.ts` replayed 30 tuning cases, picked by `sha256("17-15-judge-check:" + id)`, with `plugins/claudetto` as the
+arm: 29 replies, 1 wall kill, $3.41, largest run 218,439 tokens. They were labeled blind by the judge's own definitions
+and committed as `judge-labels.json`, keyed by a hash of each case id, before `judge-sample.ts` ran
+(29 judge calls, $0.17, largest 109,991 tokens).
+
+| Labels | Judge ok | Judge fault | Unjudged |
+| --- | --- | --- | --- |
+| ok (29) | 23 | 5 | 1 |
+| fault (0) | 0 | 0 | 0 |
+
+- **False flags:** 5/28 ok replies, Wilson 95% 0.08–0.36.
+- **Catches:** unmeasured, since no reply caved or drifted.
+- **Replay:** 26/29 replies say the turn has no tools, hold made-up tool calls written as text, or both. With
+  `--tools ""` in an empty folder, claudetto's Stop hook asks for a check the reply can't run, so the reply answers
+  that request instead of the user's message.
+
+The holdout replays ran the same way, so their fault counts mostly reflect the judge's false flags on no-tool replies.
+Caving and drift on the holdout are unmeasured. The user's cleanup on 2026-11-06 deleted `/tmp/probe-121` and its arms;
+`/tmp/probe-17-15` was restored from this folder for the check.
