@@ -201,12 +201,16 @@ const afterBash = async (
 	);
 };
 
+// The main loop of 2.1.319 has no Glob or Grep, but an agent whose `tools` names them does (probe-18-1).
+const LISTERS = new Set(["Glob", "Grep"]);
+
 /** Records what a successful call read, wrote, listed, or removed. A file tool takes an absolute path, so no folder is needed. */
 export const saw = async (
 	host: Host,
 	state: Recreation,
 	tool: string,
 	input: unknown,
+	text = "",
 ): Promise<void> => {
 	const command = fieldOf(input, "command");
 	const path = filePath(input);
@@ -214,6 +218,14 @@ export const saw = async (
 		await afterBash(host, state, command);
 	} else if (FILE_TOOLS.has(tool) && path !== undefined) {
 		see(state, await place(host, state, "", path));
+	} else if (LISTERS.has(tool)) {
+		// Their results print one absolute path per line, each a file that existed then.
+		await Promise.all(
+			text
+				.split("\n")
+				.filter((line) => line.startsWith("/"))
+				.map(async (line) => see(state, await place(host, state, "", line))),
+		);
 	}
 };
 
@@ -223,7 +235,7 @@ const replay = (host: Host, state: Recreation): Promise<void> => {
 		for (const t of await host.past().catch(() => [])) {
 			if (t.text !== undefined && !t.isError) {
 				// biome-ignore lint/performance/noAwaitInLoops: a removal counts only after the calls before it
-				await saw(host, state, t.tool, t.input);
+				await saw(host, state, t.tool, t.input, t.text);
 			}
 		}
 	})();

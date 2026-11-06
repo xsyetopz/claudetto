@@ -426,6 +426,7 @@ test("`.env` as text in a pattern or a quoted name is not read as an env-file re
 interface Past {
 	tool: string;
 	input: Record<string, unknown>;
+	text?: string;
 	isError?: true;
 	inFlight?: true;
 }
@@ -687,6 +688,19 @@ test("a file seen only in an `ls` of the working folder and gone now asks on a c
 	expect(verdict.decision).toBe("ask");
 });
 
+// An agent whose `tools` names Glob gets it in 2.1.319 (probe-18-1), and its result prints one path per line.
+test("a file seen only in an agent's Glob and gone now asks on a Write", async ($: Engine, on: On) => {
+	const files = new Set(["/p/sub/a.txt"]);
+	on("tool.call", { tool: "Glob" }, () => ({ result: "/p/sub/a.txt" }));
+	vanishing(on, files);
+	await $.tool.call({ tool: "Glob", pattern: "*.txt", path: "/p/sub" });
+	files.delete("/p/sub/a.txt");
+
+	const verdict = await run($, "Write", { file_path: "/p/sub/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
 test("an rm that left the file in place is no removal", async ($: Engine, on: On) => {
 	const files = new Set(["/p/a.txt"]);
 	vanishing(on, files);
@@ -706,6 +720,16 @@ test("a file read before a resume and gone now asks on a Write", async ($: Engin
 		history: [{ tool: "Read", input: { file_path: "/p/a.txt" } }],
 	});
 	files.delete("/p/a.txt");
+
+	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
+
+	expect(verdict.decision).toBe("ask");
+});
+
+test("a file an agent's Glob listed before a resume and gone now asks on a Write", async ($: Engine, on: On) => {
+	vanishing(on, new Set(), {
+		history: [{ tool: "Glob", input: { pattern: "*.txt" }, text: "/p/a.txt" }],
+	});
 
 	const verdict = await run($, "Write", { file_path: "/p/a.txt" });
 

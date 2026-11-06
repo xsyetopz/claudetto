@@ -122,14 +122,14 @@ export const gate = (on: On): void => {
 		if (answer.deny !== undefined) {
 			return answer;
 		}
-		if (!answer.isError) {
-			await saw(hostOf($), files, e.tool, e);
-		}
 		const seen =
 			answer.text ??
 			(typeof answer.result === "string"
 				? answer.result
 				: (JSON.stringify(answer.result) ?? ""));
+		if (!answer.isError) {
+			await saw(hostOf($), files, e.tool, e, seen);
+		}
 		const secrets = await secretsIn(
 			(argv, init) => $.process.run(argv, init),
 			seen,
