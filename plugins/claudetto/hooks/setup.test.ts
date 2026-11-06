@@ -360,6 +360,17 @@ test("the floor itself logs nothing about the version", async ($: Engine, on: On
 	expect(state.logs.some((l) => l.includes("claude update"))).toBe(false);
 });
 
+test("a startup below the version floor logs exactly one line, naming both versions", async ($: Engine, on: On) => {
+	const older = lab(on, undefined, undefined, undefined, false, "2.1.317");
+
+	await $.classic.SessionStart({ source: "startup" });
+
+	const lines = older.logs.filter((l) => l.includes("claude update"));
+	expect(lines).toHaveLength(1);
+	expect(lines[0]).toContain("2.1.317");
+	expect(lines[0]).toContain("2.1.318");
+});
+
 test("a startup without ast-grep logs one notice, and the second logs none", async ($: Engine, on: On) => {
 	const state = lab(on, undefined);
 
@@ -599,6 +610,37 @@ test("only the chosen group is written to the user settings file", async ($: Eng
 	await run($, "claudetto:setup");
 
 	expect(saved(state)).toEqual({ worktree: { baseRef: "head" } });
+});
+
+test("the setup report names the groups written and gives no share of a limit", async ($: Engine, on: On) => {
+	lab(on, undefined);
+
+	const out = await run($, "claudetto:setup");
+
+	expect(out.text).toContain("Wrote Smaller prompt");
+	expect(out.text).not.toContain("%");
+});
+
+test("a clean write holds each planned key, only in the settings file, and no subagentStatusLine", async ($: Engine, on: On) => {
+	const state = lab(on, undefined);
+
+	await run($, "claudetto:setup");
+	const written = saved(state);
+
+	expect(valueAt(written, ["minimumVersion"])).toBe("2.1.318");
+	expect(valueAt(written, ["workflowSizeGuideline"])).toBe("unrestricted");
+	for (const key of [
+		"workflowKeywordTriggerEnabled",
+		"enableWorkflows",
+		"enableArtifact",
+		"remoteControlAtStartup",
+	]) {
+		expect(valueAt(written, [key])).toBe(false);
+	}
+	expect(valueAt(written, ["$schema"])).toContain("claude-code-settings.json");
+	expect(valueAt(written, ["statusLine", "type"])).toBe("command");
+	expect(JSON.stringify(written)).not.toContain("subagentStatusLine");
+	expect(state.written.every((w) => w.path === FILE)).toBe(true);
 });
 
 test("a full write holds no agent key", async ($: Engine, on: On) => {
