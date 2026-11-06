@@ -77,7 +77,7 @@ const toConstraint = (c: unknown): PinConstraint[] => {
 		{
 			text: c["text"],
 			rule: c["rule"],
-			files: Array.isArray(files) ? files.map(String) : undefined,
+			...(Array.isArray(files) ? { files: files.map(String) } : {}),
 		},
 	];
 };

@@ -257,6 +257,43 @@ test("the grader sees the earlier person and assistant messages", async ($: Engi
 	);
 });
 
+test("the grader sees the background tasks the session lists, which ground a status reply", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("stay put")], '{"faults":[]}', seen);
+	await $.classic.Stop({
+		stop_hook_active: false,
+		last_assistant_message: "The three background shells are still running.",
+		background_tasks: [
+			{
+				id: "b1",
+				type: "local_bash",
+				status: "running",
+				description: "wait loop",
+			},
+		],
+	});
+	expect(seen[0]).toContain("- local_bash `b1` (running): wait loop");
+	expect(seen[0]).toContain("listed background tasks");
+});
+
+test("the grader is told the turn facts that offer its codes: no look, and no issues-file write", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("It's 30s now, confirm it.")], '{"faults":[]}', seen);
+	await stop($);
+	expect(seen[0]).toContain("Fact: no call this turn read the workspace.");
+	expect(seen[0]).toContain(
+		"Fact: this turn wrote nothing to the project's open-issues file.",
+	);
+});
+
+test("a turn that looked is not told it made no look", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("confirm it"), used("Read")], '{"faults":[]}', seen);
+	await stop($);
+	expect(seen[0]).not.toContain("Fact: no call");
+	expect(seen[0]).toContain("Fact: this turn wrote nothing");
+});
+
 const ran = (tool: string, text: string, command = "git diff") => ({
 	role: "assistant",
 	text: "",

@@ -22,7 +22,7 @@ import { namedPaths } from "./named-files.ts";
 import { openItems, turnOf } from "./open-items.ts";
 
 /** The project's open-issues file: an `ISSUES*.md` anywhere in the path. */
-const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
+export const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
 
 const ANY_TOOL = /^/;
 
@@ -55,13 +55,14 @@ const tasksKey = (tasks: readonly BackgroundTaskSummary[]): string =>
 		.sort()
 		.join("\n");
 
-const tasksText = (tasks: readonly BackgroundTaskSummary[]): string =>
-	STOP_TASKS(
-		tasks.map(
-			(task) =>
-				`- ${task.type} \`${task.id}\` (${task.status}): ${task.description}`,
-		),
+const taskLines = (tasks: readonly BackgroundTaskSummary[]): string[] =>
+	tasks.map(
+		(task) =>
+			`- ${task.type} \`${task.id}\` (${task.status}): ${task.description}`,
 	);
+
+const tasksText = (tasks: readonly BackgroundTaskSummary[]): string =>
+	STOP_TASKS(taskLines(tasks));
 
 const withTasks = <
 	A extends { readonly additionalContext?: readonly string[] },
@@ -116,6 +117,17 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
+/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, a write to the issues file `unfiled`. */
+export const offeredCodes = (
+	looked: boolean,
+	wroteIssues: boolean,
+): GradeFault[] => [
+	"credited",
+	"fallback",
+	...(looked ? [] : (["unchecked", "rules"] as const)),
+	...(wroteIssues ? [] : (["unfiled"] as const)),
+];
+
 /**
  * The block for the faults one model call finds in the final reply. The call grades the reply against the person messages and the earlier
  * assistant messages; a fault the turn's own calls rule out (a lookup made, the issues file written) is left off the list the model sees.
@@ -123,7 +135,10 @@ const filesBlock = async (
  */
 const gradeBlock = async (
 	$: EngineInterface,
-	e: { readonly last_assistant_message?: string | undefined },
+	e: {
+		readonly last_assistant_message?: string | undefined;
+		readonly background_tasks?: readonly BackgroundTaskSummary[] | undefined;
+	},
 	wroteIssues: boolean,
 	denied: ReadonlySet<string>,
 ) => {
@@ -132,12 +147,7 @@ const gradeBlock = async (
 	if (reply === "") {
 		return;
 	}
-	const codes: GradeFault[] = [
-		"credited",
-		"fallback",
-		...(turn.looked ? [] : (["unchecked", "rules"] as const)),
-		...(wroteIssues ? [] : (["unfiled"] as const)),
-	];
+	const codes = offeredCodes(turn.looked, wroteIssues);
 	const grade = async (
 		model: "haiku" | "sonnet",
 		list: readonly GradeFault[],
@@ -154,6 +164,7 @@ const gradeBlock = async (
 					reply,
 					list,
 					results,
+					taskLines(e.background_tasks ?? []),
 				),
 				maxTokens: 300,
 				timeoutMs: 15_000,
@@ -191,7 +202,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		const answer = await next(e);
 		const ok = didWrite(answer);
 		wrote ||= ok;
-		wroteIssues ||= ok && ISSUES_FILE.test(e.file_path ?? "");
+		wroteIssues ||= ok && "file_path" in e && ISSUES_FILE.test(e.file_path);
 		return answer;
 	});
 	on("tool.call", { tool: "Bash" }, async (_$, e, next) => {
