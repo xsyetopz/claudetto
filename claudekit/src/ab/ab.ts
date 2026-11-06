@@ -173,7 +173,7 @@ export const runExperiment = async <A extends { name: string }, C extends { name
 	}
 	const ledger = await readLedger(opts.ledger);
 	for (const check of [
-		admit(ledger, { bound: Math.max(e.tokenBoundPerRun, ...e.cases.map((c) => e.boundOf?.(c) ?? 0)) }),
+		admit(ledger, { bound: Math.max(e.tokenBoundPerRun, ...e.cases.map((c) => e.boundOf?.(c) ?? 0)), ...(opts.goalCap ? { goalCap: opts.goalCap } : {}) }),
 		admit(ledger, { bound: plan.tokenBound, runCap: Number.POSITIVE_INFINITY, ...(opts.goalCap ? { goalCap: opts.goalCap } : {}) }),
 	]) {
 		if (!check.ok) {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { readLedger } from "../ledger/ledger.ts";
+import { appendEntry, readLedger } from "../ledger/ledger.ts";
 import { DEFAULT_MODEL } from "../shared/model.ts";
 import { tempDir } from "../shared/temp.ts";
 import {
@@ -105,6 +105,19 @@ describe("runExperiment", () => {
 		const opts = { run: true, ledger, base: "base", margin: 0, session };
 		await expect(runExperiment(experiment({ tokenBoundPerRun: 300_001 }), opts)).rejects.toThrow(OVER_RUN_CAP);
 		await expect(runExperiment(experiment({ n: 1001 }), opts)).rejects.toThrow(OVER_GOAL_CAP);
+	});
+
+	test("a goal cap the caller raises admits a ledger already past the default", async () => {
+		const ledger = join(await tempDir("ab"), "ledger.jsonl");
+		const tokens = { input: 2_500_000, write: 0, read: 0, output: 0 };
+		await appendEntry(ledger, { at: "2026-11-06T00:00:00Z", probe: "past", runId: "r0", model: DEFAULT_MODEL, tokens, usd: 0 });
+		let calls = 0;
+		const session = async () => {
+			calls++;
+			return { runId: "r", model: DEFAULT_MODEL, usage, verdict: verdict(true), armCheck: asserted };
+		};
+		await runExperiment(experiment(), { run: true, ledger, base: "base", margin: 0, goalCap: 2_600_000, session });
+		expect(calls).toBe(4);
 	});
 
 	test("records one ledger entry per session and keeps the parallel limit", async () => {
