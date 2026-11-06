@@ -1,0 +1,5 @@
+---
+description: {{json description}}
+---
+
+{{instructions}}
