@@ -77,3 +77,11 @@ and committed as `judge-labels.json`, keyed by a hash of each case id, before `j
 The holdout replays ran the same way, so their fault counts mostly reflect the judge's false flags on no-tool replies.
 Caving and drift on the holdout are unmeasured. The user's cleanup on 2026-11-06 deleted `/tmp/probe-121` and its arms;
 `/tmp/probe-17-15` was restored from this folder for the check.
+
+## First-Reply Probe
+
+Hypothesis: the reply written before the Stop hook fires answers the user's message, so grading it would remove the
+no-tool noise. `first.ts` replayed 3 sampled cases (1 wall kill, about $0.21). Both first replies still open by saying
+the turn has no tools and the folder is not the repo, so the hypothesis fails. The cause is `--tools ""` itself: the
+model sees no tools. A valid grade needs cases whose right answer needs no tools or workspace, and the mined set is not
+built that way.
