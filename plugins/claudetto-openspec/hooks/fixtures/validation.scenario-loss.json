@@ -1,0 +1,4131 @@
+[
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > errors when the MODIFIED block omits a scenario the main spec still has",
+		"seq": 0,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-2BVF89",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-scenario",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/rename-scenario",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > errors when the MODIFIED block omits a scenario the main spec still has",
+		"seq": 1,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-2BVF89",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-scenario",
+		"args": ["$ROOT/openspec/changes/rename-scenario", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/rename-scenario/specs",
+					"source": "$ROOT/openspec/changes/rename-scenario/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > errors when the MODIFIED block omits a scenario the main spec still has",
+		"seq": 2,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-2BVF89",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-scenario/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/rename-scenario/specs",
+				"source": "$ROOT/openspec/changes/rename-scenario/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"rename-scenario",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > counts repeated scenario names, so keeping one of two duplicates still errors",
+		"seq": 3,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-WI5HFd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-duplicate",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/drop-duplicate",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n\n#### Scenario: Repeated\n- **WHEN** queried twice\n- **THEN** the state is reported again\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n\n#### Scenario: Repeated\n- **WHEN** queried twice\n- **THEN** the state is reported again\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Repeated\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > counts repeated scenario names, so keeping one of two duplicates still errors",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-WI5HFd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-duplicate",
+		"args": ["$ROOT/openspec/changes/drop-duplicate", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n\n#### Scenario: Repeated\n- **WHEN** queried twice\n- **THEN** the state is reported again\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n\n#### Scenario: Repeated\n- **WHEN** queried twice\n- **THEN** the state is reported again\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/drop-duplicate/specs",
+					"source": "$ROOT/openspec/changes/drop-duplicate/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > counts repeated scenario names, so keeping one of two duplicates still errors",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-WI5HFd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-duplicate/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/drop-duplicate/specs",
+				"source": "$ROOT/openspec/changes/drop-duplicate/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"drop-duplicate",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n\n#### Scenario: Repeated\n- **WHEN** queried twice\n- **THEN** the state is reported again\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-duplicate/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Repeated\n- **WHEN** queried once\n- **THEN** the state is reported\n\n#### Scenario: Repeated\n- **WHEN** queried twice\n- **THEN** the state is reported again\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Repeated\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > accepts a MODIFIED block that carries every current scenario over",
+		"seq": 6,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-yRFNoP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/keeps-all",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/keeps-all",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > accepts a MODIFIED block that carries every current scenario over",
+		"seq": 7,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-yRFNoP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/keeps-all",
+		"args": ["$ROOT/openspec/changes/keeps-all", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/keeps-all/specs",
+					"source": "$ROOT/openspec/changes/keeps-all/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > accepts a MODIFIED block that carries every current scenario over",
+		"seq": 8,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-yRFNoP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/keeps-all/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/keeps-all/specs",
+				"source": "$ROOT/openspec/changes/keeps-all/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"keeps-all",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/keeps-all/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state promptly.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: New scenario\n- **WHEN** it errors\n- **THEN** the error is reported\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > stays silent when the requirement header is not in the main spec (sister change in flight)",
+		"seq": 9,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-gLW5wL",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/cross-change",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/cross-change",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/cross-change": {
+				"dir": true
+			},
+			"openspec/changes/cross-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/cross-change/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/cross-change/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget colour\nThe system SHALL report the widget colour.\n\n#### Scenario: Colour queried\n- **WHEN** queried\n- **THEN** the colour is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/cross-change": {
+				"dir": true
+			},
+			"openspec/changes/cross-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/cross-change/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/cross-change/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget colour\nThe system SHALL report the widget colour.\n\n#### Scenario: Colour queried\n- **WHEN** queried\n- **THEN** the colour is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "widgets/spec.md",
+						"message": "Archive would refuse this delta: widgets MODIFIED failed for header \"### Requirement: Widget colour\" - not found"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > stays silent when the main spec file does not exist yet",
+		"seq": 10,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-Q25qH7",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/greenfield",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/greenfield",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/greenfield": {
+				"dir": true
+			},
+			"openspec/changes/greenfield/specs": {
+				"dir": true
+			},
+			"openspec/changes/greenfield/specs/gadgets": {
+				"dir": true
+			},
+			"openspec/changes/greenfield/specs/gadgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Gadget state\nThe system SHALL report the gadget state.\n\n#### Scenario: Gadget queried\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/greenfield": {
+				"dir": true
+			},
+			"openspec/changes/greenfield/specs": {
+				"dir": true
+			},
+			"openspec/changes/greenfield/specs/gadgets": {
+				"dir": true
+			},
+			"openspec/changes/greenfield/specs/gadgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Gadget state\nThe system SHALL report the gadget state.\n\n#### Scenario: Gadget queried\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "gadgets/spec.md",
+						"message": "Archive would refuse this delta: gadgets: target spec does not exist; only ADDED requirements are allowed for new specs. MODIFIED and RENAMED operations require an existing spec."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > ignores a #### Scenario: sample inside a fenced block in the main spec",
+		"seq": 11,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-R9jfzk",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/fenced-sample",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/fenced-sample",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Sample inside a fence\n- **WHEN** copied\n- **THEN** it is only an example\n```\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Sample inside a fence\n- **WHEN** copied\n- **THEN** it is only an example\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > ignores a #### Scenario: sample inside a fenced block in the main spec",
+		"seq": 12,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-R9jfzk",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/fenced-sample",
+		"args": ["$ROOT/openspec/changes/fenced-sample", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Sample inside a fence\n- **WHEN** copied\n- **THEN** it is only an example\n```\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Sample inside a fence\n- **WHEN** copied\n- **THEN** it is only an example\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/fenced-sample/specs",
+					"source": "$ROOT/openspec/changes/fenced-sample/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > ignores a #### Scenario: sample inside a fenced block in the main spec",
+		"seq": 13,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-R9jfzk",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/fenced-sample/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/fenced-sample/specs",
+				"source": "$ROOT/openspec/changes/fenced-sample/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"fenced-sample",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Sample inside a fence\n- **WHEN** copied\n- **THEN** it is only an example\n```\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-sample/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Sample inside a fence\n- **WHEN** copied\n- **THEN** it is only an example\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state clearly.\n\n#### Scenario: Real scenario\n- **WHEN** queried\n- **THEN** the state is reported\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > resolves nested capability layouts against the matching main spec",
+		"seq": 14,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-EBH02Z",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/nested-drop",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/nested-drop",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs/platform": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs/platform/session": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs/platform/session/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Session start\nThe system SHALL start a session quickly.\n\n#### Scenario: Started\n- **WHEN** requested\n- **THEN** a session starts\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/platform": {
+				"dir": true
+			},
+			"openspec/specs/platform/session": {
+				"dir": true
+			},
+			"openspec/specs/platform/session/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Session start\nThe system SHALL start a session.\n\n#### Scenario: Started\n- **WHEN** requested\n- **THEN** a session starts\n\n#### Scenario: Resumed\n- **WHEN** resumed\n- **THEN** the session continues\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs/platform": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs/platform/session": {
+				"dir": true
+			},
+			"openspec/changes/nested-drop/specs/platform/session/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Session start\nThe system SHALL start a session quickly.\n\n#### Scenario: Started\n- **WHEN** requested\n- **THEN** a session starts\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/platform": {
+				"dir": true
+			},
+			"openspec/specs/platform/session": {
+				"dir": true
+			},
+			"openspec/specs/platform/session/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Session start\nThe system SHALL start a session.\n\n#### Scenario: Started\n- **WHEN** requested\n- **THEN** a session starts\n\n#### Scenario: Resumed\n- **WHEN** resumed\n- **THEN** the session continues\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "platform/session/spec.md",
+						"message": "MODIFIED \"Session start\" omits scenario(s) the current spec still has: \"Resumed\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > checks a MODIFIED that names the new header of a rename in the same delta",
+		"seq": 15,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-fmq66M",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-then-modify",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/rename-then-modify",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: New name\nThe system SHALL do the new thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: New name\nThe system SHALL do the new thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"New name\" omits scenario(s) the current spec still has: \"Dropped\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > checks a MODIFIED that names the new header of a rename in the same delta",
+		"seq": 16,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-fmq66M",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-then-modify",
+		"args": [
+			"$ROOT/openspec/changes/rename-then-modify",
+			"$ROOT/openspec/specs"
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: New name\nThe system SHALL do the new thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: New name\nThe system SHALL do the new thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/rename-then-modify/specs",
+					"source": "$ROOT/openspec/changes/rename-then-modify/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > checks a MODIFIED that names the new header of a rename in the same delta",
+		"seq": 17,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-fmq66M",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-then-modify/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/rename-then-modify/specs",
+				"source": "$ROOT/openspec/changes/rename-then-modify/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"rename-then-modify",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: New name\nThe system SHALL do the new thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-then-modify/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: New name\nThe system SHALL do the new thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: New name\" - current spec contains scenario(s) not present in the modified block: \"Dropped\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > follows a chain of renames back to the block the main spec still holds",
+		"seq": 18,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-qTovPt",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-chain",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/rename-chain",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Charlie`\n\n## MODIFIED Requirements\n\n### Requirement: Charlie\nThe system SHALL do the charlie thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Charlie`\n\n## MODIFIED Requirements\n\n### Requirement: Charlie\nThe system SHALL do the charlie thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Charlie\" omits scenario(s) the current spec still has: \"Dropped\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > follows a chain of renames back to the block the main spec still holds",
+		"seq": 19,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-qTovPt",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-chain",
+		"args": ["$ROOT/openspec/changes/rename-chain", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Charlie`\n\n## MODIFIED Requirements\n\n### Requirement: Charlie\nThe system SHALL do the charlie thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Charlie`\n\n## MODIFIED Requirements\n\n### Requirement: Charlie\nThe system SHALL do the charlie thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/rename-chain/specs",
+					"source": "$ROOT/openspec/changes/rename-chain/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > follows a chain of renames back to the block the main spec still holds",
+		"seq": 20,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-qTovPt",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-chain/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/rename-chain/specs",
+				"source": "$ROOT/openspec/changes/rename-chain/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"rename-chain",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Charlie`\n\n## MODIFIED Requirements\n\n### Requirement: Charlie\nThe system SHALL do the charlie thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-chain/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Charlie`\n\n## MODIFIED Requirements\n\n### Requirement: Charlie\nThe system SHALL do the charlie thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Charlie\" - current spec contains scenario(s) not present in the modified block: \"Dropped\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > reads a CRLF main spec the same way archive does",
+		"seq": 21,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-bLPC8x",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/crlf-drop",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/crlf-drop",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nDefine widget behavior for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n\r\n#### Scenario: Second scenario\r\n- **WHEN** idle\r\n- **THEN** idle is reported\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nDefine widget behavior for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n\r\n#### Scenario: Second scenario\r\n- **WHEN** idle\r\n- **THEN** idle is reported\r\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > reads a CRLF main spec the same way archive does",
+		"seq": 22,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-bLPC8x",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/crlf-drop",
+		"args": ["$ROOT/openspec/changes/crlf-drop", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nDefine widget behavior for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n\r\n#### Scenario: Second scenario\r\n- **WHEN** idle\r\n- **THEN** idle is reported\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nDefine widget behavior for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n\r\n#### Scenario: Second scenario\r\n- **WHEN** idle\r\n- **THEN** idle is reported\r\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/crlf-drop/specs",
+					"source": "$ROOT/openspec/changes/crlf-drop/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > reads a CRLF main spec the same way archive does",
+		"seq": 23,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-bLPC8x",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/crlf-drop/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/crlf-drop/specs",
+				"source": "$ROOT/openspec/changes/crlf-drop/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"crlf-drop",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nDefine widget behavior for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n\r\n#### Scenario: Second scenario\r\n- **WHEN** idle\r\n- **THEN** idle is reported\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/crlf-drop/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nDefine widget behavior for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Widget state\r\nThe system SHALL report the widget state.\r\n\r\n#### Scenario: Existing scenario\r\n- **WHEN** queried\r\n- **THEN** the state is reported\r\n\r\n#### Scenario: Second scenario\r\n- **WHEN** idle\r\n- **THEN** idle is reported\r\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > runs no main-spec check when the caller passes no main specs directory",
+		"seq": 24,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-CsePlE",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/no-root",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/openspec/changes/no-root"]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/no-root": {
+				"dir": true
+			},
+			"openspec/changes/no-root/specs": {
+				"dir": true
+			},
+			"openspec/changes/no-root/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/no-root/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/no-root": {
+				"dir": true
+			},
+			"openspec/changes/no-root/specs": {
+				"dir": true
+			},
+			"openspec/changes/no-root/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/no-root/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > fails the change in the default (non-strict) mode too",
+		"seq": 25,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-vGFVcJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/non-strict",
+		"args": {
+			"strict": false,
+			"args": [
+				"$ROOT/openspec/changes/non-strict",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/non-strict": {
+				"dir": true
+			},
+			"openspec/changes/non-strict/specs": {
+				"dir": true
+			},
+			"openspec/changes/non-strict/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/non-strict/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/non-strict": {
+				"dir": true
+			},
+			"openspec/changes/non-strict/specs": {
+				"dir": true
+			},
+			"openspec/changes/non-strict/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/non-strict/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > terminates on a rename cycle instead of walking it forever",
+		"seq": 26,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-ze1btv",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/rename-cycle",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/rename-cycle",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Alpha`\n\n## MODIFIED Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Only\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Untouched\nThe system SHALL do the untouched thing.\n\n#### Scenario: Only\n- **WHEN** invoked\n- **THEN** it works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle/specs": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/rename-cycle/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha`\n- TO: `### Requirement: Bravo`\n- FROM: `### Requirement: Bravo`\n- TO: `### Requirement: Alpha`\n\n## MODIFIED Requirements\n\n### Requirement: Alpha\nThe system SHALL do the alpha thing.\n\n#### Scenario: Only\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Untouched\nThe system SHALL do the untouched thing.\n\n#### Scenario: Only\n- **WHEN** invoked\n- **THEN** it works\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED references old name from RENAMED. Use new header for \"Bravo\""
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > ignores a fenced scenario sample inside the MODIFIED block itself",
+		"seq": 27,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-BOkeDU",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/fenced-in-delta",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/fenced-in-delta",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n```\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n```\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > ignores a fenced scenario sample inside the MODIFIED block itself",
+		"seq": 28,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-BOkeDU",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/fenced-in-delta",
+		"args": ["$ROOT/openspec/changes/fenced-in-delta", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n```\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n```\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/fenced-in-delta/specs",
+					"source": "$ROOT/openspec/changes/fenced-in-delta/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > ignores a fenced scenario sample inside the MODIFIED block itself",
+		"seq": 29,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-BOkeDU",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/fenced-in-delta/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/fenced-in-delta/specs",
+				"source": "$ROOT/openspec/changes/fenced-in-delta/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"fenced-in-delta",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n```\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/fenced-in-delta/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n```markdown\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n```\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > says so when the main spec exists but cannot be read",
+		"seq": 30,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-PtVubp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/unreadable-main-spec",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/unreadable-main-spec",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "Could not read $ROOT/openspec/specs/widgets/spec.md to check the MODIFIED requirements against it (EISDIR). Archive reads the same file, so fix the file before archiving."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > says so when the main spec exists but cannot be read",
+		"seq": 31,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-PtVubp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/unreadable-main-spec",
+		"args": [
+			"$ROOT/openspec/changes/unreadable-main-spec",
+			"$ROOT/openspec/specs"
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/unreadable-main-spec/specs",
+					"source": "$ROOT/openspec/changes/unreadable-main-spec/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > says so when the main spec exists but cannot be read",
+		"seq": 32,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-PtVubp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/unreadable-main-spec/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/unreadable-main-spec/specs",
+				"source": "$ROOT/openspec/changes/unreadable-main-spec/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"unreadable-main-spec",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/unreadable-main-spec/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "EISDIR: illegal operation on a directory, read '$ROOT/openspec/specs/widgets/spec.md'",
+				"code": "EISDIR"
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > stays silent on a read error that says nothing about the file",
+		"seq": 33,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-J19z6c",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/transient-read-error",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/transient-read-error",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error/specs": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error/specs": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/transient-read-error/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "widgets/spec.md",
+						"message": "Archive would refuse this delta: widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > detects a dropped level-4 scenario whose header is not labeled \"Scenario:\"",
+		"seq": 34,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-kYE3TY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-unlabeled-scenario",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/drop-unlabeled-scenario",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Edge case\n- **WHEN** disabled\n- **THEN** nothing is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Edge case\n- **WHEN** disabled\n- **THEN** nothing is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Edge case\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > detects a dropped level-4 scenario whose header is not labeled \"Scenario:\"",
+		"seq": 35,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-kYE3TY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-unlabeled-scenario",
+		"args": [
+			"$ROOT/openspec/changes/drop-unlabeled-scenario",
+			"$ROOT/openspec/specs"
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Edge case\n- **WHEN** disabled\n- **THEN** nothing is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Edge case\n- **WHEN** disabled\n- **THEN** nothing is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/drop-unlabeled-scenario/specs",
+					"source": "$ROOT/openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > detects a dropped level-4 scenario whose header is not labeled \"Scenario:\"",
+		"seq": 36,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-kYE3TY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/drop-unlabeled-scenario/specs",
+				"source": "$ROOT/openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"drop-unlabeled-scenario",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Edge case\n- **WHEN** disabled\n- **THEN** nothing is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-unlabeled-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Edge case\n- **WHEN** disabled\n- **THEN** nothing is reported\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Edge case\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > detects a dropped labeled scenario even when an unlabeled sibling is kept",
+		"seq": 37,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-e0cyfp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/drop-labeled-keep-unlabeled",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Labeled\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Labeled\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Labeled\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > detects a dropped labeled scenario even when an unlabeled sibling is kept",
+		"seq": 38,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-e0cyfp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled",
+		"args": [
+			"$ROOT/openspec/changes/drop-labeled-keep-unlabeled",
+			"$ROOT/openspec/specs"
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Labeled\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Labeled\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled/specs",
+					"source": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > detects a dropped labeled scenario even when an unlabeled sibling is kept",
+		"seq": 39,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-e0cyfp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled/specs",
+				"source": "$ROOT/openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"drop-labeled-keep-unlabeled",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Labeled\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-labeled-keep-unlabeled/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Labeled\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Unlabeled\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Labeled\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > does not name scenarios for a MODIFIED the same delta renames away",
+		"seq": 40,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-KExrBg",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/modifies-renamed-away",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/modifies-renamed-away",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away/specs": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away/specs": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/modifies-renamed-away/specs/widgets/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## MODIFIED Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Old name\nThe system SHALL do the old thing.\n\n#### Scenario: Kept\n- **WHEN** invoked\n- **THEN** it works\n\n#### Scenario: Dropped\n- **WHEN** retried\n- **THEN** it still works\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED references old name from RENAMED. Use new header for \"New name\""
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > reports both new headings when one current scenario is replaced by two (#1697)",
+		"seq": 41,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-uYvtXa",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/widen-scenario",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/widen-scenario",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario, first branch\n- **WHEN** queried in the first case\n- **THEN** the first state is reported\n\n#### Scenario: Existing scenario, second branch\n- **WHEN** queried in the second case\n- **THEN** the second state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario, first branch\n- **WHEN** queried in the first case\n- **THEN** the first state is reported\n\n#### Scenario: Existing scenario, second branch\n- **WHEN** queried in the second case\n- **THEN** the second state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Existing scenario\". The modified block has 2 scenarios; the current spec has 1 scenario. It adds 2 scenarios not in the current spec: \"Existing scenario, first branch\", \"Existing scenario, second branch\". Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > reports both new headings when one current scenario is replaced by two (#1697)",
+		"seq": 42,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-uYvtXa",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/widen-scenario",
+		"args": ["$ROOT/openspec/changes/widen-scenario", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario, first branch\n- **WHEN** queried in the first case\n- **THEN** the first state is reported\n\n#### Scenario: Existing scenario, second branch\n- **WHEN** queried in the second case\n- **THEN** the second state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario, first branch\n- **WHEN** queried in the first case\n- **THEN** the first state is reported\n\n#### Scenario: Existing scenario, second branch\n- **WHEN** queried in the second case\n- **THEN** the second state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/widen-scenario/specs",
+					"source": "$ROOT/openspec/changes/widen-scenario/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > reports both new headings when one current scenario is replaced by two (#1697)",
+		"seq": 43,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-uYvtXa",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/widen-scenario/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/widen-scenario/specs",
+				"source": "$ROOT/openspec/changes/widen-scenario/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"widen-scenario",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario, first branch\n- **WHEN** queried in the first case\n- **THEN** the first state is reported\n\n#### Scenario: Existing scenario, second branch\n- **WHEN** queried in the second case\n- **THEN** the second state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/widen-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario, first branch\n- **WHEN** queried in the first case\n- **THEN** the first state is reported\n\n#### Scenario: Existing scenario, second branch\n- **WHEN** queried in the second case\n- **THEN** the second state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Existing scenario\". The modified block has 2 scenarios; the current spec has 1 scenario. It adds 2 scenarios not in the current spec: \"Existing scenario, first branch\", \"Existing scenario, second branch\". Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > says the block adds none when scenarios are only dropped (#1697)",
+		"seq": 44,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-loss-pCkk5O",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-scenario",
+		"args": {
+			"strict": true,
+			"args": [
+				"$ROOT/openspec/changes/drop-scenario",
+				{
+					"mainSpecsDir": "$ROOT/openspec/specs"
+				}
+			]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "widgets/spec.md",
+						"message": "MODIFIED \"Widget state\" omits scenario(s) the current spec still has: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them)."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > says the block adds none when scenarios are only dropped (#1697)",
+		"seq": 45,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-scenario-loss-pCkk5O",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-scenario",
+		"args": ["$ROOT/openspec/changes/drop-scenario", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/openspec/changes/drop-scenario/specs",
+					"source": "$ROOT/openspec/changes/drop-scenario/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "validation.scenario-loss.test.ts",
+		"test": "validate: MODIFIED blocks that would drop a main-spec scenario (#1477) > says the block adds none when scenarios are only dropped (#1697)",
+		"seq": 46,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-scenario-loss-pCkk5O",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/drop-scenario/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/openspec/changes/drop-scenario/specs",
+				"source": "$ROOT/openspec/changes/drop-scenario/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"drop-scenario",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets": {
+				"dir": true
+			},
+			"openspec/changes/drop-scenario/specs/widgets/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/widgets": {
+				"dir": true
+			},
+			"openspec/specs/widgets/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nDefine widget behavior for these tests.\n\n## Requirements\n\n### Requirement: Widget state\nThe system SHALL report the widget state.\n\n#### Scenario: Existing scenario\n- **WHEN** queried\n- **THEN** the state is reported\n\n#### Scenario: Second scenario\n- **WHEN** idle\n- **THEN** idle is reported\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "widgets MODIFIED failed for header \"### Requirement: Widget state\" - current spec contains scenario(s) not present in the modified block: \"Second scenario\". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.",
+				"code": null
+			}
+		}
+	}
+]

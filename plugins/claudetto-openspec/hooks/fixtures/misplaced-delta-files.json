@@ -1,0 +1,1504 @@
+[
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > reports a delta written as specs/<capability>.md",
+		"seq": 0,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-3U6mXK",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "user-auth.md",
+					"expected": "user-auth/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > reports a delta in a capability folder under another name",
+		"seq": 1,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-VpTdpY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "user-auth/delta.md",
+					"expected": "user-auth/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > reports a stray delta beside a capability spec.md",
+		"seq": 2,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-WKHGeY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "user-auth/more.md",
+					"expected": "user-auth/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > reports one inside a nested area folder",
+		"seq": 3,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-1XyIQt",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/platform": {
+				"dir": true
+			},
+			"specs/platform/session": {
+				"dir": true
+			},
+			"specs/platform/session/changes.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/platform": {
+				"dir": true
+			},
+			"specs/platform/session": {
+				"dir": true
+			},
+			"specs/platform/session/changes.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "platform/session/changes.md",
+					"expected": "platform/session/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > reports a spec file whose name differs only in case",
+		"seq": 4,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-uLsEDJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/SPEC.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/SPEC.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "user-auth/SPEC.md",
+					"expected": "user-auth/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > ignores the flat and nested layouts the merge path reads",
+		"seq": 5,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-Srg8jd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/platform": {
+				"dir": true
+			},
+			"specs/platform/session": {
+				"dir": true
+			},
+			"specs/platform/session/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/platform": {
+				"dir": true
+			},
+			"specs/platform/session": {
+				"dir": true
+			},
+			"specs/platform/session/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > leaves a specs/-root spec.md to its own check",
+		"seq": 6,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-v4m6zB",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > ignores notes with no delta section",
+		"seq": 7,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-m6urnB",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/README.md": {
+				"text": "# Notes\n\nWhy these specs are organized this way.\n"
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/notes.md": {
+				"text": "# Notes\n\nOpen questions for review.\n"
+			},
+			"specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/README.md": {
+				"text": "# Notes\n\nWhy these specs are organized this way.\n"
+			},
+			"specs/user-auth": {
+				"dir": true
+			},
+			"specs/user-auth/notes.md": {
+				"text": "# Notes\n\nOpen questions for review.\n"
+			},
+			"specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > ignores delta headers that only appear inside a code fence",
+		"seq": 8,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-KmSBgV",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/guide.md": {
+				"text": "# How to write a delta\n\n```markdown\n## ADDED Requirements\n### Requirement: Example\n```\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/guide.md": {
+				"text": "# How to write a delta\n\n```markdown\n## ADDED Requirements\n### Requirement: Example\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > skips dot entries and non-markdown files",
+		"seq": 9,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-gBgSh8",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/.drafts": {
+				"dir": true
+			},
+			"specs/.drafts/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/.hidden.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/user-auth.txt": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/.drafts": {
+				"dir": true
+			},
+			"specs/.drafts/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/.hidden.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/user-auth.txt": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > returns results sorted by path",
+		"seq": 10,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-qAfxBW",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/alpha": {
+				"dir": true
+			},
+			"specs/alpha/delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/zeta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/alpha": {
+				"dir": true
+			},
+			"specs/alpha/delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"specs/zeta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "alpha/delta.md",
+					"expected": "alpha/spec.md"
+				},
+				{
+					"path": "zeta.md",
+					"expected": "zeta/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > returns nothing for a change with no specs folder",
+		"seq": 11,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-8RqGI8",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "findUnreadDeltaFiles > skips a dangling symlink",
+		"seq": 12,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-deltas-5xchxP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/specs",
+		"args": ["$ROOT/specs"],
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/ghost.md": {
+				"link": "$ROOT/missing.md"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/ghost.md": {
+				"link": "$ROOT/missing.md"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "validate with an unread delta file > rejects specs/<capability>.md, naming the file and where it belongs",
+		"seq": 13,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-unread-validate-wHSxlP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/change"]
+		},
+		"before": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "user-auth.md",
+						"message": "Delta spec found at specs/user-auth.md. Delta specs must be a spec.md inside a capability folder — this file is ignored when the change is applied or archived. Move its requirements into specs/user-auth/spec.md."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "validate with an unread delta file > rejects a stray delta file even when the capability spec.md is valid",
+		"seq": 14,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-unread-validate-gag7my",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/change"]
+		},
+		"before": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/user-auth": {
+				"dir": true
+			},
+			"change/specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/user-auth": {
+				"dir": true
+			},
+			"change/specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "user-auth/more.md",
+						"message": "Delta spec found at specs/user-auth/more.md. Delta specs must be a spec.md inside a capability folder — this file is ignored when the change is applied or archived. Move its requirements into specs/user-auth/spec.md."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "validate with an unread delta file > control: accepts the nested layout specs/<area>/<capability>/spec.md",
+		"seq": 15,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-unread-validate-Vl96KG",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/change"]
+		},
+		"before": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/platform": {
+				"dir": true
+			},
+			"change/specs/platform/session": {
+				"dir": true
+			},
+			"change/specs/platform/session/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/platform": {
+				"dir": true
+			},
+			"change/specs/platform/session": {
+				"dir": true
+			},
+			"change/specs/platform/session/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "validate with an unread delta file > control: accepts notes beside a valid delta",
+		"seq": 16,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-unread-validate-EeHAa5",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/change"]
+		},
+		"before": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/README.md": {
+				"text": "# Notes\n\nPlain notes.\n"
+			},
+			"change/specs/user-auth": {
+				"dir": true
+			},
+			"change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"after": {
+			"change": {
+				"dir": true
+			},
+			"change/specs": {
+				"dir": true
+			},
+			"change/specs/README.md": {
+				"text": "# Notes\n\nPlain notes.\n"
+			},
+			"change/specs/user-auth": {
+				"dir": true
+			},
+			"change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "archive with an unread delta file > refuses to archive when the only delta is specs/<capability>.md",
+		"seq": 17,
+		"kind": "archive.execute",
+		"root": "openspec-unread-archive-ESktpl",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"args": [
+				"flat-delta",
+				{
+					"yes": true
+				}
+			],
+			"cwd": ""
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/flat-delta": {
+				"dir": true
+			},
+			"openspec/changes/flat-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/flat-delta/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/flat-delta/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/flat-delta": {
+				"dir": true
+			},
+			"openspec/changes/flat-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/flat-delta/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/flat-delta/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "archive with an unread delta file > refuses to archive when a stray delta sits beside a valid spec.md",
+		"seq": 18,
+		"kind": "archive.execute",
+		"root": "openspec-unread-archive-SErRHo",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"args": [
+				"stray-delta",
+				{
+					"yes": true
+				}
+			],
+			"cwd": ""
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta/specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Passkey Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/stray-delta/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/stray-delta/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/stray-delta/specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Passkey Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/stray-delta/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/stray-delta/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "archive with an unread delta file > still archives with --no-validate, the documented escape hatch",
+		"seq": 19,
+		"kind": "archive.execute",
+		"root": "openspec-unread-archive-L7jUmZ",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"args": [
+				"flat-no-validate",
+				{
+					"yes": true,
+					"noValidate": true
+				}
+			],
+			"cwd": ""
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/flat-no-validate": {
+				"dir": true
+			},
+			"openspec/changes/flat-no-validate/specs": {
+				"dir": true
+			},
+			"openspec/changes/flat-no-validate/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/flat-no-validate/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-flat-no-validate": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-flat-no-validate/specs": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-flat-no-validate/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/archive/2026-11-05-flat-no-validate/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "archive with an unread delta file > control: a change with no spec files still archives",
+		"seq": 20,
+		"kind": "archive.execute",
+		"root": "openspec-unread-archive-MOLhst",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"args": [
+				"tooling-only",
+				{
+					"yes": true
+				}
+			],
+			"cwd": ""
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/tooling-only": {
+				"dir": true
+			},
+			"openspec/changes/tooling-only/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-tooling-only": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-tooling-only/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "archive with an unread delta file > control: specs/<capability>/spec.md archives and merges",
+		"seq": 21,
+		"kind": "archive.execute",
+		"root": "openspec-unread-archive-22ycFv",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"args": [
+				"nested-delta",
+				{
+					"yes": true
+				}
+			],
+			"cwd": ""
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/nested-delta": {
+				"dir": true
+			},
+			"openspec/changes/nested-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/nested-delta/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/nested-delta/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/nested-delta/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/archive": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-nested-delta": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-nested-delta/specs": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-nested-delta/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/archive/2026-11-05-nested-delta/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/archive/2026-11-05-nested-delta/tasks.md": {
+				"text": "- [x] Task 1\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/specs/user-auth/spec.md": {
+				"text": "# user-auth Specification\n\n## Purpose\nTBD - created by archiving change nested-delta. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "instructions apply with an unread delta file > warns about specs/<capability>.md, exactly when the validator rejects it",
+		"seq": 22,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-apply-Lc06hd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/my-change/specs",
+		"args": ["$ROOT/openspec/changes/my-change/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "user-auth.md",
+					"expected": "user-auth/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "instructions apply with an unread delta file > warns about specs/<capability>.md, exactly when the validator rejects it",
+		"seq": 23,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-unread-apply-Lc06hd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/my-change",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/openspec/changes/my-change"]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "user-auth.md",
+						"message": "Delta spec found at specs/user-auth.md. Delta specs must be a spec.md inside a capability folder — this file is ignored when the change is applied or archived. Move its requirements into specs/user-auth/spec.md."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "instructions apply with an unread delta file > names a stray delta beside a valid spec.md",
+		"seq": 24,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-apply-iGAT6L",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/my-change/specs",
+		"args": ["$ROOT/openspec/changes/my-change/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth/more.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"path": "user-auth/more.md",
+					"expected": "user-auth/spec.md"
+				}
+			]
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "instructions apply with an unread delta file > control: stays quiet for specs/<capability>/spec.md",
+		"seq": 25,
+		"kind": "discovery.findUnreadDeltaFiles",
+		"root": "openspec-unread-apply-LMtwam",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/my-change/specs",
+		"args": ["$ROOT/openspec/changes/my-change/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "misplaced-delta-files.test.ts",
+		"test": "instructions apply with an unread delta file > control: stays quiet for specs/<capability>/spec.md",
+		"seq": 26,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-unread-apply-LMtwam",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/my-change",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/openspec/changes/my-change"]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/my-change": {
+				"dir": true
+			},
+			"openspec/changes/my-change/.openspec.yaml": {
+				"text": "schema: spec-driven\n"
+			},
+			"openspec/changes/my-change/proposal.md": {
+				"text": "## Why\nx\n"
+			},
+			"openspec/changes/my-change/specs": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth": {
+				"dir": true
+			},
+			"openspec/changes/my-change/specs/user-auth/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Password Login\nThe system SHALL let a user sign in with a password.\n\n#### Scenario: Valid password\n- **WHEN** a user submits a valid password\n- **THEN** a session is created\n"
+			},
+			"openspec/changes/my-change/tasks.md": {
+				"text": "## 1. Implementation\n- [x] 1.1 Write the code\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	}
+]

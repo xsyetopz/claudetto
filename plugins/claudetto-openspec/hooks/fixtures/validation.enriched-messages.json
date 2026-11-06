@@ -1,0 +1,132 @@
+[
+	{
+		"file": "validation.enriched-messages.test.ts",
+		"test": "Validator enriched messages > adds guidance for no deltas in change",
+		"seq": 0,
+		"kind": "validator.validateChange",
+		"root": "test-validation-enriched-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/proposal.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/proposal.md"]
+		},
+		"before": {
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nThere are changes proposed, but no delta specs provided yet."
+			}
+		},
+		"after": {
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nThere are changes proposed, but no delta specs provided yet."
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "deltas",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.enriched-messages.test.ts",
+		"test": "Validator enriched messages > adds guidance when spec missing Purpose/Requirements",
+		"seq": 1,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-enriched-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Requirements\n\n### Requirement: Foo\nFoo SHALL ...\n\n#### Scenario: Bar\nWhen..."
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Requirements\n\n### Requirement: Foo\nFoo SHALL ...\n\n#### Scenario: Bar\nWhen..."
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Spec must have a Purpose section. Missing required sections. Expected headers: \"## Purpose\" and \"## Requirements\". Example:\n## Purpose\n[brief purpose]\n\n## Requirements\n### Requirement: Clear requirement statement\nUsers SHALL ...\n\n#### Scenario: Descriptive name\n- **WHEN** ...\n- **THEN** ..."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.enriched-messages.test.ts",
+		"test": "Validator enriched messages > warns with scenario conversion template when missing scenarios",
+		"seq": 2,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-enriched-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis is a sufficiently long purpose section to avoid warnings about brevity.\n\n## Requirements\n\n### Requirement: Foo SHALL be described\nText of requirement\n"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis is a sufficiently long purpose section to avoid warnings about brevity.\n\n## Requirements\n\n### Requirement: Foo SHALL be described\nText of requirement\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "requirements.0.scenarios",
+						"message": "Requirement must have at least one scenario"
+					},
+					{
+						"level": "WARNING",
+						"path": "requirements[0].scenarios",
+						"message": "Requirement must have at least one scenario. Scenarios must use level-4 headers. Convert bullet lists into:\n#### Scenario: Short name\n- **WHEN** ...\n- **THEN** ...\n- **AND** ..."
+					},
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"Foo SHALL be described\" should contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header. (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 2,
+					"info": 0
+				}
+			}
+		}
+	}
+]

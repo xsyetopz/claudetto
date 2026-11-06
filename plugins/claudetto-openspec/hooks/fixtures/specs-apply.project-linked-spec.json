@@ -1,0 +1,2072 @@
+[
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > merges through the link and leaves the link in place",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-FuY3ER",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "login",
+					"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+					"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/login/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > merges through the link and leaves the link in place",
+		"seq": 1,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-project-linked-spec-FuY3ER",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"add-mfa",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > merges through the link and leaves the link in place",
+		"seq": 2,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-project-linked-spec-FuY3ER",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses a link that leaves the project",
+		"seq": 3,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-w0sFNE",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"after": {
+			"outside.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/login/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses a link repointed out of the project between resolve and write",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-3StSm2",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "login",
+					"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+					"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/login/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses a link repointed out of the project between resolve and write",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-project-linked-spec-3StSm2",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"add-mfa",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses a link repointed out of the project between resolve and write",
+		"seq": 6,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-project-linked-spec-3StSm2",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"after": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/login/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses a link repointed out of the project between resolve and read",
+		"seq": 7,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-d05CY7",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "login",
+					"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+					"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/login/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses a link repointed out of the project between resolve and read",
+		"seq": 8,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-project-linked-spec-d05CY7",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"add-mfa",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"after": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/login/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > cannot be redirected by a link repointed while the write is in flight",
+		"seq": 9,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-MDDnc3",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "login",
+					"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+					"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/login/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > cannot be redirected by a link repointed while the write is in flight",
+		"seq": 10,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-project-linked-spec-MDDnc3",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"add-mfa",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > cannot be redirected by a link repointed while the write is in flight",
+		"seq": 11,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-project-linked-spec-MDDnc3",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/login/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses an ordinary target replaced by a link while the write is in flight",
+		"seq": 12,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-l78GY5",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "login",
+					"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+					"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/login/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses an ordinary target replaced by a link while the write is in flight",
+		"seq": 13,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-project-linked-spec-l78GY5",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"add-mfa",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > refuses an ordinary target replaced by a link while the write is in flight",
+		"seq": 14,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-project-linked-spec-l78GY5",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			}
+		},
+		"after": {
+			"outside.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/login/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > merges through a linked delta spec inside the project",
+		"seq": 15,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-project-linked-spec-g7mjax",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa",
+		"args": [
+			"$ROOT/repo/openspec/changes/add-mfa",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas/login.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"link": "../../../../../docs/auth/deltas/login.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas/login.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"link": "../../../../../docs/auth/deltas/login.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "login",
+					"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+					"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/login/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.project-linked-spec.test.ts",
+		"test": "a spec.md linked to a file elsewhere in the project > merges through a linked delta spec inside the project",
+		"seq": 16,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-project-linked-spec-g7mjax",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+		"args": [
+			{
+				"id": "login",
+				"sourceRoot": "$ROOT/repo/openspec/changes/add-mfa/specs",
+				"source": "$ROOT/repo/openspec/changes/add-mfa/specs/login/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/login/spec.md",
+				"exists": true
+			},
+			"add-mfa",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas/login.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"link": "../../../../../docs/auth/deltas/login.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"after": {
+			"repo": {
+				"dir": true
+			},
+			"repo/docs": {
+				"dir": true
+			},
+			"repo/docs/auth": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas": {
+				"dir": true
+			},
+			"repo/docs/auth/deltas/login.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n"
+			},
+			"repo/docs/auth/specs": {
+				"dir": true
+			},
+			"repo/docs/auth/specs/login.md": {
+				"text": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n"
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/changes/add-mfa/specs/login/spec.md": {
+				"link": "../../../../../docs/auth/deltas/login.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/login": {
+				"dir": true
+			},
+			"repo/openspec/specs/login/spec.md": {
+				"link": "../../../docs/auth/specs/login.md"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# login Specification\n\n## Purpose\nUsers sign in with their credentials to reach their account.\n\n## Requirements\n\n### Requirement: Sign in\nThe system SHALL let a user sign in with valid credentials.\n\n#### Scenario: Valid credentials\n- **WHEN** the user submits valid credentials\n- **THEN** the user is signed in\n\n### Requirement: Second factor\nThe system SHALL require a second factor.\n\n#### Scenario: Prompted\n- **WHEN** a user signs in\n- **THEN** a second factor is requested\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	}
+]

@@ -1,0 +1,771 @@
+[
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > control: a scenario with WHEN and THEN draws no step warning",
+		"seq": 0,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-vwrWh9",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > names the ADDED requirement and the scenario, and says both halves are missing",
+		"seq": 1,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-1DJOPi",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > fails --strict for ADDED",
+		"seq": 2,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-zsiMYD",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > names the MODIFIED requirement and the scenario, and says both halves are missing",
+		"seq": 3,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-nzREpC",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "MODIFIED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > fails --strict for MODIFIED",
+		"seq": 4,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-9IakO3",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "MODIFIED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > reads a CRLF delta the same way: one warning, and none for a scenario with steps",
+		"seq": 5,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-kxJltO",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\r\n### Requirement: Credit Notes\r\nThe system SHALL issue a credit note when an invoice is voided.\r\n\r\n#### Scenario: Invoice voided\r\n- **AND** the ledger is balanced\r\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\r\n### Requirement: Credit Notes\r\nThe system SHALL issue a credit note when an invoice is voided.\r\n\r\n#### Scenario: Invoice voided\r\n- **AND** the ledger is balanced\r\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > reads a CRLF delta the same way: one warning, and none for a scenario with steps",
+		"seq": 6,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-U5cY7A",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\r\n### Requirement: Credit Notes\r\nThe system SHALL issue a credit note when an invoice is voided.\r\n\r\n#### Scenario: Invoice voided\r\n- **WHEN** an invoice is voided\r\n- **THEN** a credit note is issued\r\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\r\n### Requirement: Credit Notes\r\nThe system SHALL issue a credit note when an invoice is voided.\r\n\r\n#### Scenario: Invoice voided\r\n- **WHEN** an invoice is voided\r\n- **THEN** a credit note is issued\r\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > reports only the half that is missing",
+		"seq": 7,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-ze8GKp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\": scenario \"Invoice voided\" is missing a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > warns about one scenario, not the requirement, when its sibling is fine",
+		"seq": 8,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-LH1vGS",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > does not stack on the empty-body error: that hint already says what to add",
+		"seq": 9,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-THyPGV",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\" must include at least one scenario (a scenario header with no body under it does not count; add its steps, e.g. \"- **WHEN** ...\" and \"- **THEN** ...\")"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > treats a fenced-only body as steps-less: an example is documentation",
+		"seq": 10,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-6IjS2m",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n```text\nWHEN voided THEN a credit note is issued\n```\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n```text\nWHEN voided THEN a credit note is issued\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "validate warns about a scenario that asserts nothing > leaves an unlabeled level-4 child alone: #### Notes is prose on purpose",
+		"seq": 11,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-steps-KImsSD",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Notes\nThe spec path counts every level-4 child as a scenario.\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Notes\nThe spec path counts every level-4 child as a scenario.\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "the main-spec path reports the same finding > warns, naming the requirement and the scenario, without failing the report",
+		"seq": 12,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "billing",
+		"args": {
+			"strict": false,
+			"args": [
+				"billing",
+				"# billing Specification\n\n## Purpose\nDefine how billing documents are issued for these tests.\n\n## Requirements\n\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0].scenarios",
+						"message": "Requirement \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "the main-spec path reports the same finding > fails --strict for a step-less scenario on the spec path",
+		"seq": 13,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "billing",
+		"args": {
+			"strict": true,
+			"args": [
+				"billing",
+				"# billing Specification\n\n## Purpose\nDefine how billing documents are issued for these tests.\n\n## Requirements\n\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **AND** the ledger is balanced\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0].scenarios",
+						"message": "Requirement \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "the main-spec path reports the same finding > reads a CRLF spec the same way: one warning for the step-less scenario, none for the good one",
+		"seq": 14,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "billing",
+		"args": {
+			"strict": false,
+			"args": [
+				"billing",
+				"# billing Specification\r\n\r\n## Purpose\r\nDefine how billing documents are issued for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Credit Notes\r\nThe system SHALL issue a credit note when an invoice is voided.\r\n\r\n#### Scenario: Invoice voided\r\n- **AND** the ledger is balanced\r\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0].scenarios",
+						"message": "Requirement \"Credit Notes\": scenario \"Invoice voided\" is missing a WHEN/GIVEN step and a THEN step. A scenario needs a trigger and an outcome, e.g. \"- **WHEN** an invoice is voided\" and \"- **THEN** a credit note is issued\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "the main-spec path reports the same finding > reads a CRLF spec the same way: one warning for the step-less scenario, none for the good one",
+		"seq": 15,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "billing",
+		"args": {
+			"strict": false,
+			"args": [
+				"billing",
+				"# billing Specification\r\n\r\n## Purpose\r\nDefine how billing documents are issued for these tests.\r\n\r\n## Requirements\r\n\r\n### Requirement: Credit Notes\r\nThe system SHALL issue a credit note when an invoice is voided.\r\n\r\n#### Scenario: Invoice voided\r\n- **WHEN** an invoice is voided\r\n- **THEN** a credit note is issued\r\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-steps.test.ts",
+		"test": "the main-spec path reports the same finding > control: a scenario with steps draws no warning on the spec path either",
+		"seq": 16,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "billing",
+		"args": {
+			"strict": false,
+			"args": [
+				"billing",
+				"# billing Specification\n\n## Purpose\nDefine how billing documents are issued for these tests.\n\n## Requirements\n\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	}
+]

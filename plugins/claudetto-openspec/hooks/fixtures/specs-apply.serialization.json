@@ -1,0 +1,1227 @@
+[
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from no terminal newline",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-NPbRlr",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from no terminal newline",
+		"seq": 1,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-NPbRlr",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from one terminal LF",
+		"seq": 2,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-zCEpwt",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from one terminal LF",
+		"seq": 3,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-zCEpwt",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from multiple terminal LF",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-QoDxPP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from multiple terminal LF",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-QoDxPP",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from multiple terminal CRLF",
+		"seq": 6,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-sdNrEC",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates deterministic serializer output.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates deterministic serializer output.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n\r\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > emits one final LF from multiple terminal CRLF",
+		"seq": 7,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-sdNrEC",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates deterministic serializer output.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates deterministic serializer output.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n\r\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > preserves content after Requirements",
+		"seq": 8,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-xPCOWs",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n## Notes\n\nKeep this later section.\n\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n## Notes\n\nKeep this later section.\n\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > preserves content after Requirements",
+		"seq": 9,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-xPCOWs",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n## Notes\n\nKeep this later section.\n\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n## Notes\n\nKeep this later section.\n\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n\n## Notes\n\nKeep this later section.\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["## Notes", "Keep this later section."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > keeps the blank lines around ## Requirements when the target has them",
+		"seq": 10,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-Jq3Aku",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\n\nDemonstrates blank-line preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\n\nDemonstrates blank-line preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > keeps the blank lines around ## Requirements when the target has them",
+		"seq": 11,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-Jq3Aku",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\n\nDemonstrates blank-line preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\n\nDemonstrates blank-line preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\n\nDemonstrates blank-line preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > separates a ## Requirements heading glued to its neighbors",
+		"seq": 12,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eof-De6hCE",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test",
+		"args": ["$ROOT/openspec/changes/serializer-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+					"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.serialization.test.ts",
+		"test": "spec serialization > separates a ## Requirements heading glued to its neighbors",
+		"seq": 13,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eof-De6hCE",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/serializer-test/specs",
+				"source": "$ROOT/openspec/changes/serializer-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"serializer-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/serializer-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates deterministic serializer output.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\nIt SHALL preserve this meaningful internal paragraph break.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	}
+]

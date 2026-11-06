@@ -1,0 +1,1402 @@
+[
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves two blank lines inside a backtick fence",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-6Kgt4L",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves two blank lines inside a backtick fence",
+		"seq": 1,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-6Kgt4L",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\nb: 2\n```\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves a longer blank run inside a fence",
+		"seq": 2,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-Tav7C0",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves a longer blank run inside a fence",
+		"seq": 3,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-Tav7C0",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\n\n\nb: 2\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```yaml\na: 1\n\n\n\n\nb: 2\n```\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves blank lines inside a tilde fence",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-1ixSm8",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n~~~yaml\na: 1\n\n\nb: 2\n~~~"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n~~~yaml\na: 1\n\n\nb: 2\n~~~"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves blank lines inside a tilde fence",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-1ixSm8",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n~~~yaml\na: 1\n\n\nb: 2\n~~~"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n~~~yaml\na: 1\n\n\nb: 2\n~~~"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n~~~yaml\na: 1\n\n\nb: 2\n~~~\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves indentation-sensitive content inside a fence",
+		"seq": 6,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-OmrdyI",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```python\ndef a():\n    pass\n\n\ndef b():\n    pass\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```python\ndef a():\n    pass\n\n\ndef b():\n    pass\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves indentation-sensitive content inside a fence",
+		"seq": 7,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-OmrdyI",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```python\ndef a():\n    pass\n\n\ndef b():\n    pass\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```python\ndef a():\n    pass\n\n\ndef b():\n    pass\n```"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Config Example\nThe system SHALL document the config file.\n\n#### Scenario: Sample config\n- **WHEN** an operator reads the spec\n- **THEN** they see:\n\n```python\ndef a():\n    pass\n\n\ndef b():\n    pass\n```\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > still collapses blank runs outside fences",
+		"seq": 8,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-dPwgFs",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spaced Out\nThe system SHALL still be normalised outside fences.\n\n\n\n#### Scenario: Normalised\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spaced Out\nThe system SHALL still be normalised outside fences.\n\n\n\n#### Scenario: Normalised\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > still collapses blank runs outside fences",
+		"seq": 9,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-dPwgFs",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spaced Out\nThe system SHALL still be normalised outside fences.\n\n\n\n#### Scenario: Normalised\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spaced Out\nThe system SHALL still be normalised outside fences.\n\n\n\n#### Scenario: Normalised\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Spaced Out\nThe system SHALL still be normalised outside fences.\n\n#### Scenario: Normalised\n- **WHEN** a\n- **THEN** b\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > leaves a spec with no fences byte-identical to the previous behaviour",
+		"seq": 10,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-T4NHyu",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Plain\nThe system SHALL be plain.\n\n#### Scenario: Plain\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Plain\nThe system SHALL be plain.\n\n#### Scenario: Plain\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > leaves a spec with no fences byte-identical to the previous behaviour",
+		"seq": 11,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-T4NHyu",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Plain\nThe system SHALL be plain.\n\n#### Scenario: Plain\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Plain\nThe system SHALL be plain.\n\n#### Scenario: Plain\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Plain\nThe system SHALL be plain.\n\n#### Scenario: Plain\n- **WHEN** a\n- **THEN** b\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > does not collapse a run of whitespace-only lines, matching the old regex",
+		"seq": 12,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-B7W9BH",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spacey\nThe system SHALL keep whitespace-only lines as before.\n\n   \n\n#### Scenario: Spacey\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spacey\nThe system SHALL keep whitespace-only lines as before.\n\n   \n\n#### Scenario: Spacey\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > does not collapse a run of whitespace-only lines, matching the old regex",
+		"seq": 13,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-B7W9BH",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spacey\nThe system SHALL keep whitespace-only lines as before.\n\n   \n\n#### Scenario: Spacey\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Spacey\nThe system SHALL keep whitespace-only lines as before.\n\n   \n\n#### Scenario: Spacey\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Spacey\nThe system SHALL keep whitespace-only lines as before.\n\n   \n\n#### Scenario: Spacey\n- **WHEN** a\n- **THEN** b\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves fenced blank lines carried in from the existing main spec",
+		"seq": 14,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-fence-eY8UPJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Unrelated\nThe system SHALL add something unrelated.\n\n#### Scenario: Unrelated\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Existing Sample\nThe system SHALL document the sample.\n\n#### Scenario: Sample\n- **THEN** they see:\n\n```yaml\nx: 1\n\n\ny: 2\n```\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Unrelated\nThe system SHALL add something unrelated.\n\n#### Scenario: Unrelated\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Existing Sample\nThe system SHALL document the sample.\n\n#### Scenario: Sample\n- **THEN** they see:\n\n```yaml\nx: 1\n\n\ny: 2\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.fence-preservation.test.ts",
+		"test": "buildUpdatedSpec (code fence preservation) > preserves fenced blank lines carried in from the existing main spec",
+		"seq": 15,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-fence-eY8UPJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Unrelated\nThe system SHALL add something unrelated.\n\n#### Scenario: Unrelated\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Existing Sample\nThe system SHALL document the sample.\n\n#### Scenario: Sample\n- **THEN** they see:\n\n```yaml\nx: 1\n\n\ny: 2\n```\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Unrelated\nThe system SHALL add something unrelated.\n\n#### Scenario: Unrelated\n- **WHEN** a\n- **THEN** b"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Existing Sample\nThe system SHALL document the sample.\n\n#### Scenario: Sample\n- **THEN** they see:\n\n```yaml\nx: 1\n\n\ny: 2\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Existing Sample\nThe system SHALL document the sample.\n\n#### Scenario: Sample\n- **THEN** they see:\n\n```yaml\nx: 1\n\n\ny: 2\n```\n\n### Requirement: Unrelated\nThe system SHALL add something unrelated.\n\n#### Scenario: Unrelated\n- **WHEN** a\n- **THEN** b\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	}
+]

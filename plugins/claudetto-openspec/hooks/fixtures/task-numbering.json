@@ -1,0 +1,183 @@
+[
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > matches duplicate ids at full depth",
+		"seq": 0,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 3. Work\n- [ ] 3.2.1 first child\n- [ ] 3.2.2 second child\n- [ ] 3.2.1 duplicate child\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 4,
+					"message": "Task ID \"3.2.1\" is duplicated; it was first declared on line 2."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > checks lines written with an unrecognised marker too (#1761)",
+		"seq": 1,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 3. Work\n- [x] 3.1 first\n- [~] 3.1 deferred duplicate\n- [] 4.1 wrong group\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "Task ID \"3.1\" is duplicated; it was first declared on line 2."
+				},
+				{
+					"path": "tasks.md",
+					"line": 4,
+					"message": "Task \"4.1\" is under group 3, but its leading number points to group 4. Move it to group 4 or renumber it."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > accepts alphabetic suffixes and numbering gaps",
+		"seq": 2,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 4. Work\r\n- [ ] 4.2a inserted\r\n- [ ] 4.2b another\r\n- [ ] 4.7 gap"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > resets group context at an unnumbered level-two heading",
+		"seq": 3,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. Work\n- [ ] 1.1 task\n## Notes\n- [ ] 9.1 external note\n- [ ] 9.1 repeated external note"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > skips every check in files without numbered groups",
+		"seq": 4,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n- [ ] plain task\n- [ ] 7.1 numbered but ungrouped\n- [ ] 7.1 duplicate but still ungrouped"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > compares group prefixes as integers",
+		"seq": 5,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 01. Work\n- [ ] 1.1 task\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-numbering.test.ts",
+		"test": "findTaskNumberingIssues > detects duplicate ids across task files",
+		"seq": 6,
+		"kind": "task.numbering",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "backend/tasks.md",
+					"content": "## 2. Backend\n- [ ] 2.1 shared task\n"
+				},
+				{
+					"path": "frontend/tasks.md",
+					"content": "## 2. Frontend\n- [ ] 2.1 duplicate task\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "frontend/tasks.md",
+					"line": 2,
+					"message": "Task ID \"2.1\" is duplicated; it was first declared in backend/tasks.md on line 2."
+				}
+			]
+		}
+	}
+]
