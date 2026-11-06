@@ -20,6 +20,8 @@ const lab = (
 	messages: unknown[],
 	verdict: Verdict,
 	seen: string[] = [],
+	models: string[] = [],
+	byModel: Record<string, string> = {},
 ) => {
 	on("classic.Stop", () => ({}));
 	on("session.messages", () => ({ value: messages }));
@@ -27,13 +29,14 @@ const lab = (
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("model.complete", (_$, e) => {
 		seen.push(e.prompt);
+		models.push(e.model ?? "");
 		if (verdict === "fail") {
 			throw new Error("timed out");
 		}
 		return {
 			value: {
 				isAnswered: verdict !== "unanswered",
-				text: verdict,
+				text: byModel[e.model ?? ""] ?? verdict,
 				usage: { inputTokens: 1, outputTokens: 1 },
 			},
 		};
@@ -151,4 +154,73 @@ test("the grader sees the earlier person and assistant messages", async ($: Engi
 	expect(seen[0]).toContain(
 		"User message that opened this turn: now summarize",
 	);
+});
+
+const ran = (tool: string, text: string, command = "git diff") => ({
+	role: "assistant",
+	text: "",
+	toolUses: [{ tool, id: "t", input: { command }, text }],
+});
+const UNSEEN_REPLY = "Committed. `.gitignore` also has the setup block.";
+
+test("a turn with tool output is also graded by sonnet for the unseen fault, which sees the output", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	const models: string[] = [];
+	lab(
+		on,
+		[user("commit"), ran("Bash", "+# setup block\n+dist/")],
+		found("unseen", "also has the setup block"),
+		seen,
+		models,
+	);
+	expect((await stop($, false, UNSEEN_REPLY)).block).toContain(
+		"not seen in full",
+	);
+	expect([...models].sort((a, b) => a.localeCompare(b))).toEqual([
+		"haiku",
+		"sonnet",
+	]);
+	const [haiku, sonnet] = models[0] === "haiku" ? seen : seen.reverse();
+	expect(sonnet).toContain("- unseen:");
+	expect(sonnet).toContain("NOT shown to the user");
+	expect(sonnet).toContain("- Bash git diff\n+# setup block");
+	expect(haiku).not.toContain("- unseen:");
+	expect(haiku).not.toContain("NOT shown to the user");
+});
+
+test("sonnet sees the other codes beside unseen, and a fault it finds on them does not block", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		[user("commit"), ran("Bash", "+# setup block")],
+		'{"faults":[]}',
+		seen,
+		[],
+		{ sonnet: found("credited", "Committed.") },
+	);
+	expect((await stop($, false, UNSEEN_REPLY)).block).toBeUndefined();
+	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+	expect(sonnet).toContain("- credited:");
+	expect(sonnet).toContain("- unfiled:");
+});
+
+test("a turn with no tool output makes one call and cannot raise the unseen fault", async ($: Engine, on: On) => {
+	const models: string[] = [];
+	lab(on, [user("hi")], found("unseen"), [], models);
+	expect((await stop($)).block).toBeUndefined();
+	expect(models).toEqual(["haiku"]);
+});
+
+test("the grader sees the latest 8 tool results, 400 characters each", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	const calls = Array.from({ length: 10 }, (_, i) =>
+		ran("Bash", `out${i}${"x".repeat(500)}`, `cmd${i}`),
+	);
+	lab(on, [user("go"), ...calls], '{"faults":[]}', seen);
+	await stop($);
+	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+	expect(sonnet).not.toContain("cmd1\n");
+	expect(sonnet).toContain("cmd2\nout2");
+	expect(sonnet).toContain("cmd9\nout9");
+	expect(sonnet).not.toContain("x".repeat(400));
 });

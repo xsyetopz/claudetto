@@ -17,6 +17,10 @@ const EARLIER = 30;
 /** How many earlier assistant messages the grader sees as what the user was shown. */
 const SHOWN = 6;
 
+/** How many of the turn's latest tool results the grader sees, and how many characters of each. */
+const RESULTS = 8;
+const RESULT_CHARS = 400;
+
 /** The person's message that opened the turn, the person messages before it, and whether any call since then looked at the workspace. */
 export const claimTurn = (messages: readonly SessionMessage[]) => {
 	const start = messages.findLastIndex(isPersonMessage);
@@ -35,6 +39,19 @@ export const claimTurn = (messages: readonly SessionMessage[]) => {
 		looked: messages
 			.slice(start + 1)
 			.some((m) => m.toolUses.some((use) => !NOT_A_LOOK.has(use.tool))),
+		results: messages
+			.slice(start + 1)
+			.flatMap((m) => m.toolUses)
+			.filter((use) => use.text !== undefined && !NOT_A_LOOK.has(use.tool))
+			.slice(-RESULTS)
+			.map((use) => {
+				const arg = [
+					use.input.command,
+					use.input.file_path,
+					use.input.pattern,
+				].find((v) => typeof v === "string");
+				return `- ${use.tool} ${String(arg ?? "").slice(0, 120)}\n${(use.text ?? "").slice(0, RESULT_CHARS)}`;
+			}),
 	};
 };
 

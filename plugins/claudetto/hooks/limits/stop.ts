@@ -32,6 +32,9 @@ const didWrite = (answer: {
 	readonly isError?: unknown;
 }): boolean => answer.deny === undefined && answer.isError === undefined;
 
+/** The codes sonnet grades beside `unseen`, as measured: its answers on them are dropped. */
+const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback", "unfiled"];
+
 /** The stop that ends a turn whose stretch since the last Stop wrote no file, in place of the block that would continue it. */
 const stallStop = (block: string) => ({
 	preventContinuation: true as const,
@@ -127,15 +130,40 @@ const gradeBlock = async (
 		...(turn.looked ? [] : (["unchecked", "rules"] as const)),
 		...(wroteIssues ? [] : (["unfiled"] as const)),
 	];
-	const r = await $.model
-		.complete({
-			model: "haiku",
-			prompt: VERIFY_GRADE(turn.people, turn.shown, turn.user, reply, codes),
-			maxTokens: 300,
-			timeoutMs: 15_000,
-		})
-		.catch(() => undefined);
-	const found = r?.isAnswered ? parseFaults(r.text, codes, reply) : [];
+	const grade = async (
+		model: "haiku" | "sonnet",
+		list: readonly GradeFault[],
+		results: readonly string[],
+		keep: readonly GradeFault[] = list,
+	) => {
+		const r = await $.model
+			.complete({
+				model,
+				prompt: VERIFY_GRADE(
+					turn.people,
+					turn.shown,
+					turn.user,
+					reply,
+					list,
+					results,
+				),
+				maxTokens: 300,
+				timeoutMs: 15_000,
+			})
+			.catch(() => undefined);
+		return r?.isAnswered
+			? parseFaults(r.text, list, reply).filter((code) => keep.includes(code))
+			: [];
+	};
+	// Haiku missed or over-flagged `unseen` on the held-out turns, so sonnet grades it, only when a tool ran. Asked for `unseen` alone,
+	// sonnet flagged 8 of 39 clean replies; beside the other codes it flagged at most 1 of 39 (/tmp/probe-147), so it sees them and keeps `unseen`.
+	const [found, unseen] = await Promise.all([
+		grade("haiku", codes, []),
+		turn.results.length > 0
+			? grade("sonnet", [...UNSEEN_PEERS, "unseen"], turn.results, ["unseen"])
+			: Promise.resolve([]),
+	]);
+	found.push(...unseen);
 	return found.length > 0 ? VERIFY_BLOCK(found) : undefined;
 };
 

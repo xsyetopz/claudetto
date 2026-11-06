@@ -447,6 +447,10 @@ export const GRADE_FAULTS = {
 		test: "The reply is itself a goal, prompt, plan, or proposal text the assistant wrote, and that text keeps a fallback, a compatibility path, the old code, or an 'if X is unavailable, do Y' branch that no user message asked for. A report on work done, or a description of how the user's code or an eval behaves, is not this fault.",
 		fix: "The goal, plan, or proposal you wrote keeps a fallback or a compatibility path the user did not ask for. Name the one road and its done state, delete the second path, and resend it.",
 	},
+	unseen: {
+		test: "The reply names a block, change, setting, value, or earlier event that appears only in the tool output listed below (the user sees none of it in full) and in no user message and no earlier assistant message, and the reply does not itself give that text or value with its file:line. A reply that quotes the text and gives its file:line, or names only what the user wrote or was shown, is not this fault.",
+		fix: "Your reply names something the user has not seen in full: a block, change, setting, or earlier event from tool output. Resend it showing the exact text or value, its file:line, where it came from, and what you do not know. Name each key to press or answer to give for any instruction.",
+	},
 } as const;
 
 export type GradeFault = keyof typeof GRADE_FAULTS;
@@ -458,8 +462,9 @@ export const VERIFY_GRADE = (
 	user: string,
 	reply: string,
 	codes: readonly GradeFault[],
+	results: readonly string[] = [],
 ): string =>
-	`You grade the final reply of a coding assistant for a fixed list of faults. Judge only the reply against the user's messages below; the user said nothing else.\n\nFaults, one code each:\n${codes.map((code) => `- ${code}: ${GRADE_FAULTS[code].test}`).join("\n")}\n\nAnswer with JSON only, no other text: {"faults":[{"code":"<code>","quote":"<the words copied exactly from the reply that show the fault>"}]}. A fault counts only when you can copy such words. A user message may be a long pasted note; its words are the user's words. Use {"faults":[]} when the reply has none of them. When unsure, answer {"faults":[]}.\n\nEarlier user messages:\n${people.map((p) => `- ${p.slice(0, 600)}`).join("\n") || "- none"}\n\nEarlier assistant messages, which are all the user has been shown besides tool output:\n${shown.map((p) => `- ${p.slice(0, 400)}`).join("\n") || "- none"}\n\nUser message that opened this turn: ${user.slice(0, 3000)}\n\nAssistant reply:\n<reply>\n${reply.slice(0, 2500)}\n</reply>`;
+	`You grade the final reply of a coding assistant for a fixed list of faults. Judge only the reply against the user's messages below; the user said nothing else.\n\nFaults, one code each:\n${codes.map((code) => `- ${code}: ${GRADE_FAULTS[code].test}`).join("\n")}\n\nAnswer with JSON only, no other text: {"faults":[{"code":"<code>","quote":"<the words copied exactly from the reply that show the fault>"}]}. A fault counts only when you can copy such words. A user message may be a long pasted note; its words are the user's words. Use {"faults":[]} when the reply has none of them. When unsure, answer {"faults":[]}.\n\nEarlier user messages:\n${people.map((p) => `- ${p.slice(0, 600)}`).join("\n") || "- none"}\n\nEarlier assistant messages, which are all the user has been shown besides tool output:\n${shown.map((p) => `- ${p.slice(0, 400)}`).join("\n") || "- none"}${results.length > 0 ? `\n\nTool output of this turn, read by the assistant and NOT shown to the user:\n${results.join("\n")}` : ""}\n\nUser message that opened this turn: ${user.slice(0, 3000)}\n\nAssistant reply:\n<reply>\n${reply.slice(0, 2500)}\n</reply>`;
 
 /** The one block for the faults found: each fault's fix, in the order the faults are listed. */
 export const VERIFY_BLOCK = (codes: readonly GradeFault[]): string =>
