@@ -85,6 +85,58 @@ test("a turn whose only lookup was denied is still offered the unchecked-claim f
 	expect(seen[0]).toContain("- unchecked:");
 });
 
+const askedCall = async ($: Engine, on: On, error: string) => {
+	scanner(on);
+	// The lab refuses an ask itself inside `tool.call`; the CLI settles it outside the plugin and hands back the result below.
+	let checks = 0;
+	on("tool.check", () =>
+		checks++ === 0
+			? { decision: "ask", reason: "read needs approval" }
+			: { decision: "allow" },
+	);
+	on("tool.call", () => ({ isError: true, result: error, text: error }));
+	await $.tool.check({
+		tool: "Read",
+		input: { file_path: "/repo/a.ts" },
+		tool_use_id: "t1",
+	});
+	await $.tool.call({
+		tool: "Read",
+		tool_use_id: "t1",
+		file_path: "/repo/a.ts",
+	});
+};
+
+const askedTurn = [
+	user("The timeout is 30s, right?"),
+	{
+		role: "assistant",
+		text: "",
+		toolUses: [{ tool: "Read", tool_use_id: "t1", input: {}, isError: true }],
+	},
+];
+
+for (const error of [
+	"read needs approval",
+	"Permission to use Read has been denied because Claude Code is running in don't ask mode.",
+	"The user doesn't want to proceed with this tool use. The tool use was rejected.",
+]) {
+	test(`an ask refused with "${error.slice(0, 30)}" is not a lookup`, async ($: Engine, on: On) => {
+		const seen: string[] = [];
+		lab(on, askedTurn, found("unchecked"), seen);
+		await askedCall($, on, error);
+		expect((await stop($)).block).toContain("Check the workspace");
+	});
+}
+
+test("an ask that was allowed and then failed is still a lookup", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, askedTurn, found("unchecked"), seen);
+	await askedCall($, on, "EACCES: permission denied, open '/repo/a.ts'");
+	expect((await stop($)).block).toBeUndefined();
+	expect(seen[0]).not.toContain("- unchecked:");
+});
+
 test("a reply the grader finds no fault in passes", async ($: Engine, on: On) => {
 	lab(on, [user("hello")], '{"faults":[]}');
 	expect((await stop($)).block).toBeUndefined();

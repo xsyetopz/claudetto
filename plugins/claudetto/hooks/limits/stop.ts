@@ -26,6 +26,10 @@ const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
 
 const ANY_TOOL = /^/;
 
+/** How the CLI words a refused ask; a headless refusal repeats the ask's reason instead. */
+const REFUSED =
+	/^(?:Permission (?:to use|for this)|The user doesn't want to proceed with this tool use)/;
+
 /** The tools whose result is a file the session changed. */
 export const WRITERS: BuiltinToolName[] = ["Edit", "NotebookEdit", "Write"];
 
@@ -181,6 +185,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	let wroteIssues = false;
 	// A denied call reaches `tool.call` as an error, the same as one that ran and failed; only `tool.check` tells them apart.
 	const denied = new Set<string>();
+	const asked = new Map<string, string>();
 	const noticeTasks = tasksNotice();
 	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
 		const answer = await next(e);
@@ -198,10 +203,26 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	});
 	on("tool.check", { tool: ANY_TOOL }, async (_$, e, next) => {
 		const verdict = await next(e);
-		if (verdict.decision === "deny" && e.tool_use_id !== undefined) {
+		if (e.tool_use_id !== undefined && verdict.decision === "deny") {
 			denied.add(e.tool_use_id);
 		}
+		if (e.tool_use_id !== undefined && verdict.decision === "ask") {
+			asked.set(e.tool_use_id, verdict.reason ?? "");
+		}
 		return verdict;
+	});
+	on("tool.call", { tool: ANY_TOOL }, async (_$, e, next) => {
+		const answer = await next(e);
+		const reason = asked.get(e.tool_use_id);
+		const text = answer.text ?? "";
+		if (
+			answer.isError &&
+			reason !== undefined &&
+			(text === reason || REFUSED.test(text))
+		) {
+			denied.add(e.tool_use_id);
+		}
+		return answer;
 	});
 	on("classic.Stop", async ($, e, next) => {
 		const stretchWrote = wrote;
