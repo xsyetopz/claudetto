@@ -11,3 +11,5 @@ Command: `sh ours.sh /tmp/probe-18-11` (2026-11-07).
 Result: `/tmp/probe-18-11/marked` only.
 
 Mutant: `ours.sh` without the session-id comparison prints `/tmp/probe-18-11/marked` and `/tmp/probe-18-11/other`, so the comparison is what keeps another session's folder off the list.
+
+Second run, on `/tmp` itself: the first `ours.sh` printed nothing, because `/tmp` is a link to `/private/tmp` and `find` does not follow a starting link. With `find -H` it prints the seven `/tmp/probe-*` folders this session marked and none of the other folders in `/tmp`; the `probe-18-11` run above is unchanged.
