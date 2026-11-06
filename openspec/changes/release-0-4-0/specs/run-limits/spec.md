@@ -1,0 +1,129 @@
+## ADDED Requirements
+
+### Requirement: Open Items at Stop
+
+At Stop, the system SHALL block a stop once when the final reply holds an open Markdown task item (`- [ ]`) or ends on a question, unless each open item carries a blocker the hook can verify: a `! <command>` for the user to run, a denial that a tool result in this turn holds, or an open `AskUserQuestion`. It SHALL read only that syntax and the turn's tool results, and a `userConfig` switch MUST turn it off.
+
+#### Scenario: Prose That Mentions a Remaining Budget
+
+- **WHEN** the reply says "Remaining budget is fine." in prose and then lists finished edits as plain bullets
+- **THEN** the stop passes, because the reply holds no `- [ ]` item and does not end on a question
+
+#### Scenario: A Done Task Item
+
+- **WHEN** the reply lists `- [x] add the test` and no `- [ ]` item
+- **THEN** the stop passes
+
+#### Scenario: A Blocker Word with No Verifiable Blocker
+
+- **WHEN** an open item reads `- [ ] add the permission check to gate.ts` or `- [ ] write the approval test`
+- **THEN** the stop is blocked and the item is listed, because a word in the item is not a blocker
+
+#### Scenario: Open Items Under Any Heading
+
+- **WHEN** `- [ ]` items sit under `## Open`, `## What I Need from You`, or no heading, and carry no `! <command>`
+- **THEN** the stop is blocked and the items are listed
+
+#### Scenario: An Offer in Prose
+
+- **WHEN** the reply ends with "Want me to write the test next?"
+- **THEN** the stop is blocked and the block names the offer as work to do or to give a blocker for
+
+#### Scenario: The Request List the Output Style Prescribes
+
+- **WHEN** the reply lists `- [ ] Send what the empty message was meant to say.` under `## What I Need from You`, with no `! <command>`
+- **THEN** the stop is blocked and the item is listed, and a `- [ ]` item that carries `! <command>` passes
+
+#### Scenario: A Paid Run That Waits for the User
+
+- **WHEN** an open item names a paid run and gives the exact `! <command>` to approve it
+- **THEN** the stop passes
+
+#### Scenario: An Open Item with No Denial in the Turn
+
+- **WHEN** an open item has no `! <command>`, no `AskUserQuestion` is open, and no tool result in this turn holds a denial
+- **THEN** the stop is blocked, and the block says that this turn holds no denial, command, or open question to block on
+
+#### Scenario: The Second Stop
+
+- **WHEN** the model answers the block and stops again with `stop_hook_active` set
+- **THEN** the stop passes
+
+#### Scenario: A Stop Another Hook Blocks
+
+- **WHEN** a hook beneath this one already blocks the stop
+- **THEN** that block stands and this check adds nothing
+
+#### Scenario: Switched Off
+
+- **WHEN** the user turns the switch off in `userConfig`
+- **THEN** no reply is read at Stop and no stop is blocked by this check
+
+### Requirement: A Stop Loop with No Progress Ends the Turn
+
+At the first Stop block that follows a stretch with no file change, claudetto SHALL end the turn with `preventContinuation` and a `stopReason` that names the loop and says `/goal clear` drops the goal. A stretch runs from the last Stop to this one. A write that ran SHALL set a flag and every Stop SHALL clear it. This replaces the count of three blocks in a row.
+
+#### Scenario: Goal That Never Meets
+
+- **WHEN** a `/goal` turn writes no file
+- **THEN** the turn ends after the first check, and `/goal clear` stays the user's choice
+
+#### Scenario: Every Stretch Writes
+
+- **WHEN** every stretch of a goal writes a file
+- **THEN** claudetto never stops it
+
+#### Scenario: Progress Without a Write
+
+- **WHEN** a stretch's progress is `Bash` only or read-only, or its write was denied or failed
+- **THEN** the flag stays clear and the turn ends at the next Stop block
+
+#### Scenario: Another Stop Hook
+
+- **WHEN** a user's own Stop hook blocks after a stretch with no write
+- **THEN** claudetto ends the turn, because that block has the same shape
+- **AND** claudetto's own open-items block is not stopped, and a Stop with no block changes nothing
+
+### Requirement: A Stop on an API Error Notifies
+
+With `notificationsEnabled` not `false`, a stop that an API error ended SHALL raise one notification that names the error. It SHALL NOT raise a notification for the permission, idle, or elicitation notices, which stay with the native channel (`feature-map.md`, "Decisions of the user, 2026-11-05", task 3.5).
+
+#### Scenario: API Error
+
+- **WHEN** a turn stops on an API error
+- **THEN** one notification names the error
+
+#### Scenario: Switched Off
+
+- **WHEN** `notificationsEnabled` is `false`
+- **THEN** no notification is raised
+
+
+### Requirement: Named Files Exist
+
+Before a reply or a subagent's final report reaches the person, the system SHALL check each absolute or `~/` file that a `! <command>` step in an inline code span or a fenced block names, and SHALL block the stop when one does not exist. The block MUST name the path and the command. It SHALL skip the operands the command makes (`mkdir`, `touch`, the last operand of `cp` and `mv`, a `git clone` destination, a redirect target) and a relative path.
+
+#### Scenario: A Step Names a File That Was Never Written
+
+- **WHEN** the reply says to run `! bun /tmp/probe-cmds-scripts/dump.ts` and that file does not exist
+- **THEN** the stop is blocked and the reason names `/tmp/probe-cmds-scripts/dump.ts` and the command
+
+#### Scenario: The File Exists
+
+- **WHEN** the same reply is given and the file exists
+- **THEN** the stop passes
+
+#### Scenario: The Command Makes the Path
+
+- **WHEN** the reply says to run `! mkdir -p /tmp/x` and `/tmp/x` does not exist
+- **THEN** the stop passes
+
+#### Scenario: A Relative Path
+
+- **WHEN** the reply says to run `! bun scripts/dump.ts`
+- **THEN** the stop passes, because the working directory of the step is unknown
+
+#### Scenario: A Subagent's Final Report
+
+- **WHEN** a subagent's final report names a missing file in a `! <command>` step
+- **THEN** the subagent's stop is blocked with the same reason, before the lead reads the report

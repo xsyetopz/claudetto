@@ -1,0 +1,131 @@
+{"category":"model_specifications","topic":"claude_5_5_family_pricing_and_architecture","facts":{"opus_5_5":{"input_per_m":4.00,"output_per_m":20.00,"cache_read_per_m":0.20,"fast_mode_input":8.00,"fast_mode_output":40.00,"context_window":1000000,"max_output":128000,"default_effort":"medium"},"sonnet_5_5":{"input_per_m":2.00,"output_per_m":10.00,"cache_read_per_m":0.10,"context_window":1000000,"max_output":128000,"default_effort":"medium"},"haiku_5_5":{"input_per_m_under_100k":0.10,"output_per_m_under_100k":0.50,"cache_read_per_m_under_100k":0.01,"input_per_m_over_100k":0.50,"output_per_m_over_100k":2.50,"cache_read_per_m_over_100k":0.05,"context_window":1000000,"max_output":128000,"default_effort":"medium"}},"sources":["Anthropic
+System Card: Claude 5.5 Model Family (2026)","Anthropic API Pricing Schedule:
+claude-opus-5-5, claude-sonnet-5-5, claude-haiku-5-5"]}
+{"category":"model_deliberation","topic":"effort_levels_and_token_runaway","facts":{"effort_levels":["low","medium","high","xhigh","max"],"default_behavior":"Applies
+across all output tokens, extended thinking, and tool invocations. Opus 5.5 and
+Haiku 5.5 default to medium.","production_runaway":"At max effort, Sonnet 5.5
+can burn up to 193,000 output tokens per task
+(7.60/task), surpassing Opus 5.5 at standard effort (5.98/task). Max effort on
+FrontierCode 1.1 scored lower (46.2%) than xhigh (52.1%) due to over-engineering
+and regression edits."},"sources":["Anthropic API Documentation: Adaptive
+Thinking & Effort Parameters","Artificial Analysis: Frontier Models Reasoning &
+Cost Benchmarks (2026)"]}
+{"category":"benchmarks","topic":"coding_reasoning_and_agentic_evaluations","facts":{"terminal_bench_4_0":{"opus_5_5":"64.85%
+(Stanford/Harbor independent) / 66.4% (Anthropic xhigh)","sonnet_5_5":"61.82%
+(Stanford/Harbor independent) / 70.6% (Anthropic max) / 61.5% (Anthropic
+xhigh)","haiku_5_5":"39.2%"},"frontier_code_1_1":{"opus_5_5":"54.4%","sonnet_5_5":"52.1%
+(xhigh) / 46.2%
+(max)","haiku_5_5":"46.4%"},"cursor_bench_4_0":{"opus_5_5":"57.8%","sonnet_5_5":"55.5%"},"gdpval_aa_v2_1":{"opus_5_5":1846,"sonnet_5_5":1844,"haiku_5_5":1620},"hle_with_tools":{"opus_5_5":"67.7%","sonnet_5_5":"64.5%","haiku_5_5":"57.4%"},"osworld_2_1":{"opus_5_5":"81.8%","sonnet_5_5":"80.1%-83.9%","haiku_5_5":"72.4%"}},"sources":["Stanford
+/ Harbor Terminal-Bench 4.0 Leaderboard","Anthropic Claude 5.5 Technical Report
+& Capability Evals","Artificial Analysis GDPval-AA v2.1 Benchmark Results"]}
+{"category":"claude_code_configuration","topic":"context_capping_and_bash_settings","facts":{"skillListingMaxDescChars":{"default":1536,"type":"positive
+integer","behavior":"Clamps combined description and when_to_use text per skill
+in system prompt before runtime
+truncation."},"skillListingBudgetFraction":{"default":0.01,"type":"float","behavior":"Caps
+total context window fraction reserved for skill listing; drops descriptions of
+least-invoked skills first when
+exceeded."},"skillOverrides":{"type":"object","allowed_values":["on","name-only","user-invocable-only","off"],"behavior":"Overrides
+SKILL.md lifecycle and visibility without editing source
+files."},"bashOutputMaxChars":{"default_max":131072,"behavior":"Limits inline
+stdout/stderr returned to Claude; outputs exceeding threshold are offloaded to
+temporary disk files."}},"sources":["Claude Code CLI Documentation
+(v2.1.318)","Anthropic Claude Code Settings Specification:
+~/.claude/settings.json"]}
+{"category":"token_optimization","topic":"consumption_reduction_mechanisms","facts":{"mechanisms":["Lowering
+bashOutputMaxChars and taskOutputMaxChars to force truncation of verbose CLI
+logs to disk","Setting skillListingBudgetFraction and skillOverrides to
+name-only or user-invocable-only to reduce system prompt tokens","Prompt caching
+on static prefix blocks providing 90-95% cost reductions (0.10-0.20/M
+read)","Using /compact to summarize conversational history and strip redundant
+tool iterations","Keeping CLAUDE.md and .claudeignore concise to avoid recurrent
+per-turn prompt taxes","Routing search and grepping tasks to Haiku 5.5 under
+the 100K token threshold"]},"sources":["Claude Code Documentation: Memory,
+Context, and Cost Controls","Anthropic Documentation: Prompt Caching
+Architecture"]}
+{"category":"skill_architecture","topic":"progressive_disclosure_and_sizing","facts":{"ideal_skill_body_size":"1,500
+to 5,000 characters (<200-500 lines of Markdown); larger logic must be
+modularized","directory_layout":{"SKILL.md":"Core orchestration, step-by-step
+workflow, and refusal gates","references/":"Specs, schemas, manuals loaded
+on-demand via Read tool","scripts/":"Executable deterministic Bash/Python
+scripts executed with zero LLM generation tokens","assets/":"Templates,
+fixtures, and binary data"},"design_principle":"Progressive disclosure keeps
+discovery context light (~100 tokens), ingests SKILL.md only on activation, and
+runs scripts deterministically."},"sources":["agentskills.io Specification: Best
+Practices for Agent Skills","Anthropic Engineering Guide: Building Effective
+Claude Skills"]}
+{"category":"skill_evaluation","topic":"eval_structures_and_ablation_methodology","facts":{"cli_eval_location":".claude/skills//evals//
+containing prompt.md and graders/","skill_creator_schema":"evals/evals.json and
+trigger_evals.json","trigger_evaluation":"Evaluates precision and recall
+on 20-40 positive and distractor prompts (target
+>=90%)","execution_ablation":"Paired comparison: Delta = Score(with_skill) -
+Score(without_skill); Delta = 0 indicates
+redundancy","grader_hierarchy":["Deterministic: file_exists, tool_used,
+tool_order, regex, pytest execution","Model-judged: Binary assertion rubrics via
+Haiku 5.5","Adversarial: Prompts commanding safety bypass to verify explicit
+refusal execution"]},"sources":["Claude Code CLI Documentation: claude plugin
+eval Reference","Anthropic skill-creator Evaluation Suite Specification"]}
+{"category":"agent_skills_standard","topic":"linux_foundation_aaif_and_industry_telemetry","facts":{"governance":"Created
+by Anthropic, published at agentskills.io, and donated to Linux Foundation
+Agentic AI Foundation (AAIF) alongside OpenAI and
+Block","spec_frontmatter_fields":["name","description","license","compatibility","metadata","allowed-tools"],"adoption":"70+
+platforms including Claude Code, OpenAI Codex CLI, Cursor, Windsurf, Copilot,
+and VS Code","industry_telemetry":["Public registries contain >1.3M skills with
+significant low-signal prompt slop causing token overhead and
+overtriggering","High-efficiency skills rely on bundled CLI scripts rather than
+generative prompting","Untrusted skills introduce supply-chain risks via prompt
+injection in references/ and unauthorized execution of
+scripts/"]},"sources":["Linux Foundation AAIF Announcement: Agent Skills
+Specification Transfer","agentskills.io Specification Documentation
+(v1.0.0)","Vercel skills.sh Directory Analysis & Security Reports (2026)"]}
+{"category":"claude_specific_metadata","topic":"extended_frontmatter_schema","facts":{"fields":{"disable-model-invocation":{"type":"boolean","use":"Prevents
+model auto-triggering; removes skill from system prompt; reduces prompt tokens
+to 0 until manually invoked"},"user-invocable":{"type":"boolean","use":"Hides
+skill from interactive slash (/) menu; reserves skill for autonomous agent-only
+execution"},"when_to_use":{"type":"string","use":"Injects extra semantic trigger
+conditions into Claude's discovery
+indexing"},"paths":{"type":"list[string]","use":"Scopes skill auto-invocation to
+matching file patterns"},"context":{"value":"fork","use":"Executes skill inside
+an isolated context window to prevent memory bloat in main
+chat"},"agent":{"type":"string","use":"Specifies subagent configuration to
+execute forked context (e.g. Explore,
+Architect)"},"background":{"type":"boolean","use":"Runs forked context
+asynchronously while user interacts in
+foreground"},"model":{"type":"string","use":"Overrides conversational model for
+the duration of the skill turn (e.g.
+claude-opus-5-5)"},"effort":{"type":"string","use":"Sets reasoning and
+deliberation budget (low, medium, high, xhigh, max) for the
+skill"},"allowed-tools":{"type":"list[string]","use":"Pre-approves specific tool
+executions and scopes (e.g. Bash(git
+log:))"},"disallowed-tools":{"type":"list[string]","use":"Strips specific tools
+from model access during skill execution to enforce read-only
+sandboxes"},"hooks":{"type":"object","use":"Registers lifecycle hooks
+(PreToolUse, Stop) for deterministic command interception"}}},"sources":["Claude
+Code Plugin Specification (v2.1.318)","Anthropic Internal Tool & Skill Metadata
+Definitions"]}
+{"category":"naming_conventions","topic":"grammar_patterns_and_validator_rules","facts":{"validator_rules":{"format":"Strict
+lowercase kebab-case (^[a-z0-9]+(-[a-z0-9]+)$)","length":"1 to 64
+characters","parity":"Frontmatter name must match parent directory name
+exactly","reserved_words":"Cannot collide with built-in commands: compact,
+clear, cost, help, init, pr, review,
+memory"},"patterns":{"action_target":"Primary standard: verb-noun format (e.g.
+audit-security, lint-sql, validate-schema)","namespaced":"domain-action-target
+for grouped plugins (e.g. db-migrate-down, git-stage-split,
+k8s-pod-debug)","lifecycle_prefixes":["check-","lint-","scaffold-","migrate-","verify-","deploy-"]},"cli_ergonomics":"Domain
+prefixes optimize tab-completion; avoid single-word generic names or
+multi-segment names exceeding 4 words"},"sources":["agentskills.io Naming &
+Validation Specification","Claude Code Slash-Command Autocomplete Guidelines"]}
+{"category":"yaml_parsing_traps","topic":"frontmatter_syntax_and_coercion_rules","facts":{"traps":{"colon_space":"Unquoted
+colon followed by space (: ) triggers illegal inline mapping
+error","reserved_start_chars":["@","`","%","*","&","!","?","[","{","-","#","|",">"],"mid_string_comment":"Unquoted
+space followed by hash ( #) strips subsequent text as an inline
+comment","yaml_1_1_norway_problem":"Unquoted boolean words (on, off, yes, no,
+true, false) coerce to booleans, failing string validation on
+name","coercion_numbers_dates":"Unquoted versions (1.0) coerce to floats;
+leading zeros (0124) coerce to octal; timestamps coerce to Date
+objects","whitespace_rules":"Hard tabs (\t) trigger YAMLParseError; frontmatter
+must begin at line 1, column 0 with delimiter ---","quotes":"Single quotes
+require doubling ('') to escape apostrophes; double quotes require escaped
+backslashes (\\)","safe_fallback":"Folded (>) or literal (|) block scalars
+safely ingest colons, quotes, and symbols without
+escaping"}},"sources":["YAML 1.1 & 1.2 Core Specifications","js-yaml / PyYAML
+Parser Validation Testbeds"]}
