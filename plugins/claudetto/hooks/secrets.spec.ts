@@ -39,7 +39,7 @@ const KEYS = {
 	],
 	ANTHROPIC_API_KEY: [
 		"sk-ant-",
-		"api03-",
+		"api03-", // betterleaks:allow
 		"tGSU8po_799NksnRH9ucAUsdMlHUvTCQCyEZDz-TddJ8HyS5SUkCnD8zRA9a9SkpXz9w3QlY7Zkuvqd",
 	],
 	AWS_SECRET_ACCESS_KEY: ["2hpChYgCfrL1spNx", "nyVmihA+2O76UMFxFkM+R5Kj"],
