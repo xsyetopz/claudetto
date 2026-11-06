@@ -1,0 +1,34 @@
+{
+	"name": "claudetto",
+	"version": "0.4.0",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"engines": {
+		"bun": ">=1.4.4"
+	},
+	"packageManager": "bun@1.4.4",
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		]
+	},
+	"devDependencies": {
+		"@biomejs/biome": "~2.6.3",
+		"@commitlint/cli": "^21.2.4",
+		"@commitlint/config-conventional": "^21.2.4",
+		"@fission-ai/openspec": "^1.16.0",
+		"biome-json": "github:xsyetopz/biome.jsonc#387e04c",
+		"bun-types": "^1.4.4",
+		"jscpd": "5.4.2",
+		"markdownlint-cli2": "^0.24.0"
+	},
+	"peerDependencies": {
+		"claude-code": "*"
+	},
+	"peerDependenciesMeta": {
+		"claude-code": {
+			"optional": true
+		}
+	}
+}

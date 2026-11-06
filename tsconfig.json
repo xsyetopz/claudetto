@@ -1,0 +1,10 @@
+{
+	"extends": "./plugins/claudetto/tsconfig.json",
+	"compilerOptions": {
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true
+	},
+	"include": ["plugins/**/*.ts"],
+	"exclude": ["node_modules", "plugins/*/.claude-plugin/types/**"],
+	"files": ["plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts"]
+}

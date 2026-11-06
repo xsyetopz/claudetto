@@ -1,0 +1,9 @@
+# Bun reads no `.env` file, so no secret of the developer reaches a test, a script, or a hook.
+env = false
+
+[install]
+linker = "isolated"
+
+[test]
+pathIgnorePatterns = ["plugins/*/tests/**", "external/**"]
+timeout = 5000
