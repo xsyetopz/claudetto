@@ -24,5 +24,13 @@ test("the output style asks for the open-item form the Stop check reads", async 
 		style.indexOf("</requests_to_the_user>"),
 	);
 
-	expect(requests).toContain("`- [ ]` items");
+	expect(requests).toContain(
+		"`## What I Need from You` heading over `- [ ]` items",
+	);
+	expect(requests).toContain(
+		"Each item is one `! <command>`, never an instruction",
+	);
+	expect(requests).toContain(
+		"Ask each question for the user with `AskUserQuestion`",
+	);
 });

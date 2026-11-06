@@ -1,0 +1,98 @@
+# 18.20: strict form of the "What I Need from You" list with writes allowed
+
+Runner: `../18-8/probe.ts`, extended with flags `--mode` (permission mode), `--prompts`, `--plugin`, `--root`, `--plugin-only`, and a new judge field `formQ`. No copy of the probe.
+
+## Revised judge (written before any run)
+
+`formQ` (the 18.20 strict form) = `checkbox` regex lines exist, and the phrase "What I Need from You" appears, and every `- [ ]` item holds a `! <command>` (18.8 `BANG`) OR is one question (item text, trailing markup stripped, ends with `?` and holds exactly one `?`).
+Differs from 18.8 `form` only by the question alternative. 18.8 `form` is still reported beside it.
+
+## Round 1 (the 18.8 prompts, writes allowed)
+
+Hypothesis: the 18.8 `form` rate of 2/32 came mostly from `Write` being denied (items were permission grants). With `--permission-mode acceptEdits` the plugin arm's `formQ` rate rises.
+Prediction (before the run): `formQ` 12-20/32 (point guess 16/32, 50%); Wilson lower bound about 0.33, so at or below 0.5 and the style needs a change. Heading rate similar to 18.8 (about 20/32).
+
+Dry run (fake API, free): `bun ../18-8/probe.ts --dry --plugin-only --mode acceptEdits --limit 3 ...` ran 3 sessions, none rejected. (A first try failed only because the A/B report wanted a base arm; fixed by using the first arm as base under `--plugin-only`.)
+
+Command (repo root, worktree plugin dir, style unchanged):
+
+```sh
+bun --env-file=/Users/krystian/CodeProjects/xsyetopz/claudetto/.env openspec/changes/release-0-4-0/evidence/18-8/probe.ts --run --plugin-only --mode acceptEdits --root /tmp/probe-18-20 --plugin <worktree>/plugins/claudetto --out /tmp/probe-18-20/r1
+```
+
+Result (`round1-sessions.jsonl`): plugin arm n=32, none rejected or capped, $1.41, 1,032,569 tokens, largest session 76,285.
+
+| Round | checkbox | form (18.8) | formQ (18.20) | heading |
+| --- | --- | --- | --- | --- |
+| 1, 18.8 prompts, acceptEdits | 20/32 (0.453-0.771) | 4/32 (0.050-0.281) | 4/32 (0.050-0.281) | 16/32 (0.336-0.664) |
+
+Prediction missed low: guessed 12-20/32 formQ, got 4/32. Lower bound 0.050 is at or below 0.5, so the style changes. Failure reading (replies inspected, p01-p14): 12 of 32 had no checkbox (a prose "Check these" list, or a question in prose); several omit the heading; several items are prose or hold a command without `!`, or put `!` commands in a code block outside the list; items carrying notes ("If X, do Y") are fine for the judge only when each also has `!`/question.
+
+## Style change
+
+`Concise.md` `<requests_to_the_user>`, was: `End with a "What I Need from You" list of `- [ ]` items only for steps only the user can take, such as a command requiring `sudo`. Each item gives the exact `! <command>` to run, what to send back, and what you do meanwhile. A step with no command is a question: ask it with `AskUserQuestion`, and do the doable work first.`
+Now: `End with a `## What I Need from You` heading over `- [ ]` items, one per step only the user can take, such as a command requiring `sudo`. Each item is one `! <command>` or one question, then what to send back and what you do meanwhile. Notes, checks, and facts go above the heading. Do the doable work first.`
+(The `AskUserQuestion` clause is dropped: the probe has no such tool and the item may itself be the question.)
+
+Pin: `tools/manifest.test.ts` now expects the heading-over-items phrase and "one `! <command>` or one question". Mutant: `git checkout -- Concise.md` (old text) made the test fail (`Expected to contain: "`## What I Need from You` heading over `- [ ]` items"`, 1 pass 1 fail); restored, 2 pass 0 fail.
+
+## Round 2 (32 fresh blind prompts, changed style)
+
+Prompts: `prompts.json`, from a fresh subagent told only the kind of task; it saw neither the style text nor round-1 replies. Caveat: many prompts say "I'll run the sudo steps myself", which names the user-only step, so they are easier than 18.8's.
+Hypothesis: the stricter wording raises formQ. Prediction (before the run): 20-27/32 (guess 24/32 = 75%), Wilson lower bound about 0.58 to 0.66, above 0.5.
+
+Command: same as round 1 with `--prompts .../18-20/prompts.json --out /tmp/probe-18-20/r2`.
+Result (`round2-sessions.jsonl`): n=32, none rejected or capped, $2.41, 1,357,519 tokens, largest session 70,297.
+
+| Round | checkbox | form (18.8) | formQ (18.20) | heading |
+| --- | --- | --- | --- | --- |
+| 2, fresh prompts, style v1 | 30/32 (0.799-0.983) | 10/32 (0.180-0.486) | 10/32 (0.180-0.486) | 30/32 (0.799-0.983) |
+
+Prediction missed (guessed 20-27/32). Lower bound 0.180, not above 0.5. The heading and checkbox are now followed (30/32), so the style v1 works on form; the misses are items that are neither a `!` command nor one question: "Send me X", "Add three secrets", "Re-enable Bash", a question followed by a sentence. The headings were also written twice in some replies (a model retry after the `AskUserQuestion` tool was missing; that tool is not in the probe's tool list).
+
+## Style change v2 (round 2 prompts are now tuned on; round 3 needs fresh ones)
+
+Now: `End with a `## What I Need from You` heading over `- [ ]` items, one per step only the user can take, such as a command requiring `sudo`. Each item is one `! <command>` or one question ending in `?`, never an instruction such as "send me" or "add". What to send back, what you do meanwhile, notes, and facts go above the heading. Write the heading once. Do the doable work first.`
+Pin: the manifest test now expects "one `! <command>` or one question ending in `?`, never an instruction". Mutant: `git checkout -- Concise.md` (original text) made it fail (1 pass 1 fail); restored, 2 pass 0 fail.
+
+## Round 3 (32 fresh blind prompts, style v2)
+
+Prompts: `prompts-round3.json`, from a second fresh subagent told only the kind of task; it saw no style text, earlier prompts or replies. These do not name the user-only step (harder than round 2).
+Hypothesis: forbidding instruction-form items moves non-command items into questions or `!` commands. Prediction (before the run): formQ 16-24/32 (guess 20/32 = 62%), Wilson lower bound about 0.45-0.58, so about even whether it clears 0.5.
+
+Command: same as round 2 with `--prompts .../18-20/prompts-round3.json --out /tmp/probe-18-20/r3`.
+Result (`round3-sessions.jsonl`): n=32, none rejected or capped, $2.36, 1,383,841 tokens, largest session 63,967.
+
+| Round | checkbox | form (18.8) | formQ (18.20) | heading |
+| --- | --- | --- | --- | --- |
+| 3, fresh prompts, style v2 | 30/32 (0.799-0.983) | 7/32 (0.110-0.388) | 20/32 (0.453-0.771) | 30/32 (0.799-0.983) |
+
+Prediction held (guess 20/32; got 20/32). The lower bound 0.453 is NOT above 0.5, so 18.20 is NOT done. Question items fixed much of the gap (7 to 20 once the question form counts); the point estimate is 62.5%.
+
+Stopped for budget: spent $1.41 + $2.41 + $2.36 + $0.02 dry = about $6.2 of $8; one more 32-session round (about $2.4) would pass $8. A further style change would also need 32 more fresh prompts, since round 3 prompts would be tuned on. Needs a decision: raise the budget for a round 4, or accept a 62.5% point estimate with an interval reaching 0.453.
+
+Totals: 128 paid sessions plus 3 dry; largest session 76,285 tokens (round 1), under 300,000.
+
+Round 3 result stands: formQ 20/32, lower bound 0.453, not above 0.5.
+
+## Round 4 (64 fresh blind prompts, style v2 unchanged, judged alone)
+
+Budget raised by $5 (total about $11.2). Concise.md is not changed before this round.
+Judged ALONE on `formQ`: n=64, no pooling with round 3. Done = Wilson 95% lower bound above 0.5 (needs at least 40/64 = 62.5%, lower bound 0.503; 39/64 gives 0.487). If it fails: stop, no further style change, report failures grouped by kind.
+Prompts: `prompts-round4.json`, 64 from a third fresh subagent told only the kind of task; it saw no style text, earlier prompts or replies.
+Command: as round 3 with `--prompts .../18-20/prompts-round4.json --out /tmp/probe-18-20/r4`, run in the background with output to a file.
+Hypothesis: the v2 wording gives the same rate as round 3 on new prompts. Prediction (before the run): formQ 38/64 (59%); Wilson interval about 0.47-0.70, so the lower bound lands near 0.47, a coin flip about whether it clears 0.5 (I put 40% on clearing). 18.8 `form` about 10/64, heading about 60/64.
+
+Note: the subagent returned 65 prompts, not 64; all 65 were run (n=65, judged alone, no pooling). The threshold at n=65 is a lower bound above 0.5 (40/65 gives about 0.495, 41/65 about 0.51).
+
+Result (`round4-sessions.jsonl`): n=65, none rejected or capped, $5.00, 2,895,256 tokens, largest session 74,057 tokens.
+
+| Round | checkbox | form (18.8) | formQ (18.20) | heading |
+| --- | --- | --- | --- | --- |
+| 4, 65 fresh blind prompts, style v2 unchanged | 62/65 (0.873-0.984) | 22/65 (0.235-0.460) | 53/65 (0.704-0.891) | 62/65 (0.873-0.984) |
+
+Prediction missed high (guessed 38/64 with a 40% chance of clearing; got 53/65 = 81.5%). Round 4 formQ lower bound 0.704 is above 0.5 on prompts the fix was not tuned on and the final style v2 was not tuned against (round 4 prompts were written after v2 was fixed). 18.20 is done on this evidence. Round 3 (20/32, 0.453) is the earlier, smaller measurement of the same style; it is reported but not pooled.
+
+Total spend: about $11.2 across 4 rounds ($1.41 + $2.41 + $2.36 + $5.00 + $0.02 dry); largest session 76,285 tokens.
+
+Process check after all runs: `ps -axo pid,ppid,command | grep probe-18-20 | grep -v grep` shows no process of mine (see below).
