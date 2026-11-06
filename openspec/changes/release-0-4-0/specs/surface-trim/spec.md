@@ -1,9 +1,73 @@
+## MODIFIED Requirements
+
+### Requirement: A Trim Never Breaks Claudetto or the User's CLI
+
+The system MUST NOT write a key that stops its own hooks, skills, or sideloaded plugin directory, and MUST NOT write a key that removes a command the user needs to run the CLI.
+
+#### Scenario: Self-Disabling Key
+
+- **WHEN** a candidate key is `disableAllHooks`, `disableSkillShellExecution`, `disableSideloadFlags`, or `disableCommandPluginSources`
+- **THEN** setup does not write it, and the `design.md` of the change that keeps it carries the reason
+
+#### Scenario: Login and Update Commands
+
+- **WHEN** a candidate key removes `/login`, `/logout`, `/doctor`, or the updater
+- **THEN** setup does not write it, because the user needs it to run the CLI
+
+### Requirement: No Deny for a Tool Whose Removal Raises the Request
+
+The system MUST NOT add a `permissions.deny` entry for a tool whose removal was measured to raise the request. Measured in characters on `2.1.317` (measured before task 17.13, `e20d11df`): removing `ToolSearch` costs `+37,936` and removing `Skill` costs `+8,720`. Removing `Bash` saves `407` and takes the shell away, so it is not denied either.
+
+#### Scenario: Deny of `ToolSearch`
+
+- **WHEN** a change adds `ToolSearch` to `permissions.deny`
+- **THEN** the setup test fails and names the measured `+37,936` characters
+
+### Requirement: A Deny Removes the Definition
+
+The system SHALL use `permissions.deny` of a tool name as a size lever, not only as a gate.
+
+#### Scenario: Denied Tool
+
+- **WHEN** a tool name is in `permissions.deny`
+- **THEN** the captured request holds no definition for that name
+
+#### Scenario: Deny of an Absent Tool
+
+- **WHEN** a name is denied that the request does not carry
+- **THEN** the score does not change, and the entry is dropped unless a reading on the real login shows the tool
+
+#### Scenario: The Reading of 2.1.311
+
+- **WHEN** `Workflow`, `ScheduleWakeup`, and `ReportFindings` were denied on 2026-10-27 against the installed `2.1.311`
+- **THEN** the first request fell from 42,676 to 30,510 characters with the same `system` and the same `messages`, so the whole 12,166-character difference was the three definitions
+- **AND** that pair stays as it was taken; the same pair on `2.1.312` is 42,879 and 30,713, recorded in `openspec/changes/archive/2026-10-30-claudetto-restart/tasks.md`, so no live figure is kept here
+
+### Requirement: No Non-CLI Surface in the Request
+
+The system SHALL turn off each surface that serves claude.ai, the web app, mobile, the cloud, or onboarding, by a settings key, an environment variable, or a `permissions.deny` entry for the tool name. A reading of the request on the real login SHALL list every tool the request carries.
+
+#### Scenario: A Non-CLI Tool Is in the Request
+
+- **WHEN** the reading shows a tool that serves a non-CLI surface
+- **THEN** setup denies it by name, or the `design.md` of the change that keeps it carries a line saying why it stays
+
+#### Scenario: Workflow
+
+- **WHEN** a session starts under claudetto
+- **THEN** the request carries no `Workflow` definition, because the project uses worktrees and the tool serves Dynamic Workflows
+
 ## REMOVED Requirements
 
 ### Requirement: Built-in Agents Are Denied
 
 **Reason**: The user chose route A, one Mod, for the built-in agents (D4; `settings-review.txt`, L17 item 1). An `agent.offer` hook withholds them and a `tool.call` hook maps their names to claudetto's agents, so a call that names `Explore`, `Plan`, or `general-purpose` still runs, where a deny rule refuses it.
 **Migration**: See "Built-in Agents Are Withheld and Mapped" in this capability.
+
+### Requirement: The Golf Score Is Measured, Not Claimed
+
+**Reason**: It scored the first request on the fake Messages API of the probing tool `claudekit/`, which left this repo under task 17.13 (`e20d11df`). The first-request readings of this change are in `openspec/changes/release-0-4-0/footprint.md`, "First request, cached prefix, and hook latency (task 7.5)", and `openspec/changes/release-0-4-0/evidence/18-15/`.
+**Migration**: None.
 
 ## ADDED Requirements
 

@@ -1,5 +1,14 @@
 ## MODIFIED Requirements
 
+### Requirement: Fixed Defects of the Old Line
+
+The rebuilt line SHALL NOT show defects D1 to D4 and D7 of the status-line defect report of 2026-10, kept outside this repo. Each has a test with the input that showed it.
+
+#### Scenario: Old Defect Input
+
+- **WHEN** the command gets the input of one listed defect
+- **THEN** its output is the fixed one
+
 ### Requirement: Setup Writes Both Lines
 
 Setup SHALL write `statusLine` as a command at the plugin root with `refreshInterval` 5, and keep a value the user set whole. `subagentStatusLine` SHALL ship in the plugin's root `settings.json`, and setup SHALL NOT write it.

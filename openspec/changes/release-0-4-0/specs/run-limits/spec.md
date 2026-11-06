@@ -1,3 +1,19 @@
+## MODIFIED Requirements
+
+### Requirement: End Stuck Agents
+
+The system SHALL end a subagent that `design.md`, "Run Limits", defines as stuck. This requirement states no limit, and it is not built while the time half of that definition is unmeasured and no reading shows how a mod ends a foreground subagent.
+
+#### Scenario: Source of the Definition
+
+- **WHEN** the definition is written
+- **THEN** it reads `loop-breaker` and the one self-report that calls an agent stuck after "an hour or more with no real changes", or in a loop of the same action (a comment on r/claudeai of 2026-10-27, line 90 of the saved page, kept outside this repo), which is not a measurement
+
+#### Scenario: Stuck Agent
+
+- **WHEN** a running subagent meets that definition
+- **THEN** the system ends it and tells the model why in one line
+
 ## ADDED Requirements
 
 ### Requirement: Open Items at Stop

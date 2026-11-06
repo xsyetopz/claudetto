@@ -3,7 +3,7 @@
 ## Purpose
 One table holds the cost-driving values, with a row per subscription tier, and setup writes the keys the user keeps.
 
-No reading splits a written key by tier. `SHARED` carries every field `tierSnippet` reads, so all three rows of `plugins/claudetto/src/tiers/tiers.ts` give a byte-identical snippet, and `subagentCap`, the one field the rows tell apart, is written to no settings key: the `agent.spawn` hook of `run-limits` enforces it. The table stays per tier so that a later reading can split a value, and `tests/claudetto/tiers.test.ts` fails when a row starts to differ in a written key.
+No reading splits a written key by tier, and no tier table ships: `plugins/claudetto/hooks/setup/settings.ts` holds one set of groups for every login, and `plugins/claudetto/hooks/setup/settings.test.ts` pins each key it writes.
 
 Setup therefore reads no plan. The premise that "settings that drive cost differ by subscription tier" is not supported by any reading this change took, and this Purpose records that rather than restating it.
 

@@ -1,5 +1,23 @@
 ## MODIFIED Requirements
 
+### Requirement: Narrow Rules Keep Calls from the Classifier
+
+Every tool call that claudetto can settle with a narrow allow rule MUST NOT reach the classifier, because one classifier request has a `system[1]` of `140,015` characters on `2.1.314` (`openspec/changes/archive/2026-10-31-release-0-1-0/decisions.md`, D37) and `141,962` in all on `2.1.317`, which is larger than three first requests of `46,084` characters (both in `openspec/changes/archive/2026-11-03-release-0-3-0/tasks.md`).
+
+#### Scenario: Routine Call with a Rule
+
+- **WHEN** a call is one that claudetto runs on every task, such as `Bash(npm test)`
+- **THEN** a narrow `allow` rule covers it and the classifier is not called
+
+### Requirement: Review the Rules with the Built-in Critique
+
+Before a release, the rules SHALL pass `claude auto-mode critique`, and each finding SHALL be fixed or answered in the `design.md` of the change that ships them.
+
+#### Scenario: Critique
+
+- **WHEN** the gate runs with approval for the model call
+- **THEN** the critique output is stored, and each finding has an answer
+
 ### Requirement: Settle Safe Calls before the Classifier
 
 A call that a permission rule or a hook already settles SHALL NOT reach the classifier, because the classifier runs only for calls that would otherwise ask.
@@ -69,4 +87,9 @@ Each `autoMode` list that setup writes SHALL replace the built-in list and name 
 ### Requirement: Protected Files Are Gated by a Hook
 
 **Reason**: The gate drops its protected-file asks because Claude Code's built-in check already asks on writes into `.claude/` and `.git/hooks/` (`design.md`, "The gate keeps only what native rules cannot express": "it drops the `ASK_PROTECTED` asks"). The code holds only the system-folder write rule (`hooks/gate/rules.ts`, `systemPath`).
+**Migration**: None.
+
+### Requirement: The Classifier Request Is Read per Rung
+
+**Reason**: Its subject was `just capture`, which read the classifier request on the fake Messages API of the probing tool `claudekit/`. The tool left this repo under task 17.13 (`e20d11df`), and the `capture` recipe is gone from the `justfile`. The classifier routes are measured per fixture in `ISSUES` (`tasks.md` 5.29).
 **Migration**: None.

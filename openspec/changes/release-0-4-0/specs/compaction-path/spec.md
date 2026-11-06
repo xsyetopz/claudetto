@@ -51,7 +51,23 @@ When a main turn ends with a reply that is not a handoff and the context is at t
 - **WHEN** a subagent's turn ends at a large context
 - **THEN** no fork is asked
 
+## ADDED Requirements
+
+### Requirement: The Compaction Result of a Handover Keeps the First Message
+
+The compaction result of a handover SHALL keep the session's first message ahead of the handoff, so the cached prefix up to that message can be read.
+
+#### Scenario: First Message Kept
+
+- **WHEN** a handover replaces a compaction of a session whose first message is `first`
+- **THEN** the result holds the first message, an assistant line, and the handoff, in that order (`plugins/claudetto/hooks/handoff/handover.test.ts`, "the compaction keeps the first message, an assistant line, and the handoff")
+
 ## REMOVED Requirements
+
+### Requirement: The Handover Keeps the First Request's Bytes
+
+**Reason**: Its scenarios compared the whole next request with the first request on the fake Messages API, and recorded a real-run miss in `ISSUES.md`. The probing tool `claudekit/` left this repo under task 17.13 (`e20d11df`), and `ISSUES.md` is not in the tree.
+**Migration**: "The Compaction Result of a Handover Keeps the First Message" binds the part that ships to its test.
 
 ### Requirement: Model Cost Is Counted
 
@@ -62,3 +78,23 @@ When a main turn ends with a reply that is not a handoff and the context is at t
 
 **Reason**: It specified the `session.compact` handler that answers with one `$.model.complete` call on Haiku, together with the `cheapSummary` switch. Task 5.7 removed both, and no code is left (`cheapSummary` and `cheapSummaryEnabled` are gone from `plugin.json`).
 **Migration**: The engine's own compaction answers every compaction that no handover replaces, as "Default Path" says.
+
+### Requirement: Decision Rule
+
+**Reason**: It scored the arms of the compaction probe (cost per fork, constraints broken, files re-read, work redone, next task done). The probing tool `claudekit/` left this repo under task 17.13 (`e20d11df`) and its source stays in history at `e20d11df~1:claudekit`. Task 5.7 removed the only non-default arm, so no arm is left to score.
+**Migration**: None: the engine's own compaction is the path, as "Default Path" says.
+
+### Requirement: Runs Repeat
+
+**Reason**: It bound the fork runs per arm of the compaction probe, which left this repo under task 17.13 (`e20d11df`), with its source in history at `e20d11df~1:claudekit`.
+**Migration**: None.
+
+### Requirement: A Paid Run Is Counted Free First
+
+**Reason**: It bound the probe's paid runs to a free count on the fake Messages API first. The probe left this repo under task 17.13 (`e20d11df`), with its source in history at `e20d11df~1:claudekit`. Paid runs now go by the user's consent (task 17.11), and their tokens are recorded in `openspec/changes/release-0-4-0/footprint.md`, "Paid run for task 7.5".
+**Migration**: None.
+
+### Requirement: A Probe Stops Only Its Own Processes
+
+**Reason**: Its subject was the probe's launcher and its fake Messages API, which left this repo under task 17.13 (`e20d11df`), with their source in history at `e20d11df~1:claudekit`.
+**Migration**: None: no script of this repo starts a long-running process of its own.
