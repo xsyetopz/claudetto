@@ -24,5 +24,5 @@ claudetto's hooks, status line, and `Concise` output style SHALL NOT change an e
 
 #### Scenario: Measured Session
 
-- **WHEN** a session on the fake API runs several turns with the plugin loaded and the shipped settings, `claudetto:Concise`, a Read and Edit turn, and a plan-mode switch
-- **THEN** every request keeps the prefix of the one before it; `prompt.submit` appends `Budget: context N% left` as a `system` message, the style reminder is appended after each turn, and the status line is not in any request
+- **WHEN** a session on the fake API runs several turns with the plugin loaded and the shipped settings, `claudetto:Concise`, a Read and Edit turn, and a plan-mode switch the person makes (the model's `EnterPlanMode` and `ExitPlanMode` are denied by setup, task 5.20)
+- **THEN** every request keeps the prefix of the one before it; `prompt.submit` appends `Budget: context N% left` as a `system` message, the style reminder is appended after each turn, and the status line is not in any request. The measured session is a probe on the fake API, not a lab test; the lab tests are `surface.test.ts` "the full plan mode reminder is replaced by a shorter one naming the plan file" for the plan-mode text and `setup/settings.test.ts` "the eight tools of the tool-trim are denied" for the denial

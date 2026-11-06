@@ -22,6 +22,14 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 
 - **WHEN** the agent ran Read, Grep, or Bash this turn
 - **THEN** `unchecked` and `rules` are not offered, and a finding of either does not block
+- **AND** the lab test is `limits/verify.test.ts`, "a turn that read the workspace is not offered the unchecked-claim or rules faults"
+
+#### Scenario: A Look That Was Denied or Refused
+
+- **WHEN** the only Read, Grep, or Bash call this turn was denied by a `tool.check` answer, or was an ask the session refused
+- **THEN** it is not a look, `unchecked` is offered, and a finding of it blocks once
+- **AND** an ask that was allowed and then failed is still a look
+- **AND** the lab tests are `limits/verify.test.ts`, "a turn whose only lookup was denied is still offered the unchecked-claim fault", the three "an ask refused with ... is not a lookup" tests, and "an ask that was allowed and then failed is still a lookup"
 
 #### Scenario: The Issues File Was Written
 

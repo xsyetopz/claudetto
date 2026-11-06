@@ -13,7 +13,8 @@ The system SHALL answer a compaction with a handover when the requirements "A Ha
 
 - **WHEN** the plugin's `userConfig` is read for a key that chooses the compaction path
 - **THEN** there is none: the `compaction` option that offered `auto`, `built-in`, and `code` stays deleted, together with the `pathOf` that resolved it
-- **AND** the one option near this path is `handoverThresholdTokens`, which sets the context size at which a fork asks for a handoff; it does not turn the built-in path off, and the cheap summary has no option (`cheapSummary` and `cheapSummaryEnabled` are gone from `plugin.json`)
+- **AND** the one option near this path is `handoverThresholdTokens`, which sets the context size at which a fork asks for a handoff; it does not turn the built-in path off. `cheapSummary` and `cheapSummaryEnabled` are gone from `plugin.json`, and no summary by another model exists
+- **AND** the test is `tools/manifest.test.ts`, "no plugin option chooses the compaction path or a summary model", a `bun test` file because a lab file cannot read `plugin.json`
 
 #### Scenario: The Code Path Is Offered Again
 
@@ -50,27 +51,14 @@ When a main turn ends with a reply that is not a handoff and the context is at t
 - **WHEN** a subagent's turn ends at a large context
 - **THEN** no fork is asked
 
+## REMOVED Requirements
+
 ### Requirement: Model Cost Is Counted
 
-The probe SHALL count the uncached input of a summarizer call that uses another model, because a model switch rebuilds the cache and a call with its own system prompt reads no part of the session's prefix. Both are verified in the `clawdipedia` routes `extend/mod-api/types/model` and `how-it-works/request-and-cache`, and `architecture.md` holds the quotes.
+**Reason**: Its "Cheap-Model Arm" scenario priced the Haiku summary, which task 5.7 removed, its text cited `architecture.md`, which is not in this change, and the probe it bound left this repo under task 17.13.
+**Migration**: None: the probe that counted it left this repo under task 17.13, and task 18.16 removes the other probe requirements of this capability.
 
-#### Scenario: Cheap-Model Arm
+### Requirement: The Summarizer Model Is Named, Not Inherited
 
-- **WHEN** an arm summarizes with Haiku 5.5, which gets no cache hit
-- **THEN** its cost includes the full input price of the whole context at the tier of the prompt length
-
-#### Scenario: Fork of the Same Model
-
-- **WHEN** a compaction forks the session on the same model while the cache entry is live
-- **THEN** its input counts at the cache-hit price, and a `cache_read_input_tokens` near zero counts as the whole prefix paid in full
-
-#### Scenario: Claims Not Yet Verified
-
-- **WHEN** either of the first two claims is unconfirmed for the version under test
-- **THEN** the report marks the cost of the arm "cache claim unverified" and the path does not change on it
-
-#### Scenario: Where the Count Comes From
-
-- **WHEN** the `cost` bar of a fork is read
-- **THEN** it is `total_cost_usd` of that fork's own run, which the program bills per model at that model's own input, cache-write, and cache-read prices, so a model switch is counted without the probe pricing any token itself, the `total_cost_usd` field of the run's stream-json `result` event
-- **AND** no harness-side price table exists to drift against the published prices, which is why the requirement is met by reading the billed figure rather than by recomputing it
+**Reason**: It specified the `session.compact` handler that answers with one `$.model.complete` call on Haiku, together with the `cheapSummary` switch. Task 5.7 removed both, and no code is left (`cheapSummary` and `cheapSummaryEnabled` are gone from `plugin.json`).
+**Migration**: The engine's own compaction answers every compaction that no handover replaces, as "Default Path" says.
