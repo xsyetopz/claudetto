@@ -24,10 +24,10 @@ import { openItems, turnOf } from "./open-items.ts";
 const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
 
 /** The tools whose result is a file the session changed. */
-const WRITERS: BuiltinToolName[] = ["Edit", "NotebookEdit", "Write"];
+export const WRITERS: BuiltinToolName[] = ["Edit", "NotebookEdit", "Write"];
 
 /** A write that ran: a denied or failed one wrote nothing. */
-const didWrite = (answer: {
+export const didWrite = (answer: {
 	readonly deny?: string | undefined;
 	readonly isError?: unknown;
 }): boolean => answer.deny === undefined && answer.isError === undefined;

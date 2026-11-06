@@ -50,9 +50,13 @@ const BASH = `Runs a bash command and returns its output to you, not reliably to
 - \`cd\` carries over only in the main session, when it succeeds inside the working directories; use absolute paths. Env vars and functions do not carry.
 - \`timeout\` is in ms: default 120000, max 600000. \`run_in_background\` detaches the command and calls you back when it exits; its \`timeout\` defaults to 600000, max 7200000. A foreground \`sleep\` is blocked.
 - Interactive flags such as \`git rebase -i\` fail. Use \`gh\` for GitHub.
-- Commit or push only when asked; branch first on the default branch.
+- Commit each finished slice that passes its check as its own commit, so one revert undoes one change. Push only when asked; branch first on the default branch.
 - Backtick a role or package that starts with \`@\` in a pull request or issue, because a bare \`@name\` notifies that login.
 - End a commit message or pull request body with the attribution lines of the system reminder, when it gives any.`;
+
+/** The block for a Stop that leaves files the session changed uncommitted. */
+export const SLICE_COMMIT = (files: readonly string[]): string =>
+	`These files you changed are not committed:\n${files.map((f) => `- \`${f}\``).join("\n")}\nCommit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.`;
 
 const READ = `Reads a file by absolute \`file_path\`: 2000 lines by default, numbered from 1 as \`cat -n\` does. Read the part you need with \`offset\` and \`limit\`.
 It also shows images and notebooks, and a PDF over 10 pages needs \`pages\`.

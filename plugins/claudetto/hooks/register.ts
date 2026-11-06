@@ -9,11 +9,13 @@ import { notify } from "./notify.ts";
 import { stringOption } from "./options.ts";
 import { pin } from "./pin.ts";
 import { setup } from "./setup.ts";
+import { slices } from "./slices.ts";
 import { surface } from "./surface.ts";
 import { ASK_SPEC, DECIDE_SPEC, MONITOR_SPEC } from "./texts.ts";
 
-// Registration order is wrap order: `limits` is outermost, so it bounds what every later hook adds.
+// Registration order is wrap order: `slices` is outermost, so it asks for a commit only after every other Stop check passed; `limits` bounds what every later hook adds.
 export const register = (on: On, options: PluginOptions): void => {
+	slices(on);
 	limits(on, options);
 	setup(on);
 	surface(on, options);

@@ -127,3 +127,22 @@ Before a reply or a subagent's final report reaches the person, the system SHALL
 
 - **WHEN** a subagent's final report names a missing file in a `! <command>` step
 - **THEN** the subagent's stop is blocked with the same reason, before the lead reads the report
+
+### Requirement: Uncommitted Session Changes Block the Stop Once
+
+At a Stop that no earlier check blocked and that `stop_hook_active` does not mark, claudetto SHALL run `git status` on the files the session's file tools wrote. When any is still changed and the permission chain would not deny `git commit`, the Stop SHALL be blocked once. The block names the files and tells the agent to commit each finished, checked slice as its own commit, and to leave failing work uncommitted with the reason.
+
+#### Scenario: Edited and Uncommitted
+
+- **WHEN** the session edited `src/a.ts`, git reports it modified, and the turn ends
+- **THEN** the Stop is blocked with a text naming `src/a.ts` that asks for one commit per revertable slice
+
+#### Scenario: The User Said Not to Commit
+
+- **WHEN** the same files are uncommitted but the ledger holds a `no-commit` constraint
+- **THEN** the Stop is not blocked
+
+#### Scenario: Committed
+
+- **WHEN** the session edited `src/a.ts` and committed it before the turn ended
+- **THEN** the Stop is not blocked
