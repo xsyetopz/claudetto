@@ -15,11 +15,20 @@ import {
 } from "./texts.ts";
 import { isPersonMessage } from "./verify.ts";
 
-const PERSON = /^(?:composer|bridge|sdk)$/;
+export const PERSON = /^(?:composer|bridge|sdk)$/;
 const ANY_TOOL = /^/;
 const ASK_TOOL = /^(?:AskUserQuestion|mcp__claudetto__ask-user-question)$/;
 const ISSUES_FILE = /^ISSUES.*\.md$/;
 const IN_PLACE = /^-[a-z]*i/;
+const READ_PROGRAMS = new Set([
+	"cat",
+	"head",
+	"tail",
+	"less",
+	"more",
+	"bat",
+	"nl",
+]);
 const WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 const WRITE_PROGRAMS = new Set([
 	"tee",
@@ -108,6 +117,17 @@ const writesFile = (c: Command): boolean =>
 		(r) => !r.op.startsWith("<") && r.op !== ">&" && r.target !== "/dev/null",
 	);
 
+const writesFiles = (c: Command): boolean => {
+	const { name, args } = programOf(c);
+	const sub = args.find((a) => !a.startsWith("-")) ?? "";
+	return (
+		writesFile(c) ||
+		WRITE_PROGRAMS.has(name) ||
+		(name === "sed" && args.some((a) => IN_PLACE.test(a))) ||
+		(name === "bun" && ["add", "install", "remove"].includes(sub))
+	);
+};
+
 const bashWrites = (
 	command: string,
 	git: Set<string> = GIT_WRITES,
@@ -116,13 +136,21 @@ const bashWrites = (
 	parse(command).commands.some((c) => {
 		const { name, args } = programOf(c);
 		const sub = args.find((a) => !a.startsWith("-")) ?? "";
-		const fileWrite =
-			writesFile(c) ||
-			WRITE_PROGRAMS.has(name) ||
-			(name === "sed" && args.some((a) => IN_PLACE.test(a))) ||
-			(name === "bun" && ["add", "install", "remove"].includes(sub));
-		return (anyWrite && fileWrite) || (name === "git" && git.has(sub));
+		return (anyWrite && writesFiles(c)) || (name === "git" && git.has(sub));
 	});
+
+/** Whether a command of the shell text writes files and names one that `isTarget` accepts, as an argument or a redirect target. */
+export const bashWritesTo = (
+	command: string,
+	isTarget: (path: string) => boolean,
+): boolean =>
+	parse(command).commands.some(
+		(c) =>
+			writesFiles(c) &&
+			[...programOf(c).args, ...c.redirects.map((r) => r.target)].some(
+				isTarget,
+			),
+	);
 
 const breaks = (c: PinConstraint, tool: string, input: unknown): boolean => {
 	const command = tool === "Bash" ? fieldOf(input, "command") : undefined;
@@ -169,38 +197,71 @@ const extractLedger = async (
 	return r.isAnswered ? parseLedger(r.text) : undefined;
 };
 
+/** The repo root as the cwd spells it: `cdup` is `git rev-parse --show-cdup`, one `../` per level up. */
+export const rootOf = (cwd: string, cdup: string): string =>
+	cwd
+		.split("/")
+		.slice(0, cwd.split("/").length - (cdup.split("../").length - 1))
+		.join("/");
+
 // The open-issues file the project keeps at its root: the newest by mtime, since names carry a date only some of the time.
+// A symlink lists as `other` with mtime 0, so its target's mtime from `stat` stands in.
 const newestIssues = async (
 	$: EngineInterface,
 	cwd: string,
-): Promise<string | undefined> =>
-	(await $.fs.list(cwd).catch(() => []))
-		.filter((f) => f.kind === "file" && ISSUES_FILE.test(f.name))
-		.sort((a, b) => b.mtimeMs - a.mtimeMs)[0]?.name;
+): Promise<string | undefined> => {
+	const named = (await $.fs.list(cwd).catch(() => [])).filter(
+		(f) => (f.kind === "file" || f.isLink) && ISSUES_FILE.test(f.name),
+	);
+	const dated = await Promise.all(
+		named.map(async (f) => ({
+			name: f.name,
+			mtimeMs: f.isLink
+				? ((await $.fs.stat(`${cwd}/${f.name}`).catch(() => undefined))
+						?.mtimeMs ?? 0)
+				: f.mtimeMs,
+		})),
+	);
+	return dated.sort((a, b) => b.mtimeMs - a.mtimeMs)[0]?.name;
+};
 
-const hasRead = (
-	messages: SessionMessage[],
-	cwd: string,
-	name: string,
-): boolean =>
+/** Whether the shell command shows `file`: a read program, or `sed` not in place, given the file as an argument. */
+const bashReads = (command: string, file: string[]): boolean =>
+	parse(command).commands.some((c) => {
+		const { name, args } = programOf(c);
+		const reads =
+			READ_PROGRAMS.has(name) ||
+			(name === "sed" && !args.some((a) => IN_PLACE.test(a)));
+		return reads && args.some((a) => file.includes(a));
+	});
+
+const hasRead = (messages: SessionMessage[], file: string[]): boolean =>
 	messages.some((m) =>
 		m.toolUses.some(
 			(u) =>
-				u.tool === "Read" &&
 				!u.isError &&
-				[name, `${cwd}/${name}`].includes(String(u.input["file_path"])),
+				(u.tool === "Read"
+					? file.includes(String(u.input["file_path"]))
+					: u.tool === "Bash" && bashReads(String(u.input["command"]), file)),
 		),
 	);
 
+// A session started in a subfolder still has the file at the repo root; outside a repo the cwd is the root.
 const unreadIssues = async (
 	$: EngineInterface,
 ): Promise<string | undefined> => {
 	const cwd = await $.session.cwd();
-	const newest = await newestIssues($, cwd);
-	return newest !== undefined &&
-		!hasRead(await $.session.messages(), cwd, newest)
-		? newest
-		: undefined;
+	const run = await $.process
+		.run(["git", "rev-parse", "--show-cdup"])
+		.catch(() => undefined);
+	const cdup = run?.exitCode === 0 ? run.stdout.trim() : "";
+	const root = rootOf(cwd, cdup);
+	const newest = await newestIssues($, root);
+	if (newest === undefined) {
+		return undefined;
+	}
+	const file = [newest, `${cdup}${newest}`, `${root}/${newest}`];
+	return hasRead(await $.session.messages(), file) ? undefined : file[1];
 };
 
 const hasSpoken = (messages: SessionMessage[]): boolean =>

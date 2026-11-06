@@ -21,6 +21,7 @@ const PROMPT = {
 
 const lab = (on: On, reading: () => Reading) => {
 	on("prompt.submit", (_$, e) => e);
+	on("session.cwd", () => ({ value: "/repo" }));
 	on("session.messages", () => ({ value: [] }));
 	on("model.complete", () => ({
 		value: {

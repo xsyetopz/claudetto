@@ -136,6 +136,34 @@ test("a turn that wrote the issues file is not offered the unfiled fault", async
 	expect(seen.at(-1)).toContain("- unfiled:");
 });
 
+const bashCall = ($: Engine, command: string) =>
+	$.tool.call({ tool: "Bash", tool_use_id: "t2", command });
+
+test("a turn that wrote the issues file through Bash is not offered the unfiled fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("fix the typo"), used("Read")], found("unfiled"), seen);
+	scanner(on);
+	on("fs.exists", () => ({ value: true }));
+	on("tool.check", () => ({ decision: "allow" }));
+	on("tool.call", () => ({ result: {} }));
+	await bashCall($, "cat <<'EOF' >> ISSUES-2026-11-06.md\n- open\nEOF");
+	expect((await stop($)).block).toBeUndefined();
+	expect(seen[0]).not.toContain("- unfiled:");
+});
+
+test("a Bash call that only reads the issues file or writes another file keeps the unfiled fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("fix the typo"), used("Read")], found("unfiled"), seen);
+	scanner(on);
+	on("fs.exists", () => ({ value: true }));
+	on("tool.check", () => ({ decision: "allow" }));
+	on("tool.call", () => ({ result: {} }));
+	await bashCall($, "cat ISSUES.md");
+	await bashCall($, "echo x > notes.md");
+	await stop($);
+	expect(seen[0]).toContain("- unfiled:");
+});
+
 test("the grader sees the earlier person and assistant messages", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(

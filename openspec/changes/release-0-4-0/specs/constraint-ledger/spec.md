@@ -62,7 +62,7 @@ Under a `no-questions` constraint, the ledger's `tool.call` hook SHALL deny `Ask
 
 ### Requirement: An Ask Waits for the Newest Issues File
 
-While the repository root holds an `ISSUES*.md` file, the ledger SHALL deny either ask tool until the session holds a successful Read of the newest such file by mtime. The denial SHALL name that file.
+While the repository root holds an `ISSUES*.md` file, the ledger SHALL deny either ask tool until the session holds a successful Read, or a Bash read command naming it, of the newest such file by mtime. A session started in a subfolder SHALL be held to the file at the repository root. The denial SHALL name that file.
 
 #### Scenario: Unread Issues File
 

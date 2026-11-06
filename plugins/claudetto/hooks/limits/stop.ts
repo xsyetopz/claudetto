@@ -6,6 +6,7 @@ import type {
 	PluginOptions,
 } from "claude-code";
 import { switchOption } from "../options.ts";
+import { bashWritesTo } from "../pin.ts";
 import {
 	type GradeFault,
 	MISSING_FILES,
@@ -181,6 +182,13 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		const ok = didWrite(answer);
 		wrote ||= ok;
 		wroteIssues ||= ok && ISSUES_FILE.test(e.file_path ?? "");
+		return answer;
+	});
+	on("tool.call", { tool: "Bash" }, async (_$, e, next) => {
+		const answer = await next(e);
+		wroteIssues ||=
+			didWrite(answer) &&
+			bashWritesTo(e.command, (path) => ISSUES_FILE.test(path));
 		return answer;
 	});
 	on("classic.Stop", async ($, e, next) => {

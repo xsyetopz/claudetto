@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { scanner } from "./secrets.mock.ts";
+import { scanned } from "./secrets.mock.ts";
 
 const lab = (
 	on: On,
@@ -9,14 +9,18 @@ const lab = (
 	seen: string[] = [],
 	kind = "task",
 	issues: { name: string; mtimeMs: number }[] = [],
+	cwd = "/repo",
 ) => {
 	on("prompt.submit", (_$, e) => e);
 	on("tool.check", () => ({ decision: "allow" }));
 	on("session.messages", () => ({ value: messages }));
-	on("session.cwd", () => ({ value: "/repo" }));
+	on("session.cwd", () => ({ value: cwd }));
 	on("fs.exists", () => ({ value: false }));
-	on("fs.list", () => ({
-		value: issues.map((f) => ({ ...f, kind: "file", size: 1, isLink: false })),
+	on("fs.list", (_$, e) => ({
+		value:
+			e.path === "/repo"
+				? issues.map((f) => ({ kind: "file", size: 1, isLink: false, ...f }))
+				: [],
 	}));
 	on("model.complete", (_$, e) => {
 		seen.push(e.prompt);
@@ -227,10 +231,24 @@ const OLD = { name: "ISSUES-2026-11-03-2333.md", mtimeMs: 1 };
 const NEW = { name: "ISSUES-2026-11-05-2100.md", mtimeMs: 2 };
 // The stub stands for the stock dialog `delegation`'s ask tool opens: it answers the first option.
 const asking =
-	(messages: unknown[], issues = [OLD, NEW]) =>
+	(messages: unknown[], issues = [OLD, NEW], cwd = "/repo") =>
 	async ($: Engine, on: On) => {
-		lab(on, [], messages, [], "task", issues);
-		scanner(on);
+		lab(on, [], messages, [], "task", issues, cwd);
+		// The cwd's distance up to the repo root, as `git rev-parse --show-cdup` gives it.
+		const cdup = "../".repeat(cwd.split("/").length - 2);
+		on("process.run", (_$, e, next) =>
+			e.argv.join(" ") === "git rev-parse --show-cdup"
+				? {
+						value: {
+							exitCode: 0,
+							stdout: `${cdup}\n`,
+							stderr: "",
+							isStdoutTruncated: false,
+							isStderrTruncated: false,
+						},
+					}
+				: (scanned(e) ?? next(e)),
+		);
 		on("clock.now", () => ({ value: 0 }));
 		on("session.start", () => ({ cwd: "/repo" }));
 		on("tool.register", (_$, e) => ({
@@ -287,6 +305,65 @@ test("a failed Read of the newest ISSUES file does not count", async ($: Engine,
 		on,
 	);
 	expect(out).not.toContain("The user answered");
+});
+
+const bash = (command: string, failed = false) => ({
+	role: "assistant",
+	text: "",
+	toolUses: [
+		{
+			tool_use_id: "t",
+			tool: "Bash",
+			input: { command },
+			...(failed ? { isError: true } : {}),
+		},
+	],
+});
+
+for (const command of [
+	"cat ISSUES-2026-11-05-2100.md",
+	"head -n 40 /repo/ISSUES-2026-11-05-2100.md",
+	"cd /repo && sed -n 1,80p ISSUES-2026-11-05-2100.md",
+]) {
+	test(`a Bash read counts: ${command}`, async ($: Engine, on: On) => {
+		const out = await asking([bash(command)])($, on);
+		expect(out).toContain("The user answered");
+	});
+}
+
+for (const [label, message] of [
+	["a failed Bash read", bash("cat ISSUES-2026-11-05-2100.md", true)],
+	["a Bash write", bash("echo x > ISSUES-2026-11-05-2100.md")],
+	["a Bash read of an older file", bash("cat ISSUES-2026-11-03-2333.md")],
+] as const) {
+	test(`${label} does not count`, async ($: Engine, on: On) => {
+		expect(await asking([message])($, on)).not.toContain("The user answered");
+	});
+}
+
+test("a symlinked ISSUES file with the newest target counts as the newest", async ($: Engine, on: On) => {
+	on("fs.stat", () => ({
+		value: { kind: "file", size: 1, mtimeMs: 9, isLink: true },
+	}));
+	const link = { name: "ISSUES.md", mtimeMs: 0, kind: "other", isLink: true };
+	const out = await asking([], [OLD, NEW, link])($, on);
+	expect(out).toContain("ISSUES.md");
+	expect(out).not.toContain("The user answered");
+});
+
+test("a session in a subfolder is held to the ISSUES file at the repo root, named by its path from there", async ($: Engine, on: On) => {
+	const out = await asking([], [OLD, NEW], "/repo/sub")($, on);
+	expect(out).toContain("../ISSUES-2026-11-05-2100.md");
+	expect(out).not.toContain("The user answered");
+});
+
+test("a session in a subfolder that read the root ISSUES file by its relative path may ask", async ($: Engine, on: On) => {
+	const out = await asking(
+		[bash("cat ../ISSUES-2026-11-05-2100.md")],
+		[OLD, NEW],
+		"/repo/sub",
+	)($, on);
+	expect(out).toContain("The user answered");
 });
 
 test("no ISSUES file at the root, no gate on the ask", async ($: Engine, on: On) => {

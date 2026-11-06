@@ -58,6 +58,12 @@ const BASH = `Runs a bash command and returns its output to you, not reliably to
 export const SLICE_COMMIT = (files: readonly string[]): string =>
 	`These files you changed are not committed:\n${files.map((f) => `- \`${f}\``).join("\n")}\nCommit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.`;
 
+/** The context line for a prompt that finds files changed since the last one by someone else, so the model keeps the edits and does not claim them. */
+export const SLICE_OTHERS = (
+	files: readonly { path: string; wrote: boolean }[],
+): string =>
+	`Since your last turn, changed by someone else: ${files.map((f) => `\`${f.path}\`${f.wrote ? " (you last wrote it)" : ""}`).join(", ")}. Keep those edits; do not claim them.`;
+
 const READ = `Reads a file by absolute \`file_path\`: 2000 lines by default, numbered from 1 as \`cat -n\` does. Read the part you need with \`offset\` and \`limit\`.
 It also shows images and notebooks, and a PDF over 10 pages needs \`pages\`.
 After \`Edit\` or \`Write\` succeeds the file holds the change, so do not read it back.`;
