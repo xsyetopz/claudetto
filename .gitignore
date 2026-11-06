@@ -40,9 +40,6 @@ node_modules/
 # Read-only reference for old Claudetto (broken) implementation.
 /archive/
 
-# Message dumps of `claudekit/dump/`, which hold session text.
-/claudekit/dumps/
-
 # Working notes, which hold session IDs, scratch paths, and history.
 /ISSUES*.md
 

@@ -87,7 +87,7 @@ Owners, in the order `design.md` tries them: **native** (a Claude Code setting o
 
 | Area | Baseline lines | Fate | Note |
 | --- | --- | --- | --- |
-| `claudekit/` | 14,081 | in-repo probing tool, not part of the plugin | The user removed it from the plugin on purpose (2026-11-04) and set its role on 2026-11-05: it probes each new Claude Code version and digs into its workings, and other agents will rewrite it. `just types` renders the hook declarations with it into `plugins/claudetto/.claude-plugin/types/`, the folder the engine writes them to, so the plugin's type check reads no `claudekit/` path |
+| `claudekit/` | 14,081 | removed | The user removed it from the plugin on purpose (2026-11-04); task 17.13 took it out of this repo, and its future is the cc-inspect plugin's. The evidence its runs produced is in `evidence/`. `just types` now has the installed Claude Code write the declarations (`design.md`, the `just types` paragraph) |
 | `tools/` | 10,509 | keep what `just check` and the evals call | Reread per recipe |
 | `docs/` | 4,795 | rewrite for 0.4.0 | |
 | `tests/` (repo level) | 2,963 | keep what covers a kept feature | |

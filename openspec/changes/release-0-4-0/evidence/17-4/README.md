@@ -3,11 +3,15 @@
 Hypothesis: the `Concise.md` edit cuts announcements of the next call. The old A/B (`/tmp/probe-122`, 68 cases × 2) showed about half the rate, at p = 0.106 by session.
 Prediction: a fresh run of 34 cases × 6 rounds per arm reaches p < 0.05.
 
-Command (claudekit's narration probe, run once, from `claudekit/`):
+Command (a narration A/B runner on the in-repo probing tool that task 17.13 removed, run once):
 
 ```sh
 bun --env-file=../.env probes/narration/probe.ts --run --worktree /tmp/probe-17-4/wt --n 6 --out /tmp/probe-17-4/out
 ```
+
+The runner gave each case's workspace from `workspaces.json` to both arms, with the cases in `../17-3/cases.json`. It counted
+announcements and computed Fisher tests with `narration.ts`, kept here as it ran except that an inline `Reply` type stands in
+for its one import. That file recomputes the figures below from `sessions.jsonl`.
 
 Result (`sessions.jsonl`, one row per session; run log below): the prediction failed. The direction holds, but the fresh data alone is not significant.
 

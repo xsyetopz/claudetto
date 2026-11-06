@@ -11,7 +11,7 @@ import { type GradeFault, VERIFY_GRADE } from "../../../../../plugins/claudetto/
 import { parseFaults } from "../../../../../plugins/claudetto/hooks/verify.ts";
 
 const HERE = import.meta.dir;
-const RUNS = join(process.env.TMPDIR ?? tmpdir(), "claudekit/narration");
+const RUNS = join(process.env.TMPDIR ?? tmpdir(), "narration-17-4");
 /** Replies per paid session: about 4,000 tokens each, so a session stays far under its 300,000-token cap. */
 const BATCH = 20;
 /** The cap on one paid session. */

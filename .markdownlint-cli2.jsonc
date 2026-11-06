@@ -16,8 +16,6 @@
 		// The openspec changes and specs quote the user as is, such as in the session handoff (`slices/handoff/compact.ts`).
 		"openspec/**",
 		// A skill, agent, or output style file has the format of a Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
-		"plugins/**",
-		// claudekit is an untracked probing tool outside the plugins, due for its own rewrite.
-		"claudekit/**"
+		"plugins/**"
 	]
 }

@@ -1,4 +1,0 @@
-{
-	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-hooks.json",
-	"modules": ["./register.ts"]
-}

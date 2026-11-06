@@ -1,0 +1,29 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123435-07e67d/config ANTHROPIC_BASE_URL=http://127.0.0.1:65016 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123435-07e67d/settings.json --plugin-dir /tmp/probe-21/mod --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123435-07e67d/viamod.tty.debug
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Opus 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123435-07e67d/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123435-07e67d/viamod.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏵⏵ auto mode on (shift+tab to cycle) · ← for agents[>0q
+▂
+▛
+hi 
+
+Esc again to clear
+❯ hi                                                                                                                                                            
+✽Jitterbugging… 
+❯  
+ · esc to interrupt · ← for agents
+⏺OK
+✻Churned for 0s · done 12:34 PM
+
+❯ 
+← for agents
+◐ medium · /effort
+Press Ctrl-C again to exit[<u[>4m[>4m[<u78[>4m[<u78
+Resume this session with:
+claude --resume 8adbed2b-2ca9-4aca-ac02-c8459480bdd6

@@ -25,13 +25,11 @@ lint:
     bunx jscpd --no-tips plugins tools
     @if git rev-parse -q --verify origin/main >/dev/null; then bunx commitlint --from "$(git merge-base origin/main HEAD)" --to HEAD; fi
 
-# Write the installed Claude Code's hook declarations where the engine itself puts them beside a mod, for `typecheck`.
-# claudekit renders them against the fake API at no cost; the plugin reads only its own copy.
+# Have the installed Claude Code write its declarations into plugins/claudetto/.claude-plugin/types/, as it does for any mod it loads.
+# A print run writes them only with the plugin-dir watch on; the closed API port ends the run before any request, so it costs nothing.
 types:
-    bun claudekit/bin/claudekit.ts template types
-    mkdir -p plugins/claudetto/.claude-plugin/types/claude-code
-    cp claudekit/types/claude-code.d.ts plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts
-    printf '*\n' > plugins/claudetto/.claude-plugin/types/.gitignore
+    -CLAUDE_CODE_PLUGIN_DIR_WATCH=1 CLAUDE_CODE_MAX_RETRIES=0 ANTHROPIC_BASE_URL=http://127.0.0.1:9 ENABLE_CLAUDEAI_MCP_SERVERS=false claude -p ok --max-turns 1 --no-session-persistence --setting-sources "" --tools "" --plugin-dir plugins/claudetto >/dev/null 2>&1
+    test -s plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts
 
 # Validate the three manifests, the marketplace, and the OpenSpec change
 validate:
@@ -54,7 +52,3 @@ lab:
 # Print the prompt bytes and context lines from fixed inputs (task 1.3); PLUGIN defaults to this tree's core plugin
 prompt-bytes plugin="plugins/claudetto":
     bun tools/prompt-bytes.ts "{{plugin}}"
-
-# Time each hook of a plugin from a fake-API session's debug log (task 1.10)
-hook-latency plugin="plugins/claudetto":
-    bun tools/hook-latency.ts "{{plugin}}"

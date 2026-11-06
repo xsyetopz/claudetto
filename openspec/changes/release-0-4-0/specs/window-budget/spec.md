@@ -49,7 +49,7 @@ When the seven-day share used is at or above 90%, the prompt hook SHALL state th
 
 ### Requirement: The Share Rate Matches the Meter
 
-**Reason**: `claudekit/price/share.ts` is gone, and `claudekit/` is an in-repo probing tool, not a plugin feature (`feature-map.md`, "Repo tooling", row `claudekit/`).
+**Reason**: the share-rate script lived in the in-repo probing tool, which task 17.13 removed from this repo, and it was never a plugin feature (`feature-map.md`, "Repo tooling", row `claudekit/`).
 **Migration**: None.
 
 ### Requirement: The Classify Block's Spend Is Counted

@@ -73,8 +73,8 @@
 			"assist": { "enabled": false }
 		},
 		{
-			// claudekit is the untracked measuring tool, not part of what the repo ships.
-			"includes": ["claudekit/**"],
+			// Evidence is kept byte for byte as a run wrote or read it; labels are committed before any grade.
+			"includes": ["openspec/changes/**/evidence/**"],
 			"linter": { "enabled": false },
 			"formatter": { "enabled": false },
 			"assist": { "enabled": false }

@@ -1,6 +1,6 @@
 # Reply and token levers (`GOAL-2.txt`)
 
-Part 2 of 2. Part 1 closed: `cd claudekit && just check` on 2026-11-05 printed `136 pass, 0 fail`, `No type errors in 49 files`, `hooks type-check in 2 folders`; DESIGN.md open items O1-O3 are closed. The user deleted `GOAL-1.txt` during this session (reported by the user).
+Part 2 of 2. Part 1 closed: the in-repo probing tool's `just check` (the tool left this repo under task 17.13) on 2026-11-05 printed `136 pass, 0 fail`, `No type errors in 49 files`, `hooks type-check in 2 folders`; DESIGN.md open items O1-O3 are closed. The user deleted `GOAL-1.txt` during this session (reported by the user).
 
 ## Paid-run ledger
 
@@ -21,6 +21,6 @@ Part 2 of 2. Part 1 closed: `cd claudekit && just check` on 2026-11-05 printed `
 
 ### F1. Fixture mining
 
-- `claudekit/probes/fixtures/mine.ts` pairs each main-chain assistant turn with the next typed user message, skipping tool results, subagent entries, meta lines, and command echoes (`mine.test.ts`, 1 pass).
+- The probing tool's `probes/fixtures/mine.ts` (removed under task 17.13) pairs each main-chain assistant turn with the next typed user message, skipping tool results, subagent entries, meta lines, and command echoes (`mine.test.ts`, 1 pass).
 - Run: `bun probes/fixtures/mine.ts /tmp/probe-fixtures/pairs.jsonl <55 sessions>` gave 392 pairs.
 - Batch 1 (`/tmp/probe-fixtures/batch1.json`): `2913471d:6412`, `2913471d:6752`, `e8ba35c3:3317`, `f8383c80:1375`, `012b83b1:2734`, control `c7edeceb:10128`.

@@ -56,7 +56,7 @@ Two counts grew:
 
 Measured on 2026-11-06 against the fake API, so no tokens were paid. The 1.8 transcripts cannot be repeated, because no saved session ran 0.4.0. Token counts and cache read and write per turn need a paid run, which waits on the user (see 7.5 in `tasks.md`). Bytes stand in for tokens here.
 
-Scripts: `/tmp/probe-75/req.ts` reads each run's saved request bodies. `/tmp/probe-75/setup-arms.ts` runs the same one-tool-call session as `just hook-latency` with every setup group's settings merged. Both arms get the same settings.
+Scripts: `/tmp/probe-75/req.ts` reads each run's saved request bodies. `/tmp/probe-75/setup-arms.ts` runs the same one-tool-call session as the hook-latency recipe below with every setup group's settings merged. Both arms get the same settings.
 
 **First request, in bytes (Haiku, `RUN:echo hi`):**
 
@@ -77,7 +77,7 @@ Scripts: `/tmp/probe-75/req.ts` reads each run's saved request bodies. `/tmp/pro
 
 A probe that deferred `ListAgents` gave 18,383 bytes, and on 2026-11-06 `DEFERRED_TOOLS` took `ListAgents` (lab 1062 pass); the paid +180 tokens below were measured before that change. `Agent` stays sent whatever `DEFERRED_TOOLS` holds, because no 0.4.0 `tool.describe` hook matches it.
 
-**Hook latency.** `just hook-latency` on 0.4.0, then on `/tmp/claudetto-baseline/plugins/claudetto`, then on 0.4.0 again, 3 runs each:
+**Hook latency.** `just hook-latency` (`tools/hook-latency.ts`, removed under task 17.13 with the probing tool whose fake API it ran on; the results below stay) on 0.4.0, then on `/tmp/claudetto-baseline/plugins/claudetto`, then on 0.4.0 again, 3 runs each:
 
 | Measure | Baseline | 0.4.0 (two passes) |
 | --- | ---: | ---: |

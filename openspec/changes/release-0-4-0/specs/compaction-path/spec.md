@@ -49,3 +49,28 @@ When a main turn ends with a reply that is not a handoff and the context is at t
 
 - **WHEN** a subagent's turn ends at a large context
 - **THEN** no fork is asked
+
+### Requirement: Model Cost Is Counted
+
+The probe SHALL count the uncached input of a summarizer call that uses another model, because a model switch rebuilds the cache and a call with its own system prompt reads no part of the session's prefix. Both are verified in the `clawdipedia` routes `extend/mod-api/types/model` and `how-it-works/request-and-cache`, and `architecture.md` holds the quotes.
+
+#### Scenario: Cheap-Model Arm
+
+- **WHEN** an arm summarizes with Haiku 5.5, which gets no cache hit
+- **THEN** its cost includes the full input price of the whole context at the tier of the prompt length
+
+#### Scenario: Fork of the Same Model
+
+- **WHEN** a compaction forks the session on the same model while the cache entry is live
+- **THEN** its input counts at the cache-hit price, and a `cache_read_input_tokens` near zero counts as the whole prefix paid in full
+
+#### Scenario: Claims Not Yet Verified
+
+- **WHEN** either of the first two claims is unconfirmed for the version under test
+- **THEN** the report marks the cost of the arm "cache claim unverified" and the path does not change on it
+
+#### Scenario: Where the Count Comes From
+
+- **WHEN** the `cost` bar of a fork is read
+- **THEN** it is `total_cost_usd` of that fork's own run, which the program bills per model at that model's own input, cache-write, and cache-read prices, so a model switch is counted without the probe pricing any token itself, the `total_cost_usd` field of the run's stream-json `result` event
+- **AND** no harness-side price table exists to drift against the published prices, which is why the requirement is met by reading the billed figure rather than by recomputing it
