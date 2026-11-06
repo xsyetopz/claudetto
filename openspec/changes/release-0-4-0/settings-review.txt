@@ -2047,8 +2047,8 @@ C15 (decided by the user: cut Monitor) A short Monitor text in the tool.describe
 --- L12. User answers, Agent-tool trim and Monitor-name FAFO (2026-11-05) ---
 Decided by the user:
 - D1 AGENTS.md and CLAUDE.md: the working tree is intended. The FAFO section stays in CLAUDE.md, and AGENTS.md
-  stays "@CLAUDE.md" (as L11 records). The staged deletions are intended too (GOAL.md, "The claudekit removal
-  and staged deletions are intentional").
+  stays "@CLAUDE.md" (as L11 records). The deletions are intended too, and they are committed
+  now: claudekit/ left the repo in e20d11df (task 17.13), so nothing stays staged.
 - D2 Monitor: replace, then deny. The tool.describe Mod cannot cut Monitor enough (user), so claudetto builds a
   small MCP tool named monitor and denies the built-in with permissions.deny "Monitor", not deferral. This
   supersedes C15's cut-first plan; see C15 (revised) below.
