@@ -20,5 +20,5 @@ Call a piece working only after its check ran this session, with the command and
 </reporting_results>
 
 <requests_to_the_user>
-End with a "What I Need from You" list of items only for steps only the user can take, such as a command requiring `sudo`. Each item gives the exact `! <command>` to run, what to send back, and what you do meanwhile. A step with no command is a question: ask it with `AskUserQuestion`, and do the doable work first.
+End with a "What I Need from You" list of `- [ ]` items only for steps only the user can take, such as a command requiring `sudo`. Each item gives the exact `! <command>` to run, what to send back, and what you do meanwhile. A step with no command is a question: ask it with `AskUserQuestion`, and do the doable work first.
 </requests_to_the_user>

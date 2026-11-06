@@ -13,3 +13,16 @@ test("no plugin option chooses the compaction path or a summary model", async ()
 	expect(keys).toContain("handoverThresholdTokens");
 	expect(keys.filter((k) => PATH_CHOICE.test(k))).toEqual([]);
 });
+
+// `limits/open-items.ts` reads only `- [ ]` lines, so a request in any other form escapes the Stop check.
+test("the output style asks for the open-item form the Stop check reads", async () => {
+	const style = await file(
+		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
+	).text();
+	const requests = style.slice(
+		style.indexOf("<requests_to_the_user>"),
+		style.indexOf("</requests_to_the_user>"),
+	);
+
+	expect(requests).toContain("`- [ ]` items");
+});
