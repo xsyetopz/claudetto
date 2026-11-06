@@ -67,7 +67,7 @@ Mutant: `claimTurn` without `|| denied.has(use.tool_use_id)` fails that test (12
 Hypothesis: an ask the session refuses (headless, `dontAsk`, or the person saying no) also reaches `tool.call` only as `isError`, so it still counted as a look.
 Prediction: with the logging plugin and `--permission-mode dontAsk`, `tool.check` gives `ask` and `tool.call` gives an error whose text is the CLI's refusal, and the file is not created.
 
-Command: the probe plugin in `/tmp/probe-17-14/plugin` (it logs `tool.check`, `tool.call` and `classic.PermissionDenied`), `claude -p "touch /tmp/probe-17-14/y.txt" --permission-mode dontAsk --plugin-dir /tmp/probe-17-14/plugin --no-session-persistence < /dev/null`.
+Command: the probe plugin in `/tmp/probe-17-14/plugin` (it logs `tool.check`, `tool.call` and `classic.PermissionDenied`), in `/tmp/probe-17-14`, `DISABLE_TELEMETRY=1 claude -p "Run exactly this Bash command once: touch /tmp/probe-17-14/y.txt   If it is refused, say so and stop." --model haiku --max-turns 3 --no-session-persistence --setting-sources "" --permission-mode dontAsk --plugin-dir /tmp/probe-17-14/plugin < /dev/null`.
 
 Result: as predicted; `y.txt` was not created and `PermissionDenied` did not fire. Log, texts cut at 120 characters:
 
