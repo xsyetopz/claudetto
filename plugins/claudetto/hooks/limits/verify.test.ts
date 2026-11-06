@@ -64,6 +64,27 @@ test("a turn that read the workspace is not offered the unchecked-claim or rules
 	expect(seen[0]).not.toContain("- rules:");
 });
 
+test("a turn whose only lookup was denied is still offered the unchecked-claim fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	const messages = [
+		user("The timeout is 30s, right?"),
+		{
+			role: "assistant",
+			text: "",
+			toolUses: [{ tool: "Read", tool_use_id: "t1", input: {}, isError: true }],
+		},
+	];
+	lab(on, messages, found("unchecked"), seen);
+	on("tool.check", () => ({ decision: "deny", reason: "answer first" }));
+	await $.tool.check({
+		tool: "Read",
+		input: { file_path: "/p/a.ts" },
+		tool_use_id: "t1",
+	});
+	expect((await stop($)).block).toContain("Check the workspace");
+	expect(seen[0]).toContain("- unchecked:");
+});
+
 test("a reply the grader finds no fault in passes", async ($: Engine, on: On) => {
 	lab(on, [user("hello")], '{"faults":[]}');
 	expect((await stop($)).block).toBeUndefined();

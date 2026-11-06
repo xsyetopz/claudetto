@@ -24,6 +24,8 @@ import { openItems, turnOf } from "./open-items.ts";
 /** The project's open-issues file: an `ISSUES*.md` anywhere in the path. */
 const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
 
+const ANY_TOOL = /^/;
+
 /** The tools whose result is a file the session changed. */
 export const WRITERS: BuiltinToolName[] = ["Edit", "NotebookEdit", "Write"];
 
@@ -119,9 +121,10 @@ const gradeBlock = async (
 	$: EngineInterface,
 	e: { readonly last_assistant_message?: string | undefined },
 	wroteIssues: boolean,
+	denied: ReadonlySet<string>,
 ) => {
 	const reply = e.last_assistant_message ?? "";
-	const turn = claimTurn(await $.session.messages());
+	const turn = claimTurn(await $.session.messages(), denied);
 	if (reply === "") {
 		return;
 	}
@@ -176,6 +179,8 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	const isOpenItemsOn = switchOption(options, "openItemsCheckEnabled");
 	let wrote = false;
 	let wroteIssues = false;
+	// A denied call reaches `tool.call` as an error, the same as one that ran and failed; only `tool.check` tells them apart.
+	const denied = new Set<string>();
 	const noticeTasks = tasksNotice();
 	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
 		const answer = await next(e);
@@ -190,6 +195,13 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 			didWrite(answer) &&
 			bashWritesTo(e.command, (path) => ISSUES_FILE.test(path));
 		return answer;
+	});
+	on("tool.check", { tool: ANY_TOOL }, async (_$, e, next) => {
+		const verdict = await next(e);
+		if (verdict.decision === "deny" && e.tool_use_id !== undefined) {
+			denied.add(e.tool_use_id);
+		}
+		return verdict;
 	});
 	on("classic.Stop", async ($, e, next) => {
 		const stretchWrote = wrote;
@@ -206,7 +218,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		const block =
 			(await filesBlock($, e)) ??
 			(isOpenItemsOn ? await openBlock($, e) : undefined) ??
-			(await gradeBlock($, e, stretchIssues));
+			(await gradeBlock($, e, stretchIssues, denied));
 		if (block !== undefined) {
 			return { ...answer, block };
 		}

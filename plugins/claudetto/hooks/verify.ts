@@ -21,8 +21,14 @@ const SHOWN = 6;
 const RESULTS = 8;
 const RESULT_CHARS = 400;
 
-/** The person's message that opened the turn, the person messages before it, and whether any call since then looked at the workspace. */
-export const claimTurn = (messages: readonly SessionMessage[]) => {
+/**
+ * The person's message that opened the turn, the person messages before it, and whether any call since then looked at the workspace.
+ * A call in `denied` was refused before it ran, so it saw nothing.
+ */
+export const claimTurn = (
+	messages: readonly SessionMessage[],
+	denied: ReadonlySet<string> = new Set(),
+) => {
 	const start = messages.findLastIndex(isPersonMessage);
 	return {
 		user: start < 0 ? "" : (messages[start]?.text ?? ""),
@@ -38,7 +44,11 @@ export const claimTurn = (messages: readonly SessionMessage[]) => {
 			.map((m) => m.text),
 		looked: messages
 			.slice(start + 1)
-			.some((m) => m.toolUses.some((use) => !NOT_A_LOOK.has(use.tool))),
+			.some((m) =>
+				m.toolUses.some(
+					(use) => !(NOT_A_LOOK.has(use.tool) || denied.has(use.tool_use_id)),
+				),
+			),
 		results: messages
 			.slice(start + 1)
 			.flatMap((m) => m.toolUses)
