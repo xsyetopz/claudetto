@@ -271,7 +271,7 @@ Each probe runs against a vanilla install: a temporary `CLAUDE_CONFIG_DIR` with 
 - [ ] 17.5 claudekit stops a run live when it passes 300,000 tokens, and paid probes run through claudekit; a test covers the stop.
 - [x] 17.6 The betterleaks finding in `hooks/secrets.spec.ts` resolved: `generic-api-key` matched the fake `api03-` fixture across the line break; a trailing `betterleaks:allow` ends the match. `betterleaks dir plugins/claudetto` reports no leaks; without the comment it reports 1, and a plain comment also clears it (`/tmp/probe-17-6`); `secrets.spec.ts` 6 pass Done (2026-11-06).
 - [ ] 17.7 Why `cc-plugin-privacy` appears in the probe-140 log, found and fixed or explained with a run.
-- [ ] 17.8 Nothing left from the `npx tsc@2.0.4` run (lockfiles, caches, node_modules), checked.
+- [x] 17.8 Nothing left from the `npx tsc@2.0.4` run in the repo: no `node_modules/.bin/tsc`, no `typescript` install, no `"tsc"` in the history of `package.json` or `bun.lock` (`git log --all -S`). The only copy is npm's cache `~/.npm/_npx/1d6e82a4126006c4` (Oct 21, package `tsc@^2.0.4`), outside the repo; its removal is handed to the user in 17.11 Done (2026-11-06).
 - [ ] 17.9 Coarse backlog commits split into revertable slices, signed, with commitlint clean.
 - [ ] 17.10 `/tmp` evidence cited in design.md and tasks.md copied to `evidence/` in this change after a betterleaks scan, and the citations rewritten.
-- [ ] 17.11 Steps only the user can take, handed over as `! <command>`: API credit, the sandbox setting in `.claude/settings.json`, the holdout grade, and the removal of stale `/tmp` dirs; every permission denial listed in the report.
+- [ ] 17.11 Steps only the user can take, handed over as `! <command>`: API credit, the sandbox setting in `.claude/settings.json`, the holdout grade, the removal of stale `/tmp` dirs, and of the npx cache `~/.npm/_npx/1d6e82a4126006c4`; every permission denial listed in the report.
