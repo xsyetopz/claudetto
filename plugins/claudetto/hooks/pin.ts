@@ -264,6 +264,14 @@ const unreadIssues = async (
 	return hasRead(await $.session.messages(), file) ? undefined : file[1];
 };
 
+// Built-ins that change nothing: a question that needs one of them gets the lookup, not the answer-first gate (task 18.21).
+const LOOKUPS: ReadonlySet<string> = new Set([
+	"ListAgents",
+	"Read",
+	"Grep",
+	"Glob",
+]);
+
 const hasSpoken = (messages: SessionMessage[]): boolean =>
 	messages
 		.slice(messages.findLastIndex(isPersonMessage) + 1)
@@ -318,7 +326,7 @@ export const pin = (on: On): void => {
 		if (hit !== undefined) {
 			return deny(PIN_BLOCKED(hit.text));
 		}
-		if (kind === "task") {
+		if (kind === "task" || (kind === "question" && LOOKUPS.has(e.tool))) {
 			return next(e);
 		}
 		const messages = await $.session.messages();

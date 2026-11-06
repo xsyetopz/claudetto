@@ -182,16 +182,26 @@ test("a remark's first tool call, a read-only one too, is denied with the answer
 	expect(r.reason).toContain("Answer from what the session holds");
 });
 
-test("a question's first call is denied, and so is a sibling call of the same batch", async ($: Engine, on: On) => {
+test("a question's first call that writes or runs a command is denied, and so is a sibling call of the same batch", async ($: Engine, on: On) => {
 	lab(on, [], [person], [], "question");
 	await submit($, person.text);
-	expect((await check($, "Read", { file_path: "/p/a.ts" })).decision).toBe(
-		"deny",
-	);
-	expect((await check($, "Read", { file_path: "/p/b.ts" })).decision).toBe(
+	expect((await check($, "Bash", { command: "ls" })).decision).toBe("deny");
+	expect((await check($, "Edit", { file_path: "/p/a.ts" })).decision).toBe(
 		"deny",
 	);
 });
+
+for (const [tool, input] of [
+	["ListAgents", {}],
+	["Read", { file_path: "/p/a.ts" }],
+	["Grep", { pattern: "lint" }],
+	["Glob", { pattern: "*.ts" }],
+] as const) {
+	test(`a question's first ${tool} call passes the answer-first gate`, async ($: Engine, on: On) => {
+		await turn("question")($, on);
+		expect((await check($, tool, input)).decision).not.toBe("deny");
+	});
+}
 
 test("a remark's call passes once assistant text precedes it in the turn", async ($: Engine, on: On) => {
 	await turn("remark", spoken("Nobody did; I misread the task."))($, on);
