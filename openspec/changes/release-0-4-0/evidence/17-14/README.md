@@ -60,3 +60,41 @@ Probe log (`log.json`):
 
 Lab: `hooks/limits/verify.test.ts`, "a turn whose only lookup was denied is still offered the unchecked-claim fault". Full lab 1207 pass; the committed slice alone in a clean worktree 1206 pass.
 Mutant: `claimTurn` without `|| denied.has(use.tool_use_id)` fails that test (1206 pass, 1 fail).
+
+
+## Follow-up: a refused ask
+
+Hypothesis: an ask the session refuses (headless, `dontAsk`, or the person saying no) also reaches `tool.call` only as `isError`, so it still counted as a look.
+Prediction: with the logging plugin and `--permission-mode dontAsk`, `tool.check` gives `ask` and `tool.call` gives an error whose text is the CLI's refusal, and the file is not created.
+
+Command: the probe plugin in `/tmp/probe-17-14/plugin` (it logs `tool.check`, `tool.call` and `classic.PermissionDenied`), `claude -p "touch /tmp/probe-17-14/y.txt" --permission-mode dontAsk --plugin-dir /tmp/probe-17-14/plugin --no-session-persistence < /dev/null`.
+
+Result: as predicted; `y.txt` was not created and `PermissionDenied` did not fire. Log, texts cut at 120 characters:
+
+```json
+[
+ {
+  "at": "tool.check",
+  "tool": "Bash",
+  "id": "toolu_01GD5NdH5VQ6Z61nYQXZfQex",
+  "decision": "ask",
+  "reason": "touch in '/tmp/probe-17-14/y.txt' needs approval. The path is inside the working directories for this session ('/private/tmp/probe-17-14', '/tmp/probe-17-14'), and Claude Code asks before a shell command creates, changes or removes files there."
+ },
+ {
+  "at": "tool.call",
+  "tool": "Bash",
+  "id": "toolu_01GD5NdH5VQ6Z61nYQXZfQex",
+  "isError": true,
+  "text": "Permission to use Bash has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to …",
+  "result": "Error: Permission to use Bash has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* att …",
+  "ref": 1
+ }
+]
+```
+
+The earlier run in default headless mode gave `ask` with the same reason, and a `tool.call` error whose `text` was that reason, word for word. Its log was overwritten by the run above, so only the in-session reading stands for it. The CLI's other refusal texts, "The user doesn't want to proceed with this tool use" and "Permission for this tool use was denied", come from its source.
+
+Fix (b80a5f1f): `stopHooks` keeps the ids `tool.check` asked about. A `tool.call` error for such an id counts as denied when its text is the ask's reason or starts with one of the CLI refusal texts.
+
+Lab: `hooks/limits/verify.test.ts`, the three "an ask refused with …" tests and "an ask that was allowed and then failed is still a lookup"; full lab 1211 pass, the committed slice alone in a clean worktree 1210 pass. The lab refuses an ask inside its own `tool.call`, so the test's check stub answers `ask` once and `allow` after that, and the stubbed result is what reaches the hook.
+Mutants, each caught: without the reason match (1 fail), without the refusal texts (2 fail), every asked call counted as refused (1 fail).
