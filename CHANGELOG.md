@@ -37,6 +37,11 @@ Before 1.0.0, a release can change or remove behavior.
 - Notifications are on by default: one fires when an unattended session stops on a failure.
 - `/goal` is set again after a handoff clears the session.
 - When claudetto's plugin code is not running, a typed `/claudetto:setup` is blocked before Claude sees it, with a reason that says to restart Claude Code or reinstall claudetto.
+- `/claudetto:setup` requires Mole (`mo`) for cache and build-folder cleanup and adds the project root to its `purge_paths`; a session start on a volume over 80% full shows the free space and offers `! mo clean --dry-run` and `! mo purge --dry-run`.
+- Hygiene at session start removes old build folders that Mole misses, from rules in `hooks/hygiene/trash.toml` (gitleaks config schema; a project overrides it with `.claude/claudetto/trash.toml`), only in another checkout whose files and git index are older than `trashCleanupPeriodDays` and that no process uses, and removes `/tmp` folders whose marker names an ended session.
+- Claude's `Bash` commands run at nice 10, and `CARGO_BUILD_JOBS` and `GOMAXPROCS` keep one core free unless you set them.
+- When an agent or worker finishes, it removes the `/tmp` folders it marked, its clean worktrees, and its merged branches, and its reply names each worktree or branch that still holds work. The gate denies a `mkdir`, `mktemp`, or file write that makes a new `/tmp` folder without the `.created-by-claudetto` marker.
+- A finished agent whose own background shell or monitor still runs, and whose reply does not name it, is told to stop it with `TaskStop`, so no task outlives the reply and wakes the session later.
 - `claudetto-openspec`, a plugin of its own, replaces `@fission-ai/openspec` with one deferred `openspec` tool and skills for apply, explore, propose, update, verify, and archive.
 
 ### Changed
