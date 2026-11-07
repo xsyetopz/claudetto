@@ -99,6 +99,8 @@ export const releaseVerdict = (c: Command): Verdict | undefined =>
 export interface Owns {
 	pid: (pid: string) => boolean;
 	tmp: (top: string) => boolean;
+	/** A /tmp folder that is there already, so a write under it makes no new folder. */
+	standing: (top: string) => boolean;
 	path: (path: string) => boolean;
 	branch: (name: string) => boolean;
 }
@@ -106,6 +108,7 @@ export interface Owns {
 export const NOBODY: Owns = {
 	pid: () => false,
 	tmp: () => false,
+	standing: () => false,
 	path: () => false,
 	branch: () => false,
 };
@@ -157,12 +160,17 @@ export const createdOf = (past: Past[]) => {
 };
 
 /** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
-export const ownsOf = (past: Past[], marked: Set<string>): Owns => {
+export const ownsOf = (
+	past: Past[],
+	marked: Set<string>,
+	standing: Set<string>,
+): Owns => {
 	const { paths, branches, workers } = createdOf(past);
 	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
 	return {
 		pid: startedBy(past),
 		tmp: (top) => marked.has(top),
+		standing: (top) => standing.has(top),
 		path: (path) =>
 			paths.includes(path) ||
 			entered.some((t) => t.text?.includes(path)) ||
@@ -211,7 +219,7 @@ export const markerVerdict = (
 		})
 		.find((a) => {
 			const top = tmpTopOf(a);
-			return top !== undefined && !own.tmp(top);
+			return top !== undefined && !own.tmp(top) && !own.standing(top);
 		});
 	return path === undefined ? undefined : deny(gateTmpMarker(path));
 };

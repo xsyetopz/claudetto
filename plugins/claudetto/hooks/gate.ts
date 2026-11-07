@@ -91,12 +91,12 @@ export async function isMarked(
 
 const ownershipOf = async ($: EngineInterface, command: string) => {
 	const tops = TMP_TOUCH.test(command) ? tmpTops(command) : [];
-	const marked = await Promise.all(
-		tops.map(async (top) => ((await isMarked($, top)) ? top : undefined)),
-	);
+	const kept = async (has: (top: string) => Promise<boolean>) =>
+		new Set((await Promise.all(tops.map(async (t) => ((await has(t)) ? t : undefined)))).filter((t) => t !== undefined));
 	return ownsOf(
 		OWNED.test(command) ? await hostOf($).past() : [],
-		new Set(marked.filter((t) => t !== undefined)),
+		await kept((top) => isMarked($, top)),
+		await kept((top) => $.fs.exists(top)),
 	);
 };
 
@@ -144,7 +144,7 @@ const ownVerdict = async (
 	}
 	// A write makes its missing folders, so it would make a /tmp folder no marker names (seen live, 18.41).
 	const top = tmpTopOf(path);
-	if (top !== undefined && top !== path && !(await isMarked($, top))) {
+	if (top !== undefined && top !== path && !(await $.fs.exists(top))) {
 		return deny(gateTmpMarker(top));
 	}
 	return systemPath(path) ? deny(GATE_SYSTEM_WRITE) : undefined;

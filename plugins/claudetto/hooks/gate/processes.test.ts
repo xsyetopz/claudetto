@@ -29,7 +29,9 @@ const lab = (
 	scanner(on);
 	on("session.cwd", () => ({ value: "/p" }));
 	on("session.id", () => ({ value: "S1" }));
-	on("fs.exists", (_$, e) => ({ value: e.path in marked }));
+	on("fs.exists", (_$, e) => ({
+		value: Object.keys(marked).some((k) => k === e.path || k.startsWith(`${e.path}/`)),
+	}));
 	on("fs.read", (_$, e) => ({ value: marked[e.path] ?? "" }));
 	on("session.messages", () => ({
 		value: [
@@ -241,25 +243,24 @@ allowed(
 	'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto"',
 );
 allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S1" });
-denied("mkdir -p /tmp/mine/sub", gateTmpMarker("/tmp/mine/sub"), [], {
-	[MARK]: "S2",
-});
+// A folder that is there already, made by another session or the user, gets no new folder from a mkdir under it.
+allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S2" });
+allowed("mkdir -p /tmp/proj/build", [], { "/tmp/proj/README.md": "x" });
 allowed("mkdir -p build/out");
 allowed("mktemp -d");
 
 // Seen live: a worker denied a bare `mkdir` made its /tmp folder with Write, which makes missing folders.
 const write = ($: Engine, file_path: string) =>
 	$.tool.check({ tool: "Write", input: { file_path, content: "x" } });
-test("a Write under an unmarked /tmp folder is denied with the marker line", async ($: Engine, on: On) => {
-	lab(on, [], { [MARK]: "S2" });
-	for (const path of ["/tmp/live-1/notes.txt", "/tmp/mine/notes.txt"]) {
-		const v = await write($, path);
-		expect(v.decision).toBe("deny");
-		expect(v.reason).toContain(gateTmpMarker(path.slice(0, path.lastIndexOf("/"))));
-	}
+test("a Write that would make a /tmp folder is denied with the marker line", async ($: Engine, on: On) => {
+	lab(on);
+	const v = await write($, "/tmp/live-1/notes.txt");
+	expect(v.decision).toBe("deny");
+	expect(v.reason).toContain(gateTmpMarker("/tmp/live-1"));
 });
-test("a Write under this session's marked /tmp folder or outside /tmp passes", async ($: Engine, on: On) => {
-	lab(on, [], { [MARK]: "S1" });
+// Seen live: a session's repo sat in a /tmp folder another session marked.
+test("a Write under a /tmp folder that is there already, or outside /tmp, passes", async ($: Engine, on: On) => {
+	lab(on, [], { [MARK]: "S2" });
 	expect((await write($, "/tmp/mine/notes.txt")).decision).toBe("allow");
 	expect((await write($, "/p/tmp/x/notes.txt")).decision).toBe("allow");
 	expect((await write($, "/tmp/notes.txt")).decision).toBe("allow");
