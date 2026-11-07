@@ -25,10 +25,11 @@ Finish task 18.31 of openspec/changes/release-2-1-319/tasks.md: the claudetto pl
 - The held-out text stays unread. Never read, list or grep ~/.claudetto-holdout/; the user runs it with their own `! <command>`. Each held-out run folder must end with only the marker, result.json and ledger.jsonl.
 - Pass CLAUDE_CODE_OAUTH_TOKEN with `bun --env-file=.env`; keep the .env values unread.
 - Keep each graded session under 300,000 tokens. A public or held-out run costs about $2.40.
+- Spend at most $60 on public runs (about 25 runs) from 2026-11-08 on, counting the c1 run started that day. If c1 and c2 have not each passed 24/24 three runs in a row by then, stop, record what is still missing under 18.31, and hand the user the 10-run held-out command anyway.
 - Stop only processes you started.
 </constraints>
 <done_when>
-- c2 and c1 each pass 24/24 on three runs in a row, with every fix recorded and measured.
+- c2 and c1 each pass 24/24 on three runs in a row, with every fix recorded and measured, or the $60 public-run cap is spent and what is still missing is recorded.
 - The user's next 10 held-out r4 runs each pass 24/24, and their sums are written under 18.31.
 - The text work of step 5 is done or each part names what blocks it.
 - `just check` passes and `openspec validate release-2-1-319 --strict` is valid.
