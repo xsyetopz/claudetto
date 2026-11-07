@@ -42,10 +42,8 @@ test("the /init interview fits 1,144 chars, names the claudetto ask-user-questio
 	expect(INTERVIEW_TEXT).not.toContain("AGENTS.md");
 });
 
-test("DEFERRED_TOOLS is Read, Write, Skill, Workflow, ScheduleWakeup, ReportFindings, and ListAgents stays loaded (18.18)", () => {
+test("DEFERRED_TOOLS is Skill, Workflow, ScheduleWakeup, ReportFindings, and ListAgents stays loaded (18.18)", () => {
 	expect([...DEFERRED_TOOLS]).toEqual([
-		"Read",
-		"Write",
 		"Skill",
 		"Workflow",
 		"ScheduleWakeup",
@@ -58,8 +56,13 @@ test("the ListAgents text is 304 chars", () => {
 	expect(TOOL_TEXTS["ListAgents"]?.length).toBe(304);
 });
 
+test("Read and Write are sent in full, not behind ToolSearch", () => {
+	expect(DEFERRED_TOOLS).not.toContain("Read");
+	expect(DEFERRED_TOOLS).not.toContain("Write");
+});
+
 for (const tool of Object.keys(TOOL_TEXTS)) {
-	test(`tool.describe sends our ${tool} text, deferred only for Read, Write, Skill among them`, async ($: Engine, on: On) => {
+	test(`tool.describe sends our ${tool} text, deferred only for Skill among them`, async ($: Engine, on: On) => {
 		on("tool.describe", (_$, e) => e);
 		const out = await $.tool.describe({
 			tool,

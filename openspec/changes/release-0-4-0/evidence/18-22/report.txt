@@ -1,0 +1,6 @@
+base	sessions 30	output tokens total 11151 mean 371.7 (bootstrap 95% 361.3-385.2) median 369	input+cache tokens 1811581	fixed 30/30 Wilson 0.886-1.000	cut markers 0	tokens 1822732	$1.4966	largest 81631	capped 0
+change	sessions 30	output tokens total 15958 mean 531.9 (bootstrap 95% 508.6-573.2) median 515	input+cache tokens 1234887	fixed 30/30 Wilson 0.886-1.000	cut markers 2	tokens 1250845	$1.1685	largest 54429	capped 0
+nocut	sessions 30	output tokens total 16576 mean 552.5 (bootstrap 95% 510.3-612.5) median 515	input+cache tokens 1227153	fixed 30/30 Wilson 0.886-1.000	cut markers 0	tokens 1243729	$1.1535	largest 55031	capped 0
+base vs change: output tokens, Mann-Whitney p=0.0000, permutation test of the mean p=0.0000
+nocut vs change: output tokens, Mann-Whitney p=0.7786, permutation test of the mean p=0.5412
+fixed, Fisher two-sided base vs change: p=1.0000

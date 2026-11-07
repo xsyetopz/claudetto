@@ -105,7 +105,7 @@ const commandVerdicts = (
 			: undefined,
 		writesWhole(name, args, redirected) ? deny(GATE_WRITE_FILE) : undefined,
 		!(c.from || c.into || redirected) && printsFile(name, args)
-			? deny(GATE_READ_FILE)
+			? deny(GATE_READ_FILE(operands(args)[0] ?? ""))
 			: undefined,
 	];
 };

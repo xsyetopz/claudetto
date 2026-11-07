@@ -118,6 +118,18 @@ for (const command of [
 	});
 }
 
+test("a failed run that arrives as a string is cut into the object shape the engine accepts", async ($: Engine, on: On) => {
+	const files = lab(on, `Error: Exit code 1\n${LONG}`, true);
+
+	const out = await run($, "bun test");
+
+	expect(out.isError).toBe(true);
+	expect(out.result).toMatchObject({ stderr: "", interrupted: false });
+	expect(stdoutOf(out)).toContain("the full output is in");
+	expect(stdoutOf(out).length).toBeLessThan(8200);
+	expect(files).toHaveLength(1);
+});
+
 test("an output that cannot be saved is cut, and the cut line says so", async ($: Engine, on: On) => {
 	lab(on, { stdout: LONG, stderr: "" }, undefined, true);
 

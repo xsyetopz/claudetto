@@ -1,4 +1,5 @@
 import type { EngineInterface, On } from "claude-code";
+import { BOUND_OUTPUT_DIR } from "./limits/bound-output.ts";
 import { didWrite, WRITERS } from "./limits/stop.ts";
 import { PERSON, rootOf } from "./pin.ts";
 import { SLICE_COMMIT, SLICE_OTHERS } from "./texts.ts";
@@ -45,7 +46,8 @@ const dirty = async ($: EngineInterface): Promise<Map<string, string>> => {
 	const entries: { path: string; gone: boolean }[] = [];
 	for (let i = 0; i < fields.length; i++) {
 		const field = fields[i] ?? "";
-		if (field !== "") {
+		// The plugin's own saved test output is not the agent's slice.
+		if (field !== "" && !field.slice(3).startsWith(`${BOUND_OUTPUT_DIR}/`)) {
 			entries.push({
 				path: `${root}/${field.slice(3)}`,
 				gone: field.slice(0, 2).includes("D"),
@@ -82,6 +84,11 @@ export const slices = (on: On): void => {
 	const mine = new Map<string, string>();
 	// The cwd repo's changed files at the last sweep; absent until the first prompt takes the session's start.
 	let known: Map<string, string> | undefined;
+	let interactive = true;
+	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
+		interactive = e.isInteractive;
+		return next(e);
+	});
 	on("prompt.submit", { origin: { kind: PERSON } }, async ($, e, next) => {
 		const now = await dirty($);
 		const others = [...now].filter(([path, hash]) =>
@@ -139,7 +146,11 @@ export const slices = (on: On): void => {
 			tool: "Bash",
 			input: { command: "git commit" },
 		});
-		if (commit.decision === "deny") {
+		// A headless session has no one to answer an ask, so the commit it asks for could not be made.
+		if (
+			commit.decision === "deny" ||
+			(commit.decision === "ask" && !interactive)
+		) {
 			return answer;
 		}
 		const files = [...mine.keys()];

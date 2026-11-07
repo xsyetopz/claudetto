@@ -60,7 +60,7 @@ const isBoundedRun = (command: string): boolean =>
 		return isRun(name, args);
 	});
 
-const BOUND_OUTPUT_DIR = ".claude/claudetto/output";
+export const BOUND_OUTPUT_DIR = ".claude/claudetto/output";
 
 /** Room for a runner's banner, its summary, and a few failures. */
 const DEFAULT_OUTPUT_CHARS = 8000;
@@ -90,8 +90,13 @@ const boundResult = (
 	limit: number,
 	saved: string | undefined,
 ): unknown => {
+	// A failed run reaches here as a string; the engine accepts a changed Bash result only in the object shape.
 	if (typeof result === "string") {
-		return boundText(result, limit, saved);
+		return {
+			stdout: boundText(result, limit, saved),
+			stderr: "",
+			interrupted: false,
+		};
 	}
 	if (!isRecord(result)) {
 		return result;

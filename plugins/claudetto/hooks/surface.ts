@@ -10,10 +10,8 @@ import {
 	TOOL_TEXTS,
 } from "./texts.ts";
 
-// Read, Write, and Skill are called by name, so the model needs no schema for them (task 5.21). ListAgents stays loaded (task 18.18): a task such as "list the agents running" is answered from the session context when the model has never seen the tool, so 18.7 measured 0/8 sessions reaching a deferred ListAgents against 8/8 with it sent, and no session searched for it. Workflow, ScheduleWakeup, and ReportFindings go uncalled in 1.8's transcripts (task 2.13); setup denies them, and a session without setup still sends them in full.
+// Skill is called by name, so the model needs no schema for it (task 5.21). Read and Write stay in full: deferred, they sent the model to `cat` through Bash, whose gate then denied the call (task 18.23). ListAgents stays loaded (task 18.18): 18.7 measured 0/8 sessions reaching a deferred ListAgents against 8/8 with it sent. Workflow, ScheduleWakeup, and ReportFindings go uncalled in 1.8's transcripts (task 2.13); setup denies them, and a session without setup still sends them in full.
 export const DEFERRED_TOOLS: readonly string[] = [
-	"Read",
-	"Write",
 	"Skill",
 	"Workflow",
 	"ScheduleWakeup",

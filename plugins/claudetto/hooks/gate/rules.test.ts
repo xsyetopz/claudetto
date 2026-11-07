@@ -47,6 +47,9 @@ for (const command of PASSES) {
 
 test("a file print is told to use Read, a whole-file write to use Write", () => {
 	expect(judge("cat src/a.ts", NONE)?.reason).toContain("Read");
+	expect(judge("bun test; cat src/a.ts", NONE)?.reason).toContain(
+		"`file_path` `src/a.ts`",
+	);
 	expect(judge("tee notes.txt", NONE)?.reason).toContain("Write");
 	expect(judge("printf a > notes.txt", NONE)?.reason).toContain("Write");
 });

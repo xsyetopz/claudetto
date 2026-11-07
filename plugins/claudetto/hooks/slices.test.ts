@@ -46,7 +46,7 @@ const gitAnswer = (repo: Repo, argv: readonly string[]) => {
 const lab = (
 	on: On,
 	repo: Repo,
-	commit: "allow" | "deny" = "allow",
+	commit: "allow" | "ask" | "deny" = "allow",
 	runs: string[][] = [],
 	answer = '{"faults":[]}',
 	stopped: { block?: string } = {},
@@ -63,6 +63,10 @@ const lab = (
 		return scanned(e);
 	});
 	on("classic.Stop", () => stopped);
+	on("session.start", () => ({ cwd: "/repo" }));
+	on("tool.register", (_$, e) => ({
+		value: { tool: `mcp__claudetto__${e.name}` },
+	}));
 	on("session.messages", () => ({ value: [] }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("prompt.submit", (_$, e) => e);
@@ -146,6 +150,20 @@ test("when the permission chain denies a commit, the stop passes", async ($: Eng
 	expect((await stop($)).block).toBeUndefined();
 });
 
+test("a commit that needs an answer blocks the stop in a session that has someone to answer", async ($: Engine, on: On) => {
+	lab(on, fakeRepo({ [A]: " M" }), "ask");
+	await $.session.start({ cwd: "/repo", surface: null, isInteractive: true });
+	await edit($);
+	expect((await stop($)).block).toContain("`src/a.ts`");
+});
+
+test("a commit that needs an answer lets the stop pass in a headless session", async ($: Engine, on: On) => {
+	lab(on, fakeRepo({ [A]: " M" }), "ask");
+	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
+	await edit($);
+	expect((await stop($)).block).toBeUndefined();
+});
+
 test("a stop the hook already continued passes", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ [A]: " M" }));
 	await edit($);
@@ -185,6 +203,18 @@ test("a file changed through Bash, such as sed -i, is blocked and named", async 
 	repo.hash["/repo/src/b.ts"] = "h1";
 	await bash($, "sed -i s/a/b/ src/b.ts");
 	expect((await stop($)).block).toContain("`src/b.ts`");
+});
+
+test("the plugin's saved test output is not listed among the files to commit", async ($: Engine, on: On) => {
+	const repo = fakeRepo({ [A]: " M" });
+	lab(on, repo);
+	await submit($);
+	repo.dirty["/repo/.claude/claudetto/output/output-t1.txt"] = "??";
+	await bash($, "bun test");
+	await edit($);
+	const out = await stop($);
+	expect(out.block).toContain("`src/a.ts`");
+	expect(out.block).not.toContain("claudetto/output");
 });
 
 test("a file in another repo that an Edit wrote is blocked and named", async ($: Engine, on: On) => {

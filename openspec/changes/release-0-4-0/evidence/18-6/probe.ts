@@ -20,15 +20,17 @@ const task = (noise: number, bug: number): Task => ({
 const tasks = [task(3, 5), task(3, 33), task(8, 5), task(8, 33), task(14, 5), task(14, 33)];
 
 const study: Study = {
-	probe: "probe-18-6",
-	root: "/tmp/probe-18-6",
-	arms: [{ name: "base", plugin: false }, { name: "change", plugin: true }, { name: "nocut", plugin: true, options: { maxTestOutputChars: 0 } }],
+	probe: process.env.PROBE_NAME ?? "probe-18-6",
+	root: process.env.PROBE_ROOT ?? "/tmp/probe-18-6",
+	arms: [{ name: "base", plugin: false }, { name: "change", plugin: true }, { name: "nocut", plugin: true, options: { maxTestOutputChars: 0 } }].filter((a) => !process.env.PROBE_ARMS || process.env.PROBE_ARMS.split(",").includes(a.name)),
 	tasks,
-	score: (reply, cwd) => {
+	score: (reply, cwd, stdout) => {
 		return {
 			fixed: /x \+ \d+ \+ 1;/.test(readOf(join(cwd, "src/lib.ts"))) ? 0 : 1,
 			cuts: reply.toolResults.filter((r) => JSON.stringify(r.content).includes("[claudetto: cut")).length,
 			turns: reply.turns,
+			shapeErrors: (stdout.match(/does not match its output shape/g) ?? []).length > 0 ? 1 : 0,
+			stopBlocks: (stdout.match(/Stop hook feedback/g) ?? []).length,
 		};
 	},
 };

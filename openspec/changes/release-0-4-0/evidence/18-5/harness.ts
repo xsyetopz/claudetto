@@ -17,7 +17,7 @@ import { resultUsage } from "/tmp/claudekit-leftovers/claudekit/probes/opener/pr
 
 export { fisher, wilson };
 
-const REPO = "/Users/krystian/CodeProjects/xsyetopz/claudetto";
+const REPO = join(import.meta.dir, "../../../../..");
 const PLUGIN = join(REPO, "plugins/claudetto");
 // Names copied by reference from the parent env, so a token is never read or printed here.
 // The plugin is for Pro and Max subscribers, so real runs bill the subscription; an API key would win over the token and bill the API.

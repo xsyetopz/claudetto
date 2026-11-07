@@ -328,7 +328,8 @@ export const secretScanFailed = (why: string): string =>
 // Gate: refusals of a shell command or a file write.
 export const GATE_ENV_VALUES =
 	"This prints the values of an env file. `Read` shows its names with the values hidden, and `grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' <file>` lists the names.";
-export const GATE_READ_FILE = "Use `Read` to read a file, not the shell.";
+export const GATE_READ_FILE = (file: string): string =>
+	`Use \`Read\` to read a file, not the shell: call \`Read\` with \`file_path\` \`${file}\` (absolute). Nothing in this command ran; send the rest of it alone.`;
 export const GATE_WRITE_FILE =
 	"Use `Write` to write a whole file, not the shell.";
 export const GATE_ENV_DUMP =
