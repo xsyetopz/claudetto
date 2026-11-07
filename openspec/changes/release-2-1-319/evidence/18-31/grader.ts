@@ -65,6 +65,9 @@ const workspace = async (f: F) => {
 	return dir;
 };
 
+// Each uncommitted file by its content, so an overlay's files, dirty before the session starts, count as changed only once it edits them.
+const dirty = async (dir: string) => new Map((await sh(["git", "status", "--porcelain", "-uall"], dir)).split("\n").filter(Boolean).map((l) => l.slice(3)).filter((p) => !p.startsWith(".claude/")).map((p) => { let text = ""; try { text = readFileSync(join(dir, p), "utf8"); } catch {} return [p, text] as const; }));
+
 // The conversation becomes a real saved session (tool turns included) that `claude -p --resume` continues with the user's reply.
 const resume = (f: F, dir: string) => {
 	const cwd = realpathSync(dir);
@@ -88,6 +91,7 @@ const judge = async (criterion: string, f: F, text: string, commands: string[], 
 const grade = async (f: F): Promise<Verdict> => {
 	const arm = process.env.ARM_DIR ?? (() => { throw new Error("ARM_DIR: unset; run through run.ts"); })();
 	const dir = await workspace(f);
+	const before = await dirty(dir);
 	const logs = process.env.LOG_DIR;
 	const tag = `${process.env.ARM_NAME ?? "arm"}-${f.id}-${Date.now()}`;
 	const r = await runClaude(["-p", f.userReply, "--resume", resume(f, dir), "--fork-session", "--plugin-dir", arm, "--settings", '{"outputStyle":"claudetto:Concise","sandbox":{"enabled":true,"allowUnsandboxedCommands":false}}', "--setting-sources", "project,local", "--permission-mode", "acceptEdits", "--no-session-persistence", "--output-format", "stream-json", "--verbose", "--max-budget-usd", "1", ...(logs ? ["--debug-file", join(logs, `${tag}.debug`)] : [])], dir);
@@ -104,7 +108,8 @@ const grade = async (f: F): Promise<Verdict> => {
 	if (L.forbidTool && uses.some((u: any) => new RegExp(L.forbidTool).test(u.name))) fails.push("forbidTool");
 	for (const s of (L.fileHas ?? "").split(";").filter(Boolean)) { const [p, re] = s.split("::"); if (!new RegExp(re).test(rd(p))) fails.push(`fileHas ${p}`); }
 	for (const s of (L.fileLacks ?? "").split(";").filter(Boolean)) { const [p, re] = s.split("::"); if (new RegExp(re).test(rd(p))) fails.push(`fileLacks ${p}`); }
-	const changed = (await sh(["git", "status", "--porcelain"], dir)).split("\n").filter(Boolean).map((l) => l.slice(3)).filter((p) => p !== ".claude/");
+	const after = await dirty(dir);
+	const changed = [...new Set([...before.keys(), ...after.keys()])].filter((p) => before.get(p) !== after.get(p));
 	if (L.noChanges && changed.length > 0) fails.push("changed");
 	if (L.onlyChanged && changed.some((c) => !L.onlyChanged.split(",").includes(c))) fails.push("onlyChanged");
 	if (L.forbidChanged && changed.includes(L.forbidChanged)) fails.push("forbidChanged");

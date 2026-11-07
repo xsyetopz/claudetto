@@ -25,11 +25,11 @@ Before 1.0.0, a release can change or remove behavior.
 - Read-only commands (`ls`, `grep`, `git status`/`diff`/`log`) run with no prompt when no rule or setting of yours asks for them; a wrapper, a file redirect, or a network tool still prompts. A test run (`bun test`, `npm test`) runs whatever its test files hold, so it prompts unless Claude Code's sandbox is on.
 - The gate denies running a released Claude Code program (a path under `claude/versions/`) to read it, and names the cc-inspect `code` tool. `claude --help` on the installed command stays allowed.
 - The Stop grader also blocks a reply that confesses, apologizes for, or narrates its own conduct ("my mistake", "I should not have") in place of the fact.
-- A Stop grader reads the final reply and blocks once when it names an unchecked claim, a broken rule, credit to the user for what they did not say, an unfiled defect, a fallback, something the session did not see, unexplained jargon, or a reply that ends on a next step it has not taken.
+- A Stop grader reads the final reply and blocks once when it names an unchecked claim, a broken rule, credit to the user for what they did not say, a fallback, something the session did not see, unexplained jargon, or a reply that ends on a next step it has not taken.
 - A Stop that leaves files the session wrote uncommitted, notebooks included, is blocked once with a request to commit them.
 - A reply or subagent report that names a file in a `! <command>` step is blocked when the file does not exist.
 - Limits you set in chat are kept, shown on each prompt, kept through compaction, and enforced. A "stop asking" limit denies both ask tools.
-- A remark or question is answered before the next tool runs, and a question waits for a read of the newest `ISSUES*.md`.
+- A remark or question is answered before the next tool runs.
 - A session is told which files it changed and which the user or another tool changed.
 - The agents `Artemis`, `Metis`, and `Heracles` replace the built-in `Explore`, `Plan`, and `general-purpose`.
 - `Monitor` and `AskUserQuestion` are served by claudetto's own deferred tools (`monitor`, `ask-user-question`), and `ask-user-question` accepts `multiSelect`.

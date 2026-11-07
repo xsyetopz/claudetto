@@ -208,7 +208,6 @@ test("a reply the grader finds no fault in passes", async ($: Engine, on: On) =>
 const FIXES = {
 	credited: "credits the user",
 	rules: "recited the rules",
-	unfiled: "open-issues file",
 	fallback: "fallback or a compatibility path",
 };
 
@@ -283,53 +282,6 @@ for (const verdict of ["fail", "unanswered", "not json"] as const) {
 	});
 }
 
-test("a turn that wrote the issues file is not offered the unfiled fault", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	lab(on, [user("fix the typo"), used("Read")], found("unfiled"), seen);
-	scanner(on);
-	on("tool.call", () => ({ result: {} }));
-	await $.tool.call({
-		tool: "Edit",
-		tool_use_id: "t1",
-		file_path: "/repo/ISSUES-2026-11-06.md",
-		old_string: "a",
-		new_string: "b",
-	});
-	expect((await stop($)).block).toBeUndefined();
-	expect(seen[0]).not.toContain("- unfiled:");
-	await stop($, true);
-	await stop($);
-	expect(seen.at(-1)).toContain("- unfiled:");
-});
-
-const bashCall = ($: Engine, command: string) =>
-	$.tool.call({ tool: "Bash", tool_use_id: "t2", command });
-
-test("a turn that wrote the issues file through Bash is not offered the unfiled fault", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	lab(on, [user("fix the typo"), used("Read")], found("unfiled"), seen);
-	scanner(on);
-	on("fs.exists", () => ({ value: true }));
-	on("tool.check", () => ({ decision: "allow" }));
-	on("tool.call", () => ({ result: {} }));
-	await bashCall($, "cat <<'EOF' >> ISSUES-2026-11-06.md\n- open\nEOF");
-	expect((await stop($)).block).toBeUndefined();
-	expect(seen[0]).not.toContain("- unfiled:");
-});
-
-test("a Bash call that only reads the issues file or writes another file keeps the unfiled fault", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	lab(on, [user("fix the typo"), used("Read")], found("unfiled"), seen);
-	scanner(on);
-	on("fs.exists", () => ({ value: true }));
-	on("tool.check", () => ({ decision: "allow" }));
-	on("tool.call", () => ({ result: {} }));
-	await bashCall($, "cat ISSUES.md");
-	await bashCall($, "echo x > notes.md");
-	await stop($);
-	expect(seen[0]).toContain("- unfiled:");
-});
-
 test("the grader sees the earlier person and assistant messages", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(
@@ -369,14 +321,11 @@ test("the grader sees the background tasks the session lists, which ground a sta
 	expect(seen[0]).toContain("listed background tasks");
 });
 
-test("the grader is told the turn facts that offer its codes: no look, and no issues-file write", async ($: Engine, on: On) => {
+test("the grader is told the turn fact that offers its codes: no look", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(on, [user("It's 30s now, confirm it.")], '{"faults":[]}', seen);
 	await stop($);
 	expect(seen[0]).toContain("Fact: no call this turn read the workspace.");
-	expect(seen[0]).toContain(
-		"Fact: this turn wrote nothing to the project's open-issues file.",
-	);
 });
 
 test("a turn that looked is not told it made no look", async ($: Engine, on: On) => {
@@ -384,7 +333,6 @@ test("a turn that looked is not told it made no look", async ($: Engine, on: On)
 	lab(on, [user("confirm it"), used("Read")], '{"faults":[]}', seen);
 	await stop($);
 	expect(seen[0]).not.toContain("Fact: no call");
-	expect(seen[0]).toContain("Fact: this turn wrote nothing");
 });
 
 const ran = (tool: string, text: string, command = "git diff") => ({
@@ -428,23 +376,21 @@ test("the unseen rule leaves a reply that reports the assistant's own edit and i
 	expect(sonnet).not.toContain("with its file:line");
 });
 
-for (const code of ["fallback", "unfiled"]) {
-	test(`sonnet sees the other codes beside unseen, and a ${code} fault it finds does not block`, async ($: Engine, on: On) => {
-		const seen: string[] = [];
-		lab(
-			on,
-			[user("commit"), ran("Bash", "+# setup block")],
-			'{"faults":[]}',
-			seen,
-			[],
-			{ sonnet: found(code, "Committed.") },
-		);
-		expect((await stop($, false, UNSEEN_REPLY)).block).toBeUndefined();
-		const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
-		expect(sonnet).toContain("- credited:");
-		expect(sonnet).toContain("- unfiled:");
-	});
-}
+test("sonnet sees the other codes beside unseen, and a fallback fault it finds does not block", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		[user("commit"), ran("Bash", "+# setup block")],
+		'{"faults":[]}',
+		seen,
+		[],
+		{ sonnet: found("fallback", "Committed.") },
+	);
+	expect((await stop($, false, UNSEEN_REPLY)).block).toBeUndefined();
+	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+	expect(sonnet).toContain("- credited:");
+	expect(sonnet).toContain("- fallback:");
+});
 
 test("a credited fault only sonnet finds blocks when a tool ran", async ($: Engine, on: On) => {
 	lab(

@@ -7,7 +7,6 @@ import {
 	PIN_BLOCKED,
 	PIN_COMPACT,
 	PIN_EXTRACT,
-	PIN_ISSUES_FIRST,
 	PIN_NO_QUESTIONS,
 	PIN_NOTE,
 	type PinConstraint,
@@ -17,17 +16,7 @@ import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/;
 const ANY_TOOL = /^/;
-const ISSUES_FILE = /^ISSUES.*\.md$/;
 const IN_PLACE = /^-[a-z]*i/;
-const READ_PROGRAMS = new Set([
-	"cat",
-	"head",
-	"tail",
-	"less",
-	"more",
-	"bat",
-	"nl",
-]);
 const WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 const WRITE_PROGRAMS = new Set([
 	"tee",
@@ -138,19 +127,6 @@ const bashWrites = (
 		return (anyWrite && writesFiles(c)) || (name === "git" && git.has(sub));
 	});
 
-/** Whether a command of the shell text writes files and names one that `isTarget` accepts, as an argument or a redirect target. */
-export const bashWritesTo = (
-	command: string,
-	isTarget: (path: string) => boolean,
-): boolean =>
-	parse(command).commands.some(
-		(c) =>
-			writesFiles(c) &&
-			[...programOf(c).args, ...c.redirects.map((r) => r.target)].some(
-				isTarget,
-			),
-	);
-
 const breaks = (c: PinConstraint, tool: string, input: unknown): boolean => {
 	const command = tool === "Bash" ? fieldOf(input, "command") : undefined;
 	switch (c.rule) {
@@ -202,66 +178,6 @@ export const rootOf = (cwd: string, cdup: string): string =>
 		.split("/")
 		.slice(0, cwd.split("/").length - (cdup.split("../").length - 1))
 		.join("/");
-
-// The open-issues file the project keeps at its root: the newest by mtime, since names carry a date only some of the time.
-// A symlink lists as `other` with mtime 0, so its target's mtime from `stat` stands in.
-const newestIssues = async (
-	$: EngineInterface,
-	cwd: string,
-): Promise<string | undefined> => {
-	const named = (await $.fs.list(cwd).catch(() => [])).filter(
-		(f) => (f.kind === "file" || f.isLink) && ISSUES_FILE.test(f.name),
-	);
-	const dated = await Promise.all(
-		named.map(async (f) => ({
-			name: f.name,
-			mtimeMs: f.isLink
-				? ((await $.fs.stat(`${cwd}/${f.name}`).catch(() => undefined))
-						?.mtimeMs ?? 0)
-				: f.mtimeMs,
-		})),
-	);
-	return dated.sort((a, b) => b.mtimeMs - a.mtimeMs)[0]?.name;
-};
-
-/** Whether the shell command shows `file`: a read program, or `sed` not in place, given the file as an argument. */
-const bashReads = (command: string, file: string[]): boolean =>
-	parse(command).commands.some((c) => {
-		const { name, args } = programOf(c);
-		const reads =
-			READ_PROGRAMS.has(name) ||
-			(name === "sed" && !args.some((a) => IN_PLACE.test(a)));
-		return reads && args.some((a) => file.includes(a));
-	});
-
-const hasRead = (messages: SessionMessage[], file: string[]): boolean =>
-	messages.some((m) =>
-		m.toolUses.some(
-			(u) =>
-				!u.isError &&
-				(u.tool === "Read"
-					? file.includes(String(u.input["file_path"]))
-					: u.tool === "Bash" && bashReads(String(u.input["command"]), file)),
-		),
-	);
-
-// A session started in a subfolder still has the file at the repo root; outside a repo the cwd is the root.
-const unreadIssues = async (
-	$: EngineInterface,
-): Promise<string | undefined> => {
-	const cwd = await $.session.cwd();
-	const run = await $.process
-		.run(["git", "rev-parse", "--show-cdup"])
-		.catch(() => undefined);
-	const cdup = run?.exitCode === 0 ? run.stdout.trim() : "";
-	const root = rootOf(cwd, cdup);
-	const newest = await newestIssues($, root);
-	if (newest === undefined) {
-		return undefined;
-	}
-	const file = [newest, `${cdup}${newest}`, `${root}/${newest}`];
-	return hasRead(await $.session.messages(), file) ? undefined : file[1];
-};
 
 // Built-ins that change nothing: a question that needs one of them gets the lookup, not the answer-first gate (task 18.21).
 const LOOKUPS: ReadonlySet<string> = new Set([
@@ -317,14 +233,10 @@ export const pin = (on: On): void => {
 			: next({ ...e, instructions: PIN_COMPACT(e.instructions, ledger) });
 	});
 	// `delegation` answers the ask tool in its own `tool.call`, so `tool.check` never runs for it: the ask's checks sit here, and `register` puts `pin` first.
-	on("tool.call", { tool: ASK_TOOL }, async ($, e, next) => {
+	on("tool.call", { tool: ASK_TOOL }, async (_$, e, next) => {
 		await pending;
 		const hit = ledger.find((c) => c.rule === "no-questions");
-		if (hit !== undefined) {
-			return { deny: PIN_NO_QUESTIONS(hit.text) };
-		}
-		const unread = await unreadIssues($);
-		return unread === undefined ? next(e) : { deny: PIN_ISSUES_FIRST(unread) };
+		return hit === undefined ? next(e) : { deny: PIN_NO_QUESTIONS(hit.text) };
 	});
 	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
 		await pending;

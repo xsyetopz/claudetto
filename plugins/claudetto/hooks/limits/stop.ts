@@ -7,7 +7,6 @@ import type {
 } from "claude-code";
 import { closed, taskLines } from "../cleanup.ts";
 import { switchOption } from "../options.ts";
-import { bashWritesTo } from "../pin.ts";
 import {
 	ASK_FORM,
 	COMMAND_FORM,
@@ -22,9 +21,6 @@ import { ASK_MCP, claimTurn, parseFaults } from "../verify.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 import { namedPaths } from "./named-files.ts";
 import { commandForm, openItems, turnOf } from "./open-items.ts";
-
-/** The project's open-issues file: an `ISSUES*.md` anywhere in the path. */
-export const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
 
 const ANY_TOOL = /^/;
 
@@ -45,8 +41,8 @@ export const didWrite = (answer: {
 	readonly isError?: unknown;
 }): boolean => answer.deny === undefined && answer.isError === undefined;
 
-/** The codes sonnet grades beside `unseen`: its answers on `fallback` and `unfiled` are dropped; its `credited` vote is ORed with haiku's (18.19 replay: haiku alone missed 4 of 12, sonnet 5 of 12 but with 0 of 30 clean flags). */
-const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback", "unfiled"];
+/** The codes sonnet grades beside `unseen`: its answer on `fallback` is dropped; its `credited` vote is ORed with haiku's (18.19 replay: haiku alone missed 4 of 12, sonnet 5 of 12 but with 0 of 30 clean flags). */
+const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback"];
 
 /** The stop that ends a turn whose stretch since the last Stop wrote no file, in place of the block that would continue it. */
 const stallStop = (block: string) => ({
@@ -125,10 +121,9 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
-/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, a write to the issues file `unfiled`, an ask call `asks`; a failed last Bash call offers `unfixed`. */
+/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, an ask call `asks`; a failed last Bash call offers `unfixed`. */
 export const offeredCodes = (
 	looked: boolean,
-	wroteIssues: boolean,
 	asked: boolean,
 	failed: boolean,
 ): GradeFault[] => [
@@ -138,14 +133,13 @@ export const offeredCodes = (
 	"jargon",
 	"narrates",
 	...(looked ? [] : (["unchecked", "rules"] as const)),
-	...(wroteIssues ? [] : (["unfiled"] as const)),
 	...(asked ? [] : (["asks"] as const)),
 	...(failed ? (["unfixed"] as const) : []),
 ];
 
 /**
  * The block for the faults one model call finds in the final reply. The call grades the reply against the person messages and the earlier
- * assistant messages; a fault the turn's own calls rule out (a lookup made, the issues file written) is left off the list the model sees.
+ * assistant messages; a fault the turn's own calls rule out (a lookup made, an ask call) is left off the list the model sees.
  * A failed, timed-out, or unreadable answer passes.
  */
 const gradeBlock = async (
@@ -154,7 +148,6 @@ const gradeBlock = async (
 		readonly last_assistant_message?: string | undefined;
 		readonly background_tasks?: readonly BackgroundTaskSummary[] | undefined;
 	},
-	wroteIssues: boolean,
 	denied: ReadonlySet<string>,
 	interactive: boolean,
 ) => {
@@ -165,7 +158,6 @@ const gradeBlock = async (
 	}
 	const codes = offeredCodes(
 		turn.looked,
-		wroteIssues,
 		turn.asked || !interactive,
 		turn.failed !== "",
 	);
@@ -218,7 +210,6 @@ const gradeBlock = async (
 export const stopHooks = (on: On, options: PluginOptions): void => {
 	const isOpenItemsOn = switchOption(options, "openItemsCheckEnabled");
 	let wrote = false;
-	let wroteIssues = false;
 	// A denied call reaches `tool.call` as an error, the same as one that ran and failed; only `tool.check` tells them apart.
 	const denied = new Set<string>();
 	const asked = new Map<string, string>();
@@ -231,16 +222,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	});
 	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
 		const answer = await next(e);
-		const ok = didWrite(answer);
-		wrote ||= ok;
-		wroteIssues ||= ok && "file_path" in e && ISSUES_FILE.test(e.file_path);
-		return answer;
-	});
-	on("tool.call", { tool: "Bash" }, async (_$, e, next) => {
-		const answer = await next(e);
-		wroteIssues ||=
-			didWrite(answer) &&
-			bashWritesTo(e.command, (path) => ISSUES_FILE.test(path));
+		wrote ||= didWrite(answer);
 		return answer;
 	});
 	on("tool.check", { tool: ANY_TOOL }, async (_$, e, next) => {
@@ -268,9 +250,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	});
 	on("classic.Stop", async ($, e, next) => {
 		const stretchWrote = wrote;
-		const stretchIssues = wroteIssues;
 		wrote = false;
-		wroteIssues = false;
 		const answer = await next(e);
 		if (answer.block !== undefined) {
 			return stretchWrote ? answer : stallStop(answer.block);
@@ -281,7 +261,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		const block =
 			(await filesBlock($, e)) ??
 			(isOpenItemsOn ? await openBlock($, e, interactive) : undefined) ??
-			(await gradeBlock($, e, stretchIssues, denied, interactive));
+			(await gradeBlock($, e, denied, interactive));
 		if (block !== undefined) {
 			return { ...answer, block };
 		}
