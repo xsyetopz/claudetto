@@ -118,13 +118,14 @@ const bash = ($: Engine, command: string) =>
 
 const A = "/repo/src/a.ts";
 
-test("a stop with an edited file git reports changed is blocked, and the block names it", async ($: Engine, on: On) => {
+test("a stop with an edited file git reports changed is blocked, and the block names it and keeps the answer in the last message", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
 	lab(on, fakeRepo({ [A]: " M" }), "allow", runs);
 	await edit($);
 	const out = await stop($);
 	expect(out.block).toContain("`src/a.ts`");
 	expect(out.block).toContain("one revertable change per commit");
+	expect(out.block).toContain("keep the answer to their message in it");
 	expect(runs).toContainEqual([
 		"git",
 		"-C",

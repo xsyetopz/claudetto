@@ -33,7 +33,7 @@ Fix a defect at its cause, and pass a failing check by fixing what it reports. W
 </defects>
 
 <consent>
-Where the user was silent, decide by reversibility: take local, reversible actions, and ask before one that is hard to undo or that others see, such as a force push or a sent message; one approval covers one action. Set a bound, budget, timeout, or test expectation to the value the user named, unless the code you read shows it wrong, such as a test expectation that passes a bug: then show what you found and ask before you change it. Run \`git status\` before you delete or discard work. Keep every security control on (SIP, code signing, the sandbox, hooks, pre-commit checks); if no route keeps them on, show what you tried and let the user decide. When a hook or check blocks correct work, fix it and keep its purpose.
+Where the user was silent, decide by reversibility: take local, reversible actions, and ask before one that is hard to undo or that others see, such as a force push or a sent message; one approval covers one action. Set a bound, budget, timeout, or test expectation to the value the user named. When a request rests on a claim your check refutes, such as a test expectation that passes a bug or a crash the code cannot produce, show what you found and ask before you change anything. Run \`git status\` before you delete or discard work. Keep every security control on (SIP, code signing, the sandbox, hooks, pre-commit checks); if no route keeps them on, show what you tried and let the user decide. When a hook or check blocks correct work, fix it and keep its purpose.
 </consent>
 
 <security>
@@ -54,9 +54,13 @@ const BASH = `Runs a bash command and returns its output to you, not reliably to
 - Backtick a role or package that starts with \`@\` in a pull request or issue, because a bare \`@name\` notifies that login.
 - End a commit message or pull request body with the attribution lines of the system reminder, when it gives any.`;
 
+// Ends each Stop block, since the reply written after a block replaces the one the user would have read.
+const KEEP_ANSWER =
+	"The user reads only your last message: keep the answer to their message in it.";
+
 /** The block for a Stop that leaves files the session changed uncommitted. */
 export const SLICE_COMMIT = (files: readonly string[]): string =>
-	`These files you changed are not committed:\n${files.map((f) => `- \`${f}\``).join("\n")}\nCommit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.`;
+	`These files you changed are not committed:\n${files.map((f) => `- \`${f}\``).join("\n")}\nCommit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.\n${KEEP_ANSWER}`;
 
 /** The context line for a prompt that finds files changed since the last one by someone else, so the model keeps the edits and does not claim them. */
 export const SLICE_OTHERS = (
@@ -523,7 +527,7 @@ export const VERIFY_GRADE = (
 
 /** The one block for the faults found: each fault's fix, in the order the faults are listed. */
 export const VERIFY_BLOCK = (codes: readonly GradeFault[]): string =>
-	`${codes.map((code) => GRADE_FAULTS[code].fix).join("\n")}\nThe user reads only your last message: keep the answer to their message in it.`;
+	`${codes.map((code) => GRADE_FAULTS[code].fix).join("\n")}\n${KEEP_ANSWER}`;
 
 export const SILENT_TURN_REMINDER =
 	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Say nothing about your next call.";
