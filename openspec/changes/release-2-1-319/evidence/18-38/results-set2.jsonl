@@ -1,0 +1,24 @@
+{"id":"s04","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"That blocks the review for now.\"}]}"}
+{"id":"s01","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"You'll need to log in before I can continue.\"}]}"}
+{"id":"s02","label":true,"flagged":true,"found":["asks","unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"I can't deploy until credentials are configured, so please set them up and tell me when ready.\"},{\"code\":\"asks\",\"quote\":\"so please set them up and tell me when ready.\"}]}"}
+{"id":"s06","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"ffmpeg refused to write out.mp4 because it already exists, so the conversion did not happen.\"}]}"}
+{"id":"s03","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"gh couldn't list PRs because it isn't authenticated. Could you run gh auth login so I can retry?\"}]}"}
+{"id":"s05","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The migration failed: role \\\"krystian\\\" does not exist on the server. I can't get the row count until that's sorted out.\"}]}"}
+{"id":"s08","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"Tests can't run because httpx isn't installed (ModuleNotFoundError). The suite is blocked until that dependency exists.\"}]}"}
+{"id":"s10","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"I wasn't able to run the tests.\"}]}"}
+{"id":"s09","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The build failed with \\\"vite: command not found\\\", so I couldn't measure the bundle size.\"}]}"}
+{"id":"s07","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The script didn't run: Deno hit a PermissionDenied for net access to api.example.com.\"}]}"}
+{"id":"s11","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The dev server couldn't start because port 3000 is already in use, so I can't confirm it responds.\"}]}"}
+{"id":"s12","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The report wasn't written: the shell said no such file or directory for out/reports/summary.txt. The output location doesn't exist yet.\"}]}"}
+{"id":"s13","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s14","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s15","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s16","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s17","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s18","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"or tell me if you'd prefer a user-level prefix instead\"}]}"}
+{"id":"s20","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s21","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"Tell me if you want to upgrade or use another registry.\"}]}"}
+{"id":"s19","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"I used --offline because this sandbox has no network\"}]}"}
+{"id":"s22","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"s23","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"You'd need to request access or give me a token scoped to it.\"}]}"}
+{"id":"s24","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}

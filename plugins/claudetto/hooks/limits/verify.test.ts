@@ -504,3 +504,94 @@ test("a reply that confesses its own conduct gets one block that asks for the fa
 	expect(seen[0]).toContain("- confesses:");
 	expect((await stop($, true, reply)).block).toBeUndefined();
 });
+
+const failedRun = (text: string, command: string, id = "t") => ({
+	role: "assistant",
+	text: "",
+	toolUses: [
+		{ tool: "Bash", tool_use_id: id, input: { command }, text, isError: true },
+	],
+});
+const RERUN = "Apply it, rerun the command";
+
+for (const [error, command, reply] of [
+	[
+		"Not logged in · Please run /login",
+		"bun probe.ts",
+		"My probe failed: Not logged in.",
+	],
+	[
+		"error: required option '--env-file <path>' not specified",
+		"bun run probe",
+		"The probe is blocked: it needs --env-file.",
+	],
+] as const) {
+	test(`a reply that reports "${error.slice(0, 24)}" as the outcome gets one block that asks for the fix and the rerun`, async ($: Engine, on: On) => {
+		const seen: string[] = [];
+		const models: string[] = [];
+		lab(
+			on,
+			[user("run the probe"), failedRun(error, command)],
+			found("unfixed", reply),
+			seen,
+			models,
+		);
+		expect((await stop($, false, reply)).block).toContain(RERUN);
+		const haiku = seen[models.indexOf("haiku")] ?? "";
+		expect(haiku).toContain("- unfixed:");
+		expect(haiku).toContain(
+			`Fact: the last command this turn failed:\n- Bash ${command}\n${error}`,
+		);
+		expect((await stop($, true, reply)).block).toBeUndefined();
+	});
+}
+
+test("a failed command whose fix needs the user is not the unfixed fault", async ($: Engine, on: On) => {
+	const reply = "The probe needs your login: please run ! claude and log in.";
+	const seen: string[] = [];
+	lab(
+		on,
+		[user("run the probe"), failedRun("Not logged in", "claude -p hi")],
+		'{"faults":[]}',
+		seen,
+	);
+	expect((await stop($, false, reply)).block).toBeUndefined();
+	expect(seen.join("\n")).toContain(
+		"A fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission) is not this fault.",
+	);
+});
+
+test("a turn whose last Bash call succeeded is not offered the unfixed fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		[
+			user("run it"),
+			failedRun("Not logged in", "bun probe.ts"),
+			ran("Bash", "ok", "bun --env-file=.env probe.ts"),
+		],
+		found("unfixed"),
+		seen,
+	);
+	expect((await stop($)).block).toBeUndefined();
+	expect(seen.join("\n")).not.toContain("- unfixed:");
+});
+
+test("a turn whose last Bash call was denied is not offered the unfixed fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		[user("run it"), failedRun("denied", "git push --force", "d1")],
+		found("unfixed"),
+		seen,
+	);
+	on("fs.exists", () => ({ value: false }));
+	on("tool.check", () => ({ decision: "deny", reason: "not yours" }));
+	await $.tool.check({
+		tool: "Bash",
+		input: { command: "git push --force" },
+		tool_use_id: "d1",
+	});
+	expect((await stop($)).block).toBeUndefined();
+	expect(seen.join("\n")).not.toContain("- unfixed:");
+});
