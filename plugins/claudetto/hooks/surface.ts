@@ -18,6 +18,12 @@ export const DEFERRED_TOOLS: readonly string[] = [
 	"ReportFindings",
 ];
 
+// A deferred tool loads through ToolSearch. A session whose `--tools` leave it out lists the tool in full, and a flag set later would send it deferred from the second request on and rewrite the cache (task 18.26).
+export const deferral = (
+	tools: readonly { readonly name: string }[],
+): { isDeferred?: true } =>
+	tools.some((tool) => tool.name === "ToolSearch") ? { isDeferred: true } : {};
+
 const LOCK_FILES: ReadonlySet<string> = new Set([
 	"bun.lock",
 	"bun.lockb",
@@ -181,13 +187,13 @@ export const surface = (on: On, options: PluginOptions): void => {
 	on(
 		"tool.describe",
 		{ tool: [...new Set([...Object.keys(TOOL_TEXTS), ...DEFERRED_TOOLS])] },
-		async (_$, e, next) => {
+		async ($, e, next) => {
 			const answer = await next(e);
 			const ours = TOOL_TEXTS[e.tool] ?? answer.description;
 			const description =
 				ours.length < answer.description.length ? ours : answer.description;
 			return DEFERRED_TOOLS.includes(e.tool)
-				? { ...answer, description, isDeferred: true }
+				? { ...answer, description, ...deferral(await $.tool.list()) }
 				: { ...answer, description };
 		},
 	);

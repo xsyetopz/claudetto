@@ -14,6 +14,19 @@ test("no plugin option chooses the compaction path or a summary model", async ()
 	expect(keys.filter((k) => PATH_CHOICE.test(k))).toEqual([]);
 });
 
+// 18.26: a subagent's requests are cached 5m unless its frontmatter says 1h; the plugin is for subscribers, so 1h costs them nothing more.
+for (const name of ["Artemis", "Metis", "Heracles"]) {
+	test(`the ${name} agent asks for a one hour prompt cache`, async () => {
+		const text = await file(
+			`${import.meta.dir}/../plugins/claudetto/agents/${name}.md`,
+		).text();
+
+		expect(text.split("\n---\n")[0]).toContain(
+			"\nexperimental:\n  cacheTtl: 1h",
+		);
+	});
+}
+
 // `limits/open-items.ts` reads only `- [ ]` lines, so a request in any other form escapes the Stop check.
 test("the output style asks for the open-item form the Stop check reads", async () => {
 	const style = await file(

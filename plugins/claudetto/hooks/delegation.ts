@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+import { deferral } from "./surface.ts";
 import { AGENT_TEXT } from "./texts.ts";
 
 const PREFIX = "claudetto:";
@@ -167,11 +168,6 @@ export const delegation = (on: On): void => {
 				},
 	);
 
-	on("tool.describe", { tool: "AskUserQuestion" }, async (_$, e, next) => ({
-		...(await next(e)),
-		isDeferred: true,
-	}));
-
 	on("tool.call", { tool: "mcp__claudetto__monitor" }, async ($, e) => {
 		running.monitor++;
 		try {
@@ -197,9 +193,9 @@ export const delegation = (on: On): void => {
 			: { deny: "Monitor is off here: call mcp__claudetto__monitor." },
 	);
 
-	on("tool.describe", { tool: "Monitor" }, async (_$, e, next) => ({
+	on("tool.describe", { tool: [OLD_ASK, "Monitor"] }, async ($, e, next) => ({
 		...(await next(e)),
-		isDeferred: true,
+		...deferral(await $.tool.list()),
 	}));
 
 	// The query is rewritten only when it names AskUserQuestion (a rewritten call sends the response's later calls to the local classifier in auto mode); the result is rewritten for every query.

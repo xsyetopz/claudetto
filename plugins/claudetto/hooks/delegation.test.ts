@@ -270,18 +270,31 @@ test("a refused ask comes back as text, not a throw", async ($: Engine, on: On) 
 	expect(out.result).toContain("ask failed");
 });
 
-test("the stock AskUserQuestion and Monitor go behind ToolSearch", async ($: Engine, on: On) => {
+// With no ToolSearch to load them, a deferral flag set after the first request rewrites the cache (18.26).
+const describeStock = ($: Engine, on: On, names: string[]) => {
+	on("tool.list", () => ({
+		value: names.map((name) => ({ name, description: "", mcp: false })),
+	}));
 	on("tool.describe", (_$, e) => e);
 	const origin = { plugin: "engine", tier: "core" } as const;
 
-	const outs = await Promise.all(
+	return Promise.all(
 		["AskUserQuestion", "Monitor"].map((tool) =>
 			$.tool.describe({ tool, description: "stock", provider: origin }),
 		),
 	);
+};
 
-	for (const out of outs) {
+test("the stock AskUserQuestion and Monitor go behind ToolSearch", async ($: Engine, on: On) => {
+	for (const out of await describeStock($, on, ["Read", "ToolSearch"])) {
 		expect(out.isDeferred).toBe(true);
+		expect(out.description).toBe("stock");
+	}
+});
+
+test("the stock AskUserQuestion and Monitor stay in the list when the session has no ToolSearch", async ($: Engine, on: On) => {
+	for (const out of await describeStock($, on, ["Read", "AskUserQuestion"])) {
+		expect(out.isDeferred).toBeUndefined();
 		expect(out.description).toBe("stock");
 	}
 });

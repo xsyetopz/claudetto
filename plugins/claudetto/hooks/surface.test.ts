@@ -61,8 +61,15 @@ test("Read and Write are sent in full, not behind ToolSearch", () => {
 	expect(DEFERRED_TOOLS).not.toContain("Write");
 });
 
+// The tools the session lists: `tool.describe` defers a tool only when ToolSearch is among them (18.26).
+const listing = (on: On, names: string[]) =>
+	on("tool.list", () => ({
+		value: names.map((name) => ({ name, description: "", mcp: false })),
+	}));
+
 for (const tool of Object.keys(TOOL_TEXTS)) {
 	test(`tool.describe sends our ${tool} text, deferred only for Skill among them`, async ($: Engine, on: On) => {
+		listing(on, ["ToolSearch"]);
 		on("tool.describe", (_$, e) => e);
 		const out = await $.tool.describe({
 			tool,
@@ -76,6 +83,7 @@ for (const tool of Object.keys(TOOL_TEXTS)) {
 
 for (const tool of ["Workflow", "ScheduleWakeup", "ReportFindings"]) {
 	test(`${tool} goes behind ToolSearch with its stock text`, async ($: Engine, on: On) => {
+		listing(on, ["ToolSearch"]);
 		on("tool.describe", (_$, e) => e);
 		const out = await $.tool.describe({
 			tool,
@@ -83,6 +91,19 @@ for (const tool of ["Workflow", "ScheduleWakeup", "ReportFindings"]) {
 			provider: { plugin: "engine", tier: "core" },
 		});
 		expect(out).toMatchObject({ description: "stock", isDeferred: true });
+	});
+}
+
+for (const tool of DEFERRED_TOOLS) {
+	test(`${tool} stays in the list when the session has no ToolSearch`, async ($: Engine, on: On) => {
+		listing(on, ["Read", "Write"]);
+		on("tool.describe", (_$, e) => e);
+		const out = await $.tool.describe({
+			tool,
+			description: "stock",
+			provider: { plugin: "engine", tier: "core" },
+		});
+		expect(out.isDeferred).toBeUndefined();
 	});
 }
 
