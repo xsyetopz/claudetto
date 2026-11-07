@@ -7,6 +7,7 @@ import {
 import { packageVerdict } from "./packages.ts";
 import {
 	killVerdict,
+	markerVerdict,
 	NOBODY,
 	type Owns,
 	ownedRemoval,
@@ -143,6 +144,7 @@ const judgeText = (
 			parsed.commands.filter((c) => !ownedRemoval(c, own)),
 		),
 		...parsed.commands.flatMap((c) => commandVerdicts(c, has, own)),
+		markerVerdict(command, parsed.commands, own),
 	]);
 };
 

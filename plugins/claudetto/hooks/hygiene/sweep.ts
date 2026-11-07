@@ -1,6 +1,7 @@
 import type { Stats } from "node:fs";
 import { readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
+import { MARKER } from "../gate/processes.ts";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
 import {
 	checkoutOf,
@@ -60,7 +61,6 @@ const NUMBER_FLAGS = new Map<
 ]);
 // Mole's `mo purge` waits as long before it calls a build folder old (lib/clean/project.sh MIN_AGE_DAYS).
 const TRASH_DAYS = 7;
-const MARKER = ".created-by-claudetto";
 
 const numberArg = (flag: string, value: string | undefined): number => {
 	const n = Number(value);

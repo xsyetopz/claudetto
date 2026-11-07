@@ -8,7 +8,7 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
-import { ownsOf, tmpTops } from "./gate/processes.ts";
+import { MARKER, ownsOf, tmpTops } from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
 import { readOnly } from "./gate/readonly.ts";
 import {
@@ -45,8 +45,7 @@ const PERSON = /^(?:composer|bridge)$/;
 const ANY_TOOL = /^/;
 // Only a command that could need the transcript or a marker file reads them.
 const OWNED = /\b(?:kill|worktree|branch|update-ref)\b/;
-const RM = /\brm\b/;
-const MARKER = ".created-by-claudetto";
+const TMP_TOUCH = /\b(?:rm|mkdir|mktemp)\b/;
 
 const isBareAsk = (
 	found: Awaited<ReturnType<EngineInterface["tool"]["check"]>>,
@@ -78,15 +77,21 @@ const hostOf = ($: EngineInterface): Host => ({
 	past: async () => (await $.session.messages()).flatMap((m) => m.toolUses),
 });
 
+/** Tells whether the /tmp folder holds this session's marker. */
+export async function isMarked(
+	$: EngineInterface,
+	top: string,
+): Promise<boolean> {
+	return (
+		(await $.fs.exists(`${top}/${MARKER}`)) &&
+		(await $.fs.read(`${top}/${MARKER}`)).trim() === (await $.session.id())
+	);
+}
+
 const ownershipOf = async ($: EngineInterface, command: string) => {
-	const tops = RM.test(command) ? tmpTops(command) : [];
+	const tops = TMP_TOUCH.test(command) ? tmpTops(command) : [];
 	const marked = await Promise.all(
-		tops.map(async (top) =>
-			(await $.fs.exists(`${top}/${MARKER}`)) &&
-			(await $.fs.read(`${top}/${MARKER}`)).trim() === (await $.session.id())
-				? top
-				: undefined,
-		),
+		tops.map(async (top) => ((await isMarked($, top)) ? top : undefined)),
 	);
 	return ownsOf(
 		OWNED.test(command) ? await hostOf($).past() : [],

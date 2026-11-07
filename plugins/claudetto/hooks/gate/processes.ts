@@ -4,6 +4,7 @@ import {
 	gateBranchDelete,
 	gateKillPid,
 	gateRmTmp,
+	gateTmpMarker,
 	gateWorktreeRemove,
 } from "../texts.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
@@ -20,7 +21,12 @@ const PROBE = /^-[0lL]$/;
 const PID = /^\d+$/;
 const TMP_TOP = /^(?:\/private)?\/tmp(?:\/[^/]+)?/;
 const TMP_TOPS = /(?:\/private)?\/tmp\/[^/\s'"]+/g;
+const TMP_NAMED = /^(?:\/private)?\/tmp\/[^/]+/;
 const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/;
+const MAKERS = new Set(["mkdir", "mktemp"]);
+const MKTEMP = /\bmktemp\b/;
+/** The file whose content, a session id, says which session made the /tmp folder holding it. */
+export const MARKER = ".created-by-claudetto";
 const AGENT_ID = /\bagentId: (\w+)/;
 const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/;
 const RELEASE = /(?:^|\/)claude\/versions\/[^/\s]+/;
@@ -130,8 +136,8 @@ const creates = (args: string[]): { path?: string; branch?: string } => {
 	return verb === "checkout" || verb === "switch" ? { branch: named } : {};
 };
 
-/** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
-export const ownsOf = (past: Past[], marked: Set<string>): Owns => {
+/** The worktree paths and branches the non-error calls in `past` created, and the ids of the isolated workers they started. */
+export const createdOf = (past: Past[]) => {
 	const made = past
 		.filter((t) => t.tool === "Bash" && !t.isError)
 		.flatMap((t) =>
@@ -140,22 +146,70 @@ export const ownsOf = (past: Past[], marked: Set<string>): Owns => {
 				return name === "git" ? creates(args) : {};
 			}),
 		);
+	return {
+		paths: made.flatMap((m) => m.path ?? []),
+		branches: made.flatMap((m) => m.branch ?? []),
+		// Claude Code makes an isolated worker's worktree itself, at `.claude/worktrees/agent-<id>` on branch `worktree-agent-<id>`.
+		workers: past
+			.filter((t) => t.tool === "Agent" && !t.isError)
+			.flatMap((t) => AGENT_ID.exec(t.text ?? "")?.[1] ?? []),
+	};
+};
+
+/** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
+export const ownsOf = (past: Past[], marked: Set<string>): Owns => {
+	const { paths, branches, workers } = createdOf(past);
 	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
-	// Claude Code makes an isolated worker's worktree itself, at `.claude/worktrees/agent-<id>` on branch `worktree-agent-<id>`.
-	const workers = past
-		.filter((t) => t.tool === "Agent" && !t.isError)
-		.flatMap((t) => AGENT_ID.exec(t.text ?? "")?.[1] ?? []);
 	return {
 		pid: startedBy(past),
 		tmp: (top) => marked.has(top),
 		path: (path) =>
-			made.some((m) => m.path === path) ||
+			paths.includes(path) ||
 			entered.some((t) => t.text?.includes(path)) ||
 			workers.some((id) => WORKER_PATH.exec(path)?.[1] === id),
 		branch: (name) =>
-			made.some((m) => m.branch === name) ||
+			branches.includes(name) ||
 			workers.some((id) => name === `worktree-agent-${id}`),
 	};
+};
+
+/** The /tmp folders the non-error Bash calls in `past` wrote a marker into: spelled `<folder>/.created-by-claudetto` in the command, or printed by a command that ran `mktemp`. A folder another call only named is left out, since a sibling agent shares the session id. The caller still reads each marker. */
+export const markedTopsOf = (past: Past[]): string[] => [
+	...new Set(
+		past
+			.filter((t) => t.tool === "Bash" && !t.isError)
+			.flatMap((t) => {
+				const command = fieldOf(t.input, "command") ?? "";
+				const printed = MKTEMP.test(command) ? tmpTops(t.text ?? "") : [];
+				return [
+					...tmpTops(command).filter((top) =>
+						command.includes(`${top}/${MARKER}`),
+					),
+					...printed,
+				].filter((top) => command.includes(MARKER) && !DOTDOT.test(top));
+			}),
+	),
+];
+
+/** Denies a `mkdir` or `mktemp` of a /tmp folder this session has not marked, when the same command writes no marker. */
+export const markerVerdict = (
+	command: string,
+	commands: Command[],
+	own: Owns,
+): Verdict | undefined => {
+	if (command.includes(MARKER)) {
+		return undefined;
+	}
+	const path = commands
+		.flatMap((c) => {
+			const { name, args } = programOf(c);
+			return MAKERS.has(name) ? args : [];
+		})
+		.find((a) => {
+			const top = TMP_NAMED.exec(a)?.[0];
+			return top !== undefined && !own.tmp(top);
+		});
+	return path === undefined ? undefined : deny(gateTmpMarker(path));
 };
 
 const isForceDelete = (flags: string[]): boolean =>

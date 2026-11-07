@@ -7,6 +7,7 @@ import {
 	gateBranchDelete,
 	gateKillPid,
 	gateRmTmp,
+	gateTmpMarker,
 	gateWorktreeRemove,
 } from "../texts.ts";
 
@@ -228,3 +229,20 @@ asks(
 	MINE,
 );
 asks("git reset --soft abc1234", MINE);
+
+// 18.41: a /tmp folder gets its marker in the command that makes it.
+denied("mkdir -p /tmp/probe-x/sub", gateTmpMarker("/tmp/probe-x/sub"));
+denied("mktemp -d /tmp/probe-XXXX", gateTmpMarker("/tmp/probe-XXXX"));
+denied("cd /p && mkdir /private/tmp/y", gateTmpMarker("/private/tmp/y"));
+allowed(
+	'mkdir -p /tmp/probe-x && printenv CLAUDE_CODE_SESSION_ID > /tmp/probe-x/.created-by-claudetto',
+);
+allowed(
+	'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto"',
+);
+allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S1" });
+denied("mkdir -p /tmp/mine/sub", gateTmpMarker("/tmp/mine/sub"), [], {
+	[MARK]: "S2",
+});
+allowed("mkdir -p build/out");
+allowed("mktemp -d");

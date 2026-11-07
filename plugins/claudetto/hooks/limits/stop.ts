@@ -5,6 +5,7 @@ import type {
 	On,
 	PluginOptions,
 } from "claude-code";
+import { closed } from "../cleanup.ts";
 import { switchOption } from "../options.ts";
 import { bashWritesTo } from "../pin.ts";
 import {
@@ -211,7 +212,7 @@ const gradeBlock = async (
 };
 
 /**
- * Stop: the stall rule, then the named-files, open-items, and graded-reply checks, then the background-task list. The flag, the task key and
+ * Stop: the stall rule, then the named-files, open-items, and graded-reply checks, then the background-task list, then the cleanup of what the session created. The flag, the task key and
  * the budget band sit in this closure: no `await` stands between a read and its write.
  */
 export const stopHooks = (on: On, options: PluginOptions): void => {
@@ -269,7 +270,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 			return stretchWrote ? answer : stallStop(answer.block);
 		}
 		if (e.stop_hook_active) {
-			return answer;
+			return closed($, e, answer, undefined);
 		}
 		const block =
 			(await filesBlock($, e)) ??
@@ -278,16 +279,23 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		if (block !== undefined) {
 			return { ...answer, block };
 		}
-		return noticeTasks(answer, e.background_tasks ?? []);
+		return closed(
+			$,
+			e,
+			noticeTasks(answer, e.background_tasks ?? []),
+			undefined,
+		);
 	});
 };
 
-/** A subagent's final report is the lead's input: the same check runs before the lead reads it. */
+/** A subagent's final report is the lead's input: the same check runs before the lead reads it. A worker's last turn removes what it created. */
 export const subagentStopHooks = (on: On): void => {
 	on("classic.SubagentStop", async ($, e, next) => {
 		const answer = await next(e);
 		const absent = e.stop_hook_active ? undefined : await filesBlock($, e);
-		return absent === undefined ? answer : { ...answer, block: absent };
+		return absent === undefined
+			? closed($, e, answer, e.agent_id)
+			: { ...answer, block: absent };
 	});
 };
 

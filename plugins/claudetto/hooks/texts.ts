@@ -361,6 +361,10 @@ export const walledUnguarded = (walls: readonly string[]): string =>
 	`claudetto walls off ${walls.map((w) => `\`${w}\``).join(", ")}, but your settings hold no ${walls.map((w) => `\`Read(${w}/**)\``).join(", ")} in \`permissions.deny\`, so only claudetto's gate keeps sessions out.`;
 export const gateRmTmp = (path: string): string =>
 	`${path} is under a /tmp folder that this session did not create: it holds no \`.created-by-claudetto\` file with this session's id. Leave it. Remove only a folder you made in this session, after you write the session id into \`<folder>/.created-by-claudetto\`.`;
+export const gateTmpMarker = (path: string): string =>
+	`${path} is a /tmp folder with no \`.created-by-claudetto\` file, so no session can prove it made the folder and nothing cleans it up. Write the marker in the same command: \`mkdir -p /tmp/<name> && printenv CLAUDE_CODE_SESSION_ID > /tmp/<name>/.created-by-claudetto\`, or \`d=$(mktemp -d /tmp/<name>-XXXXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "$d"\`.`;
+export const CLEANUP_LEFT = (left: readonly string[]): string =>
+	`Left in place because they hold work: ${left.map((item) => `\`${item}\``).join(", ")}. A worktree has uncommitted changes, or a branch has commits the current branch lacks. Name each in your reply with what it holds, so the user can merge or drop it.`;
 export const gateWorktreeRemove = (path: string): string =>
 	`${path} is not a worktree this session created: no earlier successful \`git worktree add\` or EnterWorktree of this session names it. Leave it. Remove only a worktree this session added, or ask the user to remove this one.`;
 export const gateBranchDelete = (name: string): string =>
