@@ -1,6 +1,17 @@
+import type { Stats } from "node:fs";
 import { readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
+import {
+	checkoutOf,
+	heldPaths,
+	keepReason,
+	loadTrash,
+	output,
+	projectTrash,
+	type Trash,
+	tempRule,
+} from "./trash.ts";
 
 interface Args {
 	readonly dryRun: boolean;
@@ -9,6 +20,7 @@ interface Args {
 	readonly handoffDays?: number;
 	readonly sessionDays?: number;
 	readonly probeMinutes?: number;
+	readonly trashDays?: number;
 }
 
 interface Host {
@@ -38,13 +50,17 @@ const MINUTE_MS = 60_000;
 const DAY_MS = 86_400_000;
 const NUMBER_FLAGS = new Map<
 	string,
-	"days" | "handoffDays" | "sessionDays" | "probeMinutes"
+	"days" | "handoffDays" | "sessionDays" | "probeMinutes" | "trashDays"
 >([
 	["--days", "days"],
 	["--handoff-days", "handoffDays"],
 	["--session-days", "sessionDays"],
 	["--probe-minutes", "probeMinutes"],
+	["--trash-days", "trashDays"],
 ]);
+// Mole's `mo purge` waits as long before it calls a build folder old (lib/clean/project.sh MIN_AGE_DAYS).
+const TRASH_DAYS = 7;
+const MARKER = ".created-by-claudetto";
 
 const numberArg = (flag: string, value: string | undefined): number => {
 	const n = Number(value);
@@ -179,12 +195,63 @@ const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 	];
 };
 
+/** Each top-level temp folder a temp rule names whose marker names a session that is no longer alive. */
+const markedTemp = async (
+	trash: Trash,
+	live: string,
+	limitMs: number,
+	host: Host,
+) => {
+	const bases = [...new Set(await Promise.all(host.tempBases.map(realOr)))];
+	const found = await Promise.all(
+		bases.map(async (base) =>
+			Promise.all(
+				(await namesIn(base))
+					.filter((entry) => entry.isDirectory())
+					.map(async (entry) => {
+						const rule = tempRule(trash, entry.name);
+						const path = join(base, entry.name);
+						const owner = (
+							await readFile(join(path, MARKER), "utf8").catch(() => "")
+						).trim();
+						// A missing marker reads as "", which every text includes, so an unmarked folder stays.
+						return rule && !live.includes(owner)
+							? [{ kind: rule.id, path, limitMs }]
+							: [];
+					}),
+			),
+		),
+	);
+	return found.flat(2);
+};
+
+/** Each project folder a project rule names that `keepReason` lets go; nothing when the running processes cannot be read. */
+const builtTrash = async (trash: Trash, limitMs: number, host: Host) => {
+	const held = limitMs > 0 ? await heldPaths(host.uid) : undefined;
+	if (held === undefined) {
+		return [];
+	}
+	const own = await checkoutOf(host.cwd);
+	const found = await projectTrash(host.cwd, trash, namesIn);
+	const kept = await Promise.all(
+		found.map(async (item) =>
+			(await keepReason(item.path, limitMs, held, own)) === undefined
+				? [{ kind: item.id, path: item.path, limitMs }]
+				: [],
+		),
+	);
+	return kept.flat();
+};
+
 const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 	const handoffMs = (args.handoffDays ?? args.days ?? host.days) * DAY_MS;
 	const claudetto = join(host.cwd, ".claude/claudetto");
 	const live = `${args.session ?? ""}\n${await liveSessions(host.configDir)}`;
 	const roots = await tempRoots(host.tempBases, host.uid);
+	const trash = await loadTrash(host.cwd);
 	const parts = await Promise.all([
+		builtTrash(trash, (args.trashDays ?? TRASH_DAYS) * DAY_MS, host),
+		markedTemp(trash, live, (args.probeMinutes ?? 60) * MINUTE_MS, host),
 		handoffsOf(join(claudetto, "handoffs"), handoffMs),
 		inFolder("bound-output", join(claudetto, "output"), DAY_MS, (n) =>
 			n.startsWith("output-"),
@@ -195,6 +262,13 @@ const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 	return parts.flat().filter((item) => item.limitMs > 0);
 };
 
+// A folder's own size is its entry list; `du` counts what removing it frees.
+const sizeOf = async (path: string, info: Stats): Promise<number> =>
+	info.isDirectory()
+		? Number((await output(["du", "-sk", path], "/"))?.split("\t")[0] ?? 0) *
+			1024
+		: info.size;
+
 export const sweep = async (args: Args, host: Host): Promise<Report> => {
 	const why = await refusal(host.cwd, host.home);
 	if (why !== undefined) {
@@ -204,7 +278,13 @@ export const sweep = async (args: Args, host: Host): Promise<Report> => {
 		(await candidates(args, host)).map(async (item) => {
 			const info = await stat(item.path).catch(() => undefined);
 			return info !== undefined && host.now - info.mtimeMs > item.limitMs
-				? [{ kind: item.kind, path: item.path, bytes: info.size }]
+				? [
+						{
+							kind: item.kind,
+							path: item.path,
+							bytes: await sizeOf(item.path, info),
+						},
+					]
 				: [];
 		}),
 	);

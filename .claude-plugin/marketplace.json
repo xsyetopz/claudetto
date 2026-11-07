@@ -18,7 +18,7 @@
 		{
 			"name": "claudetto-you-should-know",
 			"source": "./plugins/claudetto-you-should-know",
-			"description": "Shows one short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. Once on, it makes one small bounded request every sixth step, sends nothing else out, and keeps no telemetry.",
+			"description": "Shows a short note above the prompt when a side check finds something about the work you likely missed. Off by default; once on, one small request every sixth step, no telemetry.",
 			"category": "productivity"
 		},
 		{

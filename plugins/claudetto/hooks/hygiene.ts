@@ -9,6 +9,7 @@ const FLAGS = [
 	["handoffCleanupPeriodDays", "--handoff-days"],
 	["sessionTempCleanupPeriodDays", "--session-days"],
 	["probeCleanupPeriodMinutes", "--probe-minutes"],
+	["trashCleanupPeriodDays", "--trash-days"],
 ] as const;
 
 export const hygiene = (on: On, options: PluginOptions): void => {

@@ -59,6 +59,8 @@ test("a startup runs the sweep in the project with the session id and cleanupPer
 		"14",
 		"--probe-minutes",
 		"60",
+		"--trash-days",
+		"7",
 	]);
 });
 
@@ -105,6 +107,7 @@ test(
 			handoffCleanupPeriodDays: 0,
 			sessionTempCleanupPeriodDays: 3,
 			probeCleanupPeriodMinutes: 15,
+			trashCleanupPeriodDays: 0,
 		},
 	},
 	async ($: Engine, on: On) => {
@@ -113,7 +116,7 @@ test(
 		await start($, "startup");
 
 		expect(launched[0]?.argv.join(" ")).toContain(
-			"--handoff-days 0 --session-days 3 --probe-minutes 15",
+			"--handoff-days 0 --session-days 3 --probe-minutes 15 --trash-days 0",
 		);
 	},
 );
