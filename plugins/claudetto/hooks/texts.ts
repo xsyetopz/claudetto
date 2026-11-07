@@ -155,7 +155,7 @@ export const offCommandText = (command: string): string =>
 // Delegation: the Agent tool text and the ask and monitor tool specs.
 
 export const AGENT_TEXT =
-	'Start a subagent for independent work: parallel tasks, a side task, or a search across many files. It knows only your prompt and returns one report the user does not see; relay what matters. subagent_type: "claudetto:Artemis" searches read-only, "claudetto:Metis" plans, "claudetto:Heracles" does the rest and runs when omitted; "fork" copies your context. Pass run_in_background: false with Artemis or Metis. Heracles runs in the background and notifies you when it ends: never predict its result. Do a few tool calls yourself instead. Pass `name` to address the agent by it in SendMessage. isolation "worktree" gives it its own git worktree.';
+	'Start a subagent for independent work: parallel tasks, a side task, or a search across many files. It knows only your prompt and returns one report the user does not see; relay what matters. subagent_type: "claudetto:Artemis" searches read-only, "claudetto:Metis" plans, "claudetto:Heracles" does the rest and runs when omitted; "fork" copies your context. Pass run_in_background: false with Artemis or Metis. Heracles runs in the background and notifies you when it ends: never predict its result. Do a few tool calls yourself instead. isolation "worktree" gives it its own git worktree.';
 
 export const ASK_SPEC = {
 	name: "ask-user-question",

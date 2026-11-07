@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { cli, type Row, type Study, type Task } from "../18-5/harness.ts";
 
-const set = (await Bun.file(join(import.meta.dir, "prompts.json")).json()) as { prompts: { id: string; kind: string; text: string }[]; fillers: string[] };
+const set = (await Bun.file(join(import.meta.dir, process.env.PROMPTS ?? "prompts.json")).json()) as { prompts: { id: string; kind: string; text: string }[]; fillers: string[] };
 const FILLERS = set.fillers.map((f) => new RegExp(f, "gim"));
 
 const files: Record<string, string> = {
@@ -30,8 +30,8 @@ const fk = (g: { words: number; sentences: number; syl: number }): number => 0.3
 const hits = (text: string): number => FILLERS.reduce((n, r) => n + (text.match(r)?.length ?? 0), 0);
 
 const study: Study = {
-	probe: "probe-18-24",
-	root: "/tmp/probe-18-24",
+	probe: process.env.PROBE ?? "probe-18-24",
+	root: process.env.ROOT ?? "/tmp/probe-18-24",
 	arms: [{ name: "base", plugin: false }, { name: "plugin", plugin: true, settings: { outputStyle: "claudetto:Concise" } }],
 	tasks,
 	score: (reply) => {

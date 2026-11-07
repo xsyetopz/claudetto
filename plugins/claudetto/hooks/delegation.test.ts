@@ -146,7 +146,8 @@ test("the Agent text picks a type from the agent list or leaves the work to the 
 	expect(out.description).toContain("claudetto:Metis");
 	expect(out.description).toContain("claudetto:Heracles");
 	expect(out.description).toContain("run_in_background: false");
-	expect(out.description).toContain("`name`");
+	// A spawn result already gives the agentId SendMessage takes (task 18.24).
+	expect(out.description).not.toContain("`name`");
 	expect(out.description).toContain("Do a few tool calls yourself instead");
 });
 
