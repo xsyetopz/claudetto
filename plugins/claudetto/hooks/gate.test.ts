@@ -825,3 +825,54 @@ test("an ask a settings rule made on a read-only command stays an ask", async ($
 	});
 	expect(verdict.decision).toBe("ask");
 });
+
+const logging = (on: On, engine: object) => {
+	const lines: string[] = [];
+	repo(on);
+	on("session.root", () => ({ value: "/p" }));
+	on("clock.now", () => ({ value: 0 }));
+	on("fs.write", (_$, e) => {
+		expect(e.path).toBe("/p/.claude/claudetto/gate-asks.jsonl");
+		lines.push(...e.text.trim().split("\n"));
+		return { value: undefined };
+	});
+	on("tool.check", () => engine);
+	return lines;
+};
+
+test("an ask is logged with its rule, tool, and time", async ($: Engine, on: On) => {
+	const lines = logging(on, { decision: "ask", rule: "Bash(git push:*)" });
+	await $.tool.check({ tool: "Bash", input: { command: "git push" } });
+	expect(lines.map((l) => JSON.parse(l))).toEqual([
+		{
+			time: "1970-01-01T00:00:00.000Z",
+			tool: "Bash",
+			decision: "ask",
+			rule: "Bash(git push:*)",
+			command: "git push",
+		},
+	]);
+});
+
+test("a deny is logged", async ($: Engine, on: On) => {
+	const lines = logging(on, { decision: "deny", reason: "by a rule" });
+	await $.tool.check({ tool: "Bash", input: { command: "git push" } });
+	expect(lines.map((l) => JSON.parse(l))).toMatchObject([
+		{ decision: "deny", rule: "by a rule" },
+	]);
+});
+
+test("an allow is not logged", async ($: Engine, on: On) => {
+	const lines = logging(on, { decision: "allow" });
+	await $.tool.check({ tool: "Bash", input: { command: "git status" } });
+	expect(lines).toEqual([]);
+});
+
+test("a command past 200 characters is cut to 200", async ($: Engine, on: On) => {
+	const lines = logging(on, { decision: "ask", rule: "Bash(echo:*)" });
+	await $.tool.check({
+		tool: "Bash",
+		input: { command: `echo ${"a".repeat(300)}` },
+	});
+	expect(JSON.parse(lines[0] ?? "{}").command).toBe(`echo ${"a".repeat(195)}`);
+});

@@ -22,6 +22,8 @@ import {
 	gateRule,
 } from "./texts.ts";
 
+export const GATE_LOG = ".claude/claudetto/gate-asks.jsonl";
+const LOGGED_CHARS = 200;
 const FILE_WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 const STRICTNESS = ["allow", "ask", "deny"];
 const PERSON = /^(?:composer|bridge)$/;
@@ -99,6 +101,46 @@ const ownVerdict = async (
 		: undefined;
 };
 
+// `$.fs` has no append, so each line is read back and written whole; the queue keeps parallel checks from losing one.
+let logging: Promise<void> = Promise.resolve();
+const log = async (
+	$: EngineInterface,
+	e: { tool: string; input: unknown },
+	verdict: { decision: string; rule?: string; reason?: string },
+): Promise<void> => {
+	if (verdict.decision === "allow") {
+		return;
+	}
+	const before = logging;
+	const write = async () => {
+		await before;
+		const path = `${await $.session.root()}/${GATE_LOG}`;
+		const text = [
+			fieldOf(e.input, "command") ?? JSON.stringify(e.input) ?? "",
+			verdict.rule ?? verdict.reason ?? "",
+		].join("\0");
+		const secrets = await secretsIn(
+			(argv, init) => $.process.run(argv, init),
+			text,
+		);
+		const [command = "", rule = ""] = redactWith(text, secrets)
+			.split("\0")
+			.map((part) => part.slice(0, LOGGED_CHARS));
+		const line = JSON.stringify({
+			time: new Date(await $.clock.now()).toISOString(),
+			tool: e.tool,
+			decision: verdict.decision,
+			rule,
+			command,
+		});
+		const held = (await $.fs.exists(path)) ? await $.fs.read(path) : "";
+		await $.fs.write(path, `${held}${line}\n`);
+	};
+	// A failed write loses its line and keeps the verdict: the outer catch would turn a deny into an ask.
+	logging = write().catch(() => undefined);
+	await logging;
+};
+
 export const gate = (on: On): void => {
 	let denials: Denials = {};
 	const files = newRecreation();
@@ -111,7 +153,9 @@ export const gate = (on: On): void => {
 			fieldOf(e.input, "command") ?? `${e.tool} ${JSON.stringify(e.input)}`,
 		);
 		if (refused !== undefined) {
-			return deny(refused);
+			const verdict = deny(refused);
+			await log($, e, verdict);
+			return verdict;
 		}
 		// Computed before `next`, so a throw leaves `next` uncalled and the `.catch` asks in its place.
 		const recreated = await recreates(hostOf($), files, e.tool, e.input);
@@ -130,10 +174,13 @@ export const gate = (on: On): void => {
 		) {
 			return { decision: "allow", reason: GATE_READ_ONLY };
 		}
-		return own === undefined ||
+		const verdict =
+			own === undefined ||
 			STRICTNESS.indexOf(engine.decision) >= STRICTNESS.indexOf(own.decision)
-			? engine
-			: own;
+				? engine
+				: own;
+		await log($, e, verdict);
+		return verdict;
 	}).catch(() => ({ decision: "ask", reason: GATE_CHECK_FAILED }));
 
 	// `classic.PermissionRequest` does not fire in `-p`, so `tool.check` carries the same verdict.
