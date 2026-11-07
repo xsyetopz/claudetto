@@ -876,3 +876,60 @@ test("a command past 200 characters is cut to 200", async ($: Engine, on: On) =>
 	});
 	expect(JSON.parse(lines[0] ?? "{}").command).toBe(`echo ${"a".repeat(195)}`);
 });
+
+const walledLab = (on: On, deny: string[] = []) => {
+	const logs: string[] = [];
+	vanishing(on, new Set());
+	on("session.root", () => ({ value: "/p" }));
+	on("fs.write", () => ({ value: undefined }));
+	on("settings.read", () => ({ value: { permissions: { deny } } }));
+	on("classic.SessionStart", () => ({}));
+	on("session.version", () => ({
+		value: { version: "2.1.319", base: "2.1.319", builtAt: "" },
+	}));
+	on("env.get", () => ({ value: undefined }));
+	on("store.get", () => ({ value: undefined }));
+	on("store.set", () => ({ value: undefined }));
+	on("ui.log", (_$, e) => {
+		logs.push(e.text);
+		return { value: undefined };
+	});
+	return logs;
+};
+const WALL_LINE = /walls off/;
+const start = ($: Engine) =>
+	$.classic.SessionStart({ source: "startup", transcript_path: "/t.jsonl" });
+
+test("by default a compound head, a grep, and a Read of the held-out folder are denied over an allow", async ($: Engine, on: On) => {
+	walledLab(on);
+	const verdicts = [
+		await run($, "Bash", {
+			command: "cd /tmp; ls; head -c 1 ~/.claudetto-holdout/canary.txt",
+		}),
+		await run($, "Bash", {
+			command: 'grep -c x "$HOME/.claudetto-holdout/canary.txt"',
+		}),
+		await run($, "Read", {
+			file_path: "/home/u/.claudetto-holdout/canary.txt",
+		}),
+	];
+	expect(verdicts.map((v) => v.decision)).toEqual(["deny", "deny", "deny"]);
+	for (const v of verdicts) {
+		expect(v.reason).toContain("which the user walled off");
+		expect(v.reason).toContain("`! <command>`");
+	}
+});
+
+test("a startup logs one line when the settings lack the wall's Read deny", async ($: Engine, on: On) => {
+	const logs = walledLab(on);
+	await start($);
+	expect(logs.filter((l) => WALL_LINE.test(l))).toEqual([
+		"claudetto walls off `~/.claudetto-holdout`, but your settings hold no `Read(~/.claudetto-holdout/**)` in `permissions.deny`, so only claudetto's gate keeps sessions out.",
+	]);
+});
+
+test("a startup with the wall's Read deny in the settings logs nothing", async ($: Engine, on: On) => {
+	const logs = walledLab(on, ["Read(~/.claudetto-holdout/**)"]);
+	await start($);
+	expect(logs.filter((l) => WALL_LINE.test(l))).toEqual([]);
+});

@@ -1,4 +1,4 @@
-import type { EngineInterface, On } from "claude-code";
+import type { EngineInterface, On, PluginOptions } from "claude-code";
 import {
 	DENIALS_PER_CALL_MAX,
 	type Denials,
@@ -11,15 +11,29 @@ import { POLICY_FILES } from "./gate/packages.ts";
 import { ownsOf, tmpTops } from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
 import { readOnly } from "./gate/readonly.ts";
-import { type Host, newRecreation, recreates, saw } from "./gate/recreate.ts";
+import {
+	type Host,
+	newRecreation,
+	type Recreation,
+	recreates,
+	saw,
+} from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
 import { deny, fieldOf, type Verdict } from "./gate/verdict.ts";
+import {
+	namedPaths,
+	spellsWall,
+	unguarded,
+	walledVerdict,
+} from "./gate/walled.ts";
+import { listOption } from "./options.ts";
 import { redactAll, redactWith, secretsIn } from "./secrets.ts";
 import {
 	GATE_CHECK_FAILED,
 	GATE_READ_ONLY,
 	GATE_SYSTEM_WRITE,
 	gateRule,
+	walledUnguarded,
 } from "./texts.ts";
 
 export const GATE_LOG = ".claude/claudetto/gate-asks.jsonl";
@@ -80,11 +94,34 @@ const ownershipOf = async ($: EngineInterface, command: string) => {
 	);
 };
 
+interface Walls {
+	paths: readonly string[];
+	files: Recreation;
+}
+
+const homeOf = async ($: EngineInterface, files: Recreation) => {
+	files.home ??= (await hostOf($).home()).trim();
+	return files.home;
+};
+
 const ownVerdict = async (
 	$: EngineInterface,
+	walls: Walls,
 	tool: string,
 	input: unknown,
 ): Promise<Verdict | undefined> => {
+	const named = namedPaths(tool, input);
+	const walled = spellsWall(walls.paths, named)
+		? walledVerdict(
+				named,
+				walls.paths,
+				await homeOf($, walls.files),
+				await $.session.cwd(),
+			)
+		: undefined;
+	if (walled !== undefined) {
+		return walled;
+	}
 	const command = fieldOf(input, "command");
 	if ((tool === "Bash" || tool === "Monitor") && command !== undefined) {
 		const present = await presentFiles($);
@@ -141,9 +178,23 @@ const log = async (
 	await logging;
 };
 
-export const gate = (on: On): void => {
+export const gate = (on: On, options: PluginOptions): void => {
 	let denials: Denials = {};
 	const files = newRecreation();
+	const walls = { paths: listOption(options, "protectedPaths"), files };
+
+	// A deny rule in the settings can vanish unnoticed, as it did on 2026-11-07, while the gate's wall stays.
+	on("classic.SessionStart", { source: "startup" }, async ($, e, next) => {
+		const open = unguarded(
+			walls.paths,
+			await $.settings.read({ key: "permissions" }),
+			await homeOf($, files),
+		);
+		if (open.length > 0) {
+			$.ui.log(walledUnguarded(open));
+		}
+		return next(e);
+	});
 
 	// The gate only tightens, except that an `ask` no rule, option, hook, or plugin made, on a read-only command, becomes an `allow`.
 	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
@@ -159,7 +210,7 @@ export const gate = (on: On): void => {
 		}
 		// Computed before `next`, so a throw leaves `next` uncalled and the `.catch` asks in its place.
 		const recreated = await recreates(hostOf($), files, e.tool, e.input);
-		const own = (await ownVerdict($, e.tool, e.input)) ?? recreated;
+		const own = (await ownVerdict($, walls, e.tool, e.input)) ?? recreated;
 		const found = await next(e);
 		// The engine's text for a rule denial does not name the rule, so a model reads it as unexplained.
 		const engine =
@@ -189,7 +240,7 @@ export const gate = (on: On): void => {
 		if (answer.decision !== undefined) {
 			return answer;
 		}
-		const own = await ownVerdict($, e.tool_name, e.tool_input);
+		const own = await ownVerdict($, walls, e.tool_name, e.tool_input);
 		return own?.decision === "deny"
 			? { ...answer, decision: { behavior: "deny", message: own.reason } }
 			: answer;

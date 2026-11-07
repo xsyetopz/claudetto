@@ -16,6 +16,14 @@ export const numberOption = <F>(
 export const switchOption = (options: PluginOptions, key: string): boolean =>
 	options[key] !== false && options[key] !== "false";
 
+export const listOption = (
+	options: PluginOptions,
+	key: string,
+): readonly string[] => {
+	const value = options[key];
+	return Array.isArray(value) ? value : [];
+};
+
 export const stringOption = (options: PluginOptions, key: string): string => {
 	const value = options[key];
 	return typeof value === "string" ? value : "";
