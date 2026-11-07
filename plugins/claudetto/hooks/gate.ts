@@ -8,7 +8,7 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
-import { MARKER, ownsOf, tmpTops } from "./gate/processes.ts";
+import { MARKER, ownsOf, tmpTopOf, tmpTops } from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
 import { readOnly } from "./gate/readonly.ts";
 import {
@@ -33,6 +33,7 @@ import {
 	GATE_READ_ONLY,
 	GATE_SYSTEM_WRITE,
 	gateRule,
+	gateTmpMarker,
 	walledUnguarded,
 } from "./texts.ts";
 
@@ -138,9 +139,15 @@ const ownVerdict = async (
 		return own && { ...own, reason: `${own.reason} (\`${command}\`)` };
 	}
 	const path = fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path");
-	return FILE_WRITERS.has(tool) && path !== undefined && systemPath(path)
-		? deny(GATE_SYSTEM_WRITE)
-		: undefined;
+	if (!FILE_WRITERS.has(tool) || path === undefined) {
+		return undefined;
+	}
+	// A write makes its missing folders, so it would make a /tmp folder no marker names (seen live, 18.41).
+	const top = tmpTopOf(path);
+	if (top !== undefined && top !== path && !(await isMarked($, top))) {
+		return deny(gateTmpMarker(top));
+	}
+	return systemPath(path) ? deny(GATE_SYSTEM_WRITE) : undefined;
 };
 
 // `$.fs` has no append, so each line is read back and written whole; the queue keeps parallel checks from losing one.

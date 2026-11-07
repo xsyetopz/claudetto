@@ -246,3 +246,21 @@ denied("mkdir -p /tmp/mine/sub", gateTmpMarker("/tmp/mine/sub"), [], {
 });
 allowed("mkdir -p build/out");
 allowed("mktemp -d");
+
+// Seen live: a worker denied a bare `mkdir` made its /tmp folder with Write, which makes missing folders.
+const write = ($: Engine, file_path: string) =>
+	$.tool.check({ tool: "Write", input: { file_path, content: "x" } });
+test("a Write under an unmarked /tmp folder is denied with the marker line", async ($: Engine, on: On) => {
+	lab(on, [], { [MARK]: "S2" });
+	for (const path of ["/tmp/live-1/notes.txt", "/tmp/mine/notes.txt"]) {
+		const v = await write($, path);
+		expect(v.decision).toBe("deny");
+		expect(v.reason).toContain(gateTmpMarker(path.slice(0, path.lastIndexOf("/"))));
+	}
+});
+test("a Write under this session's marked /tmp folder or outside /tmp passes", async ($: Engine, on: On) => {
+	lab(on, [], { [MARK]: "S1" });
+	expect((await write($, "/tmp/mine/notes.txt")).decision).toBe("allow");
+	expect((await write($, "/p/tmp/x/notes.txt")).decision).toBe("allow");
+	expect((await write($, "/tmp/notes.txt")).decision).toBe("allow");
+});

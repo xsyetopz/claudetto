@@ -191,6 +191,10 @@ export const markedTopsOf = (past: Past[]): string[] => [
 	),
 ];
 
+/** The top folder below /tmp that a path starts with. */
+export const tmpTopOf = (path: string): string | undefined =>
+	TMP_NAMED.exec(path)?.[0];
+
 /** Denies a `mkdir` or `mktemp` of a /tmp folder this session has not marked, when the same command writes no marker. */
 export const markerVerdict = (
 	command: string,
@@ -206,7 +210,7 @@ export const markerVerdict = (
 			return MAKERS.has(name) ? args : [];
 		})
 		.find((a) => {
-			const top = TMP_NAMED.exec(a)?.[0];
+			const top = tmpTopOf(a);
 			return top !== undefined && !own.tmp(top);
 		});
 	return path === undefined ? undefined : deny(gateTmpMarker(path));
