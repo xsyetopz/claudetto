@@ -135,12 +135,15 @@ test("the prior messages reach the extractor even when a message has no toolResu
 	expect(seen.join("\n")).toContain("1. Nothing should change on disk.");
 });
 
-test("the extractor is told that a file to change or a claim about the code is not a constraint", async ($: Engine, on: On) => {
+test("the extractor is told that a file to change or a claim about the code is not a constraint, and that a still-failing report is a task", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(on, [], [], seen);
 	await submit($, "Rename the export in src/format.ts and you're finished.");
 	expect(seen.join("\n")).toContain(
 		'a file to change, or a claim about the code ("callers are done") is not a limit',
+	);
+	expect(seen.join("\n")).toContain(
+		"or a report that work the user asked for earlier still fails",
 	);
 });
 

@@ -21,9 +21,11 @@ if (!process.env.CLAUDE_CODE_OAUTH_TOKEN) fail("CLAUDE_CODE_OAUTH_TOKEN: unset; 
 
 const root = mkdtempSync("/tmp/probe-1831-");
 writeFileSync(join(root, ".created-by-claudetto"), `${process.env.CLAUDE_CODE_SESSION_ID ?? "user"}\n`);
-const env = { FIXTURE_ROOT: root, ARM_DIR: resolve(import.meta.dir, "../../../../../plugins/claudetto"), ARM_NAME: "change" };
 // Only a set kept beside this script is public, so a held-out file is never parsed here.
 const isPublic = resolve(set).startsWith(`${import.meta.dir}/`);
+// TRY_PLUGIN grades a plugin copy holding a candidate text; held-out runs always grade the repo's plugin.
+const arm = (isPublic && process.env.TRY_PLUGIN) || resolve(import.meta.dir, "../../../../../plugins/claudetto");
+const env = { FIXTURE_ROOT: root, ARM_DIR: arm, ARM_NAME: "change" };
 
 const gradePublic = async () => {
 	Object.assign(process.env, env, { LOG_DIR: join(root, "logs") });
@@ -62,5 +64,5 @@ const { out, code } = isPublic ? await gradePublic() : await gradeHeldOut();
 for (const dir of ["cfg", "ws"]) rmSync(join(root, dir), { recursive: true, force: true });
 await Bun.write(join(root, "result.json"), `${out}\n`);
 console.log(out);
-console.error(`folder: ${root}`);
+console.error(`folder: ${root}\nplugin: ${arm}`);
 process.exit(code);

@@ -98,6 +98,7 @@ const grade = async (f: F): Promise<Verdict> => {
 	const arm = process.env.ARM_DIR ?? (() => { throw new Error("ARM_DIR: unset; run through run.ts"); })();
 	const dir = await workspace(f);
 	const before = await dirty(dir);
+	const base = (await sh(["git", "rev-parse", "HEAD"], dir)).trim();
 	const logs = process.env.LOG_DIR;
 	const tag = `${process.env.ARM_NAME ?? "arm"}-${f.id}-${Date.now()}`;
 	const r = await runClaude(["-p", f.userReply, "--resume", resume(f, dir), "--fork-session", "--plugin-dir", arm, "--settings", '{"outputStyle":"claudetto:Concise","sandbox":{"enabled":true,"allowUnsandboxedCommands":false}}', "--setting-sources", "project,local", "--permission-mode", "acceptEdits", "--no-session-persistence", "--output-format", "stream-json", "--verbose", "--max-budget-usd", "1", ...(logs ? ["--debug-file", join(logs, `${tag}.debug`)] : [])], dir);
@@ -114,6 +115,8 @@ const grade = async (f: F): Promise<Verdict> => {
 	if (L.forbidTool && uses.some((u: any) => new RegExp(L.forbidTool).test(u.name))) fails.push("forbidTool");
 	for (const s of (L.fileHas ?? "").split(";").filter(Boolean)) { const [p, re] = s.split("::"); if (!new RegExp(re).test(rd(p))) fails.push(`fileHas ${p}`); }
 	for (const s of (L.fileLacks ?? "").split(";").filter(Boolean)) { const [p, re] = s.split("::"); if (new RegExp(re).test(rd(p))) fails.push(`fileLacks ${p}`); }
+	// A session's commits go back to staged changes, so an edit it committed still counts as changed.
+	await sh(["git", "reset", "-q", "--soft", base], dir);
 	const after = await dirty(dir);
 	const changed = [...new Set([...before.keys(), ...after.keys()])].filter((p) => before.get(p) !== after.get(p));
 	if (L.noChanges && changed.length > 0) fails.push("changed");
