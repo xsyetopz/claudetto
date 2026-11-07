@@ -470,6 +470,14 @@ export const GRADE_FAULTS = {
 		test: "The reply points at a block, change, setting, value, or earlier event that appears only in the tool output listed below (the user sees none of it in full) by name or description alone, such as 'the setup block', 'that setting', or 'the earlier error', without giving its text or value, and no user message or earlier assistant message gave it. A reply that states the text or value, or reports an edit the assistant made this turn and its test result, or names only what the user wrote or was shown, is not this fault.",
 		fix: "Your reply names something the user has not seen in full: a block, change, setting, or earlier event from tool output. Resend it showing the exact text or value, its file:line, where it came from, and what you do not know. Name each key to press or answer to give for any instruction.",
 	},
+	jargon: {
+		test: "The reply uses an id, internal name, or type name (such as R9, M1, a function or schema name) that no listed message explained, with no plain gloss beside it, so a reader outside the work could not tell what it means.",
+		fix: "Your reply uses names or ids the user was not given a meaning for. Resend it saying each thing in plain words; keep a name only with a short gloss beside it.",
+	},
+	narrates: {
+		test: 'The reply ends by narrating a next step in place of a result ("I\'m now making...", "Next I\'ll..."), so the turn ends with work promised and not done or reported.',
+		fix: "Your reply ends on a step you say you will take, and the turn ends. Do that step now, or report the result you have, and resend.",
+	},
 } as const;
 
 export type GradeFault = keyof typeof GRADE_FAULTS;

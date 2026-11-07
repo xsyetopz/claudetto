@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 import { decide } from "./decide.ts";
 import { delegation } from "./delegation.ts";
+import { fold } from "./fold.ts";
 import { gate } from "./gate.ts";
 import { handoff } from "./handoff.ts";
 import { hygiene } from "./hygiene.ts";
@@ -26,6 +27,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	hygiene(on, options);
 	notify(on, options);
 	gate(on);
+	fold(on);
 
 	// The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.
 	on("session.start", async ($, e, next) => {

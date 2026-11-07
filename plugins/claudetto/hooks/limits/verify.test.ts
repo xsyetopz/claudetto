@@ -462,3 +462,28 @@ test("the grader sees the latest 8 tool results, 400 characters each", async ($:
 	expect(sonnet).toContain("cmd9\nout9");
 	expect(sonnet).not.toContain("x".repeat(400));
 });
+
+test("a reply with unexplained ids gets one block that asks for plain words", async ($: Engine, on: On) => {
+	const reply = "R9 and M1 are done.";
+	const seen: string[] = [];
+	lab(on, [user("status?")], found("jargon", "R9 and M1"), seen);
+	expect((await stop($, false, reply)).block).toContain("plain words");
+	expect(seen[0]).toContain("- jargon:");
+	expect((await stop($, true, reply)).block).toBeUndefined();
+});
+
+test("a reply that ends on a promised next step gets one block that asks for the step", async ($: Engine, on: On) => {
+	const reply = "I'm now making the change.";
+	const seen: string[] = [];
+	lab(on, [user("fix it")], found("narrates", "I'm now making"), seen);
+	expect((await stop($, false, reply)).block).toContain("Do that step now");
+	expect(seen[0]).toContain("- narrates:");
+	expect((await stop($, true, reply)).block).toBeUndefined();
+});
+
+test("a clean reply is not blocked for jargon or narration", async ($: Engine, on: On) => {
+	lab(on, [user("status?")], '{"faults":[]}');
+	expect(
+		(await stop($, false, "The total now skips no rows.")).block,
+	).toBeUndefined();
+});

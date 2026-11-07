@@ -133,6 +133,8 @@ export const offeredCodes = (
 ): GradeFault[] => [
 	"credited",
 	"fallback",
+	"jargon",
+	"narrates",
 	...(looked ? [] : (["unchecked", "rules"] as const)),
 	...(wroteIssues ? [] : (["unfiled"] as const)),
 	...(asked ? [] : (["asks"] as const)),
