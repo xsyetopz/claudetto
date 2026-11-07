@@ -119,8 +119,9 @@ export const slices = (on: On): void => {
 	});
 	on("tool.call", { tool: WRITERS }, async ($, e, next) => {
 		const answer = await next(e);
-		if (didWrite(answer) && "file_path" in e) {
-			mine.set(e.file_path, (await hashes($, [e.file_path]))[0] ?? "");
+		const path = "file_path" in e ? e.file_path : e.notebook_path;
+		if (didWrite(answer)) {
+			mine.set(path, (await hashes($, [path]))[0] ?? "");
 		}
 		return answer;
 	});

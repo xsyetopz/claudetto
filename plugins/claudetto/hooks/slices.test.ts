@@ -136,6 +136,18 @@ test("a stop with an edited file git reports changed is blocked, and the block n
 	]);
 });
 
+test("a stop with a notebook NotebookEdit changed is blocked, and the block names it", async ($: Engine, on: On) => {
+	const nb = "/repo/nb/a.ipynb";
+	lab(on, fakeRepo({ [nb]: " M" }));
+	await $.tool.call({
+		tool: "NotebookEdit",
+		tool_use_id: "t3",
+		notebook_path: nb,
+		new_source: "x = 1",
+	});
+	expect((await stop($)).block).toContain("`nb/a.ipynb`");
+});
+
 test("a committed edit passes", async ($: Engine, on: On) => {
 	lab(on, fakeRepo());
 	await edit($);
