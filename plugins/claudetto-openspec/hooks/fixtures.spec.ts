@@ -371,6 +371,7 @@ const divergence = (rec: Rec, threw: boolean, blocked?: string) => {
 const archiveThrew = async (rec: Rec, root: string, change: string) => {
 	try {
 		await archive(nodeFs, spawnArgv, root, change, "2026-11-05");
+		return undefined;
 	} catch (error) {
 		if (process.env["COS_DEBUG"]) {
 			console.log(rec.test, String(error));

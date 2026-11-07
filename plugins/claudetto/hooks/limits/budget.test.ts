@@ -27,7 +27,12 @@ const lab = (on: On, reading: () => Reading) => {
 		value: {
 			isAnswered: true,
 			text: "NO",
-			usage: { inputTokens: 1, outputTokens: 1 },
+			usage: {
+				input_tokens: 1,
+				output_tokens: 1,
+				cache_read_input_tokens: 0,
+				cache_creation_input_tokens: 0,
+			},
 		},
 	}));
 	on("session.usage", () => ({ value: { startedAt: 0, ...reading() } }));

@@ -738,7 +738,12 @@ const HANDOFF_INPUT = {
 };
 
 const goal = ($: Engine, args: string) =>
-	$.command.run({ command: "goal", args });
+	$.command.run({
+		command: "goal",
+		args,
+		origin: { kind: "composer" },
+		presentation: { isFullscreen: false, columns: 80 },
+	});
 
 /** The commands `$.command.run` reached the engine with, after a handoff that ran its timer. */
 const handedOff = async ($: Engine, on: On, goals: () => Promise<unknown>) => {

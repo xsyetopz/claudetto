@@ -6,5 +6,9 @@
 	},
 	"include": ["plugins/**/*.ts"],
 	"exclude": ["node_modules", "plugins/*/.claude-plugin/types/**"],
-	"files": ["plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts"]
+	"files": [
+		"plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts",
+		"plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts",
+		"plugins/claudetto/.claude-plugin/types/claude-code-mcp/index.d.ts"
+	]
 }

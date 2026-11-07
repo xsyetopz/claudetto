@@ -33,7 +33,11 @@ const REFUSED =
 	/^(?:Permission (?:to use|for this)|The user doesn't want to proceed with this tool use)/;
 
 /** The tools whose result is a file the session changed. */
-export const WRITERS: BuiltinToolName[] = ["Edit", "NotebookEdit", "Write"];
+export const WRITERS = [
+	"Edit",
+	"NotebookEdit",
+	"Write",
+] satisfies BuiltinToolName[];
 
 /** A write that ran: a denied or failed one wrote nothing. */
 export const didWrite = (answer: {

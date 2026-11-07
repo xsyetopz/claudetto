@@ -28,6 +28,10 @@
 		"types": [],
 		"useDefineForClassFields": true
 	},
-	"include": ["src/**/*.ts", "tests/**/*.ts"],
-	"files": [".claude-plugin/types/claude-code/index.d.ts"]
+	"include": ["hooks/**/*.ts"],
+	"files": [
+		".claude-plugin/types/claude-code/index.d.ts",
+		".claude-plugin/types/claude-code-tools/index.d.ts",
+		".claude-plugin/types/claude-code-mcp/index.d.ts"
+	]
 }

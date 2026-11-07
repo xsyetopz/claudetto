@@ -28,7 +28,7 @@ const runWith =
 		};
 	};
 
-const run = runWith(process.env.PATH);
+const run = runWith(process.env["PATH"]);
 
 // Joined at run time, so this file holds no key a push scanner would flag.
 const KEYS = {

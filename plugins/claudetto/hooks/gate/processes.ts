@@ -120,7 +120,9 @@ export const tmpTops = (command: string): string[] =>
 const BRANCH_FLAGS = new Set(["-b", "-B", "-c", "-C"]);
 
 /** The path and branch a `git` command creates: `worktree add [-b name] <path>`, `branch <name>`, `checkout -b <name>`, `switch -c <name>`. */
-const creates = (args: string[]): { path?: string; branch?: string } => {
+const creates = (
+	args: string[],
+): { path?: string | undefined; branch?: string | undefined } => {
 	const [verb = "", ...rest] = withoutGitOptions(args);
 	const at = rest.findIndex((a) => BRANCH_FLAGS.has(a));
 	const named = at < 0 ? undefined : rest[at + 1];
