@@ -35,6 +35,7 @@ export interface ArmSpec {
 	name: string;
 	plugin: boolean;
 	options?: Record<string, unknown>;
+	settings?: Record<string, unknown>;
 }
 
 export interface Study {
@@ -68,9 +69,9 @@ const git = async (cwd: string, ...args: string[]): Promise<void> => {
 const armOf = (a: ArmSpec, model: string): Arm => ({
 	name: a.name,
 	plugins: a.plugin ? [{ dir: PLUGIN }] : [],
-	settings: a.options ? { pluginConfigs: { claudetto: { options: a.options } } } : {},
+	settings: { ...(a.options ? { pluginConfigs: { claudetto: { options: a.options } } } : {}), ...(a.settings ?? {}) },
 	env: { DISABLE_ERROR_REPORTING: "1" },
-	flags: ["--permission-mode", "acceptEdits", "--allowedTools", TOOLS.join(","), "--max-budget-usd", "1"],
+	flags: ["--permission-mode", "acceptEdits", "--allowedTools", TOOLS.join(","), "--max-budget-usd", process.env.ARM_BUDGET_USD ?? "1"],
 	model,
 	expect: {},
 });

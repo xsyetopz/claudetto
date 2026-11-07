@@ -1,0 +1,184 @@
+{
+	"prompts": [
+		{
+			"id": "d01",
+			"kind": "delegate",
+			"text": "Have a helper go through every file in src and list anything that looks like dead code, while I keep working on the README with you."
+		},
+		{
+			"id": "d02",
+			"kind": "delegate",
+			"text": "Spin up two helpers: one to review src/parse.ts for edge-case bugs, and the other to review src/format.ts for the same. Report back with both findings together."
+		},
+		{
+			"id": "d03",
+			"kind": "delegate",
+			"text": "Can you get a helper to search the whole project for every place we read from process.env or process.argv? I want a tidy list with file and line."
+		},
+		{
+			"id": "d04",
+			"kind": "delegate",
+			"text": "delegate a side task: have a helper draft a CHANGELOG entry from the current state of package.json and the README, and don't let it touch any source files"
+		},
+		{
+			"id": "d05",
+			"kind": "delegate",
+			"text": "I'd like a helper to audit package.json for outdated or unnecessary dependencies and scripts while you carry on explaining the CLI entry point to me."
+		},
+		{
+			"id": "d06",
+			"kind": "delegate",
+			"text": "Send a helper off to hunt through all three source files for inconsistent error handling. Meanwhile I'll wait; just summarize what it finds."
+		},
+		{
+			"id": "d07",
+			"kind": "delegate",
+			"text": "Two helpers please, in parallel. First one checks that every claim in the README matches what src/cli.ts actually does. Second one checks the type annotations across src for anything loose like any."
+		},
+		{
+			"id": "d08",
+			"kind": "delegate",
+			"text": "Hey, could a helper grep the project for TODO, FIXME, and HACK comments and give me a ranked list by how risky they look?"
+		},
+		{
+			"id": "d09",
+			"kind": "delegate",
+			"text": "Use a helper to write a rough test plan for the parsing module in the background. I only need bullet points, and I don't want you stopping what you're doing."
+		},
+		{
+			"id": "d10",
+			"kind": "delegate",
+			"text": "Please have a helper trace how data flows from the CLI through parse and into format, and write up the call path step by step so I can onboard a teammate."
+		},
+		{
+			"id": "d11",
+			"kind": "delegate",
+			"text": "get a helper to do a naming consistency sweep over every file: variables, exports, file names. just report, no edits"
+		},
+		{
+			"id": "d12",
+			"kind": "delegate",
+			"text": "I want a second pair of eyes that isn't you. Have a helper independently review src/cli.ts for usability problems, and have another helper review the README for gaps a new user would hit."
+		},
+		{
+			"id": "d13",
+			"kind": "delegate",
+			"text": "Could you hand off to a helper the job of checking whether tsconfig strictness settings, if any exist, fit the code in src? Search everything, since I'm not sure where the config lives."
+		},
+		{
+			"id": "d14",
+			"kind": "delegate",
+			"text": "Delegate a scan to a helper: find every import statement across the project and tell me if there are any circular or unused ones."
+		},
+		{
+			"id": "d15",
+			"kind": "delegate",
+			"text": "While we talk through the release plan, have a helper quietly look through all files for hard-coded strings that should be constants or config."
+		},
+		{
+			"id": "d16",
+			"kind": "delegate",
+			"text": "Run a helper over the codebase to collect every exported symbol and which file imports it, then give me the table. Keep it going on its own while I grab coffee."
+		},
+		{
+			"id": "q01",
+			"kind": "question",
+			"text": "What's the practical difference between a type and an interface in TypeScript?"
+		},
+		{
+			"id": "q02",
+			"kind": "question",
+			"text": "I keep getting \"Cannot find module\" when I run my compiled output, even though the import path looks right in the editor. What usually causes that?"
+		},
+		{
+			"id": "q03",
+			"kind": "question",
+			"text": "Should I use async/await or promise chains in a tiny CLI like this one? Just pick one and tell me why."
+		},
+		{
+			"id": "q04",
+			"kind": "question",
+			"text": "Explain what \"strict\": true actually turns on in tsconfig, in plain words."
+		},
+		{
+			"id": "q05",
+			"kind": "question",
+			"text": "Is it worth adding a linter to a project this small?"
+		},
+		{
+			"id": "q06",
+			"kind": "question",
+			"text": "why does TS say 'Object is possibly undefined' when I already checked it two lines up"
+		},
+		{
+			"id": "q07",
+			"kind": "question",
+			"text": "Quick one: ESM or CommonJS for a new Node tool in 2026? I need a recommendation, not a survey."
+		},
+		{
+			"id": "q08",
+			"kind": "question",
+			"text": "Briefly, what does a README for a command-line tool need at minimum so a stranger can use it?"
+		},
+		{
+			"id": "q09",
+			"kind": "question",
+			"text": "Walk me through what happens when Node runs a script with a shebang line at the top and the file has been made executable."
+		},
+		{
+			"id": "q10",
+			"kind": "question",
+			"text": "Tradeoffs between throwing errors and returning a result object when parsing bad input? I'm leaning toward throwing but not sure."
+		},
+		{
+			"id": "q11",
+			"kind": "question",
+			"text": "Can you tell me what semantic versioning means for going from 0.3.2 to 0.4.0?"
+		},
+		{
+			"id": "q12",
+			"kind": "question",
+			"text": "Is it bad practice to keep parsing and formatting in separate files when each is only about fifteen lines? Be honest."
+		},
+		{
+			"id": "q13",
+			"kind": "question",
+			"text": "What does the \"main\" versus \"bin\" field in package.json do, and when do I need each?"
+		},
+		{
+			"id": "q14",
+			"kind": "question",
+			"text": "Decide for me: tabs or two spaces for this project, and give me one sentence of justification."
+		},
+		{
+			"id": "q15",
+			"kind": "question",
+			"text": "I'm confused about unknown versus any. When would I reach for unknown?"
+		},
+		{
+			"id": "q16",
+			"kind": "question",
+			"text": "Give me a short, friendly explanation of what a unit test is that I could read to a coworker who has never written one."
+		}
+	],
+	"fillers": [
+		"^\\s*(hi|hello|hey|dear)\\b",
+		"\\b(great|good|excellent|fantastic|interesting) (question|point|idea|catch)\\b",
+		"\\bhappy to\\b",
+		"\\bglad to\\b",
+		"\\bcertainly\\b",
+		"\\bof course\\b",
+		"\\babsolutely\\b",
+		"\\bsure thing\\b",
+		"\\bI hope (this|that) helps\\b",
+		"\\bfeel free\\b",
+		"\\blet me know\\b",
+		"\\bthank(s| you)\\b",
+		"\\bplease\\b",
+		"\\b(sorry|apologi[sz]e)\\b",
+		"\\bto be honest\\b",
+		"\\bit.?s worth (noting|mentioning)\\b",
+		"\\bI.ll go ahead and\\b",
+		"\\bdelve\\b"
+	]
+}

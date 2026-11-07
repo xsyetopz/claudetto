@@ -34,3 +34,21 @@ test("the output style asks for the open-item form the Stop check reads", async 
 		"Ask each question for the user with `AskUserQuestion`",
 	);
 });
+
+// 18.24: the two reader rules sit in the style's `<sentence_style>`, outside `<requests_to_the_user>`.
+test("the output style says what an agent message and a user reply hold", async () => {
+	const style = await file(
+		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
+	).text();
+	const rules = style.slice(
+		style.indexOf("<sentence_style>"),
+		style.indexOf("</sentence_style>"),
+	);
+
+	expect(rules).toContain(
+		"holds the task, its inputs, and its done-check, with no greeting, thanks, or restated context",
+	);
+	expect(rules).toContain(
+		"plain English a non-expert can follow, with no pleasantries, praise, or filler",
+	);
+});
