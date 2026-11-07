@@ -10,11 +10,17 @@ import {
 import { POLICY_FILES } from "./gate/packages.ts";
 import { ownsOf, tmpTops } from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
+import { readOnly } from "./gate/readonly.ts";
 import { type Host, newRecreation, recreates, saw } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
 import { deny, fieldOf, type Verdict } from "./gate/verdict.ts";
 import { redactAll, redactWith, secretsIn } from "./secrets.ts";
-import { GATE_CHECK_FAILED, GATE_SYSTEM_WRITE, gateRule } from "./texts.ts";
+import {
+	GATE_CHECK_FAILED,
+	GATE_READ_ONLY,
+	GATE_SYSTEM_WRITE,
+	gateRule,
+} from "./texts.ts";
 
 const FILE_WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 const STRICTNESS = ["allow", "ask", "deny"];
@@ -25,6 +31,15 @@ const ANY_TOOL = /^/;
 const OWNED = /\b(?:kill|worktree|branch)\b/;
 const RM = /\brm\b/;
 const MARKER = ".created-by-claudetto";
+
+const isBareAsk = (
+	found: Awaited<ReturnType<EngineInterface["tool"]["check"]>>,
+): boolean =>
+	found.decision === "ask" &&
+	found.rule === undefined &&
+	found.setting === undefined &&
+	found.hook === undefined &&
+	found.plugin === undefined;
 
 const presentFiles = async ($: EngineInterface): Promise<Set<string>> => {
 	const cwd = await $.session.cwd();
@@ -88,7 +103,7 @@ export const gate = (on: On): void => {
 	let denials: Denials = {};
 	const files = newRecreation();
 
-	// The gate only tightens: its verdict never turns a `deny` or `ask` of the engine into a looser one.
+	// The gate only tightens, except that an `ask` no rule, option, hook, or plugin made, on a read-only or test command, becomes an `allow`.
 	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
 		const refused = repeatedText(
 			denials,
@@ -107,6 +122,14 @@ export const gate = (on: On): void => {
 			found.decision === "deny" && found.rule !== undefined
 				? { ...found, reason: gateRule(found.reason, found.rule) }
 				: found;
+		if (
+			own === undefined &&
+			e.tool === "Bash" &&
+			isBareAsk(engine) &&
+			readOnly(fieldOf(e.input, "command") ?? "")
+		) {
+			return { decision: "allow", reason: GATE_READ_ONLY };
+		}
 		return own === undefined ||
 			STRICTNESS.indexOf(engine.decision) >= STRICTNESS.indexOf(own.decision)
 			? engine

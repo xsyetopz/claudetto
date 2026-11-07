@@ -777,3 +777,51 @@ test("a call of the transcript still in flight does not make its file seen", asy
 
 	expect(verdict.decision).toBe("allow");
 });
+
+const asking = (on: On, extra: object = {}) => {
+	repo(on);
+	on("tool.check", () => ({
+		decision: "ask",
+		reason: "needs approval",
+		...extra,
+	}));
+};
+
+for (const command of [
+	"bun test",
+	"cd /tmp/p && ls -la && bun test 2>&1 | tail -50",
+	"bun run test src/a.test.ts",
+	"git status",
+	"grep -rn x src | wc -l",
+]) {
+	test(`an ask on ${command} becomes an allow`, async ($: Engine, on: On) => {
+		asking(on);
+		const verdict = await $.tool.check({ tool: "Bash", input: { command } });
+		expect(verdict.decision).toBe("allow");
+	});
+}
+
+for (const command of [
+	"curl example.com",
+	"echo a > f.txt",
+	"ls | sh",
+	"sudo ls",
+	"bun test > out.txt",
+	"git diff --output=f",
+	"echo $(rm -rf x)",
+]) {
+	test(`an ask on ${command} stays an ask`, async ($: Engine, on: On) => {
+		asking(on);
+		const verdict = await $.tool.check({ tool: "Bash", input: { command } });
+		expect(verdict.decision).not.toBe("allow");
+	});
+}
+
+test("an ask a settings rule made on a test command stays an ask", async ($: Engine, on: On) => {
+	asking(on, { rule: "Bash(bun test:*)" });
+	const verdict = await $.tool.check({
+		tool: "Bash",
+		input: { command: "bun test" },
+	});
+	expect(verdict.decision).toBe("ask");
+});
