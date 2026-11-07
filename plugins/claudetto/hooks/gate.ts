@@ -103,7 +103,7 @@ export const gate = (on: On): void => {
 	let denials: Denials = {};
 	const files = newRecreation();
 
-	// The gate only tightens, except that an `ask` no rule, option, hook, or plugin made, on a read-only or test command, becomes an `allow`.
+	// The gate only tightens, except that an `ask` no rule, option, hook, or plugin made, on a read-only command, becomes an `allow`.
 	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
 		const refused = repeatedText(
 			denials,

@@ -16,8 +16,6 @@ const READS = new Set([
 	"tail",
 ]);
 const GIT_READS = new Set(["status", "diff", "log"]);
-const TEST =
-	/^(?:(?:bun|npm|pnpm|yarn) (?:run )?test|(?:npx|bunx) (?:vitest|jest)|pytest|cargo test|go test)(?: |$)/;
 // `git diff --output=file` writes a file and `rg --pre cmd` runs one.
 const WRITES_OR_RUNS = /^--(?:output|pre)\b/;
 const FD = /^\d+$/;
@@ -30,7 +28,7 @@ const quiet = (c: Command): boolean =>
 			: r.target.startsWith("/dev/") || (r.op === ">&" && FD.test(r.target)),
 	);
 
-/** Whether every command of the text reads only or runs the project's tests. A wrapper (`sudo`, `env`, an assignment) before the program, a shell, a network tool, or a file redirect makes it false. */
+/** Whether every command of the text only reads. A test run is no read: it runs whatever the test files hold, so it passes only through the sandbox's own auto-allow. A wrapper (`sudo`, `env`, an assignment) before the program, a shell, a network tool, or a file redirect makes it false. */
 export const readOnly = (command: string): boolean => {
 	const { commands, unreadable } = parse(command);
 	return (
@@ -42,9 +40,7 @@ export const readOnly = (command: string): boolean => {
 				at === 0 &&
 				quiet(c) &&
 				!args.some((a) => WRITES_OR_RUNS.test(a)) &&
-				(READS.has(name) ||
-					(name === "git" && GIT_READS.has(args[0] ?? "")) ||
-					TEST.test([name, ...args.slice(0, 2)].join(" ")))
+				(READS.has(name) || (name === "git" && GIT_READS.has(args[0] ?? "")))
 			);
 		})
 	);

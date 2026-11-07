@@ -788,9 +788,7 @@ const asking = (on: On, extra: object = {}) => {
 };
 
 for (const command of [
-	"bun test",
-	"cd /tmp/p && ls -la && bun test 2>&1 | tail -50",
-	"bun run test src/a.test.ts",
+	"cd /tmp/p && ls -la 2>&1 | tail -50",
 	"git status",
 	"grep -rn x src | wc -l",
 ]) {
@@ -806,7 +804,9 @@ for (const command of [
 	"echo a > f.txt",
 	"ls | sh",
 	"sudo ls",
-	"bun test > out.txt",
+	"ls > out.txt",
+	"bun test",
+	"bun run test src/a.test.ts",
 	"git diff --output=f",
 	"echo $(rm -rf x)",
 ]) {
@@ -817,11 +817,11 @@ for (const command of [
 	});
 }
 
-test("an ask a settings rule made on a test command stays an ask", async ($: Engine, on: On) => {
-	asking(on, { rule: "Bash(bun test:*)" });
+test("an ask a settings rule made on a read-only command stays an ask", async ($: Engine, on: On) => {
+	asking(on, { rule: "Bash(git status)" });
 	const verdict = await $.tool.check({
 		tool: "Bash",
-		input: { command: "bun test" },
+		input: { command: "git status" },
 	});
 	expect(verdict.decision).toBe("ask");
 });
