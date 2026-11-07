@@ -21,6 +21,8 @@ const PID = /^\d+$/;
 const TMP_TOP = /^(?:\/private)?\/tmp(?:\/[^/]+)?/;
 const TMP_TOPS = /(?:\/private)?\/tmp\/[^/\s'"]+/g;
 const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/;
+const AGENT_ID = /\bagentId: (\w+)/;
+const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/;
 const RELEASE = /(?:^|\/)claude\/versions\/[^/\s]+/;
 
 interface Past {
@@ -139,13 +141,20 @@ export const ownsOf = (past: Past[], marked: Set<string>): Owns => {
 			}),
 		);
 	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
+	// Claude Code makes an isolated worker's worktree itself, at `.claude/worktrees/agent-<id>` on branch `worktree-agent-<id>`.
+	const workers = past
+		.filter((t) => t.tool === "Agent" && !t.isError)
+		.flatMap((t) => AGENT_ID.exec(t.text ?? "")?.[1] ?? []);
 	return {
 		pid: startedBy(past),
 		tmp: (top) => marked.has(top),
 		path: (path) =>
 			made.some((m) => m.path === path) ||
-			entered.some((t) => t.text?.includes(path)),
-		branch: (name) => made.some((m) => m.branch === name),
+			entered.some((t) => t.text?.includes(path)) ||
+			workers.some((id) => WORKER_PATH.exec(path)?.[1] === id),
+		branch: (name) =>
+			made.some((m) => m.branch === name) ||
+			workers.some((id) => name === `worktree-agent-${id}`),
 	};
 };
 

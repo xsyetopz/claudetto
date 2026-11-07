@@ -159,6 +159,27 @@ allowed("git worktree remove /w/new", [
 allowed("git worktree remove --force /w/ent", [
 	{ tool: "EnterWorktree", text: "Created worktree at /w/ent", command: "" },
 ]);
+const WORKER = {
+	tool: "Agent",
+	text: "Async agent launched successfully.\nagentId: a1b2c3 (internal ID)",
+	command: "",
+};
+allowed("git worktree remove --force .claude/worktrees/agent-a1b2c3", [WORKER]);
+denied(
+	"git worktree remove .claude/worktrees/agent-zz9",
+	gateWorktreeRemove(".claude/worktrees/agent-zz9"),
+	[WORKER],
+);
+denied(
+	"git branch -D worktree-agent-zz9",
+	gateBranchDelete("worktree-agent-zz9"),
+	[WORKER],
+);
+test("git branch -D of a worker's branch is not denied as foreign", async ($: Engine, on: On) => {
+	lab(on, [WORKER]);
+	const v = await run($, "git branch -D worktree-agent-a1b2c3");
+	expect(v.decision).toBe("ask");
+});
 
 denied("git branch -D theirs", gateBranchDelete("theirs"));
 denied("git branch -d --force theirs", gateBranchDelete("theirs"), [
