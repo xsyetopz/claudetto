@@ -12,7 +12,7 @@ Plugins that tune Claude Code for coding at the lowest token cost. They use only
 
 In Claude Code:
 
-```
+```text
 /plugin marketplace add xsyetopz/claudetto
 /plugin install claudetto@claudetto
 ```
