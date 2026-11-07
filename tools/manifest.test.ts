@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { file } from "bun";
+import { file, spawn } from "bun";
 
 const PATH_CHOICE = /compaction|summary/i;
 
@@ -83,34 +83,31 @@ const runPromptHook = async (prompt: string): Promise<string> => {
 	const { hooks } = await file(
 		`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`,
 	).json();
-	const proc = Bun.spawn(
-		["sh", "-c", hooks.UserPromptSubmit[0].hooks[0].command],
-		{
-			stdin: new TextEncoder().encode(
-				JSON.stringify({ hook_event_name: "UserPromptSubmit", prompt }),
-			),
-			stdout: "pipe",
-		},
-	);
+	const proc = spawn(["sh", "-c", hooks.UserPromptSubmit[0].hooks[0].command], {
+		stdin: new TextEncoder().encode(
+			JSON.stringify({ hook_event_name: "UserPromptSubmit", prompt }),
+		),
+		stdout: "pipe",
+	});
 	return await new Response(proc.stdout).text();
 };
 
 test("a prompt that starts with /claudetto:setup is blocked with a plain reason", async () => {
-	for (const prompt of ["/claudetto:setup", "/claudetto:setup now"]) {
-		const out = JSON.parse(await runPromptHook(prompt));
-
+	const outs = await Promise.all(
+		["/claudetto:setup", "/claudetto:setup now"].map(runPromptHook),
+	);
+	for (const out of outs.map((o) => JSON.parse(o))) {
 		expect(out.decision).toBe("block");
 		expect(out.reason).toContain("Restart Claude Code");
 	}
 });
 
 test("other prompts are not blocked", async () => {
-	for (const prompt of [
+	const outs = [
 		"hello",
 		"/claudetto:handoff",
 		"run /claudetto:setup",
 		"/claudetto:setupx",
-	]) {
-		expect(await runPromptHook(prompt)).toBe("");
-	}
+	].map(runPromptHook);
+	expect(await Promise.all(outs)).toEqual(["", "", "", ""]);
 });
