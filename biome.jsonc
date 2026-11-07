@@ -81,7 +81,6 @@
 		}
 	],
 	"plugins": [
-		"./node_modules/biome-json/plugins/noFunctionDeclaration.grit",
 		"./node_modules/biome-json/plugins/noTypeAssertion.grit",
 		"./node_modules/biome-json/plugins/noDoubleTypeAssertion.grit",
 		"./node_modules/biome-json/plugins/useStructuredClone.grit",
