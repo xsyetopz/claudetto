@@ -401,6 +401,15 @@ test("a turn with tool output is also graded by sonnet for the unseen fault, whi
 	expect(haiku).not.toContain("NOT shown to the user");
 });
 
+test("the unseen rule leaves a reply that reports the assistant's own edit and its test result unflagged", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("fix it"), ran("Bash", "+ x + 5 + 1")], '{"faults":[]}', seen);
+	await stop($, false, "I fixed `f5` in `src/lib.ts`; all 40 tests pass.");
+	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+	expect(sonnet).toContain("reports an edit the assistant made this turn");
+	expect(sonnet).not.toContain("with its file:line");
+});
+
 for (const code of ["fallback", "unfiled"]) {
 	test(`sonnet sees the other codes beside unseen, and a ${code} fault it finds does not block`, async ($: Engine, on: On) => {
 		const seen: string[] = [];

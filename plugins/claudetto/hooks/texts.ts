@@ -467,7 +467,7 @@ export const GRADE_FAULTS = {
 		fix: "Your reply leaves a choice or an input to the user in prose, or picks or assumes something the request left open. Ask it now with AskUserQuestion (one question per open point, your pick as the first option), and delete the prose question, offer, or assumption from the reply.",
 	},
 	unseen: {
-		test: "The reply names a block, change, setting, value, or earlier event that appears only in the tool output listed below (the user sees none of it in full) and in no user message and no earlier assistant message, and the reply does not itself give that text or value with its file:line. A reply that quotes the text and gives its file:line, or names only what the user wrote or was shown, is not this fault.",
+		test: "The reply points at a block, change, setting, value, or earlier event that appears only in the tool output listed below (the user sees none of it in full) by name or description alone, such as 'the setup block', 'that setting', or 'the earlier error', without giving its text or value, and no user message or earlier assistant message gave it. A reply that states the text or value, or reports an edit the assistant made this turn and its test result, or names only what the user wrote or was shown, is not this fault.",
 		fix: "Your reply names something the user has not seen in full: a block, change, setting, or earlier event from tool output. Resend it showing the exact text or value, its file:line, where it came from, and what you do not know. Name each key to press or answer to give for any instruction.",
 	},
 } as const;
