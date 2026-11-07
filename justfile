@@ -49,6 +49,10 @@ lab:
     claude plugin test plugins/claudetto-you-should-know
     claude plugin test plugins/claudetto-openspec
 
+# Refuse a release version that does not follow the latest anthropics/claude-code tag and this repo's tags (task 18.32); needs `gh` and the network, so `check` does not run it
+release-version:
+    bun tools/release-version.ts
+
 # Print the prompt bytes and context lines from fixed inputs (task 1.3); PLUGIN defaults to this tree's core plugin
 prompt-bytes plugin="plugins/claudetto":
     bun tools/prompt-bytes.ts "{{plugin}}"
