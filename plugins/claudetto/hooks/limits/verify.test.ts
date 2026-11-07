@@ -469,6 +469,10 @@ test("a reply with unexplained ids gets one block that asks for plain words", as
 	lab(on, [user("status?")], found("jargon", "R9 and M1"), seen);
 	expect((await stop($, false, reply)).block).toContain("plain words");
 	expect(seen[0]).toContain("- jargon:");
+	// A coding reply names functions and files; only made-up labels are the fault.
+	expect(seen[0]).toContain(
+		"A file, function, command, or setting name the user wrote or works with is not this fault.",
+	);
 	expect((await stop($, true, reply)).block).toBeUndefined();
 });
 

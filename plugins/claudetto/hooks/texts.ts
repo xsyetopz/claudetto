@@ -471,7 +471,7 @@ export const GRADE_FAULTS = {
 		fix: "Your reply names something the user has not seen in full: a block, change, setting, or earlier event from tool output. Resend it showing the exact text or value, its file:line, where it came from, and what you do not know. Name each key to press or answer to give for any instruction.",
 	},
 	jargon: {
-		test: "The reply uses an id, internal name, or type name (such as R9, M1, a function or schema name) that no listed message explained, with no plain gloss beside it, so a reader outside the work could not tell what it means.",
+		test: "The reply uses a label the session made up or saw only in tool output (such as R9, M1, or a case code) that no listed message explained, with no plain gloss beside it. A file, function, command, or setting name the user wrote or works with is not this fault.",
 		fix: "Your reply uses names or ids the user was not given a meaning for. Resend it saying each thing in plain words; keep a name only with a short gloss beside it.",
 	},
 	narrates: {
