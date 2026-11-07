@@ -1,7 +1,14 @@
 # 18.31: grade the current plugin on a held-out set
 
 One run grades `plugins/claudetto` of this checkout on a set of 24 cases and prints counts only. Run it from the repo root
-by your own `!`, once per run (10 runs, each 24/24):
+by your own `!`, once per run (10 runs, each 24/24). The fresh set r4 was written blind outside the protected folder, so
+move it in once, which no session may do:
+
+```sh
+! mv ~/.claudetto-holdout-r4.json ~/.claudetto-holdout/held-out-r4.json
+```
+
+Then grade it:
 
 ```sh
 ! bun --env-file=.env openspec/changes/release-2-1-319/evidence/18-31/run.ts ~/.claudetto-holdout/held-out-r4.json
