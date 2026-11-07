@@ -1,6 +1,6 @@
 // 18.8: how often the model follows Concise.md's `<requests_to_the_user>` line.
 // Reuses the removed claudekit (A/B runner, launcher, ledger, workspace, fake API) from /tmp/claudekit-leftovers.
-import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { planExperiment, runExperiment, wilson, type Experiment, type Session, type SessionResult } from "/tmp/claudekit-leftovers/claudekit/src/ab/ab.ts";
@@ -19,16 +19,19 @@ let ROOT = "/tmp/probe-18-8";
 let MODE = "default";
 let ARMS = ["plugin", "base"];
 let POPUP = false;
+let SEED = "";
 const STYLE = "claudetto:Concise";
 const TOKEN = "CLAUDE_CODE_OAUTH_TOKEN";
 const MODEL = MODELS.sonnet;
 const USD_STOP = 14;
 let PLUGIN = "/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto";
+// 18-20 round 7: the Stop hook's two block reasons (hooks/texts.ts ASK_FORM, COMMAND_FORM), found in the stream.
+const BLOCKED = /puts a question to the user as a checklist item|leaves a choice or an input to the user in prose|outside a `- \[ \] ! <command>` item/;
 const OPEN_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+\[ \]\s+(.*\S)\s*$/;
 const HEADING = /what i need from you/i;
 const BANG = /(^|[\s`])!\s*\S/;
 
-interface Row { arm: string; case: string; kind: string; asked: number; denied: string[]; formP: boolean; runId: string; checkbox: boolean; form: boolean; formQ: boolean; heading: boolean; capped: boolean; tokens: number; usd: number; armDiff: string[]; reply: string }
+interface Row { arm: string; case: string; kind: string; asked: number; denied: string[]; turns: number; blocked: boolean; formP: boolean; runId: string; checkbox: boolean; form: boolean; formQ: boolean; heading: boolean; capped: boolean; tokens: number; usd: number; armDiff: string[]; reply: string }
 
 // The three labels in prompts.json, applied to the final reply text.
 // 18-20 adds formQ: like form, but an item may instead be one question (ends in "?", holds one "?").
@@ -55,7 +58,7 @@ const arm = (name: string, plugin: boolean): Arm => ({
 	plugins: plugin ? [{ dir: PLUGIN }] : [],
 	settings: plugin ? { outputStyle: STYLE } : {},
 	env: { DISABLE_ERROR_REPORTING: "1" },
-	flags: ["--tools", POPUP ? "Read,Write,Edit,Glob,Grep,AskUserQuestion" : "Read,Write,Edit,Glob,Grep", "--permission-mode", MODE, "--max-budget-usd", "1"],
+	flags: ["--tools", POPUP ? "Read,Write,Edit,Glob,Grep,AskUserQuestion,ToolSearch" : "Read,Write,Edit,Glob,Grep", "--permission-mode", MODE, "--max-budget-usd", "1"],
 	model: MODEL,
 	expect: {},
 });
@@ -71,6 +74,7 @@ const sessionOf = (mode: { fake: boolean; out: string; ledger: string }) => asyn
 	const files = runFiles(run);
 	const { pluginDirs, treeHashes } = await materializeArm(s.arm, run);
 	mkdirSync(files.work, { recursive: true });
+	if (SEED) cpSync(SEED, files.work, { recursive: true });
 	writeFileSync(join(files.work, ".created-by-claudetto"), process.env.CLAUDE_CODE_SESSION_ID ?? "");
 	const spec: LaunchSpec = { prompt: s.case.prompt, mode: "stream-json", model: MODEL, auth: "fake", pluginDirs, pluginTreeHashes: treeHashes, settings: s.arm.settings ?? {}, settingSources: [], env: s.arm.env ?? {}, flags: s.arm.flags ?? [], cwd: files.work, arm: s.arm.name, case: s.case.name };
 	if (!mode.fake && !process.env[TOKEN]) throw new Error(`${TOKEN} unset: run with bun --env-file=.env from the repo root`);
@@ -93,7 +97,7 @@ const sessionOf = (mode: { fake: boolean; out: string; ledger: string }) => asyn
 		const frames = stdout.split("\n").filter((l) => l.startsWith("{")).map((l) => JSON.parse(l) as unknown);
 		const init = frames.find((f) => isRecord(f) && f.subtype === "init");
 		const result = frames.findLast((f) => isRecord(f) && f.type === "result");
-		const usage = isRecord(result) && isRecord(result.usage) ? (result.usage as never) : (done.record.usage ?? { input_tokens: 0, output_tokens: 0 });
+		const usage = isRecord(result) && isRecord(result.usage) ? (result.usage as never) : (done.record?.usage ?? { input_tokens: 0, output_tokens: 0 });
 		const diff: string[] = [];
 		if (!isRecord(init)) diff.push("no init frame");
 		else {
@@ -107,7 +111,7 @@ const sessionOf = (mode: { fake: boolean; out: string; ledger: string }) => asyn
 		const reply = readStreamJson(stdout);
 		const text = reply.segments.at(-1)?.text ?? "";
 		const tokens = Object.values(tokensOf(usage)).reduce((a, b) => a + b, 0);
-		const row: Row = { arm: s.arm.name, case: s.case.name, kind: s.case.kind, asked: popup.asked, denied: popup.denied, formP: formP(text, s.case.kind, popup.asked), runId: run.id, ...grade(text), capped: done.capped, tokens, usd: cost(MODEL, usage), armDiff: diff, reply: replyText(reply) };
+		const row: Row = { arm: s.arm.name, case: s.case.name, kind: s.case.kind, asked: popup.asked, denied: popup.denied, turns: isRecord(result) ? Number(result.num_turns) : 0, blocked: BLOCKED.test(stdout), formP: formP(text, s.case.kind, popup.asked), runId: run.id, ...grade(text), capped: done.capped, tokens, usd: cost(MODEL, usage), armDiff: diff, reply: replyText(reply) };
 		appendFileSync(join(mode.out, "sessions.jsonl"), `${JSON.stringify(row)}\n`);
 		const pass = !done.capped && diff.length === 0;
 		return { runId: run.id, model: MODEL, usage, ...(done.capped ? { capped: true } : {}), verdict: { pass, label: pass ? "ok" : "fail", evidence: diff.join(",") }, armCheck: { ok: diff.length === 0, diff } };
@@ -131,18 +135,19 @@ const report = async (out: string): Promise<string[]> => {
 };
 
 if (import.meta.main) {
-	const { values } = parseArgs({ args: Bun.argv.slice(2), options: { out: { type: "string" }, dry: { type: "boolean" }, run: { type: "boolean" }, report: { type: "boolean" }, limit: { type: "string" }, mode: { type: "string" }, prompts: { type: "string" }, plugin: { type: "string" }, root: { type: "string" }, "plugin-only": { type: "boolean" }, popup: { type: "boolean" } } });
+	const { values } = parseArgs({ args: Bun.argv.slice(2), options: { out: { type: "string" }, dry: { type: "boolean" }, run: { type: "boolean" }, report: { type: "boolean" }, limit: { type: "string" }, mode: { type: "string" }, prompts: { type: "string" }, plugin: { type: "string" }, root: { type: "string" }, "plugin-only": { type: "boolean" }, popup: { type: "boolean" }, seed: { type: "string" }, only: { type: "string" } } });
 	ROOT = values.root ?? ROOT;
 	MODE = values.mode ?? MODE;
 	PLUGIN = values.plugin ?? PLUGIN;
 	if (values["plugin-only"]) ARMS = ["plugin"];
 	POPUP = !!values.popup;
+	SEED = values.seed ?? "";
 	const out = values.out ?? join(ROOT, "out");
 	if (values.report) {
 		console.log((await report(out)).join("\n"));
 	} else {
 		const set = (await Bun.file(values.prompts ?? join(import.meta.dir, "prompts.json")).json()) as { prompts: (string | { prompt: string; kind?: string })[] };
-		const cases = set.prompts.slice(0, Number(values.limit ?? set.prompts.length)).map((p, i) => ({ name: `p${String(i + 1).padStart(2, "0")}`, prompt: typeof p === "string" ? p : p.prompt, kind: typeof p === "string" ? "" : (p.kind ?? "") }));
+		const cases = set.prompts.slice(0, Number(values.limit ?? set.prompts.length)).map((p, i) => ({ name: `p${String(i + 1).padStart(2, "0")}`, prompt: typeof p === "string" ? p : p.prompt, kind: typeof p === "string" ? "" : (p.kind ?? "") })).filter((c) => values.only === undefined || values.only.split(",").includes(c.name));
 		const e: Experiment<Arm, Case> = { name: "18-8", arms: ARMS.map((a) => arm(a, a === "plugin")), cases, n: 1, parallel: 6, tokenBoundPerRun: 300_000 };
 		const plan = planExperiment(e);
 		mkdirSync(out, { recursive: true });

@@ -10,6 +10,7 @@ const lab = (on: On, block: string | null = BLOCK, writes: Writes = "ok") => {
 	scanner(on);
 	on("classic.Stop", () => (block === null ? {} : { block }));
 	on("session.messages", () => ({ value: [] }));
+	on("tool.list", () => ({ value: [] }));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("tool.call", () => {

@@ -13,11 +13,10 @@ import {
 	type PinConstraint,
 	type PinKind,
 } from "./texts.ts";
-import { isPersonMessage } from "./verify.ts";
+import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/;
 const ANY_TOOL = /^/;
-const ASK_TOOL = /^(?:AskUserQuestion|mcp__claudetto__ask-user-question)$/;
 const ISSUES_FILE = /^ISSUES.*\.md$/;
 const IN_PLACE = /^-[a-z]*i/;
 const READ_PROGRAMS = new Set([

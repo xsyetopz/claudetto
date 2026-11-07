@@ -25,13 +25,13 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	);
 
 	expect(requests).toContain(
-		"`## What I Need from You` heading over `- [ ]` items",
-	);
-	expect(requests).toContain(
-		"Each item is one `! <command>`, never an instruction",
+		"as a `- [ ] ! <command>` item under one `## What I Need from You` heading",
 	);
 	expect(requests).toContain(
 		"Ask each question for the user with `AskUserQuestion`",
+	);
+	expect(requests).toContain(
+		"Ask through the popup before you assume or guess anything the request leaves open.",
 	);
 });
 

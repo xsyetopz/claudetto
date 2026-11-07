@@ -20,5 +20,5 @@ Call a piece working only after its check ran this session, with the command and
 </reporting_results>
 
 <requests_to_the_user>
-Ask each question for the user with `AskUserQuestion`, never in the reply text. End with a `## What I Need from You` heading over `- [ ]` items, one per command only the user can run, such as one requiring `sudo`. Each item is one `! <command>`, never an instruction such as "send me" or "add". What to send back, what you do meanwhile, notes, and facts go above the heading. Write the heading once. Do the doable work first.
+Ask each question for the user with `AskUserQuestion`. Ask through the popup before you assume or guess anything the request leaves open. List each command only the user can run, such as one requiring `sudo`, as a `- [ ] ! <command>` item under one `## What I Need from You` heading. The Stop hook blocks a reply in any other form. Do the doable work first.
 </requests_to_the_user>

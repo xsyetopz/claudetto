@@ -1,7 +1,7 @@
 import type { On, PluginOptions, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { scanner } from "../secrets.mock.ts";
-import { openItems } from "./open-items.ts";
+import { commandForm, openItems } from "./open-items.ts";
 
 const said = (role: SessionMessage["role"], text: string): SessionMessage => ({
 	role,
@@ -19,12 +19,22 @@ const withUse = (use: {
 	toolUses: [{ tool_use_id: "t1", input: {}, ...use }],
 });
 
+let tools: string[] = ["AskUserQuestion"];
+let listed = 0;
+
 const lab = (on: On, ...turn: SessionMessage[]): void => {
 	scanner(on);
 	on("classic.Stop", () => ({}));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("session.messages", () => ({ value: [said("user", "go"), ...turn] }));
+	listed = 0;
+	on("tool.list", () => {
+		listed += 1;
+		return {
+			value: tools.map((name) => ({ name, description: "", mcp: false })),
+		};
+	});
 };
 
 const stop = (
@@ -91,52 +101,42 @@ test("a plain bullet under an Open heading is no task item", async ($: Engine, o
 	expect(out.block).toBeUndefined();
 });
 
-test("an offer in the last line blocks and is named", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop(
-		$,
-		"The fix is in.\n\nWant me to write the test next?\n",
-	);
-
-	expect(out.block).toContain("Want me to write the test next?");
-});
-
-test("a question in the middle of the reply is no offer", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop($, "Why did it fail? The path was wrong.\nFixed.");
-
-	expect(out.block).toBeUndefined();
-});
-
 test("an open item that gives a `! command` passes, a paid run included", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
 		$,
-		"- [ ] paid eval: approve it with `! bun run paid-eval`",
+		"## What I Need from You\n- [ ] paid eval: approve it with `! bun run paid-eval`",
 	);
 
 	expect(out.block).toBeUndefined();
 });
 
-test("an open item with no denial, command, or open question blocks and says so", async ($: Engine, on: On) => {
+test("an item without a ! command is a question: the block says to ask it and delete the item", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await stop($, "- [ ] push to origin");
-
-	expect(out.block).toContain(
-		"no denial, `! <command>`, or open question in this turn",
+	const out = await stop(
+		$,
+		"- [ ] Tell me where the repo is\n- [ ] give me the ID\n- [ ] enable Bash",
 	);
+
+	expect(out.block).toContain("A checklist item without `! ` is a question");
+	expect(out.block).toContain("Ask each with AskUserQuestion and delete it");
+	for (const item of [
+		"Tell me where the repo is",
+		"give me the ID",
+		"enable Bash",
+	]) {
+		expect(out.block).toContain(`- [ ] ${item}`);
+	}
 });
 
-test("a refused call in the turn is the blocker of an open item", async ($: Engine, on: On) => {
-	lab(on, withUse({ tool: "Bash", isError: true }));
+test("a refused call in the turn, a host-denied Glob or Grep included, excuses no item", async ($: Engine, on: On) => {
+	lab(on, withUse({ tool: "Glob", isError: true }));
 
 	const out = await stop($, "- [ ] push to origin");
 
-	expect(out.block).toBeUndefined();
+	expect(out.block).toContain("- [ ] push to origin");
 });
 
 test("an open AskUserQuestion is the blocker of an open item", async ($: Engine, on: On) => {
@@ -234,7 +234,7 @@ test("a `!` excuses an item at its start, after a space, a backtick, or a paren,
 			"log in with ! gh auth login",
 			"run `!  gh auth login`",
 			"run (! gh auth login)",
-		].map((item) => stop($, `- [ ] ${item}`)),
+		].map((item) => stop($, `## What I Need from You\n- [ ] ${item}`)),
 	);
 	const blocked = await Promise.all(
 		["fix this! Then retry", "run `!gh auth login`"].map((item) =>
@@ -249,24 +249,19 @@ test("a `!` excuses an item at its start, after a space, a backtick, or a paren,
 	expect(blocked[1]?.block).toContain("run `!gh auth login`");
 });
 
-test("a refusal or question of an earlier turn excuses nothing", async ($: Engine, on: On) => {
-	lab(
-		on,
-		withUse({ tool: "Bash", isError: true }),
-		withUse({ tool: "AskUserQuestion" }),
-		said("user", "go on"),
-	);
+test("a question of an earlier turn excuses nothing", async ($: Engine, on: On) => {
+	lab(on, withUse({ tool: "AskUserQuestion" }), said("user", "go on"));
 
 	expect((await stop($, "- [ ] push")).block).toContain("\n- [ ] push\n");
 });
 
 test("a turn is counted from the last message with text, so a tool result or a reply does not restart it", async ($: Engine, on: On) => {
-	lab(on, withUse({ tool: "Bash", isError: true }), said("user", ""));
+	lab(on, withUse({ tool: "AskUserQuestion" }), said("user", ""));
 	expect((await stop($, "- [ ] push")).block).toBeUndefined();
 });
 
 test("a reply of the assistant does not restart the turn either", async ($: Engine, on: On) => {
-	lab(on, withUse({ tool: "Bash", isError: true }), said("assistant", "ok"));
+	lab(on, withUse({ tool: "AskUserQuestion" }), said("assistant", "ok"));
 
 	expect((await stop($, "- [ ] push")).block).toBeUndefined();
 });
@@ -282,26 +277,88 @@ test("a call that worked, or a question that was answered, is no blocker", async
 	expect((await stop($, "- [ ] push")).block).toContain("\n- [ ] push\n");
 });
 
-test("a question that is open and a refusal that is not a question each excuse alone", async ($: Engine, on: On) => {
+test("a question that is open excuses an item", async ($: Engine, on: On) => {
 	lab(on, withUse({ tool: "Read" }), withUse({ tool: "AskUserQuestion" }));
 	expect((await stop($, "- [ ] push")).block).toBeUndefined();
 });
 
-test("the offer is the last non-blank line, trimmed, and an empty reply has none", async ($: Engine, on: On) => {
-	lab(on);
+test("openItems of an empty or blank reply finds nothing", () => {
+	const turn = { asking: false };
 
-	const spaced = await stop($, "Done.\n  Want more?  \n");
-	const blank = await stop($, "Want more?\n   \n");
-	const empty = await stop($, "");
-
-	expect(spaced.block).toContain("The reply ends on an offer: Want more?\n");
-	expect(blank.block).toContain("The reply ends on an offer: Want more?\n");
-	expect(empty.block).toBeUndefined();
+	expect(openItems("", turn)).toEqual([]);
+	expect(openItems("\n  \n", turn)).toEqual([]);
 });
 
-test("openItems of an empty or blank reply finds nothing", () => {
-	const turn = { denied: false, asking: false };
+test("a backtick command the reply asks the user to run without ! is stray", () => {
+	expect(
+		commandForm("You need to run `gh auth login` first.").stray,
+	).toHaveLength(1);
+	expect(commandForm("Run `bun dev` to start it.").stray).toEqual([]);
+	expect(commandForm("- [ ] ! gh auth login").stray).toEqual([]);
+});
 
-	expect(openItems("", turn)).toEqual({ items: [], offer: undefined });
-	expect(openItems("\n  \n", turn)).toEqual({ items: [], offer: undefined });
+test("a question item names AskUserQuestion, or the mcp tool when the session lists it", async ($: Engine, on: On) => {
+	lab(on);
+	const plain = await stop($, "- [ ] Which region should I use?");
+	tools = ["AskUserQuestion", "mcp__claudetto__ask-user-question"];
+	const mcp = await stop($, "- [ ] Which region should I use?");
+	tools = ["AskUserQuestion"];
+
+	expect(plain.block).toContain("Ask each with AskUserQuestion and");
+	expect(plain.block).toContain("Which region should I use?");
+	expect(mcp.block).toContain(
+		"Ask each with mcp__claudetto__ask-user-question and",
+	);
+});
+
+test("a reply already in form costs nothing: no block and no tool.list call", async ($: Engine, on: On) => {
+	lab(on);
+
+	const out = await stop(
+		$,
+		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo\n- [ ] ! gh auth login",
+	);
+	const plain = await stop($, "Wrote the unit file. Tests pass.");
+
+	expect(out.block).toBeUndefined();
+	expect(plain.block).toBeUndefined();
+	expect(listed).toBe(0);
+});
+
+test("a command outside an item blocks: a ! line, a sudo code block, sudo in prose", async ($: Engine, on: On) => {
+	lab(on);
+
+	const bang = await stop($, "Run this:\n\n! gh auth login");
+	const code = await stop($, "Install:\n```sh\nsudo apt install jq\n```");
+	const prose = await stop($, "You need to run sudo systemctl restart foo.");
+
+	expect(bang.block).toContain("`- [ ] ! <command>` item");
+	expect(bang.block).toContain("! gh auth login");
+	expect(code.block).toContain("sudo apt install jq");
+	expect(prose.block).toContain("sudo systemctl restart foo");
+});
+
+test("items with a ! command and no heading block", async ($: Engine, on: On) => {
+	lab(on);
+
+	const out = await stop($, "- [ ] ! gh auth login");
+
+	expect(out.block).toContain("## What I Need from You");
+});
+
+test("the form passes: commands in items under the heading, no question in the text", async ($: Engine, on: On) => {
+	lab(on);
+
+	const out = await stop(
+		$,
+		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo\n- [ ] ! gh auth login",
+	);
+
+	expect(out.block).toBeUndefined();
+});
+
+test("a command block of a continued turn passes", async ($: Engine, on: On) => {
+	lab(on);
+
+	expect((await stop($, "! gh auth login", true)).block).toBeUndefined();
 });

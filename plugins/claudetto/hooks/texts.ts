@@ -226,17 +226,21 @@ export const STOP_TASKS = (lines: readonly string[]): string =>
 export const STALL_STOP = (blocks: string): string =>
 	`A Stop hook blocked and no file changed since the last stop, so the turn ends here: ${blocks}. If a goal keeps the session going, \`/goal clear\` drops it.`;
 
-export const OPEN_ITEMS_ASK = (v: {
-	items: readonly string[];
-	offer: string | undefined;
+export const ASK_FORM = (tool: string, items: readonly string[]): string =>
+	[
+		"The reply puts a question to the user as a checklist item.",
+		...items.map((item) => `- [ ] ${item}`),
+		`A checklist item without \`! \` is a question, whether it reads "Tell me where X is", "give me the ID", or "enable Bash". Ask each with ${tool} and delete it from the reply.`,
+	].join("\n");
+
+export const COMMAND_FORM = (v: {
+	stray: readonly string[];
+	headless: boolean;
 }): string =>
 	[
-		"The reply has open items with no denial, `! <command>`, or open question in this turn to block on.",
-		...v.items.map((item) => `- [ ] ${item}`),
-		...(v.offer === undefined
-			? []
-			: [`The reply ends on an offer: ${v.offer}`]),
-		"Do each item or the offer now, or give it a blocker the hook can check: a `! <command>` for the user to run, or an AskUserQuestion.",
+		"The reply names a command for the user outside a `- [ ] ! <command>` item under `## What I Need from You`.",
+		...v.stray.map((line) => `- ${line}`),
+		"Move each into a `- [ ] ! <command>` item under one `## What I Need from You` heading.",
 	].join("\n");
 
 export const MISSING_FILES = (
@@ -457,6 +461,10 @@ export const GRADE_FAULTS = {
 	fallback: {
 		test: "The reply is itself a goal, prompt, plan, or proposal text the assistant wrote, and that text keeps a fallback, a compatibility path, the old code, or an 'if X is unavailable, do Y' branch that no user message asked for. A report on work done, or a description of how the user's code or an eval behaves, is not this fault.",
 		fix: "The goal, plan, or proposal you wrote keeps a fallback or a compatibility path the user did not ask for. Name the one road and its done state, delete the second path, and resend it.",
+	},
+	asks: {
+		test: 'The reply leaves a choice or an input to the user in prose, or picked, assumed, or guessed something the request left open (a name, a value, a limit, a version, a scheme, a path, a default), even when it says so and the pick is reasonable. That includes: a question; "tell me", "send me", "give me", "let me know"; an "if you want X, I\'ll" or "say the word" offer; "I assumed", "I picked", "I went with", "defaulting to". When unsure whether the request fixed the value, flag it. A report of finished work whose every value the request or the workspace fixed is not this fault, and neither is a command the user must run.',
+		fix: "Your reply leaves a choice or an input to the user in prose, or picks or assumes something the request left open. Ask it now with AskUserQuestion (one question per open point, your pick as the first option), and delete the prose question, offer, or assumption from the reply.",
 	},
 	unseen: {
 		test: "The reply names a block, change, setting, value, or earlier event that appears only in the tool output listed below (the user sees none of it in full) and in no user message and no earlier assistant message, and the reply does not itself give that text or value with its file:line. A reply that quotes the text and gives its file:line, or names only what the user wrote or was shown, is not this fault.",

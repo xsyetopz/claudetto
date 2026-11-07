@@ -8,18 +8,19 @@ import type {
 import { switchOption } from "../options.ts";
 import { bashWritesTo } from "../pin.ts";
 import {
+	ASK_FORM,
+	COMMAND_FORM,
 	type GradeFault,
 	MISSING_FILES,
-	OPEN_ITEMS_ASK,
 	STALL_STOP,
 	STOP_TASKS,
 	VERIFY_BLOCK,
 	VERIFY_GRADE,
 } from "../texts.ts";
-import { claimTurn, parseFaults } from "../verify.ts";
+import { ASK_MCP, claimTurn, parseFaults } from "../verify.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 import { namedPaths } from "./named-files.ts";
-import { openItems, turnOf } from "./open-items.ts";
+import { commandForm, openItems, turnOf } from "./open-items.ts";
 
 /** The project's open-issues file: an `ISSUES*.md` anywhere in the path. */
 export const ISSUES_FILE = /(^|\/)ISSUES[^/]*\.md$/;
@@ -91,13 +92,20 @@ const openBlock = async (
 	$: EngineInterface,
 	e: { readonly last_assistant_message?: string | undefined },
 ) => {
-	const open = openItems(
-		e.last_assistant_message ?? "",
-		turnOf(await $.session.messages()),
+	const reply = e.last_assistant_message ?? "";
+	const form = commandForm(reply);
+	if (form.stray.length > 0 || form.headless) {
+		return COMMAND_FORM(form);
+	}
+	const items = openItems(reply, turnOf(await $.session.messages()));
+	if (items.length === 0) {
+		return;
+	}
+	const names = (await $.tool.list()).map((tool) => tool.name);
+	return ASK_FORM(
+		names.find((name) => name === ASK_MCP) ?? "AskUserQuestion",
+		items,
 	);
-	return open.items.length > 0 || open.offer !== undefined
-		? OPEN_ITEMS_ASK(open)
-		: undefined;
 };
 
 const filesBlock = async (
@@ -117,15 +125,17 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
-/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, a write to the issues file `unfiled`. */
+/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, a write to the issues file `unfiled`, an ask call `asks`. */
 export const offeredCodes = (
 	looked: boolean,
 	wroteIssues: boolean,
+	asked: boolean,
 ): GradeFault[] => [
 	"credited",
 	"fallback",
 	...(looked ? [] : (["unchecked", "rules"] as const)),
 	...(wroteIssues ? [] : (["unfiled"] as const)),
+	...(asked ? [] : (["asks"] as const)),
 ];
 
 /**
@@ -147,7 +157,7 @@ const gradeBlock = async (
 	if (reply === "") {
 		return;
 	}
-	const codes = offeredCodes(turn.looked, wroteIssues);
+	const codes = offeredCodes(turn.looked, wroteIssues, turn.asked);
 	const grade = async (
 		model: "haiku" | "sonnet",
 		list: readonly GradeFault[],

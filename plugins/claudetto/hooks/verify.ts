@@ -1,6 +1,9 @@
 import type { SessionMessage } from "claude-code";
 import type { GradeFault } from "./texts.ts";
 
+export const ASK_MCP = "mcp__claudetto__ask-user-question";
+export const ASK_TOOL = new RegExp(`^(?:AskUserQuestion|${ASK_MCP})$`);
+
 // A tool call that is not a lookup of the tool list does not ground a claim; every other call looked at the workspace.
 const NOT_A_LOOK = new Set(["ToolSearch"]);
 
@@ -47,6 +50,13 @@ export const claimTurn = (
 			.some((m) =>
 				m.toolUses.some(
 					(use) => !(NOT_A_LOOK.has(use.tool) || denied.has(use.tool_use_id)),
+				),
+			),
+		asked: messages
+			.slice(start + 1)
+			.some((m) =>
+				m.toolUses.some(
+					(use) => ASK_TOOL.test(use.tool) && !denied.has(use.tool_use_id),
 				),
 			),
 		results: messages

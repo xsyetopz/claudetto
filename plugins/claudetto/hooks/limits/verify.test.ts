@@ -64,6 +64,51 @@ test("a turn that read the workspace is not offered the unchecked-claim or rules
 	expect(seen[0]).not.toContain("- rules:");
 });
 
+test("a reply that leaves a choice to the user in prose gets one block that says to ask", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	const reply = "I picked Python 3.12. Tell me if you want another.";
+	lab(
+		on,
+		[user("Which Python should CI use?"), used("Read")],
+		found("asks", "I picked Python 3.12."),
+		seen,
+	);
+	const out = await stop($, false, reply);
+	expect(out.block).toContain("Ask it now with AskUserQuestion");
+	expect(seen[0]).toContain("- asks:");
+	expect((await stop($, true, reply)).block).toBeUndefined();
+});
+
+test("a turn that made an ask call is not offered the asks fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		[user("pick a port"), used("mcp__claudetto__ask-user-question")],
+		found("asks"),
+		seen,
+	);
+	expect((await stop($)).block).toBeUndefined();
+	expect(seen[0]).not.toContain("- asks:");
+});
+
+test("a refused ask call does not keep the asks fault from being offered", async ($: Engine, on: On) => {
+	const refused: string[] = [];
+	const messages = [
+		user("pick a port"),
+		{
+			role: "assistant",
+			text: "",
+			toolUses: [{ tool: "AskUserQuestion", tool_use_id: "t9", input: {} }],
+		},
+	];
+	lab(on, messages, found("asks"), refused);
+	on("tool.check", () => ({ decision: "deny", reason: "off" }));
+	await $.tool.check({ tool: "AskUserQuestion", input: {}, tool_use_id: "t9" });
+	await stop($, true);
+	await stop($);
+	expect(refused.at(-1)).toContain("- asks:");
+});
+
 test("a turn whose only lookup was denied is still offered the unchecked-claim fault", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	const messages = [
