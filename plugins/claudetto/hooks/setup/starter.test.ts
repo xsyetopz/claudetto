@@ -43,13 +43,13 @@ describe("detectFamilies", () => {
 
 describe("planStarter", () => {
 	test("a bun repo gets bounded commands from its markers", () => {
-		const files = ["package.json", "bun.lock", "biome.jsonc"];
+		const files = ["package.json", "bun.lock", "eslint.config.js"];
 
 		const plan = planStarter({ files, tracked: files }, NONE);
 
 		const agents = textOf(plan, "AGENTS.md") ?? "";
 		expect(agents).toContain("`bun test --bail --dots`");
-		expect(agents).toContain("biome check");
+		expect(agents).toContain("eslint --quiet");
 		expect(agents).not.toContain("vitest");
 	});
 

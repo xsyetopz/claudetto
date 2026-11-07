@@ -18,9 +18,8 @@ check: lint test validate lab
 test *args:
     env -u CLAUDE_CODE_SESSION_ID bun test ./tools ./plugins/claudetto-openspec/hooks/fixtures.spec.ts ./plugins/claudetto-openspec/hooks/upstream.spec.ts ./plugins/claudetto/hooks/secrets.spec.ts "$@"
 
-# Lint code, Markdown, clones, and the branch's commit messages
+# Lint Markdown, clones, and the branch's commit messages
 lint:
-    bunx biome check --error-on-warnings
     bunx markdownlint-cli2
     bunx jscpd --no-tips plugins tools
     @if git rev-parse -q --verify origin/main >/dev/null; then bunx commitlint --from "$(git merge-base origin/main HEAD)" --to HEAD; fi

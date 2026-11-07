@@ -135,7 +135,6 @@ const bashRecreates = async (
 	// A removal counts only once the command has run (`saw`); here it holds for the commands after it in the same text.
 	const removing = new Set<string>();
 	for (const { c, name, args } of programs) {
-		// biome-ignore lint/performance/noAwaitInLoops: a command is judged after the removals of the commands before it
 		const lost = await Promise.all(
 			creates(c, name, args)
 				.filter((t) => !t.startsWith("/dev/"))
@@ -234,7 +233,6 @@ const replay = (host: Host, state: Recreation): Promise<void> => {
 	state.replayed ??= (async () => {
 		for (const t of await host.past().catch(() => [])) {
 			if (t.text !== undefined && !t.isError) {
-				// biome-ignore lint/performance/noAwaitInLoops: a removal counts only after the calls before it
 				await saw(host, state, t.tool, t.input, t.text);
 			}
 		}

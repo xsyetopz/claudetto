@@ -1,4 +1,4 @@
-// Read on 2026-11-03. Flags: the installed `--help` of `bun`, `biome`, `uv`, `ruff`, `shellcheck`, `cargo`, `swift`,
+// Read on 2026-11-03. Flags: the installed `--help` of `bun`, `uv`, `ruff`, `shellcheck`, `cargo`, `swift`,
 // and `make`; the docs or source of the other tools. Marker, `heavy`, and `bulky` names: a doc page, an installed
 // `man` page, or the files that `swift package init`, `cargo init`, `uv init`, and `bundle init` wrote in a new
 // folder. An entry no source named is not in the table. A tool whose bounding flags are unconfirmed is left out of
@@ -60,11 +60,6 @@ export const FAMILIES: readonly Family[] = [
 				kind: "test",
 				run: "jest --bail --silent --noStackTrace",
 				when: ["jest.config.*"],
-			},
-			{
-				kind: "lint",
-				run: "biome check --max-diagnostics=20 --reporter=summary",
-				when: ["biome.json", "biome.jsonc"],
 			},
 			{
 				kind: "lint",

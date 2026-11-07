@@ -342,7 +342,6 @@ const offerRule = async (
 const rulesPart = async ($: EngineInterface, dir: string): Promise<string> => {
 	const report: string[] = [];
 	for (const name of RULES) {
-		// biome-ignore lint/performance/noAwaitInLoops: one question at a time, and none after a dismissal
 		const line = await offerRule($, dir, name);
 		if (line !== undefined) {
 			report.push(line);

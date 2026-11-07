@@ -153,11 +153,9 @@ export const mergeSpec = async (
 // Deletes each retired spec and prunes the capability directories it empties, up to the specs root.
 const retireSpecs = async (run: Run, specs: string, ids: string[]) => {
 	for (const id of ids) {
-		// biome-ignore lint/performance/noAwaitInLoops: each removal must finish before its parent directory is tried
 		await run(["rm", "-f", join(specs, id, "spec.md")]);
 		const parts = id.split("/");
 		for (let n = parts.length; n > 0; n--) {
-			// biome-ignore lint/performance/noAwaitInLoops: stops at the first directory that is not empty
 			const gone = await run(["rmdir", join(specs, ...parts.slice(0, n))]);
 			if (gone.exitCode !== 0) {
 				break;

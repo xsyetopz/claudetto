@@ -24,7 +24,6 @@ export interface Rec {
 	test: string;
 	seq: number;
 	kind: string;
-	// biome-ignore lint/suspicious/noExplicitAny: recorded JSON of many shapes, narrowed by each runner
 	args: any;
 	before: Record<string, Entry> | null;
 	after: Record<string, Entry> | null;
@@ -47,7 +46,6 @@ const kindOf = (e: { isDirectory(): boolean; isFile(): boolean }) => {
 };
 
 export const nodeFs: Fs = {
-	// biome-ignore lint/suspicious/noExplicitAny: one body serves every overload of `$.fs.read`
 	read: (path: string, _options?: unknown): Promise<any> =>
 		readFile(path, "utf8"),
 	write: async (path, text) => {

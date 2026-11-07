@@ -23,7 +23,6 @@ import { discoverDeltas, issueKey, validateDir } from "./validate.ts";
 
 const CRLF = /\r\n?/g;
 const BLANKS = /\n\s*\n+/g;
-// biome-ignore lint/suspicious/noExplicitAny: recorded JSON of many shapes, narrowed by each runner
 type Obj = any;
 const tally: Record<string, Record<string, number>> = {};
 const count = (file: string, what: string) => {
@@ -32,7 +31,6 @@ const count = (file: string, what: string) => {
 };
 afterAll(() => {
 	for (const [f, c] of Object.entries(tally)) {
-		// biome-ignore lint/suspicious/noConsole: bun-only tally of how each recorded case was compared
 		console.log(f, JSON.stringify(c));
 	}
 });
@@ -306,7 +304,6 @@ for (const name of files) {
 				if (rec.outcome.threw) {
 					const refusal = await refusedBy(run, rec, args, outcome);
 					count(name, `upstream threw: plugin ${refusal ?? "SUCCEEDED"}`);
-					// biome-ignore lint/suspicious/noConditionalExpect: a record where upstream threw is a different assertion
 					expect(refusal).toBeDefined();
 					return;
 				}
@@ -376,7 +373,6 @@ const archiveThrew = async (rec: Rec, root: string, change: string) => {
 		await archive(nodeFs, spawnArgv, root, change, "2026-11-05");
 	} catch (error) {
 		if (process.env["COS_DEBUG"]) {
-			// biome-ignore lint/suspicious/noConsole: bun-only debugging switch
 			console.log(rec.test, String(error));
 		}
 		return error instanceof ArchiveBlocked ? error.code : "error";
