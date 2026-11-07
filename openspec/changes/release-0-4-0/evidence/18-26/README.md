@@ -191,3 +191,9 @@ Run (two batches, the second after the first showed 158,264 tokens for 3): `bun 
 Deviation: 5 sessions ran, not 6. The sixth (p20, about 55k tokens) would have taken the total past the 300k bound (5 sessions: 273,110 tokens, $0.145 at list price, subscription). Prompts run: p17, p16, p03, p06, p04.
 Result: `apiKeySource` is "none" in 5/5 stdout.txt. The break list is empty. Turn 1 per row (request 2 after the first tool call; read / write / lost = previous read + write minus this read): 8422 / 271 / 0, 8434 / 333 / 0, 8441 / 204 / 0, 8444 / 448 / 0, 8435 / 426 / 0. First-request read 6782 x5. Stop-block turns write 351 against a 325 tail (3 turns), none lost.
 Verdict: prediction held (lost 0, at most 500 on 5/5 plugin rows; round 7 lost 3901 to 3929 on 33/33 with the same `--tools` list). H3 and the round 3 fix are confirmed on the paid API for a `--tools` list without `ToolSearch`. Limits: 5 rows, empty sandboxes (the round 7 seed is gone), so sessions are shorter than round 7.
+
+## Process check (18.17)
+
+Hypothesis: `probe.ts` stops its fake API in `finally`, so no process outlives it. Prediction: `ps` lists nothing naming the run folder or the script after a run.
+Command: `bun probe.ts /tmp/probe-18-26z plugin popup --tools=Read,Write,Edit,Glob,Grep,AskUserQuestion`, then `ps -axo pid,command | grep -E 'probe-18-26z|18-26/probe'`.
+Result (2026-11-07): exit 0, 0 processes.
