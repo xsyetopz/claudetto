@@ -1,4 +1,4 @@
-import type { On } from "claude-code";
+import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { scanner } from "../secrets.mock.ts";
 
@@ -24,7 +24,7 @@ const lab = (
 	byModel: Record<string, string> = {},
 ) => {
 	on("classic.Stop", () => ({}));
-	on("session.messages", () => ({ value: messages }));
+	on("session.messages", () => ({ value: messages as SessionMessage[] }));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("model.complete", (_$, e) => {
@@ -33,12 +33,21 @@ const lab = (
 		if (verdict === "fail") {
 			throw new Error("timed out");
 		}
+		const usage = {
+			input_tokens: 1,
+			output_tokens: 1,
+			cache_read_input_tokens: 0,
+			cache_creation_input_tokens: 0,
+		};
 		return {
-			value: {
-				isAnswered: verdict !== "unanswered",
-				text: byModel[e.model ?? ""] ?? verdict,
-				usage: { inputTokens: 1, outputTokens: 1 },
-			},
+			value:
+				verdict === "unanswered"
+					? { isAnswered: false as const, reason: "empty-reply" as const, usage }
+					: {
+							isAnswered: true as const,
+							text: byModel[e.model ?? ""] ?? verdict,
+							usage,
+						},
 		};
 	});
 };

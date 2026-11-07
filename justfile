@@ -11,7 +11,14 @@ default:
     @just --list
 
 # Lint, type-check, test, validate, and run the hook lab
-check: lint test validate lab
+check: lint typecheck test validate lab
+
+# Type-check every plugin's TypeScript with Bun's checker, one core short of all of them
+# The declarations come from `just types`, and Bun's own from `bun install`.
+typecheck:
+    test -s plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts || { echo "run 'just types' first" >&2; exit 1; }
+    bun install --frozen-lockfile
+    bun check --no-pretty --threads $(( $(getconf _NPROCESSORS_ONLN) - 1 ))
 
 # Run the `bun test` files of the tools and the openspec fixtures, optionally one file or with `-t RE`; the plugins' lab files run in `lab`
 # Each argument is a `./` path; a bare `tools` is a name filter that also matches the lab file `hooks/setup/tools.test.ts`.

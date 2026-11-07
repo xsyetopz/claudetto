@@ -51,7 +51,7 @@ const lab = (
 	answer = '{"faults":[]}',
 	stopped: { block?: string } = {},
 ) => {
-	on("process.run", (_$, e) => {
+	on("process.run", (_$, e, next) => {
 		if (e.argv[0] === "git") {
 			runs.push([...e.argv]);
 			// `git -C dir status` is `status` with the directory moved in front.
@@ -60,7 +60,7 @@ const lab = (
 				e.argv[1] === "-C" ? ["git", ...e.argv.slice(3)] : e.argv,
 			);
 		}
-		return scanned(e);
+		return scanned(e) ?? next(e);
 	});
 	on("classic.Stop", () => stopped);
 	on("session.start", () => ({ cwd: "/repo" }));
@@ -76,7 +76,12 @@ const lab = (
 		value: {
 			isAnswered: true,
 			text: answer,
-			usage: { inputTokens: 1, outputTokens: 1 },
+			usage: {
+				input_tokens: 1,
+				output_tokens: 1,
+				cache_read_input_tokens: 0,
+				cache_creation_input_tokens: 0,
+			},
 		},
 	}));
 	on("tool.check", (_$, e) => ({

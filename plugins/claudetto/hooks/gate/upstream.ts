@@ -24,7 +24,7 @@ const rules: {
 	rule: Rule;
 	test: RegExp;
 	filters: (text: string) => boolean;
-}[] = GENERATED.rules.map((rule) => {
+}[] = GENERATED.rules.map((rule: Rule) => {
 	const filters = rule.filters.flatMap((f) =>
 		f.type === "PathExists"
 			? []

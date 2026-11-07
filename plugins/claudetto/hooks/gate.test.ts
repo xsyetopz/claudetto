@@ -1,4 +1,11 @@
-import type { On } from "claude-code";
+import type { On, ResultOf, ToolCallResult } from "claude-code";
+
+declare module "claude-code" {
+	interface BuiltinToolInputs {
+		// An agent whose `tools` names Glob gets it, though the CLI's own table lists none.
+		Glob: { pattern: string; path?: string };
+	}
+}
 import { type Engine, expect, test } from "claude-code/testing";
 import { scanned, scanner } from "./secrets.mock.ts";
 
@@ -180,7 +187,7 @@ const bashOf = (stdout: string) => ({
 	text: stdout,
 });
 
-const scanning = (on: On, answer: object) => {
+const scanning = (on: On, answer: ToolCallResult) => {
 	on("session.cwd", () => ({ value: "/p" }));
 	on("clock.now", () => ({ value: 0 }));
 	on("fs.exists", () => ({ value: false }));
@@ -826,7 +833,7 @@ test("an ask a settings rule made on a read-only command stays an ask", async ($
 	expect(verdict.decision).toBe("ask");
 });
 
-const logging = (on: On, engine: object) => {
+const logging = (on: On, engine: ResultOf["tool.check"]) => {
 	const lines: string[] = [];
 	repo(on);
 	on("session.root", () => ({ value: "/p" }));

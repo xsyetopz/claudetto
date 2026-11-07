@@ -1,4 +1,4 @@
-import type { On } from "claude-code";
+import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { scanned } from "./secrets.mock.ts";
 
@@ -13,7 +13,7 @@ const lab = (
 ) => {
 	on("prompt.submit", (_$, e) => e);
 	on("tool.check", () => ({ decision: "allow" }));
-	on("session.messages", () => ({ value: messages }));
+	on("session.messages", () => ({ value: messages as SessionMessage[] }));
 	on("session.cwd", () => ({ value: cwd }));
 	on("fs.exists", () => ({ value: false }));
 	on("fs.list", (_$, e) => ({
@@ -28,7 +28,12 @@ const lab = (
 			value: {
 				isAnswered: true,
 				text: JSON.stringify({ kind, constraints }),
-				usage: { inputTokens: 1, outputTokens: 1 },
+				usage: {
+				input_tokens: 1,
+				output_tokens: 1,
+				cache_read_input_tokens: 0,
+				cache_creation_input_tokens: 0,
+			},
 			},
 		};
 	});
@@ -149,11 +154,27 @@ test("the extractor is told that a file to change or a claim about the code is n
 test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
 	lab(on, [{ text: "Stop asking questions.", rule: "no-questions" }]);
 	await submit($, "stop asking questions. fix the problems");
-	const asks = await Promise.all(
-		["mcp__claudetto__ask-user-question", "AskUserQuestion"].map((tool) =>
-			$.tool.call({ tool, question: "Which?", options: ["Alpha", "Beta"] }),
-		),
-	);
+	const asks = await Promise.all([
+		$.tool.call({
+			tool: "mcp__claudetto__ask-user-question",
+			question: "Which?",
+			options: ["Alpha", "Beta"],
+		}),
+		$.tool.call({
+			tool: "AskUserQuestion",
+			questions: [
+				{
+					question: "Which?",
+					header: "Pick",
+					options: [
+						{ label: "Alpha", description: "a" },
+						{ label: "Beta", description: "b" },
+					],
+					multiSelect: false,
+				},
+			],
+		}),
+	]);
 	expect(asks[0]?.deny).toContain("state the reading you took");
 	expect(asks[1]?.deny).toContain("state the reading you took");
 	expect(asks[0]?.deny).not.toContain("ask whether");
