@@ -56,7 +56,7 @@ test("a resumed session's first prompt waits for the constraint its earlier mess
 		"Nothing should change on disk.",
 	);
 	expect(seen.join("\n")).toContain(
-		'a permission or go-ahead to do something ("you can commit now")',
+		'a go-ahead ("you can commit now")',
 	);
 });
 
@@ -139,7 +139,9 @@ test("the extractor is told that a file to change or a claim about the code is n
 	const seen: string[] = [];
 	lab(on, [], [], seen);
 	await submit($, "Rename the export in src/format.ts and you're finished.");
-	expect(seen.join("\n")).toContain("a file the user asks to change");
+	expect(seen.join("\n")).toContain(
+		'a file to change, or a claim about the code ("callers are done") listed as a limit loses credit',
+	);
 });
 
 test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
