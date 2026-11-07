@@ -202,11 +202,7 @@ const HEADS = "refs/heads/";
 const REF_FLAGS = new Set(["-d", "--delete", "--no-deref", "--create-reflog"]);
 
 /** Tells whether a command moves or deletes one branch this session owns: `update-ref [-d] refs/heads/<name> ...` or `branch -f <name> ...`. The vendored `git:delete_ref` rule and the ref-move ask then do not apply. */
-export const ownedMove = (
-	name: string,
-	args: string[],
-	own: Owns,
-): boolean => {
+export const ownedMove = (name: string, args: string[], own: Owns): boolean => {
 	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
 	const flags = rest.filter((w) => w.startsWith("-"));
 	const [ref = ""] = plain(rest);

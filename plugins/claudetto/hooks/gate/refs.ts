@@ -6,6 +6,8 @@ import { ask, type Verdict } from "./verdict.ts";
 const MODES = new Set(["--soft", "--mixed", "--keep", "--merge", "--hard"]);
 // A name a fetch, merge, or reset writes to `.git`, which resolves to one of several commits.
 const PSEUDO = /^(FETCH_HEAD|ORIG_HEAD|MERGE_HEAD|CHERRY_PICK_HEAD)\b/;
+// `-f` alone, inside a cluster of short flags (`-fM`), or `--force`.
+const FORCE = /^(?:-[A-Za-z]*f[A-Za-z]*|--force)$/;
 const AT_HEAD = /^(HEAD|@)([~^]\d*)*$/;
 
 /** Asks before a command moves a branch to another commit: a `reset` to a ref other than `HEAD`, `update-ref`, or `branch -f`, unless it moves one branch this session owns. A `reset` moves the current branch, which the hook cannot know cheaply, so it keeps asking. */
@@ -28,6 +30,6 @@ export const refVerdict = (
 			(PSEUDO.test(target) ||
 				(flags.some((f) => MODES.has(f)) && !AT_HEAD.test(target)))) ||
 		verb === "update-ref" ||
-		(verb === "branch" && flags.some((f) => f === "-f" || f === "--force"));
+		(verb === "branch" && flags.some((f) => FORCE.test(f)));
 	return moves && !ownedMove(name, args, own) ? ask(GATE_REF_MOVE) : undefined;
 };

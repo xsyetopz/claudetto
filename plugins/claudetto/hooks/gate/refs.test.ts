@@ -13,6 +13,7 @@ for (const command of [
 	"git update-ref refs/heads/main 8ec2d966",
 	"git branch -f main 8ec2d966",
 	"git branch --force main HEAD~2",
+	"git branch -fM mine main",
 	"sh -c 'git reset --soft ORIG_HEAD'",
 ]) {
 	test(`${command} asks and names the hash form`, () => {
