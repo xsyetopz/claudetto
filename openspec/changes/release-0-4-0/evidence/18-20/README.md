@@ -17,7 +17,7 @@ Dry run (fake API, free): `bun ../18-8/probe.ts --dry --plugin-only --mode accep
 Command (repo root, worktree plugin dir, style unchanged):
 
 ```sh
-bun --env-file=/Users/krystian/CodeProjects/xsyetopz/claudetto/.env openspec/changes/release-0-4-0/evidence/18-8/probe.ts --run --plugin-only --mode acceptEdits --root /tmp/probe-18-20 --plugin <worktree>/plugins/claudetto --out /tmp/probe-18-20/r1
+bun --env-file=.env openspec/changes/release-0-4-0/evidence/18-8/probe.ts --run --plugin-only --mode acceptEdits --root /tmp/probe-18-20 --plugin <worktree>/plugins/claudetto --out /tmp/probe-18-20/r1
 ```
 
 Result (`round1-sessions.jsonl`): plugin arm n=32, none rejected or capped, $1.41, 1,032,569 tokens, largest session 76,285.
@@ -298,3 +298,36 @@ Unblocked failing rows: p01, p20, p21, p26, p28. p20 made no popup call and ende
 Lab: mutants for this round were caught and restored: `asks` offered after an ask call (test "a turn that made an ask call is not offered the asks fault"), a denied ask counted (test "a refused ask call does not keep the asks fault from being offered"), the fix text without AskUserQuestion (test "a reply that leaves a choice to the user in prose gets one block that says to ask"), and the Concise.md sentence removed (`tools/manifest.test.ts`). Full suite, run once: 1226 pass, 4 fail, all "timed out after 5000 ms" under load 150-200 (not logic failures): "an identical call is refused after the failure limit, with the earlier error", "prose that mentions a remaining budget passes", "a Haiku result that would take the next request over the step is withheld", "a Skip on every group writes no settings file".
 
 Cleanup: `work`, `arm` and the seed copy deleted; every stdout.txt and the `/tmp/probe-18-20c*` folders kept for 18.26.
+
+## Round 10 (18.20: the same code on prompts with no ask cue)
+
+Why: 20 of the 32 round 9 prompts told the assistant to ask, so the cue may carry the 24/32 pass. Main e07113ed holds the round 9 work (ASK_MCP and ASK_TOOL moved into `verify.ts`); this worktree was reset to it. No code changes in round 10, and no tuning on it.
+
+Prompts: `prompts-round10.json`, written blind by a ninth fresh subagent told the seed file list, the tools, the three kinds and one rule: no prompt tells the assistant to ask, confirm or check with the user. Kinds are its labels: 11 question, 10 command, 11 both. Cue grep before the run (`\bask|confirm|check with|consult|let me decide|tell me first|before you proceed|verify with|run it by`): 0 prompts tell the assistant to ask or check with the user. The grep matches 3 prompts about verifying the system, not the user ("confirm the config test passes", "Check the latest failed GitHub Actions run", "verify it works with a request"); the same grep matches 20 lines of round 9. Many prompts leave a value open ("our production domain", "the right channel", "the retry count we agreed on").
+
+Prediction (before any run): without the cue, the model assumes more often, so the pass falls toward round 8 (15/32) and rises only by what the `asks` code and the Concise.md sentence add. formP 15-23/32, guess 19/32, about 25% that the Wilson lower bound clears 0.5 (needs 22/32). Command rows stay the easiest because a command-only step already lands in a checklist.
+
+Lab test files run alone with `claude plugin test --file <path> plugins/claudetto`; stdout.txt files stay in `/tmp/probe-18-20c10` only (they hold session ids), the repo gets rows only.
+
+### Round 10 result (`round10-sessions.jsonl`, 32 fresh blind prompts with no ask cue, test data, no tuning on it)
+
+Run: same command as round 9 (`probe.ts --run --popup --plugin-only --mode acceptEdits`, `--tools Read,Write,Edit,Glob,Grep,AskUserQuestion,ToolSearch`, `bun --env-file=.env`), subscription only. `apiKeySource` is "none" in 32/32 stdout.txt files. Largest session 110,898 tokens (bound 300k). Total 2,105,121 tokens, $1.57. stdout.txt files are in `/tmp/probe-18-20c10/full/ab/<runId>/` only; the repo holds rows.
+
+Prediction was formP 15-23/32 (guess 19), about 25% that the lower bound clears 0.5. Measured: **formP 28/32, Wilson95 0.719-0.950**. The prediction was too low: the pass did not depend on the cue. Round 9 (cued) was 24/32, round 8 (no code) 15/32.
+
+| Kind | n | formP |
+| --- | --- | --- |
+| question | 11 | 11 |
+| command | 10 | 9 |
+| both | 11 | 8 |
+
+Every one of the 32 sessions made at least one ask call (`asked > 0`), and 28 of them are in form. Failing rows: p18 (command, blocked, ended in prose "send me the error"), p23 (both, ISSUES.md note, no checklist), p24 and p25 (both, ended with a prose request for a real domain or the server address).
+
+| Group | n | formP | mean turns | mean tokens | largest | cache-read | cache-creation | uncached in | out |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| blocked | 20 | 18 | 11.4 | 66,894 | 110,898 | 59,269 | 5,572 | 17 | 2,037 |
+| unblocked | 12 | 10 | 11.2 | 63,937 | 110,740 | 55,875 | 6,034 | 16 | 2,012 |
+
+Tokens per blocked session: 66,894, which is 2,957 more than an unblocked session (mean turns +0.2). Block causes by stdout: `asks` fix text 15, ASK_FORM 3, COMMAND_FORM 2 (a row can hold more than one).
+
+False blocks (blocked replies that assume nothing): I read the first 420 characters of each of the 20 blocked replies. 0 are clearly false: the visible text of 15 shows a prose request ("send me", "I'm waiting for your output", "if you want it"), a placeholder, a pick or a default (`www-data`, `example.com`, `ON_ERROR_STOP`), and 5 (p02, p05, p09, p22, p32) show only confirmed answers and "stays as written", so I cannot tell from the rows whether the assumption sat in an earlier part of the reply. Counted as unclear: 5.
