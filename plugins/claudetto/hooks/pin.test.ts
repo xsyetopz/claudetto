@@ -48,6 +48,22 @@ test("a constraint found on one prompt rides the next prompt as context, and the
 	);
 });
 
+test("a resumed session's first prompt waits for the constraint its earlier messages hold", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		RO,
+		[{ role: "user", text: "Nothing should change on disk.", toolUses: [] }],
+		seen,
+	);
+	expect((await submit($)).context?.join("\n")).toContain(
+		"Nothing should change on disk.",
+	);
+	expect(seen.join("\n")).toContain(
+		'a permission or go-ahead to do something ("you can commit now")',
+	);
+});
+
 test("no constraint adds no context", async ($: Engine, on: On) => {
 	lab(on, []);
 	expect((await submit($)).context ?? []).toEqual([]);

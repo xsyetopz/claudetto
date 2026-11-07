@@ -163,6 +163,7 @@ test("a denial with no reason is not retried", async ($: Engine, on: On) => {
 test("a message from the person lets the same call reach its check again", async ($: Engine, on: On) => {
 	allowing(on);
 	on("session.cwd", () => ({ value: "/repo" }));
+	on("session.messages", () => ({ value: [] }));
 	await denied($);
 	await denied($);
 

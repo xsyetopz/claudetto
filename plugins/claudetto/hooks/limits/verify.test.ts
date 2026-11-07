@@ -496,7 +496,11 @@ test("a reply that confesses its own conduct gets one block that asks for the fa
 	const reply = "My mistake: I should not have used pkill.";
 	const seen: string[] = [];
 	lab(on, [user("status?")], found("confesses", "My mistake"), seen);
-	expect((await stop($, false, reply)).block).toContain("your own conduct");
+	const block = (await stop($, false, reply)).block;
+	expect(block).toContain("your own conduct");
+	expect(block).toContain(
+		"The user reads only your last message: keep the answer to their message in it.",
+	);
 	expect(seen[0]).toContain("- confesses:");
 	expect((await stop($, true, reply)).block).toBeUndefined();
 });

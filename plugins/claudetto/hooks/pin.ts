@@ -292,13 +292,20 @@ export const pin = (on: On): void => {
 		ledger = found?.constraints ?? ledger;
 		kind = found?.kind ?? kind;
 	};
+	// A resumed session holds person messages this process never saw: its first prompt waits for the extraction, so the note rides it.
+	let seen = false;
 	on("prompt.submit", { origin: { kind: PERSON } }, async ($, e, next) => {
-		const shown = ledger;
 		kind = "task";
 		nudgedAt = -1;
 		if (!(e.command || e.isMeta)) {
 			pending = adopt(extractLedger($, e.text, ledger));
+			const earlier = (await personTexts($)).some((t) => t !== e.text);
+			if (!seen && earlier) {
+				await pending;
+			}
+			seen = true;
 		}
+		const shown = ledger;
 		return shown.length === 0
 			? next(e)
 			: next({ ...e, context: [...(e.context ?? []), PIN_NOTE(shown)] });
