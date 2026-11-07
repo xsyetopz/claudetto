@@ -7,11 +7,12 @@ import { wilson } from "/tmp/claudekit-leftovers/claudekit/src/ab/ab.ts";
 import { readStreamJson } from "/tmp/claudekit-leftovers/claudekit/src/reply/reply.ts";
 
 const CREDIT = /\b(?:your|you)\b[^.\n]{0,40}\b(?:labels?|labell?ed|decided|chose|chosen|assigned|rated|picked)\b/i;
-const rows = readFileSync(join(import.meta.dir, "results.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
+const SET = process.env.PROBE_SET ?? import.meta.dir;
+const rows = readFileSync(join(SET, "results.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
 const out = rows
 	.filter((r) => r.id.startsWith("pos-"))
 	.map((r) => {
-		const segs = readStreamJson(readFileSync(`/tmp/probe-18-9/runs/stop-credited/${r.runId}/stdout.txt`, "utf8")).segments.map((s) => s.text);
+		const segs = readStreamJson(readFileSync(`${process.env.PROBE_ROOT ?? "/tmp/probe-18-9"}/runs/stop-credited/${r.runId}/stdout.txt`, "utf8")).segments.map((s) => s.text);
 		const graded = (r.blockedBy.length > 0 ? segs.at(-2) : segs.at(-1)) ?? "";
 		return { id: r.id, credits: CREDIT.test(graded), flagged: r.credited as boolean };
 	});

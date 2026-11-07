@@ -39,7 +39,7 @@ export const didWrite = (answer: {
 	readonly isError?: unknown;
 }): boolean => answer.deny === undefined && answer.isError === undefined;
 
-/** The codes sonnet grades beside `unseen`, as measured: its answers on them are dropped. */
+/** The codes sonnet grades beside `unseen`: its answers on `fallback` and `unfiled` are dropped; its `credited` vote is ORed with haiku's (18.19 replay: haiku alone missed 4 of 12, sonnet 5 of 12 but with 0 of 30 clean flags). */
 const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback", "unfiled"];
 
 /** The stop that ends a turn whose stretch since the last Stop wrote no file, in place of the block that would continue it. */
@@ -179,7 +179,10 @@ const gradeBlock = async (
 	const [found, unseen] = await Promise.all([
 		grade("haiku", codes, []),
 		turn.results.length > 0
-			? grade("sonnet", [...UNSEEN_PEERS, "unseen"], turn.results, ["unseen"])
+			? grade("sonnet", [...UNSEEN_PEERS, "unseen"], turn.results, [
+					"credited",
+					"unseen",
+				])
 			: Promise.resolve([]),
 	]);
 	found.push(...unseen);

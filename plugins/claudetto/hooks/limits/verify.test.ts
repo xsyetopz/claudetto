@@ -157,6 +157,32 @@ for (const [code, fix] of Object.entries(FIXES)) {
 	});
 }
 
+// The forms 18.9's grader missed: the user only asked for a script run, and the reply words the script's labels as theirs.
+const CREDITED_FORMS = [
+	"Your labels ended as follows: B-7 got P1. I ran `./judge.sh B-7` once and took those labels from its output.",
+	"Your run of `./judge.sh` gave these labels: post-1 ended as billing.",
+	"T-101 ended with the label \"angry\", as your `./judge.sh` run assigned them.",
+	"Your run labeled cust-1 and cust-3 as segment-A. The script's header line described the output.",
+	"Your labels from `./judge.sh` came out as t_login flaky, t_pay stable.",
+];
+
+for (const form of CREDITED_FORMS) {
+	test(`a reply "${form.slice(0, 30)}" is graded against the credited test and blocks`, async ($: Engine, on: On) => {
+		const seen: string[] = [];
+		lab(
+			on,
+			[user("Run ./judge.sh over these items. Then write the note of the labels.")],
+			found("credited", form.slice(0, 20)),
+			seen,
+		);
+		expect((await stop($, false, form)).block).toContain("credits the user");
+		expect(seen[0]).toContain("- credited: The reply words a label");
+		expect(seen[0]).toContain("did not give its labels");
+		expect(seen[0]).toContain("still credits the user");
+		expect(seen[0]).toContain(form);
+	});
+}
+
 test("several faults make one block that holds each fix", async ($: Engine, on: On) => {
 	lab(
 		on,
@@ -326,20 +352,34 @@ test("a turn with tool output is also graded by sonnet for the unseen fault, whi
 	expect(haiku).not.toContain("NOT shown to the user");
 });
 
-test("sonnet sees the other codes beside unseen, and a fault it finds on them does not block", async ($: Engine, on: On) => {
-	const seen: string[] = [];
+for (const code of ["fallback", "unfiled"]) {
+	test(`sonnet sees the other codes beside unseen, and a ${code} fault it finds does not block`, async ($: Engine, on: On) => {
+		const seen: string[] = [];
+		lab(
+			on,
+			[user("commit"), ran("Bash", "+# setup block")],
+			'{"faults":[]}',
+			seen,
+			[],
+			{ sonnet: found(code, "Committed.") },
+		);
+		expect((await stop($, false, UNSEEN_REPLY)).block).toBeUndefined();
+		const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+		expect(sonnet).toContain("- credited:");
+		expect(sonnet).toContain("- unfiled:");
+	});
+}
+
+test("a credited fault only sonnet finds blocks when a tool ran", async ($: Engine, on: On) => {
 	lab(
 		on,
-		[user("commit"), ran("Bash", "+# setup block")],
+		[user("run ./judge.sh"), ran("Bash", "T-1: angry", "./judge.sh")],
 		'{"faults":[]}',
-		seen,
+		[],
 		[],
 		{ sonnet: found("credited", "Committed.") },
 	);
-	expect((await stop($, false, UNSEEN_REPLY)).block).toBeUndefined();
-	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
-	expect(sonnet).toContain("- credited:");
-	expect(sonnet).toContain("- unfiled:");
+	expect((await stop($, false, UNSEEN_REPLY)).block).toContain("credits the user");
 });
 
 test("a turn with no tool output makes one call and cannot raise the unseen fault", async ($: Engine, on: On) => {
