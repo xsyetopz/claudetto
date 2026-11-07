@@ -161,7 +161,7 @@ for (const [code, fix] of Object.entries(FIXES)) {
 const CREDITED_FORMS = [
 	"Your labels ended as follows: B-7 got P1. I ran `./judge.sh B-7` once and took those labels from its output.",
 	"Your run of `./judge.sh` gave these labels: post-1 ended as billing.",
-	"T-101 ended with the label \"angry\", as your `./judge.sh` run assigned them.",
+	'T-101 ended with the label "angry", as your `./judge.sh` run assigned them.',
 	"Your run labeled cust-1 and cust-3 as segment-A. The script's header line described the output.",
 	"Your labels from `./judge.sh` came out as t_login flaky, t_pay stable.",
 ];
@@ -171,7 +171,11 @@ for (const form of CREDITED_FORMS) {
 		const seen: string[] = [];
 		lab(
 			on,
-			[user("Run ./judge.sh over these items. Then write the note of the labels.")],
+			[
+				user(
+					"Run ./judge.sh over these items. Then write the note of the labels.",
+				),
+			],
 			found("credited", form.slice(0, 20)),
 			seen,
 		);
@@ -379,7 +383,9 @@ test("a credited fault only sonnet finds blocks when a tool ran", async ($: Engi
 		[],
 		{ sonnet: found("credited", "Committed.") },
 	);
-	expect((await stop($, false, UNSEEN_REPLY)).block).toContain("credits the user");
+	expect((await stop($, false, UNSEEN_REPLY)).block).toContain(
+		"credits the user",
+	);
 });
 
 test("a turn with no tool output makes one call and cannot raise the unseen fault", async ($: Engine, on: On) => {
