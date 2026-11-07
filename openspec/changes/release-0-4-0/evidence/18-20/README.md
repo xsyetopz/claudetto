@@ -118,3 +118,22 @@ Per prompt `kind` (blind labels). `question`: no `- [ ]` item in the final reply
 ### Paid run: stopped, not measured
 
 The coordinator reported the API account is out of credit ("Credit balance is too low") and asked for one paid session before any batch. My batch had already started (6 parallel sessions, 20261107-020017-*, none finished and none wrote a row) before that message arrived; I stopped it with TaskStop. `sessions.jsonl` was never written, so there are no counts, no Wilson interval and no cost for round 5. 18.20 stays not done. The 32 prompts, the judge, `popup.ts` and the `--popup` flag are ready; rerun after credit is restored with the command in the report (start with `--limit 1`).
+
+### Round 5 result (the earlier "Paid run: stopped" note is superseded)
+
+The key was removed from `.env`; runs billed the subscription. One-session check first (`--limit 1`, out `r5-one`): init frame `apiKeySource: "none"`, real reply (34,455 tokens). Then the full run (out `r5-full`, copied to `round5-sessions.jsonl`): plugin arm, 32 prompts (11 question, 11 command, 10 both), `claude-sonnet-5-5`, n=1, acceptEdits, popup host. None rejected (armDiff 0), none capped.
+
+| Round | checkbox | form (18.8) | formQ | formP (18.20, popup) | heading |
+| --- | --- | --- | --- | --- | --- |
+| 5, 32 fresh blind prompts, style fb6e80ac | 15/32 (0.309-0.636) | 13/32 (0.255-0.577) | 13/32 (0.255-0.577) | 10/32 (0.180-0.486) | 15/32 (0.309-0.636) |
+
+By kind (formP): question 3/11, command 5/11, both 2/10. Cost $2.44 at list price (subscription run); 1,272,956 tokens; largest session 67,909 tokens. Prediction (16-24/32, guess 20) missed low. The lower bound 0.180 is not above 0.5: 18.20 is NOT done. Per the rules: no tuning, no rerun on these prompts.
+
+Failure patterns (22 failing replies, recounted from `round5-sessions.jsonl`):
+- No popup where the kind needs a question (15 of 21 question/both prompts): 17 replies chose a default and went on, or typed the choice in prose, and called `AskUserQuestion` 0 times. Only 7 of 32 sessions called it at all (3 question, 2 command, 2 both). Many prompts say "pick what you think fits", so deciding alone may be fair; the kind labels did not allow for that.
+- Question-only prompts with a `- [ ] ! <command>` checklist (p01, p10, p22): the model added a run-it-yourself command (build or install) the label did not expect, and without the popup.
+- Command kinds with no checklist at all (p02, p05, p17, p26, p29; also both p09, p15, p24, p30): the commands went in prose or a code block, or no heading was written.
+- Items not in `! <command>` form (p14: "Reply with the absolute path ..." after a popup call; p27 holds a `?`).
+- Commands that name a probe path (`cd /private/tmp/probe-18-20b/...`): not a failure of the form, only noise.
+Permission denials by the host: 2 `Glob` requests (one `both` session); no `Bash` request reached the host.
+Run files: `round5-sessions.jsonl`; process check: no probe process of mine left.
