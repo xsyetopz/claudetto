@@ -20,7 +20,8 @@ export { fisher, wilson };
 const REPO = "/Users/krystian/CodeProjects/xsyetopz/claudetto";
 const PLUGIN = join(REPO, "plugins/claudetto");
 // Names copied by reference from the parent env, so a token is never read or printed here.
-const PASS = ["CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_API_KEY"];
+// The plugin is for Pro and Max subscribers, so real runs bill the subscription; an API key would win over the token and bill the API.
+const PASS = ["CLAUDE_CODE_OAUTH_TOKEN"];
 const TOOLS = ["Bash(grep:*)", "Bash(rg:*)", "Bash(wc:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(sed:*)", "Bash(cat:*)", "Bash(ls:*)", "Bash(find:*)", "Bash(awk:*)", "Bash(jq:*)", "Bash(bun:*)"];
 
 export interface Task {
@@ -77,13 +78,13 @@ const armOf = (a: ArmSpec, model: string): Arm => ({
 });
 
 // The init frame names the plugins and the model that this session really ran with.
-const armDiff = (stdout: string, a: ArmSpec, model: string): string[] => {
+const armDiff = (stdout: string, a: ArmSpec, model: string, fake: boolean): string[] => {
 	const init = stdout.split("\n").filter((l) => l.startsWith("{")).map((l) => JSON.parse(l) as unknown).find((f) => isRecord(f) && f.subtype === "init");
 	if (!isRecord(init)) {
 		return ["no init frame"];
 	}
 	const loaded = (Array.isArray(init.plugins) ? init.plugins.filter(isRecord) : []).some((p) => p.name === "claudetto");
-	return [...(loaded === a.plugin ? [] : [`claudetto loaded ${loaded}, want ${a.plugin}`]), ...(init.model === model ? [] : [`model ${String(init.model)}, want ${model}`])];
+	return [...(loaded === a.plugin ? [] : [`claudetto loaded ${loaded}, want ${a.plugin}`]), ...(init.model === model ? [] : [`model ${String(init.model)}, want ${model}`]), ...(fake || init.apiKeySource === "none" ? [] : [`apiKeySource ${String(init.apiKeySource)}, want none (subscription)`])];
 };
 
 interface Mode {
@@ -148,7 +149,7 @@ const run1 = (study: Study, mode: Mode) => async (s: Session<ArmSpec, Task>): Pr
 		runId: run.id,
 		capped: done.capped,
 		timedOut: done.timedOut,
-		armDiff: armDiff(stdout, s.arm, mode.model),
+		armDiff: armDiff(stdout, s.arm, mode.model, mode.fake),
 		usd: cost(mode.model, usage),
 		tokens: Object.values(tokensOf(usage)).reduce((a, b) => a + b, 0),
 		usage,
