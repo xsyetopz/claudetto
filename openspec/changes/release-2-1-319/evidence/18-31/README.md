@@ -17,7 +17,8 @@ Then grade it:
 For the contaminated r3 set, pass `~/.claudetto-holdout/held-out-r3.json` instead.
 
 Output: `{"n":24,"pass":N,"byLabel":{...}}`. The folder it made (`/tmp/probe-1831-XXXXXX`, marked with
-`.created-by-claudetto`) holds `result.json`, `ledger.jsonl` (tokens and cost per session, no case text) and `cfg/`, `ws/`.
+`.created-by-claudetto`) holds `result.json` and `ledger.jsonl` (tokens and cost per session, no case text). The sessions' `cfg/` and `ws/` hold case
+text, so `run.ts` removes them once grading ends. The grade names no failing case, by design.
 
 ## What it is
 

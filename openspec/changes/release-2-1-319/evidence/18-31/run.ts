@@ -1,7 +1,7 @@
 // Task 18.31: grade the current plugins/claudetto on a held-out set. Usage: bun --env-file=.env run.ts SET.json
 // Makes a marked /tmp folder for the sessions' config dir, workspaces and ledger, runs `claudekit fixture grade` with grader.ts,
 // and prints the aggregate (counts only). The sessions run outside the repo so that `--setting-sources project,local` does not read this repo.
-import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -28,6 +28,8 @@ const p = Bun.spawn(["bun", CLAUDEKIT, "fixture", "grade", resolve(set), join(im
 });
 const out = (await new Response(p.stdout).text()).trim();
 await p.exited;
+// The sessions hold case text, which must not sit outside the protected folder.
+for (const dir of ["cfg", "ws"]) rmSync(join(root, dir), { recursive: true, force: true });
 await Bun.write(join(root, "result.json"), `${out}\n`);
 console.log(out);
 console.error(`ledger: ${join(root, "ledger.jsonl")}`);
