@@ -96,3 +96,25 @@ Prediction missed high (guessed 38/64 with a 40% chance of clearing; got 53/65 =
 Total spend: about $11.2 across 4 rounds ($1.41 + $2.41 + $2.36 + $5.00 + $0.02 dry); largest session 76,285 tokens.
 
 Process check after all runs: `ps -axo pid,ppid,command | grep probe-18-20 | grep -v grep` shows no process of mine (see below).
+
+## Round 5 (18.20 redo: style with `AskUserQuestion`, commit fb6e80ac)
+
+### Step 1: does `claude -p` offer `AskUserQuestion`? (free, fake API, /tmp/probe-18-20b-fake)
+
+Hypothesis A: plain `-p --tools Read,Write,AskUserQuestion` lists the tool, and the call returns a permission error because nobody answers. Prediction: tool in the request's tools; second request holds an `is_error` tool_result.
+Result A (fake plan makes the model call the tool): the tools list was `Read, DeferredToolPlaceholder, Write`; the result was `No such tool available: AskUserQuestion. AskUserQuestion is disabled for this session`. Hypothesis A false: `-p` drops the tool.
+Hypothesis B: `--permission-prompt-tool stdio` (the SDK host mode) offers it. Result B: with it, the tool is listed (also with text input), and the call yields `Tool permission request failed: AbortError: Stream closed` because no host answers. A `PermissionRequest` hook did not help (the denial fired before the hook returned).
+Hypothesis C: with `--input-format stream-json --permission-prompt-tool stdio` and a host that answers the `can_use_tool` control_request (what the SDK's `canUseTool` does), the call succeeds. Result C (`popup.ts`): `asked 1`, tool_result `Your questions have been answered: "Which region?"="us-east-1"`. True.
+So the round runs through `popup.ts` (my host: answers each question with its first option, denies every other permission request and records it), wired into `../18-8/probe.ts` by `--popup`. `.created-by-claudetto` written in the probe folder.
+
+### Judge `formP`, fixed before any run (see `prompts-round5.json`, `judge`)
+
+Per prompt `kind` (blind labels). `question`: no `- [ ]` item in the final reply and at least one `AskUserQuestion` tool_use. `command`: heading, at least one item, every item `- [ ] ! <command>` (a `?` in an item fails it). `both`: both rules. Pass needs these only; the first question text and answer are not graded.
+
+### Prediction (before the run)
+
+32 prompts (11 question, 11 command, 10 both), plugin arm only, `claude-sonnet-5-5`, n=1, `--permission-mode acceptEdits`, tools `Read,Write,Edit,Glob,Grep,AskUserQuestion`. Hypothesis: the model calls the popup for forks, but the `question`/`both` kinds also leave typed `?` items or no heading. Prediction: formP 16-24/32 (guess 20/32); lower bound at 20/32 is 0.453, so under even odds (about 35%) that it clears 0.5 (needs 22/32 = lower bound 0.51). Cost about $2.5, largest session under 80,000 tokens.
+
+### Paid run: stopped, not measured
+
+The coordinator reported the API account is out of credit ("Credit balance is too low") and asked for one paid session before any batch. My batch had already started (6 parallel sessions, 20261107-020017-*, none finished and none wrote a row) before that message arrived; I stopped it with TaskStop. `sessions.jsonl` was never written, so there are no counts, no Wilson interval and no cost for round 5. 18.20 stays not done. The 32 prompts, the judge, `popup.ts` and the `--popup` flag are ready; rerun after credit is restored with the command in the report (start with `--limit 1`).
