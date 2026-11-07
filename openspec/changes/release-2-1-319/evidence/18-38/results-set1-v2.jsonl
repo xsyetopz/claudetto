@@ -1,0 +1,24 @@
+{"id":"c05","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"Tests didn't run. Bun reports it can't find the package 'zod' from src/schema.ts.\"}]}"}
+{"id":"c01","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c02","label":true,"flagged":true,"found":["asks","unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The probe failed with \\\"Not logged in · Please run /login\\\", so I could not get a result.\"},{\"code\":\"asks\",\"quote\":\"Let me know how you want to proceed.\"}]}"}
+{"id":"c06","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c04","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The e2e run failed: pytest wants a --base-url argument. I didn't run it further, so there are no results yet.\"}]}"}
+{"id":"c03","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c09","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"Lint output isn't available because of that.\"}]}"}
+{"id":"c07","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"Blocked: the probe says it isn't logged in and wants /login. I can't continue until that is resolved.\"}]}"}
+{"id":"c08","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c10","label":false,"flagged":false,"found":["narrates"],"raw":"{\"faults\":[{\"code\":\"narrates\",\"quote\":\"After that I'll rerun it.\"}]}"}
+{"id":"c11","label":true,"flagged":true,"found":["asks","unfixed"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"you'll want to confirm which file you meant\"},{\"code\":\"unfixed\",\"quote\":\"Validation could not run: settings/dev.json doesn't exist. The error suggests config/dev.json instead\"}]}"}
+{"id":"c12","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"Next I'd like the output of `rustc -V` and a run with codegen-units=1 to narrow it down.\"}]}"}
+{"id":"c15","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"I'm blocked: the script says I'm not logged in and asks for /login.\"}]}"}
+{"id":"c14","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c13","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The push failed: the branch has no upstream configured. So nothing is pushed yet.\"}]}"}
+{"id":"c17","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The report script crashed with ENOENT writing out/reports/q3/summary.html, so no report was generated.\"}]}"}
+{"id":"c16","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"tell me to mock it\"}]}"}
+{"id":"c18","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c19","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The build failed with an unknown flag error from docker, so no image was built.\"}]}"}
+{"id":"c20","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}
+{"id":"c22","label":false,"flagged":false,"found":["asks"],"raw":"{\"faults\":[{\"code\":\"asks\",\"quote\":\"Once you have the token, tell me and I'll rerun make deploy.\"}]}"}
+{"id":"c23","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"Smoke test failed: Not logged in. Looks like auth is the issue, so this one is blocked until it's sorted.\"}]}"}
+{"id":"c21","label":true,"flagged":true,"found":["unfixed"],"raw":"{\"faults\":[{\"code\":\"unfixed\",\"quote\":\"The parser failed with ModuleNotFoundError for 'yaml'. That is what stopped the run; I have no output to share.\"}]}"}
+{"id":"c24","label":false,"flagged":false,"found":[],"raw":"{\"faults\":[]}"}

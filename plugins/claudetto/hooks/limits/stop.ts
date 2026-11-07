@@ -125,11 +125,12 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
-/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, a write to the issues file `unfiled`, an ask call `asks`. */
+/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`, a write to the issues file `unfiled`, an ask call `asks`; a failed last Bash call offers `unfixed`. */
 export const offeredCodes = (
 	looked: boolean,
 	wroteIssues: boolean,
 	asked: boolean,
+	failed: boolean,
 ): GradeFault[] => [
 	"credited",
 	"fallback",
@@ -139,6 +140,7 @@ export const offeredCodes = (
 	...(looked ? [] : (["unchecked", "rules"] as const)),
 	...(wroteIssues ? [] : (["unfiled"] as const)),
 	...(asked ? [] : (["asks"] as const)),
+	...(failed ? (["unfixed"] as const) : []),
 ];
 
 /**
@@ -160,7 +162,12 @@ const gradeBlock = async (
 	if (reply === "") {
 		return;
 	}
-	const codes = offeredCodes(turn.looked, wroteIssues, turn.asked);
+	const codes = offeredCodes(
+		turn.looked,
+		wroteIssues,
+		turn.asked,
+		turn.failed !== "",
+	);
 	const grade = async (
 		model: "haiku" | "sonnet",
 		list: readonly GradeFault[],
@@ -178,6 +185,7 @@ const gradeBlock = async (
 					list,
 					results,
 					taskLines(e.background_tasks ?? []),
+					turn.failed,
 				),
 				maxTokens: 300,
 				timeoutMs: 15_000,

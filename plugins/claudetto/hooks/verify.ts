@@ -1,4 +1,4 @@
-import type { SessionMessage } from "claude-code";
+import type { SessionMessage, ToolUseSummary } from "claude-code";
 import type { GradeFault } from "./texts.ts";
 
 export const ASK_MCP = "mcp__claudetto__ask-user-question";
@@ -24,15 +24,32 @@ const SHOWN = 6;
 const RESULTS = 8;
 const RESULT_CHARS = 400;
 
+const resultLine = (use: ToolUseSummary): string => {
+	const arg = [use.input.command, use.input.file_path, use.input.pattern].find(
+		(v) => typeof v === "string",
+	);
+	return `- ${use.tool} ${String(arg ?? "").slice(0, 120)}\n${(use.text ?? "").slice(0, RESULT_CHARS)}`;
+};
+
 /**
  * The person's message that opened the turn, the person messages before it, and whether any call since then looked at the workspace.
- * A call in `denied` was refused before it ran, so it saw nothing.
+ * A call in `denied` was refused before it ran, so it saw nothing. `failed` is the turn's last Bash result when it is an error, else "".
  */
 export const claimTurn = (
 	messages: readonly SessionMessage[],
 	denied: ReadonlySet<string> = new Set(),
 ) => {
 	const start = messages.findLastIndex(isPersonMessage);
+	const lastRun = messages
+		.slice(start + 1)
+		.flatMap((m) => m.toolUses)
+		.filter(
+			(use) =>
+				use.tool === "Bash" &&
+				use.text !== undefined &&
+				!denied.has(use.tool_use_id),
+		)
+		.at(-1);
 	return {
 		user: start < 0 ? "" : (messages[start]?.text ?? ""),
 		people: messages
@@ -64,14 +81,8 @@ export const claimTurn = (
 			.flatMap((m) => m.toolUses)
 			.filter((use) => use.text !== undefined && !NOT_A_LOOK.has(use.tool))
 			.slice(-RESULTS)
-			.map((use) => {
-				const arg = [
-					use.input.command,
-					use.input.file_path,
-					use.input.pattern,
-				].find((v) => typeof v === "string");
-				return `- ${use.tool} ${String(arg ?? "").slice(0, 120)}\n${(use.text ?? "").slice(0, RESULT_CHARS)}`;
-			}),
+			.map(resultLine),
+		failed: lastRun?.isError ? resultLine(lastRun) : "",
 	};
 };
 
