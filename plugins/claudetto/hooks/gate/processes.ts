@@ -1,5 +1,13 @@
-import { GATE_KILL_BROAD, GATE_RELEASE_RUN, gateKillPid } from "../texts.ts";
-import { type Command, programOf } from "./shell-words.ts";
+import {
+	GATE_KILL_BROAD,
+	GATE_RELEASE_RUN,
+	gateBranchDelete,
+	gateKillPid,
+	gateRmTmp,
+	gateWorktreeRemove,
+} from "../texts.ts";
+import { type Command, parse, programOf } from "./shell-words.ts";
+import { withoutGitOptions } from "./upstream.ts";
 import { deny, fieldOf, type Verdict } from "./verdict.ts";
 
 // Flags of `kill` that take the next word as their value.
@@ -10,6 +18,9 @@ const BACKGROUNDS = /\$!|(?<![>&])&(?![&>0-9])/;
 const FLAG = /^-[A-Za-z0-9]/;
 const PROBE = /^-[0lL]$/;
 const PID = /^\d+$/;
+const TMP_TOP = /^(?:\/private)?\/tmp(?:\/[^/]+)?/;
+const TMP_TOPS = /(?:\/private)?\/tmp\/[^/\s'"]+/g;
+const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/;
 const RELEASE = /(?:^|\/)claude\/versions\/[^/\s]+/;
 
 interface Past {
@@ -75,3 +86,105 @@ export const releaseVerdict = (c: Command): Verdict | undefined =>
 	RELEASE.test(c.words[programOf(c).at] ?? "")
 		? deny(GATE_RELEASE_RUN)
 		: undefined;
+
+/** What this session owns: a started process, a /tmp folder with its marker, a created worktree path, a created branch. */
+export interface Owns {
+	pid: (pid: string) => boolean;
+	tmp: (top: string) => boolean;
+	path: (path: string) => boolean;
+	branch: (name: string) => boolean;
+}
+
+export const NOBODY: Owns = {
+	pid: () => false,
+	tmp: () => false,
+	path: () => false,
+	branch: () => false,
+};
+
+/** The top folders below /tmp that a command names, whose marker file the caller reads. */
+export const tmpTops = (command: string): string[] =>
+	command.match(TMP_TOPS) ?? [];
+
+const BRANCH_FLAGS = new Set(["-b", "-B", "-c", "-C"]);
+
+/** The path and branch a `git` command creates: `worktree add [-b name] <path>`, `branch <name>`, `checkout -b <name>`, `switch -c <name>`. */
+const creates = (args: string[]): { path?: string; branch?: string } => {
+	const [verb = "", ...rest] = withoutGitOptions(args);
+	const at = rest.findIndex((a) => BRANCH_FLAGS.has(a));
+	const named = at < 0 ? undefined : rest[at + 1];
+	if (verb === "worktree" && rest[0] === "add") {
+		const words = rest.slice(1);
+		return {
+			branch: named,
+			path: words.find(
+				(a, i) => !a.startsWith("-") && !BRANCH_FLAGS.has(words[i - 1] ?? ""),
+			),
+		};
+	}
+	if (verb === "branch" && rest.length > 0 && !rest[0]?.startsWith("-")) {
+		return { branch: rest[0] };
+	}
+	return verb === "checkout" || verb === "switch" ? { branch: named } : {};
+};
+
+/** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
+export const ownsOf = (past: Past[], marked: Set<string>): Owns => {
+	const made = past
+		.filter((t) => t.tool === "Bash" && !t.isError)
+		.flatMap((t) =>
+			parse(fieldOf(t.input, "command") ?? "").commands.map((c) => {
+				const { name, args } = programOf(c);
+				return name === "git" ? creates(args) : {};
+			}),
+		);
+	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
+	return {
+		pid: startedBy(past),
+		tmp: (top) => marked.has(top),
+		path: (path) =>
+			made.some((m) => m.path === path) ||
+			entered.some((t) => t.text?.includes(path)),
+		branch: (name) => made.some((m) => m.branch === name),
+	};
+};
+
+const isForceDelete = (flags: string[]): boolean =>
+	flags.includes("-D") ||
+	(flags.some((f) => f === "-d" || f === "--delete") &&
+		flags.some((f) => f === "-f" || f === "--force"));
+
+const plain = (words: string[]): string[] =>
+	words.filter((w) => !w.startsWith("-"));
+
+/** Denies `rm` under /tmp of a top folder without this session's marker, `git worktree remove` of a path this session did not create, and a forced branch delete of a branch it did not create. */
+export const ownedVerdict = (
+	name: string,
+	args: string[],
+	own: Owns,
+): Verdict | undefined => {
+	if (name === "rm") {
+		const path = plain(args).find((p) => {
+			const top = TMP_TOP.exec(p)?.[0];
+			return top !== undefined && (DOTDOT.test(p) || !own.tmp(top));
+		});
+		return path === undefined ? undefined : deny(gateRmTmp(path));
+	}
+	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
+	if (verb === "worktree" && rest[0] === "remove") {
+		const path = plain(rest.slice(1))[0];
+		return path === undefined || own.path(path)
+			? undefined
+			: deny(gateWorktreeRemove(path));
+	}
+	if (
+		verb === "branch" &&
+		isForceDelete(rest.filter((w) => w.startsWith("-")))
+	) {
+		const stranger = plain(rest).find((b) => !own.branch(b));
+		return stranger === undefined
+			? undefined
+			: deny(gateBranchDelete(stranger));
+	}
+	return undefined;
+};

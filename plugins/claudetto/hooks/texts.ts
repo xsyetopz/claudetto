@@ -353,6 +353,12 @@ export const GATE_KILL_BROAD =
 	"`pkill` and `killall` stop every process with a matching name, and some of those were not started by this session. Stop a background task with `TaskStop`, or run `kill <pid>` on a pid that an earlier command of this session printed after it started the process in the background.";
 export const gateKillPid = (pid: string): string =>
 	`${pid} is not a process this session started: no earlier result of this session shows a background command that printed it. Leave it running. Stop only what this session started, with \`TaskStop\` or \`kill <pid>\` of a pid its own command printed.`;
+export const gateRmTmp = (path: string): string =>
+	`${path} is under a /tmp folder that this session did not create: it holds no \`.created-by-claudetto\` file with this session's id. Leave it. Remove only a folder you made in this session, after you write the session id into \`<folder>/.created-by-claudetto\`.`;
+export const gateWorktreeRemove = (path: string): string =>
+	`${path} is not a worktree this session created: no earlier successful \`git worktree add\` or EnterWorktree of this session names it. Leave it. Remove only a worktree this session added, or ask the user to remove this one.`;
+export const gateBranchDelete = (name: string): string =>
+	`${name} is not a branch this session created: no earlier successful \`git branch\`, \`git checkout -b\`, \`git switch -c\`, or \`git worktree add -b\` of this session made it. Leave it. Delete only a branch this session made, or ask the user to delete this one.`;
 export const GATE_RELEASE_RUN =
 	"This runs a released Claude Code program to read it. Read it with the cc-inspect `code` tool instead; its `installs` action lists the releases. `claude --help` on the installed command is still allowed.";
 export const GATE_REF_MOVE =

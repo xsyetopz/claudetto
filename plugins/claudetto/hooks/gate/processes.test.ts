@@ -1,24 +1,46 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 import { scanner } from "../secrets.mock.ts";
-import { GATE_KILL_BROAD, GATE_RELEASE_RUN, gateKillPid } from "../texts.ts";
+import {
+	GATE_KILL_BROAD,
+	GATE_RELEASE_RUN,
+	gateBranchDelete,
+	gateKillPid,
+	gateRmTmp,
+	gateWorktreeRemove,
+} from "../texts.ts";
 
 const RELEASE = "/Users/u/.local/share/claude/versions/2.1.319";
 
-const lab = (on: On, past: { command: string; text: string }[] = []) => {
+interface Earlier {
+	command?: string;
+	text: string;
+	tool?: string;
+	isError?: true;
+}
+
+// `marked` maps a path to the content of the file there.
+const lab = (
+	on: On,
+	past: Earlier[] = [],
+	marked: Record<string, string> = {},
+) => {
 	scanner(on);
 	on("session.cwd", () => ({ value: "/p" }));
-	on("fs.exists", () => ({ value: false }));
+	on("session.id", () => ({ value: "S1" }));
+	on("fs.exists", (_$, e) => ({ value: e.path in marked }));
+	on("fs.read", (_$, e) => ({ value: marked[e.path] ?? "" }));
 	on("session.messages", () => ({
 		value: [
 			{
 				role: "assistant",
 				text: "",
 				toolUses: past.map((p, i) => ({
-					tool: "Bash",
+					tool: p.tool ?? "Bash",
 					tool_use_id: `${i}`,
 					input: { command: p.command },
 					text: p.text,
+					...(p.isError && { isError: true }),
 				})),
 			},
 		],
@@ -91,5 +113,67 @@ for (const command of [
 	test(`${command} passes`, async ($: Engine, on: On) => {
 		lab(on);
 		expect((await run($, command)).decision).toBe("allow");
+	});
+}
+
+const MARK = "/tmp/mine/.created-by-claudetto";
+const denied = (
+	command: string,
+	reason: string,
+	past: Earlier[] = [],
+	marked: Record<string, string> = {},
+) =>
+	test(`${command} is denied as not owned`, async ($: Engine, on: On) => {
+		lab(on, past, marked);
+		const v = await run($, command);
+		expect(v.decision).toBe("deny");
+		expect(v.reason).toContain(reason);
+	});
+const allowed = (
+	command: string,
+	past: Earlier[] = [],
+	marked: Record<string, string> = {},
+) =>
+	test(`${command} passes as owned`, async ($: Engine, on: On) => {
+		lab(on, past, marked);
+		expect((await run($, command)).decision).toBe("allow");
+	});
+
+denied("rm -rf /tmp/other/x", gateRmTmp("/tmp/other/x"));
+denied("rm -f /private/tmp/other", gateRmTmp("/private/tmp/other"));
+denied("rm -rf /tmp", gateRmTmp("/tmp"));
+denied("rm -rf /tmp/mine", gateRmTmp("/tmp/mine"), [], { [MARK]: "S2" });
+denied("rm -rf /tmp/mine/../other", gateRmTmp("/tmp/mine/../other"), [], {
+	[MARK]: "S1",
+});
+allowed("rm /tmp/mine/sub", [], { [MARK]: "S1\n" });
+allowed("rm notes.txt");
+
+denied("git worktree remove /w/old", gateWorktreeRemove("/w/old"));
+denied("git worktree remove /w/old", gateWorktreeRemove("/w/old"), [
+	{ command: "git worktree add /w/old", text: "", isError: true },
+]);
+allowed("git worktree remove /w/new", [
+	{ command: "git worktree add -b feat /w/new", text: "" },
+]);
+allowed("git worktree remove --force /w/ent", [
+	{ tool: "EnterWorktree", text: "Created worktree at /w/ent", command: "" },
+]);
+
+denied("git branch -D theirs", gateBranchDelete("theirs"));
+denied("git branch -d --force theirs", gateBranchDelete("theirs"), [
+	{ command: "git branch theirs", text: "", isError: true },
+]);
+for (const make of [
+	"git branch mine",
+	"git checkout -b mine",
+	"git switch -c mine",
+	"git worktree add -b mine /w/m",
+]) {
+	test(`git branch -D of a branch made by ${make} is not denied as foreign`, async ($: Engine, on: On) => {
+		lab(on, [{ command: make, text: "" }]);
+		const v = await run($, "git branch -D mine");
+		// The engine rule still asks; only the owner deny is gone.
+		expect(v.decision).toBe("ask");
 	});
 }

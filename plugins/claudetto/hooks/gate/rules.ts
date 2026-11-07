@@ -5,7 +5,13 @@ import {
 	GATE_WRITE_FILE,
 } from "../texts.ts";
 import { packageVerdict } from "./packages.ts";
-import { killVerdict, releaseVerdict } from "./processes.ts";
+import {
+	killVerdict,
+	NOBODY,
+	type Owns,
+	ownedVerdict,
+	releaseVerdict,
+} from "./processes.ts";
 import { refVerdict } from "./refs.ts";
 import { type Command, parse, programOf, scriptOf } from "./shell-words.ts";
 import { upstreamVerdict } from "./upstream.ts";
@@ -93,7 +99,7 @@ export const writeTargets = (
 const commandVerdicts = (
 	c: Command,
 	has: (file: string) => boolean,
-	started: (pid: string) => boolean,
+	own: Owns,
 ): (Verdict | undefined)[] => {
 	const { name, args } = programOf(c);
 	const redirected = c.redirects.some(
@@ -102,7 +108,8 @@ const commandVerdicts = (
 	return [
 		packageVerdict(name, args, has),
 		refVerdict(name, args),
-		killVerdict(name, args, started),
+		killVerdict(name, args, own.pid),
+		ownedVerdict(name, args, own),
 		releaseVerdict(c),
 		writeTargets(c, name, args).some((p) => PLUGIN_HOOKS.test(p))
 			? ask(GATE_HOOK_WRITE)
@@ -123,7 +130,7 @@ const judgeText = (
 	command: string,
 	parsed: ReturnType<typeof parse>,
 	has: (file: string) => boolean,
-	started: (pid: string) => boolean,
+	own: Owns,
 ): Verdict | undefined => {
 	if (parsed.unreadable) {
 		// The commands cannot be told apart, but the rules that read the whole text still can.
@@ -131,7 +138,7 @@ const judgeText = (
 	}
 	return strictest([
 		upstreamVerdict(command, parsed.commands),
-		...parsed.commands.flatMap((c) => commandVerdicts(c, has, started)),
+		...parsed.commands.flatMap((c) => commandVerdicts(c, has, own)),
 	]);
 };
 
@@ -139,18 +146,16 @@ const judgeText = (
 export const judge = (
 	command: string,
 	has: (file: string) => boolean,
-	started: (pid: string) => boolean = () => false,
+	own: Owns = NOBODY,
 ): Verdict | undefined => {
 	const parsed = parse(command);
 	const scripts = parsed.commands.flatMap((c) => scriptOf(c) ?? []);
 	return strictest([
-		judgeText(command, parsed, has, started),
+		judgeText(command, parsed, has, own),
 		// An unreadable script is already an ask through the outer text.
 		...scripts.map((s) => {
 			const p = parse(s);
-			return p.unreadable
-				? upstreamVerdict(s, [])
-				: judgeText(s, p, has, started);
+			return p.unreadable ? upstreamVerdict(s, []) : judgeText(s, p, has, own);
 		}),
 	]);
 };

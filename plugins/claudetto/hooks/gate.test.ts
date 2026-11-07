@@ -468,6 +468,9 @@ const vanishing = (
 	on("session.cwd", () => ({ value: "/p" }));
 	on("clock.now", () => ({ value: 0 }));
 	on("fs.exists", (_$, e) => ({ value: there(e.path) }));
+	// `there` finds any path without a file extension, so a marker file reads as empty.
+	on("fs.read", () => ({ value: "" }));
+	on("session.id", () => ({ value: "S1" }));
 	on("fs.stat", (_$, e) => {
 		if (!there(e.path)) {
 			throw new Error("ENOENT");

@@ -8,7 +8,7 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
-import { startedBy } from "./gate/processes.ts";
+import { ownsOf, tmpTops } from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
 import { type Host, newRecreation, recreates, saw } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
@@ -21,7 +21,10 @@ const STRICTNESS = ["allow", "ask", "deny"];
 const PERSON = /^(?:composer|bridge)$/;
 // Another feature owns the unmatched `tool.check`; this pattern matches every tool name.
 const ANY_TOOL = /^/;
-const KILL = /\bkill\b/;
+// Only a command that could need the transcript or a marker file reads them.
+const OWNED = /\b(?:kill|worktree|branch)\b/;
+const RM = /\brm\b/;
+const MARKER = ".created-by-claudetto";
 
 const presentFiles = async ($: EngineInterface): Promise<Set<string>> => {
 	const cwd = await $.session.cwd();
@@ -44,6 +47,22 @@ const hostOf = ($: EngineInterface): Host => ({
 	past: async () => (await $.session.messages()).flatMap((m) => m.toolUses),
 });
 
+const ownershipOf = async ($: EngineInterface, command: string) => {
+	const tops = RM.test(command) ? tmpTops(command) : [];
+	const marked = await Promise.all(
+		tops.map(async (top) =>
+			(await $.fs.exists(`${top}/${MARKER}`)) &&
+			(await $.fs.read(`${top}/${MARKER}`)).trim() === (await $.session.id())
+				? top
+				: undefined,
+		),
+	);
+	return ownsOf(
+		OWNED.test(command) ? await hostOf($).past() : [],
+		new Set(marked.filter((t) => t !== undefined)),
+	);
+};
+
 const ownVerdict = async (
 	$: EngineInterface,
 	tool: string,
@@ -55,7 +74,7 @@ const ownVerdict = async (
 		const own = judge(
 			command,
 			(f) => present.has(f),
-			startedBy(KILL.test(command) ? await hostOf($).past() : []),
+			await ownershipOf($, command),
 		);
 		return own && { ...own, reason: `${own.reason} (\`${command}\`)` };
 	}
