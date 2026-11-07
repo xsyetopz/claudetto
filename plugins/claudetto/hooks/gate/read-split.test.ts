@@ -30,18 +30,26 @@ test("a line the split cannot make exact is left whole", () => {
 	}
 });
 
-const lab = (on: On, readFails = false): string[] => {
+interface Reply {
+	result: string;
+	text: string;
+	isError?: true;
+}
+
+const lab = (
+	on: On,
+	read: (ran: readonly string[]) => Reply = () => ({
+		result: "numbered",
+		text: "1\tconst x = 1;",
+	}),
+): string[] => {
 	scanner(on);
 	const ran: string[] = [];
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("fs.exists", () => ({ value: false }));
 	on("tool.check", () => ({ decision: "allow" }));
-	on("tool.call", { tool: ["Read"] }, () =>
-		readFails
-			? { result: "no such file", text: "no such file", isError: true }
-			: { result: "numbered", text: "1\tconst x = 1;" },
-	);
+	on("tool.call", { tool: ["Read"] }, () => read(ran));
 	on("tool.call", { tool: ["Bash"] }, (_$, e) => {
 		ran.push(String(e.command));
 		return {
@@ -67,7 +75,11 @@ test("the closing cat is read with Read in the same call and the rest runs alone
 });
 
 test("a read that fails after the rest ran ends the result with the error, as cat would", async ($: Engine, on: On) => {
-	const ran = lab(on, true);
+	const ran = lab(on, () => ({
+		result: "no such file",
+		text: "no such file",
+		isError: true,
+	}));
 
 	const out = await run($, "bun test; cat src/lib.ts");
 
@@ -78,22 +90,9 @@ test("a read that fails after the rest ran ends the result with the error, as ca
 });
 
 test("a file the rest writes is read after the rest ran", async ($: Engine, on: On) => {
-	scanner(on);
-	let contents = "old";
-	on("clock.now", () => ({ value: 0 }));
-	on("session.cwd", () => ({ value: "/repo" }));
-	on("fs.exists", () => ({ value: false }));
-	on("tool.check", () => ({ decision: "allow" }));
-	on("tool.call", { tool: ["Read"] }, () => ({
-		result: contents,
-		text: contents,
-	}));
-	on("tool.call", { tool: ["Bash"] }, () => {
-		contents = "new";
-		return {
-			result: { stdout: "ok", stderr: "", interrupted: false },
-			text: "ok",
-		};
+	lab(on, (ran) => {
+		const contents = ran.length > 0 ? "new" : "old";
+		return { result: contents, text: contents };
 	});
 
 	const out = await run($, "bun test > out.txt; cat out.txt");
