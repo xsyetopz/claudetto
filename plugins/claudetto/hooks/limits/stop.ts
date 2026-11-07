@@ -90,6 +90,7 @@ const tasksNotice = () => {
 const openBlock = async (
 	$: EngineInterface,
 	e: { readonly last_assistant_message?: string | undefined },
+	interactive: boolean,
 ) => {
 	const reply = e.last_assistant_message ?? "";
 	const form = commandForm(reply);
@@ -97,7 +98,7 @@ const openBlock = async (
 		return COMMAND_FORM(form);
 	}
 	const items = openItems(reply, turnOf(await $.session.messages()));
-	if (items.length === 0) {
+	if (items.length === 0 || !interactive) {
 		return;
 	}
 	const names = (await $.tool.list()).map((tool) => tool.name);
@@ -155,6 +156,7 @@ const gradeBlock = async (
 	},
 	wroteIssues: boolean,
 	denied: ReadonlySet<string>,
+	interactive: boolean,
 ) => {
 	const reply = e.last_assistant_message ?? "";
 	const turn = claimTurn(await $.session.messages(), denied);
@@ -164,7 +166,7 @@ const gradeBlock = async (
 	const codes = offeredCodes(
 		turn.looked,
 		wroteIssues,
-		turn.asked,
+		turn.asked || !interactive,
 		turn.failed !== "",
 	);
 	const grade = async (
@@ -221,6 +223,12 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	const denied = new Set<string>();
 	const asked = new Map<string, string>();
 	const noticeTasks = tasksNotice();
+	// A headless session has no AskUserQuestion, and the claudetto ask tool forwards to it, so no ask can reach anyone.
+	let interactive = true;
+	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
+		interactive = e.isInteractive;
+		return next(e);
+	});
 	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
 		const answer = await next(e);
 		const ok = didWrite(answer);
@@ -272,8 +280,8 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		}
 		const block =
 			(await filesBlock($, e)) ??
-			(isOpenItemsOn ? await openBlock($, e) : undefined) ??
-			(await gradeBlock($, e, stretchIssues, denied));
+			(isOpenItemsOn ? await openBlock($, e, interactive) : undefined) ??
+			(await gradeBlock($, e, stretchIssues, denied, interactive));
 		if (block !== undefined) {
 			return { ...answer, block };
 		}

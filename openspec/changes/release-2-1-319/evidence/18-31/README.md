@@ -1,7 +1,7 @@
 # 18.31: grade the current plugin on a held-out set
 
 One run grades `plugins/claudetto` of this checkout on a set of 24 cases and prints counts only. Run it from the repo root
-by your own `!`, once per run (10 runs, each 24/24). The fresh set r4 was written blind outside the protected folder, so
+by your own `!`, once per run (10 runs, each 23/24 or better). The fresh set r4 was written blind outside the protected folder, so
 move it in once, which no session may do:
 
 ```sh
@@ -20,12 +20,17 @@ Output: `{"n":24,"pass":N,"byLabel":{...}}`. The folder it made (`/tmp/probe-183
 `.created-by-claudetto`) holds `result.json` and `ledger.jsonl` (tokens and cost per session, no case text). The sessions' `cfg/` and `ws/` hold case
 text, so `run.ts` removes them once grading ends. The grade names no failing case, by design.
 
+A set kept beside `run.ts`, such as `public-c1.json`, is public: `run.ts` grades it in-process with six lanes and also
+writes `cases.jsonl`, one line per case with its id and verdict, so its misses can be read and fixed.
+
 ## What it is
 
 - `grader.ts` is `../tmp/probe-122/grader.ts` (the grader of the 12.3 runs; the old `/tmp/probe-123/grader.ts` differed
   only in `ROOT`). Folders come from `FIXTURE_ROOT`, workspace templates and the session writer from `../tmp/probe-122`.
 - `run.ts` makes the folder, sets `ARM_DIR` to this checkout's `plugins/claudetto` (the old `arm-change` was a copy of it)
   and calls `claudekit fixture grade SET grader.ts`.
+- The graded sessions run with Claude Code's sandbox on (`"sandbox":{"enabled":true,"allowUnsandboxedCommands":false}`
+  in `--settings`), so test runners pass through `autoAllowBashIfSandboxed` (18.36).
 - The folder is under `/tmp` because the sessions run with `--setting-sources project,local`: a folder inside the repo
   would load the repo's own settings and nest git repos.
 - `~/.local/share/claudekit` (the claudekit checkout of the 12.1 and 12.3 runs) must exist; `run.ts` stops and says so when it does not.

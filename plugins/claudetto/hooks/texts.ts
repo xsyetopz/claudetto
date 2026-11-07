@@ -481,7 +481,7 @@ export const GRADE_FAULTS = {
 		fix: "The user raised a problem and your reply recited the rules you follow. Do the work now: find the problem, fix it, and report what changed with file:line. Leave the rules out unless the user asked which rule applies.",
 	},
 	unfiled: {
-		test: "The reply reports a defect the assistant found outside the user's request, and says it was left unrecorded, or mentions it only in the reply, while the turn wrote nothing to the project's open-issues file.",
+		test: "The reply reports a defect the assistant found outside the user's request, and says it was left unrecorded, or mentions it only in the reply, while the turn wrote nothing to the project's open-issues file. A defect in what the user asked about (the function, file, bug, or behavior their question or task names) is the answer, not outside the request, and is not this fault.",
 		fix: "You found a defect outside the task and wrote it nowhere. Add it to the project's open-issues file (the ISSUES file at the repo root) now with its place, then say you did. Leave the code unchanged unless the user asked.",
 	},
 	fallback: {

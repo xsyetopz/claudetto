@@ -90,7 +90,7 @@ const grade = async (f: F): Promise<Verdict> => {
 	const dir = await workspace(f);
 	const logs = process.env.LOG_DIR;
 	const tag = `${process.env.ARM_NAME ?? "arm"}-${f.id}-${Date.now()}`;
-	const r = await runClaude(["-p", f.userReply, "--resume", resume(f, dir), "--fork-session", "--plugin-dir", arm, "--settings", '{"outputStyle":"claudetto:Concise"}', "--setting-sources", "project,local", "--permission-mode", "acceptEdits", "--no-session-persistence", "--output-format", "stream-json", "--verbose", "--max-budget-usd", "1", ...(logs ? ["--debug-file", join(logs, `${tag}.debug`)] : [])], dir);
+	const r = await runClaude(["-p", f.userReply, "--resume", resume(f, dir), "--fork-session", "--plugin-dir", arm, "--settings", '{"outputStyle":"claudetto:Concise","sandbox":{"enabled":true,"allowUnsandboxedCommands":false}}', "--setting-sources", "project,local", "--permission-mode", "acceptEdits", "--no-session-persistence", "--output-format", "stream-json", "--verbose", "--max-budget-usd", "1", ...(logs ? ["--debug-file", join(logs, `${tag}.debug`)] : [])], dir);
 	ledger({ kind: "session", model: r.models.join(","), tokens: r.tokens, usd: r.usd, killed: r.killed });
 	if (logs) await Bun.write(join(logs, `${tag}.jsonl`), r.events.map((e) => JSON.stringify(e)).join("\n"));
 	const uses = r.events.filter((e) => e.type === "assistant").flatMap((e) => e.message.content).filter((c: any) => c.type === "tool_use");

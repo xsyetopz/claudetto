@@ -27,6 +27,7 @@ const lab = (
 	on("session.messages", () => ({ value: messages as SessionMessage[] }));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
+	on("session.start", () => ({ cwd: "/repo" }));
 	on("model.complete", (_$, e) => {
 		seen.push(e.prompt);
 		models.push(e.model ?? "");
@@ -97,6 +98,14 @@ test("a turn that made an ask call is not offered the asks fault", async ($: Eng
 		seen,
 	);
 	expect((await stop($)).block).toBeUndefined();
+	expect(seen[0]).not.toContain("- asks:");
+});
+
+test("a headless session, which has no AskUserQuestion, is not offered the asks fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("Which Python should CI use?"), used("Read")], found("asks", "I picked Python 3.12."), seen);
+	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
+	expect((await stop($, false, "I picked Python 3.12.")).block).toBeUndefined();
 	expect(seen[0]).not.toContain("- asks:");
 });
 

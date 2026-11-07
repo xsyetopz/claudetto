@@ -27,6 +27,7 @@ const lab = (on: On, ...turn: SessionMessage[]): void => {
 	on("classic.Stop", () => ({}));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
+	on("session.start", () => ({ cwd: "/repo" }));
 	on("session.messages", () => ({ value: [said("user", "go"), ...turn] }));
 	listed = 0;
 	on("tool.list", () => {
@@ -309,6 +310,14 @@ test("a question item names AskUserQuestion, or the mcp tool when the session li
 	expect(mcp.block).toContain(
 		"Ask each with mcp__claudetto__ask-user-question and",
 	);
+});
+
+test("a headless session, which has no AskUserQuestion, gets no ask block for a question item and still gets the command block", async ($: Engine, on: On) => {
+	lab(on);
+	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
+
+	expect((await stop($, "- [ ] Which region should I use?")).block).toBeUndefined();
+	expect((await stop($, "You need to run `gh auth login` first.")).block).toBeDefined();
 });
 
 test("a reply already in form costs nothing: no block and no tool.list call", async ($: Engine, on: On) => {
