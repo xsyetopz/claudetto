@@ -25,3 +25,5 @@ Result (`sessions.jsonl`, `run.log`; 16 sessions, no arm-check diff, none capped
 Fisher p = 1. Total $0.2616 (ledger price), 371,278 tokens. Closes 18.18: its 0/8 came first from the deferral (fixed in 18.18) and then from this gate.
 
 Process check: `ps -axo pid,ppid,command | grep probe-18-18 | grep -v grep` printed nothing after the run.
+
+Processes (18.17): runs `../18-7/probe.ts`, no starter of its own; fake stopped by 18-7/probe.ts:68 and 47-51; ps after run: nothing, see the process check above

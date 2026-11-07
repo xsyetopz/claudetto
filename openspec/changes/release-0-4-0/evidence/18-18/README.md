@@ -29,3 +29,5 @@ What changed against 18.7: the model now calls `ListAgents` in 8/8 change sessio
 Process check, `ps -axo pid,ppid,command | grep probe-18-18 | grep -v grep` printed nothing after the dry run and after the paid run.
 
 Follow-up: the denial above came from the answer-first gate in `hooks/pin.ts`; task 18.21 fixed it and the rerun reached 8/8 against 8/8, see `../18-21/README.md`.
+
+Processes (18.17): runs `../18-7/probe.ts`, no starter of its own; fake stopped by 18-7/probe.ts:68 and 47-51; ps after run: nothing, see the process check above

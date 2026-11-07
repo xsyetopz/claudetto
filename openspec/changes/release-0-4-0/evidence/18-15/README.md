@@ -17,3 +17,5 @@ All runs use claudekit's fake Messages API from `/tmp/claudekit-leftovers` on Cl
     - no `Glob` branch: the first test fails;
     - no result text passed from `tool.call`: the first test fails;
     - no text passed by the replay: the second test fails.
+
+Processes (18.17): fake API and `claude -p` (tools.ts:4-5, agent.ts:8-9, seen.ts:17-18) stopped by `try/finally { p.kill(); await fake.stop() }` (tools.ts:6, agent.ts:10, seen.ts:30); ps after run: checked 2026-11-07 sweep: none

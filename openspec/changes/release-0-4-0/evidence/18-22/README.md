@@ -72,3 +72,5 @@ Not changed: the Bash gate still refuses a whole compound line (a hook allows or
 ## Process check
 
 `ps -axo pid,ppid,command | grep probe-18-22 | grep -v grep` after the run printed nothing. No scratch outside `/tmp/probe-18-22/`.
+
+Processes (18.17): scripts/*.ts read files and start no process; ps after run: checked 2026-11-07 sweep: none

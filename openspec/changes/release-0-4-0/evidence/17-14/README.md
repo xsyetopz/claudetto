@@ -98,3 +98,5 @@ Fix (b80a5f1f): `stopHooks` keeps the ids `tool.check` asked about. A `tool.call
 
 Lab: `hooks/limits/verify.test.ts`, the three "an ask refused with …" tests and "an ask that was allowed and then failed is still a lookup"; full lab 1211 pass, the committed slice alone in a clean worktree 1210 pass. The lab refuses an ask inside its own `tool.call`, so the test's check stub answers `ask` once and `allow` after that, and the stubbed result is what reaches the hook.
 Mutants, each caught: without the reason match (1 fail), without the refusal texts (2 fail), every asked call counted as refused (1 fail).
+
+Processes (18.17): the `claude -p` commands in this README are foreground shell commands, no fake API and no `&`; each ends with its own exit; ps after run: checked 2026-11-07 sweep: none

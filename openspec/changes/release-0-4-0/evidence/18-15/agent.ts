@@ -7,7 +7,7 @@ for (const a of ["Artemis", "Metis"]) {
 	], fallback: { blocks: [{ type: "text", text: "done" }], stop: "end_turn" } };
 	const fake = await startFake({ plan, dir });
 	const p = Bun.spawn(["claude", "-p", "go-agent", "--plugin-dir", "/tmp/probe-122/arm-new", "--permission-mode", "acceptEdits", "--no-session-persistence"], { cwd: "/tmp/probe-18-1", env: { ...process.env, ANTHROPIC_BASE_URL: fake.url, ANTHROPIC_API_KEY: "fake", CLAUDE_CODE_OAUTH_TOKEN: "", CLAUDE_CONFIG_DIR: "/tmp/probe-18-1/cfg" }, stdout: "pipe", stderr: "pipe" });
-	await p.exited; await fake.stop();
+	try { await p.exited; } finally { p.kill(); await fake.stop(); }
 	const sub = (await readRequests(dir)).filter((r) => JSON.stringify(r.body.messages ?? []).includes("PROBE-SUB") && !JSON.stringify(r.body.messages ?? []).includes("go-agent"));
 	console.log(a, sub.length, sub[0] ? (sub[0].body.tools as any[]).map((t) => t.name).join(",") : "no subagent request");
 }

@@ -75,3 +75,5 @@ the predicted 0.3 to 0.7; among crediting replies 0.53 is below the predicted 0.
 
 After the run, `ps -axo pid,ppid,command | grep probe-18-9` showed nothing of this run. The scored run uses no fake API. The dry run's fake is stopped in `finally`
 (`launch(...).finally(() => fake?.stop())`). Other fake-API orphans in `ps` belong to other probes (`probe-18-7`, the old tui run) and were left alone.
+
+Processes (18.17): fake API (probe.ts:59) and `claude -p` via `launch` stopped by `.finally(() => fake?.stop())` (probe.ts:60); manipulation.ts and build.ts start nothing; ps after run: checked 2026-11-07 sweep: none

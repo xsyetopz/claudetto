@@ -40,3 +40,5 @@ new alone	sessions with an announcement 24/204 vs 31/204 p=0.3846	per text block
 old recount	sessions with an announcement 13/136 vs 22/136 p=0.1466	per text block 13/63 vs 23/64 p=0.0761	announcements per session (the 122 note's method) 13/136 vs 23/136 p=0.1064
 pooled	sessions with an announcement 37/340 vs 53/340 p=0.0892	per text block 37/190 vs 54/179 p=0.0215	announcements per session (the 122 note's method) 37/340 vs 54/340 p=0.0711
 ```
+
+Processes (18.17): no process starter in this folder (narration.ts is a pure grader; the sessions ran through 18-7/probe.ts); ps after run: checked 2026-11-07 sweep: none

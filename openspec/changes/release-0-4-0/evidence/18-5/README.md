@@ -41,3 +41,5 @@ Cost and size: base 2,503,888 tokens, $1.1892, largest session 119,822 tokens; c
 Caveat: one model (Sonnet), synthetic files, a prompt that asks one question per session.
 
 Process check after the runs: `ps -axo pid,ppid,command | grep probe-18-` showed no process under `/tmp/probe-18-5` or `/tmp/probe-18-6`, and no `fake/server.ts` of ours. The harness stops each fake in a `finally`.
+
+Processes (18.17): fake API (harness.ts:133) and `claude -p` via `launch` (harness.ts:135) stopped by `try/finally await fake.stop()` (harness.ts:136-137); launch awaits the child and kills it on cap or timeout (claudekit launcher.ts:264-271); ps after run: checked 2026-11-07 sweep: none

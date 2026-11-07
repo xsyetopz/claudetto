@@ -77,3 +77,5 @@ Mutants, each caught:
 - the no-look fact dropped: 1 fail
 - the issues fact dropped: 2 fail
 - the background tasks not passed to the prompt: 1 fail
+
+Processes (18.17): `claude -p` (grader.ts:156) stopped by `await proc.exited` (grader.ts:161); the `$.model` hook calls in probe/m.ts start no process; ps after run: checked 2026-11-07 sweep: none

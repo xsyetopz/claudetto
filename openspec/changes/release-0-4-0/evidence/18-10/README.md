@@ -36,3 +36,5 @@ The Bash exit code is 128 in all three (git's fatal exit; the claude process exi
 - Not measured: a successful ssh login (needs a key GitHub accepts and a known_hosts entry), and an allow log line (none is written). User step if wanted:
 
   `! ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts` then run `! claude`, and ask it to run `git ls-remote git@github.com:<owner>/<repo>.git HEAD` with a loaded key. This is outside the free run.
+
+Processes (18.17): fake server and `claude -p` (run.sh:5, run.sh:15) stopped by `trap ... EXIT` plus `trap 'exit 1' INT TERM HUP` (run.sh:8-9), and `wait $cpid`; ps after run: checked 2026-11-07 sweep: none (SIGTERM mid-run left nothing; with the traps removed the fake and the claude child stayed with ppid 1)

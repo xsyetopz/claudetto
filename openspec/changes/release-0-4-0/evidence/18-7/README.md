@@ -48,3 +48,5 @@ What the sessions did:
 Not measured: `SendMessage` (deferred by 5.21; needs a live agent), Workflow, ScheduleWakeup and ReportFindings (deferred by 2.13), other models (Sonnet only), interactive sessions, tasks that need a deferred tool for the answer to be right.
 
 Process check after the free run and after the paid run, `ps -axo pid,ppid,command | grep probe-18-7 | grep -v grep` printed nothing both times. An earlier failed free run (a wrong plugin path) left three fake API servers and one more came from a stopped run; they were killed by PID, and `probe.ts` now stops its fakes on `exit`, `SIGINT`, `SIGTERM` and `SIGHUP`.
+
+Processes (18.17): fake API (probe.ts:66) and `claude -p` via `launch` (probe.ts:68) stopped by `try/finally await fake.stop()` (probe.ts:68) plus an exit/SIGINT/SIGTERM/SIGHUP handler killing every live fake (probe.ts:47-51); ps after run: checked 2026-11-07 sweep: none

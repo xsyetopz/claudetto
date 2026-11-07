@@ -98,3 +98,5 @@ Run: `PROBE_GOAL_CAP=40000000 PROBE_ROOT=/tmp/probe-18-19 PROBE_SET=<set2> bun -
 - Set1, rerun is not needed; its result (recall 11/16, lower bound 0.44) stands as the pre-sonnet-vote measurement. Set1 was run before the sonnet vote was added.
 - Process check: after set2, `ps -axo pid,ppid,command | grep probe-18-19 | grep -v grep` printed nothing.
 - Final `claude plugin test plugins/claudetto`: see the report (1225 pass, 0 fail).
+
+Processes (18.17): `claude -p` via `Bun.spawnSync` (pre.ts:32) blocks until the child exits; no fake, no `&`; ps after run: checked 2026-11-07 sweep: none

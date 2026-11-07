@@ -35,3 +35,5 @@ Caveats:
 - 11 plugin replies had no checkbox: p05, p06, p07, p13, p15, p19, p20, p23, p27, p29, p31 (p31 holds the heading only).
 - One sample per prompt (n=1), one model (sonnet), tools limited to `Read,Write,Edit,Glob,Grep`, so the model could not run the user-only commands itself.
 - Judging is by regex, not an LLM, so `checkbox` counts any `- [ ]` line.
+
+Processes (18.17): fake API (probe.ts:77) and `claude -p` via `launch` stopped by `try/finally await fake?.stop()` (probe.ts:114-115); ps after run: checked 2026-11-07 sweep: none

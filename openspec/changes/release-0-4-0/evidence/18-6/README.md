@@ -40,3 +40,5 @@ The plugin's own difference (about 700 output tokens more than `base` with or wi
 Caveat: one model (Sonnet), synthetic tests, a prompt that names `bun test`; the model often pipes the output through `head` or `tail` itself, which is why the cut rarely fires.
 
 Process check after the runs: `ps -axo pid,ppid,command | grep probe-18-` showed no process under `/tmp/probe-18-5` or `/tmp/probe-18-6`, and no `fake/server.ts` of ours.
+
+Processes (18.17): runs through 18-5/harness.ts, no starter of its own; fake stopped by 18-5/harness.ts:136-137; ps after run: checked 2026-11-07 sweep: none
