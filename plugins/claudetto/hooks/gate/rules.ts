@@ -58,7 +58,7 @@ const writesWhole = (
 			name === "echo" ||
 			(name === "cat" && operands(args).length === 0)));
 
-const printsFile = (name: string, args: string[]): boolean => {
+export const printsFile = (name: string, args: string[]): boolean => {
 	const files = operands(args);
 	if (name === "cat" || name === "head") {
 		return files.length > 0;

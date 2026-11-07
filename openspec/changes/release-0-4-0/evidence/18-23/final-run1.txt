@@ -1,0 +1,4 @@
+base: n=30 output mean 355.8 (bootstrap 347.8-363.4) turns/session 3.00 raw calls/session 2.97 job-op calls/session 4.07 ToolSearch 0.00 denials 0.00 stopBlocks 0.00 shapeErr sessions 0 fixed 30/30 Wilson 0.886-1.000 usd 1.4857 largest 59674
+   bash by purpose per session: tests plus a read 30; tests only 30
+change: n=30 output mean 692.2 (bootstrap 593.7-795.2) turns/session 3.97 raw calls/session 3.37 job-op calls/session 5.23 ToolSearch 0.00 denials 0.00 stopBlocks 0.43 shapeErr sessions 0 fixed 30/30 Wilson 0.886-1.000 usd 1.1942 largest 88782
+   bash by purpose per session: tests plus a read 30; tests only 43

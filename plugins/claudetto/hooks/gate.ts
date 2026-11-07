@@ -8,6 +8,7 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
+import { readSplit } from "./gate/read-split.ts";
 import { type Host, newRecreation, recreates, saw } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
 import { deny, fieldOf, type Verdict } from "./gate/verdict.ts";
@@ -115,6 +116,8 @@ export const gate = (on: On): void => {
 		denials = {};
 		return next(e);
 	});
+
+	readSplit(on);
 
 	// Every result is scanned, so a secret any tool prints reaches the model as `[REDACTED]`.
 	on("tool.call", { tool: ANY_TOOL }, async ($, e, next) => {

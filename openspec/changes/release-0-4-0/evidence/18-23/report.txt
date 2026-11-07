@@ -1,0 +1,10 @@
+plan: 60 sessions, bound 18000000 tokens; ledger 0 tokens, $0.0000
+{
+	"rejected": [],
+	"usd": 2.6144124
+}
+base	sessions 30	output tokens total 11350 mean 378.3 (bootstrap 95% 363.5-397.3) median 368	input+cache tokens 1855040	fixed 30/30 Wilson 0.886-1.000	cut markers 0	tokens 1866390	$1.5053	largest 103018	capped 0
+change	sessions 30	output tokens total 16554 mean 551.8 (bootstrap 95% 460.7-646.6) median 378	input+cache tokens 1139409	fixed 30/30 Wilson 0.886-1.000	cut markers 0	tokens 1155963	$1.1091	largest 72319	capped 0
+base vs change: output tokens, Mann-Whitney p=0.0107, permutation test of the mean p=0.0008
+nocut vs change: output tokens, Mann-Whitney p=1.0000, permutation test of the mean p=0.0000
+fixed, Fisher two-sided base vs change: p=1.0000
