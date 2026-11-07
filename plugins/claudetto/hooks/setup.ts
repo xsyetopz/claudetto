@@ -465,7 +465,7 @@ const onStartup: HookFor<"classic.SessionStart"> = async ($, e, next) => {
 	}
 	const path = await $.env.get("PATH");
 	await Promise.all(TOOLS.map((tool) => toolNotice($, tool, path)));
-	const disk = diskLine(await lines($, ["df", "-Pk", await $.session.cwd()]));
+	const disk = diskLine(await lines($, ["df", "-Pk", "."]));
 	if (disk !== undefined) {
 		$.ui.log(disk);
 	}

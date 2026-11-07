@@ -6,6 +6,7 @@
 # The names come from Mole's purge targets (`mo purge`, lib/clean/purge_shared.sh), minus `bin`, which can hold scripts, and from each tool's docs.
 # A name that several tools share, such as `build` or `target`, sits in each of their rules: the report names the first rule that matches, and disabling one rule leaves the others.
 # Ninja and Make write files only, into the folder their generator chose, so they have no rule.
+# Bazel has none either: its bazel-* outputs are symlinks into its own cache, and the walk does not follow links; `bazel clean` frees them.
 
 title = "claudetto trash"
 
@@ -45,8 +46,8 @@ tags = ["project", "dependencies", "python"]
 
 [[rules]]
 id = "python-caches"
-description = "Bytecode, pytest, mypy, Ruff, Hypothesis, Jupyter, and egg-info caches"
-path = '''(?:^|/)(?:__pycache__|\.pytest_cache|\.mypy_cache|\.ruff_cache|\.hypothesis|\.ipynb_checkpoints|[^/]+\.egg-info)$'''
+description = "Bytecode, pdm build, pytest, mypy, Ruff, Hypothesis, Jupyter, and egg-info caches"
+path = '''(?:^|/)(?:__pycache__|\.pdm-build|\.pytest_cache|\.mypy_cache|\.ruff_cache|\.hypothesis|\.ipynb_checkpoints|[^/]+\.egg-info)$'''
 tags = ["project", "build", "python"]
 
 # Apple
@@ -102,6 +103,12 @@ id = "kotlin"
 description = "Kotlin 2 compiler data, which earlier versions kept in .gradle/kotlin"
 path = '''(?:^|/)\.kotlin$'''
 tags = ["project", "build", "kotlin"]
+
+[[rules]]
+id = "clojure"
+description = "Clojure CLI classpath cache and Leiningen target folder"
+path = '''(?:^|/)(?:\.cpcache|target)$'''
+tags = ["project", "build", "clojure"]
 
 [[rules]]
 id = "android-ndk"
@@ -169,8 +176,8 @@ tags = ["project", "build", "zig"]
 
 [[rules]]
 id = "dart"
-description = "Dart and Flutter tool cache"
-path = '''(?:^|/)\.dart_tool$'''
+description = "Dart and Flutter tool cache, and Flutter's generated platform files"
+path = '''(?:^|/)(?:\.dart_tool|Flutter/ephemeral)$'''
 tags = ["project", "build", "dart"]
 
 [[rules]]
@@ -181,14 +188,14 @@ tags = ["project", "build", "dotnet"]
 
 [[rules]]
 id = "vendor"
-description = "Composer, Bundler, and Go module vendor folders"
+description = "Composer, Bundler, Go module, and Deno vendor folders"
 path = '''(?:^|/)vendor$'''
 tags = ["project", "dependencies"]
 
 [[rules]]
 id = "elixir"
-description = "Mix build output"
-path = '''(?:^|/)_build$'''
+description = "Mix and rebar3 build output, and Mix dependencies"
+path = '''(?:^|/)(?:_build|deps)$'''
 tags = ["project", "build", "elixir"]
 
 [[rules]]
@@ -205,9 +212,15 @@ tags = ["project", "build", "elm"]
 
 [[rules]]
 id = "terraform"
-description = "Terraform and Terragrunt downloaded providers and modules"
+description = "Terraform, OpenTofu, and Terragrunt downloaded providers and modules"
 path = '''(?:^|/)(?:\.terraform|\.terragrunt-cache)$'''
 tags = ["project", "dependencies", "terraform"]
+
+[[rules]]
+id = "luarocks"
+description = "LuaRocks project tree and its config folder"
+path = '''(?:^|/)(?:lua_modules|\.luarocks)$'''
+tags = ["project", "dependencies", "lua"]
 
 # Temp
 
