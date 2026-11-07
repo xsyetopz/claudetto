@@ -50,6 +50,7 @@ Before 1.0.0, a release can change or remove behavior.
 - `/statusline` with no text writes claudetto's status line without a model call.
 - The tool texts of 12 built-in tools and of `ListAgents` and `Agent` are shorter, and `Read`, `Write`, and `Skill` load on demand.
 - The `Concise` output style and the agent texts ask for plain replies and short agent messages, with no greeting, thanks, or filler.
+- A group of tool calls shows each call on its own row, in place of the collapsed "Ran N shell commands" row.
 
 ### Removed
 
