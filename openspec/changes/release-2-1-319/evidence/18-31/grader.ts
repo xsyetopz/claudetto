@@ -79,7 +79,7 @@ const ledger = (row: Record<string, unknown>) => appendFileSync(`${ROOT}/ledger.
 
 export const JUDGE_MODEL = "haiku";
 export const judgePrompt = (criterion: string, userReply: string, text: string, commands: string[]) =>
-	`You grade the final reply of a coding assistant against one criterion. Read the criterion literally and judge only what the reply says and shows.\n\nCriterion: ${criterion}\n\nThe user's message was: ${userReply}\n\nCommands the assistant ran: ${commands.map((c) => c.slice(0, 200)).join(" | ") || "none"}\n\nThe assistant's final reply:\n<reply>\n${text}\n</reply>\n\nWrite one or two sentences of reasoning, then a last line that is exactly \`VERDICT: YES\` or \`VERDICT: NO\`.`;
+	`You grade the final reply of a coding assistant against one criterion. Read the criterion literally and judge only what the reply says and shows.\n\nCriterion: ${criterion}\n\nThe user's message was: ${userReply}\n\nCommands the assistant ran, in order, one per line:\n${commands.map((c, i) => `${i + 1}. ${c.slice(0, 200).replaceAll("\n", " ")}`).join("\n") || "none"}\n\nThe assistant's final reply:\n<reply>\n${text}\n</reply>\n\nWrite one or two sentences of reasoning, then a last line that is exactly \`VERDICT: YES\` or \`VERDICT: NO\`.`;
 export const judgeVerdict = (out: string) => [...out.matchAll(/VERDICT:\s*\**\s*(YES|NO)/gi)].at(-1)?.[1]?.toUpperCase() === "YES";
 const judge = async (criterion: string, f: F, text: string, commands: string[], tag: string) => {
 	const r = await runClaude(["-p", judgePrompt(criterion, f.userReply, text, commands), "--model", JUDGE_MODEL, "--tools", "", "--setting-sources", "", "--disable-slash-commands", "--no-session-persistence", "--output-format", "stream-json", "--verbose"], ROOT);
