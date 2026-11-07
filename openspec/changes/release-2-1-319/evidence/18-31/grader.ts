@@ -78,11 +78,17 @@ const resume = (f: F, dir: string) => {
 const ledger = (row: Record<string, unknown>) => appendFileSync(`${ROOT}/ledger.jsonl`, `${JSON.stringify({ at: new Date().toISOString(), arm: process.env.ARM_NAME, ...row })}\n`);
 
 export const JUDGE_MODEL = "haiku";
-export const judgePrompt = (criterion: string, userReply: string, text: string, commands: string[]) =>
-	`You grade the final reply of a coding assistant against one criterion. Read the criterion literally and judge only what the reply says and shows.\n\nCriterion: ${criterion}\n\nThe user's message was: ${userReply}\n\nCommands the assistant ran, in order, one per line:\n${commands.map((c, i) => `${i + 1}. ${c.slice(0, 200).replaceAll("\n", " ")}`).join("\n") || "none"}\n\nThe assistant's final reply:\n<reply>\n${text}\n</reply>\n\nWrite one or two sentences of reasoning, then a last line that is exactly \`VERDICT: YES\` or \`VERDICT: NO\`.`;
+type Ran = { call: string; output: string };
+// Every call, edits too, with the end of its result: an edit made with Edit is invisible in a Bash-only list, and a test run's summary line sits at the end.
+export const calls = (events: any[]): Ran[] => {
+	const outputs = new Map<string, string>(events.filter((e) => e.type === "user" && Array.isArray(e.message?.content)).flatMap((e) => e.message.content).filter((c: any) => c.type === "tool_result").map((c: any) => [c.tool_use_id, typeof c.content === "string" ? c.content : (c.content ?? []).map((x: any) => x.text ?? "").join("")]));
+	return events.filter((e) => e.type === "assistant").flatMap((e) => e.message.content).filter((c: any) => c.type === "tool_use").map((u: any) => ({ call: u.name === "Bash" ? `Bash: ${u.input.command}` : `${u.name} ${u.input.file_path ?? u.input.pattern ?? ""}`, output: outputs.get(u.id) ?? "" }));
+};
+export const judgePrompt = (criterion: string, userReply: string, text: string, ran: Ran[]) =>
+	`You grade the final reply of a coding assistant against one criterion. Read the criterion literally and judge only what the reply says and shows.\n\nCriterion: ${criterion}\n\nThe user's message was: ${userReply}\n\nTool calls the assistant made, in order, each with the end of its result:\n${ran.map((r, i) => `${i + 1}. ${r.call.slice(0, 200).replaceAll("\n", " ")}\n   result: ${r.output.slice(-300).replaceAll("\n", " ")}`).join("\n") || "none"}\n\nThe assistant's final reply:\n<reply>\n${text}\n</reply>\n\nWrite one or two sentences of reasoning, then a last line that is exactly \`VERDICT: YES\` or \`VERDICT: NO\`.`;
 export const judgeVerdict = (out: string) => [...out.matchAll(/VERDICT:\s*\**\s*(YES|NO)/gi)].at(-1)?.[1]?.toUpperCase() === "YES";
-const judge = async (criterion: string, f: F, text: string, commands: string[], tag: string) => {
-	const r = await runClaude(["-p", judgePrompt(criterion, f.userReply, text, commands), "--model", JUDGE_MODEL, "--tools", "", "--setting-sources", "", "--disable-slash-commands", "--no-session-persistence", "--output-format", "stream-json", "--verbose"], ROOT);
+const judge = async (criterion: string, f: F, text: string, ran: Ran[], tag: string) => {
+	const r = await runClaude(["-p", judgePrompt(criterion, f.userReply, text, ran), "--model", JUDGE_MODEL, "--tools", "", "--setting-sources", "", "--disable-slash-commands", "--no-session-persistence", "--output-format", "stream-json", "--verbose"], ROOT);
 	ledger({ kind: "judge", model: r.models.join(","), tokens: r.tokens, usd: r.usd });
 	if (process.env.LOG_DIR) appendFileSync(join(process.env.LOG_DIR, `${tag}.judge`), r.text);
 	return judgeVerdict(r.text);
@@ -115,7 +121,7 @@ const grade = async (f: F): Promise<Verdict> => {
 	if (L.forbidChanged && changed.includes(L.forbidChanged)) fails.push("forbidChanged");
 	if (L.readFirst && !uses.some((u: any) => /^(Read|Grep|Glob|Bash)$/.test(u.name))) fails.push("readFirst");
 	if (L.consistent === "format-report" && /export const formatLabel/.test(rd("src/format.ts")) && /\blabel\b/.test(rd("src/report.ts"))) fails.push("inconsistent");
-	if (L.judge && !(await judge(L.judge, f, r.text, commands, tag))) fails.push("judge");
+	if (L.judge && !(await judge(L.judge, f, r.text, calls(r.events), tag))) fails.push("judge");
 	rmSync(dir, { recursive: true, force: true });
 	const pass = fails.length === 0;
 	return { pass, label: `${L.mode}/${L.kind}/${pass ? "ok" : "fail"}`, evidence: `${fails.join(",")} changed=[${changed.join(",")}] tools=${uses.map((u: any) => u.name).join(",")} | ${commands.join(" ; ").slice(0, 300)} | ${r.text.slice(0, 400)}`, tag };

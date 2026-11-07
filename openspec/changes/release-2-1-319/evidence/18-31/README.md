@@ -26,7 +26,9 @@ writes `cases.jsonl`, one line per case with its id and verdict, so its misses c
 ## What it is
 
 - `grader.ts` is `../tmp/probe-122/grader.ts` (the grader of the 12.3 runs; the old `/tmp/probe-123/grader.ts` differed
-  only in `ROOT`). Folders come from `FIXTURE_ROOT`, workspace templates and the session writer from `../tmp/probe-122`.
+  only in `ROOT`), except that its judge sees every tool call, edits included, with the last 300 characters of its result, so a held-out run after
+  that change does not compare one to one with the earlier r4 runs. Folders come from `FIXTURE_ROOT`, workspace templates and the
+  session writer from `../tmp/probe-122`.
 - `run.ts` makes the folder, sets `ARM_DIR` to this checkout's `plugins/claudetto` (the old `arm-change` was a copy of it)
   and calls `claudekit fixture grade SET grader.ts`.
 - The graded sessions run with Claude Code's sandbox on (`"sandbox":{"enabled":true,"allowUnsandboxedCommands":false}`
