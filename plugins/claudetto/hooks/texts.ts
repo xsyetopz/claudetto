@@ -355,6 +355,10 @@ export const GATE_KILL_BROAD =
 	"`pkill` and `killall` stop every process with a matching name, and some of those were not started by this session. Stop a background task with `TaskStop`, or run `kill <pid>` on a pid that an earlier command of this session printed after it started the process in the background.";
 export const gateKillPid = (pid: string): string =>
 	`${pid} is not a process this session started: no earlier result of this session shows a background command that printed it. Leave it running. Stop only what this session started, with \`TaskStop\` or \`kill <pid>\` of a pid its own command printed.`;
+export const gateWalled = (path: string, wall: string): string =>
+	`${path} is under \`${wall}\`, which the user walled off. Do not read, list, or search it by any tool, command, or other route. If a count or a fact about it is needed, ask the user to run their own \`! <command>\` and tell you the result.`;
+export const walledUnguarded = (walls: readonly string[]): string =>
+	`claudetto walls off ${walls.map((w) => `\`${w}\``).join(", ")}, but your settings hold no ${walls.map((w) => `\`Read(${w}/**)\``).join(", ")} in \`permissions.deny\`, so only claudetto's gate keeps sessions out.`;
 export const gateRmTmp = (path: string): string =>
 	`${path} is under a /tmp folder that this session did not create: it holds no \`.created-by-claudetto\` file with this session's id. Leave it. Remove only a folder you made in this session, after you write the session id into \`<folder>/.created-by-claudetto\`.`;
 export const gateWorktreeRemove = (path: string): string =>

@@ -26,7 +26,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	handoff(on, options);
 	hygiene(on, options);
 	notify(on, options);
-	gate(on);
+	gate(on, options);
 	fold(on);
 
 	// The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.

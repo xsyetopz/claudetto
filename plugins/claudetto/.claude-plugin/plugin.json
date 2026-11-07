@@ -97,6 +97,13 @@
 			"default": 60,
 			"min": 0
 		},
+		"protectedPaths": {
+			"type": "string",
+			"multiple": true,
+			"title": "Walled-off paths",
+			"description": "Folders no session may read, list, or search: the gate denies a `Read`, `Grep`, or `Glob` under one, and a `Bash` or `Monitor` command that names a path under one, and each session start says when your `permissions.deny` lacks `Read(<path>/**)` for one. `~/` paths are under the home folder. The default walls off the held-out eval set.",
+			"default": ["~/.claudetto-holdout"]
+		},
 		"openItemsCheckEnabled": {
 			"type": "boolean",
 			"title": "Open items at Stop",

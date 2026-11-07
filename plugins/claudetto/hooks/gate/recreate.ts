@@ -6,7 +6,7 @@ import { ask, fieldOf, type Verdict } from "./verdict.ts";
 const FILE_TOOLS = new Set(["Read", "Write", "Edit", "NotebookEdit"]);
 
 // The hooks module cannot import `node:path`, so `.`, `..`, and repeated slashes fold here.
-const flatten = (path: string): string => {
+export const flatten = (path: string): string => {
 	const parts: string[] = [];
 	for (const p of path.split("/")) {
 		if (p === "..") {
