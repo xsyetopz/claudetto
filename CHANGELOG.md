@@ -26,7 +26,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies running a released Claude Code program (a path under `claude/versions/`) to read it, and names the cc-inspect `code` tool. `claude --help` on the installed command stays allowed.
 - The Stop grader also blocks a reply that confesses, apologizes for, or narrates its own conduct ("my mistake", "I should not have") in place of the fact.
 - A Stop grader reads the final reply and blocks once when it names an unchecked claim, a broken rule, credit to the user for what they did not say, an unfiled defect, a fallback, something the session did not see, unexplained jargon, or a reply that ends on a next step it has not taken.
-- A Stop that leaves files the session wrote uncommitted is blocked once with a request to commit them.
+- A Stop that leaves files the session wrote uncommitted, notebooks included, is blocked once with a request to commit them.
 - A reply or subagent report that names a file in a `! <command>` step is blocked when the file does not exist.
 - Limits you set in chat are kept, shown on each prompt, kept through compaction, and enforced. A "stop asking" limit denies both ask tools.
 - A remark or question is answered before the next tool runs, and a question waits for a read of the newest `ISSUES*.md`.
@@ -40,8 +40,9 @@ Before 1.0.0, a release can change or remove behavior.
 - `/claudetto:setup` requires Mole (`mo`) for cache and build-folder cleanup and adds the project root to its `purge_paths`; a session start on a volume over 80% full shows the free space and offers `! mo clean --dry-run` and `! mo purge --dry-run`.
 - Hygiene at session start removes old build folders that Mole misses, from rules in `hooks/hygiene/trash.toml` (gitleaks config schema; a project overrides it with `.claude/claudetto/trash.toml`), only in another checkout whose files and git index are older than `trashCleanupPeriodDays` and that no process uses, and removes `/tmp` folders whose marker names an ended session.
 - Claude's `Bash` commands run at nice 10, and `CARGO_BUILD_JOBS` and `GOMAXPROCS` keep one core free unless you set them.
-- When an agent or worker finishes, it removes the `/tmp` folders it marked, its clean worktrees, and its merged branches, and its reply names each worktree or branch that still holds work. The gate denies a `mkdir`, `mktemp`, or file write that makes a new `/tmp` folder without the `.created-by-claudetto` marker.
+- When an agent or worker finishes, it removes the `/tmp` folders it marked, its clean worktrees, and its merged branches, and its reply names each worktree or branch that still holds work. The gate denies a `mkdir`, `mktemp`, or file write that makes a new `/tmp` folder without the `.created-by-claudetto` marker, also when the path is relative after `cd /tmp`.
 - A finished agent whose own background shell or monitor still runs, and whose reply does not name it, is told to stop it with `TaskStop`, so no task outlives the reply and wakes the session later.
+- The gate denies a background `while` or `until` loop that sleeps with no `timeout` and no `$SECONDS` limit, since one that waits for a result that never comes polls forever.
 - `claudetto-openspec`, a plugin of its own, replaces `@fission-ai/openspec` with one deferred `openspec` tool and skills for apply, explore, propose, update, verify, and archive.
 
 ### Changed
