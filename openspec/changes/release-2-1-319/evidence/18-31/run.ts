@@ -2,9 +2,11 @@
 // Makes a marked /tmp folder for the sessions' config dir, workspaces and ledger, runs `claudekit fixture grade` with grader.ts,
 // and prints the aggregate (counts only). The sessions run outside the repo so that `--setting-sources project,local` does not read this repo.
 import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
-const CLAUDEKIT = "/tmp/claudekit-leftovers/claudekit/bin/claudekit.ts";
+// Kept out of /tmp, whose files macOS deletes after three days unread.
+const CLAUDEKIT = join(homedir(), ".local/share/claudekit/bin/claudekit.ts");
 const set = Bun.argv[2];
 const fail = (m: string): never => {
 	console.error(`18-31 run: ${m}`);
@@ -12,7 +14,7 @@ const fail = (m: string): never => {
 };
 if (!set) fail("SET: missing; usage: bun --env-file=.env run.ts SET.json");
 if (!existsSync(set)) fail(`${set}: not found`);
-if (!existsSync(CLAUDEKIT)) fail(`${CLAUDEKIT}: not found; it is the claudekit checkout the 12.1 and 12.3 runs used, restore it before running`);
+if (!existsSync(CLAUDEKIT)) fail(`${CLAUDEKIT}: not found; copy the claudekit checkout the 12.1 and 12.3 runs used there`);
 if (!process.env.CLAUDE_CODE_OAUTH_TOKEN) fail("CLAUDE_CODE_OAUTH_TOKEN: unset; run from the repo root with `bun --env-file=.env`");
 
 const root = mkdtempSync("/tmp/probe-1831-");

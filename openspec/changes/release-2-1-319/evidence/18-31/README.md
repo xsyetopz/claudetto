@@ -20,10 +20,10 @@ Output: `{"n":24,"pass":N,"byLabel":{...}}`. The folder it made (`/tmp/probe-183
   and calls `claudekit fixture grade SET grader.ts`.
 - The folder is under `/tmp` because the sessions run with `--setting-sources project,local`: a folder inside the repo
   would load the repo's own settings and nest git repos.
-- `/tmp/claudekit-leftovers/claudekit` must exist; `run.ts` stops and says so when it does not.
+- `~/.local/share/claudekit` (the claudekit checkout of the 12.1 and 12.3 runs) must exist; `run.ts` stops and says so when it does not.
 
 ## Set format
 
 The claudekit loader accepts a prefix of plain-string messages only. r2 cases with `tool_use`/`tool_result` blocks fail
 `fixture check` ("prefix: want an array of { role, content: string }"), so a set for this command has string prefixes.
-Check a set with `bun /tmp/claudekit-leftovers/claudekit/bin/claudekit.ts fixture check SET`.
+Check a set with `bun ~/.local/share/claudekit/bin/claudekit.ts fixture check SET`.
