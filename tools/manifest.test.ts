@@ -1,4 +1,7 @@
 import { expect, test } from "bun:test";
+import { mkdtemp } from "node:fs/promises";
+import { availableParallelism, tmpdir } from "node:os";
+import { join } from "node:path";
 import { file, spawn } from "bun";
 
 const PATH_CHOICE = /compaction|summary/i;
@@ -79,11 +82,12 @@ test("the output style says what an agent message and a user reply hold", async 
 });
 
 // 18.28: with the hooks module not running, the setup command would reach Claude as bare tags, so a plain hook blocks it; the module's `command.run` serves it first when it runs.
+const hookCommand = async (event: string): Promise<string> =>
+	(await file(`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`).json())
+		.hooks[event][0].hooks[0].command;
+
 const runPromptHook = async (prompt: string): Promise<string> => {
-	const { hooks } = await file(
-		`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`,
-	).json();
-	const proc = spawn(["sh", "-c", hooks.UserPromptSubmit[0].hooks[0].command], {
+	const proc = spawn(["sh", "-c", await hookCommand("UserPromptSubmit")], {
 		stdin: new TextEncoder().encode(
 			JSON.stringify({ hook_event_name: "UserPromptSubmit", prompt }),
 		),
@@ -100,6 +104,35 @@ test("a prompt that starts with /claudetto:setup is blocked with a plain reason"
 		expect(out.decision).toBe("block");
 		expect(out.reason).toContain("Restart Claude Code");
 	}
+});
+
+// Claude's Bash commands source this file: nice 10 lets the user's apps win the CPU, and one core stays out of cargo and Go builds. `make` and CMake are left alone, since make runs one job by default.
+const startedShell = async (env: Record<string, string>): Promise<string> => {
+	const envFile = join(await mkdtemp(join(tmpdir(), "envfile-")), "env");
+	const run = async (command: string) =>
+		await new Response(
+			spawn(["sh", "-c", command], {
+				env: { ...process.env, ...env, CLAUDE_ENV_FILE: envFile },
+				stdout: "pipe",
+			}).stdout,
+		).text();
+	const start = await hookCommand("SessionStart");
+	await run(start);
+	await run(start);
+	return await run(
+		`. "$CLAUDE_ENV_FILE"; echo $(ps -o nice= -p $$) $CARGO_BUILD_JOBS $GOMAXPROCS`,
+	);
+};
+
+test("a Bash command runs at nice 10 with one core kept out of cargo and Go, after two session starts", async () => {
+	const jobs = Math.max(availableParallelism() - 1, 1);
+	expect((await startedShell({})).trim()).toBe(`10 ${jobs} ${jobs}`);
+});
+
+test("a job count the user set is kept", async () => {
+	expect(
+		(await startedShell({ CARGO_BUILD_JOBS: "3", GOMAXPROCS: "2" })).trim(),
+	).toBe("10 3 2");
 });
 
 test("other prompts are not blocked", async () => {

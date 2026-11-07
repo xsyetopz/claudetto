@@ -7,7 +7,7 @@ import {
 	settle,
 } from "./ignores.ts";
 import { planStarter, previewOf, type StarterFile } from "./starter.ts";
-import { isOnPath, noticeKey, type Tool } from "./tools.ts";
+import { isOnPath, MOLE, noticeKey, PURGE_PATHS, type Tool } from "./tools.ts";
 
 const WRITE = "Write";
 const SKIP = "Skip";
@@ -28,8 +28,9 @@ export interface Io {
 		options: readonly string[],
 	): Promise<string>;
 	path(): Promise<string | undefined>;
-	/** Records the version of the tool whose install was declined, so the launch notice stays quiet. */
-	decline(key: string, version: string): Promise<void>;
+	home(): Promise<string>;
+	/** Records that the tool's install was declined, so the launch notice stays quiet. */
+	decline(key: string): Promise<void>;
 	run(argv: readonly string[]): Promise<{ exitCode: number; text: string }>;
 }
 
@@ -184,7 +185,7 @@ export const toolPart = async (
 		if (tool.required) {
 			return `Did not install \`${tool.name}\`: ${tool.why}. Run \`${shown}\` to fix it.`;
 		}
-		await io.decline(noticeKey(tool), tool.version);
+		await io.decline(noticeKey(tool));
 		return `Did not install \`${tool.name}\`. The launch notice stays quiet.`;
 	}
 	try {
@@ -195,4 +196,26 @@ export const toolPart = async (
 	} catch (error) {
 		return `Could not run \`${shown}\` (${String(error)}).`;
 	}
+};
+
+/** Adds the project root to Mole's `purge_paths`, unless it or a folder holding it is listed already. */
+export const purgePart = async (io: Io): Promise<string | undefined> => {
+	if (!(await isOnPath(MOLE.name, await io.path(), io.exists))) {
+		return undefined;
+	}
+	const home = await io.home();
+	const file = `${home}/${PURGE_PATHS}`;
+	const root =
+		(await io.git(["rev-parse", "--show-toplevel"]))[0] ?? (await io.cwd());
+	const text = (await io.exists(file)) ? await io.read(file) : "";
+	const listed = text
+		.split("\n")
+		.map((line) => line.trim().replace(/^~(?=\/|$)/, home))
+		.filter((dir) => dir !== "" && !dir.startsWith("#"));
+	if (listed.some((dir) => root === dir || root.startsWith(`${dir}/`))) {
+		return undefined;
+	}
+	const gap = text === "" || text.endsWith("\n") ? "" : "\n";
+	await io.write(file, `${text}${gap}${root}\n`);
+	return `Added ${root} to ${file}, so \`mo purge\` scans it.`;
 };

@@ -1,9 +1,7 @@
-import { SCANNER, SCANNER_INSTALL, SCANNER_VERSION } from "../secrets.ts";
+import { SCANNER, SCANNER_INSTALL } from "../secrets.ts";
 
 export interface Tool {
 	readonly name: string;
-	/** For an optional tool, the version a decline was recorded for, so its notice shows again only after a change. */
-	readonly version: string;
 	readonly install: readonly string[];
 	readonly releases: string;
 	/** A required tool's notice shows at every start until it is installed, and a decline is not recorded. */
@@ -11,10 +9,17 @@ export interface Tool {
 	readonly why: string;
 }
 
+export const MOLE: Tool = {
+	name: "mo",
+	install: ["brew", "install", "mole"],
+	releases: "https://github.com/tw93/Mole/releases",
+	required: true,
+	why: "claudetto leaves cache and build-folder cleanup to Mole",
+};
+
 export const TOOLS: readonly Tool[] = [
 	{
 		name: "ast-grep",
-		version: "0.51.1",
 		install: ["brew", "install", "ast-grep"],
 		releases: "https://github.com/ast-grep/ast-grep/releases",
 		required: false,
@@ -22,13 +27,28 @@ export const TOOLS: readonly Tool[] = [
 	},
 	{
 		name: SCANNER,
-		version: SCANNER_VERSION,
 		install: SCANNER_INSTALL,
 		releases: "https://github.com/betterleaks/betterleaks/releases",
 		required: true,
 		why: "without it every tool result is withheld, because claudetto cannot check it for secrets",
 	},
+	MOLE,
 ];
+
+/** `mo purge` scans only these folders once the file names any, and its defaults miss most project roots. */
+export const PURGE_PATHS = ".config/mole/purge_paths";
+const FULL_PERCENT = 80;
+
+/** The line for `df -Pk` output once the volume is over 80% full, or nothing. */
+export const diskLine = (df: string): string | undefined => {
+	const [, , , available, capacity] = (df.trim().split("\n")[1] ?? "").split(/\s+/);
+	const percent = Number.parseInt(capacity ?? "", 10);
+	if (!(percent > FULL_PERCENT)) {
+		return undefined;
+	}
+	const free = (Number(available) / 1024 ** 2).toFixed(1);
+	return `The disk holding this project is ${percent}% full, ${free} GiB free. Preview what Mole would remove: \`! mo clean --dry-run\` for caches, \`! mo purge --dry-run\` for build folders.`;
+};
 
 export const noticeKey = (tool: Tool): string => `optional-tool:${tool.name}`;
 

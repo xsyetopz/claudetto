@@ -2,6 +2,16 @@
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-hooks.json",
 	"modules": ["./register.ts"],
 	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "n=$(getconf _NPROCESSORS_ONLN); j=$((n > 1 ? n - 1 : 1)); printf '%s\\n' 'renice 10 -p $$ >/dev/null 2>&1' \"export CARGO_BUILD_JOBS=\\${CARGO_BUILD_JOBS:-$j} GOMAXPROCS=\\${GOMAXPROCS:-$j}\" >> \"$CLAUDE_ENV_FILE\""
+					}
+				]
+			}
+		],
 		"UserPromptSubmit": [
 			{
 				"hooks": [

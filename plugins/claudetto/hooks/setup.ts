@@ -16,9 +16,16 @@ import {
 	withCacheDirs,
 } from "./setup/settings.ts";
 import { linesOf } from "./setup/starter.ts";
-import { type Io, ignoresPart, starterPart, toolPart } from "./setup/steps.ts";
+import {
+	type Io,
+	ignoresPart,
+	purgePart,
+	starterPart,
+	toolPart,
+} from "./setup/steps.ts";
 import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./setup/text.ts";
 import {
+	diskLine,
 	isBelowFloor,
 	isOnPath,
 	noticeKey,
@@ -139,8 +146,9 @@ const ioOf = ($: EngineInterface): Io => ({
 	},
 	ask: async (question, _header, options) => await ask($, question, options),
 	path: async () => await $.env.get("PATH"),
-	decline: async (key, version) => {
-		await $.store.set(key, version);
+	home: async () => (await $.env.get("HOME")) ?? "",
+	decline: async (key) => {
+		await $.store.set(key, true);
 	},
 	run: async (argv) => {
 		const result = await $.process.run(argv, { timeoutMs: INSTALL_MS });
@@ -391,6 +399,7 @@ const onSetup: HookFor<"command.run"> = async ($) => {
 		await starterPart(io),
 		await ignoresPart(io),
 		...(await Promise.all(TOOLS.map((tool) => toolPart(io, tool)))),
+		await purgePart(io),
 	].filter((part) => part !== undefined);
 	return { text: parts.join("\n") };
 };
@@ -428,7 +437,7 @@ const onStatuslinePrompt: HookFor<"skill.prompt"> = async ($, e, next) =>
 		? { text: statuslineEdit(e.text, `${await configDir($)}/settings.json`) }
 		: next(e);
 
-/** A missing tool's launch notice; an optional one's stays quiet once shown for its version. */
+/** A missing tool's launch notice; an optional one's stays quiet once shown. */
 const toolNotice = async (
 	$: Parameters<HookFor<"classic.SessionStart">>[0],
 	tool: Tool,
@@ -436,13 +445,13 @@ const toolNotice = async (
 ): Promise<void> => {
 	const exists = (file: string) => $.fs.exists(file);
 	const quiet =
-		!tool.required && (await $.store.get(noticeKey(tool))) === tool.version;
+		!tool.required && (await $.store.get(noticeKey(tool))) === true;
 	if (quiet || (await isOnPath(tool.name, path, exists))) {
 		return;
 	}
 	$.ui.log(noticeLine(tool, await isOnPath("brew", path, exists)));
 	if (!tool.required) {
-		await $.store.set(noticeKey(tool), tool.version);
+		await $.store.set(noticeKey(tool), true);
 	}
 };
 
@@ -456,6 +465,10 @@ const onStartup: HookFor<"classic.SessionStart"> = async ($, e, next) => {
 	}
 	const path = await $.env.get("PATH");
 	await Promise.all(TOOLS.map((tool) => toolNotice($, tool, path)));
+	const disk = diskLine(await lines($, ["df", "-Pk", await $.session.cwd()]));
+	if (disk !== undefined) {
+		$.ui.log(disk);
+	}
 	const dir = await configDir($);
 	await Promise.all(RULES.map((name) => reportRule($, dir, name)));
 	return next(e);

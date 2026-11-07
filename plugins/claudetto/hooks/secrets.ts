@@ -2,7 +2,6 @@ import type { EngineInterface } from "claude-code";
 import { secretScanFailed } from "./texts.ts";
 
 export const SCANNER = "betterleaks";
-export const SCANNER_VERSION = "1.10.0";
 export const SCANNER_INSTALL = ["brew", "install", SCANNER] as const;
 
 const REDACTED = "[REDACTED]";

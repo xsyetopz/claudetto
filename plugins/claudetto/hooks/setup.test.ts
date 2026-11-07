@@ -764,7 +764,7 @@ test("a Yes shows the brew command and then runs it", async ($: Engine, on: On) 
 	expect(state.runs).toContainEqual(["brew", "install", "ast-grep"]);
 });
 
-test("a No runs nothing and records the pinned version", async ($: Engine, on: On) => {
+test("a No runs nothing and records the decline", async ($: Engine, on: On) => {
 	const state = lab(on, "{}", (q) => (q.includes("brew") ? "No" : "Skip"));
 	state.path = "/bin";
 	state.files.set("/bin/brew", "");
@@ -772,7 +772,7 @@ test("a No runs nothing and records the pinned version", async ($: Engine, on: O
 	await run($, "claudetto:setup");
 
 	expect(state.runs).not.toContainEqual(["brew", "install", "ast-grep"]);
-	expect(state.store.get("optional-tool:ast-grep")).toBe("0.51.1");
+	expect(state.store.get("optional-tool:ast-grep")).toBe(true);
 });
 
 test("a startup without betterleaks logs its notice every time, and records nothing", async ($: Engine, on: On) => {
@@ -849,15 +849,6 @@ test("the startup notice names the install command and /claudetto:setup", async 
 	const [line] = state.logs.filter((l) => l.includes("ast-grep"));
 	expect(line).toContain("brew install ast-grep");
 	expect(line).toContain("/claudetto:setup");
-});
-
-test("a changed pin shows the notice again", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
-	state.store.set("optional-tool:ast-grep", "0.50.0");
-
-	await startup($);
-
-	expect(state.logs.filter((l) => l.includes("ast-grep"))).toHaveLength(1);
 });
 
 test("ast-grep on the PATH logs nothing at startup", async ($: Engine, on: On) => {
@@ -987,4 +978,76 @@ test("the hooks runtime computes SHA-256 as the setup hash needs it", async () =
 			b.toString(16).padStart(2, "0"),
 		).join(""),
 	).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+});
+
+const MOLE_FILE = "/home/u/.config/mole/purge_paths";
+const DF_HEAD = "Filesystem 1024-blocks Used Available Capacity Mounted on\n";
+const moleLab = (on: On, df = "", root = "/p") => {
+	const state = lab(
+		on,
+		"{}",
+		() => "Skip",
+		(argv) => {
+			if (argv[0] === "df") {
+				return df;
+			}
+			return argv.includes("--show-toplevel") ? `${root}\n` : "";
+		},
+	);
+	state.path = "/bin";
+	state.files.set("/bin/mo", "");
+	return state;
+};
+
+test("a startup without Mole logs its install notice every time, and a No to it names the install step", async ($: Engine, on: On) => {
+	const state = lab(on, "{}", (q) => (q.includes("brew") ? "No" : "Skip"));
+	state.path = "/bin";
+	state.files.set("/bin/brew", "");
+
+	await startup($);
+	await startup($);
+	const out = await run($, "claudetto:setup");
+
+	expect(state.logs.filter((l) => l.includes("brew install mole"))).toHaveLength(2);
+	expect(state.runs).not.toContainEqual(["brew", "install", "mole"]);
+	expect(out.text).toContain("Run `brew install mole` to fix it.");
+});
+
+test("setup adds the project root to Mole's purge_paths once, keeping what the file held", async ($: Engine, on: On) => {
+	const state = moleLab(on);
+	state.files.set(MOLE_FILE, "# Mole Purge Paths\n~/Library/CloudStorage");
+
+	const first = await run($, "claudetto:setup");
+	const second = await run($, "claudetto:setup");
+
+	expect(state.files.get(MOLE_FILE)).toBe("# Mole Purge Paths\n~/Library/CloudStorage\n/p\n");
+	expect(first.text).toContain(`Added /p to ${MOLE_FILE}`);
+	expect(second.text).not.toContain("purge_paths");
+});
+
+test("a purge_paths entry holding the project, written with ~, adds nothing", async ($: Engine, on: On) => {
+	const state = moleLab(on, "", "/home/u/code/p");
+	state.files.set(MOLE_FILE, "~/code\n");
+
+	await run($, "claudetto:setup");
+
+	expect(state.written.filter((w) => w.path === MOLE_FILE)).toEqual([]);
+});
+
+test("a disk over 80% full logs its free space and both Mole previews", async ($: Engine, on: On) => {
+	const full = moleLab(on, `${DF_HEAD}/dev/disk3s5 482000000 395000000 47185920 81% /System/Volumes/Data\n`);
+
+	await startup($);
+
+	expect(full.logs.filter((l) => l.includes("% full"))).toEqual([
+		"The disk holding this project is 81% full, 45.0 GiB free. Preview what Mole would remove: `! mo clean --dry-run` for caches, `! mo purge --dry-run` for build folders.",
+	]);
+});
+
+test("a disk at 80% full logs no disk line", async ($: Engine, on: On) => {
+	const state = moleLab(on, `${DF_HEAD}/dev/disk3s5 482000000 385000000 97000000 80% /System/Volumes/Data\n`);
+
+	await startup($);
+
+	expect(state.logs.filter((l) => l.includes("% full"))).toEqual([]);
 });

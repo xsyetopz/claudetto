@@ -1,7 +1,7 @@
 // The real betterleaks over made-up keys (bun test only: the lab cannot run a process).
 import { expect, test } from "bun:test";
 import { spawn } from "bun";
-import { redact, SCANNER_VERSION, secretsIn } from "./secrets.ts";
+import { redact, secretsIn } from "./secrets.ts";
 
 type Run = Parameters<typeof secretsIn>[0];
 
@@ -58,11 +58,6 @@ const secrets = [
 	PASSWORD,
 	BEARER,
 ];
-
-test(`betterleaks ${SCANNER_VERSION} is the one on PATH`, async () => {
-	const out = await run(["betterleaks", "version"]);
-	expect(out.stdout).toContain(SCANNER_VERSION);
-});
 
 test("each made-up key, the URL password and the bearer token are found, and redacted", async () => {
 	const text = `${lines.join("\n")}\nDATABASE_HOST=localhost\n`;
