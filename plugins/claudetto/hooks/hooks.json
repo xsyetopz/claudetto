@@ -1,4 +1,16 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-hooks.json",
-	"modules": ["./register.ts"]
+	"modules": ["./register.ts"],
+	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "IN=$(cat); case \"$IN\" in *'\"prompt\":\"/claudetto:setup\"'*|*'\"prompt\":\"/claudetto:setup '*) printf '%s' '{\"decision\":\"block\",\"reason\":\"Setup did not run: claudetto plugin code is not running in this session. Restart Claude Code; if it still fails, reinstall claudetto.\"}';; esac"
+					}
+				]
+			}
+		]
+	}
 }

@@ -28,6 +28,7 @@ Before 1.0.0, a release can change or remove behavior.
 - A subagent status line ships in the plugin's `settings.json`.
 - Notifications are on by default: one fires when an unattended session stops on a failure.
 - `/goal` is set again after a handoff clears the session.
+- When claudetto's plugin code is not running, a typed `/claudetto:setup` is blocked before Claude sees it, with a reason that says to restart Claude Code or reinstall claudetto.
 - `claudetto-openspec`, a plugin of its own, replaces `@fission-ai/openspec` with one deferred `openspec` tool and skills for apply, explore, propose, update, verify, and archive.
 
 ### Changed
