@@ -14,7 +14,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies package and build tools that the repo does not use (for example `npm install` in a Bun repo, or `cmake` in an Xmake repo), and denies writing or printing a file through `Bash` where `Write` or `Read` fits.
 - A `Bash` line that ends in `; cat <file>` runs the rest, then reads the file with `Read` in the same call instead of being denied.
 - The gate asks before it recreates a file that the session saw and did not remove.
-- The gate logs each ask and deny it returns to `.claude/claudetto/gate-asks.jsonl` in the project, one JSON line of time, tool, decision, rule, and command, with secrets redacted and each text cut to 200 characters.
+- The gate logs each ask and deny it returns to `~/.claude/claudetto/gate-asks/<session id>.jsonl`, one JSON line of time, tool, decision, project root, rule, and command, with secrets redacted and each text cut to 200 characters.
 - `/claudetto:setup` writes one `sandbox` block that turns on Claude Code's sandbox: writes only to the project, the temp folder, and the tool caches, cloud-credential reads denied, and no retry outside the sandbox.
 - `/claudetto:setup` adds `DISABLE_TELEMETRY=1` to `env` and denies eight tools that claudetto does not use, such as `Workflow`, `CronCreate`, and `EnterPlanMode`.
 - Setup saves a hash of each rule file it copies, and the next start logs which copies were updated or modified.

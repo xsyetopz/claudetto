@@ -837,9 +837,11 @@ const logging = (on: On, engine: ResultOf["tool.check"]) => {
 	const lines: string[] = [];
 	repo(on);
 	on("session.root", () => ({ value: "/p" }));
+	on("env.get", () => ({ value: "/home/u" }));
+	on("session.id", () => ({ value: "s1" }));
 	on("clock.now", () => ({ value: 0 }));
 	on("fs.write", (_$, e) => {
-		expect(e.path).toBe("/p/.claude/claudetto/gate-asks.jsonl");
+		expect(e.path).toBe("/home/u/.claude/claudetto/gate-asks/s1.jsonl");
 		lines.push(...e.text.trim().split("\n"));
 		return { value: undefined };
 	});
@@ -855,6 +857,7 @@ test("an ask is logged with its rule, tool, and time", async ($: Engine, on: On)
 			time: "1970-01-01T00:00:00.000Z",
 			tool: "Bash",
 			decision: "ask",
+			root: "/p",
 			rule: "Bash(git push:*)",
 			command: "git push",
 		},

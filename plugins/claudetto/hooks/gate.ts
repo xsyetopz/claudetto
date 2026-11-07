@@ -44,7 +44,9 @@ import {
 	walledUnguarded,
 } from "./texts.ts";
 
-export const GATE_LOG = ".claude/claudetto/gate-asks.jsonl";
+// Under HOME, not the project: a file in the project shows in its `git status`, and agents stop to explain or commit it.
+// One file per session, since `$.fs` has no append and sessions that run at once would overwrite each other's lines.
+export const GATE_LOG = ".claude/claudetto/gate-asks";
 const LOGGED_CHARS = 200;
 const FILE_WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 const STRICTNESS = ["allow", "ask", "deny"];
@@ -182,7 +184,7 @@ const log = async (
 	const before = logging;
 	const write = async () => {
 		await before;
-		const path = `${await $.session.root()}/${GATE_LOG}`;
+		const path = `${await $.env.get("HOME")}/${GATE_LOG}/${await $.session.id()}.jsonl`;
 		const text = [
 			fieldOf(e.input, "command") ?? JSON.stringify(e.input) ?? "",
 			verdict.rule ?? verdict.reason ?? "",
@@ -198,6 +200,7 @@ const log = async (
 			time: new Date(await $.clock.now()).toISOString(),
 			tool: e.tool,
 			decision: verdict.decision,
+			root: await $.session.root(),
 			rule,
 			command,
 		});
