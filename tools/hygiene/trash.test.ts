@@ -263,9 +263,9 @@ test("every folder a tool probe made matches a rule, and a bare generic name doe
 	const { proj } = await repo();
 	const { rules } = await loadTrash(proj);
 	const matched = (path: string) => rules.some((rule) => !rule.temp && rule.path.test(path));
-	const made = ["node_modules", "dist", ".venv", ".pdm-build", ".tox", ".mypy_cache", "htmlcov", "_build", "deps", "build", "elm-stuff", ".dart_tool", "ios/Flutter/ephemeral", "lua_modules", ".luarocks", "vendor", ".terraform", ".terragrunt-cache", ".zig-cache", "zig-out", ".cpcache", "target", "project/target", ".gradle", ".kotlin", "app/build", "CMakeFiles", "out/build", "builddir", ".xmake", "autom4te.cache", ".pio", "buck-out", ".build"];
+	const made = ["node_modules", "dist", ".venv", ".pdm-build", ".tox", ".mypy_cache", "htmlcov", "_build", "deps", "build", "elm-stuff", ".dart_tool", "ios/Flutter/ephemeral", "lua_modules", ".luarocks", "vendor", ".terraform", ".terragrunt-cache", ".zig-cache", "zig-out", ".cpcache", "target", "project/target", ".gradle", ".kotlin", "app/build", "CMakeFiles", "out/build", "builddir", ".xmake", "autom4te.cache", ".pio", "buck-out", ".build", "vcpkg_installed", "build/vcpkg_installed", "buildtrees", ".scala-build", ".bsp", ".direnv"];
 	expect(made.filter((path) => !matched(path))).toEqual([]);
-	expect(["ephemeral", "local", "charts", "bin", "src"].filter(matched)).toEqual([]);
+	expect(["ephemeral", "local", "charts", "bin", "src", "result", "packages", "downloads"].filter(matched)).toEqual([]);
 });
 
 test("the plugin's trash file passes the gitleaks config check of betterleaks", async () => {
@@ -278,5 +278,5 @@ test("the plugin's trash file passes the gitleaks config check of betterleaks", 
 		join(import.meta.dir, "../../plugins/claudetto/hooks/hygiene/trash.toml"),
 	]);
 
-	expect(await new Response(check.stdout).text()).toContain("OK: 34 rules");
+	expect(await new Response(check.stdout).text()).toContain("OK: 36 rules");
 });
