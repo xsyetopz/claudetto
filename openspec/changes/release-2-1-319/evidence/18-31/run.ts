@@ -1,0 +1,32 @@
+// Task 18.31: grade the current plugins/claudetto on a held-out set. Usage: bun --env-file=.env run.ts SET.json
+// Makes a marked /tmp folder for the sessions' config dir, workspaces and ledger, runs `claudekit fixture grade` with grader.ts,
+// and prints the aggregate (counts only). The sessions run outside the repo so that `--setting-sources project,local` does not read this repo.
+import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+
+const CLAUDEKIT = "/tmp/claudekit-leftovers/claudekit/bin/claudekit.ts";
+const set = Bun.argv[2];
+const fail = (m: string): never => {
+	console.error(`18-31 run: ${m}`);
+	process.exit(1);
+};
+if (!set) fail("SET: missing; usage: bun --env-file=.env run.ts SET.json");
+if (!existsSync(set)) fail(`${set}: not found`);
+if (!existsSync(CLAUDEKIT)) fail(`${CLAUDEKIT}: not found; it is the claudekit checkout the 12.1 and 12.3 runs used, restore it before running`);
+if (!process.env.CLAUDE_CODE_OAUTH_TOKEN) fail("CLAUDE_CODE_OAUTH_TOKEN: unset; run from the repo root with `bun --env-file=.env`");
+
+const root = mkdtempSync("/tmp/probe-1831-");
+writeFileSync(join(root, ".created-by-claudetto"), `${process.env.CLAUDE_CODE_SESSION_ID ?? "user"}\n`);
+const arm = resolve(import.meta.dir, "../../../../../plugins/claudetto");
+const p = Bun.spawn(["bun", CLAUDEKIT, "fixture", "grade", resolve(set), join(import.meta.dir, "grader.ts")], {
+	env: { ...process.env, FIXTURE_ROOT: root, ARM_DIR: arm, ARM_NAME: "change" },
+	stdin: "ignore",
+	stdout: "pipe",
+	stderr: "inherit",
+});
+const out = (await new Response(p.stdout).text()).trim();
+await p.exited;
+await Bun.write(join(root, "result.json"), `${out}\n`);
+console.log(out);
+console.error(`ledger: ${join(root, "ledger.jsonl")}`);
+process.exit(p.exitCode ?? 1);
