@@ -73,6 +73,7 @@ const toConstraint = (c: unknown): PinConstraint[] => {
 const KINDS: ReadonlySet<unknown> = new Set<PinKind>([
 	"remark",
 	"question",
+	"dispute",
 	"task",
 ]);
 const isKind = (x: unknown): x is PinKind => KINDS.has(x);
@@ -244,7 +245,12 @@ export const pin = (on: On): void => {
 		if (hit !== undefined) {
 			return deny(PIN_BLOCKED(hit.text));
 		}
-		if (kind === "task" || (kind === "question" && LOOKUPS.has(e.tool))) {
+		// A dispute is settled by running the disputed code, so its command passes; an edit still waits for the answer.
+		if (
+			kind === "task" ||
+			(kind !== "remark" && LOOKUPS.has(e.tool)) ||
+			(kind === "dispute" && e.tool === "Bash")
+		) {
 			return next(e);
 		}
 		const messages = await $.session.messages();

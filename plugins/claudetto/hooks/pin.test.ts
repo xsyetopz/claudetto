@@ -219,6 +219,19 @@ for (const [tool, input] of [
 	});
 }
 
+test("a dispute's first lookup or command passes, so the disputed answer can be checked, and its first edit is denied", async ($: Engine, on: On) => {
+	await turn("dispute")($, on);
+	expect((await check($, "Bash", { command: "bun test" })).decision).not.toBe(
+		"deny",
+	);
+	expect((await check($, "Read", { file_path: "/p/a.ts" })).decision).not.toBe(
+		"deny",
+	);
+	expect((await check($, "Edit", { file_path: "/p/a.ts" })).decision).toBe(
+		"deny",
+	);
+});
+
 test("a remark's call passes once assistant text precedes it in the turn", async ($: Engine, on: On) => {
 	await turn("remark", spoken("Nobody did; I misread the task."))($, on);
 	expect((await check($, "Grep", { pattern: "lint" })).decision).not.toBe(
