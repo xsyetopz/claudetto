@@ -4,6 +4,7 @@ import { scanner } from "../secrets.mock.ts";
 import {
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
+	GATE_ENDLESS_WAIT,
 	gateBranchDelete,
 	gateKillPid,
 	gateRmTmp,
@@ -274,4 +275,30 @@ test("a Write under a /tmp folder that is there already, or outside /tmp, passes
 	expect((await write($, "/tmp/mine/notes.txt")).decision).toBe("allow");
 	expect((await write($, "/p/tmp/x/notes.txt")).decision).toBe("allow");
 	expect((await write($, "/tmp/notes.txt")).decision).toBe("allow");
+});
+
+// Seen in another session: a background wait for four successes polled for 32 minutes after one job failed.
+const WAIT = "until [ $(gh run list --json conclusion | grep -c success) -ge 4 ]; do sleep 30; done";
+const background = ($: Engine, command: string) =>
+	$.tool.check({ tool: "Bash", input: { command, run_in_background: true } });
+test("a background wait loop with no time limit is denied", async ($: Engine, on: On) => {
+	lab(on);
+	const v = await background($, WAIT);
+	expect(v.decision).toBe("deny");
+	expect(v.reason).toContain(GATE_ENDLESS_WAIT);
+});
+for (const command of [
+	`timeout 1800 sh -c '${WAIT}'`,
+	"until gh run view 1 --exit-status || [ $SECONDS -gt 1800 ]; do sleep 30; done",
+	"for i in $(seq 60); do gh run view 1 && break; sleep 30; done",
+	"bun run dev",
+]) {
+	test(`a background ${command} is not denied as an endless wait`, async ($: Engine, on: On) => {
+		lab(on);
+		expect((await background($, command)).decision).not.toBe("deny");
+	});
+}
+test("the same wait loop in the foreground is not denied, since the Bash timeout ends it", async ($: Engine, on: On) => {
+	lab(on);
+	expect((await run($, WAIT)).decision).not.toBe("deny");
 });

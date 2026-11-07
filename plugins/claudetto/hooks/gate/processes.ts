@@ -29,6 +29,8 @@ const MAKERS = new Set(["mkdir", "mktemp"]);
 const MKTEMP = /\bmktemp\b/;
 /** The file whose content, a session id, says which session made the /tmp folder holding it. */
 export const MARKER = ".created-by-claudetto";
+const WAIT_LOOP = /\b(?:while|until)\b[\s\S]*\bsleep\b/;
+const TIME_LIMIT = /\bg?timeout\s+(?:-\S+\s+)*\d|\bSECONDS\b/;
 const AGENT_ID = /\bagentId: (\w+)/;
 const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/;
 const RELEASE = /(?:^|\/)claude\/versions\/[^/\s]+/;
@@ -55,6 +57,10 @@ const targetsOf = (args: string[]): string[] => {
 	}
 	return targets;
 };
+
+/** Tells whether a command is a loop that sleeps until something happens with no time limit, so it never ends if that never comes. */
+export const endlessWait = (command: string): boolean =>
+	WAIT_LOOP.test(command) && !TIME_LIMIT.test(command);
 
 /** Tells whether an earlier call of this session started the process: a Bash call that ran something in the background and whose result printed the pid. */
 export const startedBy =

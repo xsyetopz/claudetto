@@ -8,7 +8,13 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
-import { MARKER, ownsOf, tmpTopOf, tmpTops } from "./gate/processes.ts";
+import {
+	endlessWait,
+	MARKER,
+	ownsOf,
+	tmpTopOf,
+	tmpTops,
+} from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
 import { readOnly } from "./gate/readonly.ts";
 import {
@@ -30,6 +36,7 @@ import { listOption } from "./options.ts";
 import { redactAll, redactWith, secretsIn } from "./secrets.ts";
 import {
 	GATE_CHECK_FAILED,
+	GATE_ENDLESS_WAIT,
 	GATE_READ_ONLY,
 	GATE_SYSTEM_WRITE,
 	gateRule,
@@ -129,6 +136,18 @@ const ownVerdict = async (
 		return walled;
 	}
 	const command = fieldOf(input, "command");
+	// Seen in another session: a background wait for four successes polled for 32 minutes after one job failed.
+	if (
+		tool === "Bash" &&
+		command !== undefined &&
+		typeof input === "object" &&
+		input !== null &&
+		"run_in_background" in input &&
+		input.run_in_background === true &&
+		endlessWait(command)
+	) {
+		return deny(GATE_ENDLESS_WAIT);
+	}
 	if ((tool === "Bash" || tool === "Monitor") && command !== undefined) {
 		const present = await presentFiles($);
 		const own = judge(
