@@ -365,6 +365,8 @@ export const gateTmpMarker = (path: string): string =>
 	`${path} is a /tmp folder with no \`.created-by-claudetto\` file, so no session can prove it made the folder and nothing cleans it up. Make the folder and its marker in one Bash command: \`mkdir -p /tmp/<name> && printenv CLAUDE_CODE_SESSION_ID > /tmp/<name>/.created-by-claudetto\`, or \`d=$(mktemp -d /tmp/<name>-XXXXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "$d"\`.`;
 export const CLEANUP_LEFT = (left: readonly string[]): string =>
 	`claudetto removed the folders, worktrees, and branches this agent created and no longer needs. These stay because they hold work: ${left.map((item) => `\`${item}\``).join(", ")}. A worktree has uncommitted changes, or a branch has commits the current branch lacks or is checked out in such a worktree. In your reply, list each of these paths and branches by name with what it holds, so the user can merge or drop it.`;
+export const STALE_TASKS = (lines: readonly string[]): string =>
+	`These background tasks of this agent still run, and once it stops nothing reads them; a monitor that outlives the reply wakes the session later with nothing to do:\n${lines.join("\n")}\nStop each with \`TaskStop\`. If your next step waits on one, name its id in your reply with what you wait for.`;
 export const gateWorktreeRemove = (path: string): string =>
 	`${path} is not a worktree this session created: no earlier successful \`git worktree add\` or EnterWorktree of this session names it. Leave it. Remove only a worktree this session added, or ask the user to remove this one.`;
 export const gateBranchDelete = (name: string): string =>

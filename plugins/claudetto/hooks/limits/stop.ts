@@ -5,7 +5,7 @@ import type {
 	On,
 	PluginOptions,
 } from "claude-code";
-import { closed } from "../cleanup.ts";
+import { closed, taskLines } from "../cleanup.ts";
 import { switchOption } from "../options.ts";
 import { bashWritesTo } from "../pin.ts";
 import {
@@ -56,12 +56,6 @@ const tasksKey = (tasks: readonly BackgroundTaskSummary[]): string =>
 		.map((task) => JSON.stringify([task.id, task.status]))
 		.sort()
 		.join("\n");
-
-const taskLines = (tasks: readonly BackgroundTaskSummary[]): string[] =>
-	tasks.map(
-		(task) =>
-			`- ${task.type} \`${task.id}\` (${task.status}): ${task.description}`,
-	);
 
 const tasksText = (tasks: readonly BackgroundTaskSummary[]): string =>
 	STOP_TASKS(taskLines(tasks));

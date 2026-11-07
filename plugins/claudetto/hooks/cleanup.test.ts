@@ -68,11 +68,11 @@ const lab = (
 	}));
 };
 
-const stop = ($: Engine, reply = "Done.", tasks: [] | [unknown] = []) =>
+const stop = ($: Engine, reply = "Done.", tasks: never[] = []) =>
 	$.classic.Stop({
 		stop_hook_active: false,
 		last_assistant_message: reply,
-		background_tasks: tasks as never,
+		background_tasks: tasks,
 	});
 
 const MARK = (top: string) => `${top}/.created-by-claudetto`;
@@ -113,12 +113,65 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 	expect(removed(runs)).toEqual(["/tmp/probe-a", "/tmp/probe-Q1w2", "/tmp/probe-b"]);
 });
 
-test("nothing is removed while background work runs", async ($: Engine, on: On) => {
-	const runs: string[][] = [];
-	lab(on, { "": [{ command: MAKE("/tmp/probe-a") }] }, { [MARK("/tmp/probe-a")]: "S1" }, {}, runs);
+const MONITOR = { id: "m7", type: "monitor", status: "running", description: "build end" };
+const SHELL = { id: "b1", type: "shell", status: "running", description: "dev server" };
+const ARMED = [
+	{ command: MAKE("/tmp/probe-a") },
+	{ tool: "mcp__claudetto__monitor", command: "", text: "Monitor started (task m7, timeout 300000ms)." },
+	{ command: "bun run dev", text: "Command running in background with ID: b1. Output is being written to: /t/b1" },
+];
 
-	await stop($, "Done.", [{ id: "b1", type: "local_bash", status: "running", description: "x" }]);
+// Seen in another session: a monitor armed for a build outlived the report and woke the session 30 minutes later.
+test("the agent's own shell and monitor that the reply does not name block the stop, and nothing is removed", async ($: Engine, on: On) => {
+	const runs: string[][] = [];
+	lab(on, { "": ARMED }, { [MARK("/tmp/probe-a")]: "S1" }, {}, runs);
+
+	const out = await stop($, "Done.", [MONITOR, SHELL] as never);
+	expect(out.block).toContain("`m7`");
+	expect(out.block).toContain("`b1`");
+	expect(out.block).toContain("TaskStop");
 	expect(runs).toEqual([]);
+});
+
+test("a task the reply names, or a background subagent, is waited on: no block and nothing removed", async ($: Engine, on: On) => {
+	const runs: string[][] = [];
+	const agent = { tool: "Agent", command: "", text: "Async agent launched successfully.\nagentId: s9" };
+	lab(on, { "": [...ARMED, agent] }, { [MARK("/tmp/probe-a")]: "S1" }, {}, runs);
+
+	const out = await stop($, "Waiting on m7 and b1 for the build.", [
+		MONITOR,
+		SHELL,
+		{ id: "s9", type: "subagent", status: "running", description: "w" },
+	] as never);
+	expect(out.block).toBeUndefined();
+	expect(runs).toEqual([]);
+});
+
+test("a stop the hook already blocked passes with the task still running", async ($: Engine, on: On) => {
+	lab(on, { "": ARMED }, { [MARK("/tmp/probe-a")]: "S1" });
+
+	const out = await $.classic.Stop({
+		stop_hook_active: true,
+		last_assistant_message: "Done.",
+		background_tasks: [MONITOR] as never,
+	});
+	expect(out.block).toBeUndefined();
+});
+
+test("a worker's stop ignores a task only the lead started and removes the worker's folders", async ($: Engine, on: On) => {
+	const runs: string[][] = [];
+	lab(on, { "": ARMED, w1: [{ command: MAKE("/tmp/probe-w1") }] }, { [MARK("/tmp/probe-w1")]: "S1" }, {}, runs);
+
+	const out = await $.classic.SubagentStop({
+		stop_hook_active: false,
+		agent_id: "w1",
+		agent_type: "general-purpose",
+		agent_transcript_path: "/t",
+		last_assistant_message: "Done.",
+		background_tasks: [MONITOR, SHELL] as never,
+	});
+	expect(out.block).toBeUndefined();
+	expect(removed(runs)).toEqual(["/tmp/probe-w1"]);
 });
 
 const WORKER = {
