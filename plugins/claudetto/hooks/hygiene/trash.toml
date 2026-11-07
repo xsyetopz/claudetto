@@ -7,6 +7,7 @@
 # A name that several tools share, such as `build` or `target`, sits in each of their rules: the report names the first rule that matches, and disabling one rule leaves the others.
 # Ninja and Make write files only, into the folder their generator chose, so they have no rule.
 # Bazel has none either: its bazel-* outputs are symlinks into its own cache, and the walk does not follow links; `bazel clean` frees them.
+# Nix has none for its `result` and `result-<output>` links, for the same reason: they are symlinks into /nix/store (nix-build manual).
 
 title = "claudetto trash"
 
@@ -88,8 +89,8 @@ tags = ["project", "build", "java"]
 
 [[rules]]
 id = "sbt"
-description = "sbt target folders, including project/target and project/project/target"
-path = '''(?:^|/)target$'''
+description = "sbt target folders, including project/target, and the .bsp and scala-cli .scala-build folders"
+path = '''(?:^|/)(?:target|\.bsp|\.scala-build)$'''
 tags = ["project", "build", "scala"]
 
 [[rules]]
@@ -123,6 +124,12 @@ path = '''(?:^|/)(?:build|dist)$'''
 tags = ["project", "build", "java"]
 
 # C and C++
+
+[[rules]]
+id = "vcpkg"
+description = "vcpkg manifest-mode installs, and the buildtrees folder of a vcpkg checkout"
+path = '''(?:^|/)(?:vcpkg_installed|buildtrees)$'''
+tags = ["project", "dependencies", "c"]
 
 [[rules]]
 id = "cmake"
@@ -221,6 +228,12 @@ id = "luarocks"
 description = "LuaRocks project tree and its config folder"
 path = '''(?:^|/)(?:lua_modules|\.luarocks)$'''
 tags = ["project", "dependencies", "lua"]
+
+[[rules]]
+id = "direnv"
+description = "direnv layout folder, which holds nix-direnv's profile links and flake inputs"
+path = '''(?:^|/)\.direnv$'''
+tags = ["project", "dependencies", "nix"]
 
 # Temp
 
