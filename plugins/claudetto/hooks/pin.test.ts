@@ -140,7 +140,7 @@ test("the extractor is told that a file to change or a claim about the code is n
 	lab(on, [], [], seen);
 	await submit($, "Rename the export in src/format.ts and you're finished.");
 	expect(seen.join("\n")).toContain(
-		'a file to change, or a claim about the code ("callers are done") listed as a limit loses credit',
+		'a file to change, or a claim about the code ("callers are done") is not a limit',
 	);
 });
 

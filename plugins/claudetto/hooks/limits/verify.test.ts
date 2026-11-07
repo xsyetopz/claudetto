@@ -242,9 +242,9 @@ for (const form of CREDITED_FORMS) {
 			seen,
 		);
 		expect((await stop($, false, form)).block).toContain("credits the user");
-		expect(seen[0]).toContain("- credited: The reply words a label");
-		expect(seen[0]).toContain("did not give its labels");
-		expect(seen[0]).toContain("still credits the user");
+		expect(seen[0]).toContain("- credited: The reply says a label");
+		expect(seen[0]).toContain("did not give its output");
+		expect(seen[0]).toContain("even when the reply says the script ran");
 		expect(seen[0]).toContain(form);
 	});
 }
@@ -318,7 +318,7 @@ test("the grader sees the background tasks the session lists, which ground a sta
 		],
 	});
 	expect(seen[0]).toContain("- local_bash `b1` (running): wait loop");
-	expect(seen[0]).toContain("listed background tasks");
+	expect(seen[0]).toContain("a status the background-task list shows");
 });
 
 test("the grader is told the turn fact that offers its codes: no look", async ($: Engine, on: On) => {
@@ -361,18 +361,18 @@ test("a turn with tool output is also graded by sonnet for the unseen fault, whi
 	]);
 	const [haiku, sonnet] = models[0] === "haiku" ? seen : seen.reverse();
 	expect(sonnet).toContain("- unseen:");
-	expect(sonnet).toContain("NOT shown to the user");
+	expect(sonnet).toContain("hidden from the user");
 	expect(sonnet).toContain("- Bash git diff\n+# setup block");
 	expect(haiku).not.toContain("- unseen:");
-	expect(haiku).not.toContain("NOT shown to the user");
+	expect(haiku).not.toContain("hidden from the user");
 });
 
 test("the unseen rule leaves a reply that reports the assistant's own edit and its test result unflagged", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(on, [user("fix it"), ran("Bash", "+ x + 5 + 1")], '{"faults":[]}', seen);
 	await stop($, false, "I fixed `f5` in `src/lib.ts`; all 40 tests pass.");
-	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
-	expect(sonnet).toContain("reports an edit the assistant made this turn");
+	const sonnet = seen.find((p) => p.includes("hidden from the user")) ?? "";
+	expect(sonnet).toContain("reports its own edit and test result");
 	expect(sonnet).not.toContain("with its file:line");
 });
 
@@ -387,7 +387,7 @@ test("sonnet sees the other codes beside unseen, and a fallback fault it finds d
 		{ sonnet: found("fallback", "Committed.") },
 	);
 	expect((await stop($, false, UNSEEN_REPLY)).block).toBeUndefined();
-	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+	const sonnet = seen.find((p) => p.includes("hidden from the user")) ?? "";
 	expect(sonnet).toContain("- credited:");
 	expect(sonnet).toContain("- fallback:");
 });
@@ -420,7 +420,7 @@ test("the grader sees the latest 8 tool results, 400 characters each", async ($:
 	);
 	lab(on, [user("go"), ...calls], '{"faults":[]}', seen);
 	await stop($);
-	const sonnet = seen.find((p) => p.includes("NOT shown")) ?? "";
+	const sonnet = seen.find((p) => p.includes("hidden from the user")) ?? "";
 	expect(sonnet).not.toContain("cmd1\n");
 	expect(sonnet).toContain("cmd2\nout2");
 	expect(sonnet).toContain("cmd9\nout9");
@@ -435,7 +435,7 @@ test("a reply with unexplained ids gets one block that asks for plain words", as
 	expect(seen[0]).toContain("- jargon:");
 	// A coding reply names functions and files; only made-up labels are the fault.
 	expect(seen[0]).toContain(
-		"A file, function, command, or setting name the user wrote or works with is not this fault.",
+		"Not this fault: a file, function, command, or setting name the user wrote or works with.",
 	);
 	expect((await stop($, true, reply)).block).toBeUndefined();
 });
@@ -521,7 +521,7 @@ test("a failed command whose fix needs the user is not the unfixed fault", async
 	);
 	expect((await stop($, false, reply)).block).toBeUndefined();
 	expect(seen.join("\n")).toContain(
-		"A fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission) is not this fault.",
+		"Not this fault: a fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission).",
 	);
 });
 

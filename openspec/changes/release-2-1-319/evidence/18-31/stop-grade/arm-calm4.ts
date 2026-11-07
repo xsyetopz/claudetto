@@ -1,0 +1,3 @@
+import { CREDIT_HEAD, gradeWith } from "./arm-new.ts";
+// arm-calm3 with the asks line "When unsure whether the request fixed the value, flag it." replaced by a plain statement of a silent pick.
+export const VERIFY_GRADE = gradeWith(CREDIT_HEAD, " When unsure, answer {\"faults\":[]}.", (s) => s.replace("When unsure whether the request fixed the value, flag it. ", "A value the reply names that the request did not, such as a version or a branch name, counts as a pick. ").replace("Tool output of this turn, which the assistant read and the user did NOT see", "Tool output of this turn, hidden from the user (only the assistant read it)"));
