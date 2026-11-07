@@ -247,6 +247,16 @@ allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S1" });
 allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S2" });
 allowed("mkdir -p /tmp/proj/build", [], { "/tmp/proj/README.md": "x" });
 allowed("mkdir -p build/out");
+// A relative path after `cd` or `pushd` makes a folder in the folder it moved to.
+denied("cd /tmp && mkdir probe-r", gateTmpMarker("/tmp/probe-r"));
+denied("pushd /private/tmp; mkdir -p a/b", gateTmpMarker("/private/tmp/a/b"));
+allowed(
+	"cd /tmp && mkdir probe-r && printenv CLAUDE_CODE_SESSION_ID > probe-r/.created-by-claudetto",
+);
+allowed("cd /tmp/mine && mkdir sub", [], { [MARK]: "S2" });
+allowed("cd build && mkdir out");
+// A path ends at a shell operator, so the folder checked is the one the command names.
+allowed("mkdir /tmp/mine;ls", [], { [MARK]: "S2" });
 allowed("mktemp -d");
 
 // Seen live: a worker denied a bare `mkdir` made its /tmp folder with Write, which makes missing folders.

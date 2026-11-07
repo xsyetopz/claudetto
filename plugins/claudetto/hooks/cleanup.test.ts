@@ -95,9 +95,17 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 				{ command: `ls /tmp/probe-sibling && ${MAKE("/tmp/probe-b")}` },
 				{ command: "mktemp -d /tmp/probe-XXXX; find /tmp -name 'probe-sib*'", text: "/tmp/probe-sib2\n" },
 				{ command: MAKE("/tmp/probe-other") },
+				{ command: "cd /tmp && mkdir probe-rel && printenv CLAUDE_CODE_SESSION_ID > probe-rel/.created-by-claudetto" },
+				{
+					command: 'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "made $d."',
+					text: "made /tmp/probe-dot.\n(/tmp/probe-par)\n",
+				},
 			],
 		},
 		{
+			[MARK("/tmp/probe-rel")]: "S1\n",
+			[MARK("/tmp/probe-dot")]: "S1\n",
+			[MARK("/tmp/probe-par")]: "S1\n",
 			[MARK("/tmp/probe-a")]: "S1\n",
 			[MARK("/tmp/probe-Q1w2")]: "S1\n",
 			[MARK("/tmp/probe-b")]: "S1\n",
@@ -110,7 +118,7 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 	);
 
 	expect((await stop($)).block).toBeUndefined();
-	expect(removed(runs)).toEqual(["/tmp/probe-a", "/tmp/probe-Q1w2", "/tmp/probe-b"]);
+	expect(removed(runs)).toEqual(["/tmp/probe-a", "/tmp/probe-Q1w2", "/tmp/probe-b", "/tmp/probe-rel", "/tmp/probe-dot", "/tmp/probe-par"]);
 });
 
 const MONITOR = { id: "m7", type: "monitor", status: "running", description: "build end" };

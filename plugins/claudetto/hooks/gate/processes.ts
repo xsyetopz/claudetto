@@ -20,7 +20,9 @@ const FLAG = /^-[A-Za-z0-9]/;
 const PROBE = /^-[0lL]$/;
 const PID = /^\d+$/;
 const TMP_TOP = /^(?:\/private)?\/tmp(?:\/[^/]+)?/;
-const TMP_TOPS = /(?:\/private)?\/tmp\/[^/\s'"]+/g;
+const TMP_TOPS = /(?:\/private)?\/tmp\/[^/\s'"`;|&()<>]+/g;
+// A sentence can end right after a path it prints.
+const TRAILING = /[.,:]+$/;
 const TMP_NAMED = /^(?:\/private)?\/tmp\/[^/]+/;
 const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/;
 const MAKERS = new Set(["mkdir", "mktemp"]);
@@ -114,8 +116,29 @@ export const NOBODY: Owns = {
 };
 
 /** The top folders below /tmp that a command names, whose marker file the caller reads. */
-export const tmpTops = (command: string): string[] =>
-	command.match(TMP_TOPS) ?? [];
+export const tmpTops = (command: string): string[] => [
+	...new Set([
+		...(command.match(TMP_TOPS) ?? []).map((top) => top.replace(TRAILING, "")),
+		...madePaths(parse(command).commands).flatMap((p) => tmpTopOf(p) ?? []),
+	]),
+];
+
+/** The folders `mkdir` and `mktemp` name, a relative one joined to the folder an earlier `cd` or `pushd` of the same command moved to. */
+const madePaths = (commands: Command[]): string[] => {
+	let dir: string | undefined;
+	return commands.flatMap((c) => {
+		const { name, args } = programOf(c);
+		const named = plain(args);
+		if (name === "cd" || name === "pushd") {
+			const to = named[0];
+			dir = to?.startsWith("/") ? to : to && dir && `${dir}/${to}`;
+			return [];
+		}
+		return MAKERS.has(name)
+			? named.map((a) => (a.startsWith("/") || !dir ? a : `${dir}/${a}`))
+			: [];
+	});
+};
 
 const BRANCH_FLAGS = new Set(["-b", "-B", "-c", "-C"]);
 
@@ -191,10 +214,15 @@ export const markedTopsOf = (past: Past[]): string[] => [
 			.flatMap((t) => {
 				const command = fieldOf(t.input, "command") ?? "";
 				const printed = MKTEMP.test(command) ? tmpTops(t.text ?? "") : [];
+				// A folder made by a relative path after `cd` is never spelled whole, and neither is the path of its marker.
+				const relative = madePaths(parse(command).commands)
+					.filter((p) => !command.includes(p))
+					.flatMap((p) => tmpTopOf(p) ?? []);
 				return [
 					...tmpTops(command).filter((top) =>
 						command.includes(`${top}/${MARKER}`),
 					),
+					...relative,
 					...printed,
 				].filter((top) => command.includes(MARKER) && !DOTDOT.test(top));
 			}),
@@ -214,15 +242,10 @@ export const markerVerdict = (
 	if (command.includes(MARKER)) {
 		return undefined;
 	}
-	const path = commands
-		.flatMap((c) => {
-			const { name, args } = programOf(c);
-			return MAKERS.has(name) ? args : [];
-		})
-		.find((a) => {
-			const top = tmpTopOf(a);
-			return top !== undefined && !own.tmp(top) && !own.standing(top);
-		});
+	const path = madePaths(commands).find((a) => {
+		const top = tmpTopOf(a);
+		return top !== undefined && !own.tmp(top) && !own.standing(top);
+	});
 	return path === undefined ? undefined : deny(gateTmpMarker(path));
 };
 
