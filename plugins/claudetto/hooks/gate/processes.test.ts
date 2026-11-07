@@ -206,3 +206,25 @@ denied("rm -rf /tmp/mine /tmp/other", gateRmTmp("/tmp/other"), [], {
 denied("git branch -D mine theirs", gateBranchDelete("theirs"), [
 	{ command: "git branch mine", text: "" },
 ]);
+
+const asks = (command: string, past: Earlier[] = []) =>
+	test(`${command} keeps asking as not owned`, async ($: Engine, on: On) => {
+		lab(on, past);
+		expect((await run($, command)).decision).toBe("ask");
+	});
+const MINE = [{ command: "git branch mine", text: "" }];
+
+allowed("git update-ref -d refs/heads/mine", MINE);
+asks("git update-ref -d refs/heads/main", MINE);
+asks("git update-ref -d refs/heads/main");
+allowed("git branch -f mine abc1234", MINE);
+asks("git branch -f main abc1234", MINE);
+asks("git branch -f -M mine main", MINE);
+allowed("git update-ref refs/heads/mine abc1234", MINE);
+asks("git update-ref refs/heads/main abc1234", MINE);
+asks("git update-ref -d refs/tags/mine", MINE);
+asks(
+	"git update-ref -d refs/heads/mine && git update-ref -d refs/heads/main",
+	MINE,
+);
+asks("git reset --soft abc1234", MINE);

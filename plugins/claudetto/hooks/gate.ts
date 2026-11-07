@@ -28,7 +28,7 @@ const PERSON = /^(?:composer|bridge)$/;
 // Another feature owns the unmatched `tool.check`; this pattern matches every tool name.
 const ANY_TOOL = /^/;
 // Only a command that could need the transcript or a marker file reads them.
-const OWNED = /\b(?:kill|worktree|branch)\b/;
+const OWNED = /\b(?:kill|worktree|branch|update-ref)\b/;
 const RM = /\brm\b/;
 const MARKER = ".created-by-claudetto";
 

@@ -20,14 +20,14 @@ const TEST =
 	/^(?:(?:bun|npm|pnpm|yarn) (?:run )?test|(?:npx|bunx) (?:vitest|jest)|pytest|cargo test|go test)(?: |$)/;
 // `git diff --output=file` writes a file and `rg --pre cmd` runs one.
 const WRITES_OR_RUNS = /^--(?:output|pre)\b/;
+const FD = /^\d+$/;
 
 // Only input redirects, `2>&1`, and `/dev/` targets leave no file behind.
 const quiet = (c: Command): boolean =>
 	c.redirects.every((r) =>
 		r.op.startsWith("<")
 			? r.op !== "<>"
-			: r.target.startsWith("/dev/") ||
-				(r.op === ">&" && /^\d+$/.test(r.target)),
+			: r.target.startsWith("/dev/") || (r.op === ">&" && FD.test(r.target)),
 	);
 
 /** Whether every command of the text reads only or runs the project's tests. A wrapper (`sudo`, `env`, an assignment) before the program, a shell, a network tool, or a file redirect makes it false. */

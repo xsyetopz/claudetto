@@ -1,4 +1,5 @@
 import { GATE_REF_MOVE } from "../texts.ts";
+import { type Owns, ownedMove } from "./processes.ts";
 import { withoutGitOptions } from "./upstream.ts";
 import { ask, type Verdict } from "./verdict.ts";
 
@@ -7,10 +8,11 @@ const MODES = new Set(["--soft", "--mixed", "--keep", "--merge", "--hard"]);
 const PSEUDO = /^(FETCH_HEAD|ORIG_HEAD|MERGE_HEAD|CHERRY_PICK_HEAD)\b/;
 const AT_HEAD = /^(HEAD|@)([~^]\d*)*$/;
 
-/** Asks before a command moves a branch to another commit: a `reset` to a ref other than `HEAD`, `update-ref`, or `branch -f`. */
+/** Asks before a command moves a branch to another commit: a `reset` to a ref other than `HEAD`, `update-ref`, or `branch -f`, unless it moves one branch this session owns. A `reset` moves the current branch, which the hook cannot know cheaply, so it keeps asking. */
 export const refVerdict = (
 	name: string,
 	args: string[],
+	own: Owns,
 ): Verdict | undefined => {
 	if (name !== "git") {
 		return undefined;
@@ -27,5 +29,5 @@ export const refVerdict = (
 				(flags.some((f) => MODES.has(f)) && !AT_HEAD.test(target)))) ||
 		verb === "update-ref" ||
 		(verb === "branch" && flags.some((f) => f === "-f" || f === "--force"));
-	return moves ? ask(GATE_REF_MOVE) : undefined;
+	return moves && !ownedMove(name, args, own) ? ask(GATE_REF_MOVE) : undefined;
 };

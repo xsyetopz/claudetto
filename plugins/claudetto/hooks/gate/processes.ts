@@ -198,11 +198,41 @@ export const ownedVerdict = (
 	return undefined;
 };
 
+const HEADS = "refs/heads/";
+const REF_FLAGS = new Set(["-d", "--delete", "--no-deref", "--create-reflog"]);
+
+/** Tells whether a command moves or deletes one branch this session owns: `update-ref [-d] refs/heads/<name> ...` or `branch -f <name> ...`. The vendored `git:delete_ref` rule and the ref-move ask then do not apply. */
+export const ownedMove = (
+	name: string,
+	args: string[],
+	own: Owns,
+): boolean => {
+	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
+	const flags = rest.filter((w) => w.startsWith("-"));
+	const [ref = ""] = plain(rest);
+	if (verb === "update-ref") {
+		return (
+			flags.every((f) => REF_FLAGS.has(f)) &&
+			ref.startsWith(HEADS) &&
+			own.branch(ref.slice(HEADS.length))
+		);
+	}
+	return (
+		verb === "branch" &&
+		flags.length > 0 &&
+		flags.every((f) => f === "-f" || f === "--force") &&
+		own.branch(ref)
+	);
+};
+
 /** Tells whether a command only removes /tmp folders or force-deletes branches that this session owns; the vendored rules `fs:recursively_delete` and `git:force_delete_branch` then do not apply. */
 export const ownedRemoval = (c: Command, own: Owns): boolean => {
 	const { name, args } = programOf(c);
 	if (ownedVerdict(name, args, own)) {
 		return false;
+	}
+	if (ownedMove(name, args, own)) {
+		return true;
 	}
 	if (name === "rm") {
 		return plain(args).length > 0 && plain(args).every((p) => TMP_TOP.test(p));

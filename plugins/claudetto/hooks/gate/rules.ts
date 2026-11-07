@@ -108,7 +108,7 @@ const commandVerdicts = (
 	);
 	return [
 		packageVerdict(name, args, has),
-		refVerdict(name, args),
+		refVerdict(name, args, own),
 		killVerdict(name, args, own.pid),
 		ownedVerdict(name, args, own),
 		releaseVerdict(c),
