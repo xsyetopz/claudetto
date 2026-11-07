@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readlink } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { spawn, TOML } from "bun";
 
@@ -6,6 +6,7 @@ export interface Rule {
 	readonly id: string;
 	readonly path: RegExp;
 	readonly temp: boolean;
+	readonly gcroot: boolean;
 	readonly keep: readonly RegExp[];
 }
 
@@ -17,6 +18,7 @@ export interface Trash {
 interface Entry {
 	readonly name: string;
 	isDirectory(): boolean;
+	isSymbolicLink(): boolean;
 }
 
 export interface Found {
@@ -24,6 +26,8 @@ export interface Found {
 	readonly path: string;
 }
 
+// Nix registers each `result` link of a build as a garbage collector root, and the root goes with the link (nix-build manual).
+const NIX_STORE = "/nix/store/";
 const DEFAULT_PATH = join(import.meta.dir, "trash.toml");
 export const PROJECT_TRASH = ".claude/claudetto/trash.toml";
 
@@ -52,6 +56,7 @@ const rulesOf = (file: string, raw: unknown): Rule[] =>
 			id: rule.id,
 			path: goRegex(rule.path),
 			temp: Array.isArray(rule.tags) && rule.tags.includes("temp"),
+			gcroot: Array.isArray(rule.tags) && rule.tags.includes("gcroot"),
 			keep: pathsOf(rule.allowlists),
 		};
 	});
@@ -100,34 +105,46 @@ export const loadTrash = async (cwd: string): Promise<Trash> => {
 	};
 };
 
-const matchOf = (trash: Trash, temp: boolean, rel: string) =>
+const matchOf = (trash: Trash, temp: boolean, rel: string, gcroot = false) =>
 	trash.keep.some((re) => re.test(rel))
 		? undefined
 		: trash.rules.find(
 				(rule) =>
 					rule.temp === temp &&
+					rule.gcroot === gcroot &&
 					rule.path.test(rel) &&
 					!rule.keep.some((re) => re.test(rel)),
 			);
 
-/** Each folder under `root` that a project rule names; the walk stops at a match and never enters `.git`. */
+/** Each folder under `root` that a project rule names, and each link into the Nix store that a `gcroot` rule names; the walk stops at a match, never enters `.git`, and never follows a link. */
 export const projectTrash = async (
 	root: string,
 	trash: Trash,
 	list: (dir: string) => Promise<readonly Entry[]>,
 ): Promise<Found[]> => {
 	const walk = async (dir: string): Promise<Found[]> => {
-		const dirs = (await list(dir)).filter(
-			(entry) => entry.isDirectory() && entry.name !== ".git",
-		);
+		const entries = await list(dir);
 		const found = await Promise.all(
-			dirs.map((entry) => {
-				const path = join(dir, entry.name);
-				const rule = matchOf(trash, false, relative(root, path));
-				return rule ? [{ id: rule.id, path }] : walk(path);
-			}),
+			entries
+				.filter((entry) => entry.isDirectory() && entry.name !== ".git")
+				.map((entry) => {
+					const path = join(dir, entry.name);
+					const rule = matchOf(trash, false, relative(root, path));
+					return rule ? [{ id: rule.id, path }] : walk(path);
+				}),
 		);
-		return found.flat();
+		const links = await Promise.all(
+			entries
+				.filter((entry) => entry.isSymbolicLink())
+				.map(async (entry) => {
+					const path = join(dir, entry.name);
+					const rule = matchOf(trash, false, relative(root, path), true);
+					return rule && (await readlink(path)).startsWith(NIX_STORE)
+						? [{ id: rule.id, path }]
+						: [];
+				}),
+		);
+		return [...found.flat(), ...links.flat()];
 	};
 	return walk(root);
 };

@@ -1,5 +1,5 @@
 import type { Stats } from "node:fs";
-import { readdir, readFile, realpath, rm, stat } from "node:fs/promises";
+import { lstat, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 import { MARKER } from "../gate/processes.ts";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
@@ -232,7 +232,9 @@ const builtTrash = async (trash: Trash, limitMs: number, host: Host) => {
 		return [];
 	}
 	const own = await checkoutOf(host.cwd);
-	const found = await projectTrash(host.cwd, trash, namesIn);
+	const found = await projectTrash(host.cwd, trash, (dir) =>
+		readdir(dir, { withFileTypes: true }).catch(() => []),
+	);
 	const kept = await Promise.all(
 		found.map(async (item) =>
 			(await keepReason(item.path, limitMs, held, own)) === undefined
@@ -276,7 +278,8 @@ export const sweep = async (args: Args, host: Host): Promise<Report> => {
 	}
 	const found = await Promise.all(
 		(await candidates(args, host)).map(async (item) => {
-			const info = await stat(item.path).catch(() => undefined);
+			// A Nix result link counts by its own time, and its store path may be gone.
+			const info = await lstat(item.path).catch(() => undefined);
 			return info !== undefined && host.now - info.mtimeMs > item.limitMs
 				? [
 						{

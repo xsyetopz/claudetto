@@ -7,7 +7,7 @@
 # A name that several tools share, such as `build` or `target`, sits in each of their rules: the report names the first rule that matches, and disabling one rule leaves the others.
 # Ninja and Make write files only, into the folder their generator chose, so they have no rule.
 # Bazel has none either: its bazel-* outputs are symlinks into its own cache, and the walk does not follow links; `bazel clean` frees them.
-# Nix has none for its `result` and `result-<output>` links, for the same reason: they are symlinks into /nix/store (nix-build manual).
+# A rule tagged `gcroot` names symlinks instead, and only those that point into /nix/store: removing one frees nothing by itself, but lets `nix-collect-garbage` free its store path.
 
 title = "claudetto trash"
 
@@ -234,6 +234,12 @@ id = "direnv"
 description = "direnv layout folder, which holds nix-direnv's profile links and flake inputs"
 path = '''(?:^|/)\.direnv$'''
 tags = ["project", "dependencies", "nix"]
+
+[[rules]]
+id = "nix-result"
+description = "nix-build and nix build result links (result, result-2, result-<output>), each a garbage collector root that goes with the link (nix-build manual)"
+path = '''(?:^|/)result(?:-[^/]+)?$'''
+tags = ["project", "gcroot", "nix"]
 
 # Temp
 

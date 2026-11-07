@@ -96,6 +96,24 @@ test("a build folder linked into a worktree from elsewhere stays, and so does wh
 	expect(await exists(join(shared, "debug/a"))).toBe(true);
 });
 
+test("an old Nix result link into the store goes, and a result link elsewhere and a result folder stay", async () => {
+	const { root, proj, worktree } = await repo();
+	const old = new Date(NOW - 10 * DAY);
+	// The store path need not exist: the walk never follows the link.
+	await symlink("/nix/store/0000-hello-dev", join(worktree, "result-dev"));
+	await symlink(join(root, "shared"), join(worktree, "result"));
+	await built(join(worktree, "app/result"), 10);
+	await Promise.all(
+		["result-dev", "result"].map((name) => lutimes(join(worktree, name), old, old)),
+	);
+	await writeFile(join(proj, ".git/info/exclude"), "result*\n");
+	await idle(proj);
+
+	expect(await swept(root, proj)).toEqual([
+		["nix-result", join(worktree, "result-dev")],
+	]);
+});
+
 test("a worktree whose git index changed within the limit keeps its old folders", async () => {
 	const { root, proj, worktree } = await repo();
 	await built(join(worktree, ".build"), 30);
@@ -262,7 +280,7 @@ test("the sweep's own process in the project does not keep its build folders", a
 test("every folder a tool probe made matches a rule, and a bare generic name does not", async () => {
 	const { proj } = await repo();
 	const { rules } = await loadTrash(proj);
-	const matched = (path: string) => rules.some((rule) => !rule.temp && rule.path.test(path));
+	const matched = (path: string) => rules.some((rule) => !rule.temp && !rule.gcroot && rule.path.test(path));
 	const made = ["node_modules", "dist", ".venv", ".pdm-build", ".tox", ".mypy_cache", "htmlcov", "_build", "deps", "build", "elm-stuff", ".dart_tool", "ios/Flutter/ephemeral", "lua_modules", ".luarocks", "vendor", ".terraform", ".terragrunt-cache", ".zig-cache", "zig-out", ".cpcache", "target", "project/target", ".gradle", ".kotlin", "app/build", "CMakeFiles", "out/build", "builddir", ".xmake", "autom4te.cache", ".pio", "buck-out", ".build", "vcpkg_installed", "build/vcpkg_installed", "buildtrees", ".scala-build", ".bsp", ".direnv"];
 	expect(made.filter((path) => !matched(path))).toEqual([]);
 	expect(["ephemeral", "local", "charts", "bin", "src", "result", "packages", "downloads"].filter(matched)).toEqual([]);
@@ -278,5 +296,5 @@ test("the plugin's trash file passes the gitleaks config check of betterleaks", 
 		join(import.meta.dir, "../../plugins/claudetto/hooks/hygiene/trash.toml"),
 	]);
 
-	expect(await new Response(check.stdout).text()).toContain("OK: 36 rules");
+	expect(await new Response(check.stdout).text()).toContain("OK: 37 rules");
 });
