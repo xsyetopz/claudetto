@@ -349,6 +349,12 @@ export const GATE_CHECK_FAILED =
 	"The gate failed. A person must approve this call.";
 export const gateRule = (reason: string | undefined, rule: string): string =>
 	`${reason ?? "This call is denied."} The rule \`${rule}\` denies it.`;
+export const GATE_KILL_BROAD =
+	"`pkill` and `killall` stop every process with a matching name, and some of those were not started by this session. Stop a background task with `TaskStop`, or run `kill <pid>` on a pid that an earlier command of this session printed after it started the process in the background.";
+export const gateKillPid = (pid: string): string =>
+	`${pid} is not a process this session started: no earlier result of this session shows a background command that printed it. Leave it running. Stop only what this session started, with \`TaskStop\` or \`kill <pid>\` of a pid its own command printed.`;
+export const GATE_RELEASE_RUN =
+	"This runs a released Claude Code program to read it. Read it with the cc-inspect `code` tool instead; its `installs` action lists the releases. `claude --help` on the installed command is still allowed.";
 export const GATE_REF_MOVE =
 	"This moves a branch to another commit. Resolve the target to a full hash with `git rev-parse <ref>`, move to that hash, and check `git diff --quiet <expected> HEAD` in the same call.";
 export const gatePackage = (file: string, use: string, name: string): string =>
@@ -473,6 +479,10 @@ export const GRADE_FAULTS = {
 	jargon: {
 		test: "The reply uses a label the session made up or saw only in tool output (such as R9, M1, or a case code) that no listed message explained, with no plain gloss beside it. A file, function, command, or setting name the user wrote or works with is not this fault.",
 		fix: "Your reply uses names or ids the user was not given a meaning for. Resend it saying each thing in plain words; keep a name only with a short gloss beside it.",
+	},
+	confesses: {
+		test: 'The reply confesses, apologizes for, or narrates the assistant\'s own conduct ("my mistake", "I should not have", "I wrongly...", "sorry, I...", "I was wrong to...") in place of stating the fact, the result, or the change. A reply that states what is true now, what was changed, or what a check showed, with no remark on the assistant\'s own fault, is not this fault.',
+		fix: "Your reply talks about your own conduct: a confession, an apology, or a note on what you should have done. Resend it stating the fact, the result, and what you changed, with no remark on yourself.",
 	},
 	narrates: {
 		test: 'The reply ends by narrating a next step in place of a result ("I\'m now making...", "Next I\'ll..."), so the turn ends with work promised and not done or reported.',

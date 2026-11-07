@@ -17,6 +17,9 @@ Before 1.0.0, a release can change or remove behavior.
 - `/claudetto:setup` writes one `sandbox` block that turns on Claude Code's sandbox: writes only to the project, the temp folder, and the tool caches, cloud-credential reads denied, and no retry outside the sandbox.
 - `/claudetto:setup` adds `DISABLE_TELEMETRY=1` to `env` and denies eight tools that claudetto does not use, such as `Workflow`, `CronCreate`, and `EnterPlanMode`.
 - Setup saves a hash of each rule file it copies, and the next start logs which copies were updated or modified.
+- The gate denies `pkill`, `killall`, and `kill <pid>` of a pid that no earlier result of the session shows a background command of its own printed. `kill -0`, `kill -l`, `kill %1`, and `kill $!` pass.
+- The gate denies running a released Claude Code program (a path under `claude/versions/`) to read it, and names the cc-inspect `code` tool. `claude --help` on the installed command stays allowed.
+- The Stop grader also blocks a reply that confesses, apologizes for, or narrates its own conduct ("my mistake", "I should not have") in place of the fact.
 - A Stop grader reads the final reply and blocks once when it names an unchecked claim, a broken rule, credit to the user for what they did not say, an unfiled defect, a fallback, something the session did not see, unexplained jargon, or a reply that ends on a next step it has not taken.
 - A Stop that leaves files the session wrote uncommitted is blocked once with a request to commit them.
 - A reply or subagent report that names a file in a `! <command>` step is blocked when the file does not exist.

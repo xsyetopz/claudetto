@@ -8,6 +8,7 @@ import {
 	withDenial,
 } from "./gate/denials.ts";
 import { POLICY_FILES } from "./gate/packages.ts";
+import { startedBy } from "./gate/processes.ts";
 import { readSplit } from "./gate/read-split.ts";
 import { type Host, newRecreation, recreates, saw } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
@@ -20,6 +21,7 @@ const STRICTNESS = ["allow", "ask", "deny"];
 const PERSON = /^(?:composer|bridge)$/;
 // Another feature owns the unmatched `tool.check`; this pattern matches every tool name.
 const ANY_TOOL = /^/;
+const KILL = /\bkill\b/;
 
 const presentFiles = async ($: EngineInterface): Promise<Set<string>> => {
 	const cwd = await $.session.cwd();
@@ -50,7 +52,11 @@ const ownVerdict = async (
 	const command = fieldOf(input, "command");
 	if ((tool === "Bash" || tool === "Monitor") && command !== undefined) {
 		const present = await presentFiles($);
-		const own = judge(command, (f) => present.has(f));
+		const own = judge(
+			command,
+			(f) => present.has(f),
+			startedBy(KILL.test(command) ? await hostOf($).past() : []),
+		);
 		return own && { ...own, reason: `${own.reason} (\`${command}\`)` };
 	}
 	const path = fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path");

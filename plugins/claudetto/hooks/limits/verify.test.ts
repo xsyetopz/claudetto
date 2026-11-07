@@ -491,3 +491,12 @@ test("a clean reply is not blocked for jargon or narration", async ($: Engine, o
 		(await stop($, false, "The total now skips no rows.")).block,
 	).toBeUndefined();
 });
+
+test("a reply that confesses its own conduct gets one block that asks for the fact", async ($: Engine, on: On) => {
+	const reply = "My mistake: I should not have used pkill.";
+	const seen: string[] = [];
+	lab(on, [user("status?")], found("confesses", "My mistake"), seen);
+	expect((await stop($, false, reply)).block).toContain("your own conduct");
+	expect(seen[0]).toContain("- confesses:");
+	expect((await stop($, true, reply)).block).toBeUndefined();
+});
