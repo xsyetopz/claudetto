@@ -21,13 +21,7 @@ Install `claudetto-you-should-know@claudetto` or `claudetto-openspec@claudetto` 
 
 ## Setup
 
-claudetto needs two tools on the `PATH`:
-
-```sh
-brew install betterleaks mole
-```
-
-Then run `/claudetto:setup` once per project. It writes claudetto's settings, starter files, ignore blocks, and tools.
+claudetto needs `betterleaks` and `mole`, and a `/claudetto:setup` run in each project: see [plugins/claudetto/README.md](plugins/claudetto/README.md).
 
 ## Options
 
