@@ -197,3 +197,18 @@ export const ownedVerdict = (
 	}
 	return undefined;
 };
+
+/** Tells whether a command only removes /tmp folders or force-deletes branches that this session owns; the vendored rules `fs:recursively_delete` and `git:force_delete_branch` then do not apply. */
+export const ownedRemoval = (c: Command, own: Owns): boolean => {
+	const { name, args } = programOf(c);
+	if (ownedVerdict(name, args, own)) {
+		return false;
+	}
+	if (name === "rm") {
+		return plain(args).length > 0 && plain(args).every((p) => TMP_TOP.test(p));
+	}
+	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
+	return (
+		verb === "branch" && isForceDelete(rest.filter((w) => w.startsWith("-")))
+	);
+};

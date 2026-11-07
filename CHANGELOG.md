@@ -19,6 +19,7 @@ Before 1.0.0, a release can change or remove behavior.
 - Setup saves a hash of each rule file it copies, and the next start logs which copies were updated or modified.
 - The gate denies `pkill`, `killall`, and `kill <pid>` of a pid that no earlier result of the session shows a background command of its own printed. `kill -0`, `kill -l`, `kill %1`, and `kill $!` pass.
 - The gate denies `rm` under a `/tmp` folder without this session's `.created-by-claudetto` marker, `git worktree remove` of a worktree the session did not add, and a forced `git branch` delete of a branch it did not make.
+- An agent removes a marked `/tmp` folder, force-deletes a branch, or removes a worktree that its session or worker made, and kills a pid it started, with no prompt.
 - The gate denies running a released Claude Code program (a path under `claude/versions/`) to read it, and names the cc-inspect `code` tool. `claude --help` on the installed command stays allowed.
 - The Stop grader also blocks a reply that confesses, apologizes for, or narrates its own conduct ("my mistake", "I should not have") in place of the fact.
 - A Stop grader reads the final reply and blocks once when it names an unchecked claim, a broken rule, credit to the user for what they did not say, an unfiled defect, a fallback, something the session did not see, unexplained jargon, or a reply that ends on a next step it has not taken.

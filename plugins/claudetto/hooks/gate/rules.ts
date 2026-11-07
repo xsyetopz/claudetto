@@ -9,6 +9,7 @@ import {
 	killVerdict,
 	NOBODY,
 	type Owns,
+	ownedRemoval,
 	ownedVerdict,
 	releaseVerdict,
 } from "./processes.ts";
@@ -137,7 +138,10 @@ const judgeText = (
 		return upstreamVerdict(command, []) ?? ask(GATE_UNREADABLE);
 	}
 	return strictest([
-		upstreamVerdict(command, parsed.commands),
+		upstreamVerdict(
+			command,
+			parsed.commands.filter((c) => !ownedRemoval(c, own)),
+		),
 		...parsed.commands.flatMap((c) => commandVerdicts(c, has, own)),
 	]);
 };

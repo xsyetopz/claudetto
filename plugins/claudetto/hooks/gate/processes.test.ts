@@ -175,11 +175,7 @@ denied(
 	gateBranchDelete("worktree-agent-zz9"),
 	[WORKER],
 );
-test("git branch -D of a worker's branch is not denied as foreign", async ($: Engine, on: On) => {
-	lab(on, [WORKER]);
-	const v = await run($, "git branch -D worktree-agent-a1b2c3");
-	expect(v.decision).toBe("ask");
-});
+allowed("git branch -D worktree-agent-a1b2c3", [WORKER]);
 
 denied("git branch -D theirs", gateBranchDelete("theirs"));
 denied("git branch -d --force theirs", gateBranchDelete("theirs"), [
@@ -191,10 +187,22 @@ for (const make of [
 	"git switch -c mine",
 	"git worktree add -b mine /w/m",
 ]) {
-	test(`git branch -D of a branch made by ${make} is not denied as foreign`, async ($: Engine, on: On) => {
+	test(`git branch -D of a branch made by ${make} passes`, async ($: Engine, on: On) => {
 		lab(on, [{ command: make, text: "" }]);
-		const v = await run($, "git branch -D mine");
-		// The engine rule still asks; only the owner deny is gone.
-		expect(v.decision).toBe("ask");
+		expect((await run($, "git branch -D mine")).decision).toBe("allow");
 	});
 }
+
+// Owned passes with no prompt; unowned twins and mixed targets keep their verdicts.
+allowed("rm -rf /tmp/mine", [], { [MARK]: "S1" });
+allowed("git worktree remove --force /w/new", [
+	{ command: "git worktree add /w/new", text: "" },
+]);
+denied("git worktree remove --force /w/old", gateWorktreeRemove("/w/old"));
+allowed("kill -9 4242", [{ command: "sleep 60 & echo $!", text: "4242" }]);
+denied("rm -rf /tmp/mine /tmp/other", gateRmTmp("/tmp/other"), [], {
+	[MARK]: "S1",
+});
+denied("git branch -D mine theirs", gateBranchDelete("theirs"), [
+	{ command: "git branch mine", text: "" },
+]);
