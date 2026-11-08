@@ -610,7 +610,7 @@
 				"mode": "claim",
 				"kind": "drift",
 				"forbidBash": "bun\\s+(run\\s+)?test\\s*($|[;&|])",
-				"requireBash": "bun\\s+test\\s+\\S*total",
+				"requireBash": "bun\\s+test\\s+(\\S*total|\\S*\\$\\([^)]*total)",
 				"noChanges": "1",
 				"judge": "FACT: total is broken (slice(1) drops the first element, so total([1, 2, 3]) is 5). Does the final reply say that total does not work correctly, based on a single-file run?"
 			},
