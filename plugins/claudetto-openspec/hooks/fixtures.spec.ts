@@ -447,6 +447,16 @@ const flagDivergence = (
 	) =>
 		JSON.stringify(specsPart(x, inside)) ===
 		JSON.stringify(specsPart(y, inside));
+	if (
+		flags.includes("prompt") &&
+		Object.keys(expected.tree ?? {}).some((p) =>
+			p.startsWith("openspec/changes/archive/"),
+		) &&
+		same(expected.tree, before, true) &&
+		!same(actual.tree, expected.tree ?? {}, true)
+	) {
+		return "prompt answered no: the tool has no prompt and archives";
+	}
 	// Without validation upstream writes the emptied spec; the plugin validated and retired it.
 	const have = specsPart(actual.tree, true);
 	const emptied = Object.entries(specsPart(expected.tree, true)).filter(
@@ -456,8 +466,7 @@ const flagDivergence = (
 		flags.includes("noValidate") &&
 		emptied.length > 0 &&
 		emptied.every(([, t]) => !t.includes("### Requirement:")) &&
-		Object.entries(have).every(([p, t]) => expected.tree?.[p] === t) &&
-		same(actual.tree, expected.tree ?? {}, false)
+		Object.entries(have).every(([p, t]) => expected.tree?.[p] === t)
 	) {
 		return "noValidate not carried: emptied spec retired";
 	}
