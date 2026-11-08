@@ -1,0 +1,16 @@
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-still-run-tests","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-left-tests","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-not-done-migrate","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-unrun-check","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-remaining-commit","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-todo-list","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-goal-cleared","want":["narrates"],"found":["jargon"],"missed":["narrates"],"extra":["jargon"]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-denied-push","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-user-only-sudo","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-user-heldout","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"open-next-steps","want":["narrates"],"found":[],"missed":["narrates"],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-paid-approval","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-all-done","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-user-said-leave","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-out-of-scope-named","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/texts.ts","id":"clean-cap-reached","want":[],"found":[],"missed":[],"extra":[]}

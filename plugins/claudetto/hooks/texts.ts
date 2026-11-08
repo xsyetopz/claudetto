@@ -501,8 +501,8 @@ export const GRADE_FAULTS = {
 		fix: "Your reply talks about your own conduct: a confession, an apology, or a note on what you should have done. Resend it stating the fact, the result, and what you changed, with no remark on yourself.",
 	},
 	narrates: {
-		test: 'The reply ends on a step it promises ("Next I\'ll…", "I\'m now making…") in place of a result, so the turn ends with the work undone.',
-		fix: "Your reply ends on a step you say you will take, and the turn ends. Do that step now, or report the result you have, and resend.",
+		test: 'The reply ends on a step it promises ("Next I\'ll…", "I\'m now making…") in place of a result, or lists as open, left, or remaining a step the assistant could still take with its own tools (a command, test, check, edit, or commit), so the turn ends with the work undone. Not this fault: an open item that waits on the user, a denial, a paid run that needs approval, or a user message that said to leave it.',
+		fix: "Your reply ends on a step you say you will take, or lists as open a step you can still take. Do that step now, or report the result you have, and resend.",
 	},
 	unfixed: {
 		test: 'The reply reports the failed command below as the outcome or a blocker, its error names a fix the assistant can apply itself (a token or env file it holds, a flag, a path, a dependency), and it did not rerun. "Not logged in" or "run /login" counts when a user message names a token or env file. Not this fault: a fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission).',

@@ -449,6 +449,14 @@ test("a reply that ends on a promised next step gets one block that asks for the
 	expect((await stop($, true, reply)).block).toBeUndefined();
 });
 
+test("a reply that lists a step it could still take as open is graded for it and blocked", async ($: Engine, on: On) => {
+	const reply = "Fixed the parser.\n\nStill open: run the test suite.";
+	const seen: string[] = [];
+	lab(on, [user("fix it")], found("narrates", "Still open: run the test suite."), seen);
+	expect((await stop($, false, reply)).block).toContain("lists as open a step you can still take");
+	expect(seen[0]).toContain("lists as open, left, or remaining a step");
+});
+
 test("a clean reply is not blocked for jargon or narration", async ($: Engine, on: On) => {
 	lab(on, [user("status?")], '{"faults":[]}');
 	expect(
