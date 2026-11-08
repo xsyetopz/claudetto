@@ -1,0 +1,1 @@
+hooks module claudetto@inline failed to load: claudetto: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/limits/stop.ts, compiled line 38 

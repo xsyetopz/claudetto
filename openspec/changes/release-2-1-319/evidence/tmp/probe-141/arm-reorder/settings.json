@@ -1,0 +1,6 @@
+{
+	"subagentStatusLine": {
+		"type": "command",
+		"command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/bin/claudetto-statusline\" --subagent"
+	}
+}

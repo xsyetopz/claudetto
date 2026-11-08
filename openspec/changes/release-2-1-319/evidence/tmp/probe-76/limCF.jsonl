@@ -1,0 +1,33 @@
+{"file":"hooks/limits/named-files.ts","id":"86","mutator":"Regex","line":3,"original":"/^\\s*```/","replacement":"/\\s*```/","status":"survived","ms":27798}
+{"file":"hooks/limits/named-files.ts","id":"88","mutator":"Regex","line":3,"original":"/^\\s*```/","replacement":"/^\\S*```/","status":"survived","ms":28784}
+{"file":"hooks/limits/named-files.ts","id":"91","mutator":"Regex","line":5,"original":"/^!\\s+(\\S.*)$/","replacement":"/!\\s+(\\S.*)$/","status":"survived","ms":31263}
+{"file":"hooks/limits/named-files.ts","id":"92","mutator":"Regex","line":5,"original":"/^!\\s+(\\S.*)$/","replacement":"/^!\\s+(\\S.*)/","status":"survived","ms":28476}
+{"file":"hooks/limits/named-files.ts","id":"93","mutator":"Regex","line":5,"original":"/^!\\s+(\\S.*)$/","replacement":"/^!\\s(\\S.*)$/","status":"survived","ms":26026}
+{"file":"hooks/limits/named-files.ts","id":"99","mutator":"StringLiteral","line":8,"original":"\"touch\"","replacement":"\"\"","status":"survived","ms":25796}
+{"file":"hooks/limits/named-files.ts","id":"102","mutator":"StringLiteral","line":9,"original":"\"mv\"","replacement":"\"\"","status":"survived","ms":25792}
+{"file":"hooks/limits/named-files.ts","id":"111","mutator":"ArrayDeclaration","line":17,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":27055}
+{"file":"hooks/limits/named-files.ts","id":"116","mutator":"StringLiteral","line":21,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":26694}
+{"file":"hooks/limits/named-files.ts","id":"119","mutator":"OptionalChaining","line":22,"original":"USER_COMMAND.exec(text.trim())?.[1]","replacement":"USER_COMMAND.exec(text.trim())[1]","status":"survived","ms":27878}
+{"file":"hooks/limits/named-files.ts","id":"120","mutator":"MethodExpression","line":22,"original":"text.trim()","replacement":"text","status":"survived","ms":27982}
+{"file":"hooks/limits/named-files.ts","id":"121","mutator":"ArrayDeclaration","line":22,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":30140}
+{"file":"hooks/limits/named-files.ts","id":"123","mutator":"StringLiteral","line":28,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":30459}
+{"file":"hooks/limits/named-files.ts","id":"124","mutator":"MethodExpression","line":29,"original":"rest.filter((word) => !word.startsWith(\"-\"))","replacement":"rest","status":"survived","ms":30343}
+{"file":"hooks/limits/named-files.ts","id":"127","mutator":"MethodExpression","line":29,"original":"word.startsWith(\"-\")","replacement":"word.endsWith(\"-\")","status":"survived","ms":29260}
+{"file":"hooks/limits/named-files.ts","id":"132","mutator":"ArrayDeclaration","line":31,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":30378}
+{"file":"hooks/limits/named-files.ts","id":"137","mutator":"LogicalOperator","line":33,"original":"program === \"git\" && args[0] === \"clone\"","replacement":"program === \"git\" || args[0] === \"clone\"","status":"survived","ms":30769}
+{"file":"hooks/limits/named-files.ts","id":"138","mutator":"ConditionalExpression","line":33,"original":"program === \"git\"","replacement":"true","status":"survived","ms":45435}
+{"file":"hooks/limits/named-files.ts","id":"141","mutator":"ConditionalExpression","line":33,"original":"args[0] === \"clone\"","replacement":"true","status":"survived","ms":36722}
+{"file":"hooks/limits/named-files.ts","id":"146","mutator":"UnaryOperator","line":34,"original":"-1","replacement":"+1","status":"survived","ms":29534}
+{"file":"hooks/limits/open-items.ts","id":"0","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"survived","ms":29538}
+{"file":"hooks/limits/open-items.ts","id":"1","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*/","status":"survived","ms":26599}
+{"file":"hooks/limits/open-items.ts","id":"3","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\S*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"survived","ms":30002}
+{"file":"hooks/limits/open-items.ts","id":"5","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"survived","ms":37157}
+{"file":"hooks/limits/open-items.ts","id":"6","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\D+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"survived","ms":43137}
+{"file":"hooks/limits/open-items.ts","id":"7","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[^.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"survived","ms":52774}
+{"file":"hooks/limits/open-items.ts","id":"8","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s\\[ \\]\\s+(.*\\S)\\s*$/","status":"survived","ms":57407}
+{"file":"hooks/limits/open-items.ts","id":"10","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s(.*\\S)\\s*$/","status":"survived","ms":59005}
+{"file":"hooks/limits/open-items.ts","id":"15","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\S*$/","status":"survived","ms":57855}
+{"file":"hooks/limits/open-items.ts","id":"16","mutator":"Regex","line":6,"original":"/(?:^|[\\s`(])!\\s+\\S/","replacement":"/(?:[\\s`(])!\\s+\\S/","status":"survived","ms":57583}
+{"file":"hooks/limits/open-items.ts","id":"18","mutator":"Regex","line":6,"original":"/(?:^|[\\s`(])!\\s+\\S/","replacement":"/(?:^|[\\S`(])!\\s+\\S/","status":"survived","ms":62839}
+{"file":"hooks/limits/open-items.ts","id":"19","mutator":"Regex","line":6,"original":"/(?:^|[\\s`(])!\\s+\\S/","replacement":"/(?:^|[\\s`(])!\\s\\S/","status":"survived","ms":61732}
+{"file":"hooks/limits/open-items.ts","id":"23","mutator":"ArrowFunction","line":16,"original":"(message) => message.role === \"user\" && message.text !== \"\"","replacement":"() => undefined","status":"survived","ms":64784}

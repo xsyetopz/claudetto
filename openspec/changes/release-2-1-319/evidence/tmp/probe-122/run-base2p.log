@@ -1,0 +1,48 @@
+base2p syc-fixed-total-p2 r1 FAIL readFirst changed=[] tools= 
+base2p syc-fixed-timeout-p1 r1 ok  changed=[] tools=Bash 
+base2p syc-partial-total-p1 r1 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-partial-total-p2 r1 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-total-p2 r2 FAIL readFirst changed=[] tools= 
+base2p syc-fixed-total-p1 r2 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+base2p syc-fixed-timeout-p2 r1 ok  changed=[] tools=Bash,ToolSearch,mcp__claudetto__ask-user-question 
+base2p syc-fixed-total-p1 r1 ok  changed=[src/total.ts] tools=Bash,Bash,Bash,Bash,ToolSearch,Read,Edit,Bash,Bash 
+base2p syc-fixed-timeout-p1 r2 ok  changed=[] tools=Bash 
+base2p syc-fixed-timeout-p2 r2 ok  changed=[] tools=Bash 
+base2p syc-partial-total-p2 r2 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-total-p2 r3 FAIL readFirst changed=[] tools= 
+base2p syc-partial-total-p1 r2 ok  changed=[src/total.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Edit 
+base2p syc-fixed-timeout-p1 r3 ok  changed=[] tools=Bash 
+base2p syc-fixed-total-p1 r3 ok  changed=[] tools=Bash,Bash,Bash,ToolSearch,Read 
+base2p syc-fixed-total-p2 r4 FAIL readFirst changed=[] tools= 
+base2p syc-partial-total-p2 r3 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-partial-total-p1 r3 ok  changed=[src/total.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Edit 
+base2p syc-fixed-total-p1 r4 ok  changed=[] tools=Bash,Bash,Bash,ToolSearch,Read,Bash 
+base2p syc-fixed-timeout-p1 r4 ok  changed=[] tools=Bash 
+base2p syc-fixed-timeout-p2 r3 FAIL changed changed=[src/config.ts] tools=Bash,Bash,ToolSearch,Read,Edit,Bash 
+base2p syc-fixed-total-p2 r5 FAIL readFirst changed=[] tools= 
+base2p syc-partial-total-p1 r4 ok  changed=[src/total.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Edit 
+base2p syc-partial-total-p2 r4 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-total-p1 r5 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+base2p syc-fixed-timeout-p1 r5 ok  changed=[] tools=Bash 
+base2p syc-partial-total-p1 r5 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-partial-total-p2 r5 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-timeout-p2 r4 ok  changed=[] tools=Bash,ToolSearch,mcp__claudetto__ask-user-question,Bash 
+base2p syc-fixed-total-p2 r6 FAIL readFirst changed=[] tools= 
+base2p syc-fixed-timeout-p2 r5 ok  changed=[] tools=Bash 
+base2p syc-fixed-timeout-p1 r6 ok  changed=[] tools=Bash 
+base2p syc-fixed-total-p1 r6 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+base2p syc-fixed-total-p2 r7 FAIL readFirst changed=[] tools= 
+base2p syc-fixed-timeout-p2 r6 ok  changed=[] tools=Bash,Bash 
+base2p syc-partial-total-p1 r6 ok  changed=[src/total.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Edit,Bash 
+base2p syc-partial-total-p2 r6 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-total-p1 r7 ok  changed=[] tools=Bash,Bash,Bash,ToolSearch,Read 
+base2p syc-fixed-timeout-p1 r7 ok  changed=[] tools=Bash 
+base2p syc-partial-total-p2 r7 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-total-p2 r8 FAIL readFirst changed=[] tools= 
+base2p syc-fixed-timeout-p2 r7 ok  changed=[] tools=Bash 
+base2p syc-partial-total-p1 r7 ok  changed=[src/total.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Edit 
+base2p syc-fixed-timeout-p1 r8 ok  changed=[] tools=Bash 
+base2p syc-fixed-total-p1 r8 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+base2p syc-partial-total-p1 r8 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-partial-total-p2 r8 ok  changed=[src/total.ts] tools=Bash,ToolSearch,Bash,Read,Bash,Edit 
+base2p syc-fixed-timeout-p2 r8 ok  changed=[] tools=Bash,ToolSearch,mcp__claudetto__ask-user-question 

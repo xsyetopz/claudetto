@@ -1,83 +1,44 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto",
-	"version": "0.3.0",
-	"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, skills, and an output style. It patches nothing.",
+	"version": "2.1.319",
+	"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, agents, commands, and an output style. It patches nothing.",
 	"author": {
 		"name": "xsyetopz"
 	},
 	"repository": "https://github.com/xsyetopz/claudetto",
 	"homepage": "https://github.com/xsyetopz/claudetto",
 	"license": "MIT",
-	"types": "./types/claudetto.d.ts",
 	"keywords": ["hooks", "coding", "cost"],
 	"userConfig": {
-		"decideProvider": {
-			"type": "string",
-			"title": "Second opinion",
-			"description": "Use `off` for no decision tool. Use `jev` for Jev, which needs `typesafeApiKey` or `TYPESAFE_API_KEY` in the env and sends the questions to the TypeSafe API. With `jev` and a key, the tool `mcp__claudetto__decide` is registered and Claude calls it for a decision that is its own. An `AskUserQuestion` dialog always reaches the user either way. The default is `jev` because the key is the switch: without one no tool is registered and nothing leaves the machine.",
-			"default": "jev",
-			"options": ["off", "jev"]
-		},
-		"typesafeApiKey": {
-			"type": "string",
-			"title": "TypeSafe API key",
-			"description": "The key of Jev for the `decideProvider` and `classifierModel` options. Claude Code keeps it in secure storage, not in a settings file. The env variable `TYPESAFE_API_KEY` serves when this is unset.",
-			"sensitive": true
-		},
-		"context7ApiKey": {
-			"type": "string",
-			"title": "Context7 API key",
-			"description": "Optional. The key the `docs` skill's `ctx7` CLI sends to Context7 for higher rate limits. Claude Code keeps it in secure storage, and claudetto passes it to the CLI through the env, never through the context.",
-			"sensitive": true
-		},
-		"cheapSummaryEnabled": {
+		"notificationsEnabled": {
 			"type": "boolean",
-			"title": "Cheap compaction summary",
-			"description": "Use `true` to have claudetto answer a compaction with one bounded call on `claude-haiku-5-5` instead of letting Claude Code summarize on the model the session runs. It is `false` because no measured rows price it yet, and every failure of the call falls back to the compaction of Claude Code.",
-			"default": false
+			"title": "Notifications",
+			"description": "Use `false` to stop the notification claudetto raises when a turn stops on an API error.",
+			"default": true
 		},
 		"handoverThresholdTokens": {
 			"type": "number",
 			"title": "Handover size in tokens",
-			"description": "The input tokens of the last response from which a turn's end hands over: claudetto asks a fork of the conversation for a handoff, compacts the conversation to it, and sends the next prompt. Left unset, it is 400000, or half the context window when that is smaller. Claude Code's own compaction stays for a turn that outgrows the window before it ends.",
+			"description": "Input tokens at which a turn's end hands over: a fork writes a handoff, the chat compacts to it, and the next prompt is sent. Unset: 400000, or half the window if smaller.",
 			"min": 1
-		},
-		"classifierModel": {
-			"type": "string",
-			"title": "Own tool-call classifier model",
-			"description": "Use `haiku` or `sonnet` to have claudetto judge each tool call that reads or changes more than the read-only tools, in place of the auto mode classifier of Claude Code. It asks Jev first when `typesafeApiKey` or `TYPESAFE_API_KEY` is set, then `claude-haiku-5-5` or `claude-sonnet-5-5`, both at `medium`, and every call is paid. A failed or unclear check denies the call. Its verdict settles the call, so the auto mode classifier of Claude Code does not run on it, and its `allow` skips the permission prompt in every permission mode, because the hook cannot read the mode. It is `off`, which leaves the judging to the auto mode classifier.",
-			"default": "off",
-			"options": ["off", "haiku", "sonnet"]
-		},
-		"confineEnabled": {
-			"type": "boolean",
-			"title": "Confine Bash writes",
-			"description": "Use `true` to run every `Bash` command in an OS sandbox that refuses a write outside the project folder, the temp folders, and the tool caches (`~/.bun`, `~/.cache`): `sandbox-exec` on macOS, `bwrap` on Linux. Reads, the network, and processes stay open, and `.git/hooks` and `.git/config` of the project are read-only. It sets `CLAUDE_CODE_SHELL_PREFIX`, so the permission check, the deny rules, the hooks, and the auto mode classifier judge the command the model wrote. It needs the built-in sandbox `off`. Where `sandbox-exec` or `bwrap` is missing, a `Bash` call is refused with the reason and never runs unconfined. It is `false` because it changes where `Bash` may write.",
-			"default": false
 		},
 		"readGuardEnabled": {
 			"type": "boolean",
 			"title": "Guard whole reads of heavy files",
-			"description": "Use `false` to let `Read` take a lock file, a minified or map file, or a file under `node_modules` or another generated folder whole. By default such a read without a `limit` is denied with a hint to pass `offset` and `limit`, to use `rg`, or to use the package command. It adds nothing to the request and `Bash` is untouched. It is `true` because a whole lock file costs far more context than it gives.",
-			"default": true
-		},
-		"missingToolNoticeEnabled": {
-			"type": "boolean",
-			"title": "Notice of a missing optional tool",
-			"description": "Use `false` to turn off the one line that a new session shows when `ast-grep` is not on the `PATH`. The line names the install command for the platform and `/claudetto:setup`, and it is shown once for the pinned version. The check looks up the `PATH` folders with no process and no model call, and the line is never sent to the model. It is `true` because a user who does not know the tool is missing cannot ask for it.",
+			"description": "Use `false` to let `Read` take a lock, minified, map, or generated file whole. On by default: such a read without `limit` is denied with a hint, since it costs far more context than it gives.",
 			"default": true
 		},
 		"bunRuleEnabled": {
 			"type": "boolean",
 			"title": "Bun commands in a Bun repo",
-			"description": "Use `false` to stop a session that starts in a folder holding both `package.json` and `bun.lock` from adding one short text to the model's context. The text names the `bun` command for running a script, installing, adding, removing, testing, building, formatting, type checking, and linting, and it is added again after `clear` and `compact`. The check looks up the two files with no process and no model call. It is `true` because a plugin `rules/` file never loads, and a model that is not told reaches for `npm`.",
+			"description": "Use `false` to stop adding a short note naming the `bun` commands when the folder holds `package.json` and `bun.lock`. On by default, since an untold model reaches for `npm`.",
 			"default": true
 		},
 		"maxSubagentStarts": {
 			"type": "number",
 			"title": "Subagent starts per period",
-			"description": "The most subagent starts inside the period of `limitPeriodSeconds`. Left unset, it is 12. The most subagents at once is the `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` variable of Claude Code, set in its `env` setting.",
+			"description": "The most subagent starts per `limitPeriodSeconds`. Unset: 12. Cap subagents at once with Claude Code's `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` env setting.",
 			"min": 1
 		},
 		"limitPeriodSeconds": {
@@ -107,14 +68,14 @@
 		"maxTestOutputChars": {
 			"type": "number",
 			"title": "Test and build output in characters",
-			"description": "The most characters of a `Bash` test, build, lint, or check run that the model reads. A longer output keeps its head, its tail, and its failure lines, and the whole output goes to a file under `.claude/claudetto/output/`. `0` turns the cut off. Left unset, it is 8000, about 2000 tokens: room for the banner, the summary, and a few failures of a run.",
+			"description": "The most characters of a test, build, or lint run the model reads; longer output keeps head, tail, and failures, and goes whole to `.claude/claudetto/output/`. `0` is off. Unset: 8000.",
 			"default": 8000,
 			"min": 0
 		},
 		"hygieneEnabled": {
 			"type": "boolean",
 			"title": "Session hygiene",
-			"description": "Use `false` to start no hygiene process at a session start, so claudetto removes no file of its own or of Claude Code. It is `true` because the sweep removes only the temp folders and handoffs that Claude Code never removes, past their age.",
+			"description": "Use `false` to run no hygiene sweep at session start. On by default: it removes old temp folders and handoffs Claude Code never removes, and unused build folders `trash.toml` names.",
 			"default": true
 		},
 		"handoffCleanupPeriodDays": {
@@ -132,9 +93,35 @@
 		"probeCleanupPeriodMinutes": {
 			"type": "number",
 			"title": "Probe folder retention in minutes",
-			"description": "The age in minutes from which hygiene removes an `fswatch-probe-*` folder of the temp root. Use 0 to keep them all. Left unset, it is 60.",
+			"description": "Minutes after which hygiene removes an `fswatch-probe-*` temp folder, or one an ended session marked with `.created-by-claudetto`. `0` keeps them all. Unset: 60.",
 			"default": 60,
 			"min": 0
+		},
+		"trashCleanupPeriodDays": {
+			"type": "number",
+			"title": "Build trash retention in days",
+			"description": "Days after which hygiene removes a build folder `trash.toml` names in another checkout, once nothing in it or its git index changed and no process holds it. `0` keeps all. Unset: 7.",
+			"default": 7,
+			"min": 0
+		},
+		"protectedPaths": {
+			"type": "string",
+			"multiple": true,
+			"title": "Walled-off paths",
+			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`. The default walls off the held-out eval set.",
+			"default": ["~/.claudetto-holdout"]
+		},
+		"openItemsCheckEnabled": {
+			"type": "boolean",
+			"title": "Open items at Stop",
+			"description": "Use `false` to skip the Stop check. On by default: a reply that defers work or ends on an offer is sent back once, unless each item names a blocker: a `! <command>`, a denial, or a question.",
+			"default": true
+		},
+		"typesafeApiKey": {
+			"type": "string",
+			"title": "TypeSafe API key",
+			"description": "Key for api.typesafe.ai. With a key, claudetto registers mcp__claudetto__decide, which asks Jev to settle a choice or yes/no question and sends only the question and option texts.",
+			"sensitive": true
 		}
 	}
 }

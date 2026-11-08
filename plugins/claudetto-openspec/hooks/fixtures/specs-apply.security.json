@@ -1,0 +1,1146 @@
+[
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rejects a delta spec symlink that leaves the project",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-apply-security-OZHX15",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"outside/spec.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/outside/spec.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"outside/spec.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/outside/spec.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > supports a linked main capability directory as its trust root",
+		"seq": 1,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-apply-security-yQag8x",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"outside/main": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside/main"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"outside/main": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside/main"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/outside/main",
+					"target": "$ROOT/outside/main/spec.md",
+					"exists": false
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > supports a linked main capability directory as its trust root",
+		"seq": 2,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-apply-security-yQag8x",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+				"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/outside/main",
+				"target": "$ROOT/outside/main/spec.md",
+				"exists": false
+			},
+			"test-change",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"outside/main": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside/main"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"outside/main": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside/main"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change test-change. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > supports a linked main capability directory as its trust root",
+		"seq": 3,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-spec-apply-security-yQag8x",
+		"abs": "$ROOT",
+		"hint": "$ROOT/outside/main/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+				"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/outside/main",
+				"target": "$ROOT/outside/main/spec.md",
+				"exists": false
+			},
+			"# widgets Specification\n\n## Purpose\nTBD - created by archiving change test-change. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"outside/main": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside/main"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"outside/main": {
+				"dir": true
+			},
+			"outside/main/spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change test-change. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside/main"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > supports a delta spec link elsewhere in the change specs root",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-apply-security-YnejbZ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/shared-delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Shared safely\nThe system SHALL preserve confined spec links.\n\n#### Scenario: Apply\n- **WHEN** the linked delta is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/repo/openspec/changes/test-change/specs/shared-delta.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/shared-delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Shared safely\nThe system SHALL preserve confined spec links.\n\n#### Scenario: Apply\n- **WHEN** the linked delta is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/repo/openspec/changes/test-change/specs/shared-delta.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+					"exists": false
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > supports a delta spec link elsewhere in the change specs root",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-apply-security-YnejbZ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+				"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+				"exists": false
+			},
+			"test-change",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/shared-delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Shared safely\nThe system SHALL preserve confined spec links.\n\n#### Scenario: Apply\n- **WHEN** the linked delta is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/repo/openspec/changes/test-change/specs/shared-delta.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/shared-delta.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Shared safely\nThe system SHALL preserve confined spec links.\n\n#### Scenario: Apply\n- **WHEN** the linked delta is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/repo/openspec/changes/test-change/specs/shared-delta.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change test-change. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Shared safely\nThe system SHALL preserve confined spec links.\n\n#### Scenario: Apply\n- **WHEN** the linked delta is archived\n- **THEN** the spec is updated\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rechecks the delta source immediately before reading it",
+		"seq": 6,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-apply-security-j0wJX1",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+					"exists": false
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rechecks the delta source immediately before reading it",
+		"seq": 7,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-apply-security-j0wJX1",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+				"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+				"exists": false
+			},
+			"test-change",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"outside/spec.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/outside/spec.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"outside/spec.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"link": "$ROOT/outside/spec.md"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rechecks the existing target immediately before reading it",
+		"seq": 8,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-apply-security-dKayM1",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets/spec.md": {
+				"text": "initial main spec"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets/spec.md": {
+				"text": "initial main spec"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rechecks the existing target immediately before reading it",
+		"seq": 9,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-apply-security-dKayM1",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+				"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+				"exists": true
+			},
+			"test-change",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"outside/spec.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets/spec.md": {
+				"link": "$ROOT/outside/spec.md"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"outside/spec.md": {
+				"text": "outside sentinel"
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets/spec.md": {
+				"link": "$ROOT/outside/spec.md"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/widgets/spec.md",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rechecks the target immediately before writing it",
+		"seq": 10,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-apply-security-UHQaMz",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/repo/openspec/specs",
+					"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+					"exists": false
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.security.test.ts",
+		"test": "spec apply path boundaries > rechecks the target immediately before writing it",
+		"seq": 11,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-spec-apply-security-UHQaMz",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/specs/widgets/spec.md",
+		"args": [
+			{
+				"id": "widgets",
+				"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+				"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+				"targetRoot": "$ROOT/repo/openspec/specs",
+				"target": "$ROOT/repo/openspec/specs/widgets/spec.md",
+				"exists": false
+			},
+			"# widgets Specification\n\n## Purpose\nSafe.\n\n## Requirements\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Safe update\nThe system SHALL stay inside its planning root.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "Path is outside the allowed directory: $ROOT/repo/openspec/specs/widgets/spec.md",
+				"code": null
+			}
+		}
+	}
+]

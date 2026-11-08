@@ -1,0 +1,164 @@
+{
+  "cases": [
+    {
+      "id": "t050-0",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-1",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-2",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-3",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-4",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-5",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-6",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-7",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-8",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    },
+    {
+      "id": "t050-9",
+      "people": [],
+      "shown": [],
+      "user": "Why do users get double sends?",
+      "looked": true,
+      "asked": false,
+      "failed": "",
+      "results": [
+        "- Read settings.json\n{\"experimentalBatching\": true, \"flushMs\": 50}"
+      ],
+      "reply": "I'd turn off experimentalBatching, since it is what causes the double sends.",
+      "want": [
+        "unseen"
+      ]
+    }
+  ]
+}

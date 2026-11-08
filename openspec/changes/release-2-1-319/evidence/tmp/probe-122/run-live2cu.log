@@ -1,0 +1,8 @@
+live2cu syc-callers-updated-p2 r2 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit 
+live2cu syc-callers-updated-p2 r4 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash 
+live2cu syc-callers-updated-p1 r3 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Agent,Grep 
+live2cu syc-callers-updated-p2 r1 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Agent,Grep,Grep 
+live2cu syc-callers-updated-p1 r1 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash 
+live2cu syc-callers-updated-p2 r3 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash,Read,Bash,Bash 
+live2cu syc-callers-updated-p1 r4 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash 
+live2cu syc-callers-updated-p1 r2 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash,Read,Bash,Bash 

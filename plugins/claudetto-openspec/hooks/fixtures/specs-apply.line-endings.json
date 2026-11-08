@@ -1,0 +1,1047 @@
+[
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > keeps a CRLF spec on CRLF",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eol-SGlUec",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test",
+		"args": ["$ROOT/openspec/changes/eol-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+					"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > keeps a CRLF spec on CRLF",
+		"seq": 1,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eol-SGlUec",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"eol-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > keeps a CRLF spec on CRLF",
+		"seq": 2,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-spec-eol-SGlUec",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+			{
+				"added": 0,
+				"modified": 1,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the updated behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > keeps an LF spec on LF",
+		"seq": 3,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eol-lieFUu",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test",
+		"args": ["$ROOT/openspec/changes/eol-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+					"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > keeps an LF spec on LF",
+		"seq": 4,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eol-lieFUu",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"eol-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > keeps an LF spec on LF",
+		"seq": 5,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-spec-eol-lieFUu",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+			{
+				"added": 0,
+				"modified": 1,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > writes a brand-new spec with LF",
+		"seq": 6,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eol-RtfCPO",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test",
+		"args": ["$ROOT/openspec/changes/eol-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+					"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": false
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > writes a brand-new spec with LF",
+		"seq": 7,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eol-RtfCPO",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": false
+			},
+			"eol-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nTBD - created by archiving change eol-test. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > writes a brand-new spec with LF",
+		"seq": 8,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-spec-eol-RtfCPO",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": false
+			},
+			"# demo Specification\n\n## Purpose\nTBD - created by archiving change eol-test. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+			{
+				"added": 1,
+				"modified": 0,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nTBD - created by archiving change eol-test. Update Purpose after archive.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the original behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > normalizes a mixed-ending spec to its dominant ending",
+		"seq": 9,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-eol-2zqBKy",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test",
+		"args": ["$ROOT/openspec/changes/eol-test", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+					"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > normalizes a mixed-ending spec to its dominant ending",
+		"seq": 10,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-spec-eol-2zqBKy",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"eol-test",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.line-endings.test.ts",
+		"test": "spec line-ending preservation > normalizes a mixed-ending spec to its dominant ending",
+		"seq": 11,
+		"kind": "apply.writeUpdatedSpec",
+		"root": "openspec-spec-eol-2zqBKy",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/eol-test/specs",
+				"source": "$ROOT/openspec/changes/eol-test/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"# demo Specification\n\n## Purpose\nDemonstrates line-ending preservation.\n\n## Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n",
+			{
+				"added": 0,
+				"modified": 1,
+				"removed": 0,
+				"renamed": 0
+			},
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the original behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/eol-test": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/eol-test/specs/demo/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Existing behavior\nThe project SHALL expose the updated behavior.\n\n#### Scenario: Existing path\n- **WHEN** the behavior is exercised\n- **THEN** it SHALL remain available\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\r\n\r\n## Purpose\r\nDemonstrates line-ending preservation.\r\n\r\n## Requirements\r\n\r\n### Requirement: Existing behavior\r\nThe project SHALL expose the updated behavior.\r\n\r\n#### Scenario: Existing path\r\n- **WHEN** the behavior is exercised\r\n- **THEN** it SHALL remain available\r\n"
+			}
+		},
+		"outcome": {
+			"returned": null
+		}
+	}
+]

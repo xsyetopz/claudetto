@@ -1,0 +1,24 @@
+{"n":5,"want":"task","c":[[],"Add a --json flag to the export command that prints rows as newline-delimited JSON."]}
+{"n":5,"want":"task|no-commit","c":[["Don't commit anything until I say so."],"Whatever it takes, get the flaky checkout test passing again."]}
+{"n":5,"want":"task","c":[["Plan the migration that adds a tenant_id column to the users table."],"Go ahead."]}
+{"n":5,"want":"task","c":[[],"Could you rename getUsr to getUser across the api folder?"]}
+{"n":5,"want":"task","c":[[],"I doubt that's the cause, since nginx already has a 30s timeout. Raise the upstream timeout to 60s and rerun the load test."]}
+{"n":5,"want":"task|only-files","c":[["Only touch src/billing/invoice.ts for this."],"The rounding on line totals is off by a cent, please fix it."]}
+{"n":5,"want":"task|","c":[["Don't push or commit anything.","Also hold off on pushing."],"Okay, you're free to commit and push the changes now."]}
+{"n":5,"want":"dispute","c":[[],"This is garbage. Your explanation of the race condition makes no sense and you clearly never looked at the lock."]}
+{"n":5,"want":"dispute","c":[[],"Hmm, I don't buy that the cache is the culprit. Isn't it much more likely DNS?"]}
+{"n":5,"want":"dispute","c":[[],"Come on, just admit the migration is safe to run on prod."]}
+{"n":5,"want":"dispute|read-only","c":[["Don't modify any files, I only want analysis."],"No, that's not what the stack trace shows. Give me a different diagnosis."]}
+{"n":5,"want":"dispute","c":[[],"Wrong again. Postgres hasn't locked the table for ADD COLUMN with a default since v11."]}
+{"n":5,"want":"dispute|no-push","c":[["Never push to the remote in this session."],"I disagree, the retry loop does terminate. Reconsider your answer."]}
+{"n":5,"want":"question","c":[[],"Can you tell me why the build step fails only on CI?"]}
+{"n":5,"want":"question","c":[[],"What's the difference between a Kubernetes Deployment and a StatefulSet?"]}
+{"n":5,"want":"question|no-questions","c":[["Please don't ask me any clarifying questions, decide on your own."],"Outline a plan for splitting the auth module out of the monolith."]}
+{"n":5,"want":"question","c":[[],"Walk me through how the CLI parses nested subcommands."]}
+{"n":5,"want":"question|only-files","c":[["Only edit README.md."],"Which of the two pagination approaches is cheaper for very large tables?"]}
+{"n":5,"want":"question","c":[[],"Does pandas read_csv infer dtypes per chunk when chunksize is set?"]}
+{"n":5,"want":"remark","c":[[],"2026-03-02T11:04:22Z ERROR worker-3 connection reset by peer\n2026-03-02T11:04:27Z WARN worker-3 retrying in 5s\n2026-03-02T11:04:32Z INFO worker-3 reconnected"]}
+{"n":5,"want":"remark","c":[["Fix the off-by-one in the paginator."],"Thanks, that did it."]}
+{"n":5,"want":"remark","c":[[],"Thinking out loud: maybe we move the feature flags into a config service, or keep them in env vars and accept redeploys. Not sure yet."]}
+{"n":5,"want":"remark","c":[[],"Oh great, another 400 lines of boilerplate. Truly the pinnacle of engineering."]}
+{"n":5,"want":"remark|no-commit","c":[["Don't commit anything."],"Nice, the dashboard renders fine now."]}

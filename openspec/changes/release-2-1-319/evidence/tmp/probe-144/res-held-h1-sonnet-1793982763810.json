@@ -1,0 +1,488 @@
+[
+ {
+  "id": "hp6",
+  "label": "pos",
+  "cands": 0,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 1781,
+  "usd": 0.008024,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"The statement that failed the first time was the index rebuild, so I reran it after applying the fix the log suggested.\"}]}"
+ },
+ {
+  "id": "hp3",
+  "label": "pos",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 2010,
+  "usd": 0.0075415000000000005,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hp4",
+  "label": "pos",
+  "cands": 0,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 2510,
+  "usd": 0.007941499999999999,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"If you don't want the generated section in this commit, run `git add -p package.json`.\"}]}"
+ },
+ {
+  "id": "hp8",
+  "label": "pos",
+  "cands": 0,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 2597,
+  "usd": 0.0079865,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"The config sets the timeout that the `.env.example` hints at, and it also turns on the cache from the template.\"}]}"
+ },
+ {
+  "id": "hp5",
+  "label": "pos",
+  "cands": 1,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 2729,
+  "usd": 0.008054,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"The lockfile also moved `esbuild` because of the pin that the CI config sets, so check that before you merge.\"}]}"
+ },
+ {
+  "id": "hp1",
+  "label": "pos",
+  "cands": 2,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 2788,
+  "usd": 0.0037658999999999995,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"`package.json` also carries the `prepare` script that the earlier install step added, so it went into the same commit.\"}]}"
+ },
+ {
+  "id": "hp2",
+  "label": "pos",
+  "cands": 0,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 3043,
+  "usd": 0.0038158999999999997,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"The run is slow because of the preload that the harness registers in `bunfig.toml`; it starts a fixture server and waits for it on every file.\"}]}"
+ },
+ {
+  "id": "hp7",
+  "label": "pos",
+  "cands": 1,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 3347,
+  "usd": 0.0098165,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the hunk in `render.ts` that changes the default\"}]}"
+ },
+ {
+  "id": "hn1",
+  "label": "near",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1780,
+  "usd": 0.0033059,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn2",
+  "label": "near",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1811,
+  "usd": 0.0032634,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn6",
+  "label": "near",
+  "cands": 3,
+  "offered": true,
+  "found": [],
+  "ms": 1463,
+  "usd": 0.0033234000000000002,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn3",
+  "label": "near",
+  "cands": 6,
+  "offered": true,
+  "found": [],
+  "ms": 1758,
+  "usd": 0.0033534,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn5",
+  "label": "near",
+  "cands": 3,
+  "offered": true,
+  "found": [],
+  "ms": 1583,
+  "usd": 0.0033759000000000003,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn4",
+  "label": "near",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1718,
+  "usd": 0.0034284000000000003,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn7",
+  "label": "near",
+  "cands": 4,
+  "offered": true,
+  "found": [],
+  "ms": 1693,
+  "usd": 0.0034534,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc2",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1005,
+  "usd": 0.0030484,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hn8",
+  "label": "near",
+  "cands": 4,
+  "offered": true,
+  "found": [],
+  "ms": 1785,
+  "usd": 0.0033009,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc1",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1851,
+  "usd": 0.0030684,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc6",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1575,
+  "usd": 0.0026734000000000003,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc3",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1651,
+  "usd": 0.0030359,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc5",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1669,
+  "usd": 0.0026184000000000003,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc4",
+  "label": "neg",
+  "cands": 3,
+  "offered": true,
+  "found": [],
+  "ms": 1809,
+  "usd": 0.0031409,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc7",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1632,
+  "usd": 0.0032784000000000003,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc8",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1894,
+  "usd": 0.0031008999999999998,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc10",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1526,
+  "usd": 0.0032634,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc9",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1829,
+  "usd": 0.0030609,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc12",
+  "label": "neg",
+  "cands": 3,
+  "offered": true,
+  "found": [],
+  "ms": 1681,
+  "usd": 0.0030959,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc11",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1752,
+  "usd": 0.0030159,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc14",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1886,
+  "usd": 0.0027634,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc17",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1495,
+  "usd": 0.0031634000000000002,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc15",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 2091,
+  "usd": 0.0027234,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc16",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1818,
+  "usd": 0.0029984,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc13",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 2566,
+  "usd": 0.0030659000000000003,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc18",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1923,
+  "usd": 0.0030183999999999996,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc19",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1757,
+  "usd": 0.0026108999999999998,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc20",
+  "label": "neg",
+  "cands": 3,
+  "offered": true,
+  "found": [],
+  "ms": 1731,
+  "usd": 0.0030359,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc21",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1684,
+  "usd": 0.0030934,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc22",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1621,
+  "usd": 0.0031584,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc24",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1679,
+  "usd": 0.0030833999999999996,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc25",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1840,
+  "usd": 0.0029834,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc26",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [
+   "credited"
+  ],
+  "ms": 1770,
+  "usd": 0.0031959,
+  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"which is your change\"}]}"
+ },
+ {
+  "id": "hc27",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1627,
+  "usd": 0.0029559000000000005,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc28",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1812,
+  "usd": 0.0031184,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc29",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 1792,
+  "usd": 0.0029859,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc31",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1571,
+  "usd": 0.0029733999999999997,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc30",
+  "label": "neg",
+  "cands": 0,
+  "offered": true,
+  "found": [],
+  "ms": 1738,
+  "usd": 0.0031984,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "hc23",
+  "label": "neg",
+  "cands": 3,
+  "offered": true,
+  "found": [],
+  "ms": 3804,
+  "usd": 0.0031159,
+  "raw": "{\"faults\":[]}"
+ }
+]

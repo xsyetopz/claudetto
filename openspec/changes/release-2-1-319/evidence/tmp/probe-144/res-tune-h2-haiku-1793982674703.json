@@ -1,0 +1,166 @@
+[
+ {
+  "id": "tp3",
+  "label": "pos",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1206,
+  "usd": 0.00004375,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tp5",
+  "label": "pos",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1483,
+  "usd": 0.00009552000000000001,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tn1",
+  "label": "near",
+  "cands": 8,
+  "offered": true,
+  "found": [],
+  "ms": 2139,
+  "usd": 0.00018593,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc1",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1059,
+  "usd": 0.000041519999999999995,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tp2",
+  "label": "pos",
+  "cands": 2,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 2431,
+  "usd": 0.00019879,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"It leaves out `.gitignore` and `.ignore`, which I didn't change.\"}]}"
+ },
+ {
+  "id": "tp4",
+  "label": "pos",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 2924,
+  "usd": 0.00025272,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc2",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1581,
+  "usd": 0.00012973,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tp1",
+  "label": "pos",
+  "cands": 5,
+  "offered": true,
+  "found": [
+   "unseen"
+  ],
+  "ms": 3172,
+  "usd": 0.00031776,
+  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the block that `/claudetto:setup` wrote earlier\"}]}"
+ },
+ {
+  "id": "tc3",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1174,
+  "usd": 0.00004092,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc4",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1052,
+  "usd": 0.00004118,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tn3",
+  "label": "near",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 3350,
+  "usd": 0.00031602,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc5",
+  "label": "neg",
+  "cands": 2,
+  "offered": true,
+  "found": [],
+  "ms": 1490,
+  "usd": 0.00008963999999999999,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc7",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1109,
+  "usd": 0.00004137,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc8",
+  "label": "neg",
+  "cands": 0,
+  "offered": false,
+  "found": [],
+  "ms": 1178,
+  "usd": 0.000041099999999999996,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tc6",
+  "label": "neg",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 3106,
+  "usd": 0.00026196,
+  "raw": "{\"faults\":[]}"
+ },
+ {
+  "id": "tn2",
+  "label": "near",
+  "cands": 1,
+  "offered": true,
+  "found": [],
+  "ms": 6253,
+  "usd": 0.00061509,
+  "raw": "{\"faults\":[]}"
+ }
+]

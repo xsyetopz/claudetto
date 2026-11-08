@@ -1,0 +1,1 @@
+Read part1.txt with the Read tool, then reply with the one word done.

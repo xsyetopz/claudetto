@@ -1,0 +1,7 @@
+2026-11-06T12:50:32.905Z [DEBUG] Forked agent [plugin_model_fork] received message: type=assistant
+2026-11-06T12:50:32.907Z [DEBUG] Forked agent [plugin_model_fork] finished: 1 messages, types=[assistant], totalUsage: input=0 output=31 cacheRead=0 cacheCreate=0
+2026-11-06T12:50:32.907Z [DEBUG] $.model.fork (claudetto): 16ms, 1 replies
+2026-11-06T12:50:32.951Z [DEBUG] $.fs.write (claudetto): $TMPDIR/tui/20261106-145018-9c30a3/work/.claude/claudetto/handoffs/handoff-2026-11-06T12-50-32.md (81 bytes)
+2026-11-06T12:50:32.972Z [DEBUG] claudetto (user) answered session.compact without next() in 0.3ms; nothing beneath it ran for this dispatch
+2026-11-06T12:50:32.972Z [DEBUG] hooks module claudetto@inline session.compact settled in 1.6ms (worker hop, next() included)
+2026-11-06T12:50:32.972Z [DEBUG] session.compact (manual): a hook's 3 messages stand (hooked by claudetto+cc-plugin-agents-md); core never ran

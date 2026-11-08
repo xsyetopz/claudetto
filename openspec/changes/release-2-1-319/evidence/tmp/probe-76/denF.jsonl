@@ -1,0 +1,4 @@
+{"file":"hooks/gate/denials.ts","id":"16","mutator":"ConditionalExpression","line":32,"original":"!seen || seen.count < DENIALS_PER_CALL_MAX","replacement":"false","status":"killed","ms":15975}
+{"file":"hooks/gate/denials.ts","id":"17","mutator":"LogicalOperator","line":32,"original":"!seen || seen.count < DENIALS_PER_CALL_MAX","replacement":"!seen && seen.count < DENIALS_PER_CALL_MAX","status":"killed","ms":17007}
+{"file":"hooks/gate/denials.ts","id":"19","mutator":"ConditionalExpression","line":32,"original":"seen.count < DENIALS_PER_CALL_MAX","replacement":"false","status":"killed","ms":16388}
+{"file":"hooks/gate/denials.ts","id":"22","mutator":"BlockStatement","line":32,"original":"{\n\t\treturn undefined;\n\t}","replacement":"{}","status":"killed","ms":16403}

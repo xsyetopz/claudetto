@@ -1,0 +1,2468 @@
+[
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an indented note' goes with the requirement it sits in",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-8yqZcf",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an indented note' goes with the requirement it sits in",
+		"seq": 1,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-8yqZcf",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"### Notes\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an unindented note' goes with the requirement it sits in",
+		"seq": 2,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-CS9pIj",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an unindented note' goes with the requirement it sits in",
+		"seq": 3,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-CS9pIj",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"### Notes\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an indented requirement header' goes with the requirement it sits in",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-KFPSPx",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Requirement: Absorbed\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Requirement: Absorbed\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an indented requirement header' goes with the requirement it sits in",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-KFPSPx",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Requirement: Absorbed\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Requirement: Absorbed\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"### Requirement: Absorbed\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Requirement: Absorbed", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an empty ATX heading' goes with the requirement it sits in",
+		"seq": 6,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-JzTsAU",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n###\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n###\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns that 'an empty ATX heading' goes with the requirement it sits in",
+		"seq": 7,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-JzTsAU",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n###\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n###\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"###\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["###", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > says nothing when a requirement holds only its own content",
+		"seq": 8,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-wPrll0",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > says nothing when a requirement holds only its own content",
+		"seq": 9,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-wPrll0",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not warn about a requirement left untouched",
+		"seq": 10,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-AsLXFY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## ADDED Requirements\n\n### Requirement: Fresh\nThe system SHALL be fresh.\n\n#### Scenario: F\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## ADDED Requirements\n\n### Requirement: Fresh\nThe system SHALL be fresh.\n\n#### Scenario: F\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not warn about a requirement left untouched",
+		"seq": 11,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-AsLXFY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## ADDED Requirements\n\n### Requirement: Fresh\nThe system SHALL be fresh.\n\n#### Scenario: F\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## ADDED Requirements\n\n### Requirement: Fresh\nThe system SHALL be fresh.\n\n#### Scenario: F\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n\n### Requirement: Fresh\nThe system SHALL be fresh.\n\n#### Scenario: F\n- **WHEN** a\n- **THEN** b\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > ignores a heading inside a fenced example",
+		"seq": 12,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-5bBRri",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n```markdown\n### Requirement: Example\n```\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n```markdown\n### Requirement: Example\n```\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > ignores a heading inside a fenced example",
+		"seq": 13,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-5bBRri",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n```markdown\n### Requirement: Example\n```\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n```markdown\n### Requirement: Example\n```\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > leaves a requirement's own scenarios alone",
+		"seq": 14,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-5suvzJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > leaves a requirement's own scenarios alone",
+		"seq": 15,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-5suvzJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not warn when RENAMED carries the full absorbed tail forward",
+		"seq": 16,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-VQ1YK7",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not warn when RENAMED carries the full absorbed tail forward",
+		"seq": 17,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-VQ1YK7",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Renamed\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 1
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns against the source requirement when a rename-plus-modify drops its tail",
+		"seq": 18,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-2qFFoh",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n\n## MODIFIED Requirements\n\n### Requirement: Renamed\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n\n## MODIFIED Requirements\n\n### Requirement: Renamed\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns against the source requirement when a rename-plus-modify drops its tail",
+		"seq": 19,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-2qFFoh",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n\n## MODIFIED Requirements\n\n### Requirement: Renamed\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Target`\n- TO: `### Requirement: Renamed`\n\n## MODIFIED Requirements\n\n### Requirement: Renamed\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Renamed\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 1
+				},
+				"warnings": [
+					"demo - \"### Notes\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not warn when MODIFIED carries the full absorbed tail forward",
+		"seq": 20,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-zokWxZ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not warn when MODIFIED carries the full absorbed tail forward",
+		"seq": 21,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-zokWxZ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns when MODIFIED keeps the heading but drops part of the absorbed tail",
+		"seq": 22,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-Nkm5cJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > warns when MODIFIED keeps the heading but drops part of the absorbed tail",
+		"seq": 23,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-Nkm5cJ",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"### Notes\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not let an identical earlier copy mask loss of the absorbed tail",
+		"seq": 24,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-vQ2JYd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > does not let an identical earlier copy mask loss of the absorbed tail",
+		"seq": 25,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-vQ2JYd",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## MODIFIED Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n```markdown\n   ### Notes\nKept by hand.\n```\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 1,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"### Notes\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > rewrites the spec exactly as before - nothing is moved",
+		"seq": 26,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-orphan-zu9kIj",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "demo",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/demo/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.salvage.test.ts",
+		"test": "buildUpdatedSpec (content absorbed into a requirement) > rewrites the spec exactly as before - nothing is moved",
+		"seq": 27,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-orphan-zu9kIj",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+		"args": [
+			{
+				"id": "demo",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/demo/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/demo/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/demo/spec.md": {
+				"text": "# demo - Changes\n\n## REMOVED Requirements\n\n### Requirement: Target\n**Reason**: x.\n**Migration**: None.\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/demo": {
+				"dir": true
+			},
+			"openspec/specs/demo/spec.md": {
+				"text": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Target\nThe system SHALL target.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n   ### Notes\nKept by hand.\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# demo Specification\n\n## Purpose\nWhy this exists.\n\n## Requirements\n\n### Requirement: Other\nThe system SHALL other.\n\n#### Scenario: T\n- **WHEN** c\n- **THEN** d\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [
+					"demo - \"### Notes\" sits inside requirement \"Target\" and goes with it. Move it under its own requirement, or above `## Requirements`, to keep it."
+				],
+				"noRequirementBlocks": false,
+				"unaccountedContent": ["### Notes", "Kept by hand."]
+			}
+		}
+	}
+]

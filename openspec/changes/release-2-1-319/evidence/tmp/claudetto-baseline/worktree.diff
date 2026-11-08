@@ -1,0 +1,65 @@
+diff --git a/tools/evals/cli.ts b/tools/evals/cli.ts
+index f27f6d38..cc492ba9 100644
+--- a/tools/evals/cli.ts
++++ b/tools/evals/cli.ts
+@@ -27,6 +27,7 @@ import {
+ } from "./plan.ts";
+ import { reportLines } from "./report.ts";
+ import { PLUGIN_DIR } from "./session.ts";
++import { allocationMain } from "./alloc/main.ts";
+ import { styleMain } from "./style/main.ts";
+ 
+ export const USAGE =
+@@ -109,6 +110,9 @@ export const main = async (
+ 	if (args[0] === "--classifier") {
+ 		return classifierMain(args.slice(1), io);
+ 	}
++	if (args[0] === "--allocation") {
++		return allocationMain(args.slice(1), io);
++	}
+ 	if (args[0] === "--style") {
+ 		return styleMain(args.slice(1), io);
+ 	}
+diff --git a/tools/evals/execute.ts b/tools/evals/execute.ts
+index 1706bddd..6a77daa8 100644
+--- a/tools/evals/execute.ts
++++ b/tools/evals/execute.ts
+@@ -23,6 +23,7 @@ export interface Deps {
+ 	readonly fixturesRoot: string;
+ 	readonly pluginDir: string;
+ 	readonly model?: string;
++	readonly env?: Readonly<Record<string, string>>;
+ 	readonly maxBudgetUsd?: number;
+ 	/** Lets a test keep its folders under `tmpdir()`, where a sandbox allows writes. */
+ 	readonly tempPrefix?: string;
+@@ -74,6 +75,7 @@ const gradeIn = async (
+ 		pluginDir: deps.pluginDir,
+ 		cwd: repo,
+ 		...(deps.model === undefined ? {} : { model: deps.model }),
++		...(deps.env === undefined ? {} : { env: deps.env }),
+ 		...(deps.maxBudgetUsd === undefined
+ 			? {}
+ 			: { maxBudgetUsd: deps.maxBudgetUsd }),
+diff --git a/tools/evals/session.ts b/tools/evals/session.ts
+index 47e11287..23a59604 100644
+--- a/tools/evals/session.ts
++++ b/tools/evals/session.ts
+@@ -27,6 +27,8 @@ export interface SessionOptions {
+ 	readonly prompt: string;
+ 	readonly pluginDir: string;
+ 	readonly model?: string;
++	/** Variables added to the session's environment. */
++	readonly env?: Readonly<Record<string, string>>;
+ 	/** A cap on the spend of one session, in dollars. */
+ 	readonly maxBudgetUsd?: number;
+ }
+@@ -55,4 +57,8 @@ export const runSession = (
+ 	arm: Arm,
+ 	options: SessionOptions & { readonly cwd: string },
+ ): Promise<CommandResult> =>
+-	run(sessionArgv(arm, options), { cwd: options.cwd, timeoutMs: SESSION_MS });
++	run(sessionArgv(arm, options), {
++		cwd: options.cwd,
++		timeoutMs: SESSION_MS,
++		...(options.env === undefined ? {} : { env: options.env }),
++	});

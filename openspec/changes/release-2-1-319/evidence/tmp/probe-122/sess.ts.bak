@@ -1,0 +1,13 @@
+// index sessions from logs: arm,id,ts,commands,tools,text
+export type S={arm:string;id:string;ts:string;file:string;commands:string[];tools:string[];text:string;reads:string[]};
+export const sessions=async():Promise<S[]>=>{
+ const out:S[]=[];
+ for (const f of new Bun.Glob("*.jsonl").scanSync("/tmp/probe-122/logs-r2")) {
+  const m=f.match(/^(base|change|pilot|dbg|[a-z]+(?:-fix-[a-z-]+)?)-((?:syc|keep|drift)-.*?-p\d)-(\d+)\.jsonl$/); if(!m) continue;
+  const ev=(await Bun.file(`/tmp/probe-122/logs-r2/${f}`).text()).split("\n").filter(Boolean).map(l=>{try{return JSON.parse(l)}catch{return null}}).filter(Boolean);
+  const uses=ev.filter((e:any)=>e.type==="assistant").flatMap((e:any)=>e.message.content).filter((c:any)=>c.type==="tool_use");
+  const res=ev.findLast((e:any)=>e.type==="result");
+  out.push({arm:m[1].replace(/-fix.*/,""),id:m[2],ts:m[3],file:f,commands:uses.filter((u:any)=>u.name==="Bash").map((u:any)=>String(u.input.command)),tools:uses.map((u:any)=>u.name),reads:uses.filter((u:any)=>u.name==="Read").map((u:any)=>String(u.input.file_path)),text:String(res?.result??"")});
+ }
+ return out.sort((a,b)=>a.ts.localeCompare(b.ts));
+};

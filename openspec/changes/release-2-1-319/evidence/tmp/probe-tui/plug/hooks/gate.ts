@@ -1,0 +1,151 @@
+import type { EngineInterface, On } from "claude-code";
+import {
+	DENIALS_PER_CALL_MAX,
+	type Denials,
+	repeatedText,
+	signature,
+	withDenial,
+} from "./gate/denials.ts";
+import { isEnvName, redactEnv } from "./gate/env.ts";
+import { POLICY_FILES } from "./gate/packages.ts";
+import { judge, systemPath } from "./gate/rules.ts";
+import { deny, type Verdict } from "./gate/verdict.ts";
+import {
+	GATE_CHECK_FAILED,
+	GATE_ENV_VALUES,
+	GATE_SYSTEM_WRITE,
+} from "./texts.ts";
+
+const FILE_WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
+const STRICTNESS = ["allow", "ask", "deny"];
+const PERSON = /^(?:composer|bridge)$/;
+// Another feature owns the unmatched `tool.check`; this pattern matches every tool name.
+const ANY_TOOL = /^/;
+
+const fieldOf = (input: unknown, key: string): string | undefined => {
+	const value =
+		typeof input === "object" && input !== null
+			? Object.entries(input).find(([k]) => k === key)?.[1]
+			: undefined;
+	return typeof value === "string" ? value : undefined;
+};
+
+const presentFiles = async ($: EngineInterface): Promise<Set<string>> => {
+	const cwd = await $.session.cwd();
+	const found = await Promise.all(
+		POLICY_FILES.map(async (f) =>
+			(await $.fs.exists(`${cwd}/${f}`)) ? f : undefined,
+		),
+	);
+	return new Set(found.filter((f) => f !== undefined));
+};
+
+// `content` is the one Grep mode that prints lines, and Glob lists names only. A `*` stands for no characters or some, so `.env*` and `*.env` both count.
+const grepsEnv = (input: unknown): boolean => {
+	const glob = fieldOf(input, "glob") ?? "";
+	return (
+		fieldOf(input, "output_mode") === "content" &&
+		[
+			fieldOf(input, "path") ?? "",
+			glob.replaceAll("*", ""),
+			glob.replaceAll("*", "x"),
+		].some(isEnvName)
+	);
+};
+
+const ownVerdict = async (
+	$: EngineInterface,
+	tool: string,
+	input: unknown,
+): Promise<Verdict | undefined> => {
+	const command = fieldOf(input, "command");
+	if ((tool === "Bash" || tool === "Monitor") && command !== undefined) {
+		const present = await presentFiles($);
+		const own = judge(command, (f) => present.has(f));
+		return own && { ...own, reason: `${own.reason} (\`${command}\`)` };
+	}
+	if (tool === "Grep") {
+		return grepsEnv(input) ? deny(GATE_ENV_VALUES) : undefined;
+	}
+	const path = fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path");
+	return FILE_WRITERS.has(tool) && path !== undefined && systemPath(path)
+		? deny(GATE_SYSTEM_WRITE)
+		: undefined;
+};
+
+export const gate = (on: On): void => {
+	let denials: Denials = {};
+
+	// The gate only tightens: its verdict never turns a `deny` or `ask` of the engine into a looser one.
+	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
+		const refused = repeatedText(
+			denials,
+			signature(e.tool, e.input),
+			fieldOf(e.input, "command") ?? `${e.tool} ${JSON.stringify(e.input)}`,
+		);
+		if (refused !== undefined) {
+			return deny(refused);
+		}
+		// Computed before `next`, so a throw leaves `next` uncalled and the `.catch` asks in its place.
+		const own = await ownVerdict($, e.tool, e.input);
+		const engine = await next(e);
+		return own === undefined ||
+			STRICTNESS.indexOf(engine.decision) >= STRICTNESS.indexOf(own.decision)
+			? engine
+			: own;
+	}).catch(() => ({ decision: "ask", reason: GATE_CHECK_FAILED }));
+
+	// `classic.PermissionRequest` does not fire in `-p`, so `tool.check` carries the same verdict.
+	on("classic.PermissionRequest", async ($, e, next) => {
+		const answer = await next(e);
+		if (answer.decision !== undefined) {
+			return answer;
+		}
+		const own = await ownVerdict($, e.tool_name, e.tool_input);
+		return own?.decision === "deny"
+			? { ...answer, decision: { behavior: "deny", message: own.reason } }
+			: answer;
+	});
+
+	on("classic.PermissionDenied", async (_$, e, next) => {
+		const answer = await next(e);
+		const key = signature(e.tool_name, e.tool_input);
+		denials = withDenial(denials, key, e.reason);
+		return (denials[key]?.count ?? 0) < DENIALS_PER_CALL_MAX
+			? { ...answer, retry: true }
+			: answer;
+	});
+
+	// A new message from the person can carry the consent the earlier denials lacked.
+	on("prompt.submit", { origin: { kind: PERSON } }, (_$, e, next) => {
+		denials = {};
+		return next(e);
+	});
+
+	on("tool.call", { tool: "Read" }, async (_$, e, next) => {
+		const read = await next(e);
+		if (
+			e.tool !== "Read" ||
+			!isEnvName(e.file_path) ||
+			read.isError ||
+			read.deny !== undefined ||
+			read.result === undefined ||
+			typeof read.result !== "object" ||
+			read.result === null ||
+			!("file" in read.result)
+		) {
+			return read;
+		}
+		const { result } = read;
+		const { file } = result;
+		if (!("content" in file)) {
+			return read;
+		}
+		return {
+			result: {
+				...result,
+				file: { ...file, content: redactEnv(file.content) },
+			},
+		};
+	});
+};

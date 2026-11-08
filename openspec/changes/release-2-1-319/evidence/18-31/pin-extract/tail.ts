@@ -1,0 +1,2 @@
+export type C = { text: string; rule: string; files?: string[] };
+export const tail = (history: string[], previous: C[], now: string) => `Answer with JSON only: {"kind":"...","constraints":[{"text":"...","rule":"...","files":["..."]}]}\n\nConstraints known so far: ${JSON.stringify(previous)}\n\nMessages:\n${history.map((m, i) => `${i + 1}. ${m.slice(0, 400)}`).join("\n")}\n\nLatest message: ${now.slice(0, 600)}`;

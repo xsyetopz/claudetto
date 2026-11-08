@@ -1,0 +1,48 @@
+{"file":"hooks/decide/judge.ts","id":"41","mutator":"ArrowFunction","line":46,"original":"(i: number): string =>\n\t`Does question ${i} ask the user to approve money, a push, a release, a delete, or a step with no undo?`","replacement":"() => undefined","status":"survived","ms":31872}
+{"file":"hooks/decide/judge.ts","id":"42","mutator":"StringLiteral","line":47,"original":"`Does question ${i} ask the user to approve money, a push, a release, a delete, or a step with no undo?`","replacement":"``","status":"survived","ms":28215}
+{"file":"hooks/decide/judge.ts","id":"57","mutator":"ArrayDeclaration","line":66,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":28602}
+{"file":"hooks/decide/judge.ts","id":"61","mutator":"StringLiteral","line":66,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":27792}
+{"file":"hooks/decide/judge.ts","id":"62","mutator":"ObjectLiteral","line":69,"original":"{ question: q.question }","replacement":"{}","status":"survived","ms":29113}
+{"file":"hooks/decide/judge.ts","id":"67","mutator":"ObjectLiteral","line":76,"original":"{\n\t\t\t\t\t\ttype: \"choice\",\n\t\t\t\t\t\tinstructions: `Which option is the best answer to question ${i}?`,\n\t\t\t\t\t\tcriteria: Object.fromEntries(\n\t\t\t\t\t\t\t(q.options ?? []).map((o) => [o.label, o.description || o.label]),\n\t\t\t\t\t\t),\n\t\t\t\t\t}","replacement":"{}","status":"survived","ms":28699}
+{"file":"hooks/decide/judge.ts","id":"68","mutator":"StringLiteral","line":77,"original":"\"choice\"","replacement":"\"\"","status":"survived","ms":28398}
+{"file":"hooks/decide/judge.ts","id":"69","mutator":"StringLiteral","line":78,"original":"`Which option is the best answer to question ${i}?`","replacement":"``","status":"survived","ms":28386}
+{"file":"hooks/decide/judge.ts","id":"71","mutator":"ArrayDeclaration","line":80,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":28610}
+{"file":"hooks/decide/judge.ts","id":"70","mutator":"LogicalOperator","line":80,"original":"q.options ?? []","replacement":"q.options && []","status":"survived","ms":29653}
+{"file":"hooks/decide/judge.ts","id":"73","mutator":"ArrayDeclaration","line":80,"original":"[o.label, o.description || o.label]","replacement":"[]","status":"survived","ms":28131}
+{"file":"hooks/decide/judge.ts","id":"74","mutator":"ConditionalExpression","line":80,"original":"o.description || o.label","replacement":"true","status":"survived","ms":28133}
+{"file":"hooks/decide/judge.ts","id":"75","mutator":"ConditionalExpression","line":80,"original":"o.description || o.label","replacement":"false","status":"survived","ms":29277}
+{"file":"hooks/decide/judge.ts","id":"76","mutator":"LogicalOperator","line":80,"original":"o.description || o.label","replacement":"o.description && o.label","status":"survived","ms":28972}
+{"file":"hooks/decide/judge.ts","id":"79","mutator":"ObjectLiteral","line":86,"original":"{\n\t\t\t\t\t\ttype: \"noul\",\n\t\t\t\t\t\tinstructions: `Is the answer to question ${i} yes?`,\n\t\t\t\t\t}","replacement":"{}","status":"survived","ms":28336}
+{"file":"hooks/decide/judge.ts","id":"80","mutator":"StringLiteral","line":87,"original":"\"noul\"","replacement":"\"\"","status":"survived","ms":28593}
+{"file":"hooks/decide/judge.ts","id":"81","mutator":"StringLiteral","line":88,"original":"`Is the answer to question ${i} yes?`","replacement":"``","status":"survived","ms":29738}
+{"file":"hooks/decide/judge.ts","id":"84","mutator":"ObjectLiteral","line":91,"original":"{ type: \"noul\", instructions: APPROVAL(i) }","replacement":"{}","status":"survived","ms":30278}
+{"file":"hooks/decide/judge.ts","id":"85","mutator":"StringLiteral","line":91,"original":"\"noul\"","replacement":"\"\"","status":"survived","ms":30045}
+{"file":"hooks/decide/judge.ts","id":"88","mutator":"ConditionalExpression","line":97,"original":"typeof x === \"number\" && x >= 0 && x <= 1","replacement":"true","status":"survived","ms":30460}
+{"file":"hooks/decide/judge.ts","id":"90","mutator":"LogicalOperator","line":97,"original":"typeof x === \"number\" && x >= 0 && x <= 1","replacement":"typeof x === \"number\" && x >= 0 || x <= 1","status":"survived","ms":31201}
+{"file":"hooks/decide/judge.ts","id":"91","mutator":"ConditionalExpression","line":97,"original":"typeof x === \"number\" && x >= 0","replacement":"true","status":"survived","ms":30426}
+{"file":"hooks/decide/judge.ts","id":"93","mutator":"ConditionalExpression","line":97,"original":"typeof x === \"number\"","replacement":"true","status":"survived","ms":33827}
+{"file":"hooks/decide/judge.ts","id":"92","mutator":"LogicalOperator","line":97,"original":"typeof x === \"number\" && x >= 0","replacement":"typeof x === \"number\" || x >= 0","status":"survived","ms":30699}
+{"file":"hooks/decide/judge.ts","id":"96","mutator":"ConditionalExpression","line":97,"original":"x >= 0","replacement":"true","status":"survived","ms":29271}
+{"file":"hooks/decide/judge.ts","id":"97","mutator":"EqualityOperator","line":97,"original":"x >= 0","replacement":"x > 0","status":"survived","ms":29206}
+{"file":"hooks/decide/judge.ts","id":"99","mutator":"ConditionalExpression","line":97,"original":"x <= 1","replacement":"true","status":"survived","ms":28336}
+{"file":"hooks/decide/judge.ts","id":"100","mutator":"EqualityOperator","line":97,"original":"x <= 1","replacement":"x < 1","status":"survived","ms":28015}
+{"file":"hooks/decide/judge.ts","id":"106","mutator":"ConditionalExpression","line":104,"original":"!isRecord(answer) || !isRecord(answer[\"probabilities\"])","replacement":"false","status":"survived","ms":33840}
+{"file":"hooks/decide/judge.ts","id":"107","mutator":"LogicalOperator","line":104,"original":"!isRecord(answer) || !isRecord(answer[\"probabilities\"])","replacement":"!isRecord(answer) && !isRecord(answer[\"probabilities\"])","status":"survived","ms":59393}
+{"file":"hooks/decide/judge.ts","id":"111","mutator":"BlockStatement","line":104,"original":"{\n\t\treturn undefined;\n\t}","replacement":"{}","status":"survived","ms":57770}
+{"file":"hooks/decide/judge.ts","id":"113","mutator":"ConditionalExpression","line":109,"original":"typeof choice === \"string\"","replacement":"true","status":"survived","ms":61543}
+{"file":"hooks/decide/judge.ts","id":"123","mutator":"ConditionalExpression","line":112,"original":"typeof choice === \"string\" &&\n\t\tp !== undefined","replacement":"true","status":"survived","ms":57059}
+{"file":"hooks/decide/judge.ts","id":"125","mutator":"ConditionalExpression","line":112,"original":"typeof choice === \"string\"","replacement":"true","status":"survived","ms":54576}
+{"file":"hooks/decide/judge.ts","id":"128","mutator":"ConditionalExpression","line":113,"original":"p !== undefined","replacement":"true","status":"survived","ms":59367}
+{"file":"hooks/decide/judge.ts","id":"135","mutator":"ArrayDeclaration","line":115,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":60243}
+{"file":"hooks/decide/judge.ts","id":"144","mutator":"ConditionalExpression","line":122,"original":"p === undefined","replacement":"false","status":"survived","ms":59991}
+{"file":"hooks/decide/judge.ts","id":"146","mutator":"BlockStatement","line":122,"original":"{\n\t\treturn undefined;\n\t}","replacement":"{}","status":"timeout","ms":74638}
+{"file":"hooks/decide/judge.ts","id":"160","mutator":"ArithmeticOperator","line":128,"original":"1 - p","replacement":"1 + p","status":"survived","ms":54450}
+{"file":"hooks/decide/judge.ts","id":"167","mutator":"ConditionalExpression","line":138,"original":"!isAskable(q) || approval === undefined","replacement":"false","status":"survived","ms":58581}
+{"file":"hooks/decide/judge.ts","id":"168","mutator":"LogicalOperator","line":138,"original":"!isAskable(q) || approval === undefined","replacement":"!isAskable(q) && approval === undefined","status":"survived","ms":59407}
+{"file":"hooks/decide/judge.ts","id":"170","mutator":"ConditionalExpression","line":138,"original":"approval === undefined","replacement":"false","status":"survived","ms":57546}
+{"file":"hooks/decide/judge.ts","id":"197","mutator":"MethodExpression","line":166,"original":"verdicts.every((v) => v !== undefined)","replacement":"verdicts.some(v => v !== undefined)","status":"survived","ms":27585}
+{"file":"hooks/decide/judge.ts","id":"198","mutator":"ArrowFunction","line":166,"original":"(v) => v !== undefined","replacement":"() => undefined","status":"survived","ms":27084}
+{"file":"hooks/decide/judge.ts","id":"199","mutator":"ConditionalExpression","line":166,"original":"v !== undefined","replacement":"true","status":"survived","ms":35229}
+{"file":"hooks/decide/judge.ts","id":"200","mutator":"ConditionalExpression","line":166,"original":"v !== undefined","replacement":"false","status":"survived","ms":30466}
+{"file":"hooks/decide/judge.ts","id":"201","mutator":"EqualityOperator","line":166,"original":"v !== undefined","replacement":"v === undefined","status":"survived","ms":26606}
+{"file":"hooks/decide/judge.ts","id":"202","mutator":"StringLiteral","line":167,"original":"\"\\n\"","replacement":"\"\"","status":"survived","ms":27674}

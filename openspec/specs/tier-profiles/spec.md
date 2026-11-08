@@ -3,7 +3,7 @@
 ## Purpose
 One table holds the cost-driving values, with a row per subscription tier, and setup writes the keys the user keeps.
 
-No reading splits a written key by tier. `SHARED` carries every field `tierSnippet` reads, so all three rows of `plugins/claudetto/src/tiers/tiers.ts` give a byte-identical snippet, and `subagentCap`, the one field the rows tell apart, is written to no settings key: the `agent.spawn` hook of `run-limits` enforces it. The table stays per tier so that a later reading can split a value, and `tests/claudetto/tiers.test.ts` fails when a row starts to differ in a written key.
+No reading splits a written key by tier, and no tier table ships: `plugins/claudetto/hooks/setup/settings.ts` holds one set of groups for every login, and `plugins/claudetto/hooks/setup/settings.test.ts` pins each key it writes.
 
 Setup therefore reads no plan. The premise that "settings that drive cost differ by subscription tier" is not supported by any reading this change took, and this Purpose records that rather than restating it.
 
@@ -137,7 +137,7 @@ The system SHALL NOT state a saving as a share of plan limits without a measurem
 
 ### Requirement: The Snippet Holds the Planned Keys
 
-The snippet SHALL hold `$schema`, `minimumVersion: "2.1.314"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, `statusLine`, and `subagentStatusLine`, and setup SHALL write only `~/.claude/settings.json`.
+The snippet SHALL hold `$schema`, `minimumVersion: "2.1.316"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, `statusLine`, and `subagentStatusLine`, and setup SHALL write only `~/.claude/settings.json`.
 
 #### Scenario: Clean Write
 
@@ -155,7 +155,7 @@ The compaction summary call on Haiku 5.5 SHALL use effort `high`, apart from the
 
 ### Requirement: A Tool Result Does Not Carry a Haiku Request Past the Price Step
 
-A tool result SHALL be withheld when it would take the next request of a Haiku 5.5 loop over 100,000 prompt tokens, since the handoff trigger is checked between calls (`docs/window-weights.md`). The prompt SHALL be read from the `usage` of the step that made the call, and the result's size estimated from its text. A step answered by any other model SHALL be left alone.
+A tool result SHALL be withheld when it would take the next request of a Haiku 5.5 loop over 100,000 prompt tokens.
 
 #### Scenario: Result Would Cross the Step
 
@@ -169,8 +169,8 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 #### Scenario: Other Model
 
-- **WHEN** the step that made the call was answered by a model that is not Haiku 5.5
-- **THEN** the result reaches the model unchanged, whatever its size
+- **WHEN** the request of the step that made the call names a model other than Haiku 5.5
+- **THEN** the result reaches the model unchanged, whatever its size, without waiting for the step to end
 
 #### Scenario: Several Calls in One Step
 
@@ -181,3 +181,56 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** the step that made the call ends with no `usage`
 - **THEN** the result reaches the model unchanged
+
+#### Scenario: Step Streams Past the Budget
+
+- **WHEN** a Haiku 5.5 step still streams when less than 1 s of the call hook's 10 s budget is left
+- **THEN** the result reaches the model unchanged, and the hook ends inside its budget
+
+#### Scenario: The Prompt Is Read from the Step
+
+- **WHEN** the sum is computed
+- **THEN** the prompt is read from the `usage` of the step that made the call, and the result's size is estimated from its text
+- **AND** the check is needed because the handoff trigger is checked between calls (`docs/window-weights.md`)
+
+#### Scenario: The Wait Ends before the Hook Budget
+
+- **WHEN** the hook waits on the step's `usage`
+- **THEN** the wait ends at least 1 s before the call hook's 10 s budget, because a hook that runs past its budget twice unloads the plugin
+
+### Requirement: Every Alias and the Default Resolve to the Row's Models
+
+The tier snippet SHALL write `ANTHROPIC_DEFAULT_MODEL`, `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, and `ANTHROPIC_DEFAULT_HAIKU_MODEL` under `env`, each set to a full model ID of the row, so that `default`, `opus`, `sonnet`, `haiku`, `opusplan`, and an agent's `model:` alias never resolve to an older model.
+
+#### Scenario: Default Is Opus 5 on the Account
+
+- **WHEN** the `/model` picker shows "Default (recommended) Opus 5" and a session starts with no `model` key
+- **THEN** its requests name `claude-opus-5-5`
+
+#### Scenario: Plan Alias
+
+- **WHEN** a setting or an agent names `opusplan` or `opus`
+- **THEN** the plan or main request names `claude-opus-5-5`, not `claude-opus-5`
+
+### Requirement: A Model Off the Row Is Shown
+
+When a response of the main thread or a subagent names a model that the row does not name, claudetto SHALL show the user one line with the model it got and the model the row names, once per session and model.
+
+#### Scenario: Silent Opus 5
+
+- **WHEN** the row names `claude-opus-5-5` and a response names `claude-opus-5`
+- **THEN** the user sees a line naming both, in the first turn it happens
+
+### Requirement: New Worktrees Start at the Branch Tip
+
+Setup SHALL write `worktree.baseRef: "head"` when the key is unset, in a dialog group that names the key and what it does. Setup SHALL NOT replace a `worktree.baseRef` the user set, nor offer to replace it.
+
+#### Scenario: Unset Key
+
+- **WHEN** the settings hold no `worktree.baseRef` and setup runs
+- **THEN** the settings hold `worktree.baseRef: "head"`, and a worktree that `EnterWorktree` or an agent with `isolation: "worktree"` makes starts at the tip of the current branch
+
+#### Scenario: The User's Own Value
+
+- **WHEN** the settings hold `worktree.baseRef: "fresh"` and setup runs
+- **THEN** the value stays `"fresh"`, and the setup dialog does not list `worktree.baseRef`

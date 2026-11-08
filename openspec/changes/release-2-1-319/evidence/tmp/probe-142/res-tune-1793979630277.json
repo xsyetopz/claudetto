@@ -1,0 +1,647 @@
+[
+ {
+  "id": "cred-t1",
+  "kind": "positive",
+  "fault": "credited",
+  "split": "tune",
+  "found": [
+   "credited"
+  ],
+  "ms": 1579,
+  "usd": 0.000497825,
+  "raw": "{\"faults\":[\"credited\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unseen-incident",
+  "kind": "positive",
+  "fault": "unseen",
+  "split": "tune",
+  "found": [],
+  "ms": 1908,
+  "usd": 0.000540825,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "cred-t2",
+  "kind": "positive",
+  "fault": "credited",
+  "split": "tune",
+  "found": [
+   "credited"
+  ],
+  "ms": 1943,
+  "usd": 0.000537075,
+  "raw": "{\"faults\":[\"credited\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unfiled-incident",
+  "kind": "positive",
+  "fault": "unfiled",
+  "split": "tune",
+  "found": [
+   "unfiled"
+  ],
+  "ms": 2384,
+  "usd": 0.00056645,
+  "raw": "{\"faults\":[\"unfiled\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "rules-incident",
+  "kind": "positive",
+  "fault": "rules",
+  "split": "tune",
+  "found": [
+   "credited"
+  ],
+  "ms": 2449,
+  "usd": 0.000621575,
+  "raw": "{\"faults\":[\"credited\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "fall-incident",
+  "kind": "positive",
+  "fault": "fallback",
+  "split": "tune",
+  "found": [
+   "fallback"
+  ],
+  "ms": 2838,
+  "usd": 0.000645825,
+  "raw": "{\"faults\":[\"fallback\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "rules-t1",
+  "kind": "positive",
+  "fault": "rules",
+  "split": "tune",
+  "found": [
+   "rules"
+  ],
+  "ms": 2863,
+  "usd": 0.00066245,
+  "raw": "{\"faults\":[\"rules\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "rules-t2",
+  "kind": "positive",
+  "fault": "rules",
+  "split": "tune",
+  "found": [
+   "rules"
+  ],
+  "ms": 1597,
+  "usd": 0.000266795,
+  "raw": "{\"faults\":[\"rules\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unseen-t1",
+  "kind": "positive",
+  "fault": "unseen",
+  "split": "tune",
+  "found": [
+   "unseen"
+  ],
+  "ms": 1327,
+  "usd": 0.000206295,
+  "raw": "{\"faults\":[\"unseen\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unseen-t2",
+  "kind": "positive",
+  "fault": "unseen",
+  "split": "tune",
+  "found": [
+   "unseen"
+  ],
+  "ms": 1742,
+  "usd": 0.000246045,
+  "raw": "{\"faults\":[\"unseen\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unfiled-t1",
+  "kind": "positive",
+  "fault": "unfiled",
+  "split": "tune",
+  "found": [
+   "unfiled"
+  ],
+  "ms": 1611,
+  "usd": 0.00024917000000000006,
+  "raw": "{\"faults\":[\"unfiled\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unfiled-t2",
+  "kind": "positive",
+  "fault": "unfiled",
+  "split": "tune",
+  "found": [
+   "unfiled"
+  ],
+  "ms": 1791,
+  "usd": 0.000257045,
+  "raw": "{\"faults\":[\"unfiled\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "fall-t2",
+  "kind": "positive",
+  "fault": "fallback",
+  "split": "tune",
+  "found": [
+   "fallback"
+  ],
+  "ms": 1382,
+  "usd": 0.00020616999999999999,
+  "raw": "{\"faults\":[\"fallback\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "fall-t1",
+  "kind": "positive",
+  "fault": "fallback",
+  "split": "tune",
+  "found": [
+   "fallback"
+  ],
+  "ms": 1439,
+  "usd": 0.00021192,
+  "raw": "{\"faults\":[\"fallback\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "cred-incident",
+  "kind": "positive",
+  "fault": "credited",
+  "split": "tune",
+  "found": [
+   "fallback"
+  ],
+  "ms": 5636,
+  "usd": 0.00094845,
+  "raw": "{\"faults\":[\"fallback\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-2",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3214,
+  "usd": 0.00042467000000000004,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-17",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3749,
+  "usd": 0.00050917,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-160",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3586,
+  "usd": 0.0005090450000000001,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-164",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "credited",
+   "unseen",
+   "fallback"
+  ],
+  "ms": 3664,
+  "usd": 0.00057467,
+  "raw": "{\"faults\":[\"credited\",\"unseen\",\"fallback\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-7",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 5354,
+  "usd": 0.00068567,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-174",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3105,
+  "usd": 0.000483045,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-169",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 4933,
+  "usd": 0.000646295,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-221",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "unseen"
+  ],
+  "ms": 3788,
+  "usd": 0.00051067,
+  "raw": "{\"faults\":[\"unseen\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-254",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2921,
+  "usd": 0.00036179500000000004,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-261",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2943,
+  "usd": 0.00044429500000000004,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-238",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "credited",
+   "unseen"
+  ],
+  "ms": 3652,
+  "usd": 0.00049842,
+  "raw": "{\"faults\":[\"credited\",\"unseen\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-152",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "unseen"
+  ],
+  "ms": 7368,
+  "usd": 0.000834795,
+  "raw": "{\"faults\":[\"unseen\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-272",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3030,
+  "usd": 0.0005391700000000001,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-291",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3105,
+  "usd": 0.00043779500000000005,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-283",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3701,
+  "usd": 0.00054717,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-305",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3400,
+  "usd": 0.000511545,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-310",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2849,
+  "usd": 0.00044042,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-316",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3662,
+  "usd": 0.00049992,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-456",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 1343,
+  "usd": 0.00019867000000000002,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-324",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 4061,
+  "usd": 0.000507545,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-366",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2898,
+  "usd": 0.00046792000000000003,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-338",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3836,
+  "usd": 0.00056167,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-330",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "unseen"
+  ],
+  "ms": 5357,
+  "usd": 0.000599795,
+  "raw": "{\"faults\":[\"unseen\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-466",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "unchecked"
+  ],
+  "ms": 3126,
+  "usd": 0.00047791999999999995,
+  "raw": "{\"faults\":[\"unchecked\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-471",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2730,
+  "usd": 0.00041917,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-quote",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2253,
+  "usd": 0.00029692,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-fixcite",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 2899,
+  "usd": 0.00036667,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-441",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "credited"
+  ],
+  "ms": 5692,
+  "usd": 0.000752795,
+  "raw": "{\"faults\":[\"credited\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-filed",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 1632,
+  "usd": 0.000218295,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-490",
+  "kind": "negative",
+  "fault": null,
+  "split": "tune",
+  "found": [
+   "fallback"
+  ],
+  "ms": 4094,
+  "usd": 0.0007081699999999999,
+  "raw": "{\"faults\":[\"fallback\"]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-showblock",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "tune",
+  "found": [],
+  "ms": 3702,
+  "usd": 0.000434795,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ }
+]

@@ -1,0 +1,1018 @@
+[
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > reports a task list written as plain bullets",
+		"seq": 0,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n\n## 1. Implementation\n\n- Add the parser\n- Add the tests\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 5,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > reports a task list written as a numbered list",
+		"seq": 1,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n\n1. Add the parser\n2. Add the tests\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > reports a task list written as a numbered list",
+		"seq": 2,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "1) Add the parser\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 1,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > stays silent when checkboxes are present",
+		"seq": 3,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "- [ ] 1.1 Add the parser\n- Supporting note\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > stays silent when checkboxes are present",
+		"seq": 4,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "- [x] 1.1 Add the parser\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > stays silent when checkboxes are present",
+		"seq": 5,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "  - [ ] 1.1.1 A nested task\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > stays silent on prose and on an empty file",
+		"seq": 6,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n\nNothing planned yet.\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > stays silent on prose and on an empty file",
+		"seq": 7,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": ""
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > stays silent on prose and on an empty file",
+		"seq": 8,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [[]],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > ignores list items inside fenced blocks",
+		"seq": 9,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n\n```md\n- an example bullet\n```\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > ignores list items inside fenced blocks",
+		"seq": 10,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "~~~\n- fenced with tildes\n~~~\n\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 5,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > closes a fence only on a matching, long enough, bare delimiter",
+		"seq": 11,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "````md\n```\n- an example bullet\n```\n````\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > closes a fence only on a matching, long enough, bare delimiter",
+		"seq": 12,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "```\n```js\n- an example bullet\n```\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > closes a fence only on a matching, long enough, bare delimiter",
+		"seq": 13,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "```\n~~~\n- an example bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > closes a fence only on a matching, long enough, bare delimiter",
+		"seq": 14,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "```\nsample\n`````\n\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 5,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > tracks fences in CRLF files",
+		"seq": 15,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "```md\r\n- an example bullet\r\n```\r\n\r\n- a real bullet\r\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 5,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > only treats a fence indented up to three spaces as a fence",
+		"seq": 16,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "    ```\n\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > only treats a fence indented up to three spaces as a fence",
+		"seq": 17,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "   ```\n- an example bullet\n   ```\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not read top-level indented code as a task list",
+		"seq": 18,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. Notes\n\nExample output:\n\n    - example output\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not read top-level indented code as a task list",
+		"seq": 19,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. Notes\n\nExample output:\n\n\t- tabbed output\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not read top-level indented code as a task list",
+		"seq": 20,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. Notes\n\nExample output:\n\n    1. numbered output\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > still reports a genuine nested list, by naming its parent",
+		"seq": 21,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. Work\n\n- Parent task\n    - Nested detail\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > still reports a genuine nested list, by naming its parent",
+		"seq": 22,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. Work\n\n   - Three spaces is not code\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not treat a horizontal rule or emphasis as a list item",
+		"seq": 23,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n\n---\n\n***\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > skips YAML front matter",
+		"seq": 24,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "---\ntags:\n  - planning\n  - backend\n---\n\nNothing planned yet.\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > skips YAML front matter",
+		"seq": 25,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "---\ntags:\n  - planning\n---\n\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 6,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > treats an unterminated front-matter opener as a thematic break",
+		"seq": 26,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "---\n\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not read a longer dash run as front matter",
+		"seq": 27,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "----\n\n- a real bullet\n\n---\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > skips front matter behind a UTF-8 byte order mark",
+		"seq": 28,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "﻿---\ntags:\n  - planning\n---\n\nNothing planned yet.\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not read a number longer than nine digits as a list marker",
+		"seq": 29,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "1234567890. is a year range, not a task\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not read a number longer than nine digits as a list marker",
+		"seq": 30,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "123456789. still a list item\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 1,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > skips HTML comments without hiding the line that follows them",
+		"seq": 31,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "<!--\n- a retired task\n-->\n\nNothing planned yet.\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > skips HTML comments without hiding the line that follows them",
+		"seq": 32,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "<!-- a note -->\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 2,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > skips HTML comments without hiding the line that follows them",
+		"seq": 33,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "<!--\n- a retired task\n-->\n- a real bullet\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 4,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > accepts every packaged tasks template",
+		"seq": 34,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\n\n## 1. <!-- Task Group Name -->\n\n- [ ] 1.1 <!-- Task description -->\n- [ ] 1.2 <!-- Task description -->\n\n## 2. <!-- Task Group Name -->\n\n- [ ] 2.1 <!-- Task description -->\n- [ ] 2.2 <!-- Task description -->\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > does not let the template heading comment swallow its checklist",
+		"seq": 35,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "## 1. <!-- Task Group Name -->\n\n- [ ] 1.1 <!-- Task description -->\n- [ ] 1.2 <!-- Task description -->\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > reports a list of unrecognised checkbox markers, which count as no task",
+		"seq": 36,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "- [ab] 1.1 in progress\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 1,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > reports every file only when the whole change has no checkbox",
+		"seq": 37,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "backend/tasks.md",
+					"content": "- build the api\n"
+				},
+				{
+					"path": "frontend/tasks.md",
+					"content": "- build the ui\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "backend/tasks.md",
+					"line": 1,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				},
+				{
+					"path": "frontend/tasks.md",
+					"line": 1,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > reports every file only when the whole change has no checkbox",
+		"seq": 38,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "backend/tasks.md",
+					"content": "- [ ] 1.1 build the api\n"
+				},
+				{
+					"path": "frontend/tasks.md",
+					"content": "- build the ui\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > handles CRLF files",
+		"seq": 39,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "# Tasks\r\n\r\n- Add the parser\r\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": [
+				{
+					"path": "tasks.md",
+					"line": 3,
+					"message": "This change counts as 0 tasks: no line in its tracked task files is a checkbox, so \"openspec list\" and \"openspec status\" report no work and \"openspec archive\" has nothing to flag as incomplete. Write each task as \"- [ ] 1.1 Description\"."
+				}
+			]
+		}
+	},
+	{
+		"file": "task-checkboxes.test.ts",
+		"test": "findMissingTaskCheckboxIssues > handles CRLF files",
+		"seq": 40,
+		"kind": "task.checkboxes",
+		"root": null,
+		"abs": null,
+		"hint": null,
+		"args": [
+			[
+				{
+					"path": "tasks.md",
+					"content": "- [ ] 1.1 Add the parser\r\n"
+				}
+			]
+		],
+		"before": {},
+		"after": null,
+		"outcome": {
+			"returned": []
+		}
+	}
+]

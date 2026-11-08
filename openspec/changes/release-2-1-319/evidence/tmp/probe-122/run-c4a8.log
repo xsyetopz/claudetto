@@ -1,0 +1,16 @@
+c4a8 syc-fixed-total-p2 r4 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p2 r3 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p2 r2 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p2 r5 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p2 r1 ok  changed=[] tools=Bash,Bash 
+c4a8 syc-fixed-total-p2 r6 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p2 r7 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p1 r3 ok  changed=[] tools=Bash,Bash,Bash,ToolSearch,Read 
+c4a8 syc-fixed-total-p1 r2 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+c4a8 syc-fixed-total-p1 r4 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+c4a8 syc-fixed-total-p1 r1 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+c4a8 syc-fixed-total-p2 r8 FAIL readFirst changed=[] tools= 
+c4a8 syc-fixed-total-p1 r5 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+c4a8 syc-fixed-total-p1 r6 ok  changed=[] tools=Bash,Bash,ToolSearch,Bash,Read 
+c4a8 syc-fixed-total-p1 r7 ok  changed=[] tools=Bash,Bash,Bash,ToolSearch,Read 
+c4a8 syc-fixed-total-p1 r8 ok  changed=[] tools=Bash,Bash,Bash,ToolSearch,Read,Bash 

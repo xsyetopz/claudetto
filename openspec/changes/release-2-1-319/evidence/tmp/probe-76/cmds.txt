@@ -1,0 +1,65 @@
+env -i A=1
+env A=1
+env -u X A=1 ls
+export FOO=1
+ls -p
+printenv HOME
+git reset --soft
+git status --hard
+git clean -n
+git clean -fd
+git clean --force
+git checkout .
+git status -- .
+git log -- .
+git commit --delete
+git push -u origin main
+git push origin +main
+git push --force-with-lease
+git push --delete origin x
+git show .env
+git add .env
+git status .env
+git -c core.x=y show .env
+tail -f src/a.ts
+tail
+cat
+head
+sed -n 5p
+sed -n 5p src/a.ts
+cat a.txt > b.txt
+ls > out.txt
+echo hi > notes.txt
+rm -rf tmp/x /
+rm -rf tmp/x
+rm -r /
+rm -R /
+rm --recursive /
+ls -R /
+rm /
+cat -n
+grep -e .env src/a.ts
+grep --file .env src/a.ts
+grep .env src/a.ts
+grep -c x .env
+grep -l x .env
+grep -q x .env
+grep --count x .env
+grep --quiet x .env
+grep -L x .env
+fgrep -o '^[A-Z]*=' .env
+rg -o '^[A-Z]*=' .env
+sed .env src/a.ts
+awk .env src/a.ts
+echo hi > /usr/x
+echo hi > /System/x
+ls > /Library/x
+ls > /sbin/x
+ls > /boot/x
+ls > /bin/x
+ls > /usr
+ls > /etcetera
+ls /etc/hosts
+tee notes.txt
+tee -a notes.txt
+tee -- -a

@@ -1,0 +1,1800 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/config ANTHROPIC_BASE_URL=http://127.0.0.1:62785 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/mon25.tty.debug
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Haiku 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/mon25.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏸ manual mode on · ? for shortcuts · ← for agents[>0q
+█▟█▟
+watchit 
+
+▟█▟█
+❯ watch it                                                                                                                                                      
+✢Moonwalking… 
+ 
+ · ? for shortcuts · ← for agents
+▛▛
+·oa
+✢Monw
+✳o
+✽Mo
+✶
+✳
+✢
+·
+❯ 
+esc to interrupt · ← for agents
+✢
+✳
+✶
+✻
+✽
+✻
+✶
+✳
+Osmosing… 
+✢(1s · ↓2 tokens)
+·…5
+Osmosing…
+Osmosing…214 tokens)
+✢5
+✶9
+⏺claudetto - monitor (MCP)
+Osmos…
+(command:"foriin$(seq150);doechol$i;sleep0.3;done",description:"rateevents",timeout_ms:120000)
+sg30
+Osmog…
+✻7
+✽42
+Osmosing…3
+5
+36
+✻Osmosing…9
+✶50
+✳2
+✢3
+1 monitor · esc tointerupt · ← for agents · ↓ to manage
+⏺
+  ⎿  Monitorstarted(taskbsb8jmmar,expiresin2munlessthesourceendsfirst;yougetonenoticeatexpiry—re-armifyoustillneedthewatch).Youw
+illbenotifiedoneachevent.Keepworking—donotpollorsleep.Eventsmayarrivewhileyouarewaitingfortheuser—aneventisnottheirreply
+.
+5
+·Osmosing…62
+3
+Osmosing…
+⏺Done.
+O5
+46
+Osmosing…
+✢71
+✳2
+✶4
+✻5
+
+8
+↓t mnage
+✽Osmosing…9
+81
+⏺OK
+52
+Osmosing…
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+Cogitating… (0s· ↓ 82 tokens)
+✶23
+✳16
+✢3
+⏺Monitorevent:l1 · rate events
+⏺Monitorevent:l2 · rate events
+⏺Monitorevent:l4 · rate events
+·0
+7 tokens)
+⏺OK
+✢6
+4
+Cogitating…
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+✢Noodling… (0s · ↓4 tokens)
+  ⎿  Tip: Use Plan Mode prepare for a complex request before making changes. Press shift+tab twice to enable.
+✳3
+✶1 ▐▛███▛█Claude Codev2.1.319
+▝▜███▀Haiku 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dc0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/work
+
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/mon25.tty.debug
+
+❯ watch it                                                                                                                                                      
+
+⏺claudetto - monitor (MCP)(command:"foriin$(seq150);doechol$i;sleep0.3;done",description:"rateevents",timeout_ms:120000)
+  ⎿  Monitor started (task bsb8jmmar, expires in 2m unlessthe source ends first; you getone notice at expiry — re-arm if you till needthewatch).Youw
+     ill be noifion each event. Kep working— do not pollor slep. Event ma arrive while youre watingfor the user — an event is not heirreply
+.
+
+⏺Done.
+
+⏺OK
+
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l1 · rate events
+
+⏺Monitorevent:l2 · rate events
+
+⏺Monitorevent:l4 · rate events
+
+⏺OK
+
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l5 · rate events
+⏺Monitorevent:l7 · rate events
+✻
+✽
+✻▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/work
+
+▎ Debug mode enabld · logging to var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-111413-ee9556/mon25.tty.debug
+❯ watch it                                                                                                                                                      
+⏺ claudetto - monitor (MCP)(command: "for i in $(seq 150); do echo l$i; sleep 0.3; done", description: "rate events", timeout_ms: 120000)
+  ⎿  Monitorstarted(taskbsb8jmmar,expiresin2munlessthesourceendsfirst;yougetonenoticeatexpiry—re-armifyoustillneedthewatch).Youw
+    ill be notified on each event. Keep working — do not poll or seep. Evnts may arrive while you are waiting for the user — an event isnottheirreply
+     .
+
+⏺Done.
+OK
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l1 ·rate events
+2
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+(0s · ↓1 tokens)
+✶1
+✳
+✢
+❯ watch it                                                                                                                                                      
+⏺ claudetto - monitor (MCP)(command: "for i in $(seq 150); do echo l$i; sleep 0.3; done", description: "rate events", timeout_ms: 120000)
+  ⎿  Monitorstarted(taskbsb8jmmar,expiresin2munlessthesourceendsfirst;yougetonenoticeatexpiry—re-armifyoustillneedthewatch).Youw
+    ill be notified on each event. Keep working — do not poll or seep. Evnts may arrive while you are waiting for the user — an event isnottheirreply
+     .
+
+⏺Done.
+OK
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l1 ·rate events
+2
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+Hyperspacing… (0s ·↓ 1 tokens)
+·illbenotifiedoneachevent.Keepworking—donotpollorsleep.Eventsmayarrivewhileyouarewaitingfortheuser—aneventisnottheirreply
+.
+
+⏺Done.
+
+⏺ OK
+
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+Mitorevent:l1 · rate events
+Monitorevent:l2 · rate events
+⏺Monitor event: l4 ·rate events
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+5
+Monitorevent:l7 · rate events
+⏺OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+9
+Monitorevent:l10 · rate events
+⏺Monitor event: l12· rate events
+✢
+⏺Done.
+OK
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l1 ·rate events
+2
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✳(0s · ↓1 tokens)
+Hyperspacing…
+✶
+OK
+✻Baked for 5s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l1 ·rate events
+2
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+Whirlpooling…
+✻
+Monitorevent:l1 · rate events
+⏺Monitor event: l2 ·rate events
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+Monitorevent:l5 · rate events
+⏺Monitor event: l7 · rate events
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+Monitorevent:l9 · rate events
+⏺Monitor event: l10· rate events
+12 · rate events
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:l13 · rate events
+⏺Monitor event: l15 ·rate events
+✽
+2
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+(0s · ↓1 tokens)
+Whirlpooling…
+✻Whirlpooling…
+4
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+Pouncing… (0s · ↓ 1tokens)
+
+OK
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l16 ·rate events
+✶u
+✳
+✻Brewed for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l16 ·rate events
+OK
+✢o
+(0s · ↓1 tokens)
+·P
+Pouncing…
+⏺Monitor event: l5 · rate events
+7
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l16 ·rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+Propagating… (0s · ↓ 1 tokens)
+OK
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+Monitorevent:l9 · rate events
+⏺Monitor event: l10· rate events
+12 · rate events
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:l13 · rate events
+⏺Monitor event: l15 ·rate events
+OK
+✻Worked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:l16 · rate events
+⏺OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:l18 · rate events
+⏺Monitor event: l19· rate events
+gi
+✢at
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l9 · rate events
+10 · rate events
+2
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l16 ·rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l18· rate events
+9
+OK
+✳pa(0s · ↓1 tokens)
+Proating…
+
+✻Cogitated for 1s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l9 · rate events
+
+⏺Monitorevent:l10 · rate events
+
+⏺Monitorevent:l12 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l13 · rate events
+
+⏺Monitorevent:l15 · rate events
+
+⏺OK
+
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l16 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻ Sautéedfor0s ·dn11:14 AM ·1 monitr still rnning
+❯ 
+↓ to manag
+⏺Monitorevent:l9 · rate events
+
+⏺Monitorevent:l10 · rate events
+
+⏺Monitorevent:l12 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l13 · rate events
+
+⏺Monitorevent:l15 · rate events
+
+⏺OK
+
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l16 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+✽Thundering… 
+  ⎿  Tip:UsePlanMdto preparefor a cmplex reqest before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+12 · rate events
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:l13 · rate events
+⏺Monitor event: l15 ·rate events
+OK
+✻Worked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:l16 · rate events
+⏺OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:l18 · rate events
+⏺Monitor event: l19· rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l22 · rate events
+T
+✻
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l13 ·rate events
+5
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l16 ·rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l18· rate events
+9
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [2 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l2 · rate events
+OK
+(0s · ↓1 tokens)
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l13 · rate events
+
+⏺Monitorevent:l15 · rate events
+
+⏺OK
+
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l16 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻ Cooked for 0s · done 11:14 AM · 1 monitor still running
+❯ 
+↓ to manag
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l13 · rate events
+
+⏺Monitorevent:l15 · rate events
+
+⏺OK
+
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l16 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+✽Smooshing… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+⏺Monitor event: l15 ·rate events
+OK
+✻Worked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:l16 · rate events
+⏺OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:l18 · rate events
+⏺Monitor event: l19· rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l22 · rate events
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l29 ·rate events
+OK
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l16 ·rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l18· rate events
+9
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [2 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l2 · rate events
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l29 · rate events
+OK
+(0s · ↓1 tokens)
+Smooshing…
+✻Smooshing…
+
+⏺OK
+
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l16 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻ Baked for 0s · done 11:14 AM · 1mnitor stillunning
+❯ 
+↓ to manag
+✻Worked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l16 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+✻Frosting… 
+  ⎿  Tip: Use Plan Mode to preparefr a complexequest before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+✽rt
+⏺OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:l18 · rate events
+⏺Monitor event: l19· rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l22 · rate events
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l29 ·rate events
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l35 · rateevents
+Fs
+(0s · ↓1 tokens)
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: l18· rate events
+9
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [2 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l2 · rate events
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l29 · rate events
+OK
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l35 · rate events
+OK
+✻o
+Fr
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻ Crunched for 0s · done 11:14 AM · 1 monitor still running
+❯ 
+↓ to manag
+⏺Monitorevent:l18 · rate events
+
+⏺Monitorevent:l19 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+✽Beboppin'… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l22 · rate events
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l29 ·rate events
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l35 · rateevents
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l42 · rate events
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [2 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l2 · rate events
+OK
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l29 · rate events
+OK
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l35 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l42 · rate events
+OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻ Baked for 0s · done 11:14 AM · 1mnitor stillunning
+❯ 
+↓ to manag
+⏺Monitorevent:[2eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l22 · rate events
+
+⏺OK
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+✻Reticulating… 
+  ⎿  Tip: Use Plan Mode to preparefr a complexequest before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Cooked for 0s · done11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l29 ·rate events
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l35 · rateevents
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l42 · rate events
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l48 · rateevents
+✽R
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l29 · rate events
+OK
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l35 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l42 · rate events
+OK
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l48 · rate events
+OK
+Reticulating…
+
+✻Cooked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻ Cogitated for 0s· one 11:14 AM· 1monitor still running
+❯ 
+↓ to manag
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l29 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+✽Boondoggling… 
+  ⎿  Tip: Use PlanMoe to preparefora complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l35 · rateevents
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l42 · rate events
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l48 · rateevents
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l55· rate events
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l35 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l42 · rate events
+OK
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l48 · rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l55 · rate events
+OK
+Boondoggling…
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻ Sautéedfor0s ·dn11:14 AM ·1 monitr still rnning
+❯ 
+↓ to manag
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l35 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+✽Shimmying… 
+  ⎿  Tip:UsePlanMdto preparefor a cmplex reqest before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l42 · rate events
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l48 · rateevents
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l55· rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l61 · rate events
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l42 · rate events
+OK
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l48 · rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l55 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l61 · rate events
+OK
+(0s · ↓1 tokens)
+Shimmying…
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻ Sautéedfor0s ·dn11:14 AM ·1 monitr still rnning
+❯ 
+↓ to manag
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l42 · rate events
+
+⏺OK
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+✻Sublimating… 
+  ⎿  Tip:UsePlanMdto preparefor a cmplex reqest before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+✽
+OK
+✻Baked for 0s · done 11:14AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l48 · rateevents
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l55· rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l61 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l67 · rate events
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l48 · rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l55 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l61 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l67 · rate events
+OK
+(0s · ↓1 tokens)
+Sublimating…
+
+✻Baked for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻ Churnedfor0s ·dn11:14 AM ·1 monitr still rnning
+❯ 
+↓ to manag
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l48 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+✽Bunning… 
+  ⎿  Tip:UsePlanMdto preparefor a cmplex reqest before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l55· rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l61 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l67 · rate events
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l74 · rate events
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l55 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l61 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l67 · rate events
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l74 · rate events
+OK
+Bunning…
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻ Cogitated for 0s· one 11:14 AM· 1monitor still running
+❯ 
+↓ to manag
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l55 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+✽Catapulting… 
+  ⎿  Tip: Use PlanMoe to preparefora complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l61 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l67 · rate events
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l74 · rate events
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l80· rate events
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l61 · rate events
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l67 · rate events
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l74 · rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l80 · rate events
+OK
+Catapulting…(0s · ↓1 tokens)
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻ Crunched for 0s · done 11:14 AM · 1 monitor still running
+❯ 
+↓ to manag
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l61 · rate events
+
+⏺OK
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+✻Gusting… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l67 · rate events
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l74 · rate events
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l80· rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l86 · rate events
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l67 · rate events
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l74 · rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l80 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l86 · rate events
+OK
+Gung…
+
+✻Sautéed for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l86 · rate events
+
+⏺OK
+
+✻ Crunched for 0s · done 11:14 AM · 1 monitor still running
+❯ 
+↓ to manag
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l67 · rate events
+
+⏺OK
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l86 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+✽Undulating… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l74 · rate events
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l80· rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l86 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l93 · rate events
+…
+✻
+✶g
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l74 · rate events
+OK
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l80 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l86 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l93 · rate events
+OK
+✢n(0s · ↓1 tokens)
+ng…
+
+✻Churned for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l86 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l93 · rate events
+
+⏺OK
+
+✻ Crunched for 0s · done 11:14 AM · 1 monitor still running
+❯ 
+↓ to manag
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l74 · rate events
+
+⏺OK
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l86 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l93 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+✽Jitterbugging… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+OK
+✻Cogitated for 0s ·done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l80· rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l86 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l93 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+Monitorevent:[4eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+⏺Monitor event: l99 · rate events
+✻
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l80 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [5 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l86 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [6 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l93 · rate events
+OK
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+⏺Monitor event: [4 events suppressed — output rate too high.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+l99 · rate events
+OK
+✶(0s · ↓1 tokens)
+✳
+✢
+
+✻Cogitated for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l80 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[5eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l86 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[6eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l93 · rate events
+
+⏺OK
+
+✻Crunched for 0s · done 11:14 AM · 1 monitor still running
+
+⏺Monitorevent:[4eventssuppressed—outputratetoohigh.ConsiderusingTaskStoptorestartthismonitorwithamoreselectivefilter.] · rate events
+
+⏺Monitorevent:l99 · rate events
+
+⏺OK
+
+✻ Baked for 0s · done 11:15 AM · 1mnitor stillunning
+❯ 
+↓ to manag

@@ -1,0 +1,29 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123441-90fc10/config ANTHROPIC_BASE_URL=http://127.0.0.1:65033 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123441-90fc10/settings.json --plugin-dir /tmp/probe-21/empty --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123441-90fc10/control.tty.debug
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Haiku 5.5 with low effort · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123441-90fc10/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-123441-90fc10/control.tty.debug
+○ low · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏵⏵ auto mode on (shift+tab to cycle) · ← for agents[>0q
+▂
+▛
+hi 
+
+Esc again to clear
+❯ hi                                                                                                                                                            
+✽Galloping… 
+❯  
+ · esc to interrupt · ← for agents
+⏺OK
+✻Sautéed for 0s · done 12:34 PM
+
+❯ 
+← for agents
+   ○ low · /effort
+Press Ctrl-C again to exit[<u[>4m[>4m[<u78[>4m[<u78
+Resume this session with:
+claude --resume 69c46987-2eef-4fbb-958b-5a269e2707ad

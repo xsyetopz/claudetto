@@ -1,0 +1,1 @@
+Read /tmp/probe-148/work/part1.txt through part7.txt with the Read tool, one file per step, in order. After the seventh, reply with one line saying all seven were read. No work follows that.

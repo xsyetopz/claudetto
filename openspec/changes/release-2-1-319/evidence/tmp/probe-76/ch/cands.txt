@@ -1,0 +1,154 @@
+echo a2>f
+echo a>f
+echo 2>f
+echo a<f
+echo a&>f
+echo a&>>f
+echo a>>f
+echo a>|f
+echo a<<<x
+echo a<<-E
+echo a<>f
+echo a<&3
+./a=b x
+FOO=1 x
+x -a=1
+bash x-c 'git push'
+bash -ec 'git push'
+bash -cx 'git push'
+bash -c
+bash -c 'ls' 'rm'
+zsh -c 'git push'
+dash -c 'git push'
+ksh -c 'git push'
+sudo -g w -h h -p p -C 1 -D d -R r -T t -U u x
+sudo --user u --group g --command-timeout 5 --host h --prompt p x
+sudo -S x
+doas -u bob x
+doas -C f x
+doas -S x
+env -u A x
+env -C d x
+env -S s x
+env -g x
+nice -n 5 x
+nice -a 5 x
+exec -a n x
+exec -n x
+timeout -s 9 5 x
+timeout -k 1 5 x
+timeout -n 5 x
+nohup -x y
+time -p x
+command -v x
+builtin x
+env
+env -i
+sudo
+x=1
+if x; then y; fi
+while a; do b; done
+until a; do b; done
+{ a; }
+! a
+else a
+elif a
+do a
+a "$(b)"
+a $(b "c)" d)
+a $(b 'c)' d)
+a $(b "\"" ) c)
+a $(b \)  c)
+a $((1+2))
+a $( (b) )
+a $(b
+a `b
+a `b` c
+a $'x\ty'
+a $'x\\ty'
+a $'x
+a $x
+a "$x"
+a "x$y"
+a "x$(b)y"
+a "x`b`y"
+a "\$x"
+a "\`x"
+a "\\x"
+a "\"x"
+a "\nx"
+a "x
+a 'x
+a "x\"
+a >(b)
+a <(b)
+a >(b
+a 3>f
+a 3>&1
+a >f 2>&1
+a &>(b)
+a 'x'y
+a x'y'
+a ~
+a x~
+a ~x
+a *.c
+a x*
+a ?
+a [x]
+a {x,y}
+a x{y
+a # c
+a#b
+a #c
+a x # c
+a x #c
+a \
+b
+a \a
+a \\
+a \
+a | b
+a |& b
+a || b
+a && b
+a & b
+a &
+a ; b
+a;b
+a
+b
+a (b)
+a )
+cat <<A <<B
+x
+A
+y
+B
+z
+cat <<A
+x
+A
+cat <<A
+  A
+y
+cat <<A
+x
+cat <<-A
+	A
+y
+cat <<A; ls
+x
+A
+bash <<A
+x
+A
+sh <<<'x'
+sh -c <<A
+x
+A
+sh -c 'sh -c "sh -c \"sh -c x\""'
+a;b | c
+echo "a
+b"
+a<b>c

@@ -1,0 +1,16 @@
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-still-run-tests","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-left-tests","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-unrun-check","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-not-done-migrate","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-remaining-commit","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-goal-cleared","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-todo-list","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"open-next-steps","want":["narrates"],"found":["narrates"],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-user-heldout","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-paid-approval","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-denied-push","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-all-done","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-user-said-leave","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-out-of-scope-named","want":[],"found":[],"missed":[],"extra":[]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-user-only-sudo","want":[],"found":["narrates"],"missed":[],"extra":["narrates"]}
+{"arm":"/Users/krystian/CodeProjects/xsyetopz/claudetto/openspec/changes/release-2-1-319/evidence/18-31/stop-grade/arm-open.ts","id":"clean-cap-reached","want":[],"found":[],"missed":[],"extra":[]}

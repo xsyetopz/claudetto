@@ -1,53 +1,31 @@
 {
 	"name": "claudetto",
-	"version": "0.3.0",
+	"version": "2.1.319",
 	"private": true,
-	"description": "A very opinionated Claude Code plugin designed by a Rustacean",
 	"type": "module",
-	"scripts": {
-		"test": "bun test",
-		"typecheck": "bun check",
-		"lint": "biome check --error-on-warnings && bun run lint:suppressions",
-		"lint:md": "bunx markdownlint-cli2",
-		"lint:suppressions": "biome-json-suppressions",
-		"lint:fix": "biome check --write --error-on-warnings",
-		"lint:ci": "biome ci --error-on-warnings"
-	},
-	"commitlint": {
-		"extends": [
-			"@commitlint/config-conventional"
-		]
-	},
 	"license": "MIT",
 	"engines": {
 		"bun": ">=1.4.4"
 	},
 	"packageManager": "bun@1.4.4",
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		]
+	},
 	"devDependencies": {
-		"@biomejs/biome": "~2.6.3",
 		"@commitlint/cli": "^21.2.4",
 		"@commitlint/config-conventional": "^21.2.4",
 		"@fission-ai/openspec": "^1.16.0",
-		"@types/node": "^26.6.5",
-		"biome-json": "github:xsyetopz/biome.jsonc#387e04c",
 		"bun-types": "^1.4.4",
 		"jscpd": "5.4.2",
-		"markdownlint-cli2": "^0.24.0",
-		"yaml": "^2.9.1"
+		"markdownlint-cli2": "^0.24.0"
 	},
 	"peerDependencies": {
-		"claude-code": "*",
-		"claude-code-mcp": "*",
-		"claude-code-tools": "*"
+		"claude-code": "*"
 	},
 	"peerDependenciesMeta": {
 		"claude-code": {
-			"optional": true
-		},
-		"claude-code-mcp": {
-			"optional": true
-		},
-		"claude-code-tools": {
 			"optional": true
 		}
 	}
