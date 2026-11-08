@@ -30,6 +30,22 @@ jobs:
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
+      - name: Install betterleaks
+        env:
+          BETTERLEAKS_VERSION: 1.10.0
+        run: |
+          case "${{ runner.os }}:${{ runner.arch }}" in
+            Linux:X64) asset="betterleaks_${BETTERLEAKS_VERSION}_linux_x64.tar.gz" ;;
+            macOS:X64) asset="betterleaks_${BETTERLEAKS_VERSION}_darwin_x64.tar.gz" ;;
+            macOS:ARM64) asset="betterleaks_${BETTERLEAKS_VERSION}_darwin_arm64.tar.gz" ;;
+            *) echo "Unsupported runner: ${{ runner.os }} ${{ runner.arch }}" >&2; exit 1 ;;
+          esac
+          curl --fail --silent --show-error --location \
+            "https://github.com/betterleaks/betterleaks/releases/download/v${BETTERLEAKS_VERSION}/${asset}" \
+            --output /tmp/betterleaks.tar.gz
+          tar -xzf /tmp/betterleaks.tar.gz -C /tmp
+          sudo install /tmp/betterleaks /usr/local/bin/betterleaks
+          betterleaks --version
       - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
         with:
           just-version: 1.58.0
