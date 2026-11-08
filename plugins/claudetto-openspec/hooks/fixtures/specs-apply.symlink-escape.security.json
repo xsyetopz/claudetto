@@ -1,0 +1,192 @@
+[
+	{
+		"file": "specs-apply.symlink-escape.security.test.ts",
+		"test": "a linked capability directory outside the project > names the real destination when the link leaves the project",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-link-escape-mi45b3",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Pwned\nThe system SHALL be pwned.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside"
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Pwned\nThe system SHALL be pwned.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/outside"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/outside",
+					"target": "$ROOT/outside/spec.md",
+					"exists": false
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.symlink-escape.security.test.ts",
+		"test": "a linked capability directory outside the project > still allows a capability directory linked within the project",
+		"seq": 1,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-spec-link-escape-RWR9Us",
+		"abs": "$ROOT",
+		"hint": "$ROOT/repo/openspec/changes/test-change",
+		"args": [
+			"$ROOT/repo/openspec/changes/test-change",
+			"$ROOT/repo/openspec/specs"
+		],
+		"before": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Pwned\nThe system SHALL be pwned.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/repo/shared/widgets"
+			},
+			"repo/shared": {
+				"dir": true
+			},
+			"repo/shared/widgets": {
+				"dir": true
+			}
+		},
+		"after": {
+			"outside": {
+				"dir": true
+			},
+			"repo": {
+				"dir": true
+			},
+			"repo/openspec": {
+				"dir": true
+			},
+			"repo/openspec/changes": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets": {
+				"dir": true
+			},
+			"repo/openspec/changes/test-change/specs/widgets/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Pwned\nThe system SHALL be pwned.\n\n#### Scenario: Apply\n- **WHEN** the change is archived\n- **THEN** the spec is updated\n"
+			},
+			"repo/openspec/specs": {
+				"dir": true
+			},
+			"repo/openspec/specs/widgets": {
+				"link": "$ROOT/repo/shared/widgets"
+			},
+			"repo/shared": {
+				"dir": true
+			},
+			"repo/shared/widgets": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "widgets",
+					"sourceRoot": "$ROOT/repo/openspec/changes/test-change/specs",
+					"source": "$ROOT/repo/openspec/changes/test-change/specs/widgets/spec.md",
+					"targetRoot": "$ROOT/repo/shared/widgets",
+					"target": "$ROOT/repo/shared/widgets/spec.md",
+					"exists": false
+				}
+			]
+		}
+	}
+]

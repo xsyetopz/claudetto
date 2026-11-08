@@ -1,0 +1,2 @@
+{"file":"hooks/limits/open-items.ts","id":"56","mutator":"OptionalChaining","line":35,"original":"lines.findLast((line) => line.trim() !== \"\")?.trim","replacement":"lines.findLast(line => line.trim() !== \"\").trim","status":"killed","ms":5605}
+{"file":"hooks/limits/open-items.ts","id":"83","mutator":"OptionalChaining","line":44,"original":"last?.endsWith","replacement":"last.endsWith","status":"killed","ms":5423}

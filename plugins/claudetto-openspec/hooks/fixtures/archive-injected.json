@@ -1,0 +1,41 @@
+{
+	"fault": [
+		"ArchiveCommand > capability retirement (#1302) > continues restoring earlier writes after a later rollback conflict",
+		"ArchiveCommand > capability retirement (#1302) > does not leave an empty capability directory when a create is rolled back",
+		"ArchiveCommand > capability retirement (#1302) > does not overwrite a concurrent chmod while rolling back an ordinary write",
+		"ArchiveCommand > capability retirement (#1302) > does not retire when authorization is removed at the displacement boundary",
+		"ArchiveCommand > capability retirement (#1302) > keeps a capability directory that already existed when a create is rolled back",
+		"ArchiveCommand > capability retirement (#1302) > keeps a file added after verification, and retains the destination",
+		"ArchiveCommand > capability retirement (#1302) > keeps a pre-existing ancestor when a nested capability create is rolled back",
+		"ArchiveCommand > capability retirement (#1302) > keeps a pre-mutation archive failure generic in JSON",
+		"ArchiveCommand > capability retirement (#1302) > keeps an edit to an already-verified file, and retains the destination",
+		"ArchiveCommand > capability retirement (#1302) > keeps applied specs when fallback retains a complete archive copy",
+		"ArchiveCommand > capability retirement (#1302) > keeps committed retirement state when one backup cleanup fails (json=false)",
+		"ArchiveCommand > capability retirement (#1302) > keeps committed retirement state when one backup cleanup fails (json=true)",
+		"ArchiveCommand > capability retirement (#1302) > preserves a concurrent edit made immediately before an ordinary write",
+		"ArchiveCommand > capability retirement (#1302) > preserves a concurrent edit made immediately before retirement",
+		"ArchiveCommand > capability retirement (#1302) > preserves a concurrent replacement at a retired regular-file path",
+		"ArchiveCommand > capability retirement (#1302) > preserves a retired hard-link inode when the final archive move fails",
+		"ArchiveCommand > capability retirement (#1302) > preserves an edit that races the atomic retirement displacement",
+		"ArchiveCommand > capability retirement (#1302) > preserves existing hard-link identity when updating a spec",
+		"ArchiveCommand > capability retirement (#1302) > reports a concurrently edited retirement backup in JSON without losing surviving content",
+		"ArchiveCommand > capability retirement (#1302) > reports a concurrently replaced retirement backup in JSON without losing surviving content",
+		"ArchiveCommand > capability retirement (#1302) > reports a destination taken during the merge as a collision, not a raw errno",
+		"ArchiveCommand > capability retirement (#1302) > reports all recovery paths when fallback source and multiple backup cleanups fail",
+		"ArchiveCommand > capability retirement (#1302) > restores a retired spec when the final archive move fails",
+		"ArchiveCommand > capability retirement (#1302) > restores an ordinary write when the final archive move fails",
+		"ArchiveCommand > capability retirement (#1302) > retains a displaced backup changed through an open handle before commit cleanup",
+		"ArchiveCommand > capability retirement (#1302) > rolls back earlier retirements when a later retirement fails",
+		"ArchiveCommand > capability retirement (#1302) > rolls back retirement when authorization changes during the final move",
+		"ArchiveCommand > capability retirement (#1302) > rolls back specs when EPERM also prevents staging the active change",
+		"ArchiveCommand > capability retirement (#1302) > rolls back when a delta changes during the final archive move",
+		"ArchiveCommand > capability retirement (#1302) > rolls back when a staged delta changes during the fallback copy",
+		"ArchiveCommand > execute > does not unlink a replaced claim when path stats omit the device id",
+		"ArchiveCommand > execute > keeps a claim when its inode changes after reading on a zero-device stat",
+		"ArchiveCommand > execute > verifies deltas through a symlinked changes directory on the cross-device fallback"
+	],
+	"clock": [
+		"ArchiveCommand > execute > should preserve the date when UTC and local calendar dates match",
+		"ArchiveCommand > execute > should use the process local date across a UTC date boundary"
+	]
+}

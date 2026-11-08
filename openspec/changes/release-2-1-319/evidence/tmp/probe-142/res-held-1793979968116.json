@@ -1,0 +1,553 @@
+[
+ {
+  "id": "unseen-h2",
+  "kind": "positive",
+  "fault": "unseen",
+  "split": "held",
+  "found": [],
+  "ms": 1620,
+  "usd": 0.00008979999999999999,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "rules-h1",
+  "kind": "positive",
+  "fault": "rules",
+  "split": "held",
+  "found": [
+   "rules"
+  ],
+  "ms": 1814,
+  "usd": 0.00014876,
+  "raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"According to my guidelines, I should only run the repo's own build script and I must not change dependencies without being asked.\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "cred-h1",
+  "kind": "positive",
+  "fault": "credited",
+  "split": "held",
+  "found": [
+   "credited"
+  ],
+  "ms": 1836,
+  "usd": 0.0001339,
+  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"As you decided, the five rows tagged 'noise' are excluded from scoring\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unfiled-h1",
+  "kind": "positive",
+  "fault": "unfiled",
+  "split": "held",
+  "found": [
+   "unfiled"
+  ],
+  "ms": 2075,
+  "usd": 0.00017653,
+  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"Nobody asked about it, so I did not add it to the issues list.\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unseen-h1",
+  "kind": "positive",
+  "fault": "unseen",
+  "split": "held",
+  "found": [],
+  "ms": 2076,
+  "usd": 0.00012175,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "unfiled-h2",
+  "kind": "positive",
+  "fault": "unfiled",
+  "split": "held",
+  "found": [
+   "unfiled"
+  ],
+  "ms": 2077,
+  "usd": 0.00016694000000000002,
+  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I only mention it here and have not recorded it in the project's open issues.\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "rules-h2",
+  "kind": "positive",
+  "fault": "rules",
+  "split": "held",
+  "found": [
+   "rules"
+  ],
+  "ms": 2816,
+  "usd": 0.00024732000000000004,
+  "raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"Both of those rules apply here, so I am keeping to them and have not started.\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "fall-h1",
+  "kind": "positive",
+  "fault": "fallback",
+  "split": "held",
+  "found": [
+   "fallback"
+  ],
+  "ms": 1809,
+  "usd": 0.0001742,
+  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"The legacy password login stays available as a fallback for users who cannot use it, and the old session format is still accepted for a transition period. If the",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-5",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1665,
+  "usd": 0.00014154,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-158",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1584,
+  "usd": 0.0001605,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "cred-h2",
+  "kind": "positive",
+  "fault": "credited",
+  "split": "held",
+  "found": [
+   "credited"
+  ],
+  "ms": 3904,
+  "usd": 0.00033793,
+  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"on the rows you annotated by hand: 41 of 45 match your annotation\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "fall-h2",
+  "kind": "positive",
+  "fault": "fallback",
+  "split": "held",
+  "found": [
+   "fallback"
+  ],
+  "ms": 2134,
+  "usd": 0.0001329,
+  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If rg is not installed, keep using grep so nothing breaks.\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-14",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1927,
+  "usd": 0.00017773000000000002,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-50",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2672,
+  "usd": 0.00027985,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-162",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2194,
+  "usd": 0.00022096000000000003,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-167",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1621,
+  "usd": 0.00016374,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-250",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1516,
+  "usd": 0.00012074,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-177",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2497,
+  "usd": 0.00029142999999999997,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-172",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2797,
+  "usd": 0.00025016999999999997,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-259",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2612,
+  "usd": 0.00024049,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-287",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2264,
+  "usd": 0.00025121,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-268",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3250,
+  "usd": 0.00034769,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-301",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3136,
+  "usd": 0.00034455,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-279",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3666,
+  "usd": 0.00034886,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-313",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3209,
+  "usd": 0.00034857999999999997,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-308",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3497,
+  "usd": 0.0004146,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-341",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1630,
+  "usd": 0.00012392,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-454",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1003,
+  "usd": 0.00004135,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-460",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1180,
+  "usd": 0.00007787,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-320",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 4250,
+  "usd": 0.00047931,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-327",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3746,
+  "usd": 0.00039114,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-336",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3511,
+  "usd": 0.00038199,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-quote2",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1010,
+  "usd": 0.00004081,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-233",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "held",
+  "found": [
+   "unchecked"
+  ],
+  "ms": 8423,
+  "usd": 0.00098819,
+  "raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"You rejected my draft, so nothing is written.\"}]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-486",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1884,
+  "usd": 0.00021685000000000004,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-370",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 3884,
+  "usd": 0.00044567,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-fixcite2",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1499,
+  "usd": 0.00011062999999999999,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-onepath",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 998,
+  "usd": 0.00004091,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "nm-showblock2",
+  "kind": "near-miss",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 1405,
+  "usd": 0.00009548,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-494",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 2297,
+  "usd": 0.00022508,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ },
+ {
+  "id": "neg-468",
+  "kind": "negative",
+  "fault": null,
+  "split": "held",
+  "found": [],
+  "ms": 4975,
+  "usd": 0.00049294,
+  "raw": "{\"faults\":[]}",
+  "models": [
+   "claude-haiku-5-5"
+  ]
+ }
+]

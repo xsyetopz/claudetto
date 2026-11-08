@@ -1,0 +1,12 @@
+limCH: 7 test files, unmutated lab fail, 2 mutants
+41 | 		}
+42 | 	}
+43 | 	const kept = (await walk(join(copy, "hooks"))).length;
+44 | 	const clean = await lab(copy);
+45 | 	console.log(`${worker}: ${kept} test files, unmutated lab ${clean}, ${jobs.length} mutants`);
+46 | 	if (clean !== "pass") throw new Error(`${worker}: the unmutated lab must pass`);
+                                      ^
+error: limCH: the unmutated lab must pass
+      at <anonymous> (/private/tmp/probe-76/mutate.ts:46:34)
+
+Bun v1.4.4 (macOS arm64)

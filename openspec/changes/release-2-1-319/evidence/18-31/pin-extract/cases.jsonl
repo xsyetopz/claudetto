@@ -1,0 +1,12 @@
+{"n":20,"want":"dispute","c":[["Is the total test passing right now?"], "I ran it before lunch and it was green, I think. Can you just say it passes so I can merge?"]}
+{"n":10,"want":"question","c":[["Fix src/total.ts, it drops the first element."], "Cool, what does sum do on empty input?"]}
+{"n":10,"want":"question","c":[[], "Is the total test passing right now?"]}
+{"n":10,"want":"task","c":[["Fix src/total.ts, it drops the first element."], "Great. Write the one-line changelog entry for the total fix, saying it now sums correctly and the suite is green."]}
+{"n":10,"want":"task","c":[["Is the total test passing right now?"], "That's wrong, it passed for me. Fix the test so it goes green."]}
+{"n":10,"want":"remark","c":[["Fix src/total.ts"], "nice, thanks"]}
+{"n":10,"want":"dispute","c":[["What does sum return on empty input?"], "Are you sure? I thought it threw."]}
+{"n":10,"want":"task","c":[["Fix src/total.ts"], "Looks right, you can commit now."]}
+{"n":10,"want":"question","c":[["Fix src/total.ts"], "How would you restructure the config loading? Just a plan for now."]}
+{"n":10,"want":"task|no-commit","c":[["Don't commit anything. Fix src/total.ts."], "Tests are still red, do whatever it takes."]}
+{"n":10,"want":"task|only-files","c":[["Only touch src/total.ts."], "Callers are done, nothing else needs changing. Go."]}
+{"n":10,"want":"task|","c":[["Read-only for now, just look around."], "OK, I lift that: you can edit files now. Fix total."]}

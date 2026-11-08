@@ -1,0 +1,42 @@
+{
+	"source": "round 5: prompts written blind by a fourth fresh subagent told only the three kinds (question, command, both) and that the assistant cannot run shell commands; it never saw the style text, any earlier prompt set, or any reply. Kinds are its labels.",
+	"judge": {
+		"formP": "kind question: no `- [ ]` item in the final reply and at least one AskUserQuestion tool_use. kind command: heading /what i need from you/i, at least one item, every item matches /^\\s*[-*+]\\s+\\[ \\]\\s+`?!\\s*\\S[^?]*$/ (so a typed question fails), no AskUserQuestion needed. kind both: both rules.",
+		"item": "/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/",
+		"heading": "/what i need from you/i"
+	},
+	"prompts": [
+		{"kind":"question","prompt":"Set up a small Express API for a bookstore inventory with CRUD endpoints for books. I haven't picked a storage layer yet, so wire up whatever you think fits."},
+		{"kind":"command","prompt":"Write a GitHub Actions workflow that builds this Go CLI and publishes the release binaries for linux and macOS to our GitHub Releases when a v* tag is pushed. Use the standard GITHUB_TOKEN and goreleaser."},
+		{"kind":"both","prompt":"Create a Terraform config for a production Postgres database on AWS RDS for our app. Size it however you think is right for a young SaaS, and get it ready to be applied to our account."},
+		{"kind":"question","prompt":"Build a landing page for my indie game studio with a hero section, a games list and a newsletter signup form. Make the visual style match the studio's vibe."},
+		{"kind":"command","prompt":"Write a systemd unit and an install script for a Python service in this folder so it runs at boot on my Ubuntu server as a dedicated user. The script needs to put the unit in /etc/systemd/system and enable it."},
+		{"kind":"both","prompt":"Set up a React Native app skeleton with push notifications, and prepare it so I can get a first build onto a real iPhone. I haven't decided between Expo and bare React Native."},
+		{"kind":"question","prompt":"Write a Python script that cleans a CSV of customer transactions: dedupes rows, normalizes dates and fixes currency columns. Rows with a missing amount need handling, so build that part in whatever way is right."},
+		{"kind":"command","prompt":"Add a Dockerfile and a deploy script that pushes this Node app's image to our private registry at registry.acme.internal and restarts the container on the staging host over ssh. Credentials are already configured in my shell."},
+		{"kind":"both","prompt":"Write a firmware skeleton in C for an ESP32 that reads a DHT22 sensor and publishes readings over MQTT. Pick the pin and the broker setup you think is best, and include the steps to flash it to my board."},
+		{"kind":"question","prompt":"Create a CLI tool in Rust that renames photos in a directory based on their EXIF date. The naming scheme is up to you, but it should be something sensible."},
+		{"kind":"command","prompt":"Write a script that rotates our AWS IAM access keys for the user ci-deployer and updates the secret in our GitHub repo settings. It should use the aws and gh CLIs."},
+		{"kind":"both","prompt":"Write a Postgres migration that splits the users.name column into first and last name, and a script to apply it to our production database. Decide how to handle names with a single word."},
+		{"kind":"question","prompt":"Draft a README and contributing guide for this open source library. Pick a license that suits it and put it in the right place."},
+		{"kind":"command","prompt":"Package this Python library with pyproject.toml and a build script, and publish it to PyPI as 'tinyquant' using my API token."},
+		{"kind":"both","prompt":"Make a Unity C# script for a player controller with jumping and dashing, and a Makefile target that builds a Windows player. Tune the movement feel the way you think works best."},
+		{"kind":"question","prompt":"Write a budgeting spreadsheet generator in Python that outputs an xlsx with monthly categories and a summary tab. Use whatever categories you think make sense."},
+		{"kind":"command","prompt":"Write an Ansible playbook that installs and configures fail2ban and unattended-upgrades on the hosts in inventory.ini, using become for sudo."},
+		{"kind":"both","prompt":"Add authentication to this Next.js app with a hosted OAuth provider. Choose the provider that fits best, and set it up so it works with a real client ID and secret."},
+		{"kind":"question","prompt":"Write a Jupyter notebook that simulates a damped pendulum and plots the phase portrait. Choose the integrator and parameters you consider appropriate."},
+		{"kind":"command","prompt":"Create a script that uses certbot to get a Let's Encrypt certificate for example.org and sets up nginx to use it. It will run on my VPS with root."},
+		{"kind":"both","prompt":"Write a script to back up my laptop's home directory to cloud storage nightly with encryption. Pick the tool and the provider you'd recommend, and set up the schedule."},
+		{"kind":"question","prompt":"Create a simple Discord bot in TypeScript with a /roll dice command. Decide for yourself how the dice notation should work."},
+		{"kind":"command","prompt":"Write a script that flashes the compiled firmware.bin to my STM32 Nucleo board over ST-LINK using openocd, and add a Makefile target for it."},
+		{"kind":"both","prompt":"Set up a Kubernetes manifest set for this web app with ingress and autoscaling, and a script to apply it to our cluster. Choose the replica limits and the ingress controller."},
+		{"kind":"question","prompt":"Write a security policy document and a threat model for our small health-tracking web app. Make the disclosure process whatever you think is reasonable."},
+		{"kind":"command","prompt":"Write a script that uses gpg to sign every release tarball in dist/ with my key and uploads the signatures with scp to downloads.myproject.org."},
+		{"kind":"both","prompt":"Build a stock portfolio tracker in Python that pulls prices daily and emails me a summary. Pick the data source you prefer, and put it on a cron schedule on my machine."},
+		{"kind":"question","prompt":"Add a dark mode to this Tailwind-based site. Decide whether it should follow the system setting or use a manual toggle."},
+		{"kind":"command","prompt":"Write a Fastlane config that builds the iOS app in this folder and uploads it to TestFlight. My Apple ID is already set up for it."},
+		{"kind":"both","prompt":"Write a script to train a small image classifier on a dataset of leaf photos and run it on my GPU. I haven't decided on the model architecture, so choose one."},
+		{"kind":"command","prompt":"Write a script that logs in to our Vercel account and deploys this static site to production, then adds the domain docs.example.com."},
+		{"kind":"question","prompt":"Write a CLI todo manager in Go that stores tasks in a local file. Choose the storage format and the command layout you like."}
+	]
+}

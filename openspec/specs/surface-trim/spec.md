@@ -44,7 +44,7 @@ The system SHALL turn off each surface that serves claude.ai, the web app, mobil
 
 ### Requirement: A Deny Removes the Definition
 
-The system SHALL use `permissions.deny` of a tool name as a size lever, not only as a gate. Measured on 2026-10-27 against the installed `2.1.311`: denying `Workflow`, `ScheduleWakeup`, and `ReportFindings` took the first request from 42,676 to 30,510 characters with the same `system` and the same `messages`, so the whole 12,166-character difference was the three definitions. That pair is the reading of `2.1.311` and stays as it was taken; the same pair on `2.1.312` is 42,879 and 30,713, which is what `BASELINE_TOTAL` and the `deny list` row of `plugins/claudetto/src/deny.ts` carry and what `just inventory` reads back, so the live figures are there and not here.
+The system SHALL use `permissions.deny` of a tool name as a size lever, not only as a gate.
 
 #### Scenario: Denied Tool
 
@@ -55,6 +55,12 @@ The system SHALL use `permissions.deny` of a tool name as a size lever, not only
 
 - **WHEN** a name is denied that the request does not carry
 - **THEN** the score does not change, and the entry is dropped unless a reading on the real login shows the tool
+
+#### Scenario: The Reading of 2.1.311
+
+- **WHEN** `Workflow`, `ScheduleWakeup`, and `ReportFindings` were denied on 2026-10-27 against the installed `2.1.311`
+- **THEN** the first request fell from 42,676 to 30,510 characters with the same `system` and the same `messages`, so the whole 12,166-character difference was the three definitions
+- **AND** that pair stays as it was taken; the same pair on `2.1.312` is 42,879 and 30,713, which is what `BASELINE_TOTAL` and the `deny list` row of `plugins/claudetto/src/deny.ts` carry and what `just inventory` reads back, so the live figures are there and not here
 
 ### Requirement: No Deny for a Tool Whose Removal Raises the Request
 

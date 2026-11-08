@@ -1,0 +1,25 @@
+{
+	"steps": [
+		{
+			"match": {
+				"lastUserIncludes": "Write the handoff now"
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "text",
+						"text": "# Handoff\nWritten by Claude at 2026-11-06T13:00:00Z.\n\n## Goal\nHANDOVER-MARK probe\n"
+					}
+				]
+			}
+		}
+	],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

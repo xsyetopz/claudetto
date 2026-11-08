@@ -1,0 +1,124 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110413-050db4/config ANTHROPIC_BASE_URL=http://127.0.0.1:62624 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110413-050db4/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110413-050db4/mon22.tty.debug
+78
+Claude Codev2.1.319
+Haiku 5.5 · API Usage Billing
+/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110413-050db4/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110413-050db4/mon22.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏸ manual mode on · ? for shortcuts · ← for agents[>0q
+▛█▄
+██▘
+▝▝ 
+watchit 
+
+ 
+▀
+  
+▛█ 
+██▀
+███▛█▄
+████▘
+   ▝▝ 
+❯ watch it                                                                                                                                                      
+✻Percolating… 
+ 
+ · ? for shortcuts · ← for agents
+✳ot
+ 
+▀
+✢ca
+     
+▛█ 
+█████▀
+·rl
+▗▟▛███▛█▄
+ ▜████▘
+ ▝▝   ▝▝ 
+eo
+         
+▐▛▛█ 
+·▜██████·
+~~
+✢Pc
+ ▐▛███▛█
+▝▜███▀
+ ▝▝   ▝▝ 
+✳r
+✶
+❯ 
+esc to interrupt · ← for agents
+✻e
+✽P
+✻
+✶
+✳
+✢
+·(1s · ↓2 tokens)
+3
+5
+Percolating…7
+✢13 tokens)
+✳5
+Percolating…
+6
+⏺claudetto - monitor (MCP)
+✶8
+(command:"sleep3;echoev1;sleep1;echoev2",description:"idleevents",timeout_ms:20000)
+✻232
+Percolating…
+✽8
+Percolating…9
+41
+3
+✻Percolating…5
+✶6
+1 monitor · esc tointerupt · ← for agents · ↓ to manage
+⏺
+  ⎿  Monitorstarted(taskbmn4dsylr,expiresin20sunlessthesourceendsfirst;yougetonenoticeatexpiry—re-armifyoustillneedthewatch).You
+willbenotifiedoneachevent.Keepworking—donotpollorsleep.Eventsmayarrivewhileyouarewaitingfortheuser—aneventisnottheirrepl
+y.
+✳8
+5
+⏺Done.
+✢39
+·Percolating…66
+7
+Percolating…
+⏺OK
+Percolating…9
+✻Baked for 3s · done 11:04 AM · 1 monitor still running
+
+❯ 
+← for agents · ↓to manage
+
+↓t mnage
+✻Hatching… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to intrrupt · ↓ to manage
+⏺Monitorevent:ev1 · idle events
+⏺OK
+Hatching…
+✽(0s · ↓1 tokens)
+✻Brewed for 0s · done 11:04 AM · 1 monitor still running
+
+
+❯ 
+↓ to manag
+
+
+✳Flibbertigibbeting… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to interrupt
+⏺Monitor"idleevents"streamended
+⏺OK
+ibb
+✻Churned for 0s · done 11:04 AM
+
+
+❯ 
+? for shortcuts

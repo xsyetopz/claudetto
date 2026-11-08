@@ -25,19 +25,13 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "es2023",
-		"typeRoots": [
-			"../../node_modules",
-			"../../node_modules/@types",
-			"./.claude-plugin/types"
-		],
-		"types": [
-			"bun-types",
-			"claude-code",
-			"claude-code-mcp",
-			"claude-code-tools",
-			"node"
-		],
+		"types": [],
 		"useDefineForClassFields": true
 	},
-	"include": ["src/**/*.ts", "tests/**/*.ts", "types/**/*.d.ts"]
+	"include": ["hooks/**/*.ts"],
+	"files": [
+		".claude-plugin/types/claude-code/index.d.ts",
+		".claude-plugin/types/claude-code-tools/index.d.ts",
+		".claude-plugin/types/claude-code-mcp/index.d.ts"
+	]
 }

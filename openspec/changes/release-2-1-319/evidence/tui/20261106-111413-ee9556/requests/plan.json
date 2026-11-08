@@ -1,0 +1,62 @@
+{
+	"steps": [
+		{
+			"match": {
+				"hasTools": true
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "ToolSearch",
+						"input": {
+							"query": "select:mcp__claudetto__monitor",
+							"max_results": 5
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		},
+		{
+			"match": {
+				"hasTools": true
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "mcp__claudetto__monitor",
+						"input": {
+							"command": "for i in $(seq 150); do echo l$i; sleep 0.3; done",
+							"description": "rate events",
+							"timeout_ms": 120000
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		},
+		{
+			"match": {
+				"hasTools": true
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "text",
+						"text": "Done."
+					}
+				]
+			}
+		}
+	],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

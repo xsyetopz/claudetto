@@ -1,1 +1,0 @@
-Implement `write` in `writer.ts` as `SPEC.md` says.

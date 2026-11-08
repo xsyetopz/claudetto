@@ -1,0 +1,1281 @@
+[
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > rejects a zero-delta change without the marker",
+		"seq": 0,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > accepts a zero-delta change that declares skip_specs",
+		"seq": 1,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > rejects skip_specs combined with delta specs",
+		"seq": 2,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/data-export": {
+				"dir": true
+			},
+			"specs/data-export/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: User can export data\nThe system SHALL allow users to export their data in CSV format.\n\n#### Scenario: Successful export\n- **WHEN** user clicks \"Export\"\n- **THEN** system downloads a CSV file\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/data-export": {
+				"dir": true
+			},
+			"specs/data-export/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: User can export data\nThe system SHALL allow users to export their data in CSV format.\n\n#### Scenario: Successful export\n- **WHEN** user clicks \"Export\"\n- **THEN** system downloads a CSV file\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml but spec files exist under specs/. Remove skip_specs or delete the delta spec files"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > treats skip_specs plus a delta file with no parseable deltas as a conflict, not acceptance",
+		"seq": 3,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/data-export": {
+				"dir": true
+			},
+			"specs/data-export/spec.md": {
+				"text": "# Notes without delta headers\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/data-export": {
+				"dir": true
+			},
+			"specs/data-export/spec.md": {
+				"text": "# Notes without delta headers\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "data-export/spec.md",
+						"message": "No delta sections found. Add headers such as \"## ADDED Requirements\" or move non-delta notes outside specs/."
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml but spec files exist under specs/. Remove skip_specs or delete the delta spec files"
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > treats skip_specs plus a root-level specs/spec.md as a conflict",
+		"seq": 4,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: User can export data\nThe system SHALL allow users to export their data in CSV format.\n\n#### Scenario: Successful export\n- **WHEN** user clicks \"Export\"\n- **THEN** system downloads a CSV file\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: User can export data\nThe system SHALL allow users to export their data in CSV format.\n\n#### Scenario: Successful export\n- **WHEN** user clicks \"Export\"\n- **THEN** system downloads a CSV file\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "spec.md",
+						"message": "Delta spec found at specs/spec.md. Delta specs must live under a capability path (e.g. specs/<capability-path>/spec.md) — a file at the specs/ root is ignored when the change is applied or archived."
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml but spec files exist under specs/. Remove skip_specs or delete the delta spec files"
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > treats skip_specs plus a stray non-spec file under specs/ as a conflict",
+		"seq": 5,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/notes.md": {
+				"text": "# Stray notes\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/notes.md": {
+				"text": "# Stray notes\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml but spec files exist under specs/. Remove skip_specs or delete the delta spec files"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > reports the marker when the metadata is not valid YAML",
+		"seq": 6,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n  bad indentation: ["
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n  bad indentation: ["
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (the file is not valid YAML)"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not honor skip_specs when the metadata fails the shared schema",
+		"seq": 7,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "skip_specs: true\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "skip_specs: true\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (schema: Invalid input: expected string, received undefined)"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not honor skip_specs when the schema does not resolve",
+		"seq": 8,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: does-not-exist\nskip_specs: true\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: does-not-exist\nskip_specs: true\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (schema: unknown schema 'does-not-exist')"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > honors skip_specs when the marker names a project-local schema",
+		"seq": 9,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/refactor",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/openspec/changes/refactor"]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/refactor": {
+				"dir": true
+			},
+			"openspec/changes/refactor/.openspec.yaml": {
+				"text": "schema: custom-flow\nskip_specs: true\n"
+			},
+			"openspec/schemas": {
+				"dir": true
+			},
+			"openspec/schemas/custom-flow": {
+				"dir": true
+			},
+			"openspec/schemas/custom-flow/schema.yaml": {
+				"text": "name: custom-flow\nversion: 1\ndescription: loadable project-local schema\nartifacts:\n  - id: specs\n    generates: \"specs/**/*.md\"\n    description: delta specs\n    template: specs.md\n    requires: []"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/refactor": {
+				"dir": true
+			},
+			"openspec/changes/refactor/.openspec.yaml": {
+				"text": "schema: custom-flow\nskip_specs: true\n"
+			},
+			"openspec/schemas": {
+				"dir": true
+			},
+			"openspec/schemas/custom-flow": {
+				"dir": true
+			},
+			"openspec/schemas/custom-flow/schema.yaml": {
+				"text": "name: custom-flow\nversion: 1\ndescription: loadable project-local schema\nartifacts:\n  - id: specs\n    generates: \"specs/**/*.md\"\n    description: delta specs\n    template: specs.md\n    requires: []"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not honor skip_specs when the schema exists but does not parse",
+		"seq": 10,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/refactor",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/openspec/changes/refactor"]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/refactor": {
+				"dir": true
+			},
+			"openspec/changes/refactor/.openspec.yaml": {
+				"text": "schema: broken-flow\nskip_specs: true\n"
+			},
+			"openspec/schemas": {
+				"dir": true
+			},
+			"openspec/schemas/broken-flow": {
+				"dir": true
+			},
+			"openspec/schemas/broken-flow/schema.yaml": {
+				"text": "{broken yaml: ["
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/refactor": {
+				"dir": true
+			},
+			"openspec/changes/refactor/.openspec.yaml": {
+				"text": "schema: broken-flow\nskip_specs: true\n"
+			},
+			"openspec/schemas": {
+				"dir": true
+			},
+			"openspec/schemas/broken-flow": {
+				"dir": true
+			},
+			"openspec/schemas/broken-flow/schema.yaml": {
+				"text": "{broken yaml: ["
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (Failed to parse schema at '$ROOT/openspec/schemas/broken-flow/schema.yaml': Flow sequence in block collection must be sufficiently indented and end with a ] at line 1, column 16:??{broken yaml: [?               ^?)"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not honor skip_specs when the schema parses but fails schema validation",
+		"seq": 11,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/refactor",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/openspec/changes/refactor"]
+		},
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/refactor": {
+				"dir": true
+			},
+			"openspec/changes/refactor/.openspec.yaml": {
+				"text": "schema: shapeless\nskip_specs: true\n"
+			},
+			"openspec/schemas": {
+				"dir": true
+			},
+			"openspec/schemas/shapeless": {
+				"dir": true
+			},
+			"openspec/schemas/shapeless/schema.yaml": {
+				"text": "name: shapeless\nversion: 1\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/refactor": {
+				"dir": true
+			},
+			"openspec/changes/refactor/.openspec.yaml": {
+				"text": "schema: shapeless\nskip_specs: true\n"
+			},
+			"openspec/schemas": {
+				"dir": true
+			},
+			"openspec/schemas/shapeless": {
+				"dir": true
+			},
+			"openspec/schemas/shapeless/schema.yaml": {
+				"text": "name: shapeless\nversion: 1\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (Invalid schema at '$ROOT/openspec/schemas/shapeless/schema.yaml': Invalid schema: artifacts: Invalid input: expected array, received undefined)"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > rejects a schema name that only resolves via extension normalization",
+		"seq": 12,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven.yaml\nskip_specs: true\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven.yaml\nskip_specs: true\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (schema: unknown schema 'spec-driven.yaml')"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > an explicit skip_specs: false never drags metadata problems into validation",
+		"seq": 13,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: false\ncreated: 123\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: false\ncreated: 123\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > counts a symlinked file under specs/ as marker-conflicting content",
+		"seq": 14,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"outside.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: User can export data\nThe system SHALL allow users to export their data in CSV format.\n\n#### Scenario: Successful export\n- **WHEN** user clicks \"Export\"\n- **THEN** system downloads a CSV file\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"outside.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: User can export data\nThe system SHALL allow users to export their data in CSV format.\n\n#### Scenario: Successful export\n- **WHEN** user clicks \"Export\"\n- **THEN** system downloads a CSV file\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/spec.md": {
+				"link": "$ROOT/outside.md"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "spec.md",
+						"message": "Delta spec found at specs/spec.md. Delta specs must live under a capability path (e.g. specs/<capability-path>/spec.md) — a file at the specs/ root is ignored when the change is applied or archived."
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml but spec files exist under specs/. Remove skip_specs or delete the delta spec files"
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > fails closed when the metadata file exists but cannot be read",
+		"seq": 15,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"dir": true
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"dir": true
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (the metadata file cannot be read (EISDIR: illegal operation on a directory, read))"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > validateChange keeps the no-deltas error when the marker names an unknown schema",
+		"seq": 16,
+		"kind": "validator.validateChange",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/proposal.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/proposal.md"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: does-not-exist\nskip_specs: true\n"
+			},
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nPure internal refactor with no spec-level behavior change."
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: does-not-exist\nskip_specs: true\n"
+			},
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nPure internal refactor with no spec-level behavior change."
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (schema: unknown schema 'does-not-exist')"
+					},
+					{
+						"level": "ERROR",
+						"path": "deltas",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > validateChange keeps the no-deltas error when the marker metadata is invalid",
+		"seq": 17,
+		"kind": "validator.validateChange",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/proposal.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/proposal.md"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "skip_specs: true\n"
+			},
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nPure internal refactor with no spec-level behavior change."
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "skip_specs: true\n"
+			},
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nPure internal refactor with no spec-level behavior change."
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (schema: Invalid input: expected string, received undefined)"
+					},
+					{
+						"level": "ERROR",
+						"path": "deltas",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > still rejects zero deltas when metadata is malformed",
+		"seq": 18,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "{invalid yaml: ["
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "{invalid yaml: ["
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > skip_specs must be exactly true - a truthy string is surfaced as unhonorable, not silently ignored",
+		"seq": 19,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: \"yes\"\n"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: \"yes\"\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": ".openspec.yaml",
+						"message": "skip_specs is set but .openspec.yaml is not valid change metadata, so the marker is not honored. Fix the metadata (skip_specs: Invalid input: expected boolean, received string)"
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not crash when specs is a regular file instead of a directory",
+		"seq": 20,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"text": "not a directory"
+			}
+		},
+		"after": {
+			"specs": {
+				"text": "not a directory"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not crash when specs is a regular file instead of a directory",
+		"seq": 21,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"text": "not a directory"
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"text": "not a directory"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml but spec files exist under specs/. Remove skip_specs or delete the delta spec files"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > ignores dot-files under specs/ just like every other code path",
+		"seq": 22,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/.DS_Store": {
+				"text": ""
+			},
+			"specs/.gitkeep": {
+				"text": ""
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"specs": {
+				"dir": true
+			},
+			"specs/.DS_Store": {
+				"text": ""
+			},
+			"specs/.gitkeep": {
+				"text": ""
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "file",
+						"message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > does not claim the marker was set when broken YAML only mentions it in a comment",
+		"seq": 23,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "# maybe add skip_specs later\nschema: spec-driven\n  broken: ["
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "# maybe add skip_specs later\nschema: spec-driven\n  broken: ["
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one \"#### Scenario:\" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set \"skip_specs: true\" in the change's .openspec.yaml instead. Tip: run \"openspec change show <change-id> --json --deltas-only\" to inspect parsed deltas."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.skip-specs.test.ts",
+		"test": "Validator skip_specs handling > validateChange drops the no-deltas error when skip_specs is declared",
+		"seq": 24,
+		"kind": "validator.validateChange",
+		"root": "test-validation-skip-specs-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/proposal.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/proposal.md"]
+		},
+		"before": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nPure internal refactor with no spec-level behavior change."
+			}
+		},
+		"after": {
+			".openspec.yaml": {
+				"text": "schema: spec-driven\nskip_specs: true\n"
+			},
+			"proposal.md": {
+				"text": "# Test Change\n\n## Why\nThis is a sufficiently long explanation to pass the why length requirement for validation purposes.\n\n## What Changes\nPure internal refactor with no spec-level behavior change."
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	}
+]

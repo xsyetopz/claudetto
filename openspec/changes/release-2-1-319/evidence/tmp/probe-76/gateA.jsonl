@@ -1,0 +1,553 @@
+{"file":"hooks/gate/shell-words.ts","id":"1157","mutator":"Regex","line":38,"original":"/^(?:&>>|&>|>>|>\\||>&|>|<<<|<<-|<<|<&|<>|<)/","replacement":"/(?:&>>|&>|>>|>\\||>&|>|<<<|<<-|<<|<&|<>|<)/","status":"survived","ms":4608}
+{"file":"hooks/gate/shell-words.ts","id":"1158","mutator":"ObjectLiteral","line":39,"original":"{ \"(\": 1, \")\": -1 }","replacement":"{}","status":"killed","ms":4162}
+{"file":"hooks/gate/shell-words.ts","id":"1159","mutator":"UnaryOperator","line":39,"original":"-1","replacement":"+1","status":"killed","ms":4116}
+{"file":"hooks/gate/shell-words.ts","id":"1160","mutator":"Regex","line":40,"original":"/^\\d+$/","replacement":"/\\d+$/","status":"survived","ms":4360}
+{"file":"hooks/gate/shell-words.ts","id":"1161","mutator":"Regex","line":40,"original":"/^\\d+$/","replacement":"/^\\d+/","status":"survived","ms":3906}
+{"file":"hooks/gate/shell-words.ts","id":"1162","mutator":"Regex","line":40,"original":"/^\\d+$/","replacement":"/^\\d$/","status":"survived","ms":4039}
+{"file":"hooks/gate/shell-words.ts","id":"1163","mutator":"Regex","line":40,"original":"/^\\d+$/","replacement":"/^\\D+$/","status":"killed","ms":4417}
+{"file":"hooks/gate/shell-words.ts","id":"1164","mutator":"Regex","line":41,"original":"/^-[a-z]*c$/","replacement":"/-[a-z]*c$/","status":"survived","ms":5010}
+{"file":"hooks/gate/shell-words.ts","id":"1165","mutator":"Regex","line":41,"original":"/^-[a-z]*c$/","replacement":"/^-[a-z]*c/","status":"survived","ms":6174}
+{"file":"hooks/gate/shell-words.ts","id":"1166","mutator":"Regex","line":41,"original":"/^-[a-z]*c$/","replacement":"/^-[a-z]c$/","status":"killed","ms":4650}
+{"file":"hooks/gate/shell-words.ts","id":"1167","mutator":"Regex","line":41,"original":"/^-[a-z]*c$/","replacement":"/^-[^a-z]*c$/","status":"survived","ms":4650}
+{"file":"hooks/gate/shell-words.ts","id":"1168","mutator":"Regex","line":42,"original":"/^[A-Za-z_]\\w*=/","replacement":"/[A-Za-z_]\\w*=/","status":"survived","ms":4395}
+{"file":"hooks/gate/shell-words.ts","id":"1169","mutator":"Regex","line":42,"original":"/^[A-Za-z_]\\w*=/","replacement":"/^[^A-Za-z_]\\w*=/","status":"killed","ms":4576}
+{"file":"hooks/gate/shell-words.ts","id":"1171","mutator":"Regex","line":42,"original":"/^[A-Za-z_]\\w*=/","replacement":"/^[A-Za-z_]\\W*=/","status":"killed","ms":4194}
+{"file":"hooks/gate/shell-words.ts","id":"1170","mutator":"Regex","line":42,"original":"/^[A-Za-z_]\\w*=/","replacement":"/^[A-Za-z_]\\w=/","status":"killed","ms":4599}
+{"file":"hooks/gate/shell-words.ts","id":"1172","mutator":"ArrayDeclaration","line":43,"original":"[\n\t\"if\",\n\t\"then\",\n\t\"else\",\n\t\"elif\",\n\t\"do\",\n\t\"while\",\n\t\"until\",\n\t\"!\",\n\t\"{\",\n\t\"}\",\n]","replacement":"[]","status":"survived","ms":4526}
+{"file":"hooks/gate/shell-words.ts","id":"1173","mutator":"StringLiteral","line":44,"original":"\"if\"","replacement":"\"\"","status":"killed","ms":4851}
+{"file":"hooks/gate/shell-words.ts","id":"1174","mutator":"StringLiteral","line":45,"original":"\"then\"","replacement":"\"\"","status":"killed","ms":4403}
+{"file":"hooks/gate/shell-words.ts","id":"1175","mutator":"StringLiteral","line":46,"original":"\"else\"","replacement":"\"\"","status":"killed","ms":4800}
+{"file":"hooks/gate/shell-words.ts","id":"1176","mutator":"StringLiteral","line":47,"original":"\"elif\"","replacement":"\"\"","status":"killed","ms":5053}
+{"file":"hooks/gate/shell-words.ts","id":"1177","mutator":"StringLiteral","line":48,"original":"\"do\"","replacement":"\"\"","status":"killed","ms":4811}
+{"file":"hooks/gate/shell-words.ts","id":"1178","mutator":"StringLiteral","line":49,"original":"\"while\"","replacement":"\"\"","status":"killed","ms":4280}
+{"file":"hooks/gate/shell-words.ts","id":"1179","mutator":"StringLiteral","line":50,"original":"\"until\"","replacement":"\"\"","status":"killed","ms":4592}
+{"file":"hooks/gate/shell-words.ts","id":"1180","mutator":"StringLiteral","line":51,"original":"\"!\"","replacement":"\"\"","status":"killed","ms":4305}
+{"file":"hooks/gate/shell-words.ts","id":"1181","mutator":"StringLiteral","line":52,"original":"\"{\"","replacement":"\"\"","status":"killed","ms":4855}
+{"file":"hooks/gate/shell-words.ts","id":"1182","mutator":"StringLiteral","line":53,"original":"\"}\"","replacement":"\"\"","status":"killed","ms":4838}
+{"file":"hooks/gate/shell-words.ts","id":"1183","mutator":"ArrayDeclaration","line":55,"original":"[\"sh\", \"bash\", \"zsh\", \"dash\", \"ksh\"]","replacement":"[]","status":"killed","ms":6005}
+{"file":"hooks/gate/shell-words.ts","id":"1184","mutator":"StringLiteral","line":55,"original":"\"sh\"","replacement":"\"\"","status":"killed","ms":4738}
+{"file":"hooks/gate/shell-words.ts","id":"1185","mutator":"StringLiteral","line":55,"original":"\"bash\"","replacement":"\"\"","status":"killed","ms":4351}
+{"file":"hooks/gate/shell-words.ts","id":"1186","mutator":"StringLiteral","line":55,"original":"\"zsh\"","replacement":"\"\"","status":"survived","ms":4050}
+{"file":"hooks/gate/shell-words.ts","id":"1187","mutator":"StringLiteral","line":55,"original":"\"dash\"","replacement":"\"\"","status":"survived","ms":4315}
+{"file":"hooks/gate/shell-words.ts","id":"1188","mutator":"StringLiteral","line":55,"original":"\"ksh\"","replacement":"\"\"","status":"survived","ms":4144}
+{"file":"hooks/gate/shell-words.ts","id":"1189","mutator":"ObjectLiteral","line":62,"original":"{\n\tsudo: {\n\t\tvalued: [\n\t\t\t\"-u\",\n\t\t\t\"-g\",\n\t\t\t\"-h\",\n\t\t\t\"-p\",\n\t\t\t\"-C\",\n\t\t\t\"-D\",\n\t\t\t\"-R\",\n\t\t\t\"-T\",\n\t\t\t\"-U\",\n\t\t\t\"--user\",\n\t\t\t\"--group\",\n\t\t\t\"--chroot\",\n\t\t\t\"--other-user\",\n\t\t\t\"--close-from\",\n\t\t\t\"--command-timeout\",\n\t\t\t\"--host\",\n\t\t\t\"--prompt\",\n\t\t],\n\t},\n\tdoas: { valued: [\"-u\", \"-C\"] },\n\tenv: { valued: [\"-u\", \"-C\", \"-S\"] },\n\tnice: { valued: [\"-n\"] },\n\texec: { valued: [\"-a\"] },\n\ttimeout: { valued: [\"-s\", \"-k\"], operand: true },\n\tnohup: { valued: [] },\n\ttime: { valued: [] },\n\tcommand: { valued: [] },\n\tbuiltin: { valued: [] },\n}","replacement":"{}","status":"killed","ms":4604}
+{"file":"hooks/gate/shell-words.ts","id":"1190","mutator":"ObjectLiteral","line":63,"original":"{\n\t\tvalued: [\n\t\t\t\"-u\",\n\t\t\t\"-g\",\n\t\t\t\"-h\",\n\t\t\t\"-p\",\n\t\t\t\"-C\",\n\t\t\t\"-D\",\n\t\t\t\"-R\",\n\t\t\t\"-T\",\n\t\t\t\"-U\",\n\t\t\t\"--user\",\n\t\t\t\"--group\",\n\t\t\t\"--chroot\",\n\t\t\t\"--other-user\",\n\t\t\t\"--close-from\",\n\t\t\t\"--command-timeout\",\n\t\t\t\"--host\",\n\t\t\t\"--prompt\",\n\t\t],\n\t}","replacement":"{}","status":"killed","ms":4361}
+{"file":"hooks/gate/shell-words.ts","id":"1191","mutator":"ArrayDeclaration","line":64,"original":"[\n\t\t\t\"-u\",\n\t\t\t\"-g\",\n\t\t\t\"-h\",\n\t\t\t\"-p\",\n\t\t\t\"-C\",\n\t\t\t\"-D\",\n\t\t\t\"-R\",\n\t\t\t\"-T\",\n\t\t\t\"-U\",\n\t\t\t\"--user\",\n\t\t\t\"--group\",\n\t\t\t\"--chroot\",\n\t\t\t\"--other-user\",\n\t\t\t\"--close-from\",\n\t\t\t\"--command-timeout\",\n\t\t\t\"--host\",\n\t\t\t\"--prompt\",\n\t\t]","replacement":"[]","status":"killed","ms":4401}
+{"file":"hooks/gate/shell-words.ts","id":"1192","mutator":"StringLiteral","line":65,"original":"\"-u\"","replacement":"\"\"","status":"killed","ms":4488}
+{"file":"hooks/gate/shell-words.ts","id":"1193","mutator":"StringLiteral","line":66,"original":"\"-g\"","replacement":"\"\"","status":"survived","ms":5300}
+{"file":"hooks/gate/shell-words.ts","id":"1194","mutator":"StringLiteral","line":67,"original":"\"-h\"","replacement":"\"\"","status":"survived","ms":12918}
+{"file":"hooks/gate/shell-words.ts","id":"1195","mutator":"StringLiteral","line":68,"original":"\"-p\"","replacement":"\"\"","status":"survived","ms":7191}
+{"file":"hooks/gate/shell-words.ts","id":"1196","mutator":"StringLiteral","line":69,"original":"\"-C\"","replacement":"\"\"","status":"survived","ms":5527}
+{"file":"hooks/gate/shell-words.ts","id":"1197","mutator":"StringLiteral","line":70,"original":"\"-D\"","replacement":"\"\"","status":"survived","ms":4759}
+{"file":"hooks/gate/shell-words.ts","id":"1198","mutator":"StringLiteral","line":71,"original":"\"-R\"","replacement":"\"\"","status":"survived","ms":4574}
+{"file":"hooks/gate/shell-words.ts","id":"1199","mutator":"StringLiteral","line":72,"original":"\"-T\"","replacement":"\"\"","status":"survived","ms":4595}
+{"file":"hooks/gate/shell-words.ts","id":"1200","mutator":"StringLiteral","line":73,"original":"\"-U\"","replacement":"\"\"","status":"survived","ms":4771}
+{"file":"hooks/gate/shell-words.ts","id":"1201","mutator":"StringLiteral","line":74,"original":"\"--user\"","replacement":"\"\"","status":"survived","ms":4837}
+{"file":"hooks/gate/shell-words.ts","id":"1202","mutator":"StringLiteral","line":75,"original":"\"--group\"","replacement":"\"\"","status":"survived","ms":5154}
+{"file":"hooks/gate/shell-words.ts","id":"1203","mutator":"StringLiteral","line":76,"original":"\"--chroot\"","replacement":"\"\"","status":"killed","ms":4559}
+{"file":"hooks/gate/shell-words.ts","id":"1204","mutator":"StringLiteral","line":77,"original":"\"--other-user\"","replacement":"\"\"","status":"killed","ms":4301}
+{"file":"hooks/gate/shell-words.ts","id":"1205","mutator":"StringLiteral","line":78,"original":"\"--close-from\"","replacement":"\"\"","status":"killed","ms":4505}
+{"file":"hooks/gate/shell-words.ts","id":"1206","mutator":"StringLiteral","line":79,"original":"\"--command-timeout\"","replacement":"\"\"","status":"survived","ms":4486}
+{"file":"hooks/gate/shell-words.ts","id":"1207","mutator":"StringLiteral","line":80,"original":"\"--host\"","replacement":"\"\"","status":"survived","ms":4668}
+{"file":"hooks/gate/shell-words.ts","id":"1208","mutator":"StringLiteral","line":81,"original":"\"--prompt\"","replacement":"\"\"","status":"survived","ms":4685}
+{"file":"hooks/gate/shell-words.ts","id":"1209","mutator":"ObjectLiteral","line":84,"original":"{ valued: [\"-u\", \"-C\"] }","replacement":"{}","status":"survived","ms":4425}
+{"file":"hooks/gate/shell-words.ts","id":"1210","mutator":"ArrayDeclaration","line":84,"original":"[\"-u\", \"-C\"]","replacement":"[]","status":"survived","ms":4812}
+{"file":"hooks/gate/shell-words.ts","id":"1211","mutator":"StringLiteral","line":84,"original":"\"-u\"","replacement":"\"\"","status":"survived","ms":5524}
+{"file":"hooks/gate/shell-words.ts","id":"1212","mutator":"StringLiteral","line":84,"original":"\"-C\"","replacement":"\"\"","status":"survived","ms":4942}
+{"file":"hooks/gate/shell-words.ts","id":"1213","mutator":"ObjectLiteral","line":85,"original":"{ valued: [\"-u\", \"-C\", \"-S\"] }","replacement":"{}","status":"killed","ms":4322}
+{"file":"hooks/gate/shell-words.ts","id":"1214","mutator":"ArrayDeclaration","line":85,"original":"[\"-u\", \"-C\", \"-S\"]","replacement":"[]","status":"survived","ms":4100}
+{"file":"hooks/gate/shell-words.ts","id":"1215","mutator":"StringLiteral","line":85,"original":"\"-u\"","replacement":"\"\"","status":"survived","ms":4111}
+{"file":"hooks/gate/shell-words.ts","id":"1216","mutator":"StringLiteral","line":85,"original":"\"-C\"","replacement":"\"\"","status":"survived","ms":5437}
+{"file":"hooks/gate/shell-words.ts","id":"1217","mutator":"StringLiteral","line":85,"original":"\"-S\"","replacement":"\"\"","status":"survived","ms":4634}
+{"file":"hooks/gate/shell-words.ts","id":"1218","mutator":"ObjectLiteral","line":86,"original":"{ valued: [\"-n\"] }","replacement":"{}","status":"survived","ms":4828}
+{"file":"hooks/gate/shell-words.ts","id":"1219","mutator":"ArrayDeclaration","line":86,"original":"[\"-n\"]","replacement":"[]","status":"survived","ms":5590}
+{"file":"hooks/gate/shell-words.ts","id":"1220","mutator":"StringLiteral","line":86,"original":"\"-n\"","replacement":"\"\"","status":"survived","ms":4609}
+{"file":"hooks/gate/shell-words.ts","id":"1221","mutator":"ObjectLiteral","line":87,"original":"{ valued: [\"-a\"] }","replacement":"{}","status":"survived","ms":4097}
+{"file":"hooks/gate/shell-words.ts","id":"1222","mutator":"ArrayDeclaration","line":87,"original":"[\"-a\"]","replacement":"[]","status":"survived","ms":4398}
+{"file":"hooks/gate/shell-words.ts","id":"1223","mutator":"StringLiteral","line":87,"original":"\"-a\"","replacement":"\"\"","status":"survived","ms":5468}
+{"file":"hooks/gate/shell-words.ts","id":"1224","mutator":"ObjectLiteral","line":88,"original":"{ valued: [\"-s\", \"-k\"], operand: true }","replacement":"{}","status":"killed","ms":4594}
+{"file":"hooks/gate/shell-words.ts","id":"1225","mutator":"ArrayDeclaration","line":88,"original":"[\"-s\", \"-k\"]","replacement":"[]","status":"survived","ms":4609}
+{"file":"hooks/gate/shell-words.ts","id":"1226","mutator":"StringLiteral","line":88,"original":"\"-s\"","replacement":"\"\"","status":"survived","ms":4841}
+{"file":"hooks/gate/shell-words.ts","id":"1227","mutator":"StringLiteral","line":88,"original":"\"-k\"","replacement":"\"\"","status":"survived","ms":4500}
+{"file":"hooks/gate/shell-words.ts","id":"1228","mutator":"BooleanLiteral","line":88,"original":"true","replacement":"false","status":"killed","ms":4397}
+{"file":"hooks/gate/shell-words.ts","id":"1229","mutator":"ObjectLiteral","line":89,"original":"{ valued: [] }","replacement":"{}","status":"survived","ms":4563}
+{"file":"hooks/gate/shell-words.ts","id":"1230","mutator":"ArrayDeclaration","line":89,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":4195}
+{"file":"hooks/gate/shell-words.ts","id":"1231","mutator":"ObjectLiteral","line":90,"original":"{ valued: [] }","replacement":"{}","status":"survived","ms":4351}
+{"file":"hooks/gate/shell-words.ts","id":"1232","mutator":"ArrayDeclaration","line":90,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":4842}
+{"file":"hooks/gate/shell-words.ts","id":"1233","mutator":"ObjectLiteral","line":91,"original":"{ valued: [] }","replacement":"{}","status":"survived","ms":4882}
+{"file":"hooks/gate/shell-words.ts","id":"1234","mutator":"ArrayDeclaration","line":91,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":4398}
+{"file":"hooks/gate/shell-words.ts","id":"1235","mutator":"ObjectLiteral","line":92,"original":"{ valued: [] }","replacement":"{}","status":"survived","ms":4357}
+{"file":"hooks/gate/shell-words.ts","id":"1236","mutator":"ArrayDeclaration","line":92,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":4457}
+{"file":"hooks/gate/shell-words.ts","id":"1237","mutator":"ArrowFunction","line":95,"original":"(word: string): string =>\n\tword.slice(word.lastIndexOf(\"/\") + 1)","replacement":"() => undefined","status":"killed","ms":4099}
+{"file":"hooks/gate/shell-words.ts","id":"1238","mutator":"MethodExpression","line":96,"original":"word.slice(word.lastIndexOf(\"/\") + 1)","replacement":"word","status":"killed","ms":4156}
+{"file":"hooks/gate/shell-words.ts","id":"1239","mutator":"ArithmeticOperator","line":96,"original":"word.lastIndexOf(\"/\") + 1","replacement":"word.lastIndexOf(\"/\") - 1","status":"killed","ms":4567}
+{"file":"hooks/gate/shell-words.ts","id":"1240","mutator":"StringLiteral","line":96,"original":"\"/\"","replacement":"\"\"","status":"killed","ms":4326}
+{"file":"hooks/gate/shell-words.ts","id":"1241","mutator":"BlockStatement","line":102,"original":"{\n\tlet j = from;\n\twhile ((words[j] ?? \"\").startsWith(\"-\") || ASSIGNMENT.test(words[j] ?? \"\")) {\n\t\tj += wrapper.valued.includes(words[j] ?? \"\") ? 2 : 1;\n\t}\n\treturn j + (wrapper.operand ? 1 : 0);\n}","replacement":"{}","status":"timeout","ms":90008}
+{"file":"hooks/gate/shell-words.ts","id":"1242","mutator":"ConditionalExpression","line":104,"original":"(words[j] ?? \"\").startsWith(\"-\") || ASSIGNMENT.test(words[j] ?? \"\")","replacement":"false","status":"killed","ms":3437}
+{"file":"hooks/gate/shell-words.ts","id":"1243","mutator":"LogicalOperator","line":104,"original":"(words[j] ?? \"\").startsWith(\"-\") || ASSIGNMENT.test(words[j] ?? \"\")","replacement":"(words[j] ?? \"\").startsWith(\"-\") && ASSIGNMENT.test(words[j] ?? \"\")","status":"killed","ms":3225}
+{"file":"hooks/gate/shell-words.ts","id":"1244","mutator":"MethodExpression","line":104,"original":"(words[j] ?? \"\").startsWith(\"-\")","replacement":"(words[j] ?? \"\").endsWith(\"-\")","status":"killed","ms":3428}
+{"file":"hooks/gate/shell-words.ts","id":"1245","mutator":"LogicalOperator","line":104,"original":"words[j] ?? \"\"","replacement":"words[j] && \"\"","status":"killed","ms":3236}
+{"file":"hooks/gate/shell-words.ts","id":"1246","mutator":"StringLiteral","line":104,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":3568}
+{"file":"hooks/gate/shell-words.ts","id":"1247","mutator":"StringLiteral","line":104,"original":"\"-\"","replacement":"\"\"","status":"timeout","ms":90010}
+{"file":"hooks/gate/shell-words.ts","id":"1248","mutator":"LogicalOperator","line":104,"original":"words[j] ?? \"\"","replacement":"words[j] && \"\"","status":"survived","ms":3724}
+{"file":"hooks/gate/shell-words.ts","id":"1249","mutator":"StringLiteral","line":104,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":3394}
+{"file":"hooks/gate/shell-words.ts","id":"1250","mutator":"BlockStatement","line":104,"original":"{\n\t\tj += wrapper.valued.includes(words[j] ?? \"\") ? 2 : 1;\n\t}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1251","mutator":"AssignmentOperator","line":105,"original":"j += wrapper.valued.includes(words[j] ?? \"\") ? 2 : 1","replacement":"j -= wrapper.valued.includes(words[j] ?? \"\") ? 2 : 1","status":"timeout","ms":90011}
+{"file":"hooks/gate/shell-words.ts","id":"1252","mutator":"LogicalOperator","line":105,"original":"words[j] ?? \"\"","replacement":"words[j] && \"\"","status":"killed","ms":8176}
+{"file":"hooks/gate/shell-words.ts","id":"1253","mutator":"StringLiteral","line":105,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":4491}
+{"file":"hooks/gate/shell-words.ts","id":"1254","mutator":"ArithmeticOperator","line":107,"original":"j + (wrapper.operand ? 1 : 0)","replacement":"j - (wrapper.operand ? 1 : 0)","status":"timeout","ms":90009}
+{"file":"hooks/gate/shell-words.ts","id":"1255","mutator":"BlockStatement","line":111,"original":"{\n\tconst word = words[from] ?? \"\";\n\tconst wrapper = WRAPPERS[baseName(word)];\n\tif (ASSIGNMENT.test(word) || RESERVED.has(word)) {\n\t\treturn programAt(words, from + 1);\n\t}\n\tif (!wrapper) {\n\t\treturn from;\n\t}\n\tconst next = afterWrapper(words, from + 1, wrapper);\n\t// `env` with no program after it prints the environment, so it stays the program.\n\treturn next >= words.length && baseName(word) === \"env\"\n\t\t? from\n\t\t: programAt(words, next);\n}","replacement":"{}","status":"killed","ms":4223}
+{"file":"hooks/gate/shell-words.ts","id":"1256","mutator":"LogicalOperator","line":112,"original":"words[from] ?? \"\"","replacement":"words[from] && \"\"","status":"killed","ms":9953}
+{"file":"hooks/gate/shell-words.ts","id":"1257","mutator":"StringLiteral","line":112,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":4384}
+{"file":"hooks/gate/shell-words.ts","id":"1258","mutator":"ConditionalExpression","line":114,"original":"ASSIGNMENT.test(word) || RESERVED.has(word)","replacement":"true","status":"timeout","ms":90009}
+{"file":"hooks/gate/shell-words.ts","id":"1259","mutator":"ConditionalExpression","line":114,"original":"ASSIGNMENT.test(word) || RESERVED.has(word)","replacement":"false","status":"killed","ms":8636}
+{"file":"hooks/gate/shell-words.ts","id":"1260","mutator":"LogicalOperator","line":114,"original":"ASSIGNMENT.test(word) || RESERVED.has(word)","replacement":"ASSIGNMENT.test(word) && RESERVED.has(word)","status":"killed","ms":3918}
+{"file":"hooks/gate/shell-words.ts","id":"1261","mutator":"BlockStatement","line":114,"original":"{\n\t\treturn programAt(words, from + 1);\n\t}","replacement":"{}","status":"killed","ms":6863}
+{"file":"hooks/gate/shell-words.ts","id":"1262","mutator":"ArithmeticOperator","line":115,"original":"from + 1","replacement":"from - 1","status":"killed","ms":6389}
+{"file":"hooks/gate/shell-words.ts","id":"1263","mutator":"BooleanLiteral","line":117,"original":"!wrapper","replacement":"wrapper","status":"killed","ms":4309}
+{"file":"hooks/gate/shell-words.ts","id":"1264","mutator":"ConditionalExpression","line":117,"original":"!wrapper","replacement":"true","status":"killed","ms":10458}
+{"file":"hooks/gate/shell-words.ts","id":"1265","mutator":"ConditionalExpression","line":117,"original":"!wrapper","replacement":"false","status":"killed","ms":4028}
+{"file":"hooks/gate/shell-words.ts","id":"1266","mutator":"BlockStatement","line":117,"original":"{\n\t\treturn from;\n\t}","replacement":"{}","status":"killed","ms":6738}
+{"file":"hooks/gate/shell-words.ts","id":"1267","mutator":"ArithmeticOperator","line":120,"original":"from + 1","replacement":"from - 1","status":"timeout","ms":90013}
+{"file":"hooks/gate/shell-words.ts","id":"1268","mutator":"ConditionalExpression","line":122,"original":"next >= words.length && baseName(word) === \"env\"","replacement":"true","status":"killed","ms":6026}
+{"file":"hooks/gate/shell-words.ts","id":"1269","mutator":"ConditionalExpression","line":122,"original":"next >= words.length && baseName(word) === \"env\"","replacement":"false","status":"survived","ms":3866}
+{"file":"hooks/gate/shell-words.ts","id":"1270","mutator":"LogicalOperator","line":122,"original":"next >= words.length && baseName(word) === \"env\"","replacement":"next >= words.length || baseName(word) === \"env\"","status":"killed","ms":8971}
+{"file":"hooks/gate/shell-words.ts","id":"1271","mutator":"ConditionalExpression","line":122,"original":"next >= words.length","replacement":"true","status":"killed","ms":4013}
+{"file":"hooks/gate/shell-words.ts","id":"1272","mutator":"EqualityOperator","line":122,"original":"next >= words.length","replacement":"next > words.length","status":"survived","ms":6341}
+{"file":"hooks/gate/shell-words.ts","id":"1273","mutator":"EqualityOperator","line":122,"original":"next >= words.length","replacement":"next < words.length","status":"killed","ms":6196}
+{"file":"hooks/gate/shell-words.ts","id":"1274","mutator":"ConditionalExpression","line":122,"original":"baseName(word) === \"env\"","replacement":"true","status":"survived","ms":3741}
+{"file":"hooks/gate/shell-words.ts","id":"1275","mutator":"EqualityOperator","line":122,"original":"baseName(word) === \"env\"","replacement":"baseName(word) !== \"env\"","status":"survived","ms":9362}
+{"file":"hooks/gate/shell-words.ts","id":"1276","mutator":"StringLiteral","line":122,"original":"\"env\"","replacement":"\"\"","status":"survived","ms":3731}
+{"file":"hooks/gate/shell-words.ts","id":"1277","mutator":"BlockStatement","line":129,"original":"{\n\tconst at = programAt(c.words);\n\treturn { name: baseName(c.words[at] ?? \"\"), args: c.words.slice(at + 1), at };\n}","replacement":"{}","status":"killed","ms":6545}
+{"file":"hooks/gate/shell-words.ts","id":"1278","mutator":"ObjectLiteral","line":131,"original":"{ name: baseName(c.words[at] ?? \"\"), args: c.words.slice(at + 1), at }","replacement":"{}","status":"killed","ms":6314}
+{"file":"hooks/gate/shell-words.ts","id":"1279","mutator":"LogicalOperator","line":131,"original":"c.words[at] ?? \"\"","replacement":"c.words[at] && \"\"","status":"killed","ms":4201}
+{"file":"hooks/gate/shell-words.ts","id":"1280","mutator":"StringLiteral","line":131,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":9152}
+{"file":"hooks/gate/shell-words.ts","id":"1281","mutator":"MethodExpression","line":131,"original":"c.words.slice(at + 1)","replacement":"c.words","status":"killed","ms":4996}
+{"file":"hooks/gate/shell-words.ts","id":"1282","mutator":"ArithmeticOperator","line":131,"original":"at + 1","replacement":"at - 1","status":"killed","ms":7995}
+{"file":"hooks/gate/shell-words.ts","id":"1283","mutator":"BooleanLiteral","line":134,"original":"false","replacement":"true","status":"survived","ms":5670}
+{"file":"hooks/gate/shell-words.ts","id":"1284","mutator":"BlockStatement","line":134,"original":"{\n\ts.word = (s.word ?? \"\") + text;\n\ts.dynamic ||= dynamic;\n}","replacement":"{}","status":"killed","ms":3839}
+{"file":"hooks/gate/shell-words.ts","id":"1285","mutator":"ArithmeticOperator","line":135,"original":"(s.word ?? \"\") + text","replacement":"(s.word ?? \"\") - text","status":"killed","ms":10096}
+{"file":"hooks/gate/shell-words.ts","id":"1287","mutator":"StringLiteral","line":135,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"killed","ms":4583}
+{"file":"hooks/gate/shell-words.ts","id":"1286","mutator":"LogicalOperator","line":135,"original":"s.word ?? \"\"","replacement":"s.word && \"\"","status":"killed","ms":6968}
+{"file":"hooks/gate/shell-words.ts","id":"1288","mutator":"AssignmentOperator","line":136,"original":"s.dynamic ||= dynamic","replacement":"s.dynamic &&= dynamic","status":"killed","ms":6129}
+{"file":"hooks/gate/shell-words.ts","id":"1289","mutator":"BlockStatement","line":139,"original":"{\n\tconst { word } = s;\n\tif (word === undefined) {\n\t\treturn;\n\t}\n\tif (s.target === undefined) {\n\t\tif (s.dynamic) {\n\t\t\ts.dyn.push(s.words.length);\n\t\t}\n\t\ts.words.push(word);\n\t} else {\n\t\tconst op = s.target;\n\t\ts.redirects.push({ op, target: word });\n\t\tif (op.startsWith(\"<<\") && op !== \"<<<\") {\n\t\t\ts.heredocs.push(word);\n\t\t}\n\t\ts.target = undefined;\n\t}\n\ts.word = undefined;\n\ts.dynamic = false;\n}","replacement":"{}","status":"killed","ms":4932}
+{"file":"hooks/gate/shell-words.ts","id":"1290","mutator":"ConditionalExpression","line":141,"original":"word === undefined","replacement":"true","status":"killed","ms":9953}
+{"file":"hooks/gate/shell-words.ts","id":"1291","mutator":"ConditionalExpression","line":141,"original":"word === undefined","replacement":"false","status":"killed","ms":4740}
+{"file":"hooks/gate/shell-words.ts","id":"1292","mutator":"EqualityOperator","line":141,"original":"word === undefined","replacement":"word !== undefined","status":"killed","ms":8457}
+{"file":"hooks/gate/shell-words.ts","id":"1294","mutator":"ConditionalExpression","line":144,"original":"s.target === undefined","replacement":"true","status":"killed","ms":5956}
+{"file":"hooks/gate/shell-words.ts","id":"1293","mutator":"BlockStatement","line":141,"original":"{\n\t\treturn;\n\t}","replacement":"{}","status":"killed","ms":4766}
+{"file":"hooks/gate/shell-words.ts","id":"1295","mutator":"ConditionalExpression","line":144,"original":"s.target === undefined","replacement":"false","status":"killed","ms":10256}
+{"file":"hooks/gate/shell-words.ts","id":"1296","mutator":"EqualityOperator","line":144,"original":"s.target === undefined","replacement":"s.target !== undefined","status":"killed","ms":4693}
+{"file":"hooks/gate/shell-words.ts","id":"1298","mutator":"ConditionalExpression","line":145,"original":"s.dynamic","replacement":"true","status":"killed","ms":7054}
+{"file":"hooks/gate/shell-words.ts","id":"1297","mutator":"BlockStatement","line":144,"original":"{\n\t\tif (s.dynamic) {\n\t\t\ts.dyn.push(s.words.length);\n\t\t}\n\t\ts.words.push(word);\n\t}","replacement":"{}","status":"killed","ms":5571}
+{"file":"hooks/gate/shell-words.ts","id":"1299","mutator":"ConditionalExpression","line":145,"original":"s.dynamic","replacement":"false","status":"killed","ms":3938}
+{"file":"hooks/gate/shell-words.ts","id":"1300","mutator":"BlockStatement","line":145,"original":"{\n\t\t\ts.dyn.push(s.words.length);\n\t\t}","replacement":"{}","status":"killed","ms":9017}
+{"file":"hooks/gate/shell-words.ts","id":"1301","mutator":"CallExpression","line":146,"original":"s.dyn.push(s.words.length);","replacement":";","status":"killed","ms":4161}
+{"file":"hooks/gate/shell-words.ts","id":"1302","mutator":"CallExpression","line":148,"original":"s.words.push(word);","replacement":";","status":"killed","ms":6658}
+{"file":"hooks/gate/shell-words.ts","id":"1303","mutator":"BlockStatement","line":149,"original":"{\n\t\tconst op = s.target;\n\t\ts.redirects.push({ op, target: word });\n\t\tif (op.startsWith(\"<<\") && op !== \"<<<\") {\n\t\t\ts.heredocs.push(word);\n\t\t}\n\t\ts.target = undefined;\n\t}","replacement":"{}","status":"killed","ms":5773}
+{"file":"hooks/gate/shell-words.ts","id":"1305","mutator":"ObjectLiteral","line":151,"original":"{ op, target: word }","replacement":"{}","status":"killed","ms":3945}
+{"file":"hooks/gate/shell-words.ts","id":"1306","mutator":"ConditionalExpression","line":152,"original":"op.startsWith(\"<<\") && op !== \"<<<\"","replacement":"true","status":"killed","ms":9325}
+{"file":"hooks/gate/shell-words.ts","id":"1307","mutator":"ConditionalExpression","line":152,"original":"op.startsWith(\"<<\") && op !== \"<<<\"","replacement":"false","status":"killed","ms":4163}
+{"file":"hooks/gate/shell-words.ts","id":"1308","mutator":"LogicalOperator","line":152,"original":"op.startsWith(\"<<\") && op !== \"<<<\"","replacement":"op.startsWith(\"<<\") || op !== \"<<<\"","status":"killed","ms":6655}
+{"file":"hooks/gate/shell-words.ts","id":"1309","mutator":"MethodExpression","line":152,"original":"op.startsWith(\"<<\")","replacement":"op.endsWith(\"<<\")","status":"survived","ms":5659}
+{"file":"hooks/gate/shell-words.ts","id":"1310","mutator":"StringLiteral","line":152,"original":"\"<<\"","replacement":"\"\"","status":"killed","ms":4177}
+{"file":"hooks/gate/shell-words.ts","id":"1311","mutator":"ConditionalExpression","line":152,"original":"op !== \"<<<\"","replacement":"true","status":"survived","ms":8806}
+{"file":"hooks/gate/shell-words.ts","id":"1312","mutator":"EqualityOperator","line":152,"original":"op !== \"<<<\"","replacement":"op === \"<<<\"","status":"killed","ms":3918}
+{"file":"hooks/gate/shell-words.ts","id":"1313","mutator":"StringLiteral","line":152,"original":"\"<<<\"","replacement":"\"\"","status":"survived","ms":8116}
+{"file":"hooks/gate/shell-words.ts","id":"1314","mutator":"BlockStatement","line":152,"original":"{\n\t\t\ts.heredocs.push(word);\n\t\t}","replacement":"{}","status":"killed","ms":6624}
+{"file":"hooks/gate/shell-words.ts","id":"1315","mutator":"CallExpression","line":153,"original":"s.heredocs.push(word);","replacement":";","status":"killed","ms":4131}
+{"file":"hooks/gate/shell-words.ts","id":"1316","mutator":"BooleanLiteral","line":158,"original":"false","replacement":"true","status":"killed","ms":9402}
+{"file":"hooks/gate/shell-words.ts","id":"1317","mutator":"ArrowFunction","line":161,"original":"(src: string, depth: number): Parsed =>\n\tdepth > MAX_DEPTH\n\t\t? { commands: [], unreadable: true }\n\t\t: run(newState(src, depth))","replacement":"() => undefined","status":"killed","ms":3924}
+{"file":"hooks/gate/shell-words.ts","id":"1318","mutator":"ConditionalExpression","line":162,"original":"depth > MAX_DEPTH","replacement":"true","status":"killed","ms":6791}
+{"file":"hooks/gate/shell-words.ts","id":"1319","mutator":"ConditionalExpression","line":162,"original":"depth > MAX_DEPTH","replacement":"false","status":"killed","ms":6162}
+{"file":"hooks/gate/shell-words.ts","id":"1320","mutator":"EqualityOperator","line":162,"original":"depth > MAX_DEPTH","replacement":"depth >= MAX_DEPTH","status":"survived","ms":3860}
+{"file":"hooks/gate/shell-words.ts","id":"1321","mutator":"EqualityOperator","line":162,"original":"depth > MAX_DEPTH","replacement":"depth <= MAX_DEPTH","status":"killed","ms":8954}
+{"file":"hooks/gate/shell-words.ts","id":"1322","mutator":"ObjectLiteral","line":163,"original":"{ commands: [], unreadable: true }","replacement":"{}","status":"killed","ms":3795}
+{"file":"hooks/gate/shell-words.ts","id":"1323","mutator":"ArrayDeclaration","line":163,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":6133}
+{"file":"hooks/gate/shell-words.ts","id":"1324","mutator":"BooleanLiteral","line":163,"original":"true","replacement":"false","status":"killed","ms":7084}
+{"file":"hooks/gate/shell-words.ts","id":"1325","mutator":"ArrowFunction","line":166,"original":"(src: string, depth: number): State => ({\n\tsrc,\n\ti: 0,\n\tdepth,\n\tcommands: [],\n\tunreadable: false,\n\tword: undefined,\n\tdynamic: false,\n\twords: [],\n\tdyn: [],\n\tredirects: [],\n\ttarget: undefined,\n\theredocs: [],\n\tfrom: false,\n})","replacement":"() => undefined","status":"killed","ms":4036}
+{"file":"hooks/gate/shell-words.ts","id":"1326","mutator":"ObjectLiteral","line":166,"original":"{\n\tsrc,\n\ti: 0,\n\tdepth,\n\tcommands: [],\n\tunreadable: false,\n\tword: undefined,\n\tdynamic: false,\n\twords: [],\n\tdyn: [],\n\tredirects: [],\n\ttarget: undefined,\n\theredocs: [],\n\tfrom: false,\n}","replacement":"{}","status":"killed","ms":7801}
+{"file":"hooks/gate/shell-words.ts","id":"1327","mutator":"ArrayDeclaration","line":170,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":4893}
+{"file":"hooks/gate/shell-words.ts","id":"1328","mutator":"BooleanLiteral","line":171,"original":"false","replacement":"true","status":"killed","ms":3670}
+{"file":"hooks/gate/shell-words.ts","id":"1329","mutator":"BooleanLiteral","line":173,"original":"false","replacement":"true","status":"killed","ms":8851}
+{"file":"hooks/gate/shell-words.ts","id":"1330","mutator":"ArrayDeclaration","line":174,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":5260}
+{"file":"hooks/gate/shell-words.ts","id":"1331","mutator":"ArrayDeclaration","line":175,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":6894}
+{"file":"hooks/gate/shell-words.ts","id":"1332","mutator":"ArrayDeclaration","line":176,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":6782}
+{"file":"hooks/gate/shell-words.ts","id":"1333","mutator":"ArrayDeclaration","line":178,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":3849}
+{"file":"hooks/gate/shell-words.ts","id":"1334","mutator":"BooleanLiteral","line":179,"original":"false","replacement":"true","status":"killed","ms":9259}
+{"file":"hooks/gate/shell-words.ts","id":"1335","mutator":"BlockStatement","line":182,"original":"{\n\tconst sub = parseShell(inner, s.depth + 1);\n\ts.commands.push(...sub.commands);\n\ts.unreadable ||= sub.unreadable;\n}","replacement":"{}","status":"killed","ms":4177}
+{"file":"hooks/gate/shell-words.ts","id":"1336","mutator":"ArithmeticOperator","line":183,"original":"s.depth + 1","replacement":"s.depth - 1","status":"killed","ms":4925}
+{"file":"hooks/gate/shell-words.ts","id":"1337","mutator":"CallExpression","line":184,"original":"s.commands.push(...sub.commands);","replacement":";","status":"killed","ms":7687}
+{"file":"hooks/gate/shell-words.ts","id":"1338","mutator":"AssignmentOperator","line":185,"original":"s.unreadable ||= sub.unreadable","replacement":"s.unreadable &&= sub.unreadable","status":"killed","ms":4014}
+{"file":"hooks/gate/shell-words.ts","id":"1339","mutator":"BlockStatement","line":188,"original":"{\n\tconst { name, args, at } = programOf(c);\n\tif (c.dynamic.includes(at) || name === \"eval\") {\n\t\ts.unreadable = true;\n\t}\n\tif (!SHELLS.has(name)) {\n\t\treturn;\n\t}\n\tconst flag = args.findIndex((a) => COMMAND_FLAG.test(a));\n\tconst body = args[flag + 1];\n\tif (flag >= 0 && body !== undefined) {\n\t\tmerge(s, body);\n\t} else if (c.redirects.some((r) => r.op.startsWith(\"<<\"))) {\n\t\ts.unreadable = true;\n\t}\n}","replacement":"{}","status":"killed","ms":9052}
+{"file":"hooks/gate/shell-words.ts","id":"1340","mutator":"ConditionalExpression","line":190,"original":"c.dynamic.includes(at) || name === \"eval\"","replacement":"true","status":"killed","ms":4060}
+{"file":"hooks/gate/shell-words.ts","id":"1341","mutator":"ConditionalExpression","line":190,"original":"c.dynamic.includes(at) || name === \"eval\"","replacement":"false","status":"killed","ms":5495}
+{"file":"hooks/gate/shell-words.ts","id":"1342","mutator":"LogicalOperator","line":190,"original":"c.dynamic.includes(at) || name === \"eval\"","replacement":"c.dynamic.includes(at) && name === \"eval\"","status":"killed","ms":7378}
+{"file":"hooks/gate/shell-words.ts","id":"1343","mutator":"ConditionalExpression","line":190,"original":"name === \"eval\"","replacement":"false","status":"killed","ms":3825}
+{"file":"hooks/gate/shell-words.ts","id":"1344","mutator":"EqualityOperator","line":190,"original":"name === \"eval\"","replacement":"name !== \"eval\"","status":"killed","ms":9142}
+{"file":"hooks/gate/shell-words.ts","id":"1345","mutator":"StringLiteral","line":190,"original":"\"eval\"","replacement":"\"\"","status":"killed","ms":4283}
+{"file":"hooks/gate/shell-words.ts","id":"1346","mutator":"BlockStatement","line":190,"original":"{\n\t\ts.unreadable = true;\n\t}","replacement":"{}","status":"killed","ms":5864}
+{"file":"hooks/gate/shell-words.ts","id":"1347","mutator":"BooleanLiteral","line":191,"original":"true","replacement":"false","status":"killed","ms":7012}
+{"file":"hooks/gate/shell-words.ts","id":"1348","mutator":"BooleanLiteral","line":193,"original":"!SHELLS.has(name)","replacement":"SHELLS.has(name)","status":"killed","ms":4036}
+{"file":"hooks/gate/shell-words.ts","id":"1349","mutator":"ConditionalExpression","line":193,"original":"!SHELLS.has(name)","replacement":"true","status":"killed","ms":9371}
+{"file":"hooks/gate/shell-words.ts","id":"1350","mutator":"ConditionalExpression","line":193,"original":"!SHELLS.has(name)","replacement":"false","status":"killed","ms":4197}
+{"file":"hooks/gate/shell-words.ts","id":"1351","mutator":"BlockStatement","line":193,"original":"{\n\t\treturn;\n\t}","replacement":"{}","status":"killed","ms":7701}
+{"file":"hooks/gate/shell-words.ts","id":"1352","mutator":"ArrowFunction","line":196,"original":"(a) => COMMAND_FLAG.test(a)","replacement":"() => undefined","status":"killed","ms":5184}
+{"file":"hooks/gate/shell-words.ts","id":"1353","mutator":"ArithmeticOperator","line":197,"original":"flag + 1","replacement":"flag - 1","status":"killed","ms":3680}
+{"file":"hooks/gate/shell-words.ts","id":"1354","mutator":"ConditionalExpression","line":198,"original":"flag >= 0 && body !== undefined","replacement":"true","status":"killed","ms":9001}
+{"file":"hooks/gate/shell-words.ts","id":"1355","mutator":"ConditionalExpression","line":198,"original":"flag >= 0 && body !== undefined","replacement":"false","status":"killed","ms":3740}
+{"file":"hooks/gate/shell-words.ts","id":"1356","mutator":"LogicalOperator","line":198,"original":"flag >= 0 && body !== undefined","replacement":"flag >= 0 || body !== undefined","status":"survived","ms":6783}
+{"file":"hooks/gate/shell-words.ts","id":"1357","mutator":"ConditionalExpression","line":198,"original":"flag >= 0","replacement":"true","status":"survived","ms":5759}
+{"file":"hooks/gate/shell-words.ts","id":"1358","mutator":"EqualityOperator","line":198,"original":"flag >= 0","replacement":"flag > 0","status":"killed","ms":3785}
+{"file":"hooks/gate/shell-words.ts","id":"1359","mutator":"EqualityOperator","line":198,"original":"flag >= 0","replacement":"flag < 0","status":"killed","ms":9598}
+{"file":"hooks/gate/shell-words.ts","id":"1360","mutator":"ConditionalExpression","line":198,"original":"body !== undefined","replacement":"true","status":"survived","ms":3858}
+{"file":"hooks/gate/shell-words.ts","id":"1361","mutator":"EqualityOperator","line":198,"original":"body !== undefined","replacement":"body === undefined","status":"killed","ms":7272}
+{"file":"hooks/gate/shell-words.ts","id":"1362","mutator":"BlockStatement","line":198,"original":"{\n\t\tmerge(s, body);\n\t}","replacement":"{}","status":"killed","ms":7093}
+{"file":"hooks/gate/shell-words.ts","id":"1363","mutator":"CallExpression","line":199,"original":"merge(s, body);","replacement":";","status":"killed","ms":4483}
+{"file":"hooks/gate/shell-words.ts","id":"1364","mutator":"ConditionalExpression","line":200,"original":"c.redirects.some((r) => r.op.startsWith(\"<<\"))","replacement":"true","status":"survived","ms":9903}
+{"file":"hooks/gate/shell-words.ts","id":"1365","mutator":"ConditionalExpression","line":200,"original":"c.redirects.some((r) => r.op.startsWith(\"<<\"))","replacement":"false","status":"killed","ms":4205}
+{"file":"hooks/gate/shell-words.ts","id":"1366","mutator":"MethodExpression","line":200,"original":"c.redirects.some((r) => r.op.startsWith(\"<<\"))","replacement":"c.redirects.every(r => r.op.startsWith(\"<<\"))","status":"survived","ms":6937}
+{"file":"hooks/gate/shell-words.ts","id":"1367","mutator":"ArrowFunction","line":200,"original":"(r) => r.op.startsWith(\"<<\")","replacement":"() => undefined","status":"killed","ms":6066}
+{"file":"hooks/gate/shell-words.ts","id":"1368","mutator":"MethodExpression","line":200,"original":"r.op.startsWith(\"<<\")","replacement":"r.op.endsWith(\"<<\")","status":"survived","ms":4114}
+{"file":"hooks/gate/shell-words.ts","id":"1369","mutator":"StringLiteral","line":200,"original":"\"<<\"","replacement":"\"\"","status":"survived","ms":10001}
+{"file":"hooks/gate/shell-words.ts","id":"1370","mutator":"BlockStatement","line":200,"original":"{\n\t\ts.unreadable = true;\n\t}","replacement":"{}","status":"killed","ms":4143}
+{"file":"hooks/gate/shell-words.ts","id":"1371","mutator":"BooleanLiteral","line":201,"original":"true","replacement":"false","status":"killed","ms":8112}
+{"file":"hooks/gate/shell-words.ts","id":"1372","mutator":"BlockStatement","line":205,"original":"{\n\tendWord(s);\n\tif (s.words.length > 0 || s.redirects.length > 0) {\n\t\tconst c: Command = {\n\t\t\twords: s.words,\n\t\t\tdynamic: s.dyn,\n\t\t\tredirects: s.redirects,\n\t\t\tfrom: s.from,\n\t\t\tinto: piped,\n\t\t};\n\t\ts.commands.push(c);\n\t\tcheckProgram(s, c);\n\t}\n\ts.words = [];\n\ts.dyn = [];\n\ts.redirects = [];\n\ts.target = undefined;\n\ts.from = piped;\n}","replacement":"{}","status":"killed","ms":5988}
+{"file":"hooks/gate/shell-words.ts","id":"1373","mutator":"CallExpression","line":206,"original":"endWord(s);","replacement":";","status":"killed","ms":4249}
+{"file":"hooks/gate/shell-words.ts","id":"1374","mutator":"ConditionalExpression","line":207,"original":"s.words.length > 0 || s.redirects.length > 0","replacement":"true","status":"killed","ms":10213}
+{"file":"hooks/gate/shell-words.ts","id":"1375","mutator":"ConditionalExpression","line":207,"original":"s.words.length > 0 || s.redirects.length > 0","replacement":"false","status":"killed","ms":4865}
+{"file":"hooks/gate/shell-words.ts","id":"1376","mutator":"LogicalOperator","line":207,"original":"s.words.length > 0 || s.redirects.length > 0","replacement":"s.words.length > 0 && s.redirects.length > 0","status":"killed","ms":7906}
+{"file":"hooks/gate/shell-words.ts","id":"1377","mutator":"ConditionalExpression","line":207,"original":"s.words.length > 0","replacement":"false","status":"killed","ms":6626}
+{"file":"hooks/gate/shell-words.ts","id":"1378","mutator":"EqualityOperator","line":207,"original":"s.words.length > 0","replacement":"s.words.length >= 0","status":"killed","ms":3715}
+{"file":"hooks/gate/shell-words.ts","id":"1379","mutator":"EqualityOperator","line":207,"original":"s.words.length > 0","replacement":"s.words.length <= 0","status":"killed","ms":9504}
+{"file":"hooks/gate/shell-words.ts","id":"1380","mutator":"ConditionalExpression","line":207,"original":"s.redirects.length > 0","replacement":"false","status":"survived","ms":3647}
+{"file":"hooks/gate/shell-words.ts","id":"1381","mutator":"EqualityOperator","line":207,"original":"s.redirects.length > 0","replacement":"s.redirects.length >= 0","status":"killed","ms":8135}
+{"file":"hooks/gate/shell-words.ts","id":"1382","mutator":"EqualityOperator","line":207,"original":"s.redirects.length > 0","replacement":"s.redirects.length <= 0","status":"killed","ms":7053}
+{"file":"hooks/gate/shell-words.ts","id":"1383","mutator":"BlockStatement","line":207,"original":"{\n\t\tconst c: Command = {\n\t\t\twords: s.words,\n\t\t\tdynamic: s.dyn,\n\t\t\tredirects: s.redirects,\n\t\t\tfrom: s.from,\n\t\t\tinto: piped,\n\t\t};\n\t\ts.commands.push(c);\n\t\tcheckProgram(s, c);\n\t}","replacement":"{}","status":"killed","ms":4745}
+{"file":"hooks/gate/shell-words.ts","id":"1384","mutator":"ObjectLiteral","line":208,"original":"{\n\t\t\twords: s.words,\n\t\t\tdynamic: s.dyn,\n\t\t\tredirects: s.redirects,\n\t\t\tfrom: s.from,\n\t\t\tinto: piped,\n\t\t}","replacement":"{}","status":"killed","ms":9251}
+{"file":"hooks/gate/shell-words.ts","id":"1385","mutator":"CallExpression","line":215,"original":"s.commands.push(c);","replacement":";","status":"killed","ms":4184}
+{"file":"hooks/gate/shell-words.ts","id":"1386","mutator":"CallExpression","line":216,"original":"checkProgram(s, c);","replacement":";","status":"killed","ms":5301}
+{"file":"hooks/gate/shell-words.ts","id":"1387","mutator":"ArrayDeclaration","line":218,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":7462}
+{"file":"hooks/gate/shell-words.ts","id":"1388","mutator":"ArrayDeclaration","line":219,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":3887}
+{"file":"hooks/gate/shell-words.ts","id":"1389","mutator":"ArrayDeclaration","line":220,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":9191}
+{"file":"hooks/gate/shell-words.ts","id":"1390","mutator":"BlockStatement","line":226,"original":"{\n\tconst close = src[at];\n\tlet i = at + 1;\n\twhile (i < src.length && src[i] !== close) {\n\t\ti += src[i] === \"\\\\\" && close === '\"' ? 2 : 1;\n\t}\n\treturn i + 1;\n}","replacement":"{}","status":"survived","ms":4190}
+{"file":"hooks/gate/shell-words.ts","id":"1391","mutator":"ArithmeticOperator","line":228,"original":"at + 1","replacement":"at - 1","status":"survived","ms":4811}
+{"file":"hooks/gate/shell-words.ts","id":"1392","mutator":"ConditionalExpression","line":229,"original":"i < src.length && src[i] !== close","replacement":"false","status":"survived","ms":7567}
+{"file":"hooks/gate/shell-words.ts","id":"1393","mutator":"LogicalOperator","line":229,"original":"i < src.length && src[i] !== close","replacement":"i < src.length || src[i] !== close","status":"survived","ms":4038}
+{"file":"hooks/gate/shell-words.ts","id":"1394","mutator":"ConditionalExpression","line":229,"original":"i < src.length","replacement":"true","status":"survived","ms":7733}
+{"file":"hooks/gate/shell-words.ts","id":"1395","mutator":"EqualityOperator","line":229,"original":"i < src.length","replacement":"i <= src.length","status":"survived","ms":4681}
+{"file":"hooks/gate/shell-words.ts","id":"1396","mutator":"EqualityOperator","line":229,"original":"i < src.length","replacement":"i >= src.length","status":"survived","ms":3663}
+{"file":"hooks/gate/shell-words.ts","id":"1397","mutator":"ConditionalExpression","line":229,"original":"src[i] !== close","replacement":"true","status":"survived","ms":9084}
+{"file":"hooks/gate/shell-words.ts","id":"1398","mutator":"EqualityOperator","line":229,"original":"src[i] !== close","replacement":"src[i] === close","status":"survived","ms":3925}
+{"file":"hooks/gate/shell-words.ts","id":"1399","mutator":"BlockStatement","line":229,"original":"{\n\t\ti += src[i] === \"\\\\\" && close === '\"' ? 2 : 1;\n\t}","replacement":"{}","status":"survived","ms":6817}
+{"file":"hooks/gate/shell-words.ts","id":"1400","mutator":"AssignmentOperator","line":230,"original":"i += src[i] === \"\\\\\" && close === '\"' ? 2 : 1","replacement":"i -= src[i] === \"\\\\\" && close === '\"' ? 2 : 1","status":"survived","ms":5492}
+{"file":"hooks/gate/shell-words.ts","id":"1401","mutator":"ConditionalExpression","line":230,"original":"src[i] === \"\\\\\" && close === '\"'","replacement":"true","status":"survived","ms":3952}
+{"file":"hooks/gate/shell-words.ts","id":"1402","mutator":"ConditionalExpression","line":230,"original":"src[i] === \"\\\\\" && close === '\"'","replacement":"false","status":"survived","ms":9001}
+{"file":"hooks/gate/shell-words.ts","id":"1403","mutator":"LogicalOperator","line":230,"original":"src[i] === \"\\\\\" && close === '\"'","replacement":"src[i] === \"\\\\\" || close === '\"'","status":"survived","ms":4210}
+{"file":"hooks/gate/shell-words.ts","id":"1404","mutator":"ConditionalExpression","line":230,"original":"src[i] === \"\\\\\"","replacement":"true","status":"survived","ms":3661}
+{"file":"hooks/gate/shell-words.ts","id":"1405","mutator":"EqualityOperator","line":230,"original":"src[i] === \"\\\\\"","replacement":"src[i] !== \"\\\\\"","status":"survived","ms":3039}
+{"file":"hooks/gate/shell-words.ts","id":"1406","mutator":"StringLiteral","line":230,"original":"\"\\\\\"","replacement":"\"\"","status":"survived","ms":3299}
+{"file":"hooks/gate/shell-words.ts","id":"1407","mutator":"ConditionalExpression","line":230,"original":"close === '\"'","replacement":"true","status":"survived","ms":3148}
+{"file":"hooks/gate/shell-words.ts","id":"1408","mutator":"EqualityOperator","line":230,"original":"close === '\"'","replacement":"close !== '\"'","status":"survived","ms":3199}
+{"file":"hooks/gate/shell-words.ts","id":"1409","mutator":"StringLiteral","line":230,"original":"'\"'","replacement":"\"\"","status":"survived","ms":3272}
+{"file":"hooks/gate/shell-words.ts","id":"1410","mutator":"ArithmeticOperator","line":232,"original":"i + 1","replacement":"i - 1","status":"survived","ms":3063}
+{"file":"hooks/gate/shell-words.ts","id":"1411","mutator":"BlockStatement","line":236,"original":"{\n\tconst start = s.i;\n\tlet depth = 1;\n\twhile (s.i < s.src.length) {\n\t\tconst c = s.src[s.i];\n\t\tif (c === \"'\" || c === '\"') {\n\t\t\ts.i = afterQuote(s.src, s.i);\n\t\t\tcontinue;\n\t\t}\n\t\ts.i += c === \"\\\\\" ? 2 : 1;\n\t\tdepth += PAREN[c ?? \"\"] ?? 0;\n\t\tif (depth === 0) {\n\t\t\treturn s.src.slice(start, s.i - 1);\n\t\t}\n\t}\n\ts.unreadable = true;\n\treturn \"\";\n}","replacement":"{}","status":"killed","ms":3318}
+{"file":"hooks/gate/shell-words.ts","id":"1412","mutator":"ConditionalExpression","line":239,"original":"s.i < s.src.length","replacement":"false","status":"killed","ms":2970}
+{"file":"hooks/gate/shell-words.ts","id":"1413","mutator":"EqualityOperator","line":239,"original":"s.i < s.src.length","replacement":"s.i <= s.src.length","status":"survived","ms":3449}
+{"file":"hooks/gate/shell-words.ts","id":"1414","mutator":"EqualityOperator","line":239,"original":"s.i < s.src.length","replacement":"s.i >= s.src.length","status":"killed","ms":3055}
+{"file":"hooks/gate/shell-words.ts","id":"1415","mutator":"BlockStatement","line":239,"original":"{\n\t\tconst c = s.src[s.i];\n\t\tif (c === \"'\" || c === '\"') {\n\t\t\ts.i = afterQuote(s.src, s.i);\n\t\t\tcontinue;\n\t\t}\n\t\ts.i += c === \"\\\\\" ? 2 : 1;\n\t\tdepth += PAREN[c ?? \"\"] ?? 0;\n\t\tif (depth === 0) {\n\t\t\treturn s.src.slice(start, s.i - 1);\n\t\t}\n\t}","replacement":"{}","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1416","mutator":"ConditionalExpression","line":241,"original":"c === \"'\" || c === '\"'","replacement":"true","status":"killed","ms":3276}
+{"file":"hooks/gate/shell-words.ts","id":"1417","mutator":"ConditionalExpression","line":241,"original":"c === \"'\" || c === '\"'","replacement":"false","status":"survived","ms":3306}
+{"file":"hooks/gate/shell-words.ts","id":"1418","mutator":"LogicalOperator","line":241,"original":"c === \"'\" || c === '\"'","replacement":"c === \"'\" && c === '\"'","status":"survived","ms":2925}
+{"file":"hooks/gate/shell-words.ts","id":"1419","mutator":"ConditionalExpression","line":241,"original":"c === \"'\"","replacement":"false","status":"survived","ms":3086}
+{"file":"hooks/gate/shell-words.ts","id":"1420","mutator":"EqualityOperator","line":241,"original":"c === \"'\"","replacement":"c !== \"'\"","status":"killed","ms":3111}
+{"file":"hooks/gate/shell-words.ts","id":"1421","mutator":"StringLiteral","line":241,"original":"\"'\"","replacement":"\"\"","status":"survived","ms":3468}
+{"file":"hooks/gate/shell-words.ts","id":"1422","mutator":"ConditionalExpression","line":241,"original":"c === '\"'","replacement":"false","status":"survived","ms":3220}
+{"file":"hooks/gate/shell-words.ts","id":"1423","mutator":"EqualityOperator","line":241,"original":"c === '\"'","replacement":"c !== '\"'","status":"killed","ms":3247}
+{"file":"hooks/gate/shell-words.ts","id":"1425","mutator":"BlockStatement","line":241,"original":"{\n\t\t\ts.i = afterQuote(s.src, s.i);\n\t\t\tcontinue;\n\t\t}","replacement":"{}","status":"survived","ms":3211}
+{"file":"hooks/gate/shell-words.ts","id":"1424","mutator":"StringLiteral","line":241,"original":"'\"'","replacement":"\"\"","status":"survived","ms":3083}
+{"file":"hooks/gate/shell-words.ts","id":"1426","mutator":"AssignmentOperator","line":245,"original":"s.i += c === \"\\\\\" ? 2 : 1","replacement":"s.i -= c === \"\\\\\" ? 2 : 1","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1427","mutator":"ConditionalExpression","line":245,"original":"c === \"\\\\\"","replacement":"true","status":"survived","ms":3303}
+{"file":"hooks/gate/shell-words.ts","id":"1428","mutator":"ConditionalExpression","line":245,"original":"c === \"\\\\\"","replacement":"false","status":"survived","ms":3234}
+{"file":"hooks/gate/shell-words.ts","id":"1429","mutator":"EqualityOperator","line":245,"original":"c === \"\\\\\"","replacement":"c !== \"\\\\\"","status":"survived","ms":3292}
+{"file":"hooks/gate/shell-words.ts","id":"1430","mutator":"StringLiteral","line":245,"original":"\"\\\\\"","replacement":"\"\"","status":"survived","ms":2942}
+{"file":"hooks/gate/shell-words.ts","id":"1431","mutator":"AssignmentOperator","line":246,"original":"depth += PAREN[c ?? \"\"] ?? 0","replacement":"depth -= PAREN[c ?? \"\"] ?? 0","status":"killed","ms":3131}
+{"file":"hooks/gate/shell-words.ts","id":"1432","mutator":"LogicalOperator","line":246,"original":"PAREN[c ?? \"\"] ?? 0","replacement":"PAREN[c ?? \"\"] && 0","status":"killed","ms":3203}
+{"file":"hooks/gate/shell-words.ts","id":"1433","mutator":"LogicalOperator","line":246,"original":"c ?? \"\"","replacement":"c && \"\"","status":"killed","ms":2991}
+{"file":"hooks/gate/shell-words.ts","id":"1434","mutator":"StringLiteral","line":246,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":3197}
+{"file":"hooks/gate/shell-words.ts","id":"1435","mutator":"ConditionalExpression","line":247,"original":"depth === 0","replacement":"true","status":"killed","ms":3103}
+{"file":"hooks/gate/shell-words.ts","id":"1436","mutator":"ConditionalExpression","line":247,"original":"depth === 0","replacement":"false","status":"killed","ms":3129}
+{"file":"hooks/gate/shell-words.ts","id":"1437","mutator":"EqualityOperator","line":247,"original":"depth === 0","replacement":"depth !== 0","status":"killed","ms":3113}
+{"file":"hooks/gate/shell-words.ts","id":"1438","mutator":"BlockStatement","line":247,"original":"{\n\t\t\treturn s.src.slice(start, s.i - 1);\n\t\t}","replacement":"{}","status":"killed","ms":3000}
+{"file":"hooks/gate/shell-words.ts","id":"1439","mutator":"MethodExpression","line":248,"original":"s.src.slice(start, s.i - 1)","replacement":"s.src","status":"killed","ms":3054}
+{"file":"hooks/gate/shell-words.ts","id":"1440","mutator":"ArithmeticOperator","line":248,"original":"s.i - 1","replacement":"s.i + 1","status":"survived","ms":3166}
+{"file":"hooks/gate/shell-words.ts","id":"1441","mutator":"BooleanLiteral","line":251,"original":"true","replacement":"false","status":"survived","ms":3255}
+{"file":"hooks/gate/shell-words.ts","id":"1442","mutator":"StringLiteral","line":252,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":3204}
+{"file":"hooks/gate/shell-words.ts","id":"1443","mutator":"BlockStatement","line":255,"original":"{\n\tconst end = s.src.indexOf(\"`\", s.i + 1);\n\tif (end < 0) {\n\t\ts.unreadable = true;\n\t\ts.i = s.src.length;\n\t\treturn;\n\t}\n\tmerge(s, s.src.slice(s.i + 1, end));\n\ts.i = end + 1;\n\tadd(s, \"\", true);\n}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1444","mutator":"StringLiteral","line":256,"original":"\"`\"","replacement":"\"\"","status":"killed","ms":2857}
+{"file":"hooks/gate/shell-words.ts","id":"1445","mutator":"ArithmeticOperator","line":256,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":2822}
+{"file":"hooks/gate/shell-words.ts","id":"1446","mutator":"ConditionalExpression","line":257,"original":"end < 0","replacement":"true","status":"killed","ms":2836}
+{"file":"hooks/gate/shell-words.ts","id":"1447","mutator":"ConditionalExpression","line":257,"original":"end < 0","replacement":"false","status":"survived","ms":2764}
+{"file":"hooks/gate/shell-words.ts","id":"1448","mutator":"EqualityOperator","line":257,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2753}
+{"file":"hooks/gate/shell-words.ts","id":"1449","mutator":"EqualityOperator","line":257,"original":"end < 0","replacement":"end >= 0","status":"killed","ms":2797}
+{"file":"hooks/gate/shell-words.ts","id":"1450","mutator":"BlockStatement","line":257,"original":"{\n\t\ts.unreadable = true;\n\t\ts.i = s.src.length;\n\t\treturn;\n\t}","replacement":"{}","status":"survived","ms":2943}
+{"file":"hooks/gate/shell-words.ts","id":"1453","mutator":"MethodExpression","line":262,"original":"s.src.slice(s.i + 1, end)","replacement":"s.src","status":"killed","ms":2828}
+{"file":"hooks/gate/shell-words.ts","id":"1451","mutator":"BooleanLiteral","line":258,"original":"true","replacement":"false","status":"survived","ms":2750}
+{"file":"hooks/gate/shell-words.ts","id":"1454","mutator":"ArithmeticOperator","line":262,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":3063}
+{"file":"hooks/gate/shell-words.ts","id":"1455","mutator":"ArithmeticOperator","line":263,"original":"end + 1","replacement":"end - 1","status":"survived","ms":3070}
+{"file":"hooks/gate/shell-words.ts","id":"1457","mutator":"StringLiteral","line":264,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":2829}
+{"file":"hooks/gate/shell-words.ts","id":"1458","mutator":"BooleanLiteral","line":264,"original":"true","replacement":"false","status":"survived","ms":2961}
+{"file":"hooks/gate/shell-words.ts","id":"1459","mutator":"BlockStatement","line":267,"original":"{\n\tconst next = s.src[s.i + 1];\n\tif (next === \"(\") {\n\t\ts.i += 2;\n\t\tmerge(s, balanced(s));\n\t\tadd(s, \"\", true);\n\t} else if (next === \"'\" && !inDouble) {\n\t\tconst start = s.i + 2;\n\t\tlet end = start;\n\t\twhile (end < s.src.length && s.src[end] !== \"'\") {\n\t\t\tend += s.src[end] === \"\\\\\" ? 2 : 1;\n\t\t}\n\t\ts.unreadable ||= end >= s.src.length;\n\t\tconst text = s.src.slice(start, end);\n\t\tadd(s, text, text.includes(\"\\\\\"));\n\t\ts.i = end + 1;\n\t} else {\n\t\tadd(s, \"$\", true);\n\t\ts.i++;\n\t}\n}","replacement":"{}","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1460","mutator":"ArithmeticOperator","line":268,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":2908}
+{"file":"hooks/gate/shell-words.ts","id":"1461","mutator":"ConditionalExpression","line":269,"original":"next === \"(\"","replacement":"true","status":"killed","ms":2848}
+{"file":"hooks/gate/shell-words.ts","id":"1462","mutator":"ConditionalExpression","line":269,"original":"next === \"(\"","replacement":"false","status":"killed","ms":2754}
+{"file":"hooks/gate/shell-words.ts","id":"1463","mutator":"EqualityOperator","line":269,"original":"next === \"(\"","replacement":"next !== \"(\"","status":"killed","ms":2735}
+{"file":"hooks/gate/shell-words.ts","id":"1464","mutator":"StringLiteral","line":269,"original":"\"(\"","replacement":"\"\"","status":"killed","ms":2757}
+{"file":"hooks/gate/shell-words.ts","id":"1465","mutator":"BlockStatement","line":269,"original":"{\n\t\ts.i += 2;\n\t\tmerge(s, balanced(s));\n\t\tadd(s, \"\", true);\n\t}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1466","mutator":"AssignmentOperator","line":270,"original":"s.i += 2","replacement":"s.i -= 2","status":"killed","ms":2761}
+{"file":"hooks/gate/shell-words.ts","id":"1467","mutator":"CallExpression","line":271,"original":"merge(s, balanced(s));","replacement":";","status":"killed","ms":2869}
+{"file":"hooks/gate/shell-words.ts","id":"1469","mutator":"StringLiteral","line":272,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":3044}
+{"file":"hooks/gate/shell-words.ts","id":"1470","mutator":"BooleanLiteral","line":272,"original":"true","replacement":"false","status":"killed","ms":2968}
+{"file":"hooks/gate/shell-words.ts","id":"1471","mutator":"ConditionalExpression","line":273,"original":"next === \"'\" && !inDouble","replacement":"true","status":"killed","ms":2811}
+{"file":"hooks/gate/shell-words.ts","id":"1472","mutator":"ConditionalExpression","line":273,"original":"next === \"'\" && !inDouble","replacement":"false","status":"survived","ms":2794}
+{"file":"hooks/gate/shell-words.ts","id":"1473","mutator":"LogicalOperator","line":273,"original":"next === \"'\" && !inDouble","replacement":"next === \"'\" || !inDouble","status":"killed","ms":2782}
+{"file":"hooks/gate/shell-words.ts","id":"1474","mutator":"ConditionalExpression","line":273,"original":"next === \"'\"","replacement":"true","status":"killed","ms":2791}
+{"file":"hooks/gate/shell-words.ts","id":"1475","mutator":"EqualityOperator","line":273,"original":"next === \"'\"","replacement":"next !== \"'\"","status":"killed","ms":2916}
+{"file":"hooks/gate/shell-words.ts","id":"1476","mutator":"StringLiteral","line":273,"original":"\"'\"","replacement":"\"\"","status":"survived","ms":2873}
+{"file":"hooks/gate/shell-words.ts","id":"1477","mutator":"BooleanLiteral","line":273,"original":"!inDouble","replacement":"inDouble","status":"survived","ms":2917}
+{"file":"hooks/gate/shell-words.ts","id":"1478","mutator":"BlockStatement","line":273,"original":"{\n\t\tconst start = s.i + 2;\n\t\tlet end = start;\n\t\twhile (end < s.src.length && s.src[end] !== \"'\") {\n\t\t\tend += s.src[end] === \"\\\\\" ? 2 : 1;\n\t\t}\n\t\ts.unreadable ||= end >= s.src.length;\n\t\tconst text = s.src.slice(start, end);\n\t\tadd(s, text, text.includes(\"\\\\\"));\n\t\ts.i = end + 1;\n\t}","replacement":"{}","status":"survived","ms":2808}
+{"file":"hooks/gate/shell-words.ts","id":"1479","mutator":"ArithmeticOperator","line":274,"original":"s.i + 2","replacement":"s.i - 2","status":"survived","ms":2957}
+{"file":"hooks/gate/shell-words.ts","id":"1480","mutator":"ConditionalExpression","line":276,"original":"end < s.src.length && s.src[end] !== \"'\"","replacement":"false","status":"survived","ms":2832}
+{"file":"hooks/gate/shell-words.ts","id":"1481","mutator":"LogicalOperator","line":276,"original":"end < s.src.length && s.src[end] !== \"'\"","replacement":"end < s.src.length || s.src[end] !== \"'\"","status":"survived","ms":2823}
+{"file":"hooks/gate/shell-words.ts","id":"1482","mutator":"ConditionalExpression","line":276,"original":"end < s.src.length","replacement":"true","status":"survived","ms":2833}
+{"file":"hooks/gate/shell-words.ts","id":"1483","mutator":"EqualityOperator","line":276,"original":"end < s.src.length","replacement":"end <= s.src.length","status":"survived","ms":2699}
+{"file":"hooks/gate/shell-words.ts","id":"1484","mutator":"EqualityOperator","line":276,"original":"end < s.src.length","replacement":"end >= s.src.length","status":"survived","ms":2917}
+{"file":"hooks/gate/shell-words.ts","id":"1485","mutator":"ConditionalExpression","line":276,"original":"s.src[end] !== \"'\"","replacement":"true","status":"survived","ms":2920}
+{"file":"hooks/gate/shell-words.ts","id":"1486","mutator":"EqualityOperator","line":276,"original":"s.src[end] !== \"'\"","replacement":"s.src[end] === \"'\"","status":"survived","ms":2766}
+{"file":"hooks/gate/shell-words.ts","id":"1487","mutator":"StringLiteral","line":276,"original":"\"'\"","replacement":"\"\"","status":"survived","ms":3025}
+{"file":"hooks/gate/shell-words.ts","id":"1488","mutator":"BlockStatement","line":276,"original":"{\n\t\t\tend += s.src[end] === \"\\\\\" ? 2 : 1;\n\t\t}","replacement":"{}","status":"survived","ms":2806}
+{"file":"hooks/gate/shell-words.ts","id":"1489","mutator":"AssignmentOperator","line":277,"original":"end += s.src[end] === \"\\\\\" ? 2 : 1","replacement":"end -= s.src[end] === \"\\\\\" ? 2 : 1","status":"survived","ms":2726}
+{"file":"hooks/gate/shell-words.ts","id":"1490","mutator":"ConditionalExpression","line":277,"original":"s.src[end] === \"\\\\\"","replacement":"true","status":"survived","ms":2828}
+{"file":"hooks/gate/shell-words.ts","id":"1491","mutator":"ConditionalExpression","line":277,"original":"s.src[end] === \"\\\\\"","replacement":"false","status":"survived","ms":2787}
+{"file":"hooks/gate/shell-words.ts","id":"1492","mutator":"EqualityOperator","line":277,"original":"s.src[end] === \"\\\\\"","replacement":"s.src[end] !== \"\\\\\"","status":"survived","ms":2736}
+{"file":"hooks/gate/shell-words.ts","id":"1493","mutator":"StringLiteral","line":277,"original":"\"\\\\\"","replacement":"\"\"","status":"survived","ms":2827}
+{"file":"hooks/gate/shell-words.ts","id":"1494","mutator":"AssignmentOperator","line":279,"original":"s.unreadable ||= end >= s.src.length","replacement":"s.unreadable &&= end >= s.src.length","status":"survived","ms":2760}
+{"file":"hooks/gate/shell-words.ts","id":"1495","mutator":"ConditionalExpression","line":279,"original":"end >= s.src.length","replacement":"true","status":"survived","ms":2804}
+{"file":"hooks/gate/shell-words.ts","id":"1496","mutator":"ConditionalExpression","line":279,"original":"end >= s.src.length","replacement":"false","status":"survived","ms":2818}
+{"file":"hooks/gate/shell-words.ts","id":"1497","mutator":"EqualityOperator","line":279,"original":"end >= s.src.length","replacement":"end > s.src.length","status":"survived","ms":2899}
+{"file":"hooks/gate/shell-words.ts","id":"1498","mutator":"EqualityOperator","line":279,"original":"end >= s.src.length","replacement":"end < s.src.length","status":"survived","ms":2786}
+{"file":"hooks/gate/shell-words.ts","id":"1499","mutator":"MethodExpression","line":280,"original":"s.src.slice(start, end)","replacement":"s.src","status":"survived","ms":2842}
+{"file":"hooks/gate/shell-words.ts","id":"1501","mutator":"StringLiteral","line":281,"original":"\"\\\\\"","replacement":"\"\"","status":"survived","ms":2919}
+{"file":"hooks/gate/shell-words.ts","id":"1502","mutator":"ArithmeticOperator","line":282,"original":"end + 1","replacement":"end - 1","status":"survived","ms":2931}
+{"file":"hooks/gate/shell-words.ts","id":"1503","mutator":"BlockStatement","line":283,"original":"{\n\t\tadd(s, \"$\", true);\n\t\ts.i++;\n\t}","replacement":"{}","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1505","mutator":"StringLiteral","line":284,"original":"\"$\"","replacement":"\"\"","status":"killed","ms":2718}
+{"file":"hooks/gate/shell-words.ts","id":"1506","mutator":"BooleanLiteral","line":284,"original":"true","replacement":"false","status":"killed","ms":2737}
+{"file":"hooks/gate/shell-words.ts","id":"1507","mutator":"UpdateOperator","line":285,"original":"s.i++","replacement":"s.i--","status":"timeout","ms":90061}
+{"file":"hooks/gate/shell-words.ts","id":"1508","mutator":"BlockStatement","line":289,"original":"{\n\tconst end = s.src.indexOf(\"'\", s.i + 1);\n\ts.unreadable ||= end < 0;\n\tadd(s, s.src.slice(s.i + 1, end < 0 ? s.src.length : end));\n\ts.i = end < 0 ? s.src.length : end + 1;\n}","replacement":"{}","status":"timeout","ms":90013}
+{"file":"hooks/gate/shell-words.ts","id":"1509","mutator":"StringLiteral","line":290,"original":"\"'\"","replacement":"\"\"","status":"killed","ms":2886}
+{"file":"hooks/gate/shell-words.ts","id":"1510","mutator":"ArithmeticOperator","line":290,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":2818}
+{"file":"hooks/gate/shell-words.ts","id":"1511","mutator":"AssignmentOperator","line":291,"original":"s.unreadable ||= end < 0","replacement":"s.unreadable &&= end < 0","status":"killed","ms":2642}
+{"file":"hooks/gate/shell-words.ts","id":"1512","mutator":"ConditionalExpression","line":291,"original":"end < 0","replacement":"true","status":"killed","ms":2942}
+{"file":"hooks/gate/shell-words.ts","id":"1513","mutator":"ConditionalExpression","line":291,"original":"end < 0","replacement":"false","status":"killed","ms":2707}
+{"file":"hooks/gate/shell-words.ts","id":"1514","mutator":"EqualityOperator","line":291,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2722}
+{"file":"hooks/gate/shell-words.ts","id":"1515","mutator":"EqualityOperator","line":291,"original":"end < 0","replacement":"end >= 0","status":"killed","ms":2724}
+{"file":"hooks/gate/shell-words.ts","id":"1517","mutator":"MethodExpression","line":292,"original":"s.src.slice(s.i + 1, end < 0 ? s.src.length : end)","replacement":"s.src","status":"killed","ms":2803}
+{"file":"hooks/gate/shell-words.ts","id":"1518","mutator":"ArithmeticOperator","line":292,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":2716}
+{"file":"hooks/gate/shell-words.ts","id":"1519","mutator":"ConditionalExpression","line":292,"original":"end < 0","replacement":"true","status":"killed","ms":2670}
+{"file":"hooks/gate/shell-words.ts","id":"1520","mutator":"ConditionalExpression","line":292,"original":"end < 0","replacement":"false","status":"survived","ms":2757}
+{"file":"hooks/gate/shell-words.ts","id":"1521","mutator":"EqualityOperator","line":292,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2865}
+{"file":"hooks/gate/shell-words.ts","id":"1522","mutator":"EqualityOperator","line":292,"original":"end < 0","replacement":"end >= 0","status":"killed","ms":2650}
+{"file":"hooks/gate/shell-words.ts","id":"1523","mutator":"ConditionalExpression","line":293,"original":"end < 0","replacement":"true","status":"killed","ms":2614}
+{"file":"hooks/gate/shell-words.ts","id":"1524","mutator":"ConditionalExpression","line":293,"original":"end < 0","replacement":"false","status":"timeout","ms":90029}
+{"file":"hooks/gate/shell-words.ts","id":"1525","mutator":"EqualityOperator","line":293,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2862}
+{"file":"hooks/gate/shell-words.ts","id":"1526","mutator":"EqualityOperator","line":293,"original":"end < 0","replacement":"end >= 0","status":"timeout","ms":90037}
+{"file":"hooks/gate/shell-words.ts","id":"1527","mutator":"ArithmeticOperator","line":293,"original":"end + 1","replacement":"end - 1","status":"killed","ms":11350}
+{"file":"hooks/gate/shell-words.ts","id":"1528","mutator":"BlockStatement","line":296,"original":"{\n\tadd(s, \"\");\n\ts.i++;\n\twhile (s.i < s.src.length && s.src[s.i] !== '\"') {\n\t\tconst c = s.src[s.i] ?? \"\";\n\t\tswitch (c) {\n\t\t\tcase \"\\\\\": {\n\t\t\t\tconst next = s.src[s.i + 1] ?? \"\";\n\t\t\t\tadd(s, '$`\"\\\\'.includes(next) ? next : `\\\\${next}`);\n\t\t\t\ts.i += 2;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tcase \"$\":\n\t\t\t\tdollar(s, true);\n\t\t\t\tbreak;\n\t\t\tcase \"`\":\n\t\t\t\tbacktick(s);\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\tadd(s, c);\n\t\t\t\ts.i++;\n\t\t}\n\t}\n\ts.unreadable ||= s.i >= s.src.length;\n\ts.i++;\n}","replacement":"{}","status":"timeout","ms":90007}
+{"file":"hooks/gate/shell-words.ts","id":"1531","mutator":"UpdateOperator","line":298,"original":"s.i++","replacement":"s.i--","status":"killed","ms":20735}
+{"file":"hooks/gate/shell-words.ts","id":"1530","mutator":"StringLiteral","line":297,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"killed","ms":5273}
+{"file":"hooks/gate/shell-words.ts","id":"1532","mutator":"ConditionalExpression","line":299,"original":"s.i < s.src.length && s.src[s.i] !== '\"'","replacement":"false","status":"killed","ms":10571}
+{"file":"hooks/gate/shell-words.ts","id":"1533","mutator":"LogicalOperator","line":299,"original":"s.i < s.src.length && s.src[s.i] !== '\"'","replacement":"s.i < s.src.length || s.src[s.i] !== '\"'","status":"timeout","ms":90046}
+{"file":"hooks/gate/shell-words.ts","id":"1534","mutator":"ConditionalExpression","line":299,"original":"s.i < s.src.length","replacement":"true","status":"survived","ms":11413}
+{"file":"hooks/gate/shell-words.ts","id":"1535","mutator":"EqualityOperator","line":299,"original":"s.i < s.src.length","replacement":"s.i <= s.src.length","status":"survived","ms":4871}
+{"file":"hooks/gate/shell-words.ts","id":"1536","mutator":"EqualityOperator","line":299,"original":"s.i < s.src.length","replacement":"s.i >= s.src.length","status":"timeout","ms":90011}
+{"file":"hooks/gate/shell-words.ts","id":"1537","mutator":"ConditionalExpression","line":299,"original":"s.src[s.i] !== '\"'","replacement":"true","status":"killed","ms":18519}
+{"file":"hooks/gate/shell-words.ts","id":"1538","mutator":"EqualityOperator","line":299,"original":"s.src[s.i] !== '\"'","replacement":"s.src[s.i] === '\"'","status":"killed","ms":4836}
+{"file":"hooks/gate/shell-words.ts","id":"1539","mutator":"StringLiteral","line":299,"original":"'\"'","replacement":"\"\"","status":"killed","ms":13970}
+{"file":"hooks/gate/shell-words.ts","id":"1541","mutator":"LogicalOperator","line":300,"original":"s.src[s.i] ?? \"\"","replacement":"s.src[s.i] && \"\"","status":"killed","ms":11748}
+{"file":"hooks/gate/shell-words.ts","id":"1540","mutator":"BlockStatement","line":299,"original":"{\n\t\tconst c = s.src[s.i] ?? \"\";\n\t\tswitch (c) {\n\t\t\tcase \"\\\\\": {\n\t\t\t\tconst next = s.src[s.i + 1] ?? \"\";\n\t\t\t\tadd(s, '$`\"\\\\'.includes(next) ? next : `\\\\${next}`);\n\t\t\t\ts.i += 2;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tcase \"$\":\n\t\t\t\tdollar(s, true);\n\t\t\t\tbreak;\n\t\t\tcase \"`\":\n\t\t\t\tbacktick(s);\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\tadd(s, c);\n\t\t\t\ts.i++;\n\t\t}\n\t}","replacement":"{}","status":"timeout","ms":90013}
+{"file":"hooks/gate/shell-words.ts","id":"1542","mutator":"StringLiteral","line":300,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":16247}
+{"file":"hooks/gate/shell-words.ts","id":"1543","mutator":"ConditionalExpression","line":302,"original":"case \"\\\\\": {\n\t\t\t\tconst next = s.src[s.i + 1] ?? \"\";\n\t\t\t\tadd(s, '$`\"\\\\'.includes(next) ? next : `\\\\${next}`);\n\t\t\t\ts.i += 2;\n\t\t\t\tbreak;\n\t\t\t}","replacement":"case \"\\\\\":","status":"survived","ms":10695}
+{"file":"hooks/gate/shell-words.ts","id":"1544","mutator":"StringLiteral","line":302,"original":"\"\\\\\"","replacement":"\"\"","status":"survived","ms":5073}
+{"file":"hooks/gate/shell-words.ts","id":"1545","mutator":"BlockStatement","line":302,"original":"{\n\t\t\t\tconst next = s.src[s.i + 1] ?? \"\";\n\t\t\t\tadd(s, '$`\"\\\\'.includes(next) ? next : `\\\\${next}`);\n\t\t\t\ts.i += 2;\n\t\t\t\tbreak;\n\t\t\t}","replacement":"{}","status":"survived","ms":21359}
+{"file":"hooks/gate/shell-words.ts","id":"1546","mutator":"LogicalOperator","line":303,"original":"s.src[s.i + 1] ?? \"\"","replacement":"s.src[s.i + 1] && \"\"","status":"killed","ms":5598}
+{"file":"hooks/gate/shell-words.ts","id":"1547","mutator":"ArithmeticOperator","line":303,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":8465}
+{"file":"hooks/gate/shell-words.ts","id":"1548","mutator":"StringLiteral","line":303,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":17804}
+{"file":"hooks/gate/shell-words.ts","id":"1550","mutator":"StringLiteral","line":304,"original":"'$`\"\\\\'","replacement":"\"\"","status":"survived","ms":5369}
+{"file":"hooks/gate/shell-words.ts","id":"1551","mutator":"StringLiteral","line":304,"original":"`\\\\${next}`","replacement":"``","status":"survived","ms":15221}
+{"file":"hooks/gate/shell-words.ts","id":"1552","mutator":"AssignmentOperator","line":305,"original":"s.i += 2","replacement":"s.i -= 2","status":"timeout","ms":90027}
+{"file":"hooks/gate/shell-words.ts","id":"1553","mutator":"ConditionalExpression","line":308,"original":"case \"$\":\n\t\t\t\tdollar(s, true);\n\t\t\t\tbreak;","replacement":"case \"$\":","status":"killed","ms":16598}
+{"file":"hooks/gate/shell-words.ts","id":"1554","mutator":"StringLiteral","line":308,"original":"\"$\"","replacement":"\"\"","status":"survived","ms":4789}
+{"file":"hooks/gate/shell-words.ts","id":"1556","mutator":"BooleanLiteral","line":309,"original":"true","replacement":"false","status":"survived","ms":15878}
+{"file":"hooks/gate/shell-words.ts","id":"1557","mutator":"ConditionalExpression","line":311,"original":"case \"`\":\n\t\t\t\tbacktick(s);\n\t\t\t\tbreak;","replacement":"case \"`\":","status":"survived","ms":10118}
+{"file":"hooks/gate/shell-words.ts","id":"1558","mutator":"StringLiteral","line":311,"original":"\"`\"","replacement":"\"\"","status":"survived","ms":4635}
+{"file":"hooks/gate/shell-words.ts","id":"1559","mutator":"CallExpression","line":312,"original":"backtick(s);","replacement":";","status":"survived","ms":20746}
+{"file":"hooks/gate/shell-words.ts","id":"1560","mutator":"ConditionalExpression","line":314,"original":"default:\n\t\t\t\tadd(s, c);\n\t\t\t\ts.i++;","replacement":"default:","status":"timeout","ms":90014}
+{"file":"hooks/gate/shell-words.ts","id":"1561","mutator":"CallExpression","line":315,"original":"add(s, c);","replacement":";","status":"killed","ms":8924}
+{"file":"hooks/gate/shell-words.ts","id":"1562","mutator":"UpdateOperator","line":316,"original":"s.i++","replacement":"s.i--","status":"timeout","ms":90018}
+{"file":"hooks/gate/shell-words.ts","id":"1563","mutator":"AssignmentOperator","line":319,"original":"s.unreadable ||= s.i >= s.src.length","replacement":"s.unreadable &&= s.i >= s.src.length","status":"survived","ms":18532}
+{"file":"hooks/gate/shell-words.ts","id":"1564","mutator":"ConditionalExpression","line":319,"original":"s.i >= s.src.length","replacement":"true","status":"killed","ms":9156}
+{"file":"hooks/gate/shell-words.ts","id":"1566","mutator":"EqualityOperator","line":319,"original":"s.i >= s.src.length","replacement":"s.i > s.src.length","status":"survived","ms":43779}
+{"file":"hooks/gate/shell-words.ts","id":"1565","mutator":"ConditionalExpression","line":319,"original":"s.i >= s.src.length","replacement":"false","status":"survived","ms":11821}
+{"file":"hooks/gate/shell-words.ts","id":"1567","mutator":"EqualityOperator","line":319,"original":"s.i >= s.src.length","replacement":"s.i < s.src.length","status":"killed","ms":25971}
+{"file":"hooks/gate/shell-words.ts","id":"1568","mutator":"UpdateOperator","line":320,"original":"s.i++","replacement":"s.i--","status":"timeout","ms":90015}
+{"file":"hooks/gate/shell-words.ts","id":"1569","mutator":"BlockStatement","line":323,"original":"{\n\tconst op = REDIRECT.exec(s.src.slice(s.i))?.[0] ?? \"\";\n\tif (s.src[s.i + 1] === \"(\" && (op === \"<\" || op === \">\")) {\n\t\ts.i += 2;\n\t\tmerge(s, balanced(s));\n\t\tadd(s, \"/dev/fd/63\", true);\n\t\treturn;\n\t}\n\tif (DIGITS.test(s.word ?? \"\")) {\n\t\ts.word = undefined;\n\t}\n\tendWord(s);\n\ts.target = op;\n\ts.i += op.length;\n}","replacement":"{}","status":"timeout","ms":90025}
+{"file":"hooks/gate/shell-words.ts","id":"1570","mutator":"LogicalOperator","line":324,"original":"REDIRECT.exec(s.src.slice(s.i))?.[0] ?? \"\"","replacement":"REDIRECT.exec(s.src.slice(s.i))?.[0] && \"\"","status":"timeout","ms":90015}
+{"file":"hooks/gate/shell-words.ts","id":"1571","mutator":"OptionalChaining","line":324,"original":"REDIRECT.exec(s.src.slice(s.i))?.[0]","replacement":"REDIRECT.exec(s.src.slice(s.i))[0]","status":"survived","ms":39952}
+{"file":"hooks/gate/shell-words.ts","id":"1572","mutator":"MethodExpression","line":324,"original":"s.src.slice(s.i)","replacement":"s.src","status":"timeout","ms":35121}
+{"file":"hooks/gate/shell-words.ts","id":"1573","mutator":"StringLiteral","line":324,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":37500}
+{"file":"hooks/gate/shell-words.ts","id":"1574","mutator":"ConditionalExpression","line":325,"original":"s.src[s.i + 1] === \"(\" && (op === \"<\" || op === \">\")","replacement":"true","status":"killed","ms":12277}
+{"file":"hooks/gate/shell-words.ts","id":"1575","mutator":"ConditionalExpression","line":325,"original":"s.src[s.i + 1] === \"(\" && (op === \"<\" || op === \">\")","replacement":"false","status":"survived","ms":21700}
+{"file":"hooks/gate/shell-words.ts","id":"1576","mutator":"LogicalOperator","line":325,"original":"s.src[s.i + 1] === \"(\" && (op === \"<\" || op === \">\")","replacement":"s.src[s.i + 1] === \"(\" || op === \"<\" || op === \">\"","status":"killed","ms":29460}
+{"file":"hooks/gate/shell-words.ts","id":"1577","mutator":"ConditionalExpression","line":325,"original":"s.src[s.i + 1] === \"(\"","replacement":"true","status":"killed","ms":10024}
+{"file":"hooks/gate/shell-words.ts","id":"1578","mutator":"EqualityOperator","line":325,"original":"s.src[s.i + 1] === \"(\"","replacement":"s.src[s.i + 1] !== \"(\"","status":"killed","ms":37632}
+{"file":"hooks/gate/shell-words.ts","id":"1579","mutator":"ArithmeticOperator","line":325,"original":"s.i + 1","replacement":"s.i - 1","status":"survived","ms":16364}
+{"file":"hooks/gate/shell-words.ts","id":"1580","mutator":"StringLiteral","line":325,"original":"\"(\"","replacement":"\"\"","status":"survived","ms":12624}
+{"file":"hooks/gate/shell-words.ts","id":"1581","mutator":"ConditionalExpression","line":325,"original":"op === \"<\" || op === \">\"","replacement":"true","status":"survived","ms":39082}
+{"file":"hooks/gate/shell-words.ts","id":"1582","mutator":"LogicalOperator","line":325,"original":"op === \"<\" || op === \">\"","replacement":"op === \"<\" && op === \">\"","status":"survived","ms":10912}
+{"file":"hooks/gate/shell-words.ts","id":"1583","mutator":"ConditionalExpression","line":325,"original":"op === \"<\"","replacement":"false","status":"survived","ms":13170}
+{"file":"hooks/gate/shell-words.ts","id":"1584","mutator":"EqualityOperator","line":325,"original":"op === \"<\"","replacement":"op !== \"<\"","status":"survived","ms":11795}
+{"file":"hooks/gate/shell-words.ts","id":"1586","mutator":"ConditionalExpression","line":325,"original":"op === \">\"","replacement":"false","status":"survived","ms":4494}
+{"file":"hooks/gate/shell-words.ts","id":"1585","mutator":"StringLiteral","line":325,"original":"\"<\"","replacement":"\"\"","status":"survived","ms":18688}
+{"file":"hooks/gate/shell-words.ts","id":"1587","mutator":"EqualityOperator","line":325,"original":"op === \">\"","replacement":"op !== \">\"","status":"survived","ms":5944}
+{"file":"hooks/gate/shell-words.ts","id":"1588","mutator":"StringLiteral","line":325,"original":"\">\"","replacement":"\"\"","status":"survived","ms":7118}
+{"file":"hooks/gate/shell-words.ts","id":"1589","mutator":"BlockStatement","line":325,"original":"{\n\t\ts.i += 2;\n\t\tmerge(s, balanced(s));\n\t\tadd(s, \"/dev/fd/63\", true);\n\t\treturn;\n\t}","replacement":"{}","status":"survived","ms":17164}
+{"file":"hooks/gate/shell-words.ts","id":"1590","mutator":"AssignmentOperator","line":326,"original":"s.i += 2","replacement":"s.i -= 2","status":"survived","ms":7551}
+{"file":"hooks/gate/shell-words.ts","id":"1591","mutator":"CallExpression","line":327,"original":"merge(s, balanced(s));","replacement":";","status":"survived","ms":18399}
+{"file":"hooks/gate/shell-words.ts","id":"1593","mutator":"StringLiteral","line":328,"original":"\"/dev/fd/63\"","replacement":"\"\"","status":"survived","ms":11750}
+{"file":"hooks/gate/shell-words.ts","id":"1594","mutator":"BooleanLiteral","line":328,"original":"true","replacement":"false","status":"survived","ms":4932}
+{"file":"hooks/gate/shell-words.ts","id":"1595","mutator":"ConditionalExpression","line":331,"original":"DIGITS.test(s.word ?? \"\")","replacement":"true","status":"survived","ms":19570}
+{"file":"hooks/gate/shell-words.ts","id":"1596","mutator":"ConditionalExpression","line":331,"original":"DIGITS.test(s.word ?? \"\")","replacement":"false","status":"killed","ms":5676}
+{"file":"hooks/gate/shell-words.ts","id":"1597","mutator":"LogicalOperator","line":331,"original":"s.word ?? \"\"","replacement":"s.word && \"\"","status":"killed","ms":11023}
+{"file":"hooks/gate/shell-words.ts","id":"1598","mutator":"StringLiteral","line":331,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":13948}
+{"file":"hooks/gate/shell-words.ts","id":"1599","mutator":"BlockStatement","line":331,"original":"{\n\t\ts.word = undefined;\n\t}","replacement":"{}","status":"killed","ms":4729}
+{"file":"hooks/gate/shell-words.ts","id":"1600","mutator":"CallExpression","line":334,"original":"endWord(s);","replacement":";","status":"survived","ms":14673}
+{"file":"hooks/gate/shell-words.ts","id":"1601","mutator":"AssignmentOperator","line":336,"original":"s.i += op.length","replacement":"s.i -= op.length","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1602","mutator":"BlockStatement","line":339,"original":"{\n\tfor (const delimiter of s.heredocs) {\n\t\tfor (;;) {\n\t\t\tconst end = s.src.indexOf(\"\\n\", s.i);\n\t\t\tconst line = s.src.slice(s.i, end < 0 ? s.src.length : end);\n\t\t\ts.i = end < 0 ? s.src.length : end + 1;\n\t\t\tif (line.trim() === delimiter || end < 0) {\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t}\n\ts.heredocs = [];\n}","replacement":"{}","status":"killed","ms":2591}
+{"file":"hooks/gate/shell-words.ts","id":"1603","mutator":"BlockStatement","line":340,"original":"{\n\t\tfor (;;) {\n\t\t\tconst end = s.src.indexOf(\"\\n\", s.i);\n\t\t\tconst line = s.src.slice(s.i, end < 0 ? s.src.length : end);\n\t\t\ts.i = end < 0 ? s.src.length : end + 1;\n\t\t\tif (line.trim() === delimiter || end < 0) {\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t}","replacement":"{}","status":"killed","ms":2604}
+{"file":"hooks/gate/shell-words.ts","id":"1604","mutator":"ConditionalExpression","line":341,"original":"for (;;) {\n\t\t\tconst end = s.src.indexOf(\"\\n\", s.i);\n\t\t\tconst line = s.src.slice(s.i, end < 0 ? s.src.length : end);\n\t\t\ts.i = end < 0 ? s.src.length : end + 1;\n\t\t\tif (line.trim() === delimiter || end < 0) {\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}","replacement":"for (; false;) {\n  const end = s.src.indexOf(\"\\n\", s.i);\n  const line = s.src.slice(s.i, end < 0 ? s.src.length : end);\n  s.i = end < 0 ? s.src.length : end + 1;\n  if (line.trim() === delimiter || end < 0) {\n    break;\n  }\n}","status":"killed","ms":2563}
+{"file":"hooks/gate/shell-words.ts","id":"1605","mutator":"BlockStatement","line":341,"original":"{\n\t\t\tconst end = s.src.indexOf(\"\\n\", s.i);\n\t\t\tconst line = s.src.slice(s.i, end < 0 ? s.src.length : end);\n\t\t\ts.i = end < 0 ? s.src.length : end + 1;\n\t\t\tif (line.trim() === delimiter || end < 0) {\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1606","mutator":"StringLiteral","line":342,"original":"\"\\n\"","replacement":"\"\"","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1607","mutator":"MethodExpression","line":343,"original":"s.src.slice(s.i, end < 0 ? s.src.length : end)","replacement":"s.src","status":"killed","ms":3073}
+{"file":"hooks/gate/shell-words.ts","id":"1608","mutator":"ConditionalExpression","line":343,"original":"end < 0","replacement":"true","status":"killed","ms":2574}
+{"file":"hooks/gate/shell-words.ts","id":"1609","mutator":"ConditionalExpression","line":343,"original":"end < 0","replacement":"false","status":"survived","ms":2597}
+{"file":"hooks/gate/shell-words.ts","id":"1610","mutator":"EqualityOperator","line":343,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2715}
+{"file":"hooks/gate/shell-words.ts","id":"1611","mutator":"EqualityOperator","line":343,"original":"end < 0","replacement":"end >= 0","status":"killed","ms":2556}
+{"file":"hooks/gate/shell-words.ts","id":"1612","mutator":"ConditionalExpression","line":344,"original":"end < 0","replacement":"true","status":"killed","ms":2432}
+{"file":"hooks/gate/shell-words.ts","id":"1613","mutator":"ConditionalExpression","line":344,"original":"end < 0","replacement":"false","status":"timeout","ms":90502}
+{"file":"hooks/gate/shell-words.ts","id":"1615","mutator":"EqualityOperator","line":344,"original":"end < 0","replacement":"end >= 0","status":"timeout","ms":90095}
+{"file":"hooks/gate/shell-words.ts","id":"1614","mutator":"EqualityOperator","line":344,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2890}
+{"file":"hooks/gate/shell-words.ts","id":"1616","mutator":"ArithmeticOperator","line":344,"original":"end + 1","replacement":"end - 1","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1618","mutator":"ConditionalExpression","line":345,"original":"line.trim() === delimiter || end < 0","replacement":"false","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1617","mutator":"ConditionalExpression","line":345,"original":"line.trim() === delimiter || end < 0","replacement":"true","status":"killed","ms":2570}
+{"file":"hooks/gate/shell-words.ts","id":"1619","mutator":"LogicalOperator","line":345,"original":"line.trim() === delimiter || end < 0","replacement":"line.trim() === delimiter && end < 0","status":"timeout","ms":90007}
+{"file":"hooks/gate/shell-words.ts","id":"1620","mutator":"ConditionalExpression","line":345,"original":"line.trim() === delimiter","replacement":"false","status":"killed","ms":2439}
+{"file":"hooks/gate/shell-words.ts","id":"1621","mutator":"EqualityOperator","line":345,"original":"line.trim() === delimiter","replacement":"line.trim() !== delimiter","status":"killed","ms":2796}
+{"file":"hooks/gate/shell-words.ts","id":"1622","mutator":"MethodExpression","line":345,"original":"line.trim()","replacement":"line","status":"survived","ms":2586}
+{"file":"hooks/gate/shell-words.ts","id":"1623","mutator":"ConditionalExpression","line":345,"original":"end < 0","replacement":"false","status":"survived","ms":2491}
+{"file":"hooks/gate/shell-words.ts","id":"1624","mutator":"EqualityOperator","line":345,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2487}
+{"file":"hooks/gate/shell-words.ts","id":"1625","mutator":"EqualityOperator","line":345,"original":"end < 0","replacement":"end >= 0","status":"killed","ms":2521}
+{"file":"hooks/gate/shell-words.ts","id":"1626","mutator":"BlockStatement","line":345,"original":"{\n\t\t\t\tbreak;\n\t\t\t}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1627","mutator":"ArrayDeclaration","line":350,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":2394}
+{"file":"hooks/gate/shell-words.ts","id":"1628","mutator":"BlockStatement","line":353,"original":"{\n\tconst next = s.src[s.i + 1];\n\tif (c === \"|\" && next !== \"|\") {\n\t\tendCommand(s, true);\n\t\ts.i += next === \"&\" ? 2 : 1;\n\t\treturn;\n\t}\n\tendCommand(s, false);\n\ts.i += (c === \"&\" || c === \"|\") && next === c ? 2 : 1;\n\tif (c === \"\\n\") {\n\t\tskipHeredocs(s);\n\t}\n}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1629","mutator":"ArithmeticOperator","line":354,"original":"s.i + 1","replacement":"s.i - 1","status":"survived","ms":2427}
+{"file":"hooks/gate/shell-words.ts","id":"1630","mutator":"ConditionalExpression","line":355,"original":"c === \"|\" && next !== \"|\"","replacement":"true","status":"killed","ms":2557}
+{"file":"hooks/gate/shell-words.ts","id":"1631","mutator":"ConditionalExpression","line":355,"original":"c === \"|\" && next !== \"|\"","replacement":"false","status":"killed","ms":2644}
+{"file":"hooks/gate/shell-words.ts","id":"1632","mutator":"LogicalOperator","line":355,"original":"c === \"|\" && next !== \"|\"","replacement":"c === \"|\" || next !== \"|\"","status":"killed","ms":2460}
+{"file":"hooks/gate/shell-words.ts","id":"1633","mutator":"ConditionalExpression","line":355,"original":"c === \"|\"","replacement":"true","status":"killed","ms":2510}
+{"file":"hooks/gate/shell-words.ts","id":"1634","mutator":"EqualityOperator","line":355,"original":"c === \"|\"","replacement":"c !== \"|\"","status":"killed","ms":2403}
+{"file":"hooks/gate/shell-words.ts","id":"1635","mutator":"StringLiteral","line":355,"original":"\"|\"","replacement":"\"\"","status":"killed","ms":2527}
+{"file":"hooks/gate/shell-words.ts","id":"1636","mutator":"ConditionalExpression","line":355,"original":"next !== \"|\"","replacement":"true","status":"survived","ms":2521}
+{"file":"hooks/gate/shell-words.ts","id":"1637","mutator":"EqualityOperator","line":355,"original":"next !== \"|\"","replacement":"next === \"|\"","status":"killed","ms":2642}
+{"file":"hooks/gate/shell-words.ts","id":"1638","mutator":"StringLiteral","line":355,"original":"\"|\"","replacement":"\"\"","status":"survived","ms":2539}
+{"file":"hooks/gate/shell-words.ts","id":"1639","mutator":"BlockStatement","line":355,"original":"{\n\t\tendCommand(s, true);\n\t\ts.i += next === \"&\" ? 2 : 1;\n\t\treturn;\n\t}","replacement":"{}","status":"killed","ms":2565}
+{"file":"hooks/gate/shell-words.ts","id":"1641","mutator":"BooleanLiteral","line":356,"original":"true","replacement":"false","status":"killed","ms":2516}
+{"file":"hooks/gate/shell-words.ts","id":"1642","mutator":"AssignmentOperator","line":357,"original":"s.i += next === \"&\" ? 2 : 1","replacement":"s.i -= next === \"&\" ? 2 : 1","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1643","mutator":"ConditionalExpression","line":357,"original":"next === \"&\"","replacement":"true","status":"survived","ms":2488}
+{"file":"hooks/gate/shell-words.ts","id":"1644","mutator":"ConditionalExpression","line":357,"original":"next === \"&\"","replacement":"false","status":"survived","ms":2423}
+{"file":"hooks/gate/shell-words.ts","id":"1645","mutator":"EqualityOperator","line":357,"original":"next === \"&\"","replacement":"next !== \"&\"","status":"survived","ms":2428}
+{"file":"hooks/gate/shell-words.ts","id":"1646","mutator":"StringLiteral","line":357,"original":"\"&\"","replacement":"\"\"","status":"survived","ms":2453}
+{"file":"hooks/gate/shell-words.ts","id":"1648","mutator":"BooleanLiteral","line":360,"original":"false","replacement":"true","status":"survived","ms":2437}
+{"file":"hooks/gate/shell-words.ts","id":"1649","mutator":"AssignmentOperator","line":361,"original":"s.i += (c === \"&\" || c === \"|\") && next === c ? 2 : 1","replacement":"s.i -= (c === \"&\" || c === \"|\") && next === c ? 2 : 1","status":"timeout","ms":90017}
+{"file":"hooks/gate/shell-words.ts","id":"1650","mutator":"ConditionalExpression","line":361,"original":"(c === \"&\" || c === \"|\") && next === c","replacement":"true","status":"killed","ms":2704}
+{"file":"hooks/gate/shell-words.ts","id":"1651","mutator":"ConditionalExpression","line":361,"original":"(c === \"&\" || c === \"|\") && next === c","replacement":"false","status":"survived","ms":2525}
+{"file":"hooks/gate/shell-words.ts","id":"1652","mutator":"LogicalOperator","line":361,"original":"(c === \"&\" || c === \"|\") && next === c","replacement":"c === \"&\" || c === \"|\" || next === c","status":"survived","ms":3660}
+{"file":"hooks/gate/shell-words.ts","id":"1654","mutator":"LogicalOperator","line":361,"original":"c === \"&\" || c === \"|\"","replacement":"c === \"&\" && c === \"|\"","status":"survived","ms":2578}
+{"file":"hooks/gate/shell-words.ts","id":"1653","mutator":"ConditionalExpression","line":361,"original":"c === \"&\" || c === \"|\"","replacement":"true","status":"survived","ms":2557}
+{"file":"hooks/gate/shell-words.ts","id":"1655","mutator":"ConditionalExpression","line":361,"original":"c === \"&\"","replacement":"false","status":"survived","ms":2630}
+{"file":"hooks/gate/shell-words.ts","id":"1656","mutator":"EqualityOperator","line":361,"original":"c === \"&\"","replacement":"c !== \"&\"","status":"survived","ms":2590}
+{"file":"hooks/gate/shell-words.ts","id":"1657","mutator":"StringLiteral","line":361,"original":"\"&\"","replacement":"\"\"","status":"survived","ms":2488}
+{"file":"hooks/gate/shell-words.ts","id":"1658","mutator":"ConditionalExpression","line":361,"original":"c === \"|\"","replacement":"false","status":"survived","ms":2351}
+{"file":"hooks/gate/shell-words.ts","id":"1659","mutator":"EqualityOperator","line":361,"original":"c === \"|\"","replacement":"c !== \"|\"","status":"survived","ms":2611}
+{"file":"hooks/gate/shell-words.ts","id":"1660","mutator":"StringLiteral","line":361,"original":"\"|\"","replacement":"\"\"","status":"survived","ms":2815}
+{"file":"hooks/gate/shell-words.ts","id":"1661","mutator":"ConditionalExpression","line":361,"original":"next === c","replacement":"true","status":"survived","ms":2474}
+{"file":"hooks/gate/shell-words.ts","id":"1662","mutator":"EqualityOperator","line":361,"original":"next === c","replacement":"next !== c","status":"survived","ms":2411}
+{"file":"hooks/gate/shell-words.ts","id":"1663","mutator":"ConditionalExpression","line":362,"original":"c === \"\\n\"","replacement":"true","status":"survived","ms":2478}
+{"file":"hooks/gate/shell-words.ts","id":"1664","mutator":"ConditionalExpression","line":362,"original":"c === \"\\n\"","replacement":"false","status":"killed","ms":2440}
+{"file":"hooks/gate/shell-words.ts","id":"1665","mutator":"EqualityOperator","line":362,"original":"c === \"\\n\"","replacement":"c !== \"\\n\"","status":"killed","ms":2509}
+{"file":"hooks/gate/shell-words.ts","id":"1666","mutator":"StringLiteral","line":362,"original":"\"\\n\"","replacement":"\"\"","status":"killed","ms":2386}
+{"file":"hooks/gate/shell-words.ts","id":"1667","mutator":"BlockStatement","line":362,"original":"{\n\t\tskipHeredocs(s);\n\t}","replacement":"{}","status":"killed","ms":2537}
+{"file":"hooks/gate/shell-words.ts","id":"1668","mutator":"CallExpression","line":363,"original":"skipHeredocs(s);","replacement":";","status":"killed","ms":2429}
+{"file":"hooks/gate/shell-words.ts","id":"1669","mutator":"BlockStatement","line":367,"original":"{\n\tif (s.src[s.i + 1] !== \"\\n\") {\n\t\tadd(s, s.src[s.i + 1] ?? \"\");\n\t}\n\ts.i += 2;\n}","replacement":"{}","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1670","mutator":"ConditionalExpression","line":368,"original":"s.src[s.i + 1] !== \"\\n\"","replacement":"true","status":"survived","ms":2576}
+{"file":"hooks/gate/shell-words.ts","id":"1671","mutator":"ConditionalExpression","line":368,"original":"s.src[s.i + 1] !== \"\\n\"","replacement":"false","status":"killed","ms":2492}
+{"file":"hooks/gate/shell-words.ts","id":"1672","mutator":"EqualityOperator","line":368,"original":"s.src[s.i + 1] !== \"\\n\"","replacement":"s.src[s.i + 1] === \"\\n\"","status":"killed","ms":2376}
+{"file":"hooks/gate/shell-words.ts","id":"1673","mutator":"ArithmeticOperator","line":368,"original":"s.i + 1","replacement":"s.i - 1","status":"survived","ms":2661}
+{"file":"hooks/gate/shell-words.ts","id":"1674","mutator":"StringLiteral","line":368,"original":"\"\\n\"","replacement":"\"\"","status":"survived","ms":2604}
+{"file":"hooks/gate/shell-words.ts","id":"1675","mutator":"BlockStatement","line":368,"original":"{\n\t\tadd(s, s.src[s.i + 1] ?? \"\");\n\t}","replacement":"{}","status":"killed","ms":2614}
+{"file":"hooks/gate/shell-words.ts","id":"1677","mutator":"LogicalOperator","line":369,"original":"s.src[s.i + 1] ?? \"\"","replacement":"s.src[s.i + 1] && \"\"","status":"killed","ms":2494}
+{"file":"hooks/gate/shell-words.ts","id":"1678","mutator":"ArithmeticOperator","line":369,"original":"s.i + 1","replacement":"s.i - 1","status":"killed","ms":7399}
+{"file":"hooks/gate/shell-words.ts","id":"1679","mutator":"StringLiteral","line":369,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":3002}
+{"file":"hooks/gate/shell-words.ts","id":"1680","mutator":"AssignmentOperator","line":371,"original":"s.i += 2","replacement":"s.i -= 2","status":"timeout","ms":90030}
+{"file":"hooks/gate/shell-words.ts","id":"1681","mutator":"BlockStatement","line":374,"original":"{\n\tif (c === \"#\" && s.word === undefined) {\n\t\tconst end = s.src.indexOf(\"\\n\", s.i);\n\t\ts.i = end < 0 ? s.src.length : end;\n\t\treturn;\n\t}\n\tadd(s, c, \"*?[{\".includes(c) || (c === \"~\" && s.word === undefined));\n\ts.i++;\n}","replacement":"{}","status":"timeout","ms":90010}
+{"file":"hooks/gate/shell-words.ts","id":"1682","mutator":"ConditionalExpression","line":375,"original":"c === \"#\" && s.word === undefined","replacement":"true","status":"killed","ms":3137}
+{"file":"hooks/gate/shell-words.ts","id":"1683","mutator":"ConditionalExpression","line":375,"original":"c === \"#\" && s.word === undefined","replacement":"false","status":"survived","ms":2793}
+{"file":"hooks/gate/shell-words.ts","id":"1684","mutator":"LogicalOperator","line":375,"original":"c === \"#\" && s.word === undefined","replacement":"c === \"#\" || s.word === undefined","status":"killed","ms":2799}
+{"file":"hooks/gate/shell-words.ts","id":"1685","mutator":"ConditionalExpression","line":375,"original":"c === \"#\"","replacement":"true","status":"killed","ms":2524}
+{"file":"hooks/gate/shell-words.ts","id":"1686","mutator":"EqualityOperator","line":375,"original":"c === \"#\"","replacement":"c !== \"#\"","status":"killed","ms":2630}
+{"file":"hooks/gate/shell-words.ts","id":"1687","mutator":"StringLiteral","line":375,"original":"\"#\"","replacement":"\"\"","status":"survived","ms":2724}
+{"file":"hooks/gate/shell-words.ts","id":"1688","mutator":"ConditionalExpression","line":375,"original":"s.word === undefined","replacement":"true","status":"survived","ms":2845}
+{"file":"hooks/gate/shell-words.ts","id":"1689","mutator":"EqualityOperator","line":375,"original":"s.word === undefined","replacement":"s.word !== undefined","status":"survived","ms":2716}
+{"file":"hooks/gate/shell-words.ts","id":"1690","mutator":"BlockStatement","line":375,"original":"{\n\t\tconst end = s.src.indexOf(\"\\n\", s.i);\n\t\ts.i = end < 0 ? s.src.length : end;\n\t\treturn;\n\t}","replacement":"{}","status":"survived","ms":2957}
+{"file":"hooks/gate/shell-words.ts","id":"1691","mutator":"StringLiteral","line":376,"original":"\"\\n\"","replacement":"\"\"","status":"timeout","ms":90009}
+{"file":"hooks/gate/shell-words.ts","id":"1692","mutator":"ConditionalExpression","line":377,"original":"end < 0","replacement":"true","status":"survived","ms":2645}
+{"file":"hooks/gate/shell-words.ts","id":"1693","mutator":"ConditionalExpression","line":377,"original":"end < 0","replacement":"false","status":"timeout","ms":90045}
+{"file":"hooks/gate/shell-words.ts","id":"1694","mutator":"EqualityOperator","line":377,"original":"end < 0","replacement":"end <= 0","status":"survived","ms":2922}
+{"file":"hooks/gate/shell-words.ts","id":"1695","mutator":"EqualityOperator","line":377,"original":"end < 0","replacement":"end >= 0","status":"timeout","ms":90055}
+{"file":"hooks/gate/shell-words.ts","id":"1697","mutator":"ConditionalExpression","line":380,"original":"\"*?[{\".includes(c) || (c === \"~\" && s.word === undefined)","replacement":"true","status":"killed","ms":2910}
+{"file":"hooks/gate/shell-words.ts","id":"1698","mutator":"ConditionalExpression","line":380,"original":"\"*?[{\".includes(c) || (c === \"~\" && s.word === undefined)","replacement":"false","status":"killed","ms":2676}
+{"file":"hooks/gate/shell-words.ts","id":"1699","mutator":"LogicalOperator","line":380,"original":"\"*?[{\".includes(c) || (c === \"~\" && s.word === undefined)","replacement":"\"*?[{\".includes(c) && c === \"~\" && s.word === undefined","status":"killed","ms":2861}
+{"file":"hooks/gate/shell-words.ts","id":"1700","mutator":"StringLiteral","line":380,"original":"\"*?[{\"","replacement":"\"\"","status":"killed","ms":2676}
+{"file":"hooks/gate/shell-words.ts","id":"1701","mutator":"ConditionalExpression","line":380,"original":"c === \"~\" && s.word === undefined","replacement":"false","status":"survived","ms":2839}
+{"file":"hooks/gate/shell-words.ts","id":"1702","mutator":"LogicalOperator","line":380,"original":"c === \"~\" && s.word === undefined","replacement":"c === \"~\" || s.word === undefined","status":"killed","ms":2589}
+{"file":"hooks/gate/shell-words.ts","id":"1703","mutator":"ConditionalExpression","line":380,"original":"c === \"~\"","replacement":"true","status":"killed","ms":2555}
+{"file":"hooks/gate/shell-words.ts","id":"1704","mutator":"EqualityOperator","line":380,"original":"c === \"~\"","replacement":"c !== \"~\"","status":"killed","ms":2701}
+{"file":"hooks/gate/shell-words.ts","id":"1706","mutator":"ConditionalExpression","line":380,"original":"s.word === undefined","replacement":"true","status":"survived","ms":2770}
+{"file":"hooks/gate/shell-words.ts","id":"1707","mutator":"EqualityOperator","line":380,"original":"s.word === undefined","replacement":"s.word !== undefined","status":"survived","ms":2629}
+{"file":"hooks/gate/shell-words.ts","id":"1705","mutator":"StringLiteral","line":380,"original":"\"~\"","replacement":"\"\"","status":"survived","ms":2846}
+{"file":"hooks/gate/shell-words.ts","id":"1708","mutator":"UpdateOperator","line":381,"original":"s.i++","replacement":"s.i--","status":"timeout","ms":90005}
+{"file":"hooks/gate/shell-words.ts","id":"1709","mutator":"BlockStatement","line":384,"original":"{\n\tconst c = s.src[s.i] ?? \"\";\n\tswitch (c) {\n\t\tcase \" \":\n\t\tcase \"\\t\":\n\t\t\tendWord(s);\n\t\t\ts.i++;\n\t\t\tbreak;\n\t\tcase \"\\\\\":\n\t\t\tescaped(s);\n\t\t\tbreak;\n\t\tcase \"'\":\n\t\t\tsingle(s);\n\t\t\tbreak;\n\t\tcase '\"':\n\t\t\tdouble(s);\n\t\t\tbreak;\n\t\tcase \"$\":\n\t\t\tdollar(s, false);\n\t\t\tbreak;\n\t\tcase \"`\":\n\t\t\tbacktick(s);\n\t\t\tbreak;\n\t\tcase \"<\":\n\t\tcase \">\":\n\t\t\tredirect(s);\n\t\t\tbreak;\n\t\tcase \"&\":\n\t\t\tif (s.src[s.i + 1] === \">\") {\n\t\t\t\tredirect(s);\n\t\t\t} else {\n\t\t\t\toperator(s, c);\n\t\t\t}\n\t\t\tbreak;\n\t\tcase \";\":\n\t\tcase \"(\":\n\t\tcase \")\":\n\t\tcase \"|\":\n\t\tcase \"\\n\":\n\t\t\toperator(s, c);\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tliteral(s, c);\n\t}\n}","replacement":"{}","status":"timeout","ms":90007}
+{"file":"hooks/gate/shell-words.ts","id":"1710","mutator":"LogicalOperator","line":385,"original":"s.src[s.i] ?? \"\"","replacement":"s.src[s.i] && \"\"","status":"killed","ms":2439}
+{"file":"hooks/gate/shell-words.ts","id":"1711","mutator":"StringLiteral","line":385,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":2532}
+{"file":"hooks/gate/shell-words.ts","id":"1712","mutator":"StringLiteral","line":387,"original":"\" \"","replacement":"\"\"","status":"killed","ms":2781}
+{"file":"hooks/gate/shell-words.ts","id":"1714","mutator":"StringLiteral","line":388,"original":"\"\\t\"","replacement":"\"\"","status":"survived","ms":2601}
+{"file":"hooks/gate/shell-words.ts","id":"1713","mutator":"ConditionalExpression","line":388,"original":"case \"\\t\":\n\t\t\tendWord(s);\n\t\t\ts.i++;\n\t\t\tbreak;","replacement":"case \"\\t\":","status":"killed","ms":2529}
+{"file":"hooks/gate/shell-words.ts","id":"1716","mutator":"UpdateOperator","line":390,"original":"s.i++","replacement":"s.i--","status":"timeout","ms":90047}
+{"file":"hooks/gate/shell-words.ts","id":"1715","mutator":"CallExpression","line":389,"original":"endWord(s);","replacement":";","status":"killed","ms":3009}
+{"file":"hooks/gate/shell-words.ts","id":"1718","mutator":"StringLiteral","line":392,"original":"\"\\\\\"","replacement":"\"\"","status":"killed","ms":6502}
+{"file":"hooks/gate/shell-words.ts","id":"1717","mutator":"ConditionalExpression","line":392,"original":"case \"\\\\\":\n\t\t\tescaped(s);\n\t\t\tbreak;","replacement":"case \"\\\\\":","status":"survived","ms":6228}
+{"file":"hooks/gate/shell-words.ts","id":"1719","mutator":"CallExpression","line":393,"original":"escaped(s);","replacement":";","status":"timeout","ms":90008}
+{"file":"hooks/gate/shell-words.ts","id":"1720","mutator":"ConditionalExpression","line":395,"original":"case \"'\":\n\t\t\tsingle(s);\n\t\t\tbreak;","replacement":"case \"'\":","status":"killed","ms":2637}
+{"file":"hooks/gate/shell-words.ts","id":"1721","mutator":"StringLiteral","line":395,"original":"\"'\"","replacement":"\"\"","status":"killed","ms":2853}
+{"file":"hooks/gate/shell-words.ts","id":"1722","mutator":"CallExpression","line":396,"original":"single(s);","replacement":";","status":"timeout","ms":90006}
+{"file":"hooks/gate/shell-words.ts","id":"1723","mutator":"ConditionalExpression","line":398,"original":"case '\"':\n\t\t\tdouble(s);\n\t\t\tbreak;","replacement":"case '\"':","status":"killed","ms":2570}
+{"file":"hooks/gate/shell-words.ts","id":"1724","mutator":"StringLiteral","line":398,"original":"'\"'","replacement":"\"\"","status":"killed","ms":2661}

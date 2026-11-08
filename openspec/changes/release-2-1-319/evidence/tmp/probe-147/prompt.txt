@@ -1,0 +1,9 @@
+Do not call any tool. Reply with exactly the five lines below and nothing else. The first character of your reply is the # of the first line, with no dashes and no code fence before it.
+
+# Handoff
+
+Written by Claude.
+
+## Next steps
+
+Say DONE.

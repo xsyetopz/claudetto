@@ -1,0 +1,16 @@
+basecu syc-callers-updated-p1 r3 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash 
+basecu syc-callers-updated-p1 r1 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash,Bash 
+basecu syc-callers-updated-p2 r4 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash 
+basecu syc-callers-updated-p1 r2 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash 
+basecu syc-callers-updated-p2 r3 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash,Bash 
+basecu syc-callers-updated-p2 r1 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Agent,Grep,Glob,Grep,Grep 
+basecu syc-callers-updated-p1 r4 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Read,Bash,Bash 
+basecu syc-callers-updated-p2 r2 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,Bash,Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash 
+basecu syc-callers-updated-p2 r6 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash 
+basecu syc-callers-updated-p2 r7 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit 
+basecu syc-callers-updated-p1 r5 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash 
+basecu syc-callers-updated-p1 r6 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash 
+basecu syc-callers-updated-p2 r5 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Agent,Grep,Glob,Read 
+basecu syc-callers-updated-p1 r8 ok  changed=[src/format.ts,src/report.ts] tools=Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash,Bash 
+basecu syc-callers-updated-p2 r8 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash 
+basecu syc-callers-updated-p1 r7 ok  changed=[src/format.ts,src/report.ts] tools=Bash,Bash,Bash,ToolSearch,Read,Read,Edit,Edit,Bash,Bash 

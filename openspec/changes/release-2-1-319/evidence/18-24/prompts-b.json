@@ -1,0 +1,184 @@
+{
+	"prompts": [
+		{
+			"id": "d01",
+			"kind": "delegate",
+			"text": "Spin up a helper agent to search the repo for every place we handle errors and tell me which ones swallow them silently. Read-only please."
+		},
+		{
+			"id": "d02",
+			"kind": "delegate",
+			"text": "can you get a subagent to review src/parse.ts for edge cases (empty lines, values containing '=', whitespace) while you look at format.ts yourself? then tell me what you both found"
+		},
+		{
+			"id": "d03",
+			"kind": "delegate",
+			"text": "Launch three helpers in parallel: one to audit src/parse.ts, one for src/format.ts, one for src/cli.ts. Each should list bugs and risky code, and don't edit anything. Combine the results into one report when they finish."
+		},
+		{
+			"id": "d04",
+			"kind": "delegate",
+			"text": "delegate a README rewrite to a subagent. it should draft a clearer usage section with examples, and show me the draft before anything is written to disk."
+		},
+		{
+			"id": "d05",
+			"kind": "delegate",
+			"text": "Have a helper agent find out which npm scripts in package.json actually work and which are broken, and report back. After that, I'd like you to fix the broken ones."
+		},
+		{
+			"id": "d06",
+			"kind": "delegate",
+			"text": "use an agent to draft a set of unit tests for parse.ts, and another one to draft tests for format.ts. don't run anything yet, just show me the drafts."
+		},
+		{
+			"id": "d07",
+			"kind": "delegate",
+			"text": "Side quest: have a subagent check whether our TypeScript config and dependencies are out of date, while you carry on and add a --help flag to the CLI. I'll read the helper's findings afterward."
+		},
+		{
+			"id": "d08",
+			"kind": "delegate",
+			"text": "Ask a helper to grep for any TODO, FIXME, or hardcoded paths in the project and give me a short list."
+		},
+		{
+			"id": "d09",
+			"kind": "delegate",
+			"text": "I want a second pair of eyes. Spawn a reviewer agent that has not seen your reasoning to look over src/cli.ts and say what could crash on a missing or unreadable file."
+		},
+		{
+			"id": "d10",
+			"kind": "delegate",
+			"text": "get two subagents going at once: one proposes a design for supporting JSON output, the other proposes a design for supporting quoted values in parse.ts. Report both designs together, no code changes."
+		},
+		{
+			"id": "d11",
+			"kind": "delegate",
+			"text": "hey, could you hand off to a helper the job of writing a one-paragraph summary of what each source file does? read-only, I just want it for onboarding notes"
+		},
+		{
+			"id": "d12",
+			"kind": "delegate",
+			"text": "Delegate a security-minded audit of the CLI to a helper agent: path handling, untrusted file contents, anything that prints raw input. Then summarize its top three concerns for me in plain language."
+		},
+		{
+			"id": "d13",
+			"kind": "delegate",
+			"text": "use a subagent to figure out how I'd add a --output flag, and let it draft the patch as a diff. don't apply it."
+		},
+		{
+			"id": "d14",
+			"kind": "delegate",
+			"text": "Please run one helper to check that the README matches what the code really does, and a second one to check the package.json fields (bin, main, scripts) for mistakes. I want both reports in one message."
+		},
+		{
+			"id": "d15",
+			"kind": "delegate",
+			"text": "background task pls: agent scans for duplicated logic across src/ and reports back later. i'll keep chatting with you meanwhile"
+		},
+		{
+			"id": "d16",
+			"kind": "delegate",
+			"text": "Can a helper agent draft a CHANGELOG entry for the changes since the last git tag, and another one list the commits that touched src/parse.ts? Keep both read-only and send me the results together."
+		},
+		{
+			"id": "q01",
+			"kind": "question",
+			"text": "what's the difference between `interface` and `type` in TypeScript, and which should I use for the parsed key/value object?"
+		},
+		{
+			"id": "q02",
+			"kind": "question",
+			"text": "Why does Node say \"Cannot use import statement outside a module\" and what are the usual fixes?"
+		},
+		{
+			"id": "q03",
+			"kind": "question",
+			"text": "is it better to split a line on the first '=' with indexOf or with split('=') when parsing key=value lines? thinking about values that contain '='"
+		},
+		{
+			"id": "q04",
+			"kind": "question",
+			"text": "How do I undo my last commit but keep the changes staged?"
+		},
+		{
+			"id": "q05",
+			"kind": "question",
+			"text": "bun vs node for a small cli like this, any real reasons to pick one?"
+		},
+		{
+			"id": "q06",
+			"kind": "question",
+			"text": "What does `Record<string, string>` mean, and when would `Map<string, string>` be a better choice?"
+		},
+		{
+			"id": "q07",
+			"kind": "question",
+			"text": "I keep getting \"TS2532: Object is possibly 'undefined'\" after indexing an array. Why does that happen and how do I fix it without using `!`?"
+		},
+		{
+			"id": "q08",
+			"kind": "question",
+			"text": "how should I unit test a function that reads a file, like the thing in cli.ts? mock fs or use a temp dir?"
+		},
+		{
+			"id": "q09",
+			"kind": "question",
+			"text": "Explain the difference between `git merge` and `git rebase` in a way that helps me choose for a solo project."
+		},
+		{
+			"id": "q10",
+			"kind": "question",
+			"text": "what does `process.exit(1)` do versus throwing an error in a node cli, and which is nicer for users?"
+		},
+		{
+			"id": "q11",
+			"kind": "question",
+			"text": "Can you explain what `\"strict\": true` turns on in tsconfig? I want to know if it's worth enabling for a tiny project."
+		},
+		{
+			"id": "q12",
+			"kind": "question",
+			"text": "my cli prints fine in the terminal but the output is garbled when piped to a file. what could cause that?"
+		},
+		{
+			"id": "q13",
+			"kind": "question",
+			"text": "What's the cleanest way to make a TypeScript file runnable as a CLI with a shebang and a bin entry in package.json?"
+		},
+		{
+			"id": "q14",
+			"kind": "question",
+			"text": "should format.ts sort keys alphabetically or keep insertion order? what are the tradeoffs"
+		},
+		{
+			"id": "q15",
+			"kind": "question",
+			"text": "How do I debug a Node script in VS Code, setting a breakpoint inside a TypeScript file?"
+		},
+		{
+			"id": "q16",
+			"kind": "question",
+			"text": "whats the difference between `readFileSync` and `readFile` from fs/promises, and does it matter for a one-shot cli?"
+		}
+	],
+	"fillers": [
+		"^\\s*(hi|hello|hey|dear)\\b",
+		"\\b(great|good|excellent|fantastic|interesting) (question|point|idea|catch)\\b",
+		"\\bhappy to\\b",
+		"\\bglad to\\b",
+		"\\bcertainly\\b",
+		"\\bof course\\b",
+		"\\babsolutely\\b",
+		"\\bsure thing\\b",
+		"\\bI hope (this|that) helps\\b",
+		"\\bfeel free\\b",
+		"\\blet me know\\b",
+		"\\bthank(s| you)\\b",
+		"\\bplease\\b",
+		"\\b(sorry|apologi[sz]e)\\b",
+		"\\bto be honest\\b",
+		"\\bit.?s worth (noting|mentioning)\\b",
+		"\\bI.ll go ahead and\\b",
+		"\\bdelve\\b"
+	]
+}

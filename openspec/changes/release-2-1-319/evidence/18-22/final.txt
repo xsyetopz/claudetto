@@ -1,0 +1,6 @@
+base: n=30 output mean 371.7 (bootstrap 361.3-385.2) turns/session 3.07 tool calls/session 3.07 ToolSearch 0.00 denials 0.00 stopBlocks 0.00 shapeErr sessions 0 fixed 30/30 Wilson 0.886-1.000 usd 1.4966 largest 81631
+   bash by purpose per session: tests plus a read 30; tests only 32
+change: n=30 output mean 531.9 (bootstrap 508.6-573.2) turns/session 4.07 tool calls/session 5.00 ToolSearch 0.00 denials 1.00 stopBlocks 0.03 shapeErr sessions 0 fixed 30/30 Wilson 0.886-1.000 usd 1.1685 largest 54429
+   bash by purpose per session: tests plus a read 30; tests only 60
+nocut: n=30 output mean 552.5 (bootstrap 510.3-612.5) turns/session 4.07 tool calls/session 5.00 ToolSearch 0.00 denials 1.00 stopBlocks 0.07 shapeErr sessions 0 fixed 30/30 Wilson 0.886-1.000 usd 1.1535 largest 55031
+   bash by purpose per session: tests plus a read 30; tests only 60

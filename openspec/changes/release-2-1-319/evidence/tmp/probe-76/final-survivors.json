@@ -1,0 +1,412 @@
+[
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1157",
+"mutator": "Regex",
+"line": 38,
+"original": "/^(?:&>>|&>|>>|>\\||>&|>|<<<|<<-|<<|<&|<>|<)/",
+"replacement": "/(?:&>>|&>|>>|>\\||>&|>|<<<|<<-|<<|<&|<>|<)/",
+"status": "survived",
+"ms": 716
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1161",
+"mutator": "Regex",
+"line": 40,
+"original": "/^\\d+$/",
+"replacement": "/^\\d+/",
+"status": "survived",
+"ms": 770
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1230",
+"mutator": "ArrayDeclaration",
+"line": 89,
+"original": "[]",
+"replacement": "[\"Stryker was here\"]",
+"status": "survived",
+"ms": 834
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1232",
+"mutator": "ArrayDeclaration",
+"line": 90,
+"original": "[]",
+"replacement": "[\"Stryker was here\"]",
+"status": "survived",
+"ms": 1158
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1234",
+"mutator": "ArrayDeclaration",
+"line": 91,
+"original": "[]",
+"replacement": "[\"Stryker was here\"]",
+"status": "survived",
+"ms": 880
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1235",
+"mutator": "ObjectLiteral",
+"line": 92,
+"original": "{ valued: [] }",
+"replacement": "{}",
+"status": "survived",
+"ms": 783
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1236",
+"mutator": "ArrayDeclaration",
+"line": 92,
+"original": "[]",
+"replacement": "[\"Stryker was here\"]",
+"status": "survived",
+"ms": 741
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1246",
+"mutator": "StringLiteral",
+"line": 104,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 832
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1248",
+"mutator": "LogicalOperator",
+"line": 104,
+"original": "words[j] ?? \"\"",
+"replacement": "words[j] && \"\"",
+"status": "survived",
+"ms": 748
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1249",
+"mutator": "StringLiteral",
+"line": 104,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 844
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1253",
+"mutator": "StringLiteral",
+"line": 105,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 775
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1257",
+"mutator": "StringLiteral",
+"line": 112,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 754
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1368",
+"mutator": "MethodExpression",
+"line": 200,
+"original": "r.op.startsWith(\"<<\")",
+"replacement": "r.op.endsWith(\"<<\")",
+"status": "survived",
+"ms": 909
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1394",
+"mutator": "ConditionalExpression",
+"line": 229,
+"original": "i < src.length",
+"replacement": "true",
+"status": "survived",
+"ms": 717
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1395",
+"mutator": "EqualityOperator",
+"line": 229,
+"original": "i < src.length",
+"replacement": "i <= src.length",
+"status": "survived",
+"ms": 798
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1413",
+"mutator": "EqualityOperator",
+"line": 239,
+"original": "s.i < s.src.length",
+"replacement": "s.i <= s.src.length",
+"status": "survived",
+"ms": 752
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1434",
+"mutator": "StringLiteral",
+"line": 246,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 712
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1448",
+"mutator": "EqualityOperator",
+"line": 257,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 1163
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1483",
+"mutator": "EqualityOperator",
+"line": 276,
+"original": "end < s.src.length",
+"replacement": "end <= s.src.length",
+"status": "survived",
+"ms": 689
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1514",
+"mutator": "EqualityOperator",
+"line": 291,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 871
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1521",
+"mutator": "EqualityOperator",
+"line": 292,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 633
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1525",
+"mutator": "EqualityOperator",
+"line": 293,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 618
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1535",
+"mutator": "EqualityOperator",
+"line": 299,
+"original": "s.i < s.src.length",
+"replacement": "s.i <= s.src.length",
+"status": "survived",
+"ms": 1141
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1542",
+"mutator": "StringLiteral",
+"line": 300,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 1027
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1556",
+"mutator": "BooleanLiteral",
+"line": 309,
+"original": "true",
+"replacement": "false",
+"status": "survived",
+"ms": 763
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1571",
+"mutator": "OptionalChaining",
+"line": 324,
+"original": "REDIRECT.exec(s.src.slice(s.i))?.[0]",
+"replacement": "REDIRECT.exec(s.src.slice(s.i))[0]",
+"status": "survived",
+"ms": 788
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1573",
+"mutator": "StringLiteral",
+"line": 324,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 798
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1581",
+"mutator": "ConditionalExpression",
+"line": 325,
+"original": "op === \"<\" || op === \">\"",
+"replacement": "true",
+"status": "survived",
+"ms": 639
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1598",
+"mutator": "StringLiteral",
+"line": 331,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 1013
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1609",
+"mutator": "ConditionalExpression",
+"line": 343,
+"original": "end < 0",
+"replacement": "false",
+"status": "survived",
+"ms": 795
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1610",
+"mutator": "EqualityOperator",
+"line": 343,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 698
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1614",
+"mutator": "EqualityOperator",
+"line": 344,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 826
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1624",
+"mutator": "EqualityOperator",
+"line": 345,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 798
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1652",
+"mutator": "LogicalOperator",
+"line": 361,
+"original": "(c === \"&\" || c === \"|\") && next === c",
+"replacement": "c === \"&\" || c === \"|\" || next === c",
+"status": "survived",
+"ms": 625
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1653",
+"mutator": "ConditionalExpression",
+"line": 361,
+"original": "c === \"&\" || c === \"|\"",
+"replacement": "true",
+"status": "survived",
+"ms": 749
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1655",
+"mutator": "ConditionalExpression",
+"line": 361,
+"original": "c === \"&\"",
+"replacement": "false",
+"status": "survived",
+"ms": 627
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1656",
+"mutator": "EqualityOperator",
+"line": 361,
+"original": "c === \"&\"",
+"replacement": "c !== \"&\"",
+"status": "survived",
+"ms": 878
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1657",
+"mutator": "StringLiteral",
+"line": 361,
+"original": "\"&\"",
+"replacement": "\"\"",
+"status": "survived",
+"ms": 811
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1661",
+"mutator": "ConditionalExpression",
+"line": 361,
+"original": "next === c",
+"replacement": "true",
+"status": "survived",
+"ms": 731
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1694",
+"mutator": "EqualityOperator",
+"line": 377,
+"original": "end < 0",
+"replacement": "end <= 0",
+"status": "survived",
+"ms": 1080
+},
+{
+"file": "hooks/gate/shell-words.ts",
+"id": "1711",
+"mutator": "StringLiteral",
+"line": 385,
+"original": "\"\"",
+"replacement": "\"Stryker was here!\"",
+"status": "survived",
+"ms": 909
+}
+]

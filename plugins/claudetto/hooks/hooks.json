@@ -1,4 +1,26 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-hooks.json",
-	"modules": ["../src/register.ts"]
+	"modules": ["./register.ts"],
+	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "n=$(getconf _NPROCESSORS_ONLN); j=$((n > 1 ? n - 1 : 1)); printf '%s\\n' 'renice 10 -p $$ >/dev/null 2>&1' \"export CARGO_BUILD_JOBS=\\${CARGO_BUILD_JOBS:-$j} GOMAXPROCS=\\${GOMAXPROCS:-$j}\" >> \"$CLAUDE_ENV_FILE\""
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "IN=$(cat); case \"$IN\" in *'\"prompt\":\"/claudetto:setup\"'*|*'\"prompt\":\"/claudetto:setup '*) printf '%s' '{\"decision\":\"block\",\"reason\":\"Setup did not run: claudetto plugin code is not running in this session. Restart Claude Code; if it still fails, reinstall claudetto.\"}';; esac"
+					}
+				]
+			}
+		]
+	}
 }

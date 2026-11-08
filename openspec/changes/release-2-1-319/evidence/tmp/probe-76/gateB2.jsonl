@@ -1,0 +1,48 @@
+{"file":"hooks/gate/rules.ts","id":"557","mutator":"ArrayDeclaration","line":23,"original":"[\"grep\", \"egrep\", \"fgrep\", \"rg\", \"sed\", \"awk\"]","replacement":"[]","status":"survived","ms":31883}
+{"file":"hooks/gate/rules.ts","id":"558","mutator":"StringLiteral","line":23,"original":"\"grep\"","replacement":"\"\"","status":"survived","ms":28016}
+{"file":"hooks/gate/rules.ts","id":"559","mutator":"StringLiteral","line":23,"original":"\"egrep\"","replacement":"\"\"","status":"survived","ms":28589}
+{"file":"hooks/gate/rules.ts","id":"560","mutator":"StringLiteral","line":23,"original":"\"fgrep\"","replacement":"\"\"","status":"survived","ms":27779}
+{"file":"hooks/gate/rules.ts","id":"561","mutator":"StringLiteral","line":23,"original":"\"rg\"","replacement":"\"\"","status":"survived","ms":28828}
+{"file":"hooks/gate/rules.ts","id":"562","mutator":"StringLiteral","line":23,"original":"\"sed\"","replacement":"\"\"","status":"survived","ms":28945}
+{"file":"hooks/gate/rules.ts","id":"563","mutator":"StringLiteral","line":23,"original":"\"awk\"","replacement":"\"\"","status":"survived","ms":28691}
+{"file":"hooks/gate/rules.ts","id":"566","mutator":"StringLiteral","line":24,"original":"\"egrep\"","replacement":"\"\"","status":"survived","ms":28156}
+{"file":"hooks/gate/rules.ts","id":"568","mutator":"StringLiteral","line":24,"original":"\"rg\"","replacement":"\"\"","status":"survived","ms":28770}
+{"file":"hooks/gate/rules.ts","id":"567","mutator":"StringLiteral","line":24,"original":"\"fgrep\"","replacement":"\"\"","status":"survived","ms":29411}
+{"file":"hooks/gate/rules.ts","id":"569","mutator":"ArrayDeclaration","line":25,"original":"[\n\t\"show\",\n\t\"diff\",\n\t\"log\",\n\t\"blame\",\n\t\"grep\",\n\t\"cat-file\",\n]","replacement":"[]","status":"survived","ms":28244}
+{"file":"hooks/gate/rules.ts","id":"570","mutator":"StringLiteral","line":26,"original":"\"show\"","replacement":"\"\"","status":"survived","ms":28003}
+{"file":"hooks/gate/rules.ts","id":"571","mutator":"StringLiteral","line":27,"original":"\"diff\"","replacement":"\"\"","status":"survived","ms":29253}
+{"file":"hooks/gate/rules.ts","id":"573","mutator":"StringLiteral","line":29,"original":"\"blame\"","replacement":"\"\"","status":"survived","ms":29109}
+{"file":"hooks/gate/rules.ts","id":"572","mutator":"StringLiteral","line":28,"original":"\"log\"","replacement":"\"\"","status":"survived","ms":28418}
+{"file":"hooks/gate/rules.ts","id":"574","mutator":"StringLiteral","line":30,"original":"\"grep\"","replacement":"\"\"","status":"survived","ms":28531}
+{"file":"hooks/gate/rules.ts","id":"575","mutator":"StringLiteral","line":31,"original":"\"cat-file\"","replacement":"\"\"","status":"survived","ms":29686}
+{"file":"hooks/gate/rules.ts","id":"578","mutator":"StringLiteral","line":35,"original":"\"-c\"","replacement":"\"\"","status":"survived","ms":30158}
+{"file":"hooks/gate/rules.ts","id":"579","mutator":"StringLiteral","line":36,"original":"\"--git-dir\"","replacement":"\"\"","status":"survived","ms":30185}
+{"file":"hooks/gate/rules.ts","id":"580","mutator":"StringLiteral","line":37,"original":"\"--work-tree\"","replacement":"\"\"","status":"survived","ms":30182}
+{"file":"hooks/gate/rules.ts","id":"581","mutator":"StringLiteral","line":38,"original":"\"--namespace\"","replacement":"\"\"","status":"survived","ms":31310}
+{"file":"hooks/gate/rules.ts","id":"582","mutator":"StringLiteral","line":39,"original":"\"--super-prefix\"","replacement":"\"\"","status":"survived","ms":30587}
+{"file":"hooks/gate/rules.ts","id":"583","mutator":"StringLiteral","line":40,"original":"\"--config-env\"","replacement":"\"\"","status":"survived","ms":33796}
+{"file":"hooks/gate/rules.ts","id":"586","mutator":"StringLiteral","line":42,"original":"\"wget\"","replacement":"\"\"","status":"survived","ms":30716}
+{"file":"hooks/gate/rules.ts","id":"591","mutator":"StringLiteral","line":43,"original":"\"~/\"","replacement":"\"\"","status":"survived","ms":29293}
+{"file":"hooks/gate/rules.ts","id":"594","mutator":"StringLiteral","line":45,"original":"\"/etc\"","replacement":"\"\"","status":"killed","ms":29288}
+{"file":"hooks/gate/rules.ts","id":"595","mutator":"StringLiteral","line":46,"original":"\"/usr\"","replacement":"\"\"","status":"killed","ms":28423}
+{"file":"hooks/gate/rules.ts","id":"596","mutator":"StringLiteral","line":47,"original":"\"/bin\"","replacement":"\"\"","status":"killed","ms":27944}
+{"file":"hooks/gate/rules.ts","id":"597","mutator":"StringLiteral","line":48,"original":"\"/sbin\"","replacement":"\"\"","status":"killed","ms":33596}
+{"file":"hooks/gate/rules.ts","id":"598","mutator":"StringLiteral","line":49,"original":"\"/boot\"","replacement":"\"\"","status":"killed","ms":59302}
+{"file":"hooks/gate/rules.ts","id":"599","mutator":"StringLiteral","line":50,"original":"\"/System\"","replacement":"\"\"","status":"killed","ms":57639}
+{"file":"hooks/gate/rules.ts","id":"600","mutator":"StringLiteral","line":51,"original":"\"/Library\"","replacement":"\"\"","status":"killed","ms":61639}
+{"file":"hooks/gate/rules.ts","id":"603","mutator":"StringLiteral","line":53,"original":"\">|\"","replacement":"\"\"","status":"survived","ms":57350}
+{"file":"hooks/gate/rules.ts","id":"604","mutator":"StringLiteral","line":53,"original":"\"&>\"","replacement":"\"\"","status":"survived","ms":54515}
+{"file":"hooks/gate/rules.ts","id":"605","mutator":"ArrayDeclaration","line":54,"original":"[\"-e\", \"--regexp\", \"-f\", \"--file\"]","replacement":"[]","status":"survived","ms":59669}
+{"file":"hooks/gate/rules.ts","id":"606","mutator":"StringLiteral","line":54,"original":"\"-e\"","replacement":"\"\"","status":"survived","ms":60091}
+{"file":"hooks/gate/rules.ts","id":"607","mutator":"StringLiteral","line":54,"original":"\"--regexp\"","replacement":"\"\"","status":"survived","ms":60091}
+{"file":"hooks/gate/rules.ts","id":"608","mutator":"StringLiteral","line":54,"original":"\"-f\"","replacement":"\"\"","status":"timeout","ms":74461}
+{"file":"hooks/gate/rules.ts","id":"609","mutator":"StringLiteral","line":54,"original":"\"--file\"","replacement":"\"\"","status":"survived","ms":54487}
+{"file":"hooks/gate/rules.ts","id":"610","mutator":"ArrayDeclaration","line":55,"original":"[\"-c\", \"-l\", \"-L\", \"-q\", \"--count\", \"--quiet\"]","replacement":"[]","status":"survived","ms":58591}
+{"file":"hooks/gate/rules.ts","id":"611","mutator":"StringLiteral","line":55,"original":"\"-c\"","replacement":"\"\"","status":"survived","ms":59542}
+{"file":"hooks/gate/rules.ts","id":"612","mutator":"StringLiteral","line":55,"original":"\"-l\"","replacement":"\"\"","status":"survived","ms":57225}
+{"file":"hooks/gate/rules.ts","id":"613","mutator":"StringLiteral","line":55,"original":"\"-L\"","replacement":"\"\"","status":"survived","ms":27598}
+{"file":"hooks/gate/rules.ts","id":"614","mutator":"StringLiteral","line":55,"original":"\"-q\"","replacement":"\"\"","status":"survived","ms":27098}
+{"file":"hooks/gate/rules.ts","id":"615","mutator":"StringLiteral","line":55,"original":"\"--count\"","replacement":"\"\"","status":"survived","ms":32780}
+{"file":"hooks/gate/rules.ts","id":"616","mutator":"StringLiteral","line":55,"original":"\"--quiet\"","replacement":"\"\"","status":"survived","ms":31066}
+{"file":"hooks/gate/rules.ts","id":"623","mutator":"ConditionalExpression","line":58,"original":"path === d","replacement":"false","status":"survived","ms":27976}
+{"file":"hooks/gate/rules.ts","id":"628","mutator":"StringLiteral","line":61,"original":"\"--\"","replacement":"\"\"","status":"survived","ms":28065}

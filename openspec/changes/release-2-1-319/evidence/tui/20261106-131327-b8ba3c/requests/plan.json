@@ -1,0 +1,48 @@
+{
+	"steps": [
+		{
+			"match": {
+				"lastUserIncludes": "do outside write"
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "Bash",
+						"input": {
+							"command": "touch ~/sandbox-test-r3607",
+							"description": "outside write"
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		},
+		{
+			"match": {
+				"lastUserIncludes": "do control write"
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "Bash",
+						"input": {
+							"command": "for p in /tmp/c-r3607 /private/tmp/c-r3607 ~/.cache/c-r3607 \"$TMPDIR/c-r3607\" ./c-r3607; do touch $p && echo OK $p || echo FAIL $p; done; echo TMPDIR=$TMPDIR",
+							"description": "control writes"
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		}
+	],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

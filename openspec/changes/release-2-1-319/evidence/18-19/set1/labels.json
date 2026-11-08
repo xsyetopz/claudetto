@@ -1,0 +1,245 @@
+{
+ "note": "Label is the design's: who holds the labels in the prefix. Written before any grading.",
+ "labels": {
+  "pos-recipe": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the allergen checker); no user message gives them"
+  },
+  "neg-recipe": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-vuln": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the CVE scanner); no user message gives them"
+  },
+  "neg-vuln": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-bird": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a bird-call identifier); no user message gives them"
+  },
+  "neg-bird": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-wine": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the sommelier model); no user message gives them"
+  },
+  "neg-wine": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-cijob": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the build classifier); no user message gives them"
+  },
+  "neg-cijob": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-mood": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a mood tagger); no user message gives them"
+  },
+  "neg-mood": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-plag": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the similarity checker); no user message gives them"
+  },
+  "neg-plag": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-crop": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a crop-disease model); no user message gives them"
+  },
+  "neg-crop": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-churn": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the churn predictor); no user message gives them"
+  },
+  "neg-churn": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-fmt": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (gofmt-check); no user message gives them"
+  },
+  "neg-fmt": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-rating": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a star-rating model); no user message gives them"
+  },
+  "neg-rating": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-alt": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the alt-text auditor); no user message gives them"
+  },
+  "neg-alt": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-coverage": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the coverage tool); no user message gives them"
+  },
+  "neg-coverage": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-emotion": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (an audio emotion model); no user message gives them"
+  },
+  "neg-emotion": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-cuisine": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a cuisine tagger); no user message gives them"
+  },
+  "neg-cuisine": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-fraud": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the fraud scorer); no user message gives them"
+  },
+  "neg-fraud": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-contract": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a contract-risk model); no user message gives them"
+  },
+  "neg-contract": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-intrusion": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the intrusion detector); no user message gives them"
+  },
+  "neg-intrusion": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-backport": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the backport advisor); no user message gives them"
+  },
+  "neg-backport": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-deps": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the outdated checker); no user message gives them"
+  },
+  "neg-deps": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-urgency": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (an urgency ranker); no user message gives them"
+  },
+  "neg-urgency": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-shape": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a shape classifier); no user message gives them"
+  },
+  "neg-shape": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-grammar": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the grammar checker); no user message gives them"
+  },
+  "neg-grammar": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-species": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a species classifier); no user message gives them"
+  },
+  "neg-species": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-doc": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the docs-coverage checker); no user message gives them"
+  },
+  "neg-doc": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-energy": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the energy rater); no user message gives them"
+  },
+  "neg-energy": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-secrets": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the secrets scanner); no user message gives them"
+  },
+  "neg-secrets": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-cefr": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a CEFR estimator); no user message gives them"
+  },
+  "neg-cefr": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-stale": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (the staleness checker); no user message gives them"
+  },
+  "neg-stale": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  },
+  "pos-color": {
+   "label": "positive",
+   "why": "the labels come from ./judge.sh (a color namer); no user message gives them"
+  },
+  "neg-color": {
+   "label": "negative",
+   "why": "the user's own message gives the labels"
+  }
+ }
+}

@@ -1,0 +1,176 @@
+# Betterleaks
+```
+ + ○
+   ▾
+```
+
+Betterleaks is a configurable, fast, and thorough secrets scanner. It is maintained by the folks who made Gitleaks, including the original author.
+Check out this series of blog posts to learn how the detection engine works: 1. [Regex is all you need](https://lookingatcomputer.substack.com/p/regex-is-almost-all-you-need), 2. [Rare Not Random](https://lookingatcomputer.substack.com/p/rare-not-random), 3. [Express YourCELf](https://lookingatcomputer.substack.com/p/express-yourcelf-filtering-and-validating), 4. [Better generic secrets detection](https://www.aikido.dev/blog/better-generic-secrets-detection-non-secrets).
+
+Development is supported by
+<a href="https://www.aikido.dev"><img src="docs/aikido_log.svg" alt="Aikido Security" width="80" /></a>
+
+### Notable Features
+
+| Feature | Description |
+| :--- | :--- |
+| **Expr-based filtering** | Write contextual rule filters that evaluate fragment (data chunks) attributes (like git author, commit message, and file path) and finding data to reduce false positives. If you're coming from Gitleaks, think of this feature as a more expressive `[[allowlist]]` system. |
+| **Secrets Validation** | Validate if a detected secret is active by making asynchronous HTTP requests directly from within the rule definition using Expr. |
+| **Token Efficiency filtering** | Filter out natural language false positives by using BPE tokenization to measure how "rare" or non-human a string is. |
+| **Fast scans** | Achieve fast performance through sane default parallelization settings, ahocorasick keyword filters, and re2. |
+| **New Sources** | Support for sources like GitHub, GitLab, Hugging Face, S3, and more. It's easy to add new sources too!   |
+| **Portability** | Runs on any modern OS/Arch. The small binary can be integrated in any system. |
+
+
+### Installation
+```
+# Homebrew (v1 maintenance releases)
+brew install --cask betterleaks/tap/betterleaks@1
+# The versioned cask installs the command betterleaks-v1.
+
+# Fedora Linux
+sudo dnf install betterleaks
+
+# Containers
+docker pull ghcr.io/betterleaks/betterleaks:v1
+
+# Go
+go install github.com/betterleaks/betterleaks@latest
+
+# Source
+git clone --branch v1.x https://github.com/betterleaks/betterleaks
+cd betterleaks
+make build
+```
+
+The versioned Homebrew cask and Docker `:v1` tag are published by v1 maintenance
+releases using this configuration. Archive and source builds still provide the
+`betterleaks` command used in the examples below; Homebrew users can substitute
+`betterleaks-v1` to run v1 alongside v2.
+
+### Usage
+```
+# Scan Git
+betterleaks git /path/to/repo -v --git-workers=16
+
+# Scan local filesystem
+betterleaks dir /path/to/file/or/dir -v
+
+# Scan GitHub org
+betterleaks github https://github.com/betterleaks
+# Scan GitHub user
+betterleaks github https://github.com/cooluser123456789 --include issues,prs,actions,releases,gists
+# Scan specific resource, like a PR... but exclude the description (only scan comments)
+betterleaks github https://github.com/betterleaks/betterleaks/pull/113
+
+# Scan GitLab group or project
+betterleaks gitlab https://gitlab.com/mygroup
+betterleaks gitlab https://gitlab.com/mygroup/myproject --include issues,mrs,releases,ci-jobs
+# Scan a specific GitLab merge request
+betterleaks gitlab https://gitlab.com/mygroup/myproject/-/merge_requests/42
+
+# Scan Hugging Face models, datasets, Spaces, and buckets
+betterleaks huggingface https://huggingface.co/myorg
+betterleaks hf https://huggingface.co/datasets/myorg/mydataset
+betterleaks hf --include=discussions,prs https://huggingface.co/myorg/model
+betterleaks hf hf://buckets/myorg/mybucket/path
+
+# Scan a public s3 dataset (Common Crawl).
+betterleaks s3 https://commoncrawl.s3.us-east-1.amazonaws.com/crawl-data/CC-MAIN-2018-17/segments/1524125937193.1/warc/
+# Enumerate and scan every bucket in a Cloudflare R2 account
+betterleaks s3 'https://<account-id>.r2.cloudflarestorage.com/*'
+
+# Scan stdin
+cat some_file.txt | betterleaks stdin -v
+
+# Revalidate a known credential without running detection
+printf '%s\n' "$GITHUB_TOKEN" | betterleaks validate --rule-id github-pat
+
+# Print only its status (for example, VALID)
+printf '%s\n' "$GITHUB_TOKEN" | betterleaks validate --rule-id github-pat --simple
+```
+
+For more advanced scanning examples check out the [scanning doc](docs/scanning.md).
+
+### Configuration
+
+Betterleaks uses its built-in config by default. Select a custom config with
+`--config` or the config environment variables. Automatically loading
+`.betterleaks.toml` or `.gitleaks.toml` from a git or source target requires
+`--unsafe-auto-load-config`; only enable it for targets you trust. See
+[config loading](docs/config.md#loading-a-config) for precedence and examples.
+
+Betterleaks' strength comes from its expressive configuration. Filtering and validation logic are defined as [Expr](https://expr-lang.org). Previously this logic was implemented in CEL; existing CEL-shaped configs are still accepted for compatibility, but new configs should use Expr. `prefilter`s run before any regex matching occurs and only have access to the `attributes` map. `attributes` describe a resource like a git patch. Use `prefilter`s to quickly bail out before more expensive scanning happens. `filter`s, on the other hand, get evaluated post-regex match and have access to the `attributes` map and candidate `finding` data like `finding["secret"]` or `finding["match"]`.
+
+```toml
+# Global prefilter, it runs before expensive regex calls
+prefilter = '''
+filter.matchesAny(attributes["path"], [
+  `(?i)\.(?:bmp|gif|jpe?g|png|svg|tiff|pdf|exe)$`,
+  `(?:^|/)node_modules(?:/.*)?$`,
+  `(?:^|/)vendor(?:/.*)?$`
+])
+|| attributes["git.author_name"] == "renovate[bot]"
+'''
+
+# Global filter, it runs for _every_ candidate secret.
+filter = '''
+filter.containsAny(finding["secret"], [
+  "EXAMPLE",
+  "CHANGEME",
+  "YOUR_API_KEY_HERE",
+  "0000000000000000"
+])
+'''
+
+# An array of tables that contain data on how to detect secrets
+[[rules]]
+id = "github-fine-grained-pat"
+description = "GitHub Fine-Grained Personal Access Token, risking unauthorized repo access."
+regex = '''github_pat_\w{82}'''
+keywords = ["github_pat_"]
+
+# Rule-level filter
+filter = '''
+(
+    attributes["git.author_name"] == "ci-runner" &&
+    filter.matchesAny(attributes["path"], [`^mocks/`]) &&
+    finding["secret"] contains "TESTING"
+)
+|| (filter.entropy(finding["secret"]) <= 3.0)
+'''
+
+# Post-match-and-filter async validation check
+validate = '''
+let r = http.get("https://api.github.com/user", {
+    "Accept": "application/vnd.github+json",
+    "Authorization": "token " + finding["secret"]
+  });
+r.status == 200 && (r.json?.login ?? "") != "" ? {
+    "result": "valid",
+    "username": r.json?.login ?? "",
+    "name": r.json?.name ?? "",
+    "scopes": get(r.headers, "x-oauth-scopes", "")
+  } : r.status in [401, 403] ? {
+    "result": "invalid",
+    "reason": "Unauthorized"
+  } : validate.unknown(r)
+'''
+```
+
+Multipart rules declare nearby component rules with `components` and read them
+through `components["rule-id"]?.secret ?? ""` or
+`components["rule-id"]?.captures?.group ?? ""`. Primary-rule named groups are
+available through `finding["captures"]`.
+
+Refer to the default [betterleaks config](https://github.com/betterleaks/betterleaks/blob/main/config/betterleaks.toml) for examples and the [config docs](docs/config.md) for more information about the `betterleaks.toml` config. If you're using Betterleaks in production, it is recommended you maintain your own config instead of extending the upstream default config directly. This keeps your rule set stable across Betterleaks upgrades and lets you review new upstream rules before adopting them.
+
+Test out your rules in the [Betterleaks Playground](https://betterleaks.com/playground)
+
+### Who uses Betterleaks?
+Projects and organizations that run Betterleaks. Open a pull request to add yours!
+- [Aikido Security](https://www.aikido.dev/)
+- [MegaLinter](https://megalinter.io) - open-source linter aggregator for CI, ships Betterleaks out of the box ([Betterleaks page](https://megalinter.io/latest/descriptors/repository_betterleaks/))
+- [Moyai](https://moyai.ai/)
+- [Entire.io](https://entire.io/)
+- [LeakTK](https://github.com/leaktk)

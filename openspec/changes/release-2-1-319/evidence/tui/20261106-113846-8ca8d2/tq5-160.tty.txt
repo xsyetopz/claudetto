@@ -1,0 +1,56 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113846-8ca8d2/config ANTHROPIC_BASE_URL=http://127.0.0.1:63360 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113846-8ca8d2/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113846-8ca8d2/tq5-160.tty.debug
+78
+Claude Codev2.1.319
+Haiku 5.5 · API Usage Billing
+/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113846-8ca8d2/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-113846-8ca8d2/tq5-160.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏵⏵ auto mode on (shift+tab to cycle) · ← for agents[>0q
+ ▝▝   ▝▝ 
+▜██████▘
+ ▝▝   ▝▝ 
+▗▟▛▛█▄
+▜██████▘
+ ▝▝   ▝▝ 
+         
+▐▛▛█ 
+·▜██████·
+~~
+ ▐▛███▛█
+▝▜███▀
+ ▝▝   ▝▝ 
+go 
+
+▂▂
+▛▛
+❯ go                                                                                                                                                            
+✶Contemplating… 
+❯  
+ · esc to interrupt · ← for agents
+✻i…
+Deliberating… 
+Deliberat…
+✽(0s · ↓2 tokens)
+⏺claudetto - ask-user-question (MCP)
+Deliberag…
+(question:"Pickone",options:["Alpha","Beta"])
+◐ medium · /effort
+
+Waiting for permission…
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ ☐ Plugin 
+Pick one
+❯1.Alpha
+2.Beta
+3. Type something.
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+4.Chataboutthis
+Enter to select · ↑/↓ to navigate · Esc to cancel
+
+
+
+
+

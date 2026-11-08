@@ -1,0 +1,53 @@
+{"file":"hooks/limits/named-files.ts","id":"86","mutator":"Regex","line":3,"original":"/^\\s*```/","replacement":"/\\s*```/","status":"killed","ms":9599}
+{"file":"hooks/limits/named-files.ts","id":"88","mutator":"Regex","line":3,"original":"/^\\s*```/","replacement":"/^\\S*```/","status":"killed","ms":6781}
+{"file":"hooks/limits/named-files.ts","id":"91","mutator":"Regex","line":5,"original":"/^!\\s+(\\S.*)$/","replacement":"/!\\s+(\\S.*)$/","status":"killed","ms":11954}
+{"file":"hooks/limits/named-files.ts","id":"92","mutator":"Regex","line":5,"original":"/^!\\s+(\\S.*)$/","replacement":"/^!\\s+(\\S.*)/","status":"killed","ms":12497}
+{"file":"hooks/limits/named-files.ts","id":"93","mutator":"Regex","line":5,"original":"/^!\\s+(\\S.*)$/","replacement":"/^!\\s(\\S.*)$/","status":"killed","ms":7191}
+{"file":"hooks/limits/named-files.ts","id":"99","mutator":"StringLiteral","line":8,"original":"\"touch\"","replacement":"\"\"","status":"killed","ms":7876}
+{"file":"hooks/limits/named-files.ts","id":"102","mutator":"StringLiteral","line":9,"original":"\"mv\"","replacement":"\"\"","status":"killed","ms":14746}
+{"file":"hooks/limits/named-files.ts","id":"111","mutator":"ArrayDeclaration","line":17,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":7777}
+{"file":"hooks/limits/named-files.ts","id":"116","mutator":"StringLiteral","line":21,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":8010}
+{"file":"hooks/limits/named-files.ts","id":"119","mutator":"OptionalChaining","line":22,"original":"USER_COMMAND.exec(text.trim())?.[1]","replacement":"USER_COMMAND.exec(text.trim())[1]","status":"killed","ms":14444}
+{"file":"hooks/limits/named-files.ts","id":"120","mutator":"MethodExpression","line":22,"original":"text.trim()","replacement":"text","status":"killed","ms":7930}
+{"file":"hooks/limits/named-files.ts","id":"121","mutator":"ArrayDeclaration","line":22,"original":"[]","replacement":"[\"Stryker was here\"]","status":"killed","ms":7205}
+{"file":"hooks/limits/named-files.ts","id":"123","mutator":"StringLiteral","line":28,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"survived","ms":11171}
+{"file":"hooks/limits/named-files.ts","id":"124","mutator":"MethodExpression","line":29,"original":"rest.filter((word) => !word.startsWith(\"-\"))","replacement":"rest","status":"killed","ms":11151}
+{"file":"hooks/limits/named-files.ts","id":"127","mutator":"MethodExpression","line":29,"original":"word.startsWith(\"-\")","replacement":"word.endsWith(\"-\")","status":"killed","ms":7343}
+{"file":"hooks/limits/named-files.ts","id":"132","mutator":"ArrayDeclaration","line":31,"original":"[]","replacement":"[\"Stryker was here\"]","status":"survived","ms":7797}
+{"file":"hooks/limits/named-files.ts","id":"137","mutator":"LogicalOperator","line":33,"original":"program === \"git\" && args[0] === \"clone\"","replacement":"program === \"git\" || args[0] === \"clone\"","status":"killed","ms":11278}
+{"file":"hooks/limits/named-files.ts","id":"138","mutator":"ConditionalExpression","line":33,"original":"program === \"git\"","replacement":"true","status":"killed","ms":6662}
+{"file":"hooks/limits/named-files.ts","id":"141","mutator":"ConditionalExpression","line":33,"original":"args[0] === \"clone\"","replacement":"true","status":"killed","ms":6155}
+{"file":"hooks/limits/named-files.ts","id":"146","mutator":"UnaryOperator","line":34,"original":"-1","replacement":"+1","status":"killed","ms":14065}
+{"file":"hooks/limits/open-items.ts","id":"0","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"killed","ms":8386}
+{"file":"hooks/limits/open-items.ts","id":"1","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*/","status":"survived","ms":7393}
+{"file":"hooks/limits/open-items.ts","id":"3","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\S*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"killed","ms":12203}
+{"file":"hooks/limits/open-items.ts","id":"5","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"killed","ms":9202}
+{"file":"hooks/limits/open-items.ts","id":"6","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\D+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"killed","ms":7377}
+{"file":"hooks/limits/open-items.ts","id":"7","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[^.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","status":"killed","ms":10663}
+{"file":"hooks/limits/open-items.ts","id":"8","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s\\[ \\]\\s+(.*\\S)\\s*$/","status":"killed","ms":11677}
+{"file":"hooks/limits/open-items.ts","id":"10","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s(.*\\S)\\s*$/","status":"killed","ms":6527}
+{"file":"hooks/limits/open-items.ts","id":"15","mutator":"Regex","line":3,"original":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/","replacement":"/^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\S*$/","status":"killed","ms":6825}
+{"file":"hooks/limits/open-items.ts","id":"16","mutator":"Regex","line":6,"original":"/(?:^|[\\s`(])!\\s+\\S/","replacement":"/(?:[\\s`(])!\\s+\\S/","status":"killed","ms":12827}
+{"file":"hooks/limits/open-items.ts","id":"18","mutator":"Regex","line":6,"original":"/(?:^|[\\s`(])!\\s+\\S/","replacement":"/(?:^|[\\S`(])!\\s+\\S/","status":"killed","ms":6087}
+{"file":"hooks/limits/open-items.ts","id":"19","mutator":"Regex","line":6,"original":"/(?:^|[\\s`(])!\\s+\\S/","replacement":"/(?:^|[\\s`(])!\\s\\S/","status":"killed","ms":5567}
+{"file":"hooks/limits/open-items.ts","id":"23","mutator":"ArrowFunction","line":16,"original":"(message) => message.role === \"user\" && message.text !== \"\"","replacement":"() => undefined","status":"killed","ms":11910}
+{"file":"hooks/limits/open-items.ts","id":"25","mutator":"ConditionalExpression","line":16,"original":"message.role === \"user\" && message.text !== \"\"","replacement":"false","status":"killed","ms":7533}
+{"file":"hooks/limits/open-items.ts","id":"26","mutator":"LogicalOperator","line":16,"original":"message.role === \"user\" && message.text !== \"\"","replacement":"message.role === \"user\" || message.text !== \"\"","status":"killed","ms":5561}
+{"file":"hooks/limits/open-items.ts","id":"27","mutator":"ConditionalExpression","line":16,"original":"message.role === \"user\"","replacement":"true","status":"killed","ms":12640}
+{"file":"hooks/limits/open-items.ts","id":"28","mutator":"EqualityOperator","line":16,"original":"message.role === \"user\"","replacement":"message.role !== \"user\"","status":"killed","ms":10232}
+{"file":"hooks/limits/open-items.ts","id":"29","mutator":"StringLiteral","line":16,"original":"\"user\"","replacement":"\"\"","status":"killed","ms":7712}
+{"file":"hooks/limits/open-items.ts","id":"30","mutator":"ConditionalExpression","line":16,"original":"message.text !== \"\"","replacement":"true","status":"killed","ms":13326}
+{"file":"hooks/limits/open-items.ts","id":"31","mutator":"EqualityOperator","line":16,"original":"message.text !== \"\"","replacement":"message.text === \"\"","status":"killed","ms":12709}
+{"file":"hooks/limits/open-items.ts","id":"32","mutator":"StringLiteral","line":16,"original":"\"\"","replacement":"\"Stryker was here!\"","status":"killed","ms":7209}
+{"file":"hooks/limits/open-items.ts","id":"33","mutator":"MethodExpression","line":18,"original":"messages.slice(start + 1)","replacement":"messages","status":"killed","ms":7081}
+{"file":"hooks/limits/open-items.ts","id":"34","mutator":"ArithmeticOperator","line":18,"original":"start + 1","replacement":"start - 1","status":"killed","ms":12967}
+{"file":"hooks/limits/open-items.ts","id":"35","mutator":"ArrowFunction","line":18,"original":"(message) => message.toolUses","replacement":"() => undefined","status":"killed","ms":7032}
+{"file":"hooks/limits/open-items.ts","id":"39","mutator":"ConditionalExpression","line":20,"original":"use.isError === true","replacement":"true","status":"killed","ms":6157}
+{"file":"hooks/limits/open-items.ts","id":"45","mutator":"ConditionalExpression","line":22,"original":"use.tool === \"AskUserQuestion\" && use.text === undefined","replacement":"true","status":"killed","ms":12364}
+{"file":"hooks/limits/open-items.ts","id":"47","mutator":"LogicalOperator","line":22,"original":"use.tool === \"AskUserQuestion\" && use.text === undefined","replacement":"use.tool === \"AskUserQuestion\" || use.text === undefined","status":"killed","ms":7876}
+{"file":"hooks/limits/open-items.ts","id":"48","mutator":"ConditionalExpression","line":22,"original":"use.tool === \"AskUserQuestion\"","replacement":"true","status":"killed","ms":6113}
+{"file":"hooks/limits/open-items.ts","id":"51","mutator":"ConditionalExpression","line":22,"original":"use.text === undefined","replacement":"true","status":"killed","ms":9231}
+{"file":"hooks/limits/open-items.ts","id":"55","mutator":"MethodExpression","line":35,"original":"lines.findLast((line) => line.trim() !== \"\")?.trim()","replacement":"lines.findLast(line => line.trim() !== \"\")","status":"killed","ms":9431}
+{"file":"hooks/limits/open-items.ts","id":"56","mutator":"OptionalChaining","line":35,"original":"lines.findLast((line) => line.trim() !== \"\")?.trim","replacement":"lines.findLast(line => line.trim() !== \"\").trim","status":"survived","ms":6082}
+{"file":"hooks/limits/open-items.ts","id":"61","mutator":"MethodExpression","line":35,"original":"line.trim()","replacement":"line","status":"killed","ms":8826}
+{"file":"hooks/limits/open-items.ts","id":"83","mutator":"OptionalChaining","line":44,"original":"last?.endsWith","replacement":"last.endsWith","status":"survived","ms":10669}

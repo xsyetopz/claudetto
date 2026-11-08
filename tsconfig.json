@@ -1,28 +1,14 @@
 {
 	"extends": "./plugins/claudetto/tsconfig.json",
 	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
 		"erasableSyntaxOnly": true,
-		"verbatimModuleSyntax": true,
-		"typeRoots": [
-			"./node_modules",
-			"./node_modules/@types",
-			"./plugins/claudetto/.claude-plugin/types"
-		],
-		"types": [
-			"bun-types",
-			"claude-code",
-			"claude-code-mcp",
-			"claude-code-tools",
-			"node"
-		]
+		"verbatimModuleSyntax": true
 	},
-	"exclude": ["node_modules"],
-	"include": [
-		"plugins/**/*.ts",
-		"tests/**/*.ts",
-		"claudekit/**/*.ts",
-		"tools/**/*.ts"
+	"include": ["plugins/**/*.ts"],
+	"exclude": ["node_modules", "plugins/*/.claude-plugin/types/**"],
+	"files": [
+		"plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts",
+		"plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts",
+		"plugins/claudetto/.claude-plugin/types/claude-code-mcp/index.d.ts"
 	]
 }

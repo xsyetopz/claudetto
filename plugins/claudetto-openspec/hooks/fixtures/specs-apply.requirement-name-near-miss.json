@@ -1,0 +1,2539 @@
+[
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > adds a requirement whose name is distinct (control)",
+		"seq": 0,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-mpEr7w",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > adds a requirement whose name is distinct (control)",
+		"seq": 1,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-mpEr7w",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > still refuses an exact duplicate name with different content (control)",
+		"seq": 2,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-Jj0XtS",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > still refuses an exact duplicate name with different content (control)",
+		"seq": 3,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-Jj0XtS",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing ADDED failed for header \"### Requirement: Late Fees\" - already exists",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses a name that differs only in case from an existing requirement",
+		"seq": 4,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-gbJHK8",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses a name that differs only in case from an existing requirement",
+		"seq": 5,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-gbJHK8",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing ADDED failed for header \"### Requirement: late fees\" - \"### Requirement: Late Fees\" already exists and differs only in case or spacing; use MODIFIED with that exact header to change it, or choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses a name that differs only in interior whitespace",
+		"seq": 6,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-ZAD4Si",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late  Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late  Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses a name that differs only in interior whitespace",
+		"seq": 7,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-ZAD4Si",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late  Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Late  Fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing ADDED failed for header \"### Requirement: Late  Fees\" - \"### Requirement: Late Fees\" already exists and differs only in case or spacing; use MODIFIED with that exact header to change it, or choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses a case variant even when its body matches the existing requirement",
+		"seq": 8,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-1wyr0A",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: LATE FEES\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: LATE FEES\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses a case variant even when its body matches the existing requirement",
+		"seq": 9,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-1wyr0A",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: LATE FEES\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: LATE FEES\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing ADDED failed for header \"### Requirement: LATE FEES\" - \"### Requirement: Late Fees\" already exists and differs only in case or spacing; use MODIFIED with that exact header to change it, or choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses two ADDED requirements in one delta that differ only in case",
+		"seq": 10,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-Jcb6bY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n\n### Requirement: credit notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n\n### Requirement: credit notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > refuses two ADDED requirements in one delta that differ only in case",
+		"seq": 11,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-Jcb6bY",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n\n### Requirement: credit notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n\n### Requirement: credit notes\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing ADDED failed for header \"### Requirement: credit notes\" - \"### Requirement: Credit Notes\" already exists and differs only in case or spacing; use MODIFIED with that exact header to change it, or choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > allows a case variant of a requirement the same delta removes",
+		"seq": 12,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-beDsrs",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: replaced by the stricter policy below\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: replaced by the stricter policy below\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > allows a case variant of a requirement the same delta removes",
+		"seq": 13,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-beDsrs",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: replaced by the stricter policy below\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: replaced by the stricter policy below\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 1,
+					"renamed": 0
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > allows a case variant of a requirement the same delta renames away",
+		"seq": 14,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-Nu0ADT",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: Overdue Fees`\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: Overdue Fees`\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > ADDED > allows a case variant of a requirement the same delta renames away",
+		"seq": 15,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-Nu0ADT",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: Overdue Fees`\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: Overdue Fees`\n\n## ADDED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Overdue Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n\n### Requirement: late fees\nThe system SHALL apply a late fee of 10 percent to invoices overdue by 15 days.\n\n#### Scenario: Overdue\n- **WHEN** an invoice is overdue\n- **THEN** a late fee is applied\n",
+				"counts": {
+					"added": 1,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 1
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > still refuses a target that exists exactly (control)",
+		"seq": 16,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-4HzszR",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > still refuses a target that exists exactly (control)",
+		"seq": 17,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-4HzszR",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing RENAMED failed for header \"### Requirement: Late Fees\" - target already exists",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that differs only in case from another requirement",
+		"seq": 18,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-CYtH1S",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that differs only in case from another requirement",
+		"seq": 19,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-CYtH1S",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing RENAMED failed for header \"### Requirement: LATE FEES\" - \"### Requirement: Late Fees\" already exists and differs only in case or spacing; choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that differs only in interior whitespace from another requirement",
+		"seq": 20,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-eqGTsq",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late   Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late   Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that differs only in interior whitespace from another requirement",
+		"seq": 21,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-eqGTsq",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late   Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late   Fees`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing RENAMED failed for header \"### Requirement: Late   Fees\" - \"### Requirement: Late Fees\" already exists and differs only in case or spacing; choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > still allows a case-only rename of a requirement to its own name",
+		"seq": 22,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-5ESSeM",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > still allows a case-only rename of a requirement to its own name",
+		"seq": 23,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-5ESSeM",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Late Fees`\n- TO: `### Requirement: LATE FEES`\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"rebuilt": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: LATE FEES\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n",
+				"counts": {
+					"added": 0,
+					"modified": 0,
+					"removed": 0,
+					"renamed": 1
+				},
+				"warnings": [],
+				"noRequirementBlocks": false,
+				"unaccountedContent": []
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that collides with a requirement the same delta removes, as an exact target does",
+		"seq": 24,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-CJLrF4",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that collides with a requirement the same delta removes, as an exact target does",
+		"seq": 25,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-CJLrF4",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: Late Fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing RENAMED failed for header \"### Requirement: Late Fees\" - target already exists",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that collides with a requirement the same delta removes, as an exact target does",
+		"seq": 26,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-CJLrF4",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: late fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: late fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > RENAMED > refuses a target that collides with a requirement the same delta removes, as an exact target does",
+		"seq": 27,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-CJLrF4",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: late fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## RENAMED Requirements\n- FROM: `### Requirement: Invoice Generation`\n- TO: `### Requirement: late fees`\n\n## REMOVED Requirements\n### Requirement: Late Fees\n**Reason**: gone\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing RENAMED failed for header \"### Requirement: late fees\" - \"### Requirement: Late Fees\" already exists and differs only in case or spacing; choose a distinct name",
+				"code": null
+			}
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > MODIFIED > still refuses a header that matches an existing requirement only by case",
+		"seq": 28,
+		"kind": "apply.findSpecUpdates",
+		"root": "openspec-near-miss-T1CqYa",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c",
+		"args": ["$ROOT/openspec/changes/c", "$ROOT/openspec/specs"],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee to invoices overdue by 45 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 45 days overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee to invoices overdue by 45 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 45 days overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"returned": [
+				{
+					"id": "billing",
+					"sourceRoot": "$ROOT/openspec/changes/c/specs",
+					"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+					"targetRoot": "$ROOT/openspec/specs",
+					"target": "$ROOT/openspec/specs/billing/spec.md",
+					"exists": true
+				}
+			]
+		}
+	},
+	{
+		"file": "specs-apply.requirement-name-near-miss.test.ts",
+		"test": "buildUpdatedSpec (requirement name near-misses) > MODIFIED > still refuses a header that matches an existing requirement only by case",
+		"seq": 29,
+		"kind": "apply.buildUpdatedSpec",
+		"root": "openspec-near-miss-T1CqYa",
+		"abs": "$ROOT",
+		"hint": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+		"args": [
+			{
+				"id": "billing",
+				"sourceRoot": "$ROOT/openspec/changes/c/specs",
+				"source": "$ROOT/openspec/changes/c/specs/billing/spec.md",
+				"targetRoot": "$ROOT/openspec/specs",
+				"target": "$ROOT/openspec/specs/billing/spec.md",
+				"exists": true
+			},
+			"c",
+			{
+				"silent": true
+			}
+		],
+		"before": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee to invoices overdue by 45 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 45 days overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"after": {
+			"openspec": {
+				"dir": true
+			},
+			"openspec/changes": {
+				"dir": true
+			},
+			"openspec/changes/c": {
+				"dir": true
+			},
+			"openspec/changes/c/specs": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing": {
+				"dir": true
+			},
+			"openspec/changes/c/specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: late fees\nThe system SHALL apply a late fee to invoices overdue by 45 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 45 days overdue\n- **THEN** a late fee is applied\n"
+			},
+			"openspec/specs": {
+				"dir": true
+			},
+			"openspec/specs/billing": {
+				"dir": true
+			},
+			"openspec/specs/billing/spec.md": {
+				"text": "# billing Specification\n\n## Purpose\nDefines how billing behaves for customers and operators.\n\n## Requirements\n### Requirement: Invoice Generation\nThe system SHALL generate an invoice for every completed billing period.\n\n#### Scenario: Period closes\n- **WHEN** a billing period closes\n- **THEN** an invoice is generated\n\n### Requirement: Late Fees\nThe system SHALL apply a late fee to invoices overdue by 30 days.\n\n#### Scenario: Thirty days overdue\n- **WHEN** an invoice is 30 days overdue\n- **THEN** a late fee is applied\n"
+			}
+		},
+		"outcome": {
+			"threw": {
+				"error": "billing MODIFIED failed for header \"### Requirement: late fees\" - not found",
+				"code": null
+			}
+		}
+	}
+]

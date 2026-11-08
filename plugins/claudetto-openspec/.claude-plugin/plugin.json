@@ -1,0 +1,13 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
+	"name": "claudetto-openspec",
+	"version": "2.1.319",
+	"description": "OpenSpec workflow in one deferred tool and six skills. Uses the upstream layout, runs no openspec binary, makes no network calls, and won't archive a change with an unticked task.",
+	"author": {
+		"name": "xsyetopz"
+	},
+	"repository": "https://github.com/xsyetopz/claudetto",
+	"homepage": "https://github.com/xsyetopz/claudetto",
+	"license": "MIT",
+	"keywords": ["openspec", "spec", "workflow"]
+}

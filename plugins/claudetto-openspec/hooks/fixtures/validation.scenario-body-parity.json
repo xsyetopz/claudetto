@@ -1,0 +1,250 @@
+[
+	{
+		"file": "validation.scenario-body-parity.test.ts",
+		"test": "validate rejects a requirement whose only scenario is empty > control: accepts a scenario with steps",
+		"seq": 0,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-body-7ZMaGk",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-body-parity.test.ts",
+		"test": "validate rejects a requirement whose only scenario is empty > rejects a ADDED requirement whose only scenario has no body, naming it",
+		"seq": 1,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-body-9sK4cQ",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\" must include at least one scenario (a scenario header with no body under it does not count; add its steps, e.g. \"- **WHEN** ...\" and \"- **THEN** ...\")"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-body-parity.test.ts",
+		"test": "validate rejects a requirement whose only scenario is empty > rejects a MODIFIED requirement whose only scenario has no body, naming it",
+		"seq": 2,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-body-Ps3KNm",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## MODIFIED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "billing/spec.md",
+						"message": "MODIFIED \"Credit Notes\" must include at least one scenario (a scenario header with no body under it does not count; add its steps, e.g. \"- **WHEN** ...\" and \"- **THEN** ...\")"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-body-parity.test.ts",
+		"test": "validate rejects a requirement whose only scenario is empty > rejects a scenario whose body is only whitespace",
+		"seq": 3,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-body-jfUULT",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n   \n\t\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Invoice voided\n   \n\t\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "billing/spec.md",
+						"message": "ADDED \"Credit Notes\" must include at least one scenario (a scenario header with no body under it does not count; add its steps, e.g. \"- **WHEN** ...\" and \"- **THEN** ...\")"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.scenario-body-parity.test.ts",
+		"test": "validate rejects a requirement whose only scenario is empty > accepts two scenarios when only one is empty, as archive does",
+		"seq": 4,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "openspec-scenario-body-TXymNM",
+		"abs": "$ROOT",
+		"hint": "$ROOT",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT"]
+		},
+		"before": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Not written yet\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			}
+		},
+		"after": {
+			"specs": {
+				"dir": true
+			},
+			"specs/billing": {
+				"dir": true
+			},
+			"specs/billing/spec.md": {
+				"text": "## ADDED Requirements\n### Requirement: Credit Notes\nThe system SHALL issue a credit note when an invoice is voided.\n\n#### Scenario: Not written yet\n\n#### Scenario: Invoice voided\n- **WHEN** an invoice is voided\n- **THEN** a credit note is issued\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	}
+]

@@ -1,0 +1,1580 @@
+bunx biome check --error-on-warnings
+/Users/krystian/CodeProjects/xsyetopz/claudetto/node_modules/.bun/biome-json@github+xsyetopz+biome.jsonc+387e04c+6896990797d7a805/node_modules/biome-json/templates/strict.jsonc:11:13 deserialize ━━━━━━━━━━
+
+  i The configuration schema version does not match the CLI version 2.6.5
+  
+     9 │ //   (React, Next.js, and others) keep their own severity, which can be "warn".
+    10 │ {
+  > 11 │ 	"$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
+       │ 	           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 │ 	"vcs": {
+    13 │ 		"enabled": true,
+  
+  i   Expected:                     2.6.5
+      Found:                        2.6.3
+  
+  
+  i Run the command biome migrate to migrate the configuration file.
+  
+
+Checked 170 files in 458ms. No fixes applied.
+bunx markdownlint-cli2
+markdownlint-cli2 v0.24.0 (markdownlint v0.42.0)
+Finding: **/*.md !external/** !**/node_modules/** !**/.agents/** !**/.claude/** !**/.openspec/** !**/.claude/claudetto/** !openspec/** !plugins/** !claudekit/**
+Linting: 3 files
+Summary: 0 issues in 0 files
+bunx jscpd --no-tips plugins tools
+Using config from .jscpd.json
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto-you-should-know/hooks/register.test.ts[39m[22m [468:23 - 473:58] (6 lines, 81 tokens)
+   claudetto-you-should-know/hooks/register.test.ts [935:4 - 941:58]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/decide.test.ts[39m[22m [69:44 - 74:30] (6 lines, 52 tokens)
+   claudetto/hooks/setup.test.ts [522:41 - 528:30]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/delegation.test.ts[39m[22m [175:43 - 180:8] (6 lines, 51 tokens)
+   claudetto/hooks/surface.test.ts [212:49 - 217:8]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/gate.test.ts[39m[22m [37:96 - 43:20] (7 lines, 54 tokens)
+   claudetto/hooks/gate.test.ts [62:47 - 68:20]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/gate.test.ts[39m[22m [37:96 - 43:20] (7 lines, 54 tokens)
+   claudetto/hooks/gate.test.ts [85:55 - 91:20]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/gate.test.ts[39m[22m [38:9 - 47:9] (10 lines, 58 tokens)
+   claudetto/hooks/gate.test.ts [370:3 - 379:9]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/handoff.test.ts[39m[22m [35:2 - 43:46] (9 lines, 59 tokens)
+   claudetto/hooks/hygiene.test.ts [20:2 - 28:46]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/handoff.test.ts[39m[22m [558:45 - 565:45] (8 lines, 50 tokens)
+   claudetto/hooks/handoff.test.ts [570:47 - 577:45]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/hygiene.test.ts[39m[22m [19:2 - 32:9] (14 lines, 112 tokens)
+   claudetto/hooks/surface.test.ts [301:2 - 313:37]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/limits/hold.test.ts[39m[22m [148:29 - 155:29] (8 lines, 58 tokens)
+   claudetto/hooks/limits/hold.test.ts [236:57 - 243:29]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/limits/stop.test.ts[39m[22m [10:13 - 15:23] (6 lines, 78 tokens)
+   claudetto/hooks/limits/stop.test.ts [276:33 - 281:23]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/setup.test.ts[39m[22m [598:59 - 604:21] (7 lines, 52 tokens)
+   claudetto/hooks/setup.test.ts [649:66 - 655:21]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/setup.test.ts[39m[22m [692:56 - 697:7] (6 lines, 57 tokens)
+   claudetto/hooks/setup.test.ts [717:70 - 722:7]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/setup.test.ts[39m[22m [693:73 - 700:21] (8 lines, 53 tokens)
+   claudetto/hooks/setup.test.ts [735:3 - 742:21]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/setup/settings.test.ts[39m[22m [273:28 - 323:3] (51 lines, 195 tokens)
+   claudetto/hooks/setup/settings.ts [120:35 - 170:4]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/surface.test.ts[39m[22m [128:64 - 133:59] (6 lines, 65 tokens)
+   claudetto/hooks/surface.test.ts [246:61 - 251:58]
+[1mClone found (typescript)[22m
+ - [1m[32mclaudetto/hooks/surface.test.ts[39m[22m [128:64 - 133:59] (6 lines, 65 tokens)
+   claudetto/hooks/surface.test.ts [259:22 - 264:59]
+[1mClone found (typescript)[22m
+ - [1m[32mhygiene/sweep.test.ts[39m[22m [50:52 - 56:7] (7 lines, 51 tokens)
+   hygiene/sweep.test.ts [89:50 - 95:7]
+[1mClone found (typescript)[22m
+ - [1m[32mhygiene/sweep.test.ts[39m[22m [53:60 - 63:6] (11 lines, 69 tokens)
+   hygiene/sweep.test.ts [66:60 - 76:6]
+[90m┌────────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐[39m
+[90m│[39m[31m Format     [39m[90m│[39m[31m Files analyzed [39m[90m│[39m[31m Total lines [39m[90m│[39m[31m Total tokens [39m[90m│[39m[31m Clones found [39m[90m│[39m[31m Duplicated lines [39m[90m│[39m[31m Duplicated tokens [39m[90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m json       [90m│[39m 4              [90m│[39m 211         [90m│[39m 725          [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m typescript [90m│[39m 130            [90m│[39m 30966       [90m│[39m 167347       [90m│[39m 19           [90m│[39m 189 (0.61%)      [90m│[39m 1314 (0.79%)      [90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m [1mTotal:[22m     [90m│[39m 134            [90m│[39m 31177       [90m│[39m 168072       [90m│[39m 19           [90m│[39m 189 (0.61%)      [90m│[39m 1314 (0.78%)      [90m│[39m
+[90m└────────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘[39m
+[90mFound 19 clones.[39m
+[90mtime: 94.226ms[39m
+⧗   --- input ---
+feat(evals): run the classifier A/B with `just eval --classifier`
+
+Twelve scripted actions, half must-block and half must-allow, run in four
+
+arms: the built-in classifier, the claudetto rule suite in its place, and the
+claudetto `PreToolUse` hook on `claude-haiku-5-5` and `claude-sonnet-5-5`.
+A fake Messages API plays the agent and forwards only classifier requests
+upstream. Each session is graded by whether the action's `tool_use_id`
+appears in `permission_denials`.
+
+Plan mode prints a price ceiling: input at the 5-minute cache write rate and
+each reply at the `max_tokens` its request sent (64 and 8,192 for the two
+built-in stages, 2,248 for the hook).
+
+`startFakeApi` takes the text to answer with, so a fake upstream can return a
+verdict.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+⚠   footer must have leading blank line [footer-leading-blank]
+
+⚠   found 0 problems, 1 warnings
+ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+
+env -u CLAUDE_CODE_SESSION_ID bun test ./tools ./plugins/claudetto-openspec/hooks/fixtures.spec.ts ./plugins/claudetto-openspec/hooks/upstream.spec.ts ./plugins/claudetto/hooks/secrets.spec.ts "$@"
+bun test v1.4.4 (38afee6c8)
+
+plugins/claudetto-openspec/hooks/fixtures.spec.ts:
+archive {"excluded: upstream's retireSpec unit takes a caller-chosen target and root, injected failures, or a return value; the plugin's retirement is derived from the id and replayed through archive.execute":5,"pass":196,"diverged: noValidate not carried: refused as invalid":16,"diverged: open tasks refused (#2006)":7,"diverged: skipSpecs+noValidate not carried: refused as invalid":2,"diverged: skipSpecs not carried: specs differ, the rest of the tree equal":4,"diverged: noValidate+skipSpecs not carried: specs differ, the rest of the tree equal":3,"excluded: dangling link":7,"excluded: injected fault":33,"excluded: injected clock":2,"diverged: noValidate not carried: specs differ, the rest of the tree equal":1,"diverged: skipSpecs not carried: refused as invalid":1,"diverged: prompt not carried: refused as invalid":4,"diverged: prompt not carried: specs differ, the rest of the tree equal":3,"diverged: prompt answered no: the tool has no prompt and archives":3,"diverged: upstream test spies validateSpecContent to force a failure (plugin validates the rebuilt spec the same, non-strict)":1,"diverged: no change name: tool asks for one":5,"diverged: noValidate not carried: emptied spec retired":1,"diverged: spec.md link leaving the specs tree refused (upstream retires the link and keeps its target)":9,"diverged: noValidate+prompt not carried: specs differ, the rest of the tree equal":1}
+validation {"excluded: upstream's proposal-prose pass is informative: archive prints it and never blocks on it, and validate never calls it":2,"pass":61,"diverged: extra stray-file error (#2173)":1}
+validation.archive-preflight {"excluded: upstream fs failure injected with vi.mock":4,"upstream threw: plugin threw":17,"pass":49,"diverged: warning->error (#2195)":2}
+validation.enriched-messages {"excluded: upstream's proposal-prose pass is informative: archive prints it and never blocks on it, and validate never calls it":1,"pass":2}
+validation.skip-specs {"excluded: upstream's proposal-prose pass is informative: archive prints it and never blocks on it, and validate never calls it":3,"pass":19,"diverged: extra stray-file error (#2173)":3}
+specs-apply.comment-masking.security {"excluded: the recording kept no delta file (the stress input is generated at test time)":2}
+specs-apply.project-linked-spec {"excluded: a link or file swapped between upstream's resolve and its write, injected with vi.spyOn":3,"pass":12,"upstream threw: plugin threw":2}
+specs-apply.security {"excluded: a link or file swapped between upstream's resolve and its write, injected with vi.spyOn":1,"upstream threw: plugin threw":3,"pass":8}
+task-checkboxes {"pass":41}
+task-numbering {"pass":7}
+misplaced-delta-files {"pass":25,"diverged: extra stray-file error (#2173)":1,"diverged: noValidate not carried: refused as invalid":1}
+validation.purpose-placeholder {"pass":12}
+validation.scenario-body-parity {"pass":5}
+validation.scenario-loss {"pass":36,"upstream threw: plugin threw":11}
+validation.scenario-steps {"pass":17}
+validation.unknown-metadata-keys {"pass":6}
+specs-apply.fence-preservation {"pass":15,"diverged: line endings / blank runs (serialization)":1}
+specs-apply.line-endings {"pass":8,"diverged: line endings / blank runs (serialization)":4}
+specs-apply.requirement-name-near-miss {"pass":19,"upstream threw: plugin threw":11}
+specs-apply.salvage {"pass":28}
+specs-apply.serialization {"pass":12,"diverged: line endings / blank runs (serialization)":2}
+specs-apply.symlink-escape.security {"pass":2}
+
+ 836 pass
+ 0 fail
+ 932 expect() calls
+Ran 836 tests across 12 files. [6.70s]
+claude plugin validate --strict plugins/claudetto
+Validating plugin manifest: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/.claude-plugin/plugin.json
+
+Validating hooks: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto/hooks/hooks.json
+
+  ❯ ./register.ts hooks: turn.step, tool.call, agent.spawn, classic.PostToolUseFailure, tool.check{tool=/"."/}, tool.call{tool=Edit|NotebookEdit|Write}, classic.Stop, classic.SubagentStop, prompt.submit, tool.call{tool=Bash}, command.run{command=claudetto:setup}, command.run{command=statusline}, command.describe{command=statusline}, skill.prompt{skill=statusline}, classic.SessionStart{source=startup}, prompt.compose, tool.describe{tool=?}, prompt.attachment{type=plan_mode}, skill.prompt{skill=init}, classic.SessionStart{source=startup|clear|compact}, tool.call{tool=Read}, settings.read, command.run{command=?}, command.describe{command=?}, agent.offer, tool.describe{tool=Agent}, tool.call{tool=Agent}, prompt.attachment{type=agent_listing_delta}, tool.call{tool=mcp__claudetto__ask-user-question}, tool.call{tool=AskUserQuestion}, tool.describe{tool=AskUserQuestion}, tool.call{tool=mcp__claudetto__monitor}, tool.call{tool=Monitor}, tool.describe{tool=Monitor}, tool.call{tool=ToolSearch}, tool.… [+543 chars]
+  ❯ ./register.ts gating hook without .catch: tool.call
+  ❯ ./register.ts gating hook without .catch: agent.spawn
+  ❯ ./register.ts gating hook without .catch: classic.PostToolUseFailure
+  ❯ ./register.ts gating hook without .catch: tool.check{tool=/"."/}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=Edit|NotebookEdit|Write}
+  ❯ ./register.ts gating hook without .catch: classic.Stop
+  ❯ ./register.ts gating hook without .catch: classic.SubagentStop
+  ❯ ./register.ts gating hook without .catch: prompt.submit
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=Bash}
+  ❯ ./register.ts gating hook without .catch: command.run{command=claudetto:setup}
+  ❯ ./register.ts gating hook without .catch: command.run{command=statusline}
+  ❯ ./register.ts gating hook without .catch: classic.SessionStart{source=startup}
+  ❯ ./register.ts gating hook without .catch: classic.SessionStart{source=startup|clear|compact}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=Read}
+  ❯ ./register.ts gating hook without .catch: settings.read
+  ❯ ./register.ts gating hook without .catch: command.run{command=?}
+  ❯ ./register.ts gating hook without .catch: agent.offer
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=Agent}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=mcp__claudetto__ask-user-question}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=AskUserQuestion}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=mcp__claudetto__monitor}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=Monitor}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=ToolSearch}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=?}
+  ❯ ./register.ts gating hook without .catch: session.compact{trigger=manual|auto|plugin}
+  ❯ ./register.ts gating hook without .catch: command.run{command=goal}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=/"^mcp__claudetto__handoff$"/}
+  ❯ ./register.ts gating hook without .catch: classic.SessionStart
+  ❯ ./register.ts gating hook without .catch: classic.SessionStart{source=startup}
+  ❯ ./register.ts gating hook without .catch: classic.StopFailure
+  ❯ ./register.ts gating hook with .catch: tool.check{tool=/"^"/}
+  ❯ ./register.ts gating hook without .catch: classic.PermissionRequest
+  ❯ ./register.ts gating hook without .catch: classic.PermissionDenied
+  ❯ ./register.ts gating hook without .catch: prompt.submit{origin has {kind=/"^(?:composer|bridge)$"/}}
+  ❯ ./register.ts gating hook with .catch: tool.call{tool=/"^"/}
+  ❯ ./register.ts calls: $.agent.list, $.clock.after, $.clock.now, $.clock.sleep, $.command.run (via callSession, handoverSession), $.env.get, $.fs.exists, $.fs.list (via mtimeOf, namesIn, readBack), $.fs.read (via copyMisnamed, ioOf, promptsOf, readBack, textOf, userSettings), $.fs.stat (via dayOf), $.fs.write, $.http.fetch, $.model.fork (via handoverSession), $.process.run, $.prompt.submit (via callSession, handoverSession, readBack), $.session.cwd (via ioOf, presentFiles), $.session.id, $.session.messages (via openBlock), $.session.root, $.session.usage, $.session.version, $.settings.read, $.store.get (via readBack, reportRule, toolNotice), $.store.set (via callSession, ioOf, offerRule, readBack, reportRule, toolNotice), $.tool.call, $.tool.register, $.turn.abort (via callSession), $.ui.ask, $.ui.log, $.ui.notify
+  ❯ ./register.ts env writes: nothing
+  ❯ ./register.ts env reads: BUN_INSTALL_CACHE_DIR, CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, CLAUDE_CONFIG_DIR, GOCACHE, GOMODCACHE, HOME, PATH, PIP_CACHE_DIR, XDG_CACHE_HOME, npm_config_cache
+
+Plugin directory checks for /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto. The plugin directory is the catalog that plugins are submitted to; this is a subset of what it runs.
+
+✘ Found 1 problem the plugin directory refuses a submission for:
+
+  ❯ README.md: README missing (README_MISSING). This plugin has no README.md. People who install it and the directory's automated review read the README to learn what it does; the first line of a README in the plugin folder also stands in as the listing summary when plugin.json has no description.
+    Fix: Add a README.md to the plugin folder describing what the plugin does, how to use it, and any setup it needs, in at least 40 words. A README at the repository root also counts for a plugin in a sub-folder.
+
+About these checks:
+
+  ❯ The repository root was taken to be /Users/krystian/CodeProjects/xsyetopz/claudetto, the nearest parent folder with a .git folder or file. No README that counts (a regular file with one of the file names the plugin directory accepts) was found there either. For a plugin submitted from a git repository, the repository root is the top folder of that repository, with only what is committed there, so check that the folder named above is that top folder.
+  ❯ hooks/hooks.json names a hooks module (a code file listed under `modules`). The plugin directory has rules of its own for such code, and these checks apply none of them, so passing here does not mean the directory accepts the plugin. The developer portal's own validation applies those rules.
+
+These plugin directory checks do not change the result below. To fail on problems the directory refuses a submission for, run this command with --profile directory.
+
+The directory also runs a safety scan and a policy review that this command does not.
+
+Digest: sha256-hEIpzUFLjXcN+xT9aldntbXVzZN+ga9aCi4g+c0VaFI=
+
+✔ Validation passed
+claude plugin validate --strict plugins/claudetto-you-should-know
+Validating plugin manifest: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto-you-should-know/.claude-plugin/plugin.json
+
+Validating hooks: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto-you-should-know/hooks/hooks.json
+
+  ❯ ./register.ts hooks: turn.step, prompt.submit, session.end, ui.render{component=AbovePrompt}
+  ❯ ./register.ts gating hook without .catch: prompt.submit
+  ❯ ./register.ts calls: $.clock.after (via askWhy, considerCheck), $.model.complete (via runCheck), $.prompt.fill (via chat), $.prompt.read (via chat), $.prompt.submit (via chat), $.session.id, $.session.surfaces (via considerCheck), $.store.get (via loadCount, loadLines, loadRow, saveRow), $.store.set (via learn, saveBackoff, saveRow, showReply), $.ui.invalidate (via expire, press, settleTyped, showReply), $.ui.resolve, $.ui.toast (via chat)
+
+Plugin directory checks for /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto-you-should-know. The plugin directory is the catalog that plugins are submitted to; this is a subset of what it runs.
+
+✘ Found 1 problem the plugin directory refuses a submission for:
+
+  ❯ README.md: README missing (README_MISSING). This plugin has no README.md. People who install it and the directory's automated review read the README to learn what it does; the first line of a README in the plugin folder also stands in as the listing summary when plugin.json has no description.
+    Fix: Add a README.md to the plugin folder describing what the plugin does, how to use it, and any setup it needs, in at least 40 words. A README at the repository root also counts for a plugin in a sub-folder.
+
+About these checks:
+
+  ❯ The repository root was taken to be /Users/krystian/CodeProjects/xsyetopz/claudetto, the nearest parent folder with a .git folder or file. No README that counts (a regular file with one of the file names the plugin directory accepts) was found there either. For a plugin submitted from a git repository, the repository root is the top folder of that repository, with only what is committed there, so check that the folder named above is that top folder.
+  ❯ hooks/hooks.json names a hooks module (a code file listed under `modules`). The plugin directory has rules of its own for such code, and these checks apply none of them, so passing here does not mean the directory accepts the plugin. The developer portal's own validation applies those rules.
+
+These plugin directory checks do not change the result below. To fail on problems the directory refuses a submission for, run this command with --profile directory.
+
+The directory also runs a safety scan and a policy review that this command does not.
+
+Digest: sha256-hsHCNoDWkFe+oH7NY+uHFWhRi2sjyvsE//6aPhV2HGM=
+
+✔ Validation passed
+claude plugin validate --strict plugins/claudetto-openspec
+Validating plugin manifest: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto-openspec/.claude-plugin/plugin.json
+
+Validating hooks: /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto-openspec/hooks/hooks.json
+
+  ❯ ./register.ts hooks: session.start, tool.call{tool=?}
+  ❯ ./register.ts gating hook without .catch: tool.call{tool=?}
+  ❯ ./register.ts calls: $.clock.now, $.fs.exists, $.fs.list, $.fs.read, $.fs.stat, $.fs.write, $.process.run, $.session.root, $.tool.register
+
+Plugin directory checks for /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto-openspec. The plugin directory is the catalog that plugins are submitted to; this is a subset of what it runs.
+
+✘ Found 1 problem the plugin directory refuses a submission for:
+
+  ❯ README.md: README missing (README_MISSING). This plugin has no README.md. People who install it and the directory's automated review read the README to learn what it does; the first line of a README in the plugin folder also stands in as the listing summary when plugin.json has no description.
+    Fix: Add a README.md to the plugin folder describing what the plugin does, how to use it, and any setup it needs, in at least 40 words. A README at the repository root also counts for a plugin in a sub-folder.
+
+⚠ Found 1 plugin directory warning:
+
+  ❯ .claude-plugin/plugin.json icon: No icon (ICON_MISSING). No icon found in the plugin. The validator looked for `icon` in plugin.json and for a file at .claude-plugin/icon.png or .svg, assets/icon.png or .svg, or a similar path.
+    Fix: Add a square PNG to the plugin folder at .claude-plugin/icon.png, or set `icon` in plugin.json to the path of a square PNG or JPEG in the plugin: 512 to 2048 px on each side, under 2 MB. SVG and WebP are not accepted. That file may become the listing icon only once: the first time the plugin is saved or submitted in the developer portal. Adding or changing it later does not change the icon.
+
+About these checks:
+
+  ❯ The repository root was taken to be /Users/krystian/CodeProjects/xsyetopz/claudetto, the nearest parent folder with a .git folder or file. No README that counts (a regular file with one of the file names the plugin directory accepts) was found there either. For a plugin submitted from a git repository, the repository root is the top folder of that repository, with only what is committed there, so check that the folder named above is that top folder.
+  ❯ hooks/hooks.json names a hooks module (a code file listed under `modules`). The plugin directory has rules of its own for such code, and these checks apply none of them, so passing here does not mean the directory accepts the plugin. The developer portal's own validation applies those rules.
+
+These plugin directory checks do not change the result below. To fail on problems the directory refuses a submission for, run this command with --profile directory.
+
+The directory also runs a safety scan and a policy review that this command does not.
+
+Digest: sha256-rZRKzbJtaWFsJqDiFP0zcWh31eOig9jqXmYJkobwDAI=
+
+✔ Validation passed
+claude plugin validate --strict .claude-plugin/marketplace.json
+Validating marketplace manifest: /Users/krystian/CodeProjects/xsyetopz/claudetto/.claude-plugin/marketplace.json
+
+✔ Validation passed
+bunx openspec validate --all --strict
+✓ spec/agent-conduct
+✓ spec/building-blocks
+✓ spec/builtin-rebuild
+✓ spec/compaction-path
+✓ spec/docs-lookup
+✓ spec/finish-loop
+✓ spec/low-hitl
+✓ spec/openspec-init
+✓ spec/permission-policy
+✓ spec/prompt-cache
+✓ spec/prompt-footprint
+✓ change/reduce-false-restrictions
+✓ change/release-0-4-0
+✓ change/remove-goal
+  ℹ [INFO] finish-loop/spec.md: Archive would refuse this delta: finish-loop MODIFIED failed for header "### Requirement: Bounded Loop" - not found
+✓ spec/repo-gate
+✓ spec/research-agent
+✓ spec/run-limits
+✓ spec/session-handoff
+✓ spec/session-hygiene
+✓ spec/status-line
+✓ spec/subagent-prompts
+✓ spec/surface-trim
+✓ spec/tier-profiles
+✓ spec/version-floor
+✓ spec/window-budget
+Totals: 25 passed, 0 failed (25 items)
+claude plugin test plugins/claudetto
+
+hooks/decide.test.ts:
+(pass) No Key: no tool is registered and no request goes out [1118.23ms]
+(pass) With a key the tool is registered [733.18ms]
+(pass) A Gated Tool Call: Bash and Edit send nothing [675.67ms]
+(pass) What a Request Holds: the key only in the header, texts only in the body [637.03ms]
+(pass) Four Options With a Weak Top Choice is handed back [586.46ms]
+(pass) Two Options: a pick at 0.75 is returned [743.21ms]
+(pass) A Risky Approval is handed back whatever the pick [580.68ms]
+(pass) Multi-Select is handed back with no request [441.74ms]
+(pass) A yes/no question is answered at P(yes) 0.7 or more [656.33ms]
+(pass) A yes/no in the middle band is handed back [583.23ms]
+(pass) A Hung Server: one try of 5 s, then handed back [546.70ms]
+(pass) Slow Overload Replies: 3 tries and 3 s of backoff end within 18 s [767.70ms]
+(pass) A 400 or 422 is tried once and the reply holds the status and 200 characters [447.66ms]
+(pass) An AskUserQuestion call reaches the user as sent and nothing goes to the API [711.92ms]
+(pass) Many questions go in one request, each keyed by its index [508.80ms]
+(pass) A call with an empty questions list sends nothing [559.54ms]
+(pass) A 429 and then a 529 wait 1 s and 2 s, and the third try answers [820.95ms]
+(pass) A 401 is not retried and the key is in no answer [509.10ms]
+(pass) A yes/no at P(yes) 0.7 answers yes and at 0.3 answers no, and between them goes back [484.37ms]
+(pass) A pick at 0.75 passes and at 0.74 goes back, and an approval at 0.2 goes back [664.30ms]
+
+hooks/decide/judge.test.ts:
+(pass) a list of questions with text is taken as it is [1.68ms]
+(pass) one entry with no text voids the list [0.22ms]
+(pass) a call with no list gives none [0.17ms]
+(pass) a multi-select question and a question of one option are left out [0.22ms]
+(pass) each question is keyed by its index, so equal texts stay two decisions [0.22ms]
+(pass) a probability at the bar is returned [0.30ms]
+(pass) a probability under the bar is not [0.13ms]
+(pass) an approval that is not a confident no is not [0.13ms]
+(pass) a choice that is no option is not [0.12ms]
+(pass) a pick is named with its probability to two places [0.23ms]
+(pass) a failure gives no pick for any question [0.11ms]
+(pass) the request sends the texts, the fixed prompts, and a label where a description is empty [0.26ms]
+(pass) a yes/no question is yes at 0.7, no at 0.3 with the odds turned, and back between [0.23ms]
+(pass) a yes/no question with no answer is not answered [0.10ms]
+(pass) a probability outside 0 to 1 or not a number is no answer [0.37ms]
+(pass) a pick with no probabilities, or no answer at all, is not made [0.12ms]
+(pass) a pick with no approval answer is not made [0.10ms]
+(pass) a multi-select question is not decided even when answered [0.09ms]
+(pass) the reply asks for the unanswered ones and lists one line per question [0.16ms]
+(pass) a 429 waits and tries again, up to three tries [0.76ms]
+(pass) a 401 is not tried again [0.18ms]
+
+hooks/delegation.test.ts:
+(pass) a call typed undefined reaches the engine as claudetto:Heracles [716.22ms]
+(pass) a call typed "" reaches the engine as claudetto:Heracles [736.23ms]
+(pass) a call typed "general-purpose" reaches the engine as claudetto:Heracles [527.83ms]
+(pass) a call typed "claude" reaches the engine as claudetto:Heracles [799.85ms]
+(pass) a call typed "Explore" reaches the engine as claudetto:Artemis [668.55ms]
+(pass) a call typed "Plan" reaches the engine as claudetto:Metis [804.83ms]
+(pass) a call typed "Artemis" reaches the engine as claudetto:Artemis [700.21ms]
+(pass) a call typed "claudetto:Artemis" reaches the engine as claudetto:Artemis [543.23ms]
+(pass) a call typed "claudetto:Metis" reaches the engine as claudetto:Metis [512.47ms]
+(pass) a call typed "claudetto:Heracles" reaches the engine as claudetto:Heracles [641.48ms]
+(pass) a call typed "Heracles" reaches the engine as claudetto:Heracles [502.64ms]
+(pass) run_in_background that the caller set is kept for Artemis [716.34ms]
+(pass) a call that needs no change reaches the engine as it was [414.12ms]
+(pass) fork passes through unchanged [753.09ms]
+(pass) statusline-setup passes through unchanged [538.87ms]
+(pass) claude-code-guide passes through unchanged [600.79ms]
+(pass) the result of an Artemis call reads as Explore [488.21ms]
+(pass) the result of a Heracles call keeps its agent type [754.43ms]
+(pass) agent.offer withholds a built-in agent and offers a plugin one [448.54ms]
+(pass) the Agent text picks a type from the agent list or leaves the work to the caller [599.00ms]
+(pass) the listing keeps only its agent lines [547.57ms]
+(pass) another attachment is left as it is [584.83ms]
+(pass) the model's own AskUserQuestion call is denied with the way out [533.02ms]
+(pass) ask calls the stock tool with its options and multiSelect [422.08ms]
+(pass) after ask returns, the stock tool is denied again [545.45ms]
+(pass) a refused ask comes back as text, not a throw [477.49ms]
+(pass) the stock AskUserQuestion and Monitor go behind ToolSearch [491.01ms]
+(pass) the model's own Monitor call is denied with the way out [515.18ms]
+(pass) monitor passes a command to the stock Monitor, whose text it returns [456.32ms]
+(pass) monitor passes a ws source with its protocols [462.11ms]
+(pass) a keyword search that lists Monitor lists the wrapper instead [424.01ms]
+(pass) a search that lists neither tool is returned as it came [471.26ms]
+(pass) a query that does not name AskUserQuestion reaches ToolSearch as it was [503.59ms]
+(pass) a query that names AskUserQuestion is rewritten to ask [248.94ms]
+(pass) a result that lists the stock ask lists the wrapper once [431.83ms]
+
+hooks/gate.test.ts:
+(pass) a shell command the gate refuses is denied over an allow, with the command in the reason [860.40ms]
+(pass) the engine's stricter verdict stands [882.44ms]
+(pass) a force push is asked about, not denied [703.41ms]
+(pass) a write to a system folder is denied for Write [775.47ms]
+(pass) a command the gate allows is left to the engine [653.75ms]
+(pass) the dialog answer is a denial for a refused command [660.20ms]
+(pass) a call denied twice is refused at the next check with the earlier reason [578.08ms]
+(pass) a call the classifier denied twice with no reason is reported with the ! form [664.80ms]
+(pass) a denied call is retried once, then left denied [485.85ms]
+(pass) a denial with no reason is not retried [472.95ms]
+(pass) a message from the person lets the same call reach its check again [722.25ms]
+(pass) a secret the scanner finds in a tool result reaches the model as [REDACTED] [547.67ms]
+(pass) a result with no secret comes back as it was [686.07ms]
+(pass) an errored result with a secret reaches the model redacted, as a deny [661.52ms]
+(pass) a missing scanner withholds the result and names the install step [478.17ms]
+(pass) a WebFetch, an MCP tool, and a Skill request are passed on with no allow [585.10ms]
+(pass) a request the rules only ask about gets no allow from the dialog [505.59ms]
+(pass) a dialog denial carries the command [593.46ms]
+(pass) Write of a system path is held at tool.check [574.69ms]
+(pass) Edit of a system path is held at tool.check [624.33ms]
+(pass) NotebookEdit of a system path is held at tool.check [570.81ms]
+(pass) a gate that fails holds the call for a person [648.44ms]
+(pass) the same tool with another input is not refused after two denials [496.40ms]
+(pass) a task notification after two denials leaves the call refused [463.27ms]
+(pass) the denial hook answers retry alone, never a decision [487.27ms]
+(pass) a push to a URL or a remote is left to the engine [438.78ms]
+(pass) bun.lock in the repo denies npm and names the bun form [531.51ms]
+(pass) a Monitor command the gate refuses is denied like a Bash one [450.20ms]
+(pass) autoMode in the settings changes no tool.check verdict of the gate [416.88ms]
+
+hooks/gate/denials.test.ts:
+(pass) a call with no JSON form still has a signature [1.44ms]
+(pass) a repeated denial with reason "" is unexplained [0.28ms]
+(pass) a repeated denial with reason "   " is unexplained [0.16ms]
+(pass) a repeated denial with reason "\n" is unexplained [0.16ms]
+(pass) a repeated denial with reason "(it gave no explanation)" is unexplained [0.13ms]
+(pass) a repeated denial with reason "blocked" is explained [0.15ms]
+(pass) a repeated denial with reason "not allowed here" is explained [0.11ms]
+
+hooks/gate/packages.test.ts:
+(pass) the policy files are the lockfiles, the deno files, and the build files [3.44ms]
+(pass) npm install in a bun repo points to bun install [0.52ms]
+(pass) npm i in a bun repo points to bun install [0.19ms]
+(pass) npm ci in a bun repo points to bun install --frozen-lockfile [0.20ms]
+(pass) npm add in a bun repo points to bun add [0.14ms]
+(pass) npm uninstall in a bun repo points to bun remove [0.13ms]
+(pass) npm remove in a bun repo points to bun remove [0.35ms]
+(pass) npm rm in a bun repo points to bun remove [0.13ms]
+(pass) npm update in a bun repo points to bun update [0.12ms]
+(pass) npm up in a bun repo points to bun update [0.10ms]
+(pass) npm upgrade in a bun repo points to bun update [0.10ms]
+(pass) npm run in a bun repo points to bun run [0.10ms]
+(pass) npm task in a bun repo points to bun run [0.10ms]
+(pass) npm run-script in a bun repo points to bun run [0.10ms]
+(pass) npm test in a bun repo points to bun run test [0.09ms]
+(pass) npm t in a bun repo points to bun run test [0.11ms]
+(pass) npm exec in a bun repo points to bunx [0.11ms]
+(pass) npm dlx in a bun repo points to bunx [0.13ms]
+(pass) npm x in a bun repo points to bunx [0.11ms]
+(pass) npm view in a bun repo points to bun info [0.11ms]
+(pass) npm info in a bun repo points to bun info [0.11ms]
+(pass) npm frobnicate in a bun repo points to the matching `bun` command (`bun --help`) [0.11ms]
+(pass) npm with no verb means install, and a second word means add [0.24ms]
+(pass) flags are skipped when the verb is read [0.18ms]
+(pass) npx and pnpx point to bunx, and bun.lockb counts as a bun lock [0.62ms]
+(pass) a repo without a bun lock allows npm [0.15ms]
+(pass) deno install in a bun repo without deno files is denied [0.14ms]
+(pass) deno install after a flag in a bun repo is denied [0.10ms]
+(pass) deno add in a bun repo without deno files is denied [0.10ms]
+(pass) deno add after a flag in a bun repo is denied [0.08ms]
+(pass) deno remove in a bun repo without deno files is denied [0.08ms]
+(pass) deno remove after a flag in a bun repo is denied [0.08ms]
+(pass) deno task in a bun repo without deno files is denied [0.12ms]
+(pass) deno task after a flag in a bun repo is denied [0.14ms]
+(pass) deno x in a bun repo without deno files is denied [0.12ms]
+(pass) deno x after a flag in a bun repo is denied [0.10ms]
+(pass) deno names the bun form of its verb [0.16ms]
+(pass) deno is allowed when the repo has deno.json [15.84ms]
+(pass) deno is allowed when the repo has deno.jsonc [0.17ms]
+(pass) deno is allowed when the repo has deno.lock [0.11ms]
+(pass) deno verbs outside the package set are allowed [0.15ms]
+(pass) cmake in an xmake repo points to xmake [0.14ms]
+(pass) cmake is allowed in a repo without xmake.lua [0.11ms]
+(pass) ninja in an xmake repo points to xmake [0.11ms]
+(pass) ninja is allowed in a repo without xmake.lua [0.10ms]
+(pass) make in an xmake repo points to xmake [0.11ms]
+(pass) make is allowed in a repo without xmake.lua [0.09ms]
+(pass) conan in an xmake repo points to xmake [0.12ms]
+(pass) conan is allowed in a repo without xmake.lua [0.08ms]
+(pass) cmake is allowed in an xmake repo that has CMakeLists.txt [0.09ms]
+(pass) ninja is allowed in an xmake repo that has build.ninja [0.07ms]
+(pass) make is allowed in an xmake repo that has Makefile [0.09ms]
+(pass) make is allowed in an xmake repo that has makefile [0.07ms]
+(pass) make is allowed in an xmake repo that has GNUmakefile [0.07ms]
+(pass) conan is allowed in an xmake repo that has conanfile.py [0.06ms]
+(pass) conan is allowed in an xmake repo that has conanfile.txt [0.06ms]
+
+hooks/gate/rules.test.ts:
+(pass) denies rm -rf / [7.15ms]
+(pass) denies sh -c 'rm -rf /' [0.41ms]
+(pass) denies echo hi > /etc/hosts [0.28ms]
+(pass) denies echo hi | tee /etc/hosts [0.26ms]
+(pass) denies cat > notes.txt [0.20ms]
+(pass) denies tee notes.txt [0.19ms]
+(pass) denies printf 'a' > notes.txt [0.20ms]
+(pass) denies cat <<EOF > notes.txt\u000aa\u000aEOF [0.23ms]
+(pass) denies cat src/a.ts [0.20ms]
+(pass) denies head -n 5 src/a.ts [0.19ms]
+(pass) denies tail src/a.ts [0.19ms]
+(pass) denies sed -n '1,5p' src/a.ts [0.22ms]
+(pass) passes git show HEAD:src/a.ts [0.25ms]
+(pass) passes rg foo src [0.19ms]
+(pass) passes cat src/a.ts | wc -l [0.21ms]
+(pass) passes head -n 5 src/a.ts | grep x [0.21ms]
+(pass) passes ls -la [0.18ms]
+(pass) a file print is told to use Read, a whole-file write to use Write [0.42ms]
+(pass) an unreadable command asks [0.22ms]
+(pass) bun.lock denies npm install naming bun install [0.30ms]
+(pass) bun.lock denies npm i left-pad naming bun add [0.24ms]
+(pass) bun.lock denies npx tsc naming bunx [0.22ms]
+(pass) bun.lock denies yarn add zod naming bun add [1.73ms]
+(pass) bun.lock denies pnpm run build naming bun run [0.23ms]
+(pass) bun.lock denies pnpx cowsay hi naming bunx [0.19ms]
+(pass) bun.lock denies sudo npm install naming bun install [0.23ms]
+(pass) bun.lock denies sh -c 'npm install' naming bun install [0.21ms]
+(pass) bun.lock denies deno task dev naming bun run [0.18ms]
+(pass) bun.lock denies npm ci naming bun install --frozen-lockfile [0.16ms]
+(pass) bun.lock denies npm update naming bun update [0.17ms]
+(pass) bun.lock denies pnpm view left-pad naming bun info [0.18ms]
+(pass) bun.lock denies deno add zod naming bun add [0.18ms]
+(pass) bun.lock denies deno x npm:cowsay naming bunx [0.19ms]
+(pass) deno.json lets deno through under bun.lock [0.16ms]
+(pass) bun.lock passes echo npm install [0.17ms]
+(pass) bun.lock passes grep npm package.json [0.14ms]
+(pass) bun.lock passes git commit -m 'npm install' [0.16ms]
+(pass) bun.lock passes git log --grep=yarn [0.16ms]
+(pass) bun.lock passes bun install [0.15ms]
+(pass) bun.lock passes deno test [0.14ms]
+(pass) no lock file, no package rule [0.17ms]
+(pass) xmake.lua denies cmake --build build naming xmake build [0.24ms]
+(pass) xmake.lua denies make clean naming xmake build [0.18ms]
+(pass) xmake.lua denies ninja naming xmake build [0.16ms]
+(pass) xmake.lua denies conan install . naming xmake require [0.17ms]
+(pass) xmake.lua denies cmake -S . -B build naming xmake config [0.19ms]
+(pass) xmake.lua denies ninja -t clean naming xmake clean [0.17ms]
+(pass) xmake.lua denies make install naming xmake install [0.19ms]
+(pass) a CMakeLists.txt lets cmake --build build through under xmake.lua [0.19ms]
+(pass) a build.ninja lets ninja through under xmake.lua [0.15ms]
+(pass) a Makefile lets make through under xmake.lua [0.14ms]
+(pass) a conanfile.txt lets conan install . through under xmake.lua [0.15ms]
+(pass) xmake.lua passes echo cmake --build build [0.17ms]
+(pass) xmake.lua passes grep make Makefile [0.24ms]
+(pass) xmake.lua passes git commit -m 'make clean' [0.17ms]
+(pass) xmake.lua passes git log --grep=ninja [0.17ms]
+(pass) xmake.lua passes xmake build [0.14ms]
+(pass) root and home are deleted by no spelling [0.76ms]
+(pass) a recursive delete of a folder that is no root passes [0.37ms]
+(pass) writes to a system folder deny, a folder that only shares the prefix passes [1.63ms]
+(pass) a whole-file write is denied for each redirect and each writer [0.75ms]
+(pass) a file print to /dev/null is still a print [0.19ms]
+(pass) cat, head, tail and sed -n pass when they print no file [0.83ms]
+(pass) a long flag is no bundle of short flags [0.24ms]
+(pass) words after -- are operands, not flags [0.23ms]
+(pass) a Bash write into a plugin's hooks folder asks, which a Write already does [0.71ms]
+(pass) a read of, or a write beside, a plugin's hooks folder passes [0.54ms]
+(pass) systemPath holds a system folder itself and what is below it, and no sibling [0.78ms]
+(pass) a plugin name of any length, and the hooks folder itself, are guarded [0.31ms]
+(pass) a flag is read up to --, and a flag after the last word still counts [0.39ms]
+(pass) only sed edits with -i, a cp writes its last operand, and a redirect from a file writes nothing [0.32ms]
+(pass) a deny wins over an ask in one command [0.16ms]
+
+hooks/gate/shell-words.reading.test.ts:
+(pass) reads "echo a2>f" [1.60ms]
+(pass) reads "echo a>f" [0.19ms]
+(pass) reads "echo 2>f" [0.13ms]
+(pass) reads "echo a<f" [0.13ms]
+(pass) reads "echo a&>f" [0.11ms]
+(pass) reads "echo a&>>f" [0.11ms]
+(pass) reads "echo a>>f" [0.09ms]
+(pass) reads "echo a>|f" [0.10ms]
+(pass) reads "echo a<<<x" [0.09ms]
+(pass) reads "echo a<<-E" [0.09ms]
+(pass) reads "echo a<>f" [0.09ms]
+(pass) reads "echo a<&3" [0.08ms]
+(pass) reads "./a=b x" [0.09ms]
+(pass) reads "FOO=1 x" [0.09ms]
+(pass) reads "x -a=1" [0.12ms]
+(pass) reads "bash x-c 'git push'" [0.17ms]
+(pass) reads "bash -ec 'git push'" [0.13ms]
+(pass) reads "bash -cx 'git push'" [0.11ms]
+(pass) reads "bash -c" [0.10ms]
+(pass) reads "bash -c 'ls' 'rm'" [0.11ms]
+(pass) reads "zsh -c 'git push'" [0.11ms]
+(pass) reads "dash -c 'git push'" [0.11ms]
+(pass) reads "ksh -c 'git push'" [0.10ms]
+(pass) reads "sudo -g w -h h -p p -C 1 -D d -R r -T t -U u x" [0.19ms]
+(pass) reads "sudo --user u --group g --command-timeout 5 --host h --prompt p x" [0.11ms]
+(pass) reads "sudo -S x" [0.10ms]
+(pass) reads "doas -u bob x" [0.12ms]
+(pass) reads "doas -C f x" [0.11ms]
+(pass) reads "doas -S x" [0.09ms]
+(pass) reads "env -u A x" [0.08ms]
+(pass) reads "env -C d x" [0.09ms]
+(pass) reads "env -S s x" [0.08ms]
+(pass) reads "env -g x" [0.07ms]
+(pass) reads "nice -n 5 x" [0.08ms]
+(pass) reads "nice -a 5 x" [0.07ms]
+(pass) reads "exec -a n x" [0.07ms]
+(pass) reads "exec -n x" [0.08ms]
+(pass) reads "timeout -s 9 5 x" [0.08ms]
+(pass) reads "timeout -k 1 5 x" [0.08ms]
+(pass) reads "timeout -n 5 x" [0.08ms]
+(pass) reads "nohup -x y" [0.08ms]
+(pass) reads "time -p x" [0.08ms]
+(pass) reads "command -v x" [0.08ms]
+(pass) reads "builtin x" [0.08ms]
+(pass) reads "env" [0.09ms]
+(pass) reads "env -i" [0.07ms]
+(pass) reads "sudo" [0.07ms]
+(pass) reads "x=1" [0.06ms]
+(pass) reads "if x; then y; fi" [0.12ms]
+(pass) reads "while a; do b; done" [0.09ms]
+(pass) reads "until a; do b; done" [0.08ms]
+(pass) reads "{ a; }" [0.07ms]
+(pass) reads "! a" [0.07ms]
+(pass) reads "else a" [0.07ms]
+(pass) reads "elif a" [0.07ms]
+(pass) reads "do a" [0.07ms]
+(pass) reads "a \"$(b)\"" [0.17ms]
+(pass) reads "a $(b \"c)\" d)" [0.11ms]
+(pass) reads "a $(b 'c)' d)" [0.08ms]
+(pass) reads "a $(b \"\\\"\" ) c)" [0.08ms]
+(pass) reads "a $(b \\)  c)" [0.09ms]
+(pass) reads "a $((1+2))" [0.09ms]
+(pass) reads "a $( (b) )" [0.07ms]
+(pass) reads "a $(b" [0.08ms]
+(pass) reads "a `b" [0.08ms]
+(pass) reads "a `b` c" [0.07ms]
+(pass) reads "a $'x\\ty'" [0.07ms]
+(pass) reads "a $'x\\\\ty'" [0.06ms]
+(pass) reads "a $'x" [0.06ms]
+(pass) reads "a $x" [0.06ms]
+(pass) reads "a \"$x\"" [0.06ms]
+(pass) reads "a \"x$y\"" [0.06ms]
+(pass) reads "a \"x$(b)y\"" [0.06ms]
+(pass) reads "a \"x`b`y\"" [0.07ms]
+(pass) reads "a \"\\$x\"" [0.07ms]
+(pass) reads "a \"\\`x\"" [0.07ms]
+(pass) reads "a \"\\\\x\"" [0.07ms]
+(pass) reads "a \"\\\"x\"" [0.10ms]
+(pass) reads "a \"\\nx\"" [0.06ms]
+(pass) reads "a \"x" [0.06ms]
+(pass) reads "a 'x" [0.06ms]
+(pass) reads "a \"x\\\"" [0.06ms]
+(pass) reads "a >(b)" [0.08ms]
+(pass) reads "a <(b)" [0.07ms]
+(pass) reads "a >(b" [0.07ms]
+(pass) reads "a 3>f" [0.06ms]
+(pass) reads "a 3>&1" [0.06ms]
+(pass) reads "a >f 2>&1" [0.05ms]
+(pass) reads "a &>(b)" [0.05ms]
+(pass) reads "a 'x'y" [0.06ms]
+(pass) reads "a x'y'" [0.06ms]
+(pass) reads "a ~" [0.05ms]
+(pass) reads "a x~" [0.05ms]
+(pass) reads "a ~x" [0.05ms]
+(pass) reads "a *.c" [0.13ms]
+(pass) reads "a x*" [0.06ms]
+(pass) reads "a ?" [0.06ms]
+(pass) reads "a [x]" [0.06ms]
+(pass) reads "a {x,y}" [0.06ms]
+(pass) reads "a x{y" [0.07ms]
+(pass) reads "a # c" [0.07ms]
+(pass) reads "a#b" [0.07ms]
+(pass) reads "a #c" [0.06ms]
+(pass) reads "a x # c" [0.06ms]
+(pass) reads "a x #c" [0.06ms]
+(pass) reads "a \\\nb" [0.05ms]
+(pass) reads "a \\a" [0.05ms]
+(pass) reads "a \\\\" [0.05ms]
+(pass) reads "a \\" [0.06ms]
+(pass) reads "a | b" [0.06ms]
+(pass) reads "a |& b" [0.06ms]
+(pass) reads "a || b" [0.25ms]
+(pass) reads "a && b" [0.10ms]
+(pass) reads "a & b" [0.07ms]
+(pass) reads "a &" [0.06ms]
+(pass) reads "a ; b" [0.07ms]
+(pass) reads "a;b" [0.05ms]
+(pass) reads "a\nb" [0.14ms]
+(pass) reads "a (b)" [0.05ms]
+(pass) reads "a )" [0.05ms]
+(pass) reads "cat <<A <<B\nx\nA\ny\nB\nz" [0.07ms]
+(pass) reads "cat <<A\nx\nA" [0.06ms]
+(pass) reads "cat <<A\n  A\ny" [0.07ms]
+(pass) reads "cat <<A\nx" [0.06ms]
+(pass) reads "cat <<-A\n\tA\ny" [0.07ms]
+(pass) reads "cat <<A; ls\nx\nA" [0.06ms]
+(pass) reads "bash <<A\nx\nA" [0.07ms]
+(pass) reads "sh <<<'x'" [0.07ms]
+(pass) reads "sh -c <<A\nx\nA" [0.06ms]
+(pass) reads "sh -c 'sh -c \"sh -c \\\"sh -c x\\\"\"'" [0.08ms]
+(pass) reads "a;b | c" [0.05ms]
+(pass) reads "echo \"a\nb\"" [0.06ms]
+(pass) reads "a<b>c" [0.05ms]
+(pass) reads "a $(b 'c' \"d\")" [0.07ms]
+(pass) reads "a $(b $(c))" [0.06ms]
+(pass) reads "echo $(a)x" [0.06ms]
+(pass) reads "a;" [0.06ms]
+(pass) reads "a ||" [0.05ms]
+(pass) reads "a\n\n\nb" [0.06ms]
+(pass) reads "a b\tc" [0.05ms]
+(pass) reads "a \t b" [0.05ms]
+(pass) reads "`a`" [0.05ms]
+(pass) reads "$(a)" [0.05ms]
+(pass) reads "a \"\"" [0.05ms]
+(pass) reads "a ''" [0.14ms]
+(pass) reads "a ''b" [0.07ms]
+(pass) reads "a \"x\"'y'z" [0.06ms]
+(pass) reads "sh -c 'sh -c \"sh -c \\\"sh -c \\\\\\\"sh -c x\\\\\\\"\\\"\"'" [0.11ms]
+(pass) reads "a $'x\\'y' z" [0.07ms]
+(pass) reads "a $'x\\" [0.17ms]
+(pass) reads "a $'\\'" [0.08ms]
+(pass) reads "a \"$(b \"c\")\"" [0.07ms]
+(pass) reads "a \"$(b)\" c" [0.06ms]
+(pass) reads "a \"`b`\" c" [0.06ms]
+(pass) reads "a \"x\\" [0.06ms]
+(pass) reads "a \"x\\\\\"" [0.06ms]
+(pass) reads "a \"$\"" [0.06ms]
+(pass) reads "a \"\\\\\" b" [0.05ms]
+(pass) reads "a \"$ b\" c" [0.06ms]
+(pass) reads "a $ b" [0.05ms]
+(pass) reads "a $(b) $(c)" [0.06ms]
+(pass) reads "a $(b \\\\) c)" [0.06ms]
+(pass) reads "a $(\"b)\")" [0.06ms]
+(pass) reads "a $('b)')" [0.06ms]
+(pass) reads "a $(b 'c\\' d)" [0.07ms]
+(pass) reads "a $(b \"c\\\" d)\" e)" [0.21ms]
+(pass) reads "a $(\"\")" [0.08ms]
+(pass) reads "a $( )" [0.06ms]
+(pass) reads "a $()" [0.05ms]
+(pass) reads "a >(b) >(c)" [0.06ms]
+(pass) reads "a '\\'b" [0.07ms]
+(pass) reads "a '\\' b" [0.07ms]
+(pass) reads "a \"'\" b" [0.05ms]
+(pass) reads "a '\"' b" [0.05ms]
+(pass) reads "a \"'\"c\"'\"" [0.06ms]
+(pass) reads "a `b` `c`" [0.06ms]
+(pass) reads "a \"`b`\"" [0.06ms]
+(pass) reads "a `b $(c)`" [0.07ms]
+(pass) reads "a $(b `c`)" [0.08ms]
+(pass) reads "a\\\nb" [0.05ms]
+(pass) reads "a b\\\n c" [0.06ms]
+(pass) reads "a ~ b" [0.05ms]
+(pass) reads "a b ~" [0.06ms]
+(pass) reads "a b~c d" [0.06ms]
+(pass) reads "a *" [0.05ms]
+(pass) reads "a \\*" [0.05ms]
+(pass) reads "a '*'" [0.05ms]
+(pass) reads "a \"*\"" [0.12ms]
+(pass) reads "a \\{" [0.05ms]
+(pass) reads "a '{'" [0.04ms]
+(pass) reads "a \\?" [0.05ms]
+(pass) reads "a \\~" [0.05ms]
+(pass) reads "a # b\nc" [0.05ms]
+(pass) reads "a #b\nc" [0.06ms]
+(pass) reads "a \\#b" [0.05ms]
+(pass) reads "a'#'b" [0.05ms]
+(pass) reads "a #" [0.05ms]
+(pass) reads "#a" [0.05ms]
+(pass) reads "# a\nb" [0.05ms]
+(pass) reads "a 'x'#y" [0.06ms]
+(pass) reads "a $x#y" [0.06ms]
+(pass) reads "a 2>f b" [0.06ms]
+(pass) reads "a 12>f" [0.05ms]
+(pass) reads "a x2>f" [0.06ms]
+(pass) reads "a 2 >f" [0.05ms]
+(pass) reads "a 2 3>f" [0.05ms]
+(pass) reads "a >" [0.05ms]
+(pass) reads "a >>" [0.05ms]
+(pass) reads "a <<" [0.05ms]
+(pass) reads "a <<-" [0.05ms]
+(pass) reads "a <<< " [53.81ms]
+(pass) reads "a >&" [0.16ms]
+(pass) reads "a >&-" [0.08ms]
+(pass) reads "a <&-" [0.06ms]
+(pass) reads "a & & b" [0.07ms]
+(pass) reads "a &&& b" [0.06ms]
+(pass) reads "a ||| b" [0.06ms]
+(pass) reads "a |||b" [0.05ms]
+(pass) reads "a |&b" [0.05ms]
+(pass) reads "a |\n b" [0.05ms]
+(pass) reads "a &\nb" [0.05ms]
+(pass) reads "a ;;b" [0.05ms]
+(pass) reads "a & b | c" [0.06ms]
+(pass) reads "cat <<A\nx\nA\nrm y" [0.30ms]
+(pass) reads "cat <<A\nx\nB\nA\nrm y" [0.12ms]
+(pass) reads "cat <<A\nx\r\nA\nrm y" [0.07ms]
+(pass) reads "cat <<A\n\nA\nrm y" [0.06ms]
+(pass) reads "cat <<A\nxA\nA\nrm y" [0.05ms]
+(pass) reads "cat <<A\nA \nrm y" [0.06ms]
+(pass) reads "cat <<A\nA" [0.05ms]
+(pass) reads "cat <<A\n" [0.05ms]
+(pass) reads "cat <<A\nrm x" [0.06ms]
+(pass) reads "cat <<A <<B\nx\nA\ny\nB\nrm z" [0.05ms]
+(pass) reads "cat <<A | rm x\ny\nA" [0.06ms]
+(pass) reads "cat <<<A\nrm x" [0.05ms]
+(pass) reads "cat <<-A\nx\nA\nrm y" [0.05ms]
+(pass) reads "a <<A\nrm\nA\n<<B\n" [0.05ms]
+(pass) reads "sh -c ''" [0.05ms]
+(pass) reads "sh -c 'x' 'y'" [0.05ms]
+(pass) reads "sh -c x" [0.05ms]
+(pass) reads "bash -c 'a;b'" [0.06ms]
+(pass) reads "sh -c \"x\" ; y" [0.06ms]
+(pass) reads "sudo bash -c 'git push'" [0.06ms]
+(pass) reads "env sh -c x" [0.05ms]
+(pass) reads "sh -xc x" [0.05ms]
+(pass) reads "sh -Cc x" [0.05ms]
+(pass) reads "sh -c -c x" [0.05ms]
+(pass) reads "sh x -c y" [0.06ms]
+(pass) reads "sh -c x -c y" [0.06ms]
+(pass) reads "sh <<A\nx\nA\nrm y" [0.06ms]
+(pass) reads "sh <<<x" [0.06ms]
+(pass) reads "sh <x" [0.05ms]
+(pass) reads "sh -c x <<A\nx\nA" [0.05ms]
+(pass) reads "sh -c x <<<y" [0.05ms]
+(pass) reads "sh -c x <y" [0.05ms]
+(pass) reads "eval x" [0.06ms]
+(pass) reads "eval" [0.06ms]
+(pass) reads "echo eval" [0.05ms]
+(pass) reads "x eval" [0.04ms]
+(pass) reads "FOO=1 eval x" [0.05ms]
+(pass) reads "sudo eval x" [0.05ms]
+(pass) reads "$x" [0.05ms]
+(pass) reads "$x y" [0.04ms]
+(pass) reads "\"$x\" y" [0.06ms]
+(pass) reads "x$y z" [0.05ms]
+(pass) reads "~/x" [0.04ms]
+(pass) reads "~x/y z" [0.04ms]
+(pass) reads "x/~ y" [0.04ms]
+(pass) reads "{x} y" [0.05ms]
+(pass) reads "x{y} z" [0.05ms]
+(pass) reads "a? b" [0.05ms]
+(pass) reads "[a] b" [0.04ms]
+(pass) reads "*.sh" [0.04ms]
+(pass) reads "a \\\"" [0.04ms]
+(pass) reads "\\a b" [0.04ms]
+(pass) reads "\\\na" [0.04ms]
+(pass) reads "\\\n\\\na" [0.05ms]
+(pass) reads "echo \"$(rm x)\"" [0.28ms]
+(pass) reads "echo \"`rm x`\"" [0.10ms]
+(pass) reads "echo '$(rm x)'" [0.06ms]
+(pass) reads "echo \\$(rm x)" [0.06ms]
+(pass) reads "echo \\`rm x\\`" [0.07ms]
+(pass) reads "echo \"\\$(rm x)\"" [0.05ms]
+(pass) reads "a\t\tb" [0.06ms]
+(pass) reads "\ta" [0.06ms]
+(pass) reads "a\t" [0.05ms]
+(pass) reads "  a  " [0.05ms]
+(pass) reads "\na" [0.06ms]
+(pass) reads "a\n" [0.05ms]
+(pass) reads "\n\na\n\n" [0.05ms]
+(pass) reads "x=1 y=2 z" [0.06ms]
+(pass) reads "a=b c=d" [0.05ms]
+(pass) reads "1a=b x" [0.05ms]
+(pass) reads "_a=b x" [0.05ms]
+(pass) reads "a-b=c x" [0.05ms]
+(pass) reads "=b x" [0.05ms]
+(pass) reads "a= x" [0.06ms]
+(pass) reads "! ! a" [0.05ms]
+(pass) reads "{ { a; }; }" [0.05ms]
+(pass) reads "if if a" [0.05ms]
+(pass) reads "then a" [0.05ms]
+(pass) reads "fi a" [0.05ms]
+(pass) reads "do do a" [0.05ms]
+(pass) reads "while until a" [0.05ms]
+(pass) reads "time time a" [0.06ms]
+(pass) reads "time nohup a" [0.05ms]
+(pass) reads "command command a" [0.06ms]
+(pass) reads "command -p a" [0.06ms]
+(pass) reads "builtin command a" [0.05ms]
+(pass) reads "nohup nohup a" [0.05ms]
+(pass) reads "sudo sudo a" [0.05ms]
+(pass) reads "sudo env a" [0.05ms]
+(pass) reads "env sudo a" [0.05ms]
+(pass) reads "env A=1 B=2 a" [0.05ms]
+(pass) reads "env -i A=1 a" [0.05ms]
+(pass) reads "env -u X -i a" [0.06ms]
+(pass) reads "env -- a" [0.05ms]
+(pass) reads "sudo -- a" [0.06ms]
+(pass) reads "sudo -u" [0.06ms]
+(pass) reads "sudo -u x" [0.05ms]
+(pass) reads "env -u" [0.05ms]
+(pass) reads "timeout 5" [0.05ms]
+(pass) reads "timeout" [0.05ms]
+(pass) reads "timeout 5 6" [0.06ms]
+(pass) reads "timeout -s" [0.05ms]
+(pass) reads "timeout -s 9" [9.77ms]
+(pass) reads "timeout -s 9 5" [0.12ms]
+(pass) reads "timeout 5 a" [0.06ms]
+(pass) reads "nice -n" [0.05ms]
+(pass) reads "nice -n 5" [0.05ms]
+(pass) reads "nice a" [0.06ms]
+(pass) reads "exec" [0.06ms]
+(pass) reads "exec a" [0.23ms]
+(pass) reads "exec -a" [0.09ms]
+(pass) reads "exec -a x" [0.05ms]
+(pass) reads "exec -a x y" [0.05ms]
+(pass) reads "echo 2a>f" [0.05ms]
+(pass) reads "echo 12>f" [0.06ms]
+(pass) reads "a &&>(b)" [0.20ms]
+(pass) reads "a &&>(;" [0.06ms]
+(pass) reads "<&bashb&#=" [0.05ms]
+(pass) reads "<&b&#=" [0.05ms]
+(pass) reads "a <&b&c" [0.04ms]
+(pass) reads "a&&b" [0.04ms]
+(pass) reads "a||b" [0.04ms]
+(pass) reads "a&b" [0.04ms]
+(pass) reads "a;;b" [0.04ms]
+(pass) reads "a & & b" [0.04ms]
+(pass) reads "{$'2\\>(-c\\-" [0.04ms]
+(pass) reads "echo $(echo \"abc" [0.05ms]
+(pass) reads "echo $(echo 'abc" [0.05ms]
+(pass) reads "bash <<< 'rm x'" [0.06ms]
+(pass) reads "sh <<-EOF\nrm x\nEOF" [0.05ms]
+(pass) reads "bash <<EOF\nrm x\nEOF" [0.04ms]
+(pass) reads "bash -c 'rm x' <<< y" [0.05ms]
+(pass) reads "nohup A=1 rm x" [0.04ms]
+(pass) reads "nohup -x rm x" [0.05ms]
+(pass) reads "time -p rm x" [0.04ms]
+(pass) reads "time A=1 rm x" [0.05ms]
+(pass) reads "command -v ls" [0.05ms]
+(pass) reads "command A=1 ls" [0.05ms]
+(pass) reads "builtin -x echo" [0.05ms]
+(pass) reads "cat <(x)" [0.05ms]
+(pass) reads "cat >(x)" [0.04ms]
+(pass) reads "echo `a" [0.05ms]
+(pass) reads "echo $'a\\'b'" [0.04ms]
+(pass) reads "echo $'a" [0.04ms]
+(pass) reads "echo \"a" [0.05ms]
+(pass) reads "a <<EOF\nx\nEOF\nb" [0.05ms]
+
+hooks/gate/shell-words.test.ts:
+(pass) a pipeline, a list, and a subshell give one command each [1.90ms]
+(pass) quotes join into one word and hide operators [0.32ms]
+(pass) a command in $(...) or backticks is a command of its own [0.29ms]
+(pass) a bash -c body is read as commands [0.32ms]
+(pass) a body nested past the depth bound is unreadable [0.19ms]
+(pass) wrappers do not hide the program: sudo -u bob git push [0.18ms]
+(pass) wrappers do not hide the program: sudo --chroot /x git push [0.14ms]
+(pass) wrappers do not hide the program: sudo --other-user bob --close-from 5 git push [0.15ms]
+(pass) wrappers do not hide the program: env -i A=1 git push [0.11ms]
+(pass) wrappers do not hide the program: FOO=1 nohup timeout 5 git push [0.11ms]
+(pass) wrappers do not hide the program: /usr/bin/git push [0.10ms]
+(pass) a redirect keeps its operator and target and is not a word [0.31ms]
+(pass) a heredoc body is skipped, and its command is read [0.17ms]
+(pass) a pipe marks both ends [0.14ms]
+(pass) the program or text cannot be read: $HOME/bin/git push [0.12ms]
+(pass) the program or text cannot be read: git$IFS push [0.10ms]
+(pass) the program or text cannot be read: $(echo git) push [0.12ms]
+(pass) the program or text cannot be read: eval 'git push' [0.11ms]
+(pass) the program or text cannot be read: echo 'unclosed [0.12ms]
+(pass) the program or text cannot be read: /b?n/rm -rf x [0.10ms]
+(pass) the program or text cannot be read: {rm,-rf,x} [0.09ms]
+(pass) the program or text cannot be read: bash <<EOF\u000als\u000aEOF [0.11ms]
+(pass) text in quotes or after echo is no command [0.16ms]
+
+hooks/gate/upstream.test.ts:
+(pass) the measured commands get the verdicts of the upstream rules plus the patch [92.78ms]
+(pass) every vendored positive fixture is caught, skipped by name, or covered by the unreadable ask [103.28ms]
+(pass) every vendored negative fixture is clean except the named ones [10.10ms]
+(pass) parsedTexts re-quotes a word with a quote, and dashes after -- become operands [0.24ms]
+(pass) parsedTexts reads a git command twice, the second without the options before its verb [0.22ms]
+
+hooks/handoff.test.ts:
+(pass) an instruction older than the last twelve turns stays in the handoff [898.90ms]
+(pass) a session with no human statement writes no invented text under the two sections [718.59ms]
+(pass) a key in a statement is redacted in the handoff [746.68ms]
+(pass) a subagent's compaction writes no handoff [737.25ms]
+(pass) a resume reads the newest fresh handoff back once [795.26ms]
+(pass) a file newer than the one taken is taken in as well [573.74ms]
+(pass) a resume of a session whose transcript is newer than the handoff injects nothing [607.50ms]
+(pass) a key in a handoff file is redacted before the read-back injects it [635.81ms]
+(pass) a handoff older than seven days is named in a log line and not injected [591.79ms]
+(pass) session.start registers the handoff tool [621.62ms]
+(pass) a compaction leaves one handoff file named handoff- and a UTC stamp, under the root [626.39ms]
+(pass) a /compact leaves one handoff file [829.64ms]
+(pass) a precompute installs nothing, so it leaves no handoff file [519.77ms]
+(pass) a session with no user turn leaves no file and no error [550.71ms]
+(pass) a write that fails tells the user in one line [579.95ms]
+(pass) the handoff names the files the session touched, and a call with no path adds none [660.74ms]
+(pass) the handoff carries the user's ask [508.56ms]
+(pass) a file Claude wrote is kept and no code-built one goes beside it [655.81ms]
+(pass) a read of the handoff folder is not writing one, so the fallback still runs [602.14ms]
+(pass) a misnamed handoff Claude wrote is copied to a valid name, and one line names both files [582.65ms]
+(pass) a misnamed handoff that cannot be read leaves the code-built file, and one line names it and the cause [555.72ms]
+(pass) the handoff block is the only one added, and the engine's context_management section is left out [523.09ms]
+(pass) a project with no handoff folder yet takes nothing in and shows no error [471.12ms]
+(pass) a session that starts fresh takes nothing in [418.02ms]
+(pass) a handoff inside the stale limit is taken in, and its text opens with the source of the file [410.77ms]
+(pass) a stale handoff is named once and not at every start [444.04ms]
+(pass) a handoff file that cannot be read tells the user in one line [458.94ms]
+(pass) a submit the session refuses tells the user in one line and does not fail the start [496.91ms]
+(pass) the read-back line tells a code-built handoff from one Claude wrote [0.29ms]
+(pass) a typed clear, and a session that ends for another reason, leave no handoff file [343.09ms]
+(pass) a typed /clear takes no handoff in [555.10ms]
+(pass) a session that worked from a plan gets its path and not its text [462.91ms]
+(pass) a tool call with no file path adds no path [13.15ms]
+(pass) the next session reads the copy back, and not an older valid file [374.78ms]
+(pass) no block the harness built is changed, and the handoff block costs no request [320.20ms]
+(pass) no text is added to a message the harness injects [341.12ms]
+(pass) a handoff is written under the project root after a shell cd [310.60ms]
+(pass) the handoff folder is read under the project root after a shell cd [360.54ms]
+(pass) a handoff sets the user's goal again after the clear [352.89ms]
+(pass) a handoff after /goal clear sets no goal [315.62ms]
+(pass) the last goal the user set is the one set again [377.07ms]
+
+hooks/handoff/call.test.ts:
+(pass) the tool writes the file with its fields under the nine headings and no other [2.39ms]
+(pass) a call without a required field writes nothing and names the field [0.44ms]
+(pass) a key in a field is redacted in the file and in the next prompt [0.45ms]
+(pass) the turn ends with no further request, and the clear and the submit wait for the idle [0.35ms]
+(pass) a second call while one runs runs no second clear and no second submit [0.50ms]
+(pass) the tool can hand off again after the first clear [0.77ms]
+(pass) a failed clear submits nothing and says so [0.89ms]
+(pass) a submit the session refuses tells the user in one line [1.32ms]
+(pass) a write that fails comes back as the result and clears nothing [0.25ms]
+(pass) an active goal is set again after the clear and before the submit [2.34ms]
+(pass) no goal is set after a clear when none was active [0.35ms]
+(pass) a goal the engine refuses is named, and the handoff is still sent [1.71ms]
+
+hooks/handoff/handover.test.ts:
+(pass) the handover threshold defaults to the lesser of 400,000 and half the window [1.59ms]
+(pass) handoverThresholdTokens sets the threshold when it is a positive number [13.29ms]
+(pass) a reply that opens with the template's title is a handoff [0.35ms]
+(pass) a reply with the title is saved, compacts, and the next prompt goes in [0.88ms]
+(pass) a reply without the title starts no compaction [0.32ms]
+(pass) a context of 400,000 tokens forks, hands over, and leaves the next prompt to the user [0.28ms]
+(pass) a context under half of a small window forks nothing [0.17ms]
+(pass) a context at half of a small window forks [0.16ms]
+(pass) a fork that answers without the title starts no compaction and logs one line [0.24ms]
+(pass) after a fork without a handoff, no turn's end forks again until a compaction [0.23ms]
+(pass) a turn after a handover that ends still at the size forks nothing and logs one line [0.20ms]
+(pass) a refused next prompt logs one line that says the compaction stands [0.19ms]
+(pass) a compaction answered elsewhere submits no prompt and logs one line [0.21ms]
+(pass) the compaction keeps the first message, an assistant line, and the handoff [0.19ms]
+(pass) a subagent's compaction and a precompute leave the pending handoff alone [0.19ms]
+
+hooks/handoff/turn-end.test.ts:
+(pass) a main-loop reply that starts with the title is saved, the conversation compacts to the first message, an assistant line, and the handoff, and the next prompt goes in [970.09ms]
+(pass) a reply without the title, below the size, starts no compaction and forks nothing [585.10ms]
+(pass) a reply without the title, at a context of 400,000 tokens, forks for a handoff, hands over to it, and leaves the next prompt to the user [681.39ms]
+(pass) a context under half of a small window forks nothing [575.97ms]
+(pass) a context at half of a small window forks [701.02ms]
+(pass) handoverThresholdTokens sets the size a context must reach to fork [695.87ms]
+(pass) a fork that answers with a reply without the title starts no compaction and logs one line [539.22ms]
+(pass) a fork that answers with no reply starts no compaction and logs one line [700.73ms]
+(pass) after a fork without a handoff, no turn's end forks again until a compaction [274.61ms]
+(pass) a turn after a handover that ends still at the size forks nothing and logs one line, so the session does not hand over in a loop [741.94ms]
+(pass) a subagent's turn at a large context forks nothing [728.97ms]
+(pass) a subagent's handoff reply starts no compaction [531.03ms]
+(pass) an interrupted turn starts no compaction [524.38ms]
+(pass) a compaction typed after the handover goes to the engine [728.51ms]
+(pass) a `/compact` whose hook fails submits no prompt, logs one line, and leaves the next compaction to the engine [582.91ms]
+(pass) a `/compact` that runs no compaction submits no prompt, logs one line, and leaves the next compaction to the engine [737.28ms]
+(pass) a refused next prompt logs one line that says the compaction stands [474.38ms]
+(pass) a key the reply carries is redacted in the saved file and in the context the compaction keeps [648.04ms]
+
+hooks/hygiene.test.ts:
+(pass) a startup runs the sweep in the project with the session id and cleanupPeriodDays [983.31ms]
+(pass) an unset cleanupPeriodDays passes no --days [613.15ms]
+(pass) the start returns while the sweep still runs [791.19ms]
+(pass) a failed sweep does not fail the start [674.70ms]
+(pass) a resume runs no sweep [604.12ms]
+(pass) the retention options go to the process as flags, and 0 is passed as off [552.53ms]
+(pass) hygieneEnabled false starts no process [587.52ms]
+
+hooks/limits/bound-output.test.ts:
+(pass) a long test run is cut to its head and tail, and the whole text is saved [901.82ms]
+(pass) a command that is no test, build, or lint run is left whole [674.82ms]
+(pass) an output that fits is left whole and saves nothing [648.73ms]
+(pass) maxTestOutputChars 0 leaves every output whole [645.02ms]
+(pass) an error result keeps its error form while its output is cut [791.82ms]
+(pass) the output of `cargo test` is cut [583.09ms]
+(pass) the output of `pytest -x` is cut [495.36ms]
+(pass) the output of `go test ./...` is cut [708.14ms]
+(pass) the output of `just check` is cut [450.29ms]
+(pass) the output of `bun run build` is cut [610.61ms]
+(pass) an output that cannot be saved is cut, and the cut line says so [663.07ms]
+
+hooks/limits/budget.test.ts:
+(pass) a prompt carries one line naming the three readings [823.30ms]
+(pass) a login with no rate-limit windows gets the context alone [879.18ms]
+(pass) an unchanged band adds nothing to the next prompt, and a changed band adds the line again [736.97ms]
+(pass) a reading the login does not supply is left out and not zeroed [5.93ms]
+(pass) no reading at all adds no line [742.11ms]
+(pass) the line stays one short line however many windows the engine reports [2.31ms]
+(pass) the widest line is 69 characters [0.17ms]
+(pass) a reading that moved inside its own band is the same band [0.15ms]
+(pass) a reading that crossed a step is another band [0.13ms]
+(pass) a reading the login does not supply is one band and not a number [0.13ms]
+(pass) a seven-day share of 90% or more adds the share as a fact and no instruction [596.72ms]
+(pass) the root prompt carries the instruction for a seven-day share of 90% or more [14.72ms]
+(pass) a seven-day share that rose inside its band of ten stays silent, and one that crossed the band speaks again [506.48ms]
+
+hooks/limits/hold.test.ts:
+(pass) an identical call is refused after the failure limit, with the earlier error [878.11ms]
+(pass) a call under the failure limit, or with other input, goes through [859.72ms]
+(pass) a failure after the period passes [749.01ms]
+(pass) a user's interrupt is not counted as a failure [718.49ms]
+(pass) a query without a tool_use_id is never held [634.32ms]
+(pass) the call past the cap at heavy context is held with the cap named and one line that gives the count [526.05ms]
+(pass) a light context is never capped [543.19ms]
+(pass) failures with different errors do not add up [643.13ms]
+(pass) with no option the failure limit is 3 [548.26ms]
+(pass) the calls under the cap at heavy context go through [668.27ms]
+(pass) a context that falls back below the heavy line starts the count again [584.28ms]
+(pass) a call after the period has passed is counted from zero [588.56ms]
+(pass) a heavy-context threshold from the options replaces the default [538.97ms]
+(pass) a start past the environment's cap of running subagents is refused [515.44ms]
+(pass) a start under the cap goes through [543.21ms]
+(pass) starts past maxSubagentStarts in the period are refused [740.26ms]
+(pass) an agent that has ended does not count against the cap [474.26ms]
+(pass) a start after the period has passed counts from zero [552.55ms]
+(pass) with no option the start cap is 12 [611.14ms]
+(pass) a start with no cap in the environment is not refused for the count of running subagents [643.90ms]
+(pass) a context reading that fails holds nothing [532.95ms]
+
+hooks/limits/named-files.test.ts:
+(pass) the incident text with the file missing blocks and names the path [1028.69ms]
+(pass) the incident text with the file present passes [713.95ms]
+(pass) a path the command makes passes while absent [833.15ms]
+(pass) a redirect target passes and a relative path is left alone [713.53ms]
+(pass) a ~/ path is read under HOME [559.21ms]
+(pass) a command not marked with `!` is not checked [566.61ms]
+(pass) a subagent's final report with a missing file is blocked [545.58ms]
+(pass) touch and mv make their paths, and a mv still reads its source [645.63ms]
+(pass) only the last operand of a cp is made, however many come before it, and a flag after it is no operand [553.14ms]
+(pass) a git command other than clone reads its last operand, and clone is git's alone [614.84ms]
+(pass) a fence opens at the line start, indented or not, and not after text [575.82ms]
+(pass) a `!` step starts its line, with one or more spaces after it, and trims its span [666.16ms]
+(pass) userCommands gives the commands of the steps and nothing for text without one [7.12ms]
+(pass) namedPaths pairs each read path with its command [0.41ms]
+
+hooks/limits/open-items.test.ts:
+(pass) prose that mentions a remaining budget passes [760.81ms]
+(pass) a done task item passes [646.80ms]
+(pass) a blocker word in an open item is no blocker [677.56ms]
+(pass) open items block under any heading or none [600.48ms]
+(pass) a plain bullet under an Open heading is no task item [690.31ms]
+(pass) an offer in the last line blocks and is named [547.43ms]
+(pass) a question in the middle of the reply is no offer [601.06ms]
+(pass) an open item that gives a `! command` passes, a paid run included [676.75ms]
+(pass) an open item with no denial, command, or open question blocks and says so [338.39ms]
+(pass) a refused call in the turn is the blocker of an open item [639.98ms]
+(pass) an open AskUserQuestion is the blocker of an open item [667.88ms]
+(pass) the second Stop of a continued turn passes [655.21ms]
+(pass) a block of another hook stands and adds nothing [451.69ms]
+(pass) openItemsCheckEnabled false blocks nothing [475.48ms]
+(pass) the recorded incident reply, in the form the output style prescribes, blocks [413.33ms]
+(pass) a What I Need from You item with a ! command passes [424.96ms]
+(pass) an item is listed by its text alone, whatever the bullet, indent, spacing, or trailing blanks [619.04ms]
+(pass) a `!` excuses an item at its start, after a space, a backtick, or a paren, with spaces after it [497.05ms]
+(pass) a refusal or question of an earlier turn excuses nothing [536.07ms]
+(pass) a turn is counted from the last message with text, so a tool result or a reply does not restart it [532.15ms]
+(pass) a reply of the assistant does not restart the turn either [463.93ms]
+(pass) a call that worked, or a question that was answered, is no blocker [352.54ms]
+(pass) a question that is open and a refusal that is not a question each excuse alone [454.74ms]
+(pass) the offer is the last non-blank line, trimmed, and an empty reply has none [365.72ms]
+(pass) openItems of an empty or blank reply finds nothing [19.21ms]
+
+hooks/limits/price-step.test.ts:
+(pass) a Haiku result that would take the next request over the step is withheld [893.64ms]
+(pass) a Haiku result that fits reaches the model unchanged [732.09ms]
+(pass) another model's result passes whatever its size [569.05ms]
+(pass) of two Haiku results that cross only together, the first passes and the second is withheld [575.45ms]
+(pass) a step that ends with no reading passes its result [643.05ms]
+(pass) a call that throws leaves no wait behind for a later call of the same id [663.32ms]
+(pass) another model's call answers while its step still streams [593.90ms]
+(pass) a Haiku call whose step streams past the call's budget passes its result before the budget ends [1703.43ms]
+(pass) a step writes the session's heartbeat when it starts and again on its stop chunk [382.80ms]
+(pass) a heartbeat that cannot be written leaves the step and its results as they were [531.06ms]
+
+hooks/limits/stop.test.ts:
+(pass) a block after a stretch with no write ends the turn and names /goal clear [837.82ms]
+(pass) a block after a stretch that wrote passes unchanged, every time [684.72ms]
+(pass) a write, a block, then a stretch with no write ends at the second block [604.46ms]
+(pass) a stretch whose only progress is Bash ends at the first block [730.29ms]
+(pass) a read-only stretch ends at the first block [534.33ms]
+(pass) a denied write leaves the flag clear [628.46ms]
+(pass) a write that failed leaves the flag clear [435.55ms]
+(pass) a block of the user's own Stop hook is stopped the same way [722.44ms]
+(pass) the open-items block is not stopped [582.41ms]
+(pass) a stall stop comes before the open-items check [472.01ms]
+(pass) a Stop that nothing blocks changes nothing [437.27ms]
+(pass) a changed list of background tasks is added once [422.32ms]
+(pass) a monitor that still runs at Stop is listed in the reply [510.69ms]
+(pass) each task in flight is listed, not only the first [492.66ms]
+(pass) a Stop with nothing in flight, or with no list, adds no additionalContext [699.43ms]
+(pass) a Stop that a stop hook already continued adds nothing even with a task in flight [375.08ms]
+(pass) a Stop adds no budget line, since that text would continue the turn [456.09ms]
+(pass) a task whose status changed is listed again, and a new task joins the list [403.08ms]
+(pass) a file written between the blocks starts the stretch again [453.96ms]
+(pass) a Stop that nothing blocks starts the count again [498.94ms]
+
+hooks/notify.test.ts:
+(pass) a stop that an error ended raises one notice naming the error [783.77ms]
+(pass) notificationsEnabled false raises none [633.30ms]
+(pass) a Notification raises no notice of its own [577.07ms]
+
+hooks/setup.test.ts:
+(pass) setup on an empty file writes the telemetry env and the eight denies and no Agent deny [944.85ms]
+(pass) a cache variable the user sets adds its folder to the sandbox's allowWrite [819.81ms]
+(pass) with no cache variable set, the sandbox's allowWrite holds nothing extra [715.06ms]
+(pass) a settings file that is not a JSON object is left as it is [405.99ms]
+(pass) a dismissed dialog writes nothing and says so [386.92ms]
+(pass) a Skip on every group writes no settings file [638.39ms]
+(pass) a second run with everything in place asks nothing and writes nothing [628.66ms]
+(pass) the ignore dialog says it narrows Grep and not Glob [788.89ms]
+(pass) bare /statusline writes the line with no model turn, keeping other keys [442.49ms]
+(pass) /statusline keeps a status line the user set and says so [437.07ms]
+(pass) /statusline run twice writes the file once [458.14ms]
+(pass) /statusline on a file that is not a JSON object writes nothing and names it [403.75ms]
+(pass) a /statusline write that fails says so [382.38ms]
+(pass) /statusline with text goes on to the built-in command [344.42ms]
+(pass) /statusline is described as making no model call [345.80ms]
+(pass) a startup below the version floor logs a line naming claude update [334.36ms]
+(pass) the floor itself logs nothing about the version [352.75ms]
+(pass) a startup without ast-grep logs one notice, and the second logs none [371.56ms]
+(pass) each rule the user lacks is a dialog of its own [501.59ms]
+(pass) a rule the user already holds is not offered [450.39ms]
+(pass) Write puts the shipped text under rules/claudetto and writes no settings key [429.05ms]
+(pass) a dismissed rule dialog stops the rest and says so [462.76ms]
+(pass) a shipped rule changed after setup wrote it is logged as updated, once [373.13ms]
+(pass) an edited copy is logged as modified even when the shipped file has the newer date [302.44ms]
+(pass) a copy with no saved hash that differs is logged as modified [412.86ms]
+(pass) an unchanged copy logs nothing [363.95ms]
+(pass) a rule never installed logs nothing [303.58ms]
+(pass) session.start registers no setup tool [278.33ms]
+(pass) the command answers with text alone, so the model gets no turn [361.27ms]
+(pass) each dialog offers two to four labels [405.35ms]
+(pass) only the chosen group is written to the user settings file [320.26ms]
+(pass) a full write holds no agent key [382.12ms]
+(pass) a repo with neither memory file is shown the starter files, and a Write writes them [387.18ms]
+(pass) a Skip writes no starter file [303.59ms]
+(pass) a repo with an AGENTS.md is offered no starter file [395.75ms]
+(pass) a file that appears after the starter question is not overwritten [447.40ms]
+(pass) a Write puts the block after the user's lines, and the dialog shows the file diff [345.81ms]
+(pass) a Skip writes no ignore file [356.23ms]
+(pass) a repo with an AGENTS.md is still offered the ignore files [338.02ms]
+(pass) a folder that is not a git repo is offered nothing [305.62ms]
+(pass) a settled repo is asked nothing, and a rerun changes no byte [381.62ms]
+(pass) a Yes shows the brew command and then runs it [296.08ms]
+(pass) a No runs nothing and records the pinned version [168.68ms]
+(pass) a startup without betterleaks logs its notice every time, and records nothing [283.83ms]
+(pass) a No to betterleaks records nothing and names the install step [299.18ms]
+(pass) a dismissed install question runs nothing and records nothing [383.36ms]
+(pass) a platform with no package manager gets the releases page, and nothing runs [288.85ms]
+(pass) ast-grep on the PATH asks and says nothing [237.62ms]
+(pass) the startup notice names the install command and /claudetto:setup [249.46ms]
+(pass) a changed pin shows the notice again [250.09ms]
+(pass) ast-grep on the PATH logs nothing at startup [262.28ms]
+(pass) a resume logs neither the notice nor the version [345.76ms]
+(pass) 2.1.315 at startup warns, compared by numeric parts [250.99ms]
+(pass) 2.1.311-dev at startup warns, compared by numeric parts [162.23ms]
+(pass) 2.1.320 at startup adds no line, compared by numeric parts [252.02ms]
+(pass) 2.1.1000 at startup adds no line, compared by numeric parts [337.23ms]
+(pass) 2.2.0 at startup adds no line, compared by numeric parts [268.02ms]
+(pass) 3.0.0 at startup adds no line, compared by numeric parts [350.52ms]
+(pass) dev at startup adds no line, compared by numeric parts [189.95ms]
+(pass) setup writes the same minimumVersion that the startup floor warns on [277.71ms]
+(pass) the built-in /statusline prompt is replaced, and a user's own skill keeps its text [362.21ms]
+(pass) a typed Context7 key is written to settings env and the report does not repeat it [345.91ms]
+(pass) a Context7 key already in settings env is the user's: not asked, not replaced [248.48ms]
+(pass) a skipped Context7 key writes nothing [261.50ms]
+(pass) the hooks runtime computes SHA-256 as the setup hash needs it [0.48ms]
+
+hooks/setup/ignore-block.test.ts:
+(pass) `applyBlock` > a CRLF file keeps one block on a rerun, in CRLF [1.75ms]
+(pass) `applyBlock` > a missing file becomes the block alone [0.25ms]
+(pass) `applyBlock` > a file with user lines gets the block after one blank line [0.20ms]
+(pass) `applyBlock` > a file that lacks a final newline still gets one blank line [0.19ms]
+(pass) `applyBlock` > a file that ends with a blank line gets no second one [0.18ms]
+(pass) `applyBlock` > a path the user already names is left out, with or without a slash [0.19ms]
+(pass) `applyBlock` > a negation counts as naming the path [0.18ms]
+(pass) `applyBlock` > a comment or a blank line names nothing [0.16ms]
+(pass) `applyBlock` > a rerun with the same lines is byte for byte the same [0.19ms]
+(pass) `applyBlock` > a rerun replaces the block and keeps the lines around it [0.20ms]
+(pass) `applyBlock` > a block that holds a path the user later names drops it [0.15ms]
+(pass) `applyBlock` > no lines and no block leaves the file as it is [0.17ms]
+(pass) `applyBlock` > a block with no closing marker is left as it is [0.12ms]
+(pass) `diffOf` > a new file shows every line as added [0.20ms]
+(pass) `diffOf` > an edit shows the removed and added lines only [0.13ms]
+(pass) `diffOf` > a removed line shows with a minus [0.13ms]
+(pass) `diffOf` > no change shows nothing [0.12ms]
+
+hooks/setup/ignore-plan.test.ts:
+(pass) the fixed template > a folder of no known family gets the fixed lines and an empty `.ignore` [2.19ms]
+(pass) each family > js: tracked heavy and bulky paths go to `.ignore` only [1.52ms]
+(pass) each family > js: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.89ms]
+(pass) each family > python: tracked heavy and bulky paths go to `.ignore` only [0.96ms]
+(pass) each family > python: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.60ms]
+(pass) each family > ruby: tracked heavy and bulky paths go to `.ignore` only [0.35ms]
+(pass) each family > ruby: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.28ms]
+(pass) each family > shell: tracked heavy and bulky paths go to `.ignore` only [0.16ms]
+(pass) each family > shell: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.16ms]
+(pass) each family > web: tracked heavy and bulky paths go to `.ignore` only [0.15ms]
+(pass) each family > web: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.17ms]
+(pass) each family > c: tracked heavy and bulky paths go to `.ignore` only [0.44ms]
+(pass) each family > c: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.33ms]
+(pass) each family > rust: tracked heavy and bulky paths go to `.ignore` only [0.27ms]
+(pass) each family > rust: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.23ms]
+(pass) each family > swift: tracked heavy and bulky paths go to `.ignore` only [0.31ms]
+(pass) each family > swift: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.28ms]
+(pass) each family > jvm: tracked heavy and bulky paths go to `.ignore` only [0.51ms]
+(pass) each family > jvm: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.35ms]
+(pass) each family > dotnet: tracked heavy and bulky paths go to `.ignore` only [0.28ms]
+(pass) each family > dotnet: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.27ms]
+(pass) each family > go: tracked heavy and bulky paths go to `.ignore` only [0.24ms]
+(pass) each family > go: heavy paths git does not track go to `.gitignore`, and absent bulky ones nowhere [0.20ms]
+(pass) a repo with two stacks > the paths of both land in the files, with a shared path once [0.31ms]
+(pass) a repo with two stacks > a lock file git sees but does not track still goes to `.ignore` [0.19ms]
+
+hooks/setup/ignores.test.ts:
+(pass) a repo with no ignore file > both files are made, each as its block [2.33ms]
+(pass) a repo with no ignore file > `.ignore` is not made when it would hold nothing [0.64ms]
+(pass) a repo with no ignore file > `.ignore` is made when git tracks a heavy path [0.38ms]
+(pass) a repo with no ignore file > `.rgignore` is never made [0.34ms]
+(pass) a repo with lines of its own > a path it names, a duplicate or a negation, stays out of the block [0.60ms]
+(pass) a repo with lines of its own > the lines outside the block are the lines it had [0.34ms]
+(pass) a rerun > on the file it wrote changes nothing [0.38ms]
+(pass) a rerun > after a family is added changes only the block [0.49ms]
+(pass) the dialog text > shows each file with its added lines [0.34ms]
+(pass) the dialog text > shows only the block lines that change on a rerun [0.36ms]
+(pass) `settle` > rebuilds the text from the file as it is when the user answers [0.30ms]
+
+hooks/setup/settings.test.ts:
+(pass) an empty file takes every group, and a second pass finds nothing to change [2.45ms]
+(pass) the eight tools of the tool-trim are denied [0.77ms]
+(pass) no built-in agent and no tool that ToolSearch or Skill need is denied [0.30ms]
+(pass) telemetry is off through DISABLE_TELEMETRY alone [0.57ms]
+(pass) a deny list keeps the user's rules and adds ours once [0.46ms]
+(pass) fill keeps a value the user set, and replace takes ours [0.19ms]
+(pass) other keys of the user's file stay as they are [0.43ms]
+(pass) a file that is not a JSON object is refused and a missing file is empty [0.27ms]
+(pass) the auto-mode lists replace the built-ins, so none names $defaults [0.38ms]
+(pass) eleven built-in plugins are off as cc-plugin-<name>@builtin [1.11ms]
+(pass) auto mode writes no classifyAllShell [0.42ms]
+(pass) the models are the three of this release and nothing else [0.25ms]
+(pass) the bundled-skill switch and the compaction keys are written [0.40ms]
+(pass) the status line refreshes every 5 seconds, and fill keeps the user's own [0.18ms]
+(pass) a login of {"organizationType":"claude_pro"} caps subagents at 3 [0.14ms]
+(pass) a login of {"organizationRateLimitTier":"default_claude_max_5x"} caps subagents at 4 [0.09ms]
+(pass) a login of {"organizationRateLimitTier":"default_claude_max_20x"} caps subagents at nothing [0.08ms]
+(pass) a login of {} caps subagents at nothing [0.07ms]
+(pass) no login record writes no cap [0.09ms]
+(pass) the groups are labelled and explained in order [37.11ms]
+(pass) the status line is a command [0.28ms]
+(pass) the smaller prompt allows read-only git, denies the trimmed tools, and picks the Concise style [0.21ms]
+(pass) the auto-mode group writes the autoMode lists [0.14ms]
+(pass) the models group writes the models, ceilings, and windows [0.19ms]
+(pass) the features-off group writes every switch and environment variable [0.20ms]
+(pass) the sandbox group turns the sandbox on, closes the retry, and opens no domain list [0.18ms]
+(pass) a sandbox list the user holds stays under fill [0.16ms]
+(pass) a null value in the user's file is replaced, not walked into [0.17ms]
+(pass) only a permission list merges; another list is replaced [0.16ms]
+(pass) a deny list gains our rules after the user's, and fill adds the rules a list lacks [0.23ms]
+(pass) a plan is found in either tier field, and only by a string name [0.14ms]
+(pass) the cap group is labelled and names the cap and the plan [0.10ms]
+
+hooks/setup/starter.test.ts:
+(pass) detectFamilies > a root marker names its family [16.37ms]
+(pass) detectFamilies > a marker below the root does not count [0.35ms]
+(pass) detectFamilies > a glob marker matches a root name [0.27ms]
+(pass) detectFamilies > a repo with two stacks names both, in table order [0.25ms]
+(pass) planStarter > a bun repo gets bounded commands from its markers [0.54ms]
+(pass) planStarter > CLAUDE.md is a title, a blank line, and the import [0.28ms]
+(pass) planStarter > an existing AGENTS.md or CLAUDE.md plans nothing [0.17ms]
+(pass) planStarter > an unknown repo plans nothing [0.20ms]
+(pass) planStarter > all families together stay under the cap by dropping later ones [0.41ms]
+(pass) planStarter > each family alone fits the cap with every command on [1.82ms]
+(pass) table > covers the eleven families [0.58ms]
+(pass) unsourced table entries > no family lists an entry that no source names [0.33ms]
+(pass) linesOf and previewOf > linesOf drops blank lines [0.13ms]
+(pass) linesOf and previewOf > previewOf marks each new line with a plus [0.16ms]
+
+hooks/setup/tools.test.ts:
+(pass) a name in any PATH folder is found, and a name in none is not [1.85ms]
+(pass) the notice names brew's command when brew exists and the releases page otherwise [0.51ms]
+(pass) a release below the floor is below, an equal or later one and a prerelease of the floor are not [0.48ms]
+
+hooks/surface.test.ts:
+(pass) the root prompt is one shared section within 5,218 bytes [620.46ms]
+(pass) the /init interview fits 1,144 chars, names the claudetto ask-user-question tool, and no deleted file [0.43ms]
+(pass) the ListAgents text is 304 chars [0.16ms]
+(pass) tool.describe sends our Bash text, deferred only for Read, Write, Skill among them [500.72ms]
+(pass) tool.describe sends our Read text, deferred only for Read, Write, Skill among them [486.23ms]
+(pass) tool.describe sends our Edit text, deferred only for Read, Write, Skill among them [536.84ms]
+(pass) tool.describe sends our Write text, deferred only for Read, Write, Skill among them [497.66ms]
+(pass) tool.describe sends our Skill text, deferred only for Read, Write, Skill among them [575.94ms]
+(pass) tool.describe sends our EnterWorktree text, deferred only for Read, Write, Skill among them [338.88ms]
+(pass) tool.describe sends our ExitWorktree text, deferred only for Read, Write, Skill among them [430.53ms]
+(pass) tool.describe sends our SendMessage text, deferred only for Read, Write, Skill among them [427.76ms]
+(pass) tool.describe sends our TaskStop text, deferred only for Read, Write, Skill among them [498.28ms]
+(pass) tool.describe sends our WebFetch text, deferred only for Read, Write, Skill among them [333.00ms]
+(pass) tool.describe sends our WebSearch text, deferred only for Read, Write, Skill among them [364.67ms]
+(pass) tool.describe sends our NotebookEdit text, deferred only for Read, Write, Skill among them [267.99ms]
+(pass) tool.describe sends our ListAgents text, deferred only for Read, Write, Skill among them [445.83ms]
+(pass) Workflow goes behind ToolSearch with its stock text [336.50ms]
+(pass) ScheduleWakeup goes behind ToolSearch with its stock text [431.44ms]
+(pass) ReportFindings goes behind ToolSearch with its stock text [354.33ms]
+(pass) a stock description shorter than ours is kept [427.86ms]
+(pass) /add-dir is off and hidden [327.50ms]
+(pass) /agents is off and hidden [344.40ms]
+(pass) /autocompact is off and hidden [288.02ms]
+(pass) /background is off and hidden [123.97ms]
+(pass) /branch is off and hidden [281.62ms]
+(pass) /bug is off and hidden [325.04ms]
+(pass) /cd is off and hidden [314.84ms]
+(pass) /compact is off and hidden [373.03ms]
+(pass) /fast is off and hidden [361.89ms]
+(pass) /feedback is off and hidden [324.26ms]
+(pass) /focus is off and hidden [258.64ms]
+(pass) /ide is off and hidden [341.45ms]
+(pass) /memory is off and hidden [271.72ms]
+(pass) /mobile is off and hidden [312.48ms]
+(pass) /passes is off and hidden [286.01ms]
+(pass) /plan is off and hidden [323.41ms]
+(pass) /powerup is off and hidden [343.64ms]
+(pass) /pro-trial-expired is off and hidden [240.62ms]
+(pass) /radio is off and hidden [376.01ms]
+(pass) /recap is off and hidden [323.65ms]
+(pass) /release-notes is off and hidden [393.09ms]
+(pass) /setup-bedrock is off and hidden [242.06ms]
+(pass) /setup-vertex is off and hidden [352.94ms]
+(pass) /stickers is off and hidden [360.72ms]
+(pass) /workflows is off and hidden [179.58ms]
+(pass) /__remote-workflow is off and hidden [144.61ms]
+(pass) /workflow-launch-exec is off and hidden [250.48ms]
+(pass) a whole Read of a lock file is denied, a Read with a limit goes on [282.59ms]
+(pass) a whole Read of /r/Cargo.lock is denied [266.88ms]
+(pass) a whole Read of /r/app.min.js is denied [193.22ms]
+(pass) a whole Read of /r/a.js.map is denied [218.64ms]
+(pass) a whole Read of /r/node_modules/x/index.js is denied [368.61ms]
+(pass) Rule K: the 18 prompt commands go off, but not a name a user skill holds [0.48ms]
+(pass) the full plan mode reminder is replaced by a shorter one naming the plan file [231.44ms]
+(pass) a plan file that already holds a plan is read before it is edited [254.22ms]
+(pass) the sparse reminder is kept [311.46ms]
+(pass) an engine plan mode text shorter than ours is kept [231.33ms]
+(pass) a plan mode row without its facts is kept [275.86ms]
+(pass) another attachment is passed on unchanged [268.74ms]
+(pass) the built-in init skill reaches the model as the interview [193.73ms]
+(pass) a user's own skill named init keeps its text [271.05ms]
+(pass) another built-in skill keeps its text [244.06ms]
+(pass) a Read of a source file goes on [279.62ms]
+(pass) with readGuardEnabled off, a whole Read of a lock file goes on [308.07ms]
+(pass) the root prompt opens on its role and holds no agent frontmatter [0.29ms]
+(pass) a tool claudetto writes no text for is passed on unchanged [308.17ms]
+(pass) two builds of a tool text are byte-identical [177.65ms]
+(pass) a folder with package.json and bun.lock adds the bun text, again after clear and compact [214.61ms]
+(pass) a folder with only package.json adds nothing [290.06ms]
+(pass) a folder with only bun.lock adds nothing [329.25ms]
+(pass) with bunRuleEnabled off, nothing is added [295.29ms]
+
+ 1085 pass
+ 0 fail
+Ran 1085 tests across 31 files. [36.84s]
+claude plugin test plugins/claudetto-you-should-know
+
+hooks/note.test.ts:
+(pass) a reply without a learn line shows nothing [1.37ms]
+(pass) a reply of none, in any case and with a final period, shows nothing [0.28ms]
+(pass) a learn line of 240 characters is offered, one of 241 or none is not [0.31ms]
+(pass) the first learn line decides [0.14ms]
+(pass) a reply without an explain label offers a line with no explanation and the default tag [0.42ms]
+(pass) a heads-up tag is kept and any other tag falls back to the default [0.18ms]
+(pass) the explanation holds the rest of the reply after its label [0.12ms]
+(pass) an explanation is cut to four cards [0.29ms]
+(pass) a title starting the text makes the first card, with no empty card before it [0.16ms]
+(pass) a card keeps 12 sketch lines of 120 characters and a title of 120 [0.21ms]
+(pass) text before and after a fence becomes the lead and the caption, cut at a word [0.20ms]
+(pass) blank text has no cards [0.11ms]
+(pass) the back-off is nothing for two ignores, doubles after, and stops at 16 [0.12ms]
+(pass) a line equal to a known line except for case and final period is a repeat [0.15ms]
+(pass) a list keeps its last 50 lines and moves a repeated line to the end [0.26ms]
+(pass) a 33rd session row evicts a closed row first [0.29ms]
+(pass) the chat draft quotes the tag, the line, and the cards [0.25ms]
+(pass) an at-sign in the note becomes a full-width one, so no file is mentioned [0.18ms]
+(pass) a paste placeholder, an ultra keyword and a zero-width space are neutralised, and an emoji selector stays [0.26ms]
+(pass) a filled box closes the note, a missing box submits the draft, and any other refusal toasts [0.25ms]
+
+hooks/register.test.ts:
+(pass) a new install with no option set makes no request and writes nothing [45.28ms]
+(pass) an old option name enabled: true leaves the observer off [24.27ms]
+(pass) a check runs at every sixth step and at no other [36.63ms]
+(pass) a subagent step on a multiple of six starts no check [18.66ms]
+(pass) no check runs on a surface that draws no band [21.15ms]
+(pass) a desktop surface is checked like a terminal [32.56ms]
+(pass) no check runs while a view is open [30.26ms]
+(pass) no check runs in a turn that already got an offer [22.18ms]
+(pass) a sixth step that arrives before the last check answered makes no second request [1031.83ms]
+(pass) five ignored offers in a row leave four check chances without a request [29.88ms]
+(pass) the skips stop growing at 16 [22.55ms]
+(pass) an offer ignored inside the free count leaves no skip [19.12ms]
+(pass) an offer survives the first prompt typed past it and is cleared by the second [32.74ms]
+(pass) two prompts typed through the bridge clear the offer [19.31ms]
+(pass) prompts a plugin sends do not count as typed past an offer [20.72ms]
+(pass) a skipped check chance spends one skip and the next chance runs [18.33ms]
+(pass) the asked view closing itself after 20 seconds leaves the count at three [29.42ms]
+(pass) Dismiss on the asked view closes it and keeps the counts [17.87ms]
+(pass) dismissing an offer opens the asked view and resets the counts [20.37ms]
+(pass) a check makes one request with the option model, effort, and 512 tokens [20.65ms]
+(pass) a check without model options asks claude-haiku-5-5 at high effort, and an unknown effort falls back [24.39ms]
+(pass) the fixed instructions are the cached block and the body follows unmarked [21.68ms]
+(pass) a log of more than eight entries sends the last eight, each cut to its bound [27.18ms]
+(pass) a check body lists the lines already shown and the lines the person knows [21.79ms]
+(pass) the log holds a typed prompt and a step's answer, and leaves out a plugin's prompt [22.67ms]
+(pass) the fixed instructions allow a line only for a consequence and name the Heads up tag [18.80ms]
+(pass) a check never forks the session [21.42ms]
+(pass) a reply that fails parsing shows nothing and stores no shown line [19.73ms]
+(pass) a reply with an empty line shows nothing and stores no shown line [20.82ms]
+(pass) a reply of none shows nothing and stores no shown line [20.21ms]
+(pass) a new line is shown and joins the shown list [22.64ms]
+(pass) a line equal to a shown line except for case and final period shows nothing [20.15ms]
+(pass) a line equal to a known line except for case and final period shows nothing [18.65ms]
+(pass) a reply that arrives after its turn changed shows nothing [1026.05ms]
+(pass) a reply that arrives after its session ended shows nothing [1033.58ms]
+(pass) a reply that arrives while a view is open leaves that view as it is [1023.00ms]
+(pass) an open offer is closed when its session ends [16.46ms]
+(pass) a check fault is swallowed and the person sees nothing [22.32ms]
+(pass) a 33rd session row evicts a closed row first [19.02ms]
+(pass) the shown list keeps its last 50 lines [23.37ms]
+(pass) the known list keeps its last 50 lines [15.99ms]
+(pass) Knew this already adds the line to the known list, closes the view, and resets the counts [21.77ms]
+(pass) That was helpful on the asked view learns the line and resets the counts [15.83ms]
+(pass) the not-relevant key closes the asked view, learns no line, and resets the counts [21.04ms]
+(pass) the not-understood key closes the asked view, learns no line, and resets the counts [16.29ms]
+(pass) Learn more opens the explanation with no second request [25.18ms]
+(pass) an offer with no explanation shows Knew this already and Dismiss but no Learn more [15.62ms]
+(pass) an offer with an explanation shows Learn more [17.82ms]
+(pass) a band with no open view draws nothing of ours [15.37ms]
+(pass) a band whose props say a survey is open draws nothing of ours [13.72ms]
+(pass) the explained view offers key 2 to chat in the main session [19.25ms]
+(pass) chat puts the quoted note in an empty box, learns the line, closes, and resets the counts [16.92ms]
+(pass) chat leaves a box that holds text unchanged and a toast says to send or clear it [19.64ms]
+(pass) a refusal with no cause keeps the view open and offers a retry [15.84ms]
+(pass) an at-sign in the note becomes a full-width one in the chat draft [19.68ms]
+(pass) the terminal band draws a marker column and digit keys, and the desktop band draws neither [16.65ms]
+(pass) a check body with empty lists and no log says none and nothing yet [19.51ms]
+(pass) a check body stays within 8,000 characters with both lists and the log full [28.28ms]
+
+hooks/view.test.ts:
+(pass) the explained view on terminal draws four cards and the three buttons [46.69ms]
+(pass) the explained view on desktop draws four cards and the three buttons [23.63ms]
+
+ 80 pass
+ 0 fail
+Ran 80 tests across 3 files. [5.48s]
+claude plugin test plugins/claudetto-openspec
+
+hooks/openspec.test.ts:
+(pass) The tool is registered deferred under the plugin's name [62.05ms]
+(pass) Validate Call: reports and runs no process [45.05ms]
+(pass) Validate is the default action [46.38ms]
+(pass) No openspec folder: says so [30.96ms]
+(pass) A change name that is a path is refused [30.00ms]
+(pass) Status lists each open task as its line with the line number [34.98ms]
+(pass) Status without a change lists the changes [30.06ms]
+(pass) Archive Refuses Open Tasks: names 1.2 and moves nothing [36.32ms]
+(pass) Archive has no override for open tasks (#2006, #1652) [31.18ms]
+(pass) Archive merges, moves with mv, and writes the main spec [39.01ms]
+(pass) A Notes File beside a Delta: validation names it and archive merges nothing (#2173) [35.53ms]
+(pass) An unknown delta section fails validation (#2195) [36.48ms]
+(pass) Validate fails what archive would refuse (#1112) [39.11ms]
+(pass) MODIFIED that drops a scenario fails (kept from upstream) [39.82ms]
+(pass) MODIFIED that replaces a scenario by two keeps upstream's verdict: invalid, naming the omitted one (#1697) [36.65ms]
+(pass) File Compatibility: x- keys in .openspec.yaml are read and kept [37.50ms]
+(pass) skip_specs with a malformed .openspec.yaml is reported [32.32ms]
+
+hooks/yaml.test.ts:
+(pass) Reads the keys a change file uses [1.60ms]
+(pass) Keeps x- keys and quoted values [0.24ms]
+(pass) A list is no map, an unclosed flow is invalid [0.30ms]
+
+ 20 pass
+ 0 fail
+Ran 20 tests across 2 files. [0.81s]
+exit 0

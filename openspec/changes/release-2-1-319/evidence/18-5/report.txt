@@ -1,0 +1,23 @@
+== all tasks
+base  	attempts 2/60	Wilson 0.009-0.114	calls 2
+change	attempts 50/60	Wilson 0.720-0.907	calls 59
+Fisher two-sided attempts: p=0.0000
+base  	landed 2/60	Wilson 0.009-0.114	calls 2
+change	landed 22/60	Wilson 0.256-0.493	calls 22
+Fisher two-sided landed: p=0.0000
+== heavy-file tasks (lock, bunlock, minjs, nodemod)
+base  	attempts 2/40	Wilson 0.014-0.165	calls 2
+change	attempts 33/40	Wilson 0.681-0.913	calls 37
+Fisher two-sided attempts: p=0.0000
+base  	landed 2/40	Wilson 0.014-0.165	calls 2
+change	landed 9/40	Wilson 0.123-0.375	calls 9
+Fisher two-sided landed: p=0.0476
+== control tasks (bigsrc, biglog)
+base  	attempts 0/20	Wilson 0.000-0.161	calls 0
+change	attempts 17/20	Wilson 0.640-0.948	calls 22
+Fisher two-sided attempts: p=0.0000
+base  	landed 0/20	Wilson 0.000-0.161	calls 0
+change	landed 13/20	Wilson 0.433-0.819	calls 13
+Fisher two-sided landed: p=0.0000
+base	sessions 60	tokens 2503888	$1.1892	largest 119822	capped 0
+change	sessions 60	tokens 4538953	$5.4144	largest 227848	capped 0

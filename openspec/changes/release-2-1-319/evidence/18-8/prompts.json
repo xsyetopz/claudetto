@@ -1,0 +1,42 @@
+{
+	"source": "written blind by a fresh subagent told only the kind of task (partly doable by the assistant, at least one step only the user can take, such as sudo, a login, a hardware action); it never saw the style text or an earlier case set",
+	"judge": {
+		"checkbox": "follow = the final reply has at least one line matching the Stop check's item regex /^\\s*(?:[-*+]|\\d+[.)])\\s+\\[ \\]\\s+(.*\\S)\\s*$/ (open-items.ts OPEN_ITEM)",
+		"form": "follow (strict) = checkbox, and a 'What I Need from You' heading or label, and every checkbox item holds a `! <command>` (a '!' followed by a backticked or plain command)",
+		"heading": "weak = the final reply holds the phrase 'What I Need from You', which the shipped Concise.md line asks for"
+	},
+	"prompts": [
+		"Set up a Postgres 16 dev database for my Rails app: write a docker-compose.yml with a named volume and a healthcheck, plus a .env.example. I think my user isn't in the docker group, so tell me whatever I need to run.",
+		"Generate a self-signed TLS cert for dev.local with a SAN, write an nginx server block that uses it, and get my Mac to trust the cert.",
+		"Write a script that backs up /etc/postgresql and /var/lib/postgresql nightly to /mnt/backup with rotation, and install it in root's crontab.",
+		"My iOS app build fails with 'No signing certificate iOS Development found'. Here is my Fastfile lane: lane :build do build_app(scheme: 'MyApp') end. Fix it so it builds for my connected iPhone.",
+		"Install and configure WireGuard on my Ubuntu box as a server for 3 peers. Generate the configs and key pairs, and give me the exact steps to enable it.",
+		"Add a systemd unit for my Go service at /opt/api/bin/api running as user 'api', restart on failure, and get it enabled and running.",
+		"Please set up AWS CLI SSO profiles for my dev and prod accounts. The start URL is https://acme.awsapps.com/start, region eu-west-1. Then verify with sts get-caller-identity.",
+		"Why does `brew install postgresql@15` keep failing with a permissions error on /usr/local/var? Fix it.",
+		"Create a Dockerfile and a GitHub Actions workflow that builds and pushes my image to ghcr.io/me/app on every tag.",
+		"Set my macOS to never sleep when the lid is closed on power, and disable Spotlight indexing on ~/CodeProjects.",
+		"Rotate the MySQL root password on this server to a new strong one, and update the my.cnf client section accordingly.",
+		"I need Android emulator working with hardware acceleration on my Linux laptop for my React Native project. Get everything ready.",
+		"Configure UFW so only ports 22, 80 and 443 are open, and rate-limit SSH. Write it as an idempotent script.",
+		"Publish this Python package to PyPI: the project is ready, version 0.3.1, just build it and upload.",
+		"Set up Let's Encrypt for example.org with certbot and nginx, with auto-renewal.",
+		"Make a Kubernetes manifest for my app with a Deployment, Service and Ingress, and apply it to my cluster. I'm logged out of gcloud at the moment.",
+		"Our static IP for the Raspberry Pi should be 192.168.1.50. Write the netplan config and apply it.",
+		"Pin Node 20 for this project using nvm, add .nvmrc, and make sure the CI uses it. I haven't installed nvm yet.",
+		"Install the Mosquitto MQTT broker, require username/password auth for a user 'sensor1', and test publishing a message.",
+		"Mount my NAS share //192.168.1.20/media at /mnt/media permanently via fstab with credentials stored safely.",
+		"Flash the firmware in my ESP32 project and show me the serial output. The board is plugged into USB.",
+		"Switch my git commits to be signed with a new GPG key, generate it, and configure git globally.",
+		"Increase the open file limit for my nginx workers to 65535 and make it persistent across reboots.",
+		"Set up SSH key auth to my server at 203.0.113.7 as user deploy, and disable password login in sshd_config.",
+		"Write a Terraform config for an S3 bucket with versioning and encryption, then run plan and apply.",
+		"Tune my Linux box for Elasticsearch: set vm.max_map_count to 262144 permanently.",
+		"Create a Homebrew formula for my CLI tool and push it to my tap repo.",
+		"Install Docker Desktop alternatives: set up colima and the docker CLI on my Mac and run hello-world.",
+		"Enable two-factor TOTP for SSH logins on my server using libpam-google-authenticator.",
+		"Set up a local DNS override so api.test resolves to 127.0.0.1 and run dnsmasq for wildcard *.test.",
+		"Restore this Postgres dump into a fresh database called shop: pg_restore -d shop backup.dump. The postgres superuser needs a password I don't remember.",
+		"Sign and notarize my macOS .app bundle located at ./dist/MyApp.app using my Developer ID, then staple it."
+	]
+}

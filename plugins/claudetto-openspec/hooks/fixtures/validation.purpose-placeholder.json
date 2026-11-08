@@ -1,0 +1,446 @@
+[
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > severity is what --strict is for > passes by default, so a project carrying one keeps validating",
+		"seq": 0,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": false,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > severity is what --strict is for > fails under --strict, naming the placeholder and where it is",
+		"seq": 1,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > severity is what --strict is for > leaves an authored Purpose passing --strict",
+		"seq": 2,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nBounds how often a failed delivery is retried, so a permanently broken endpoint cannot occupy the worker pool forever.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the gap this closes > is the case --strict could not reach: the placeholder outruns the length floor",
+		"seq": 3,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the gap this closes > is the case --strict could not reach: the placeholder outruns the length floor",
+		"seq": 4,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nDoes stuff.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"message": "Purpose section is too brief (less than 50 characters)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the gap this closes > reports a bare TBD once, as a placeholder rather than as too brief",
+		"seq": 5,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nTBD\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the gap this closes > reports a bare TODO the same way, since it is the same non-answer",
+		"seq": 6,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nTODO\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > a Purpose that documents the placeholder is not one > passes --strict while quoting the sentence archive writes inside a fence",
+		"seq": 7,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": true,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nDocuments the Purpose `openspec archive` writes for a capability a delta introduced\nwithout one, and what to replace it with:\n\n```\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n```\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > archive is unaffected > still reports a placeholder spec as valid to the validator archive runs",
+		"seq": 8,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "widgets",
+		"args": {
+			"strict": false,
+			"args": [
+				"widgets",
+				"# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the real file path > reports a placeholder read off disk",
+		"seq": 9,
+		"kind": "validator.validateSpec",
+		"root": "openspec-purpose-IXrIAg",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the real file path > reports the same line for a spec saved with CRLF endings",
+		"seq": 10,
+		"kind": "validator.validateSpec",
+		"root": "openspec-purpose-YfI9Up",
+		"abs": "$ROOT",
+		"hint": "$ROOT/lf.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/lf.md"]
+		},
+		"before": {
+			"crlf.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\r\n\r\n## Requirements\r\n### Requirement: Retries are bounded\r\nThe system SHALL stop retrying a delivery after the configured budget.\r\n\r\n#### Scenario: Budget exhausted\r\n- **WHEN** the budget is exhausted\r\n- **THEN** the delivery is abandoned\r\n"
+			},
+			"lf.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			}
+		},
+		"after": {
+			"crlf.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\r\n\r\n## Requirements\r\n### Requirement: Retries are bounded\r\nThe system SHALL stop retrying a delivery after the configured budget.\r\n\r\n#### Scenario: Budget exhausted\r\n- **WHEN** the budget is exhausted\r\n- **THEN** the delivery is abandoned\r\n"
+			},
+			"lf.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.purpose-placeholder.test.ts",
+		"test": "Purpose placeholder validation > the real file path > reports the same line for a spec saved with CRLF endings",
+		"seq": 11,
+		"kind": "validator.validateSpec",
+		"root": "openspec-purpose-YfI9Up",
+		"abs": "$ROOT",
+		"hint": "$ROOT/crlf.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/crlf.md"]
+		},
+		"before": {
+			"crlf.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\r\n\r\n## Requirements\r\n### Requirement: Retries are bounded\r\nThe system SHALL stop retrying a delivery after the configured budget.\r\n\r\n#### Scenario: Budget exhausted\r\n- **WHEN** the budget is exhausted\r\n- **THEN** the delivery is abandoned\r\n"
+			},
+			"lf.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			}
+		},
+		"after": {
+			"crlf.md": {
+				"text": "# widgets Specification\r\n\r\n## Purpose\r\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\r\n\r\n## Requirements\r\n### Requirement: Retries are bounded\r\nThe system SHALL stop retrying a delivery after the configured budget.\r\n\r\n#### Scenario: Budget exhausted\r\n- **WHEN** the budget is exhausted\r\n- **THEN** the delivery is abandoned\r\n"
+			},
+			"lf.md": {
+				"text": "# widgets Specification\n\n## Purpose\nTBD - created by archiving change add-retry-budget. Update Purpose after archive.\n\n## Requirements\n### Requirement: Retries are bounded\nThe system SHALL stop retrying a delivery after the configured budget.\n\n#### Scenario: Budget exhausted\n- **WHEN** the budget is exhausted\n- **THEN** the delivery is abandoned\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"line": 4,
+						"message": "Purpose section is still a placeholder rather than a Purpose anyone wrote (the sentence `openspec archive` writes for a new capability, or a `TBD`/`TODO` marker left in its place). Replace it with what this capability is for, editing the main spec directly: a `## Purpose` in a delta is read only when the capability is created, so it cannot replace this one."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	}
+]

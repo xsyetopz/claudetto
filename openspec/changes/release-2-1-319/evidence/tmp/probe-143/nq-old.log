@@ -1,0 +1,314 @@
+2026-11-06T16:27:22.309Z [DEBUG] MDM settings load completed in 0ms
+2026-11-06T16:27:22.320Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T16:27:22.321Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.json
+2026-11-06T16:27:22.321Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.local.json
+2026-11-06T16:27:22.322Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: CLAUDE_AUTOCOMPACT_PCT_OVERRIDE,CLAUDE_CODE_SUBAGENT_MODEL,CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS,CLAUDE_CODE_DISABLE_CFC_PROMPT,CLAUDE_CODE_DISABLE_ADVISOR_TOOL,CLAUDE_CODE_DISABLE_CRON,CLAUDE_CODE_FORK_SUBAGENT,CLAUDE_CODE_AUTO_CONNECT_IDE,CLAUDE_CODE_DISABLE_TERMINAL_TITLE,CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY,DISABLE_ERROR_REPORTING,DISABLE_EXTRA_USAGE_COMMAND,DISABLE_FEEDBACK_COMMAND,DISABLE_INSTALL_GITHUB_APP_COMMAND,CLAUDE_CODE_DISABLE_FAST_MODE,ENABLE_CLAUDEAI_MCP_SERVERS,CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL,CLAUDE_CODE_THRIFTY_SONIC,ANTHROPIC_DEFAULT_MODEL,ANTHROPIC_DEFAULT_OPUS_MODEL,ANTHROPIC_DEFAULT_SONNET_MODEL,ANTHROPIC_DEFAULT_HAIKU_MODEL
+2026-11-06T16:27:22.323Z [DEBUG] [init] configureGlobalMTLS starting
+2026-11-06T16:27:22.323Z [DEBUG] [init] configureGlobalMTLS complete
+2026-11-06T16:27:22.323Z [DEBUG] [init] configureGlobalAgents starting
+2026-11-06T16:27:22.323Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-11-06T16:27:22.323Z [DEBUG] CA certs: Loaded 118 bundled root certificates
+2026-11-06T16:27:22.346Z [DEBUG] CA certs: Loaded 7 system CA certificates
+2026-11-06T16:27:22.349Z [DEBUG] CA certs: Dropped blocked certificate 40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 from bundled
+2026-11-06T16:27:22.356Z [DEBUG] CA certs: Dropped 1 certificate(s) that do not chain to a root in the CA list
+2026-11-06T16:27:22.356Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-11-06T16:27:22.357Z [DEBUG] [init] configureGlobalAgents complete
+2026-11-06T16:27:22.359Z [DEBUG] Error log sink initialized
+2026-11-06T16:27:22.359Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-11-06T16:27:22.381Z [DEBUG] Applying permission update: Adding 4 allow rule(s) to destination 'userSettings': ["Bash(git status *)","Bash(git diff)","Bash(git log)","Bash(git show)"]
+2026-11-06T16:27:22.381Z [DEBUG] Applying permission update: Adding 6 deny rule(s) to destination 'userSettings': ["Workflow","ScheduleWakeup","ReportFindings","DesignSync","Agent(statusline-setup)","NotebookEdit"]
+2026-11-06T16:27:22.382Z [DEBUG] [ToolSearch:optimistic] mode=tst, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-11-06T16:27:22.383Z [DEBUG] [claudeai-mcp] Disabled via env var
+2026-11-06T16:27:22.383Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-11-06T16:27:22.384Z [DEBUG] [STARTUP] Running setup()...
+2026-11-06T16:27:22.391Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/agents: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/agents'
+2026-11-06T16:27:22.393Z [DEBUG] --plugin-dir /tmp/probe-143/old is one plugin: .claude-plugin at its top marks it
+2026-11-06T16:27:22.393Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/commands: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/commands'
+2026-11-06T16:27:22.393Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-11-06T16:27:22.397Z [DEBUG] Read hooks.json for plugin claudetto (enabled=true): /tmp/probe-143/old/hooks/hooks.json
+2026-11-06T16:27:22.398Z [INFO] [uds-messaging] Listening: /tmp/cc-socks/64851.sock
+2026-11-06T16:27:22.399Z [DEBUG] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-socks/64851.sock
+2026-11-06T16:27:22.403Z [DEBUG] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-11-06T16:27:22.404Z [DEBUG] Error log sink initialized
+2026-11-06T16:27:22.405Z [DEBUG] Wrote per-PID lock for 2.1.318 (PID 64851)
+2026-11-06T16:27:22.413Z [DEBUG] Cannot acquire lock for 2.1.318 - held by PID 19521
+2026-11-06T16:27:22.413Z [DEBUG] [STARTUP] setup() completed in 29ms
+2026-11-06T16:27:22.413Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T16:27:22.413Z [DEBUG] Cleared proxy agent cache
+2026-11-06T16:27:22.416Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-11-06T16:27:22.420Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/commands: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/commands'
+2026-11-06T16:27:22.420Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-11-06T16:27:22.421Z [DEBUG] Loaded settings from settings.json for plugin claudetto
+2026-11-06T16:27:22.421Z [DEBUG] Loaded inline plugin from path: claudetto
+2026-11-06T16:27:22.421Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-11-06T16:27:22.422Z [DEBUG] Found 4 plugins (3 enabled, 1 disabled)
+2026-11-06T16:27:22.422Z [DEBUG] Cached plugin settings with keys: subagentStatusLine
+2026-11-06T16:27:22.422Z [DEBUG] getPluginSkills: Processing 3 enabled plugins
+2026-11-06T16:27:22.422Z [DEBUG] Checking plugin claudetto: skillsPath=exists, skillsPaths=0 paths
+2026-11-06T16:27:22.422Z [DEBUG] Attempting to load skills from plugin claudetto default skillsPath: /tmp/probe-143/old/skills
+2026-11-06T16:27:22.423Z [DEBUG] Checking plugin cc-plugin-privacy: skillsPath=none, skillsPaths=0 paths
+2026-11-06T16:27:22.423Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-11-06T16:27:22.424Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.json
+2026-11-06T16:27:22.424Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.local.json
+2026-11-06T16:27:22.424Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T16:27:22.426Z [DEBUG] plugin claudetto: no pluginConfigs["claudetto" or "claudetto@inline"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-11-06T16:27:22.431Z [DEBUG] Loaded 2 commands from plugin claudetto default directory
+2026-11-06T16:27:22.431Z [DEBUG] Total plugin commands loaded: 2
+2026-11-06T16:27:22.432Z [DEBUG] Loaded 3 agents from plugin claudetto default directory
+2026-11-06T16:27:22.432Z [DEBUG] Total plugin agents loaded: 3
+2026-11-06T16:27:22.432Z [DEBUG] Loaded 1 skills from plugin claudetto default directory
+2026-11-06T16:27:22.432Z [DEBUG] Total plugin skills loaded: 1 (0 duplicate/user-owned entries skipped)
+2026-11-06T16:27:22.433Z [DEBUG] getSkills returning: 0 skill dir commands, 1 plugin skills, 2 bundled skills, 1 builtin plugin skills
+2026-11-06T16:27:22.434Z [DEBUG] Auto mode classifier: ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5 cannot serve as the classifier; using the Sonnet 5 default instead
+2026-11-06T16:27:22.436Z [DEBUG] [STARTUP] Commands and agents loaded in 20ms
+2026-11-06T16:27:22.438Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-11-06T16:27:22.438Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-11-06T16:27:22.438Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-11-06T16:27:22.438Z [DEBUG] Starting background startup prefetches
+2026-11-06T16:27:22.438Z [DEBUG] [Bootstrap] Fetching
+2026-11-06T16:27:22.438Z [DEBUG] Passes: Using fresh cached eligibility data
+2026-11-06T16:27:22.443Z [DEBUG] [STARTUP] MCP configs resolved in 44ms (awaited at +60ms)
+2026-11-06T16:27:22.444Z [DEBUG] Artifacts MCP server not added: artifact_tool_off (switched_off)
+2026-11-06T16:27:22.446Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T16:27:22.446Z [DEBUG] Cleared proxy agent cache
+2026-11-06T16:27:22.448Z [DEBUG] Syncing installed_plugins.json with enabledPlugins from all settings.json files
+2026-11-06T16:27:22.449Z [DEBUG] [MCP] --mcp-config servers running fully async (nonblocking)
+2026-11-06T16:27:22.450Z [DEBUG] [MCP] claude.ai connectors running fully async (nonblocking)
+2026-11-06T16:27:22.450Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-haiku-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-11-06T16:27:22.450Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-11-06T16:27:22.450Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-11-06T16:27:22.450Z [DEBUG] [servedCatalog] off (flag)
+2026-11-06T16:27:22.460Z [DEBUG] Grove: Using fresh cached config
+2026-11-06T16:27:22.460Z [DEBUG] Grove: the server recently confirmed a Consumer Terms answer; not asking again
+2026-11-06T16:27:22.461Z [DEBUG] Total LSP servers loaded: 0
+2026-11-06T16:27:22.461Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-11-06T16:27:22.461Z [DEBUG] LSP manager initialized with 0 servers
+2026-11-06T16:27:22.461Z [DEBUG] LSP server manager initialized successfully
+2026-11-06T16:27:22.462Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-11-06T16:27:22.463Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-11-06T16:27:22.464Z [DEBUG] [sessionRegistry] sweep permitted (domain darwin)
+2026-11-06T16:27:22.467Z [DEBUG] mcp runtime arm: v2 (source: default)
+2026-11-06T16:27:22.530Z [DEBUG] Initialized versioned plugins system with 4 plugins
+2026-11-06T16:27:22.623Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-11-06T16:27:22.696Z [DEBUG] hooks module claudetto@inline loaded (worker, environment 1, tier user); events: turn.step,tool.call,agent.spawn,classic.PostToolUseFailure,tool.check,classic.Stop,classic.SubagentStop,prompt.submit,command.run,command.describe,skill.prompt,classic.SessionStart,prompt.compose,tool.describe,prompt.attachment,settings.read,agent.offer,session.compact,session.start,turn.start,prompt.context,prompt.section,turn.complete,classic.StopFailure,classic.PermissionRequest,classic.PermissionDenied
+2026-11-06T16:27:22.696Z [DEBUG] hooks native host made (for the plugins the binary carries)
+2026-11-06T16:27:22.697Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 2, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-11-06T16:27:22.697Z [DEBUG] hooks module cc-plugin-privacy@builtin loaded (native, environment 3, tier builtin); events: tool.check
+2026-11-06T16:27:22.698Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for claudetto,cc-plugin-plugin-authoring,cc-plugin-privacy
+2026-11-06T16:27:22.698Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-11-06T16:27:22.699Z [DEBUG] plugin.register: cc-plugin-privacy (builtin, cc-plugin-privacy@builtin), judged by core alone: admitted
+2026-11-06T16:27:22.699Z [DEBUG] plugin.register: claudetto (user, claudetto@inline), judged by core alone: admitted
+2026-11-06T16:27:22.700Z [DEBUG] Registered 0 hooks from 3 plugins
+2026-11-06T16:27:22.702Z [DEBUG] hooks module claudetto@inline: settings.read nested in
+2026-11-06T16:27:22.708Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-143/repo/.claude/skills failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-143/repo/.claude/skills'
+2026-11-06T16:27:22.708Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-143/repo/.claude/commands failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-143/repo/.claude/commands'
+2026-11-06T16:27:22.709Z [DEBUG] hooks module claudetto@inline settings.read settled in 7.1ms (worker hop, next() included)
+2026-11-06T16:27:22.710Z [DEBUG] settings.read: the engine's merge was raised (the loaded plugins changed) in 9.4 ms; 1 keys answered otherwise than the files.
+2026-11-06T16:27:22.710Z [DEBUG] Programmatic settings change notification for policySettings
+2026-11-06T16:27:22.710Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T16:27:22.712Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.json
+2026-11-06T16:27:22.712Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.local.json
+2026-11-06T16:27:22.712Z [DEBUG] Plugin hooks: skipping reload, plugin-affecting settings unchanged
+2026-11-06T16:27:22.713Z [DEBUG] Settings changed from policySettings, updating app state
+2026-11-06T16:27:22.726Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /Library/Application Support/ClaudeCode/managed-settings.json
+2026-11-06T16:27:22.727Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.json
+2026-11-06T16:27:22.727Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /private/tmp/probe-143/repo/.claude/settings.local.json
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all allow rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all deny rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all ask rules for destination 'userSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all allow rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all deny rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all ask rules for destination 'projectSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all allow rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all deny rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all ask rules for destination 'localSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all allow rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all deny rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all ask rules for destination 'flagSettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all allow rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all deny rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all ask rules for destination 'policySettings' with 0 rule(s): []
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all allow rules for destination 'userSettings' with 4 rule(s): ["Bash(git status *)","Bash(git diff)","Bash(git log)","Bash(git show)"]
+2026-11-06T16:27:22.728Z [DEBUG] Replacing all deny rules for destination 'userSettings' with 6 rule(s): ["Workflow","ScheduleWakeup","ReportFindings","DesignSync","Agent(statusline-setup)","NotebookEdit"]
+2026-11-06T16:27:22.729Z [DEBUG] Cleared mTLS configuration cache
+2026-11-06T16:27:22.729Z [DEBUG] Cleared proxy agent cache
+2026-11-06T16:27:22.729Z [DEBUG] hooks module claudetto@inline: settings.read nested in
+2026-11-06T16:27:22.732Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-143/repo/.claude/skills failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-143/repo/.claude/skills'
+2026-11-06T16:27:22.732Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-143/repo/.claude/commands failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-143/repo/.claude/commands'
+2026-11-06T16:27:22.733Z [DEBUG] hooks module claudetto@inline settings.read settled in 3.4ms (worker hop, next() included)
+2026-11-06T16:27:22.733Z [DEBUG] settings.read: the engine's merge was raised (the loaded plugins changed) in 4.2 ms; 1 keys answered otherwise than the files.
+2026-11-06T16:27:22.734Z [DEBUG] [mcp-registry] Loaded 294 official MCP URLs (legacy)
+2026-11-06T16:27:22.736Z [DEBUG] $.session (claudetto): no session bound; id, cwd and model answered from the process
+2026-11-06T16:27:22.736Z [DEBUG] $.session (claudetto): no session bound; id, cwd and model answered from the process
+2026-11-06T16:27:22.736Z [DEBUG] hooks module claudetto@inline: settings.read nested in claudetto#45
+2026-11-06T16:27:22.737Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-143/repo/.claude/skills failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-143/repo/.claude/skills'
+2026-11-06T16:27:22.737Z [DEBUG] $.fs.list (claudetto): /private/tmp/probe-143/repo/.claude/commands failed: ENOENT: no such file or directory, scandir '/private/tmp/probe-143/repo/.claude/commands'
+2026-11-06T16:27:22.738Z [DEBUG] hooks module claudetto@inline settings.read settled in 1.7ms (worker hop, next() included)
+2026-11-06T16:27:22.739Z [DEBUG] $.process.run (claudetto): /tmp/probe-143/old/bin/claudetto-hygiene with 4 args in /private/tmp/probe-143/repo (pid 64866)
+2026-11-06T16:27:22.740Z [DEBUG] hooks module claudetto@inline classic.SessionStart settled in 38.1ms (worker hop, next() included)
+2026-11-06T16:27:22.749Z [DEBUG] session.start: raised (surface none, not interactive)
+2026-11-06T16:27:22.752Z [DEBUG] installPluginsForHeadless: starting
+2026-11-06T16:27:22.753Z [DEBUG] $.tool.register: loopback MCP server listening on 127.0.0.1:55681
+2026-11-06T16:27:22.755Z [DEBUG] $.tool.register (claudetto): 1 tool(s) served at 127.0.0.1:55681/claudetto v1
+2026-11-06T16:27:22.759Z [DEBUG] $.tool.register (claudetto): mcp__claudetto__handoff (1 tool(s) on server "claudetto"); connecting
+2026-11-06T16:27:22.775Z [DEBUG] [MCP] Server "claudetto" connected with subscribe=false
+2026-11-06T16:27:22.781Z [DEBUG] $.tool.register (claudetto): mcp__claudetto__handoff visible after 22ms
+2026-11-06T16:27:22.785Z [DEBUG] $.tool.register (claudetto): 2 tool(s) served at 127.0.0.1:55681/claudetto v2
+2026-11-06T16:27:22.785Z [DEBUG] $.tool.register (claudetto): mcp__claudetto__ask-user-question (2 tool(s) on server "claudetto"); connecting
+2026-11-06T16:27:22.790Z [DEBUG] [MCP] Server "claudetto" connected with subscribe=false
+2026-11-06T16:27:22.793Z [DEBUG] $.tool.register (claudetto): mcp__claudetto__ask-user-question visible after 8ms
+2026-11-06T16:27:22.794Z [DEBUG] $.tool.register (claudetto): 3 tool(s) served at 127.0.0.1:55681/claudetto v3
+2026-11-06T16:27:22.794Z [DEBUG] $.tool.register (claudetto): mcp__claudetto__monitor (3 tool(s) on server "claudetto"); connecting
+2026-11-06T16:27:22.798Z [DEBUG] [MCP] Server "claudetto" connected with subscribe=false
+2026-11-06T16:27:22.801Z [DEBUG] $.tool.register (claudetto): mcp__claudetto__monitor visible after 7ms
+2026-11-06T16:27:22.801Z [DEBUG] hooks module claudetto@inline session.start settled in 51.5ms (worker hop, next() included)
+2026-11-06T16:27:22.805Z [DEBUG] getSkills returning: 0 skill dir commands, 1 plugin skills, 2 bundled skills, 1 builtin plugin skills
+2026-11-06T16:27:22.812Z [DEBUG] hooks module claudetto@inline prompt.context settled in 7.6ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.8ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.7ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.6ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.6ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.5ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.4ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.3ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 4.0ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.9ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.9ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.9ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.8ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.7ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.7ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.5ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.5ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.5ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.4ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.3ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.3ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.2ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.2ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.2ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 3.1ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 2.9ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 2.9ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 2.9ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 2.5ms (worker hop, next() included)
+2026-11-06T16:27:22.813Z [DEBUG] hooks module claudetto@inline command.describe settled in 2.4ms (worker hop, next() included)
+2026-11-06T16:27:22.814Z [DEBUG] Failed to stat directory /Library/Application Support/ClaudeCode/.claude/output-styles: ENOENT: no such file or directory, stat '/Library/Application Support/ClaudeCode/.claude/output-styles'
+2026-11-06T16:27:22.814Z [DEBUG] Loaded 1 output styles from plugin claudetto default directory
+2026-11-06T16:27:22.814Z [DEBUG] Total plugin output styles loaded: 1
+2026-11-06T16:27:22.815Z [DEBUG] claudetto (user) answered prompt.compose without next() in 0.2ms; nothing beneath it ran for this dispatch
+2026-11-06T16:27:22.815Z [DEBUG] hooks module claudetto@inline prompt.compose settled in 0.5ms (worker hop, next() included)
+2026-11-06T16:27:22.821Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-11-06T16:27:22.821Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-11-06T16:27:22.821Z [DEBUG] Sending 3 skills via attachment (initial)
+2026-11-06T16:27:22.821Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-11-06T16:27:22.824Z [DEBUG] claudetto (user) answered agent.offer without next() in 0.2ms; nothing beneath it ran for this dispatch
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.8ms (worker hop, next() included)
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.4ms (worker hop, next() included)
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.3ms (worker hop, next() included)
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.3ms (worker hop, next() included)
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.9ms (worker hop, next() included)
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.8ms (worker hop, next() included)
+2026-11-06T16:27:22.824Z [DEBUG] hooks module claudetto@inline agent.offer settled in 4.5ms (worker hop, next() included)
+2026-11-06T16:27:22.827Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-11-06T16:27:22.832Z [DEBUG] [session-notices] advertise=false mode=default flag=false(disabled) pollChannel=false ownEventsOnly=false remote=false remoteEnv=false nonInteractive=true
+2026-11-06T16:27:22.834Z [DEBUG] [engine] turn 1 start
+2026-11-06T16:27:22.836Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=180000
+2026-11-06T16:27:22.840Z [DEBUG] hooks module claudetto@inline prompt.submit settled in 13.4ms (worker hop, next() included)
+2026-11-06T16:27:22.840Z [DEBUG] hooks module claudetto@inline turn.start settled in 6.5ms (worker hop, next() included)
+2026-11-06T16:27:22.842Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.cef; cc_entrypoint=sdk-cli; cch=00000;
+2026-11-06T16:27:22.843Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=0cced8fa-7191-4570-89eb-8051dae27750 source=side_query
+2026-11-06T16:27:22.845Z [DEBUG] [Bootstrap] Fetch ok
+2026-11-06T16:27:22.846Z [DEBUG] [Bootstrap] Cache unchanged, skipping write
+2026-11-06T16:27:22.846Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-143/repo/.claude/claudetto/heartbeat/2fbcf4e0-87af-490c-af46-40f1ddb62c45.txt (13 bytes)
+2026-11-06T16:27:22.848Z [DEBUG] hooks module claudetto@inline prompt.attachment settled in 0.7ms (worker hop, next() included)
+2026-11-06T16:27:22.848Z [DEBUG] prompt.attachment agent_listing_delta: claudetto (user) rewrote it (539 -> 362 characters)
+2026-11-06T16:27:22.858Z [DEBUG] hooks module claudetto@inline tool.describe settled in 3.0ms (worker hop, next() included)
+2026-11-06T16:27:22.858Z [DEBUG] hooks module claudetto@inline tool.describe settled in 3.1ms (worker hop, next() included)
+2026-11-06T16:27:22.858Z [DEBUG] hooks module claudetto@inline tool.describe settled in 3.1ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 3.0ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] tool.describe ListAgents: a hook set isDeferred false -> true
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 3.0ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.9ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] tool.describe Read: a hook set isDeferred false -> true
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.9ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.8ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.8ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.5ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] tool.describe Write: a hook set isDeferred false -> true
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.4ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.3ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] tool.describe Skill: a hook set isDeferred false -> true
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.3ms (worker hop, next() included)
+2026-11-06T16:27:22.859Z [DEBUG] hooks module claudetto@inline tool.describe settled in 2.1ms (worker hop, next() included)
+2026-11-06T16:27:22.860Z [DEBUG] Dynamic tool loading: 0/15 deferred tools included
+2026-11-06T16:27:22.862Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.6c4; cc_entrypoint=sdk-cli; cch=00000; cc_prompt_id=23d7681a-4c4e-4a63-b56e-a18cc42d600a; cc_turn_origin=sdk; cc_prompt_index=0; cc_turn_index=1;
+2026-11-06T16:27:22.865Z [DEBUG] [API:timing] dispatching to firstParty model=claude-haiku-5-5
+2026-11-06T16:27:22.865Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=69d22852-a337-4527-ab2b-0cccd7240fe0 source=sdk
+2026-11-06T16:27:23.049Z [DEBUG] $.process.run (claudetto): /tmp/probe-143/old/bin/claudetto-hygiene exited 0 in 311ms, 150 + 0 chars
+2026-11-06T16:27:24.240Z [DEBUG] Stream started - received first chunk
+2026-11-06T16:27:24.240Z [DEBUG] [API:timing] first byte after 1375ms
+2026-11-06T16:27:24.882Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-143/repo/.claude/claudetto/heartbeat/2fbcf4e0-87af-490c-af46-40f1ddb62c45.txt (13 bytes)
+2026-11-06T16:27:24.884Z [DEBUG] hooks module claudetto@inline turn.step stream settled in 2043.6ms (worker hop, next() included)
+2026-11-06T16:27:25.667Z [DEBUG] $.model.complete (claudetto): claude-haiku-5-5 answered in 2826ms, 96 chars
+2026-11-06T16:27:25.669Z [DEBUG] hooks module claudetto@inline tool.check settled in 789.8ms (worker hop, next() included)
+2026-11-06T16:27:25.670Z [INFO] [Stall] tool_dispatch_start tool=ToolSearch toolUseId=toolu_01VAY6CPUBAPxApdMr6onEgK permissionDecisionMs=791
+2026-11-06T16:27:25.670Z [DEBUG] ToolSearchTool: cache invalidated - deferred tools changed
+2026-11-06T16:27:25.670Z [DEBUG] ToolSearchTool: selected mcp__claudetto__ask-user-question
+2026-11-06T16:27:25.670Z [INFO] [Stall] tool_dispatch_end tool=ToolSearch toolUseId=toolu_01VAY6CPUBAPxApdMr6onEgK outcome=ok durationMs=1
+2026-11-06T16:27:25.673Z [DEBUG] hooks module claudetto@inline tool.call settled in 796.7ms (worker hop, next() included)
+2026-11-06T16:27:25.675Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-11-06T16:27:25.675Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-11-06T16:27:25.675Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.1ms (worker hop, next() included)
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.0ms (worker hop, next() included)
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 0.9ms (worker hop, next() included)
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 0.9ms (worker hop, next() included)
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.2ms (worker hop, next() included)
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.2ms (worker hop, next() included)
+2026-11-06T16:27:25.676Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.1ms (worker hop, next() included)
+2026-11-06T16:27:25.677Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=180000
+2026-11-06T16:27:25.678Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-143/repo/.claude/claudetto/heartbeat/2fbcf4e0-87af-490c-af46-40f1ddb62c45.txt (13 bytes)
+2026-11-06T16:27:25.680Z [DEBUG] Dynamic tool loading: found 1 discovered tools in message history
+2026-11-06T16:27:25.680Z [DEBUG] Dynamic tool loading: 1/15 deferred tools included
+2026-11-06T16:27:25.681Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.6c4; cc_entrypoint=sdk-cli; cch=00000; cc_prev_req=req_011CgmzJ9MuiQnVuFoTr8Ye1; cc_prompt_id=23d7681a-4c4e-4a63-b56e-a18cc42d600a; cc_turn_origin=sdk; cc_prompt_index=0; cc_turn_index=1;
+2026-11-06T16:27:25.683Z [DEBUG] [API:timing] dispatching to firstParty model=claude-haiku-5-5
+2026-11-06T16:27:25.683Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=309c56cd-fe47-4761-a3e6-2e94bbff4f0b source=sdk
+2026-11-06T16:27:26.913Z [DEBUG] Stream started - received first chunk
+2026-11-06T16:27:26.913Z [DEBUG] [API:timing] first byte after 1230ms
+2026-11-06T16:27:27.867Z [DEBUG] $.tool.call (claudetto): no tool named "AskUserQuestion"; the session has Agent, Bash, Edit, EnterWorktree, ExitWorktree, ListAgents, Monitor, Read, RemoteTrigger, SendMessage, Skill, TaskStop, ToolSearch, WebFetch, WebSearch, Write, mcp__claudetto__ask-user-question, mcp__claudetto__handoff, mcp__claudetto__monitor
+2026-11-06T16:27:27.869Z [DEBUG] claudetto (user) answered tool.call without next() in 2.0ms; nothing beneath it ran for this dispatch
+2026-11-06T16:27:27.869Z [DEBUG] hooks module claudetto@inline tool.call settled in 2.3ms (worker hop, next() included)
+2026-11-06T16:27:27.869Z [DEBUG] tool.call mcp__claudetto__ask-user-question toolu_01KQjbGPi39RVS2GftfiJSv5: resolved by a hooks module (result)
+2026-11-06T16:27:27.870Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-143/repo/.claude/claudetto/heartbeat/2fbcf4e0-87af-490c-af46-40f1ddb62c45.txt (13 bytes)
+2026-11-06T16:27:27.871Z [DEBUG] hooks module claudetto@inline turn.step stream settled in 2193.4ms (worker hop, next() included)
+2026-11-06T16:27:27.873Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-11-06T16:27:27.873Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-11-06T16:27:27.873Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-11-06T16:27:27.873Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.0ms (worker hop, next() included)
+2026-11-06T16:27:27.873Z [DEBUG] hooks module claudetto@inline agent.offer settled in 0.8ms (worker hop, next() included)
+2026-11-06T16:27:27.873Z [DEBUG] hooks module claudetto@inline agent.offer settled in 0.9ms (worker hop, next() included)
+2026-11-06T16:27:27.873Z [DEBUG] hooks module claudetto@inline agent.offer settled in 0.9ms (worker hop, next() included)
+2026-11-06T16:27:27.874Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.2ms (worker hop, next() included)
+2026-11-06T16:27:27.874Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.2ms (worker hop, next() included)
+2026-11-06T16:27:27.874Z [DEBUG] hooks module claudetto@inline agent.offer settled in 1.1ms (worker hop, next() included)
+2026-11-06T16:27:27.874Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=180000
+2026-11-06T16:27:27.876Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-143/repo/.claude/claudetto/heartbeat/2fbcf4e0-87af-490c-af46-40f1ddb62c45.txt (13 bytes)
+2026-11-06T16:27:27.877Z [DEBUG] Dynamic tool loading: found 1 discovered tools in message history
+2026-11-06T16:27:27.877Z [DEBUG] Dynamic tool loading: 1/15 deferred tools included
+2026-11-06T16:27:27.878Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.6c4; cc_entrypoint=sdk-cli; cch=00000; cc_prev_req=req_011CgmzJMgaZ316EX16krDgX; cc_prompt_id=23d7681a-4c4e-4a63-b56e-a18cc42d600a; cc_turn_origin=sdk; cc_prompt_index=0; cc_turn_index=1;
+2026-11-06T16:27:27.879Z [DEBUG] [API:timing] dispatching to firstParty model=claude-haiku-5-5
+2026-11-06T16:27:27.880Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=7e135a2d-c4e0-40fc-9f90-597d7102798e source=sdk
+2026-11-06T16:27:29.149Z [DEBUG] Stream started - received first chunk
+2026-11-06T16:27:29.149Z [DEBUG] [API:timing] first byte after 1270ms
+2026-11-06T16:27:30.115Z [DEBUG] $.fs.write (claudetto): /private/tmp/probe-143/repo/.claude/claudetto/heartbeat/2fbcf4e0-87af-490c-af46-40f1ddb62c45.txt (13 bytes)
+2026-11-06T16:27:30.116Z [DEBUG] hooks module claudetto@inline turn.step stream settled in 2240.6ms (worker hop, next() included)
+2026-11-06T16:27:30.120Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.318.b81; cc_entrypoint=sdk-cli; cch=00000;
+2026-11-06T16:27:30.121Z [DEBUG] [API REQUEST] /v1/messages x-client-request-id=efa4a6e0-06c5-4980-9392-403763bc0b3f source=side_query
+2026-11-06T16:27:32.592Z [DEBUG] $.model.complete (claudetto): claude-haiku-5-5 answered in 2472ms, 13 chars
+2026-11-06T16:27:32.593Z [DEBUG] hooks module claudetto@inline classic.Stop settled in 2475.4ms (worker hop, next() included)
+2026-11-06T16:27:32.594Z [DEBUG] [engine] turn 1 end (turns=3 usage in=6 out=620 cost=$0.0007 api=6446ms stop=end_turn resultLen=463)
+2026-11-06T16:27:32.612Z [DEBUG] hooks module claudetto@inline turn.complete settled in 4.0ms (worker hop, next() included)
+2026-11-06T16:27:32.624Z [DEBUG] [uds-messaging] Shutting down
+2026-11-06T16:27:32.625Z [DEBUG] LSP server manager shut down successfully
+2026-11-06T16:27:32.626Z [DEBUG] $.session.usage (claudetto): no session bound; the context window is answered empty

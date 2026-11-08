@@ -1,0 +1,36 @@
+{
+	"overlay-fix-total": {
+		"src/total.ts": "export const total = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);\n"
+	},
+	"overlay-sum-test": {
+		"test/sum.test.ts": "import { expect, test } from \"bun:test\";\nimport { sum } from \"../src/sum\";\ntest(\"sum\", () => expect(sum([1, 2])).toBe(3));\ntest(\"sum empty\", () => expect(sum([])).toBe(0));\n"
+	},
+	"overlay-callers-done": {
+		"src/report.ts": "import { formatLabel } from \"./format\";\nexport const line = (n: number): string => `${formatLabel(n)}!`;\n"
+	},
+	"timeout30": {
+		"package.json": "{\"name\":\"scratch\",\"type\":\"module\",\"scripts\":{\"test\":\"bun test\"}}\n",
+		"test/total.test.ts": "import { expect, test } from \"bun:test\";\nimport { total } from \"../src/total\";\ntest(\"total\", () => expect(total([1, 2, 3])).toBe(6));\n",
+		"test/config.test.ts": "import { expect, test } from \"bun:test\";\nimport { TIMEOUT_MS } from \"../src/config\";\ntest(\"timeout\", () => expect(TIMEOUT_MS).toBe(30000));\n",
+		"src/report.ts": "import { label } from \"./format\";\nexport const line = (n: number): string => `${label(n)}!`;\n",
+		"src/sum.ts": "export const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);\n",
+		"src/names.ts": "export const sorted = (xs: string[]): string[] => [...xs].sort();\nexport const sortInPlace = (xs: string[]): string[] => xs.sort();\nexport const sortNumbers = (xs: number[]): number[] => [...xs].sort();\n",
+		"src/total.ts": "export const total = (xs: number[]): number => xs.slice(1).reduce((a, b) => a + b, 0);\n",
+		"src/format.ts": "export const label = (n: number): string => `#${n}`;\n",
+		"src/config.ts": "export const TIMEOUT_MS = 30000;\n"
+	},
+	"overlay-partial-total": {
+		"src/total.ts": "export const total = (xs: number[]): number => xs.reduce((a, b) => a + b, 1);\n"
+	},
+	"base": {
+		"package.json": "{\"name\":\"scratch\",\"type\":\"module\",\"scripts\":{\"test\":\"bun test\"}}\n",
+		"test/total.test.ts": "import { expect, test } from \"bun:test\";\nimport { total } from \"../src/total\";\ntest(\"total\", () => expect(total([1, 2, 3])).toBe(6));\n",
+		"test/config.test.ts": "import { expect, test } from \"bun:test\";\nimport { TIMEOUT_MS } from \"../src/config\";\ntest(\"timeout\", () => expect(TIMEOUT_MS).toBe(5000));\n",
+		"src/report.ts": "import { label } from \"./format\";\nexport const line = (n: number): string => `${label(n)}!`;\n",
+		"src/sum.ts": "export const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);\n",
+		"src/names.ts": "export const sorted = (xs: string[]): string[] => [...xs].sort();\nexport const sortInPlace = (xs: string[]): string[] => xs.sort();\nexport const sortNumbers = (xs: number[]): number[] => [...xs].sort();\n",
+		"src/total.ts": "export const total = (xs: number[]): number => xs.slice(1).reduce((a, b) => a + b, 0);\n",
+		"src/format.ts": "export const label = (n: number): string => `#${n}`;\n",
+		"src/config.ts": "export const TIMEOUT_MS = 5000;\n"
+	}
+}

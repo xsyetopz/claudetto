@@ -3,6 +3,9 @@ set positional-arguments
 # `claude plugin validate` and `claude plugin test` otherwise report to the API and to Datadog at each start, which a check needs neither of.
 export DISABLE_TELEMETRY := "1"
 
+# OpenSpec reports each command unless this is 0 (`@fission-ai/openspec` `dist/telemetry/index.js`).
+export OPENSPEC_TELEMETRY := "0"
+
 # List recipes
 default:
     @just --list
@@ -10,109 +13,52 @@ default:
 # Lint, type-check, test, validate, and run the hook lab
 check: lint typecheck test validate lab
 
-# Run `bun test`, optionally on one file or with `-t RE`
-test *args:
-    env -u CLAUDE_CODE_SESSION_ID bun test "$@"
+# Type-check every plugin's TypeScript with Bun's checker, one core short of all of them
+# The declarations come from `just types`, and Bun's own from `bun install`.
+typecheck:
+    test -s plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts || { echo "run 'just types' first" >&2; exit 1; }
+    bun install --frozen-lockfile
+    bun check --no-pretty --threads $(( $(getconf _NPROCESSORS_ONLN) - 1 ))
 
-# Lint code, Markdown, file lengths, comment narration, clones outside the `jscpd` baseline, and the branch's commit messages
+# Run the `bun test` files of the tools and the openspec fixtures, optionally one file or with `-t RE`; the plugins' lab files run in `lab`
+# Each argument is a `./` path; a bare `tools` is a name filter that also matches the lab file `hooks/setup/tools.test.ts`.
+test *args:
+    env -u CLAUDE_CODE_SESSION_ID bun test ./tools ./plugins/claudetto-openspec/hooks/fixtures.spec.ts ./plugins/claudetto-openspec/hooks/upstream.spec.ts ./plugins/claudetto/hooks/secrets.spec.ts "$@"
+
+# Lint Markdown, clones, and the branch's commit messages
 lint:
-    bun run lint
-    bun run lint:md
-    bun tools/file-lines.ts
-    bun tools/no-narration.ts
-    bunx jscpd --no-tips plugins tests tools claudekit
-    # The range the `commitlint` job of CI reads; a clone without `origin/main`, such as the shallow one of the `check` job, skips it.
+    bunx markdownlint-cli2
+    bunx jscpd --no-tips plugins tools
     @if git rev-parse -q --verify origin/main >/dev/null; then bunx commitlint --from "$(git merge-base origin/main HEAD)" --to HEAD; fi
 
-# Type-check against the vendored Claude Code types, once as the whole repository and once as the plugin project, which is what an editor uses for a file under `plugins/claudetto/`
-typecheck:
-    bun check
-    bun check -p plugins/claudetto/tsconfig.json
+# Have the installed Claude Code write its declarations into plugins/claudetto/.claude-plugin/types/, as it does for any mod it loads.
+# A print run writes them only with the plugin-dir watch on; the closed API port ends the run before any request, so it costs nothing.
+types:
+    -CLAUDE_CODE_PLUGIN_DIR_WATCH=1 CLAUDE_CODE_MAX_RETRIES=0 ANTHROPIC_BASE_URL=http://127.0.0.1:9 ENABLE_CLAUDEAI_MCP_SERVERS=false claude -p ok --max-turns 1 --no-session-persistence --setting-sources "" --tools "" --plugin-dir plugins/claudetto >/dev/null 2>&1
+    test -s plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts
 
-# Check agents, layout, JSDoc, literals, generated files, and manifests
+# Validate the three manifests, the marketplace, and the OpenSpec change
 validate:
-    bun tools/agent-tools.ts
-    bun tools/clusters.ts
-    bun tools/jsdoc.ts
-    bun tools/literals.ts
-    bun tools/gitleaks/run.ts --check
-    bun tools/rebuild/constants.ts
-    bun tools/rebuild/own.ts
-    bun tools/rebuild/silent.ts
-    bun tools/manifests.ts
     claude plugin validate --strict plugins/claudetto
     claude plugin validate --strict plugins/claudetto-you-should-know
+    claude plugin validate --strict plugins/claudetto-openspec
     claude plugin validate --strict .claude-plugin/marketplace.json
+    bunx openspec validate --all --strict
 
 # Run each plugin's mod tests against stubbed events
+# Regenerate the gate rules from the pinned shellfirm release and the patch.
+vendor-rules:
+    bun scripts/vendor-rules.ts
+
 lab:
     claude plugin test plugins/claudetto
     claude plugin test plugins/claudetto-you-should-know
+    claude plugin test plugins/claudetto-openspec
 
-# Show the key counts of the published settings schemas and env-var pages
-settings-schema:
-    bun tools/settings-schema.ts
+# Refuse a release version that does not follow the latest anthropics/claude-code tag and this repo's tags (task 18.32); needs `gh` and the network, so `check` does not run it
+release-version:
+    bun tools/release-version.ts
 
-# Show the supported Claude Code version, or move it with a version argument
-claude-version *args:
-    bun tools/claude-version.ts "$@"
-
-# Regenerate the Gitleaks rules (--fetch, --ref TAG, --upstream)
-gitleaks-rules *args:
-    bun tools/gitleaks/run.ts "$@"
-
-# Merge this plan tier's settings into `~/.claude/settings.json` (--settings PATH, --dry-run)
-setup *args:
-    bun plugins/claudetto/src/tiers/setup.ts "$@"
-
-# Remove stale temp folders and old handoffs (--dry-run, --session ID, --days N)
-hygiene *args:
-    plugins/claudetto/bin/claudetto-hygiene "$@"
-
-# Remove old dev scratch folders from the temp folders (--hours N, --dry-run)
-gc *args:
-    bun claudekit/gc/main.ts "$@"
-
-# Report window cost per task from recorded rows
-window-report:
-    bun tools/window-report.ts
-
-# Measure the first request against a fake API (--help)
-capture *args:
-    bun tools/capture/run.ts "$@"
-
-# Plan the eval sessions; --run makes paid calls (--case, --arm, --runs, --model, --budget; --classifier, --upstream URL; --style for the `Concise` A/B)
-eval *args:
-    bun tools/evals/cli.ts "$@"
-
-# Check the prompt-size inventory against a fresh reading
-inventory:
-    bun tools/capture/inventory.ts
-
-# Price compaction thresholds from local transcripts (--sweep, --charge, --summary, --thresholds, --seed, --root)
-compaction-cost *args:
-    bun claudekit/compaction-cost/main.ts "$@"
-
-# Plan the compaction-threshold probe; --run makes paid calls (--report, --runs, --model, --alt-threshold, --sizes, --max-total-usd, --dir)
-compaction-probe *args:
-    bun claudekit/probe/main.ts "$@"
-
-# Price one compaction; --run makes paid calls (--steps, --threshold, --model, --dir, --cheap-summary)
-compaction-price *args:
-    bun claudekit/compaction-price/main.ts "$@"
-
-# Measure the status-line summarizer cost; --run makes paid calls (--runs, --dir)
-summary-cost *args:
-    bun claudekit/summary-cost/main.ts "$@"
-
-# Show which commit a new worktree starts at, against the fake API (enter|agent [BASE_REF] [--plugin-dir DIR])
-worktree-base *args:
-    bun claudekit/worktree-base/main.ts "$@"
-
-# Drive one session with a debug log until the hooks worker crashes; without --fake it makes paid calls (--dir, --prompts, --binary, --cap, --minutes, --fake AGENTS, --resume, --plugin-dir)
-hooks-crash *args:
-    bun claudekit/hooks-crash/main.ts "$@"
-
-# Run the proxy that answers the status-line summarizer locally (LOG_PATH, --pass)
-summary-proxy *args:
-    bun claudekit/api/proxy.ts "$@"
+# Print the prompt bytes and context lines from fixed inputs (task 1.3); PLUGIN defaults to this tree's core plugin
+prompt-bytes plugin="plugins/claudetto":
+    bun tools/prompt-bytes.ts "{{plugin}}"

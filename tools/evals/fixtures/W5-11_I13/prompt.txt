@@ -1,1 +1,0 @@
-Rename `fetchUser` to `getUser` in `api.ts`.

@@ -1,0 +1,3182 @@
+[
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > should validate a valid spec file",
+		"seq": 0,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# User Authentication Spec\n\n## Purpose\nThis specification defines the requirements for user authentication in the system.\n\n## Requirements\n\n### The system SHALL provide secure user authentication\nThe system SHALL provide secure user authentication mechanisms.\n\n#### Scenario: Successful login\nGiven a user with valid credentials\nWhen they submit the login form\nThen they are authenticated and redirected to the dashboard\n\n### The system SHALL handle invalid login attempts\nThe system SHALL gracefully handle incorrect credentials.\n\n#### Scenario: Invalid credentials\nGiven a user with invalid credentials\nWhen they submit the login form\nThen they see an error message"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# User Authentication Spec\n\n## Purpose\nThis specification defines the requirements for user authentication in the system.\n\n## Requirements\n\n### The system SHALL provide secure user authentication\nThe system SHALL provide secure user authentication mechanisms.\n\n#### Scenario: Successful login\nGiven a user with valid credentials\nWhen they submit the login form\nThen they are authenticated and redirected to the dashboard\n\n### The system SHALL handle invalid login attempts\nThe system SHALL gracefully handle incorrect credentials.\n\n#### Scenario: Invalid credentials\nGiven a user with invalid credentials\nWhen they submit the login form\nThen they see an error message"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > flags requirement descriptions only after the documented length limit",
+		"seq": 1,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "requirement-length-boundary",
+		"args": {
+			"strict": false,
+			"args": [
+				"requirement-length-boundary",
+				"# Requirement length boundary\n\n## Purpose\nThis specification checks the exact requirement description length boundary.\n\n## Requirements\n\n### Requirement: Boundary\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Boundary is checked\n- **WHEN** the requirement is validated\n- **THEN** the configured length boundary is applied"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > flags requirement descriptions only after the documented length limit",
+		"seq": 2,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "requirement-length-boundary",
+		"args": {
+			"strict": false,
+			"args": [
+				"requirement-length-boundary",
+				"# Requirement length boundary\n\n## Purpose\nThis specification checks the exact requirement description length boundary.\n\n## Requirements\n\n### Requirement: Boundary\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Boundary is checked\n- **WHEN** the requirement is validated\n- **THEN** the configured length boundary is applied"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > fails strict validation, but not normal validation, on an overlong requirement (#1976)",
+		"seq": 3,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "overlong",
+		"args": {
+			"strict": false,
+			"args": [
+				"overlong",
+				"# Overlong requirement\n\n## Purpose\nThis specification checks how strict mode treats an overlong requirement description.\n\n## Requirements\n\n### Requirement: Overlong\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Overlong is checked\n- **WHEN** the requirement is validated\n- **THEN** the length finding is reported"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > fails strict validation, but not normal validation, on an overlong requirement (#1976)",
+		"seq": 4,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "overlong",
+		"args": {
+			"strict": true,
+			"args": [
+				"overlong",
+				"# Overlong requirement\n\n## Purpose\nThis specification checks how strict mode treats an overlong requirement description.\n\n## Requirements\n\n### Requirement: Overlong\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Overlong is checked\n- **WHEN** the requirement is validated\n- **THEN** the length finding is reported"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > should detect missing overview section",
+		"seq": 5,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# User Authentication Spec\n\n## Requirements\n\n### The system SHALL provide secure user authentication\n\n#### Scenario: Login\nGiven a user\nWhen they login\nThen authenticated"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# User Authentication Spec\n\n## Requirements\n\n### The system SHALL provide secure user authentication\n\n#### Scenario: Login\nGiven a user\nWhen they login\nThen authenticated"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Spec must have a Purpose section. Missing required sections. Expected headers: \"## Purpose\" and \"## Requirements\". Example:\n## Purpose\n[brief purpose]\n\n## Requirements\n### Requirement: Clear requirement statement\nUsers SHALL ...\n\n#### Scenario: Descriptive name\n- **WHEN** ...\n- **THEN** ..."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > should error on delta headers inside a main spec",
+		"seq": 6,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Specification\n\n## Purpose\nThis specification validates that stray delta headers are rejected in main specs.\n\n## Requirements\n\n### Requirement: A\nThe system SHALL do A.\n\n#### Scenario: A works\n- **WHEN** foo\n- **THEN** bar\n\n## MODIFIED Requirements\n\n### Requirement: B\nThe system SHALL do B.\n\n#### Scenario: B works\n- **WHEN** baz\n- **THEN** qux"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Specification\n\n## Purpose\nThis specification validates that stray delta headers are rejected in main specs.\n\n## Requirements\n\n### Requirement: A\nThe system SHALL do A.\n\n#### Scenario: A works\n- **WHEN** foo\n- **THEN** bar\n\n## MODIFIED Requirements\n\n### Requirement: B\nThe system SHALL do B.\n\n#### Scenario: B works\n- **WHEN** baz\n- **THEN** qux"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"line": 15,
+						"message": "Main spec contains delta header \"## MODIFIED Requirements\". Delta headers are only valid inside openspec/changes/<name>/specs/<capability-path>/spec.md and truncate the parsed ## Requirements section."
+					},
+					{
+						"level": "ERROR",
+						"path": "file",
+						"line": 17,
+						"message": "Requirement header \"### Requirement: B\" appears outside the main ## Requirements section. Main specs only parse requirements inside that section, so this requirement is currently invisible to validate, list, and archive."
+					}
+				],
+				"summary": {
+					"errors": 2,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > should error on requirement headers that appear after the Requirements section ends",
+		"seq": 7,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Specification\n\n## Purpose\nThis specification validates that hidden requirements are rejected even without delta headers.\n\n## Requirements\n\n### Requirement: A\nThe system SHALL do A.\n\n#### Scenario: A works\n- **WHEN** foo\n- **THEN** bar\n\n## Edge Cases\n\n### Requirement: B\nThe system SHALL do B.\n\n#### Scenario: B works\n- **WHEN** baz\n- **THEN** qux"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Specification\n\n## Purpose\nThis specification validates that hidden requirements are rejected even without delta headers.\n\n## Requirements\n\n### Requirement: A\nThe system SHALL do A.\n\n#### Scenario: A works\n- **WHEN** foo\n- **THEN** bar\n\n## Edge Cases\n\n### Requirement: B\nThe system SHALL do B.\n\n#### Scenario: B works\n- **WHEN** baz\n- **THEN** qux"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"line": 17,
+						"message": "Requirement header \"### Requirement: B\" appears outside the main ## Requirements section. Main specs only parse requirements inside that section, so this requirement is currently invisible to validate, list, and archive."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateSpec > should ignore delta header examples inside fenced code blocks",
+		"seq": 8,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Specification\n\n## Purpose\nThis specification documents delta syntax without being flagged for quoted examples.\n\n## Requirements\n\n### Requirement: Explain delta syntax\nThe system SHALL allow documentation specs to quote delta headers inside fenced code blocks.\n\n```markdown\n## ADDED Requirements\n\n### Requirement: Example\nThe system SHALL ...\n```\n\n#### Scenario: reader follows the example\n- **WHEN** a reader reviews the documentation\n- **THEN** the quoted delta header remains an example only"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Specification\n\n## Purpose\nThis specification documents delta syntax without being flagged for quoted examples.\n\n## Requirements\n\n### Requirement: Explain delta syntax\nThe system SHALL allow documentation specs to quote delta headers inside fenced code blocks.\n\n```markdown\n## ADDED Requirements\n\n### Requirement: Example\nThe system SHALL ...\n```\n\n#### Scenario: reader follows the example\n- **WHEN** a reader reviews the documentation\n- **THEN** the quoted delta header remains an example only"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChange > should validate a valid change file",
+		"seq": 9,
+		"kind": "validator.validateChange",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/change.md"]
+		},
+		"before": {
+			"change.md": {
+				"text": "# Add User Authentication\n\n## Why\nWe need to implement user authentication to secure the application and protect user data from unauthorized access.\n\n## What Changes\n- **user-auth:** Add new user authentication specification\n- **api-endpoints:** Modify to include auth endpoints"
+			}
+		},
+		"after": {
+			"change.md": {
+				"text": "# Add User Authentication\n\n## Why\nWe need to implement user authentication to secure the application and protect user data from unauthorized access.\n\n## What Changes\n- **user-auth:** Add new user authentication specification\n- **api-endpoints:** Modify to include auth endpoints"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "deltas[0].requirements",
+						"message": "ADDED Delta should include requirements"
+					},
+					{
+						"level": "WARNING",
+						"path": "deltas[1].requirements",
+						"message": "MODIFIED Delta should include requirements"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 2,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChange > should detect missing why section",
+		"seq": 10,
+		"kind": "validator.validateChange",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/change.md"]
+		},
+		"before": {
+			"change.md": {
+				"text": "# Add User Authentication\n\n## What Changes\n- **user-auth:** Add new user authentication specification"
+			}
+		},
+		"after": {
+			"change.md": {
+				"text": "# Add User Authentication\n\n## What Changes\n- **user-auth:** Add new user authentication specification"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "file",
+						"message": "Change must have a Why section. Missing required sections. Expected headers: \"## Why\" and \"## What Changes\". Ensure deltas are documented in specs/ using delta headers."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > strict mode > should fail on warnings in strict mode",
+		"seq": 11,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nBrief overview\n\n## Requirements\n\n### The system SHALL do something\n\n#### Scenario: Test\nGiven test\nWhen action\nThen result"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nBrief overview\n\n## Requirements\n\n### The system SHALL do something\n\n#### Scenario: Test\nGiven test\nWhen action\nThen result"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"message": "Purpose section is too brief (less than 50 characters)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > strict mode > should pass warnings in non-strict mode",
+		"seq": 12,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/spec.md",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/spec.md"]
+		},
+		"before": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nBrief overview\n\n## Requirements\n\n### The system SHALL do something\n\n#### Scenario: Test\nGiven test\nWhen action\nThen result"
+			}
+		},
+		"after": {
+			"spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nBrief overview\n\n## Requirements\n\n### The system SHALL do something\n\n#### Scenario: Test\nGiven test\nWhen action\nThen result"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "overview",
+						"message": "Purpose section is too brief (less than 50 characters)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs requirement length (#1976) > fails strict, but not normal, validation on an overlong ADDED requirement",
+		"seq": 13,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/added-long",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/added-long"]
+		},
+		"before": {
+			"added-long": {
+				"dir": true
+			},
+			"added-long/specs": {
+				"dir": true
+			},
+			"added-long/specs/test-spec": {
+				"dir": true
+			},
+			"added-long/specs/test-spec/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"after": {
+			"added-long": {
+				"dir": true
+			},
+			"added-long/specs": {
+				"dir": true
+			},
+			"added-long/specs/test-spec": {
+				"dir": true
+			},
+			"added-long/specs/test-spec/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Long\": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs requirement length (#1976) > fails strict, but not normal, validation on an overlong ADDED requirement",
+		"seq": 14,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/added-long",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/added-long"]
+		},
+		"before": {
+			"added-long": {
+				"dir": true
+			},
+			"added-long/specs": {
+				"dir": true
+			},
+			"added-long/specs/test-spec": {
+				"dir": true
+			},
+			"added-long/specs/test-spec/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"after": {
+			"added-long": {
+				"dir": true
+			},
+			"added-long/specs": {
+				"dir": true
+			},
+			"added-long/specs/test-spec": {
+				"dir": true
+			},
+			"added-long/specs/test-spec/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Long\": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs requirement length (#1976) > accepts an ADDED requirement at the limit",
+		"seq": 15,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/added-at-limit",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/added-at-limit"]
+		},
+		"before": {
+			"added-at-limit": {
+				"dir": true
+			},
+			"added-at-limit/specs": {
+				"dir": true
+			},
+			"added-at-limit/specs/test-spec": {
+				"dir": true
+			},
+			"added-at-limit/specs/test-spec/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"after": {
+			"added-at-limit": {
+				"dir": true
+			},
+			"added-at-limit/specs": {
+				"dir": true
+			},
+			"added-at-limit/specs/test-spec": {
+				"dir": true
+			},
+			"added-at-limit/specs/test-spec/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs requirement length (#1976) > does not flag an overlong MODIFIED requirement, which keeps the existing text whole",
+		"seq": 16,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/modified-long",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/modified-long"]
+		},
+		"before": {
+			"modified-long": {
+				"dir": true
+			},
+			"modified-long/specs": {
+				"dir": true
+			},
+			"modified-long/specs/test-spec": {
+				"dir": true
+			},
+			"modified-long/specs/test-spec/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"after": {
+			"modified-long": {
+				"dir": true
+			},
+			"modified-long/specs": {
+				"dir": true
+			},
+			"modified-long/specs/test-spec": {
+				"dir": true
+			},
+			"modified-long/specs/test-spec/spec.md": {
+				"text": "## MODIFIED Requirements\n\n### Requirement: Long\nThe system SHALL xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n#### Scenario: Long is checked\n- **WHEN** the change is validated\n- **THEN** the length finding is reported"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > rejects a delta that both renames and removes the same requirement",
+		"seq": 17,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/rename-remove-conflict",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/rename-remove-conflict"]
+		},
+		"before": {
+			"rename-remove-conflict": {
+				"dir": true
+			},
+			"rename-remove-conflict/specs": {
+				"dir": true
+			},
+			"rename-remove-conflict/specs/test-spec": {
+				"dir": true
+			},
+			"rename-remove-conflict/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## REMOVED Requirements\n\n### Requirement: Old name"
+			}
+		},
+		"after": {
+			"rename-remove-conflict": {
+				"dir": true
+			},
+			"rename-remove-conflict/specs": {
+				"dir": true
+			},
+			"rename-remove-conflict/specs/test-spec": {
+				"dir": true
+			},
+			"rename-remove-conflict/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: New name`\n\n## REMOVED Requirements\n\n### Requirement: Old name"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "Requirement present in both RENAMED and REMOVED: \"Old name\""
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > rejects a case/whitespace variant of the renamed FROM header in REMOVED",
+		"seq": 18,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/rename-remove-case-conflict",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/rename-remove-case-conflict"]
+		},
+		"before": {
+			"rename-remove-case-conflict": {
+				"dir": true
+			},
+			"rename-remove-case-conflict/specs": {
+				"dir": true
+			},
+			"rename-remove-case-conflict/specs/test-spec": {
+				"dir": true
+			},
+			"rename-remove-case-conflict/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Old Name`\n- TO: `### Requirement: New Name`\n\n## REMOVED Requirements\n\n### Requirement: old   name"
+			}
+		},
+		"after": {
+			"rename-remove-case-conflict": {
+				"dir": true
+			},
+			"rename-remove-case-conflict/specs": {
+				"dir": true
+			},
+			"rename-remove-case-conflict/specs/test-spec": {
+				"dir": true
+			},
+			"rename-remove-case-conflict/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## RENAMED Requirements\n\n- FROM: `### Requirement: Old Name`\n- TO: `### Requirement: New Name`\n\n## REMOVED Requirements\n\n### Requirement: old   name"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "Requirement present in both RENAMED and REMOVED: \"Old Name\" (REMOVED spells it \"old   name\")"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should validate requirement with metadata before SHALL/MUST text",
+		"seq": 19,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change"]
+		},
+		"before": {
+			"test-change": {
+				"dir": true
+			},
+			"test-change/specs": {
+				"dir": true
+			},
+			"test-change/specs/test-spec": {
+				"dir": true
+			},
+			"test-change/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Circuit Breaker State Management SHALL be implemented\n**ID**: REQ-CB-001\n**Priority**: P1 (High)\n\nThe system MUST implement a circuit breaker with three states.\n\n#### Scenario: Normal operation\n**Given** the circuit breaker is in CLOSED state\n**When** a request is made\n**Then** the request is executed normally"
+			}
+		},
+		"after": {
+			"test-change": {
+				"dir": true
+			},
+			"test-change/specs": {
+				"dir": true
+			},
+			"test-change/specs/test-spec": {
+				"dir": true
+			},
+			"test-change/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Circuit Breaker State Management SHALL be implemented\n**ID**: REQ-CB-001\n**Priority**: P1 (High)\n\nThe system MUST implement a circuit breaker with three states.\n\n#### Scenario: Normal operation\n**Given** the circuit breaker is in CLOSED state\n**When** a request is made\n**Then** the request is executed normally"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should validate requirement with SHALL in text but not in header",
+		"seq": 20,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-2",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-2"]
+		},
+		"before": {
+			"test-change-2": {
+				"dir": true
+			},
+			"test-change-2/specs": {
+				"dir": true
+			},
+			"test-change-2/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-2/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Error Handling\n**ID**: REQ-ERR-001\n**Priority**: P2\n\nThe system SHALL handle all errors gracefully.\n\n#### Scenario: Error occurs\n**Given** an error condition\n**When** an error occurs\n**Then** the error is logged and user is notified"
+			}
+		},
+		"after": {
+			"test-change-2": {
+				"dir": true
+			},
+			"test-change-2/specs": {
+				"dir": true
+			},
+			"test-change-2/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-2/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Error Handling\n**ID**: REQ-ERR-001\n**Priority**: P2\n\nThe system SHALL handle all errors gracefully.\n\n#### Scenario: Error occurs\n**Given** an error condition\n**When** an error occurs\n**Then** the error is logged and user is notified"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should fail when a delta spec.md sits directly under specs/",
+		"seq": 21,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-root-delta",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-root-delta"]
+		},
+		"before": {
+			"test-change-root-delta": {
+				"dir": true
+			},
+			"test-change-root-delta/specs": {
+				"dir": true
+			},
+			"test-change-root-delta/specs/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Request metrics\nThe system SHALL record request metrics.\n\n#### Scenario: Request is counted\n- **WHEN** a request completes\n- **THEN** a counter is incremented"
+			}
+		},
+		"after": {
+			"test-change-root-delta": {
+				"dir": true
+			},
+			"test-change-root-delta/specs": {
+				"dir": true
+			},
+			"test-change-root-delta/specs/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Request metrics\nThe system SHALL record request metrics.\n\n#### Scenario: Request is counted\n- **WHEN** a request completes\n- **THEN** a counter is incremented"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "spec.md",
+						"message": "Delta spec found at specs/spec.md. Delta specs must live under a capability path (e.g. specs/<capability-path>/spec.md) — a file at the specs/ root is ignored when the change is applied or archived."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should accept a capability folder that is literally named spec.md",
+		"seq": 22,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-spec-md-folder",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-spec-md-folder"]
+		},
+		"before": {
+			"test-change-spec-md-folder": {
+				"dir": true
+			},
+			"test-change-spec-md-folder/specs": {
+				"dir": true
+			},
+			"test-change-spec-md-folder/specs/spec.md": {
+				"dir": true
+			},
+			"test-change-spec-md-folder/specs/spec.md/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Request metrics\nThe system SHALL record request metrics.\n\n#### Scenario: Request is counted\n- **WHEN** a request completes\n- **THEN** a counter is incremented"
+			}
+		},
+		"after": {
+			"test-change-spec-md-folder": {
+				"dir": true
+			},
+			"test-change-spec-md-folder/specs": {
+				"dir": true
+			},
+			"test-change-spec-md-folder/specs/spec.md": {
+				"dir": true
+			},
+			"test-change-spec-md-folder/specs/spec.md/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Request metrics\nThe system SHALL record request metrics.\n\n#### Scenario: Request is counted\n- **WHEN** a request completes\n- **THEN** a counter is incremented"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should still validate a nested capability layout",
+		"seq": 23,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-nested-delta",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-nested-delta"]
+		},
+		"before": {
+			"test-change-nested-delta": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs/platform": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs/platform/metrics": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs/platform/metrics/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Request metrics\nThe system SHALL record request metrics.\n\n#### Scenario: Request is counted\n- **WHEN** a request completes\n- **THEN** a counter is incremented"
+			}
+		},
+		"after": {
+			"test-change-nested-delta": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs/platform": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs/platform/metrics": {
+				"dir": true
+			},
+			"test-change-nested-delta/specs/platform/metrics/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Request metrics\nThe system SHALL record request metrics.\n\n#### Scenario: Request is counted\n- **WHEN** a request completes\n- **THEN** a counter is incremented"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should fail strict validation when requirement text lacks SHALL/MUST",
+		"seq": 24,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-3",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/test-change-3"]
+		},
+		"before": {
+			"test-change-3": {
+				"dir": true
+			},
+			"test-change-3/specs": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\n**ID**: REQ-LOG-001\n\nThe system will log all events.\n\n#### Scenario: Event occurs\n**Given** an event\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"after": {
+			"test-change-3": {
+				"dir": true
+			},
+			"test-change-3/specs": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\n**ID**: REQ-LOG-001\n\nThe system will log all events.\n\n#### Scenario: Event occurs\n**Given** an event\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Logging Feature\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should fail strict validation when requirement text lacks SHALL/MUST",
+		"seq": 25,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-3",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-3"]
+		},
+		"before": {
+			"test-change-3": {
+				"dir": true
+			},
+			"test-change-3/specs": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\n**ID**: REQ-LOG-001\n\nThe system will log all events.\n\n#### Scenario: Event occurs\n**Given** an event\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"after": {
+			"test-change-3": {
+				"dir": true
+			},
+			"test-change-3/specs": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-3/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\n**ID**: REQ-LOG-001\n\nThe system will log all events.\n\n#### Scenario: Event occurs\n**Given** an event\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Logging Feature\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should keep missing requirement text as an error for ADDED requirements",
+		"seq": 26,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-missing-added-text",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/test-change-missing-added-text"]
+		},
+		"before": {
+			"test-change-missing-added-text": {
+				"dir": true
+			},
+			"test-change-missing-added-text/specs": {
+				"dir": true
+			},
+			"test-change-missing-added-text/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-missing-added-text/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\n\n#### Scenario: Event occurs\n- **WHEN** an event occurs\n- **THEN** it is logged"
+			}
+		},
+		"after": {
+			"test-change-missing-added-text": {
+				"dir": true
+			},
+			"test-change-missing-added-text/specs": {
+				"dir": true
+			},
+			"test-change-missing-added-text/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-missing-added-text/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\n\n#### Scenario: Event occurs\n- **WHEN** an event occurs\n- **THEN** it is logged"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Logging Feature\" is missing requirement text"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should keep missing requirement text as an error for MODIFIED requirements",
+		"seq": 27,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-missing-modified-text",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/test-change-missing-modified-text"]
+		},
+		"before": {
+			"test-change-missing-modified-text": {
+				"dir": true
+			},
+			"test-change-missing-modified-text/specs": {
+				"dir": true
+			},
+			"test-change-missing-modified-text/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-missing-modified-text/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## MODIFIED Requirements\n\n### Requirement: Logging Feature\n\n#### Scenario: Event occurs\n- **WHEN** an event occurs\n- **THEN** it is logged"
+			}
+		},
+		"after": {
+			"test-change-missing-modified-text": {
+				"dir": true
+			},
+			"test-change-missing-modified-text/specs": {
+				"dir": true
+			},
+			"test-change-missing-modified-text/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-missing-modified-text/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## MODIFIED Requirements\n\n### Requirement: Logging Feature\n\n#### Scenario: Event occurs\n- **WHEN** an event occurs\n- **THEN** it is logged"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "MODIFIED \"Logging Feature\" is missing requirement text"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should hint the author when ADDED requirement only has SHALL/MUST in the header",
+		"seq": 28,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-shall-in-header-added",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-shall-in-header-added"]
+		},
+		"before": {
+			"test-change-shall-in-header-added": {
+				"dir": true
+			},
+			"test-change-shall-in-header-added/specs": {
+				"dir": true
+			},
+			"test-change-shall-in-header-added/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-shall-in-header-added/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: The system SHALL log all errors\nError handling logic goes here.\n\n#### Scenario: Error occurs\n**Given** an error\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"after": {
+			"test-change-shall-in-header-added": {
+				"dir": true
+			},
+			"test-change-shall-in-header-added/specs": {
+				"dir": true
+			},
+			"test-change-shall-in-header-added/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-shall-in-header-added/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: The system SHALL log all errors\nError handling logic goes here.\n\n#### Scenario: Error occurs\n**Given** an error\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"The system SHALL log all errors\" should contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header. (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should hint the author when MODIFIED requirement only has SHALL/MUST in the header",
+		"seq": 29,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-shall-in-header-modified",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-shall-in-header-modified"]
+		},
+		"before": {
+			"test-change-shall-in-header-modified": {
+				"dir": true
+			},
+			"test-change-shall-in-header-modified/specs": {
+				"dir": true
+			},
+			"test-change-shall-in-header-modified/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-shall-in-header-modified/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## MODIFIED Requirements\n\n### Requirement: The system MUST validate user input\nPlease describe how validation should work here.\n\n#### Scenario: Invalid input\n**Given** invalid input\n**When** validation runs\n**Then** an error surfaces"
+			}
+		},
+		"after": {
+			"test-change-shall-in-header-modified": {
+				"dir": true
+			},
+			"test-change-shall-in-header-modified/specs": {
+				"dir": true
+			},
+			"test-change-shall-in-header-modified/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-shall-in-header-modified/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## MODIFIED Requirements\n\n### Requirement: The system MUST validate user input\nPlease describe how validation should work here.\n\n#### Scenario: Invalid input\n**Given** invalid input\n**When** validation runs\n**Then** an error surfaces"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "MODIFIED \"The system MUST validate user input\" should contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header. (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should keep generic SHALL/MUST guidance when neither header nor body contain the keyword",
+		"seq": 30,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-shall-nowhere",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-shall-nowhere"]
+		},
+		"before": {
+			"test-change-shall-nowhere": {
+				"dir": true
+			},
+			"test-change-shall-nowhere/specs": {
+				"dir": true
+			},
+			"test-change-shall-nowhere/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-shall-nowhere/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\nThe system will log all events.\n\n#### Scenario: Event occurs\n**Given** an event\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"after": {
+			"test-change-shall-nowhere": {
+				"dir": true
+			},
+			"test-change-shall-nowhere/specs": {
+				"dir": true
+			},
+			"test-change-shall-nowhere/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-shall-nowhere/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Logging Feature\nThe system will log all events.\n\n#### Scenario: Event occurs\n**Given** an event\n**When** it occurs\n**Then** it is logged"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Logging Feature\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should handle requirements without metadata fields",
+		"seq": 31,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-4",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-4"]
+		},
+		"before": {
+			"test-change-4": {
+				"dir": true
+			},
+			"test-change-4/specs": {
+				"dir": true
+			},
+			"test-change-4/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-4/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Simple Feature\nThe system SHALL implement this feature.\n\n#### Scenario: Basic usage\n**Given** a condition\n**When** an action occurs\n**Then** a result happens"
+			}
+		},
+		"after": {
+			"test-change-4": {
+				"dir": true
+			},
+			"test-change-4/specs": {
+				"dir": true
+			},
+			"test-change-4/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-4/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Simple Feature\nThe system SHALL implement this feature.\n\n#### Scenario: Basic usage\n**Given** a condition\n**When** an action occurs\n**Then** a result happens"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > does not flag requirement headers/scenarios inside fenced code blocks",
+		"seq": 32,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-fenced-example",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-fenced-example"]
+		},
+		"before": {
+			"test-change-fenced-example": {
+				"dir": true
+			},
+			"test-change-fenced-example/specs": {
+				"dir": true
+			},
+			"test-change-fenced-example/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-fenced-example/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Documentation Generator\nThe system SHALL render a delta example in its output.\n\n#### Scenario: Renders an example\n**Given** a template\n**When** documentation is generated\n**Then** the following snippet is produced:\n\n```markdown\n### Requirement: Example only\n#### Scenario: Example scenario\n```\n"
+			}
+		},
+		"after": {
+			"test-change-fenced-example": {
+				"dir": true
+			},
+			"test-change-fenced-example/specs": {
+				"dir": true
+			},
+			"test-change-fenced-example/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-fenced-example/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Documentation Generator\nThe system SHALL render a delta example in its output.\n\n#### Scenario: Renders an example\n**Given** a template\n**When** documentation is generated\n**Then** the following snippet is produced:\n\n```markdown\n### Requirement: Example only\n#### Scenario: Example scenario\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > does not count scenario headers inside fenced code blocks toward the required scenario count",
+		"seq": 33,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-fenced-scenario-only",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-fenced-scenario-only"]
+		},
+		"before": {
+			"test-change-fenced-scenario-only": {
+				"dir": true
+			},
+			"test-change-fenced-scenario-only/specs": {
+				"dir": true
+			},
+			"test-change-fenced-scenario-only/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-fenced-scenario-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Documentation Generator\nThe system SHALL render a delta example in its output.\n\n```markdown\n#### Scenario: Example scenario\n```\n"
+			}
+		},
+		"after": {
+			"test-change-fenced-scenario-only": {
+				"dir": true
+			},
+			"test-change-fenced-scenario-only/specs": {
+				"dir": true
+			},
+			"test-change-fenced-scenario-only/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-fenced-scenario-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Documentation Generator\nThe system SHALL render a delta example in its output.\n\n```markdown\n#### Scenario: Example scenario\n```\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Documentation Generator\" must include at least one scenario"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > should treat delta headers case-insensitively",
+		"seq": 34,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-mixed-case",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-mixed-case"]
+		},
+		"before": {
+			"test-change-mixed-case": {
+				"dir": true
+			},
+			"test-change-mixed-case/specs": {
+				"dir": true
+			},
+			"test-change-mixed-case/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-mixed-case/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## Added Requirements\n\n### Requirement: Mixed Case Handling\nThe system MUST support mixed case delta headers.\n\n#### Scenario: Case insensitive parsing\n**Given** a delta file with mixed case headers\n**When** validation runs\n**Then** the delta is detected"
+			}
+		},
+		"after": {
+			"test-change-mixed-case": {
+				"dir": true
+			},
+			"test-change-mixed-case/specs": {
+				"dir": true
+			},
+			"test-change-mixed-case/specs/test-spec": {
+				"dir": true
+			},
+			"test-change-mixed-case/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## Added Requirements\n\n### Requirement: Mixed Case Handling\nThe system MUST support mixed case delta headers.\n\n#### Scenario: Case insensitive parsing\n**Given** a delta file with mixed case headers\n**When** validation runs\n**Then** the delta is detected"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > discovers and validates deltas in a nested specs/<area>/<capability> layout (#1182b)",
+		"seq": 35,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-nested",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-nested"]
+		},
+		"before": {
+			"test-change-nested": {
+				"dir": true
+			},
+			"test-change-nested/specs": {
+				"dir": true
+			},
+			"test-change-nested/specs/area-one": {
+				"dir": true
+			},
+			"test-change-nested/specs/area-one/cap-a": {
+				"dir": true
+			},
+			"test-change-nested/specs/area-one/cap-a/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Nested capability\nThe system SHALL support nested multi-area delta layouts.\n\n#### Scenario: Nested delta is discovered\n- **WHEN** validating a change with nested specs\n- **THEN** the delta is found and validated"
+			}
+		},
+		"after": {
+			"test-change-nested": {
+				"dir": true
+			},
+			"test-change-nested/specs": {
+				"dir": true
+			},
+			"test-change-nested/specs/area-one": {
+				"dir": true
+			},
+			"test-change-nested/specs/area-one/cap-a": {
+				"dir": true
+			},
+			"test-change-nested/specs/area-one/cap-a/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: Nested capability\nThe system SHALL support nested multi-area delta layouts.\n\n#### Scenario: Nested delta is discovered\n- **WHEN** validating a change with nested specs\n- **THEN** the delta is found and validated"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > validateChangeDeltaSpecs with metadata > still validates a single-level layout unchanged (#1182b control)",
+		"seq": 36,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/test-change-onelevel",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/test-change-onelevel"]
+		},
+		"before": {
+			"test-change-onelevel": {
+				"dir": true
+			},
+			"test-change-onelevel/specs": {
+				"dir": true
+			},
+			"test-change-onelevel/specs/cap-a": {
+				"dir": true
+			},
+			"test-change-onelevel/specs/cap-a/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: One level capability\nThe system SHALL support a one-level layout.\n\n#### Scenario: One level delta\n- **WHEN** validating\n- **THEN** the delta is found"
+			}
+		},
+		"after": {
+			"test-change-onelevel": {
+				"dir": true
+			},
+			"test-change-onelevel/specs": {
+				"dir": true
+			},
+			"test-change-onelevel/specs/cap-a": {
+				"dir": true
+			},
+			"test-change-onelevel/specs/cap-a/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: One level capability\nThe system SHALL support a one-level layout.\n\n#### Scenario: One level delta\n- **WHEN** validating\n- **THEN** the delta is found"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > emits the targeted hint when the keyword is in the header only (with a body line)",
+		"seq": 37,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: The system SHALL log\nLogging happens here.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"The system SHALL log\" should contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header. (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > uses an actionable sentence byte-identical to the change-delta message",
+		"seq": 38,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: The system SHALL log\nLogging happens here.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"The system SHALL log\" should contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header. (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > uses an actionable sentence byte-identical to the change-delta message",
+		"seq": 39,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change-parity-sentence",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/change-parity-sentence"]
+		},
+		"before": {
+			"change-parity-sentence": {
+				"dir": true
+			},
+			"change-parity-sentence/specs": {
+				"dir": true
+			},
+			"change-parity-sentence/specs/cap": {
+				"dir": true
+			},
+			"change-parity-sentence/specs/cap/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: The system SHALL log\nLogging happens here.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			}
+		},
+		"after": {
+			"change-parity-sentence": {
+				"dir": true
+			},
+			"change-parity-sentence/specs": {
+				"dir": true
+			},
+			"change-parity-sentence/specs/cap": {
+				"dir": true
+			},
+			"change-parity-sentence/specs/cap/spec.md": {
+				"text": "## ADDED Requirements\n\n### Requirement: The system SHALL log\nLogging happens here.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "cap/spec.md",
+						"message": "ADDED \"The system SHALL log\" should contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header. (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > keeps generic missing-keyword guidance when neither header nor body has the keyword",
+		"seq": 40,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: Logging\nThe system will log all events.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"Logging\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > allows non-English requirement text in normal mode and warns about English keywords",
+		"seq": 41,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: 事件记录\n系统必须记录应用程序中的重要事件。\n\n#### Scenario: 事件发生\n- **WHEN** 应用程序生成重要事件\n- **THEN** 系统保存该事件"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"事件记录\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > does not flag a requirement whose body line contains the keyword",
+		"seq": 42,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: Logging\nThe system SHALL log all events.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > rejects a lowercase shall/must in the body (matching the delta path)",
+		"seq": 43,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: Logging\nthe system shall log all events.\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"Logging\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > emits the hint for a header-only requirement with no body line (intended additive change)",
+		"seq": 44,
+		"kind": "validator.validateSpecContent",
+		"root": null,
+		"abs": null,
+		"hint": "demo",
+		"args": {
+			"strict": false,
+			"args": [
+				"demo",
+				"# Demo Spec\n\n## Purpose\nA purpose long enough to satisfy the validator length threshold for tests.\n\n## Requirements\n\n### Requirement: The system MUST be available\n\n#### Scenario: S\n- **WHEN** x\n- **THEN** y"
+			]
+		},
+		"before": {},
+		"after": {},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "requirements[0]",
+						"message": "Requirement \"The system MUST be available\" must contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > main-spec SHALL/MUST body-keyword hint (#1156) > does not subject RENAMED requirements to the hint (byte-for-byte unchanged)",
+		"seq": 45,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/change-renamed",
+		"args": {
+			"strict": false,
+			"args": ["$ROOT/change-renamed"]
+		},
+		"before": {
+			"change-renamed": {
+				"dir": true
+			},
+			"change-renamed/specs": {
+				"dir": true
+			},
+			"change-renamed/specs/cap": {
+				"dir": true
+			},
+			"change-renamed/specs/cap/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: The system SHALL do the new thing`\n"
+			}
+		},
+		"after": {
+			"change-renamed": {
+				"dir": true
+			},
+			"change-renamed/specs": {
+				"dir": true
+			},
+			"change-renamed/specs/cap": {
+				"dir": true
+			},
+			"change-renamed/specs/cap/spec.md": {
+				"text": "## RENAMED Requirements\n\n- FROM: `### Requirement: Old name`\n- TO: `### Requirement: The system SHALL do the new thing`\n"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > #361: a normative keyword on a wrapped body line passes both change and spec",
+		"seq": 46,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-361",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-361"]
+		},
+		"before": {
+			"fidelity-361": {
+				"dir": true
+			},
+			"fidelity-361/specs": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Wrapped keyword\nThe system performs the described behavior and it\ncontinues onto a second line where SHALL appears in full.\n\n#### Scenario: Wrapped\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"after": {
+			"fidelity-361": {
+				"dir": true
+			},
+			"fidelity-361/specs": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Wrapped keyword\nThe system performs the described behavior and it\ncontinues onto a second line where SHALL appears in full.\n\n#### Scenario: Wrapped\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > #361: a normative keyword on a wrapped body line passes both change and spec",
+		"seq": 47,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-361-spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-361-spec.md"]
+		},
+		"before": {
+			"fidelity-361": {
+				"dir": true
+			},
+			"fidelity-361/specs": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Wrapped keyword\nThe system performs the described behavior and it\ncontinues onto a second line where SHALL appears in full.\n\n#### Scenario: Wrapped\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			},
+			"fidelity-361-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises a normative keyword wrapped onto a second line.\n\n## Requirements\n\n### Requirement: Wrapped keyword\nThe system performs the described behavior and it\ncontinues onto a second line where SHALL appears in full.\n\n#### Scenario: Wrapped\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"after": {
+			"fidelity-361": {
+				"dir": true
+			},
+			"fidelity-361/specs": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-361/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Wrapped keyword\nThe system performs the described behavior and it\ncontinues onto a second line where SHALL appears in full.\n\n#### Scenario: Wrapped\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			},
+			"fidelity-361-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises a normative keyword wrapped onto a second line.\n\n## Requirements\n\n### Requirement: Wrapped keyword\nThe system performs the described behavior and it\ncontinues onto a second line where SHALL appears in full.\n\n#### Scenario: Wrapped\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > #418: metadata before the description passes validate <spec> (matching <change>)",
+		"seq": 48,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-418-spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-418-spec.md"]
+		},
+		"before": {
+			"fidelity-418-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises metadata fields preceding the requirement description.\n\n## Requirements\n\n### Requirement: Metadata first\n**ID**: REQ-FILE-001\n**Priority**: P1 (High)\nThe system MUST persist the uploaded file.\n\n#### Scenario: Persisted\n**Given** an uploaded file\n**When** the request completes\n**Then** the file is stored"
+			}
+		},
+		"after": {
+			"fidelity-418-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises metadata fields preceding the requirement description.\n\n## Requirements\n\n### Requirement: Metadata first\n**ID**: REQ-FILE-001\n**Priority**: P1 (High)\nThe system MUST persist the uploaded file.\n\n#### Scenario: Persisted\n**Given** an uploaded file\n**When** the request completes\n**Then** the file is stored"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > #312: a fenced block before the prose line passes both change and spec",
+		"seq": 49,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-312",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-312"]
+		},
+		"before": {
+			"fidelity-312": {
+				"dir": true
+			},
+			"fidelity-312/specs": {
+				"dir": true
+			},
+			"fidelity-312/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-312/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Fence first\n```bash\n# this is a shell comment, not the requirement text\necho hello\n```\nThe system SHALL handle fenced examples before the prose line.\n\n#### Scenario: Handled\n**Given** a fenced example\n**When** the requirement is read\n**Then** the prose line is the requirement text"
+			}
+		},
+		"after": {
+			"fidelity-312": {
+				"dir": true
+			},
+			"fidelity-312/specs": {
+				"dir": true
+			},
+			"fidelity-312/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-312/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Fence first\n```bash\n# this is a shell comment, not the requirement text\necho hello\n```\nThe system SHALL handle fenced examples before the prose line.\n\n#### Scenario: Handled\n**Given** a fenced example\n**When** the requirement is read\n**Then** the prose line is the requirement text"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > fenced scenario: a #### Scenario inside a fence does not count (change matches spec)",
+		"seq": 50,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-fenced-scenario",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-fenced-scenario"]
+		},
+		"before": {
+			"fidelity-fenced-scenario": {
+				"dir": true
+			},
+			"fidelity-fenced-scenario/specs": {
+				"dir": true
+			},
+			"fidelity-fenced-scenario/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-fenced-scenario/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Fenced scenario only\nThe system SHALL do something real.\n\n```markdown\n#### Scenario: not a real scenario\n- **WHEN** a reader studies the example\n- **THEN** it stays inside the fence\n```"
+			}
+		},
+		"after": {
+			"fidelity-fenced-scenario": {
+				"dir": true
+			},
+			"fidelity-fenced-scenario/specs": {
+				"dir": true
+			},
+			"fidelity-fenced-scenario/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-fenced-scenario/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Fenced scenario only\nThe system SHALL do something real.\n\n```markdown\n#### Scenario: not a real scenario\n- **WHEN** a reader studies the example\n- **THEN** it stays inside the fence\n```"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Fenced scenario only\" must include at least one scenario"
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > #498: a stray ### divider yields an INFO note and does not change valid (even strict)",
+		"seq": 51,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-498",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-498"]
+		},
+		"before": {
+			"fidelity-498": {
+				"dir": true
+			},
+			"fidelity-498/specs": {
+				"dir": true
+			},
+			"fidelity-498/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-498/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Documentation Requirements\n\n### Requirement: Real requirement\nThe system SHALL do the real thing.\n\n#### Scenario: Works\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"after": {
+			"fidelity-498": {
+				"dir": true
+			},
+			"fidelity-498/specs": {
+				"dir": true
+			},
+			"fidelity-498/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-498/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Documentation Requirements\n\n### Requirement: Real requirement\nThe system SHALL do the real thing.\n\n#### Scenario: Works\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "test-spec/spec.md",
+						"line": 5,
+						"message": "Header \"### Documentation Requirements\" in ADDED Requirements is not a \"### Requirement:\" header and is ignored by validation. Use \"### Requirement: Documentation Requirements\" if it should be validated as a requirement."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > guard: a single-line requirement is read byte-for-byte as before",
+		"seq": 52,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-single-line",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-single-line"]
+		},
+		"before": {
+			"fidelity-single-line": {
+				"dir": true
+			},
+			"fidelity-single-line/specs": {
+				"dir": true
+			},
+			"fidelity-single-line/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-single-line/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Single line\nThe system SHALL remain unchanged for single-line bodies.\n\n#### Scenario: Unchanged\n**Given** a single-line requirement\n**When** it is validated\n**Then** nothing changes"
+			}
+		},
+		"after": {
+			"fidelity-single-line": {
+				"dir": true
+			},
+			"fidelity-single-line/specs": {
+				"dir": true
+			},
+			"fidelity-single-line/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-single-line/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Single line\nThe system SHALL remain unchanged for single-line bodies.\n\n#### Scenario: Unchanged\n**Given** a single-line requirement\n**When** it is validated\n**Then** nothing changes"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > predicate agrees across readers: a SHALL substring inside a word is not a keyword",
+		"seq": 53,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-predicate",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-predicate"]
+		},
+		"before": {
+			"fidelity-predicate": {
+				"dir": true
+			},
+			"fidelity-predicate/specs": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Marshalling\nThe MARSHALL coordinates parade logistics.\n\n#### Scenario: Coordinated\n**Given** a parade\n**When** it begins\n**Then** logistics are coordinated"
+			}
+		},
+		"after": {
+			"fidelity-predicate": {
+				"dir": true
+			},
+			"fidelity-predicate/specs": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Marshalling\nThe MARSHALL coordinates parade logistics.\n\n#### Scenario: Coordinated\n**Given** a parade\n**When** it begins\n**Then** logistics are coordinated"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Marshalling\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > predicate agrees across readers: a SHALL substring inside a word is not a keyword",
+		"seq": 54,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-predicate-spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-predicate-spec.md"]
+		},
+		"before": {
+			"fidelity-predicate": {
+				"dir": true
+			},
+			"fidelity-predicate/specs": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Marshalling\nThe MARSHALL coordinates parade logistics.\n\n#### Scenario: Coordinated\n**Given** a parade\n**When** it begins\n**Then** logistics are coordinated"
+			},
+			"fidelity-predicate-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec checks that a SHALL substring inside a word is not treated as a keyword.\n\n## Requirements\n\n### Requirement: Marshalling\nThe MARSHALL coordinates parade logistics.\n\n#### Scenario: Coordinated\n**Given** a parade\n**When** it begins\n**Then** logistics are coordinated"
+			}
+		},
+		"after": {
+			"fidelity-predicate": {
+				"dir": true
+			},
+			"fidelity-predicate/specs": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-predicate/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Marshalling\nThe MARSHALL coordinates parade logistics.\n\n#### Scenario: Coordinated\n**Given** a parade\n**When** it begins\n**Then** logistics are coordinated"
+			},
+			"fidelity-predicate-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec checks that a SHALL substring inside a word is not treated as a keyword.\n\n## Requirements\n\n### Requirement: Marshalling\nThe MARSHALL coordinates parade logistics.\n\n#### Scenario: Coordinated\n**Given** a parade\n**When** it begins\n**Then** logistics are coordinated"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "requirements[0]",
+						"message": "Requirement \"Marshalling\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > guard: a metadata-only body without a keyword still fails validation",
+		"seq": 55,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-metadata-only",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-metadata-only"]
+		},
+		"before": {
+			"fidelity-metadata-only": {
+				"dir": true
+			},
+			"fidelity-metadata-only/specs": {
+				"dir": true
+			},
+			"fidelity-metadata-only/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-metadata-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Metadata only\n**ID**: REQ-META-001\n**Priority**: P1 (High)\n\n#### Scenario: Present\n**Given** a metadata-only body\n**When** it is validated\n**Then** validation fails"
+			}
+		},
+		"after": {
+			"fidelity-metadata-only": {
+				"dir": true
+			},
+			"fidelity-metadata-only/specs": {
+				"dir": true
+			},
+			"fidelity-metadata-only/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-metadata-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Metadata only\n**ID**: REQ-META-001\n**Priority**: P1 (High)\n\n#### Scenario: Present\n**Given** a metadata-only body\n**When** it is validated\n**Then** validation fails"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Metadata only\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > a requirement written entirely as **Constraint**: metadata keeps its MUST (change and spec)",
+		"seq": 56,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-constraint-only",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-constraint-only"]
+		},
+		"before": {
+			"fidelity-constraint-only": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Constraint style\n**Constraint**: The system MUST respond within the configured deadline.\n\n#### Scenario: Deadline honored\n**Given** a configured deadline\n**When** a request is handled\n**Then** the response arrives in time"
+			}
+		},
+		"after": {
+			"fidelity-constraint-only": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Constraint style\n**Constraint**: The system MUST respond within the configured deadline.\n\n#### Scenario: Deadline honored\n**Given** a configured deadline\n**When** a request is handled\n**Then** the response arrives in time"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > a requirement written entirely as **Constraint**: metadata keeps its MUST (change and spec)",
+		"seq": 57,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-constraint-only-spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-constraint-only-spec.md"]
+		},
+		"before": {
+			"fidelity-constraint-only": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Constraint style\n**Constraint**: The system MUST respond within the configured deadline.\n\n#### Scenario: Deadline honored\n**Given** a configured deadline\n**When** a request is handled\n**Then** the response arrives in time"
+			},
+			"fidelity-constraint-only-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises a requirement whose whole body is a metadata-style line.\n\n## Requirements\n\n### Requirement: Constraint style\n**Constraint**: The system MUST respond within the configured deadline.\n\n#### Scenario: Deadline honored\n**Given** a configured deadline\n**When** a request is handled\n**Then** the response arrives in time"
+			}
+		},
+		"after": {
+			"fidelity-constraint-only": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-constraint-only/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Constraint style\n**Constraint**: The system MUST respond within the configured deadline.\n\n#### Scenario: Deadline honored\n**Given** a configured deadline\n**When** a request is handled\n**Then** the response arrives in time"
+			},
+			"fidelity-constraint-only-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises a requirement whose whole body is a metadata-style line.\n\n## Requirements\n\n### Requirement: Constraint style\n**Constraint**: The system MUST respond within the configured deadline.\n\n#### Scenario: Deadline honored\n**Given** a configured deadline\n**When** a request is handled\n**Then** the response arrives in time"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > canonical empty bodies keep the body-keyword hint on both paths after #1280",
+		"seq": 58,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-empty-body",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-empty-body"]
+		},
+		"before": {
+			"fidelity-empty-body": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: The tool MUST support header-only requirements\n\n#### Scenario: Header only\n**Given** a requirement with no body text\n**When** it is validated\n**Then** both paths ask for the keyword in the body"
+			}
+		},
+		"after": {
+			"fidelity-empty-body": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: The tool MUST support header-only requirements\n\n#### Scenario: Header only\n**Given** a requirement with no body text\n**When** it is validated\n**Then** both paths ask for the keyword in the body"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"The tool MUST support header-only requirements\" must contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > canonical empty bodies keep the body-keyword hint on both paths after #1280",
+		"seq": 59,
+		"kind": "validator.validateSpec",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-empty-body-spec.md",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-empty-body-spec.md"]
+		},
+		"before": {
+			"fidelity-empty-body": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: The tool MUST support header-only requirements\n\n#### Scenario: Header only\n**Given** a requirement with no body text\n**When** it is validated\n**Then** both paths ask for the keyword in the body"
+			},
+			"fidelity-empty-body-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises the shared body extraction without using the display fallback for validation.\n\n## Requirements\n\n### Requirement: The tool MUST support header-only requirements\n\n#### Scenario: Header only\n**Given** a requirement with no body text\n**When** it is validated\n**Then** both paths ask for the keyword in the body"
+			}
+		},
+		"after": {
+			"fidelity-empty-body": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-empty-body/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: The tool MUST support header-only requirements\n\n#### Scenario: Header only\n**Given** a requirement with no body text\n**When** it is validated\n**Then** both paths ask for the keyword in the body"
+			},
+			"fidelity-empty-body-spec.md": {
+				"text": "# Test Spec\n\n## Purpose\nThis spec exercises the shared body extraction without using the display fallback for validation.\n\n## Requirements\n\n### Requirement: The tool MUST support header-only requirements\n\n#### Scenario: Header only\n**Given** a requirement with no body text\n**When** it is validated\n**Then** both paths ask for the keyword in the body"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "ERROR",
+						"path": "requirements[0]",
+						"message": "Requirement \"The tool MUST support header-only requirements\" must contain SHALL or MUST in the requirement body, not only in the header. Move the SHALL/MUST statement to the line immediately after the \"### Requirement: ...\" header."
+					}
+				],
+				"summary": {
+					"errors": 1,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > a stray ### divider ends the requirement body: a MUST in its notes does not count",
+		"seq": 60,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-divider-body",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-divider-body"]
+		},
+		"before": {
+			"fidelity-divider-body": {
+				"dir": true
+			},
+			"fidelity-divider-body/specs": {
+				"dir": true
+			},
+			"fidelity-divider-body/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-divider-body/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Divider absorbed\nThe system performs the described behavior without a keyword.\n\n### Background\nThese notes explain that the system MUST NOT be read as requirement text.\n\n#### Scenario: Bounded\n**Given** a stray divider\n**When** the requirement is read\n**Then** the body stops at the divider"
+			}
+		},
+		"after": {
+			"fidelity-divider-body": {
+				"dir": true
+			},
+			"fidelity-divider-body/specs": {
+				"dir": true
+			},
+			"fidelity-divider-body/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-divider-body/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Divider absorbed\nThe system performs the described behavior without a keyword.\n\n### Background\nThese notes explain that the system MUST NOT be read as requirement text.\n\n#### Scenario: Bounded\n**Given** a stray divider\n**When** the requirement is read\n**Then** the body stops at the divider"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": false,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "test-spec/spec.md",
+						"line": 8,
+						"message": "Header \"### Background\" in ADDED Requirements is not a \"### Requirement:\" header and is ignored by validation. Use \"### Requirement: Background\" if it should be validated as a requirement."
+					},
+					{
+						"level": "WARNING",
+						"path": "test-spec/spec.md",
+						"message": "ADDED \"Divider absorbed\" should contain SHALL or MUST (RFC 2119 best practice for English specs)"
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 1,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > a nameless \"### Requirement:\" header gets a dedicated INFO message",
+		"seq": 61,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-nameless",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-nameless"]
+		},
+		"before": {
+			"fidelity-nameless": {
+				"dir": true
+			},
+			"fidelity-nameless/specs": {
+				"dir": true
+			},
+			"fidelity-nameless/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-nameless/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement:\n\n### Requirement: Real requirement\nThe system SHALL do the real thing.\n\n#### Scenario: Works\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"after": {
+			"fidelity-nameless": {
+				"dir": true
+			},
+			"fidelity-nameless/specs": {
+				"dir": true
+			},
+			"fidelity-nameless/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-nameless/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement:\n\n### Requirement: Real requirement\nThe system SHALL do the real thing.\n\n#### Scenario: Works\n**Given** a request\n**When** it is handled\n**Then** the behavior occurs"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [
+					{
+						"level": "INFO",
+						"path": "test-spec/spec.md",
+						"line": 5,
+						"message": "Header \"### Requirement:\" in ADDED Requirements is missing a requirement name and is ignored by validation. Add a name, e.g. \"### Requirement: <name>\"."
+					}
+				],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 1
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > the skipped-header INFO reflects the reader: a fenced divider is not reported",
+		"seq": 62,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-fenced-divider",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-fenced-divider"]
+		},
+		"before": {
+			"fidelity-fenced-divider": {
+				"dir": true
+			},
+			"fidelity-fenced-divider/specs": {
+				"dir": true
+			},
+			"fidelity-fenced-divider/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-fenced-divider/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Fence with divider example\nThe system SHALL treat fenced headers as content.\n\n```markdown\n### Not A Real Divider\n```\n\n#### Scenario: Fenced\n**Given** a fenced example containing a level-3 header\n**When** the delta is validated\n**Then** no INFO note is emitted for it"
+			}
+		},
+		"after": {
+			"fidelity-fenced-divider": {
+				"dir": true
+			},
+			"fidelity-fenced-divider/specs": {
+				"dir": true
+			},
+			"fidelity-fenced-divider/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-fenced-divider/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Fence with divider example\nThe system SHALL treat fenced headers as content.\n\n```markdown\n### Not A Real Divider\n```\n\n#### Scenario: Fenced\n**Given** a fenced example containing a level-3 header\n**When** the delta is validated\n**Then** no INFO note is emitted for it"
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	},
+	{
+		"file": "validation.test.ts",
+		"test": "Validator > parser reading fidelity (#361, #418, #312, fenced scenario, #498) > any #### header counts as a scenario on the delta path (deliberate spec-path parity)",
+		"seq": 63,
+		"kind": "validator.validateChangeDeltaSpecs",
+		"root": "test-validation-tmp",
+		"abs": "$ROOT",
+		"hint": "$ROOT/fidelity-h4-parity",
+		"args": {
+			"strict": true,
+			"args": ["$ROOT/fidelity-h4-parity"]
+		},
+		"before": {
+			"fidelity-h4-parity": {
+				"dir": true
+			},
+			"fidelity-h4-parity/specs": {
+				"dir": true
+			},
+			"fidelity-h4-parity/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-h4-parity/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Notes as scenario\nThe system SHALL accept any level-4 child, matching the spec path.\n\n#### Notes\nThe spec path treats every level-4 child of a requirement as a scenario."
+			}
+		},
+		"after": {
+			"fidelity-h4-parity": {
+				"dir": true
+			},
+			"fidelity-h4-parity/specs": {
+				"dir": true
+			},
+			"fidelity-h4-parity/specs/test-spec": {
+				"dir": true
+			},
+			"fidelity-h4-parity/specs/test-spec/spec.md": {
+				"text": "# Test Spec\n\n## ADDED Requirements\n\n### Requirement: Notes as scenario\nThe system SHALL accept any level-4 child, matching the spec path.\n\n#### Notes\nThe spec path treats every level-4 child of a requirement as a scenario."
+			}
+		},
+		"outcome": {
+			"returned": {
+				"valid": true,
+				"issues": [],
+				"summary": {
+					"errors": 0,
+					"warnings": 0,
+					"info": 0
+				}
+			}
+		}
+	}
+]

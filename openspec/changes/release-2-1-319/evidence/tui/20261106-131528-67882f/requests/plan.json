@@ -1,0 +1,33 @@
+{
+	"steps": [
+		{
+			"match": {
+				"lastUserIncludes": "do handoff"
+			},
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "mcp__claudetto__handoff",
+						"input": {
+							"goal": "G-MARK",
+							"standing": "S-MARK",
+							"state": "ST-MARK",
+							"decisions": "D-MARK",
+							"next_prompt": "NEXT-PROMPT-MARK continue"
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		}
+	],
+	"fallback": {
+		"blocks": [
+			{
+				"type": "text",
+				"text": "OK"
+			}
+		]
+	}
+}

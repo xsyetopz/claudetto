@@ -1,0 +1,47 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-100924-f013b9/config ANTHROPIC_BASE_URL=http://127.0.0.1:60597 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-100924-f013b9/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Haiku 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-100924-f013b9/work
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏵⏵ auto mode on (shift+tab to cycle) · ← for agents[>0q
+        
+ ▐▛▛█ 
+·▜██████·
+~~
+▗▟▛███▛█▄
+▜███▘
+ ▝▝   ▝▝ 
+ ▐ 
+▝▀
+        
+ ▐▛▛█ 
+·▜██████·
+~~
+▗▟▛███▛█▄
+▜███▘
+ ▝▝   ▝▝ 
+ ▐ 
+▝▀
+/statuslineshowthegitbranch 
+
+❯ /statusline show the git branch                                                                                                                               
+✶Inferring… 
+❯  
+ · esc to interrupt · ← for agents
+ 
+  ⎿  Read ../../../../../../../../../../Users/krystian/.claude/settings.json (161 lines)
+✻i…
+⏺OK
+Germinating… 
+Germinat…
+✻Cooked for 0s · done 10:09 AM
+
+❯ 
+← for agents
+Press Ctrl-C again to exit[<u[>4m[>4m[<u78[>4m[<u78
+Resume this session with:
+claude --resume ade05b61-a61c-4e0e-becb-eec63a688ea5

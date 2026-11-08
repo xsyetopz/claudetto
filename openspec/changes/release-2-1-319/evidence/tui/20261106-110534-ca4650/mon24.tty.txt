@@ -1,0 +1,75 @@
+spawn env -i HOME=/Users/krystian PATH=<user PATH> TERM=xterm-256color CLAUDE_CONFIG_DIR=/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110534-ca4650/config ANTHROPIC_BASE_URL=http://127.0.0.1:62646 ANTHROPIC_API_KEY=<fake key> DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --model claude-haiku-5-5 --setting-sources project --settings /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110534-ca4650/settings.json --plugin-dir /Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto --debug-file /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110534-ca4650/mon24.tty.debug
+78
+ ▐▛███▛█Claude Codev2.1.319
+▝▜██████▀Haiku 5.5 · API Usage Billing
+ ▝▝   ▝▝ /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110534-ca4650/work
+▎Debug mode enabled · logging to /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/claudekit/tui/20261106-110534-ca4650/mon24.tty.debug
+◐ medium · /effort
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+⏸ manual mode on · ? for shortcuts · ← for agents[>0q
+█▟█▟
+▟█▟█
+watchit 
+
+▛▛
+❯ watch it                                                                                                                                                      
+✽Crunching… 
+❯  
+ · esc to interrupt · ← for agents
+cn
+Generating… 
+(0s · ↓2 tokens)
+Generating…
+✻Generating…9
+rat
+⏺claudetto - monitor (MCP)
+(ws:{"url":"ws://127.0.0.1:18770"},description:"wsevents",timeout_ms:20000)
+25 tokens)
+1 monitor · esc tointerupt · ← for agents · ↓ to manage
+⏺
+  ⎿  Monitorstarted(tasks7efirwrh,expiresin20sunlessthesourceendsfirst;yougetonenoticeatexpiry—re-armifyoustillneedthewatch).You
+willbenotifiedoneachevent.Keepworking—donotpollorsleep.Eventsmayarrivewhileyouarewaitingfortheuser—aneventisnottheirrepl
+y.
+rat
+rat
+⏺Done.
+✶et38
+era
+era
+⏺OK
+✳49
+era
+✻Cogitated for 0s · done 11:05 AM · 1 monitor still running
+
+❯ 
+← for agents · ↓to manage
+✶Tempering… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to interrupt· ← for agents · ↓ to manage
+⏺Monitorevent:wsev1 · ws events
+⏺OK
+✻(0s · ↓1 tokens)
+Tempering…
+✻Cooked for 0s · done 11:05 AM · 1 monitor still running
+
+
+❯ 
+← for agents · ↓to manage
+
+
+✶Gesticulating… 
+  ⎿  Tip: Use Plan Mode to prepare for a complex request before making changes. Press shift+tab twice to enable.
+❯ 
+esc to interrupt · ← foragens
+⏺Monitorevent:wsev2 · ws events
+⏺Monitorevent:[WebSocketclosed:1000] · ws events
+⏺OK
+✻Brewed for 0s · done 11:05 AM
+
+
+❯ 
+? for shortcuts · ← for agents
+

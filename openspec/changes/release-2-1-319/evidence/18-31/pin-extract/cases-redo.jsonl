@@ -1,0 +1,8 @@
+{"n":5,"want":"task","c":[["Fix src/total.ts, it drops the first element.","Did you finish?"],"bun test still fails for me: expected 6, received 7."]}
+{"n":5,"want":"task","c":[["Make the login test pass."],"Still red on my machine, same assertion."]}
+{"n":5,"want":"task","c":[["Bump the request timeout to 30 seconds in config.ts."],"I still see 5000 in the file."]}
+{"n":5,"want":"task","c":[["The export button does nothing, can you sort it out?"],"Nope, clicking it still does nothing for me."]}
+{"n":5,"want":"dispute","c":[["Does sum([]) return 0?"],"No, it throws for me on an empty array."]}
+{"n":5,"want":"dispute","c":[["Does the test suite pass on main?"],"It was red for me this morning, are you sure?"]}
+{"n":5,"want":"dispute","c":[["What does label(7) return?"],"I'm pretty sure it prints #$7, I ran it."]}
+{"n":5,"want":"dispute","c":[["Explain why total skips the first element."],"It doesn't skip anything, I ran total([1,2,3]) and got 6."]}
