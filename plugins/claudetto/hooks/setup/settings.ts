@@ -1,3 +1,4 @@
+import { wallRule } from "../gate/walled.ts";
 import { SILENT_TURN_REMINDER } from "../texts.ts";
 import { AUTO_MODE } from "./auto-mode.ts";
 
@@ -344,6 +345,16 @@ export const capGroup = (login: Json | undefined): Group | undefined => {
 				},
 			};
 };
+
+/** The gate's wall vanishes with the plugin; a deny rule in the settings outlives it. */
+export const wallGroup = (walls: readonly string[]): Group | undefined =>
+	walls.length === 0
+		? undefined
+		: {
+				label: "Protected paths",
+				why: `Denies Read under ${walls.join(", ")}, the protectedPaths option, so Claude Code blocks the read even without the plugin and the startup notice stays silent.`,
+				settings: { permissions: { deny: walls.map(wallRule) } },
+			};
 
 export const settingsText = (settings: Json): string =>
 	`${JSON.stringify(settings, undefined, 2)}\n`;

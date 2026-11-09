@@ -85,6 +85,13 @@ export const walledVerdict = (
 	return undefined;
 };
 
+/** The `Read(<wall>/**)` rule `unguarded` accepts: `~/` for a home path, `//` for any other, which the gate places from `/`. */
+export const wallRule = (wall: string): string => {
+	const home = HOME.exec(wall)?.[0];
+	const rest = flatten(home === undefined ? wall : wall.slice(home.length));
+	return `Read(${home === undefined ? "/" : "~"}${rest}/**)`;
+};
+
 /** The walls the settings' `permissions.deny` holds no `Read(<wall>/**)` for, in its `~/` or `//` absolute form. */
 export const unguarded = (
 	walls: readonly string[],

@@ -108,7 +108,7 @@
 			"type": "string",
 			"multiple": true,
 			"title": "Walled-off paths",
-			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`. The default walls off the held-out eval set.",
+			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. The default walls off the held-out eval set.",
 			"default": ["~/.claudetto-holdout"]
 		},
 		"openItemsCheckEnabled": {

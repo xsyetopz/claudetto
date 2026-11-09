@@ -1,6 +1,12 @@
 // The setup and `/statusline` commands and the session start check share these `$` helpers: the hook loader takes `$` into a helper only within the file that defines it.
 
-import type { EngineInterface, HookFor, On } from "claude-code";
+import type {
+	EngineInterface,
+	HookFor,
+	On,
+	PluginOptions,
+} from "claude-code";
+import { listOption } from "./options.ts";
 import {
 	applyChanges,
 	type Change,
@@ -13,6 +19,7 @@ import {
 	parseSettings,
 	STATUS_LINE,
 	settingsText,
+	wallGroup,
 	withCacheDirs,
 } from "./setup/settings.ts";
 import { linesOf } from "./setup/starter.ts";
@@ -229,18 +236,21 @@ const cacheDirs = async ($: EngineInterface): Promise<string[]> =>
 		])
 	).filter((dir): dir is string => dir !== undefined && dir !== "");
 
-const settingsPart = async ($: EngineInterface): Promise<string> => {
+const settingsPart = async (
+	$: EngineInterface,
+	walls: readonly string[],
+): Promise<string> => {
 	const { dir, file, held } = await userSettings($);
 	if (held === undefined) {
 		return `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP} again.`;
 	}
-	const cap = capGroup(parseSettings(await textOf($, await loginFile($))));
+	const extra = [
+		capGroup(parseSettings(await textOf($, await loginFile($)))),
+		wallGroup(walls),
+	].filter((group) => group !== undefined);
 	const result = await askGroups(
 		$,
-		withCacheDirs(
-			cap === undefined ? GROUPS : [...GROUPS, cap],
-			await cacheDirs($),
-		),
+		withCacheDirs([...GROUPS, ...extra], await cacheDirs($)),
 		held,
 		[],
 	);
@@ -391,10 +401,13 @@ const reportRule = async (
 	await $.store.set(seenKey(name), pair);
 };
 
-const onSetup: HookFor<"command.run"> = async ($) => {
+const onSetup = async (
+	$: EngineInterface,
+	walls: readonly string[],
+): Promise<{ text: string }> => {
 	const io = ioOf($);
 	const parts = [
-		await settingsPart($),
+		await settingsPart($, walls),
 		await keyPart($),
 		await starterPart(io),
 		await ignoresPart(io),
@@ -474,8 +487,9 @@ const onStartup: HookFor<"classic.SessionStart"> = async ($, e, next) => {
 	return next(e);
 };
 
-export const setup = (on: On): void => {
-	on("command.run", { command: SETUP }, onSetup);
+export const setup = (on: On, options: PluginOptions): void => {
+	const walls = listOption(options, "protectedPaths");
+	on("command.run", { command: SETUP }, ($) => onSetup($, walls));
 	on("command.run", { command: STATUSLINE }, onStatusline);
 	on("command.describe", { command: STATUSLINE }, (_$, e, next) =>
 		next({ ...e, description: STATUSLINE_DESCRIPTION }),

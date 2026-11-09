@@ -264,6 +264,15 @@ The "Subagent cap" group SHALL write `env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` 
 - **WHEN** the login record holds another plan, or the session uses an API key
 - **THEN** no cap is written
 
+### Requirement: The Protected Paths Group Denies Each Wall's Reads
+
+The "Protected paths" group SHALL write `permissions.deny` `Read(<wall>/**)` for each `protectedPaths` entry, in the form the startup wall notice accepts: `~/` for a path under `~`, `$HOME`, or `${HOME}`, and `//` for any other. With no entry it SHALL be no group.
+
+#### Scenario: Three Spellings
+
+- **WHEN** `protectedPaths` holds `~/.claudetto-holdout`, `$HOME/b`, and `/srv/holdout/`
+- **THEN** the deny list holds `Read(~/.claudetto-holdout/**)`, `Read(~/b/**)`, and `Read(//srv/holdout/**)`, and the startup notice finds no wall unguarded (`hooks/setup.test.ts`, "each protected path gets a Read deny that silences the startup wall notice", "the default protected path gets its Read deny", "with no protected path, setup writes no Read deny")
+
 ### Requirement: `/statusline` Is Described as Making No Model Call
 
 The `command.describe` hook SHALL give `/statusline` the description "Write claudetto's status line, with no model call".

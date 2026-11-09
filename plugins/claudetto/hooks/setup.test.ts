@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { unguarded } from "./gate/walled.ts";
 import { scanned } from "./secrets.mock.ts";
 import { valueAt } from "./setup/settings.ts";
 
@@ -210,6 +211,58 @@ test("with no cache variable set, the sandbox's allowWrite holds nothing extra",
 
 	expect(allowWrite(state)).toEqual(BASE_WRITES);
 });
+
+test(
+	"each protected path gets a Read deny that silences the startup wall notice",
+	{
+		options: {
+			protectedPaths: ["~/.claudetto-holdout", "$HOME/b", "/srv/holdout/"],
+		},
+	},
+	async ($: Engine, on: On) => {
+		const state = lab(on, undefined);
+
+		await run($, "claudetto:setup");
+		const permissions = valueAt(saved(state), ["permissions"]);
+
+		expect(valueAt(saved(state), ["permissions", "deny"])).toEqual(
+			expect.arrayContaining([
+				"Read(~/.claudetto-holdout/**)",
+				"Read(~/b/**)",
+				"Read(//srv/holdout/**)",
+			]),
+		);
+		expect(
+			unguarded(
+				["~/.claudetto-holdout", "$HOME/b", "/srv/holdout/"],
+				permissions,
+				"/home/u",
+			),
+		).toEqual([]);
+	},
+);
+
+test("the default protected path gets its Read deny", async ($: Engine, on: On) => {
+	const state = lab(on, undefined);
+
+	await run($, "claudetto:setup");
+
+	expect(valueAt(saved(state), ["permissions", "deny"])).toContain(
+		"Read(~/.claudetto-holdout/**)",
+	);
+});
+
+test(
+	"with no protected path, setup writes no Read deny",
+	{ options: { protectedPaths: [] } },
+	async ($: Engine, on: On) => {
+		const state = lab(on, undefined);
+
+		await run($, "claudetto:setup");
+
+		expect(JSON.stringify(saved(state))).not.toContain("Read(");
+	},
+);
 
 test("a settings file that is not a JSON object is left as it is", async ($: Engine, on: On) => {
 	const state = lab(on, "[1");

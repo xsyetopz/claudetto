@@ -17,7 +17,7 @@ import { ASK_SPEC, DECIDE_SPEC, MONITOR_SPEC } from "./texts.ts";
 export const register = (on: On, options: PluginOptions): void => {
 	slices(on);
 	limits(on, options);
-	setup(on);
+	setup(on, options);
 	surface(on, options);
 	pin(on);
 	delegation(on);
