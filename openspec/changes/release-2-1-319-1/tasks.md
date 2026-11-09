@@ -8,7 +8,7 @@
 
 ## 2. Fixes, One Slice and One Commit Each, Failing Test First
 
-- [ ] 2.1 claim-check: read popup answers in `credited` (`texts.ts:473-475`), per `specs/claim-check/spec.md`.
+- [x] 2.1 claim-check: read popup answers in `credited` (`texts.ts:473-475`), per `specs/claim-check/spec.md`.
 - [ ] 2.2 lean-openspec: validate the main specs with no change (`openspec.ts:97-104`, reuse `validateSpec` at `spec-rules.ts:329`), add `init`, `new`, the status graph, and `list`; replace `justfile:46`.
 - [ ] 2.3 constraint-ledger: quote the person for each entry, drop unsupported ones, lift allowed ones (`PIN_EXTRACT` `texts.ts:445`, `pin.ts:162-174, 206-211`).
 - [ ] 2.4 run-limits: count only writes that ran (`slices.ts:128-139`), and replace `SLICE_OTHERS` (`texts.ts:66-69`) with the commit-under-its-source text.

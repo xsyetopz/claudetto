@@ -52,11 +52,24 @@ export const claimTurn = (
 		.at(-1);
 	return {
 		user: start < 0 ? "" : (messages[start]?.text ?? ""),
-		people: messages
-			.slice(0, Math.max(start, 0))
-			.filter(isPersonMessage)
-			.slice(-EARLIER)
-			.map((m) => m.text),
+		people: [
+			...messages
+				.slice(0, Math.max(start, 0))
+				.filter(isPersonMessage)
+				.slice(-EARLIER)
+				.map((m) => m.text),
+			// A popup answer is the person's choice too, in this turn as much as before it.
+			...messages
+				.flatMap((m) => m.toolUses)
+				.filter(
+					(use) =>
+						ASK_TOOL.test(use.tool) &&
+						use.text !== undefined &&
+						!use.isError &&
+						!denied.has(use.tool_use_id),
+				)
+				.map((use) => `Popup answer: ${use.text}`),
+		],
 		shown: messages
 			.slice(0, Math.max(start, 0))
 			.filter((m) => m.role === "assistant" && m.text !== "")

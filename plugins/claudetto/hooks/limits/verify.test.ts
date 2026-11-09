@@ -302,6 +302,29 @@ test("the grader sees the earlier person and assistant messages", async ($: Engi
 	);
 });
 
+test("the grader sees each popup answer, before and in this turn, as the person's words", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	const answered = (tool: string, text: string) => ({
+		role: "assistant",
+		text: "",
+		toolUses: [{ tool, tool_use_id: text, input: {}, text }],
+	});
+	lab(
+		on,
+		[
+			user("set up the branch"),
+			answered("AskUserQuestion", '"Which branch?"="feat/2.1.319+1"'),
+			user("go on"),
+			answered("mcp__claudetto__ask-user-question", '"Which port?"="8080"'),
+		],
+		'{"faults":[]}',
+		seen,
+	);
+	await stop($);
+	expect(seen[0]).toContain('- Popup answer: "Which branch?"="feat/2.1.319+1"');
+	expect(seen[0]).toContain('- Popup answer: "Which port?"="8080"');
+});
+
 test("the grader sees the background tasks the session lists, which ground a status reply", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(on, [user("stay put")], '{"faults":[]}', seen);
