@@ -176,21 +176,34 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Sandbox",
-		why: "Turns on the built-in sandbox with least friction: Bash writes to the project, the temp folder, and the tool caches and nowhere else, reads no cloud-credential file, reaches any host without a prompt, and cannot retry outside the sandbox.",
+		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folder, except the files that run later (shell startup files, git config, SSH, launch agents, and the PATH folders in your home folder). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, runs ps, top, sysctl, and launchctl list outside the sandbox, and cannot retry outside the sandbox.",
 		settings: {
 			sandbox: {
 				enabled: true,
 				allowUnsandboxedCommands: false,
+				// Read-only commands that fail sandboxed under every key: `ps` and `top` are setuid root, and `sysctl` reads a fixed name list.
+				excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
 				filesystem: {
-					allowWrite: [
-						"~/.cache",
-						"~/.bun",
-						"~/.npm",
-						"~/Library/Caches",
-						// The sandbox does not follow the `/tmp` link on macOS, so only the real path opens it.
-						"/private/tmp",
+					// The sandbox does not follow the `/tmp` link on macOS, so only the real path opens it.
+					allowWrite: ["~/", "/Volumes/", "/private/tmp"],
+					denyWrite: [
+						"~/.zshrc",
+						"~/.zshenv",
+						"~/.zprofile",
+						"~/.bashrc",
+						"~/.bash_profile",
+						"~/.profile",
+						"~/.config/fish",
+						"~/.gitconfig",
+						"~/.config/git",
+						"~/.ssh",
+						"~/Library/LaunchAgents",
+						"~/.local/bin",
+						"~/.bun/bin",
+						"~/bin",
 					],
 					denyRead: [
+						"~/Library/Keychains",
 						"~/.aws",
 						"~/.azure",
 						"~/.config/gcloud",
@@ -198,7 +211,7 @@ export const GROUPS: readonly Group[] = [
 						"~/.git-credentials",
 					],
 				},
-				network: { allowedDomains: ["*"] },
+				network: { allowedDomains: ["*"], allowMachLookup: ["*"] },
 			},
 		},
 	},
@@ -256,29 +269,6 @@ const setAt = (
 				: setAt(isRecord(child) ? child : {}, rest, value),
 	};
 };
-
-/** The Sandbox group with each folder in `dirs` added to its `allowWrite`: the folders the user's cache variables name, which a fixed list cannot know. */
-export const withCacheDirs = (
-	groups: readonly Group[],
-	dirs: readonly string[],
-): readonly Group[] =>
-	groups.map((group) => {
-		if (group.label !== "Sandbox") {
-			return group;
-		}
-		const path = ["sandbox", "filesystem", "allowWrite"];
-		const held = valueAt(group.settings, path);
-		const list = Array.isArray(held) ? held : [];
-		return {
-			...group,
-			settings: setAt(group.settings, path, [
-				...list,
-				...dirs.filter(
-					(dir, at) => !list.includes(dir) && dirs.indexOf(dir) === at,
-				),
-			]),
-		};
-	});
 
 const same = (a: unknown, b: unknown): boolean =>
 	JSON.stringify(a) === JSON.stringify(b);

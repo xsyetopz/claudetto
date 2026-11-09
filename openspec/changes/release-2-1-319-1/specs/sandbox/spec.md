@@ -27,8 +27,9 @@ The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block 
 
 #### Scenario: A Read of a Credential Path
 
-- **WHEN** a sandboxed command reads a path in `denyRead`: `~/.ssh`, `~/.gnupg`, `~/Library/Keychains`, `~/.aws`, `~/.azure`, `~/.config/gcloud`, `~/.netrc`, `~/.git-credentials`
+- **WHEN** a sandboxed command reads a path in `denyRead`: `~/Library/Keychains`, `~/.aws`, `~/.azure`, `~/.config/gcloud`, `~/.netrc`, `~/.git-credentials`
 - **THEN** the read fails with "Operation not permitted" and no prompt is raised
+- **AND** `~/.ssh` and `~/.gnupg` stay readable, because a signed commit reads its key there; `~/.ssh` stays in `denyWrite` (the user's choice, 2026-11-09: "Keep ~/.ssh and ~/.gnupg readable, but block writes to ~/.ssh (signing keeps working)")
 
 #### Scenario: A System Service
 

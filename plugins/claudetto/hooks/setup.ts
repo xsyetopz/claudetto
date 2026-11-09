@@ -20,7 +20,6 @@ import {
 	STATUS_LINE,
 	settingsText,
 	wallGroup,
-	withCacheDirs,
 } from "./setup/settings.ts";
 import { linesOf } from "./setup/starter.ts";
 import {
@@ -223,19 +222,6 @@ const askGroups = async (
 	]);
 };
 
-// Each name is a literal, because `$.env.get` reads the names off the source. A variable set to a folder moves that tool's cache out of the Sandbox group's fixed list.
-const cacheDirs = async ($: EngineInterface): Promise<string[]> =>
-	(
-		await Promise.all([
-			$.env.get("BUN_INSTALL_CACHE_DIR"),
-			$.env.get("npm_config_cache"),
-			$.env.get("PIP_CACHE_DIR"),
-			$.env.get("GOMODCACHE"),
-			$.env.get("GOCACHE"),
-			$.env.get("XDG_CACHE_HOME"),
-		])
-	).filter((dir): dir is string => dir !== undefined && dir !== "");
-
 const settingsPart = async (
 	$: EngineInterface,
 	walls: readonly string[],
@@ -250,7 +236,7 @@ const settingsPart = async (
 	].filter((group) => group !== undefined);
 	const result = await askGroups(
 		$,
-		withCacheDirs([...GROUPS, ...extra], await cacheDirs($)),
+		[...GROUPS, ...extra],
 		held,
 		[],
 	);

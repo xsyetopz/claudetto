@@ -28,7 +28,7 @@
 
 ## 4. Research Slices
 
-- [ ] 4.1 Sandbox (issue item 17): in the setup "Sandbox" group, write the deny-list block of `specs/sandbox/spec.md`: home-wide `allowWrite` with `denyWrite` for files that run later, `allowMachLookup` `["*"]`, the wider `denyRead`, and the four read-only `excludedCommands`; drop the per-tool cache entries.
+- [x] 4.1 Sandbox (issue item 17): in the setup "Sandbox" group, write the deny-list block of `specs/sandbox/spec.md`: home-wide `allowWrite` with `denyWrite` for files that run later, `allowMachLookup` `["*"]`, the wider `denyRead`, and the four read-only `excludedCommands`; drop the per-tool cache entries.
 - [ ] 4.1.1 Check on the real install that `gh api user` passes TLS under `allowMachLookup` `["*"]` (the fake API answered "Bad Gateway" with and without it, so TLS was not reached), and drop `enableWeakerNetworkIsolation` if it does.
 - [ ] 4.1.2 Find why `open -R` and `osascript -e 'return 1'` passed in the probe, when the session's sandbox text says they are blocked and no `allowAppleEvents` is set.
 - [ ] 4.1.3 On Linux, find the bubblewrap form of each rule, since `allowMachLookup` is macOS only.

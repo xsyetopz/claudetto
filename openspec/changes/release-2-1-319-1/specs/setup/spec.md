@@ -248,12 +248,12 @@ The "Worktrees" group SHALL write `worktree.baseRef` `head`.
 
 ### Requirement: The Sandbox Group Carries Fixed Values
 
-The "Sandbox" group SHALL write `sandbox.enabled` `true`, `allowUnsandboxedCommands` `false`, `allowWrite` of `~/.cache`, `~/.bun`, `~/.npm`, `~/Library/Caches`, `/private/tmp` plus the folder of each set cache variable (`BUN_INSTALL_CACHE_DIR`, `npm_config_cache`, `PIP_CACHE_DIR`, `GOMODCACHE`, `GOCACHE`, `XDG_CACHE_HOME`), `denyRead` of `~/.aws`, `~/.azure`, `~/.config/gcloud`, `~/.netrc`, `~/.git-credentials`, and `allowedDomains` `*`.
+The "Sandbox" group SHALL write the deny-list block of the `sandbox` spec, with its lists as that spec names them, and no per-tool entry ("the sandbox group lists what is dangerous: home-wide writes, denies for files that run later and for secret stores, any host and service").
 
 #### Scenario: A Cache Variable
 
-- **WHEN** `GOCACHE` is set to a folder
-- **THEN** that folder joins the sandbox's `allowWrite`, and with none set nothing is added ("a cache variable the user sets adds its folder to the sandbox's allowWrite", "with no cache variable set, the sandbox's allowWrite holds nothing extra")
+- **WHEN** `BUN_INSTALL_CACHE_DIR` is set to a folder under `/Volumes/`
+- **THEN** the sandbox's `allowWrite` gains no entry for it, because `/Volumes/` covers it ("A Cache Folder Named by an Env Var: setup writes no entry for it, because allowWrite covers it")
 
 ### Requirement: The Subagent Cap Group Carries Fixed Values
 

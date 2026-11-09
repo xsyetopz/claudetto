@@ -181,31 +181,14 @@ test("setup on an empty file writes the telemetry env and the eight denies and n
 	}
 });
 
-const BASE_WRITES = [
-	"~/.cache",
-	"~/.bun",
-	"~/.npm",
-	"~/Library/Caches",
-	"/private/tmp",
-];
+const BASE_WRITES = ["~/", "/Volumes/", "/private/tmp"];
 
 const allowWrite = (state: Lab): unknown =>
 	valueAt(saved(state), ["sandbox", "filesystem", "allowWrite"]);
 
-test("a cache variable the user sets adds its folder to the sandbox's allowWrite", async ($: Engine, on: On) => {
+test("A Cache Folder Named by an Env Var: setup writes no entry for it, because allowWrite covers it", async ($: Engine, on: On) => {
 	const state = lab(on, undefined);
 	state.env = { BUN_INSTALL_CACHE_DIR: "/Volumes/DevAudioStore/bun-cache" };
-
-	await run($, "claudetto:setup");
-
-	expect(allowWrite(state)).toEqual([
-		...BASE_WRITES,
-		"/Volumes/DevAudioStore/bun-cache",
-	]);
-});
-
-test("with no cache variable set, the sandbox's allowWrite holds nothing extra", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
 
 	await run($, "claudetto:setup");
 

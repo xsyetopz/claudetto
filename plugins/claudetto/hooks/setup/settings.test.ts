@@ -327,16 +327,25 @@ test("the features-off group writes every switch and environment variable", () =
 	});
 });
 
-test("the sandbox group turns the sandbox on, closes the retry, and opens no domain list", () => {
-	const { settings } = groupNamed("Sandbox");
-	const at = (key: string) => valueAt(settings, ["sandbox", key]);
+const words = (text: string): string[] => text.split(" ");
 
-	expect(at("enabled")).toBe(true);
-	expect(at("allowUnsandboxedCommands")).toBe(false);
-	expect(at("autoAllowBashIfSandboxed")).toBeUndefined();
-	expect(valueAt(settings, ["sandbox", "network", "allowedDomains"])).toEqual([
-		"*",
-	]);
+test("the sandbox group lists what is dangerous: home-wide writes, denies for files that run later and for secret stores, any host and service", () => {
+	// `~/.ssh` and `~/.gnupg` stay readable for commit signing; "the sandbox's denyRead leaves the signing keys readable" pins that.
+	expect(groupNamed("Sandbox").settings).toEqual({
+		sandbox: {
+			enabled: true,
+			allowUnsandboxedCommands: false,
+			excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
+			filesystem: {
+				allowWrite: ["~/", "/Volumes/", "/private/tmp"],
+				denyWrite: words(
+					"~/.zshrc ~/.zshenv ~/.zprofile ~/.bashrc ~/.bash_profile ~/.profile ~/.config/fish ~/.gitconfig ~/.config/git ~/.ssh ~/Library/LaunchAgents ~/.local/bin ~/.bun/bin ~/bin",
+				),
+				denyRead: words("~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials"),
+			},
+			network: { allowedDomains: ["*"], allowMachLookup: ["*"] },
+		},
+	});
 });
 
 test("a sandbox list the user holds stays under fill", () => {
