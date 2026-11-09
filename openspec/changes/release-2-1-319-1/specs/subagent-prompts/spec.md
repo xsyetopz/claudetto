@@ -40,7 +40,7 @@ An edit slice SHALL carry the command that checks it, and the root SHALL run tha
 
 #### Scenario: The Log Decides the Model
 
-- **WHEN** 10 or more edit runs are logged and the redo rate at Sonnet for a kind of slice exceeds the cost saved against the root doing it
+- **WHEN** 3 or more edit runs are logged and the redo rate at Sonnet for a kind of slice exceeds the cost saved against the root doing it
 - **THEN** that kind of slice moves to Opus or to the root
 
 ### Requirement: One Place Sets the Subagent Cache TTL

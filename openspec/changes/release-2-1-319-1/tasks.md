@@ -35,7 +35,7 @@
 - [x] 4.1.3 On Linux, find the bubblewrap form of each rule, since `allowMachLookup` is macOS only.
 - [x] 4.2 Subagents (issue item 18): move the TTL into `subagentPromptCacheTtl` and drop `cacheTtl` from the agent files, add the run log and the check-on-return rule, and remove the stale `Hephaestus` name from `openspec/specs/subagent-prompts/spec.md`, per `specs/subagent-prompts/spec.md`.
 - [x] 4.2.1 Run the free fake-API probes: fork against fresh prefix sharing with `CLAUDE_CODE_FORK_SUBAGENT=1`, and the `ttl` on each request under `subagentPromptCacheTtl` `5m` and `1h`.
-- [ ] 4.2.2 After 10 or more logged edit runs, set the delegation cut-offs and the TTL from the log.
+- [ ] 4.2.2 After 3 or more logged edit runs, set the delegation cut-offs and the TTL from the log.
 - [x] 4.3 Display (issue item 19): delete `plugins/claudetto/hooks/fold.ts` and its `register.ts` entry, per `specs/surface-trim/spec.md`, and check in a fresh session that a grouped `grep` result folds.
 - [x] 4.4 Status line window: write the window file from the mod after each response, read it in `contextText` (`statusline/segments.ts:94-109`), and name it in the line's file reads, per `specs/status-line/spec.md`.
 - [x] 4.5 Status line flow: replace the fixed row groups of `rowsOf` (`statusline/rows.ts:24-39`) with one item sequence wrapped at the width, up to `MAX_ROWS`.
