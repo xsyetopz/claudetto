@@ -18,7 +18,7 @@
 - [x] 2.8 Removals from 1.2: delete `GATE_ENV_VALUES`, `GATE_ENV_DUMP` (`texts.ts:335-342`) and the grader faults `asks`, `jargon`, `confesses`, `narrates` (`texts.ts:485-504`) with their tests and CHANGELOG lines.
 - [x] 2.9 Walls (item A): setup writes `Read(<wall>/**)` to `permissions.deny` for each `protectedPaths` entry, so the start notice (`gate.ts:221-229`) stays silent after setup.
 - [x] 2.11 Removals (item C): the injected rules say a removal deletes the feature's code, tests, and docs and adds no test that it stays gone, and that a pre-release project (version below 1.0.0, or the person says so) keeps no compatibility path for what it drops (`texts.ts:32`).
-- [ ] 2.12 One command at a time (item D): `Concise.md:23` asks for at most one `- [ ] ! <command>` item per reply, and the Stop check (`limits/open-items.ts`, text at `texts.ts:245-247`) blocks a reply with two or more, per `specs/agent-conduct/spec.md` and `specs/run-limits/spec.md`; failing test first in `limits/open-items.test.ts`.
+- [x] 2.12 One command at a time (item D): `Concise.md:23` asks for at most one `- [ ] ! <command>` item per reply, and the Stop check (`limits/open-items.ts`, text at `texts.ts:245-247`) blocks a reply with two or more, per `specs/agent-conduct/spec.md` and `specs/run-limits/spec.md`; failing test first in `limits/open-items.test.ts`.
 - [x] 2.10 Setup (item B): keep one popup per step; Haiku explains each and recommends an option, listed first (the person's choice, 2026-11-09).
 
 ## 3. Handover Probe

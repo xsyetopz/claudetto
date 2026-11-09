@@ -325,7 +325,7 @@ test("a reply already in form costs nothing: no block and no tool.list call", as
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo\n- [ ] ! gh auth login",
+		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo",
 	);
 	const plain = await stop($, "Wrote the unit file. Tests pass.");
 
@@ -355,7 +355,18 @@ test("items with a ! command and no heading block", async ($: Engine, on: On) =>
 	expect(out.block).toContain("## What I Need from You");
 });
 
-test("the form passes: commands in items under the heading, no question in the text", async ($: Engine, on: On) => {
+test("the form passes: one command in an item under the heading, no question in the text", async ($: Engine, on: On) => {
+	lab(on);
+
+	const out = await stop(
+		$,
+		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo",
+	);
+
+	expect(out.block).toBeUndefined();
+});
+
+test("two ! command items block once, naming both, and keep the one the work needs first", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
@@ -363,7 +374,11 @@ test("the form passes: commands in items under the heading, no question in the t
 		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo\n- [ ] ! gh auth login",
 	);
 
-	expect(out.block).toBeUndefined();
+	expect(out.block).toContain("! sudo systemctl enable foo");
+	expect(out.block).toContain("! gh auth login");
+	expect(out.block).toContain("needs first");
+	expect(out.block).toContain("later reply");
+	expect(listed).toBe(0);
 });
 
 test("a command block of a continued turn passes", async ($: Engine, on: On) => {

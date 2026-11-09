@@ -90,7 +90,7 @@ const openBlock = async (
 ) => {
 	const reply = e.last_assistant_message ?? "";
 	const form = commandForm(reply);
-	if (form.stray.length > 0 || form.headless) {
+	if (form.stray.length > 0 || form.headless || form.several.length > 0) {
 		return COMMAND_FORM(form);
 	}
 	const items = openItems(reply, turnOf(await $.session.messages()));

@@ -37,19 +37,25 @@ export const openItems = (reply: string, turn: Turn): readonly string[] =>
 				return item === undefined || USER_COMMAND.test(item) ? [] : [item];
 			});
 
-/** The lines that name a command for the user outside an open item, and whether the items lack the one heading. */
+/** The lines that name a command for the user outside an open item, whether the items lack the one heading, and the command items when there are two or more, since the person's `!` runs queue while the agent works. */
 export const commandForm = (
 	reply: string,
-): { readonly stray: readonly string[]; readonly headless: boolean } => {
+): {
+	readonly stray: readonly string[];
+	readonly headless: boolean;
+	readonly several: readonly string[];
+} => {
 	const lines = reply.split("\n");
 	const inItem = (line: string): boolean => {
 		const item = OPEN_ITEM.exec(line)?.[1];
 		return item !== undefined && USER_COMMAND.test(item);
 	};
+	const items = lines.filter(inItem).map((line) => line.trim());
 	return {
 		stray: lines
 			.filter((line) => COMMAND_LINE.test(line) && !inItem(line))
 			.map((line) => line.trim()),
-		headless: lines.some(inItem) && !HEADING.test(reply),
+		headless: items.length > 0 && !HEADING.test(reply),
+		several: items.length > 1 ? items : [],
 	};
 };

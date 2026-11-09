@@ -240,11 +240,23 @@ export const ASK_FORM = (tool: string, items: readonly string[]): string =>
 export const COMMAND_FORM = (v: {
 	stray: readonly string[];
 	headless: boolean;
+	several: readonly string[];
 }): string =>
 	[
-		"The reply names a command for the user outside a `- [ ] ! <command>` item under `## What I Need from You`.",
-		...v.stray.map((line) => `- ${line}`),
-		"Move each into a `- [ ] ! <command>` item under one `## What I Need from You` heading.",
+		...(v.stray.length > 0 || v.headless
+			? [
+					"The reply names a command for the user outside a `- [ ] ! <command>` item under `## What I Need from You`.",
+					...v.stray.map((line) => `- ${line}`),
+					"Move each into a `- [ ] ! <command>` item under one `## What I Need from You` heading.",
+				]
+			: []),
+		...(v.several.length > 0
+			? [
+					"The reply lists more than one `- [ ] ! <command>` item:",
+					...v.several,
+					"Keep the one the work needs first, and ask for the next in a later reply, after the person has run it.",
+				]
+			: []),
 	].join("\n");
 
 export const MISSING_FILES = (
