@@ -38,7 +38,7 @@ The context part SHALL show the input tokens as a percent of the window that com
 #### Scenario: No Window File
 
 - **WHEN** the file is absent or unreadable, such as before the first response
-- **THEN** the part falls back to stdin `used_percentage` and `context_window_size`, as today
+- **THEN** the context part is left out, as "Stdin Only" says for a missing file
 
 #### Scenario: The Call Is Free
 
@@ -59,15 +59,25 @@ The line SHALL paint each part with the colour of the active Claude Code theme's
 - **WHEN** the theme is `light`
 - **THEN** the line paints `success` `rgb(44,122,57)`, `error` `rgb(171,43,63)`, `warning` `rgb(150,108,30)`, and `inactive` `rgb(102,102,102)`, where today it paints the dark values on every theme (`statusline/color.ts:11-13, 49`)
 
+#### Scenario: A Daltonized Theme
+
+- **WHEN** the theme is `light-daltonized` or `dark-daltonized`
+- **THEN** `success`, `error`, `warning` are `rgb(0,102,153)`, `rgb(204,0,0)`, `rgb(255,153,0)` on light and `rgb(51,153,255)`, `rgb(255,102,102)`, `rgb(255,204,0)` on dark (`chunk-w5ysqthb.js` offsets 14298 and 19252, 2.1.319)
+
 #### Scenario: An ANSI Theme
 
 - **WHEN** the theme is `light-ansi` or `dark-ansi`
-- **THEN** the line paints with basic SGR colours (`32`, `33`, `31`), not RGB
+- **THEN** the line paints with the engine's ANSI names as SGR codes: green, red, yellow, magenta (`32`, `31`, `33`, `35`) and `inactive` bright black (`90`) on light; the bright forms (`92`, `91`, `93`, `95`) and `inactive` white (`37`) on dark (offsets 9447-11896)
 
-#### Scenario: An Unknown Theme
+#### Scenario: The Table for Each Name
 
-- **WHEN** the theme is `auto`, a `custom:` name, or the file is absent
-- **THEN** the line uses the `dark` palette, as the engine does for an unknown name (`RK` in `chunk-w5ysqthb.js`)
+- **WHEN** the line picks a palette
+- **THEN** it maps the name as the engine's `RK` does (`chunk-w5ysqthb.js` offset 21135): `light`, `light-ansi`, `dark-ansi`, `light-daltonized`, `dark-daltonized` to their tables, and any other name to `dark`
+
+#### Scenario: No Theme File
+
+- **WHEN** the session file is absent
+- **THEN** the line paints with no colour, as it does under `NO_COLOR`
 
 #### Scenario: The Copied Palette Is Checked
 
