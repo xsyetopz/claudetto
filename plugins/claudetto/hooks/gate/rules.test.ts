@@ -46,12 +46,29 @@ for (const command of PASSES) {
 }
 
 test("a file print is told to use Read, a whole-file write to use Write", () => {
-	expect(judge("cat src/a.ts", NONE)?.reason).toContain("Read");
-	expect(judge("bun test; cat src/a.ts", NONE)?.reason).toContain(
+	expect(judge("cat src/a.ts", NONE)?.reason).toContain(
 		"`file_path` `src/a.ts`",
 	);
 	expect(judge("tee notes.txt", NONE)?.reason).toContain("Write");
 	expect(judge("printf a > notes.txt", NONE)?.reason).toContain("Write");
+});
+
+test("A sed Range: the Read redirect names the file, never the sed script", () => {
+	expect(judge("sed -n 370,376p hooks/texts.ts", NONE)?.reason).toContain(
+		"`file_path` `hooks/texts.ts`",
+	);
+	expect(judge("sed -n -e 5p hooks/texts.ts", NONE)?.reason).toContain(
+		"`file_path` `hooks/texts.ts`",
+	);
+});
+
+test("A Compound Command: a read inside a compound command is not refused", () => {
+	for (const command of [
+		"git log -1 && head -5 CHANGELOG.md",
+		"bun test; cat src/a.ts",
+	]) {
+		expect(decision(command)).toBeUndefined();
+	}
 });
 
 test("an unreadable command asks", () => {

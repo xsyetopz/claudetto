@@ -333,7 +333,7 @@ export const secretScanFailed = (why: string): string =>
 
 // Gate: refusals of a shell command or a file write.
 export const GATE_READ_FILE = (file: string): string =>
-	`Use \`Read\` to read a file, not the shell: call \`Read\` with \`file_path\` \`${file}\` (absolute). Nothing in this command ran; send the rest of it alone.`;
+	`Use \`Read\` to read a file, not the shell: call \`Read\` with \`file_path\` \`${file}\` (absolute). The command did not run.`;
 export const GATE_WRITE_FILE =
 	"Use `Write` to write a whole file, not the shell.";
 export const GATE_SYSTEM_WRITE = "This call writes to a system folder.";

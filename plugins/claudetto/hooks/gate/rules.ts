@@ -102,6 +102,7 @@ const commandVerdicts = (
 	c: Command,
 	has: (file: string) => boolean,
 	own: Owns,
+	alone: boolean,
 ): (Verdict | undefined)[] => {
 	const { name, args } = programOf(c);
 	const redirected = c.redirects.some(
@@ -117,8 +118,9 @@ const commandVerdicts = (
 			? ask(GATE_HOOK_WRITE)
 			: undefined,
 		writesWhole(name, args, redirected) ? deny(GATE_WRITE_FILE) : undefined,
-		!(c.from || c.into || redirected) && printsFile(name, args)
-			? deny(GATE_READ_FILE(operands(args)[0] ?? ""))
+		// The file is the last operand: one before it can be a `head -n` count or a `sed` script.
+		alone && !redirected && printsFile(name, args)
+			? deny(GATE_READ_FILE(operands(args).at(-1) ?? ""))
 			: undefined,
 	];
 };
@@ -143,7 +145,9 @@ const judgeText = (
 			command,
 			parsed.commands.filter((c) => !ownedRemoval(c, own)),
 		),
-		...parsed.commands.flatMap((c) => commandVerdicts(c, has, own)),
+		...parsed.commands.flatMap((c) =>
+			commandVerdicts(c, has, own, parsed.commands.length === 1),
+		),
 		markerVerdict(command, parsed.commands, own),
 	]);
 };

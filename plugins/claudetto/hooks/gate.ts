@@ -15,7 +15,6 @@ import {
 	tmpTopOf,
 	tmpTops,
 } from "./gate/processes.ts";
-import { readSplit } from "./gate/read-split.ts";
 import { readOnly } from "./gate/readonly.ts";
 import {
 	type Host,
@@ -297,7 +296,6 @@ export const gate = (on: On, options: PluginOptions): void => {
 		return next(e);
 	});
 
-	readSplit(on);
 
 	// Every result is scanned, so a secret any tool prints reaches the model as `[REDACTED]`.
 	on("tool.call", { tool: ANY_TOOL }, async ($, e, next) => {
