@@ -48,7 +48,7 @@ export const ARMS: readonly Arm[] = [
 		label: "built-in compaction near 140,000 tokens",
 		handoverTokens: OFF,
 		handoffOnBoundary: false,
-		autoCompactPct: 70,
+		autoCompactPct: 78,
 		compactAfter: [],
 		expects: "a compaction near 140,000 tokens",
 	},
