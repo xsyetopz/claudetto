@@ -24,9 +24,10 @@
 
 ## 4. Research Slices
 
-- [ ] 4.1 Sandbox (issue item 17): in the setup "Sandbox" group, add `enableWeakerNetworkIsolation`, the `~/.ssh`, `~/.gnupg`, and `~/Library/Keychains` reads to `denyRead`, the `npm config get cache` folder, and the read-only `excludedCommands`, per `specs/sandbox/spec.md`.
-- [ ] 4.1.1 Re-run the pass and fail table (`/private/tmp/claude/probe-sandbox-run*.sh`) with each new key, one at a time, and keep only the entries that pass: `ps *`, `top *`, `pgrep *`, `sysctl *`, `launchctl list`, `diskutil list`, `scutil *`, and `allowMachLookup` `com.apple.pasteboard.1` for `pbcopy` and `pbpaste`.
+- [ ] 4.1 Sandbox (issue item 17): in the setup "Sandbox" group, write the deny-list block of `specs/sandbox/spec.md`: home-wide `allowWrite` with `denyWrite` for files that run later, `allowMachLookup` `["*"]`, the wider `denyRead`, and the four read-only `excludedCommands`; drop the per-tool cache entries.
+- [ ] 4.1.1 Check on the real install that `gh api user` passes TLS under `allowMachLookup` `["*"]` (the fake API answered "Bad Gateway" with and without it, so TLS was not reached), and drop `enableWeakerNetworkIsolation` if it does.
 - [ ] 4.1.2 Find why `open -R` and `osascript -e 'return 1'` passed in the probe, when the session's sandbox text says they are blocked and no `allowAppleEvents` is set.
+- [ ] 4.1.3 On Linux, find the bubblewrap form of each rule, since `allowMachLookup` is macOS only.
 - [ ] 4.2 Subagents (issue item 18): move the TTL into `subagentPromptCacheTtl` and drop `cacheTtl` from the agent files, add the run log and the check-on-return rule, and remove the stale `Hephaestus` name from `openspec/specs/subagent-prompts/spec.md`, per `specs/subagent-prompts/spec.md`.
 - [ ] 4.2.1 Run the free fake-API probes: fork against fresh prefix sharing with `CLAUDE_CODE_FORK_SUBAGENT=1`, and the `ttl` on each request under `subagentPromptCacheTtl` `5m` and `1h`.
 - [ ] 4.2.2 After 10 or more logged edit runs, set the delegation cut-offs and the TTL from the log.
