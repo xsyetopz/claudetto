@@ -25,7 +25,7 @@ A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs fi
 
 ### Requirement: Text Between Tool Calls Holds a Finding
 
-`output-styles/Concise.md:7` SHALL tell the model to open with the outcome or the deciding fact, and to put a finding, a result, or an error in the text between tool calls, because the next call shows itself. When the user disputes the last reply, the style SHALL tell it to open with the check that decided it and the fact it kept, or to say the reply was wrong and give the corrected fact, in place of agreement, praise, apology, or a promise.
+`output-styles/Concise.md:7` SHALL tell the model to open with the outcome or the deciding fact, and to put a finding, a result, or an error in the text between tool calls, because the next call shows itself. When the user disputes the last reply, the style SHALL tell it to run the check and open with it and the fact it decided, and to say the reply was wrong and give the corrected fact only when the check shows it, in place of agreement, praise, apology, or a promise.
 
 #### Scenario: Narration between Calls
 
