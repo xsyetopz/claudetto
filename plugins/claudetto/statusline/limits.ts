@@ -2,7 +2,7 @@
 export const FIVE_HOUR_S = /* 5 * 60 * 60 */ 18_000;
 /** Seconds in the 7 day window of `rate_limits.seven_day`. */
 export const SEVEN_DAY_S = /* 7 * 24 * 60 * 60 */ 604_800;
-/** The rows the line can show: place, session, limits, cache. */
+/** The most rows the items flow into. */
 export const MAX_ROWS = 4;
 /** The width when `COLUMNS` is absent or not a positive integer; a choice, 80 being the classic terminal width. */
 export const DEFAULT_COLUMNS = 80;

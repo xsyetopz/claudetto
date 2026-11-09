@@ -9,7 +9,7 @@ import {
 } from "../../plugins/claudetto/statusline/local.ts";
 import { statusWithFiles } from "../../plugins/claudetto/statusline/main.ts";
 import { plain } from "../../plugins/claudetto/statusline/width.ts";
-import { BASE, NOW } from "./support.ts";
+import { NOW } from "./support.ts";
 
 const ROOT = await mkdtemp(join(tmpdir(), "claudetto-local-"));
 afterAll(() => rm(ROOT, { recursive: true, force: true }));
@@ -19,11 +19,11 @@ const put = async (path: string, text: string): Promise<void> => {
 	await writeFile(path, text);
 };
 
-/** The first row for a session with these `workspace` fields, read through the real file reader. */
+/** The first row for a session with only these fields, so the place items are all it holds, read through the real file reader. */
 const firstRow = async (fields: Record<string, unknown>): Promise<string> =>
 	plain(
 		await statusWithFiles(
-			JSON.stringify({ ...BASE, ...fields }),
+			JSON.stringify(fields),
 			{ COLUMNS: "200", NO_COLOR: "1" },
 			NOW,
 		),

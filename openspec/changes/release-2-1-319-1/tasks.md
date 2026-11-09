@@ -33,7 +33,7 @@
 - [ ] 4.2.2 After 10 or more logged edit runs, set the delegation cut-offs and the TTL from the log.
 - [ ] 4.3 Display (issue item 19): delete `plugins/claudetto/hooks/fold.ts` and its `register.ts` entry, per `specs/surface-trim/spec.md`, and check in a fresh session that a grouped `grep` result folds.
 - [ ] 4.4 Status line window: write the window file from the mod after each response, read it in `contextText` (`statusline/segments.ts:94-109`), and name it in the line's file reads, per `specs/status-line/spec.md`.
-- [ ] 4.5 Status line flow: replace the fixed row groups of `rowsOf` (`statusline/rows.ts:24-39`) with one item sequence wrapped at the width, up to `MAX_ROWS`.
+- [x] 4.5 Status line flow: replace the fixed row groups of `rowsOf` (`statusline/rows.ts:24-39`) with one item sequence wrapped at the width, up to `MAX_ROWS`.
 - [ ] 4.6 Status line colours: write the `theme` name into the session file, add the palettes to `statusline/color.ts` (`:11-13, 49, 64-65`) for the six built-in themes from `chunk-w5ysqthb.js`, and add the palette-drift test.
 
 ## 5. Release

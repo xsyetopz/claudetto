@@ -1,22 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { statusOf } from "../../plugins/claudetto/statusline/main.ts";
 import { width } from "../../plugins/claudetto/statusline/width.ts";
-import { linesOf, NOW_S, raw } from "./support.ts";
+import { BASE, linesOf, NOW_S, raw } from "./support.ts";
 
 const LONG_WORD = /\S{30,}/;
 const RUN_OF_SPACES = / {2,}/;
-const CLOCK_RESET = /↻\d+(?::\d+)?(?:am|pm)/;
-const COUNTDOWN_RESET = /↻1h00m/;
+const CLOCK_RESET = /↻[A-Z][a-z]{2} \d+ at \d+(?::\d+)?(?:am|pm)/;
+const COUNTDOWN_RESET = /↻2d0h/;
 
-describe("the first two rows share no column, so no gap follows the folder", () => {
-	test("`⌂ claudetto` is followed by one item gap, not padding to the model column", () => {
-		const [place, session] = linesOf({
-			pr: { number: 12, review_state: "approved" },
-		});
-		expect(place).toBe("⌂ claudetto · ⇄ #12 approved");
-		expect(session).toStartWith("❖ Opus 5.5 high");
-	});
-
+describe("items keep no column, so one gap stands between two items", () => {
 	test("no line holds a run of two spaces", () => {
 		for (const line of linesOf({
 			pr: { number: 12 },
@@ -31,12 +23,12 @@ describe("the first two rows share no column, so no gap follows the folder", () 
 
 describe("an empty place keeps no column, so no gap precedes the cost", () => {
 	test("the cost follows the context after one gap when the row above has no third item", () => {
-		const [, session] = linesOf({
+		const [line] = linesOf({
 			pr: undefined,
 			rate_limits: undefined,
 			cost: { total_cost_usd: 0.5 },
 		});
-		expect(session).toBe("❖ Opus 5.5 high · ◫ ctx 40% of 200k · $0.50");
+		expect(line).toBe("⌂ claudetto · ❖ Opus 5.5 high · ◫ ctx 40% of 200k · $0.50");
 	});
 
 	test("a row with only its last item starts at the left edge", () => {
@@ -94,17 +86,17 @@ describe("no cost on a subscription login", () => {
 
 describe("thinking and fast mode carry a label", () => {
 	test("thinking shows the word `think`, not a bare glyph", () => {
-		const [, session] = linesOf({ thinking: { enabled: true } });
+		const [session] = linesOf({ thinking: { enabled: true } });
 		expect(session).toContain("think");
 		expect(session).not.toContain("✦");
 	});
 
 	test("fast mode shows the word `fast`", () => {
-		expect(linesOf({ fast_mode: true })[1]).toContain("fast");
+		expect(linesOf({ fast_mode: true })[0]).toContain("fast");
 	});
 
 	test("neither shows when off", () => {
-		const [, session] = linesOf({
+		const [session] = linesOf({
 			thinking: { enabled: false },
 			fast_mode: false,
 		});
@@ -202,16 +194,22 @@ describe("boundary: no line reaches the terminal edge", () => {
 		expect(out).not.toMatch(LONG_WORD);
 	});
 
-	test("the full times give way to countdowns before the line is cut", () => {
+	test("the full times give way to countdowns when the items with them do not fit 4 rows", () => {
+		const base = {
+			workspace: BASE.workspace,
+			model: BASE.model,
+			context_window: BASE.context_window,
+		};
 		const fields = {
 			rate_limits: {
-				five_hour: { used_percentage: 50, resets_at: NOW_S + 3600 },
+				seven_day: { used_percentage: 50, resets_at: NOW_S + 2 * 86_400 },
 			},
 		};
-		const roomy = linesOf(fields, { COLUMNS: "120", NO_COLOR: "1" }).join("\n");
-		const tight = linesOf(fields, { COLUMNS: "24", NO_COLOR: "1" }).join("\n");
-		expect(roomy).toMatch(CLOCK_RESET);
-		expect(tight).toMatch(COUNTDOWN_RESET);
+		const roomy = linesOf(fields, { COLUMNS: "120", NO_COLOR: "1" }, base);
+		const tight = linesOf(fields, { COLUMNS: "24", NO_COLOR: "1" }, base);
+		expect(roomy.join("\n")).toMatch(CLOCK_RESET);
+		expect(tight).toHaveLength(4);
+		expect(tight[3]).toMatch(COUNTDOWN_RESET);
 	});
 });
 
@@ -225,12 +223,12 @@ describe("bad input prints a short line", () => {
 	});
 
 	test("a missing field leaves out only its part", () => {
-		const [place, session] = linesOf({}, undefined, {
-			workspace: { current_dir: "/a/b" },
-			model: { display_name: "Opus 5.5" },
-		});
-		expect(place).toBe("⌂ b");
-		expect(session).toBe("❖ Opus 5.5");
+		expect(
+			linesOf({}, undefined, {
+				workspace: { current_dir: "/a/b" },
+				model: { display_name: "Opus 5.5" },
+			}),
+		).toEqual(["⌂ b · ❖ Opus 5.5"]);
 	});
 
 	test("a field of a wrong type is left out and the rest prints", () => {
@@ -239,6 +237,6 @@ describe("bad input prints a short line", () => {
 			model: 5,
 		});
 		expect(lines.join("\n")).not.toContain("ctx");
-		expect(lines[0]).toBe("⌂ claudetto");
+		expect(lines).toEqual(["⌂ claudetto · $0.00"]);
 	});
 });
