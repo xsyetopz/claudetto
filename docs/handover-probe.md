@@ -1,6 +1,6 @@
 # Handover probe: paid run 2 (task 3.3)
 
-Run on 2026-11-09 with Claude Code 2.1.319, a `claude setup-token` login, and `tools/handover-probe` at `fee4378b`, scored by the scorer of `2c419b3c`. The command was `bun tools/handover-probe/probe.ts --paid`, and its raw output is `probe-paid.md` (commit `78673c5b`). That file's recall column comes from the old scorer and is wrong; the recall below rescored the same streams.
+Run on 2026-11-09 with Claude Code 2.1.319, a `claude setup-token` login, and `tools/handover-probe` at `fee4378b`, scored by the scorer of `2c419b3c`. The command was `bun tools/handover-probe/probe.ts --paid`, and its raw output is `probe-paid.md` in commit `78673c5b`, which is not in the tree now. That file's recall column comes from the old scorer and is wrong; the recall below rescored the same streams.
 
 Each arm ran 3 times on one scripted 40-turn task. A real run spans about 25,000 to 65,000 tokens of context, so every threshold sits inside that span.
 
