@@ -219,6 +219,12 @@ for (const make of [
 
 // Owned passes with no prompt; unowned twins and mixed targets keep their verdicts.
 allowed("rm -rf /tmp/mine", [], { [MARK]: "S1" });
+// The sandbox's TMPDIR, `/tmp/claude-<uid>`, is a base like `/tmp`: each folder in it is a top with its own marker.
+allowed("rm -rf /tmp/claude-501/gate20", [], {
+	"/tmp/claude-501/gate20/.created-by-claudetto": "S1",
+});
+denied("rm -rf /tmp/claude-501/other", gateRmTmp("/tmp/claude-501/other"));
+denied("rm -rf /tmp/claude-501", gateRmTmp("/tmp/claude-501"));
 allowed("git worktree remove --force /w/new", [
 	{ command: "git worktree add /w/new", text: "" },
 ]);
@@ -250,6 +256,11 @@ asks("git reset --soft abc1234", MINE);
 denied("mkdir -p /tmp/probe-x/sub", gateTmpMarker("/tmp/probe-x/sub"));
 denied("mktemp -d /tmp/probe-XXXX", gateTmpMarker("/tmp/probe-XXXX"));
 denied("cd /p && mkdir /private/tmp/y", gateTmpMarker("/private/tmp/y"));
+// Seen live: a folder made through a variable got no marker and outlived the session.
+denied(
+	"S=/tmp/claude-501/gate20 && mkdir -p $S",
+	gateTmpMarker("/tmp/claude-501/gate20"),
+);
 allowed(
 	'mkdir -p /tmp/probe-x && printenv CLAUDE_CODE_SESSION_ID > /tmp/probe-x/.created-by-claudetto',
 );

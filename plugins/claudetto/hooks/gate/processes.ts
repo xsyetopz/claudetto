@@ -18,11 +18,13 @@ const BACKGROUNDS = /\$!|(?<![>&])&(?![&>0-9])/;
 const FLAG = /^-[A-Za-z0-9]/;
 const PROBE = /^-[0lL]$/;
 const PID = /^\d+$/;
-const TMP_TOP = /^(?:\/private)?\/tmp(?:\/[^/]+)?/;
-const TMP_TOPS = /(?:\/private)?\/tmp\/[^/\s'"`;|&()<>]+/g;
+// The sandbox's TMPDIR, `/tmp/claude-<uid>`, is a base like `/tmp` itself, as the sweep reads it: a top is a folder in either.
+const TMP_TOP = /^(?:\/private)?\/tmp(?:\/claude-\d+)?(?:\/[^/]+)?/;
+const TMP_TOPS =
+	/(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/\s'"`;|&()<>]+/g;
 // A sentence can end right after a path it prints.
 const TRAILING = /[.,:]+$/;
-const TMP_NAMED = /^(?:\/private)?\/tmp\/[^/]+/;
+const TMP_NAMED = /^(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/]+/;
 const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/;
 const MAKERS = new Set(["mkdir", "mktemp"]);
 const MKTEMP = /\bmktemp\b/;
@@ -131,10 +133,30 @@ export const tmpTops = (command: string): string[] => [
 	]),
 ];
 
+const ASSIGNED = /^([A-Za-z_]\w*)=(.*)$/s;
+const VARIABLE = /\$(?:\{(\w+)\}|(\w+))/g;
+
+/** The words of each command with the variables that earlier assignment-only commands of the same call set put in; any other variable stays as written. */
+const expanded = (commands: Command[]): Command[] => {
+	const set = new Map<string, string>();
+	return commands.map((c) => {
+		const words = c.words.map((w) =>
+			w.replace(VARIABLE, (whole, braced?: string, bare?: string) => set.get(braced ?? bare ?? "") ?? whole),
+		);
+		const assigned = words.map((w) => ASSIGNED.exec(w));
+		if (assigned.every((m) => m !== null)) {
+			for (const [, name = "", value = ""] of assigned) {
+				set.set(name, value);
+			}
+		}
+		return { ...c, words };
+	});
+};
+
 /** The folders `mkdir` and `mktemp` name, a relative one joined to the folder an earlier `cd` or `pushd` of the same command moved to. */
 const madePaths = (commands: Command[]): string[] => {
 	let dir: string | undefined;
-	return commands.flatMap((c) => {
+	return expanded(commands).flatMap((c) => {
 		const { name, args } = programOf(c);
 		const named = plain(args);
 		if (name === "cd" || name === "pushd") {
@@ -170,26 +192,6 @@ const creates = (
 		return { branch: rest[0] };
 	}
 	return verb === "checkout" || verb === "switch" ? { branch: named } : {};
-};
-
-const ASSIGNED = /^([A-Za-z_]\w*)=(.*)$/s;
-const VARIABLE = /\$(?:\{(\w+)\}|(\w+))/g;
-
-/** The words of each command with the variables that earlier assignment-only commands of the same call set put in; any other variable stays as written. */
-const expanded = (commands: Command[]): Command[] => {
-	const set = new Map<string, string>();
-	return commands.map((c) => {
-		const words = c.words.map((w) =>
-			w.replace(VARIABLE, (whole, braced?: string, bare?: string) => set.get(braced ?? bare ?? "") ?? whole),
-		);
-		const assigned = words.map((w) => ASSIGNED.exec(w));
-		if (assigned.every((m) => m !== null)) {
-			for (const [, name = "", value = ""] of assigned) {
-				set.set(name, value);
-			}
-		}
-		return { ...c, words };
-	});
 };
 
 /** The worktree paths and branches the non-error calls in `past` created, and the ids of the isolated workers they started. */
