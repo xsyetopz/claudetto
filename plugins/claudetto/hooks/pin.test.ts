@@ -196,6 +196,15 @@ test("the extractor is told to quote the user, that a fact is no limit, that a l
 	);
 });
 
+test("Yet Another Fault: the extractor is told that a remark a standing instruction covers is a task", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [], [], seen);
+	await submit($, "so that is yet another fault to report");
+	expect(seen.join("\n")).toContain(
+		"a remark is a task only when an earlier message of the user asked for the work it points at",
+	);
+});
+
 test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
 	lab(on, [
 		{
