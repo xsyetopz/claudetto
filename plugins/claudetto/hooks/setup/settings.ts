@@ -86,7 +86,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Models and windows",
-		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, and the context windows with the compaction trigger the handoff is written against.`,
+		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, and the context windows with the compaction trigger the handoff is written against.`,
 		settings: {
 			model: OPUS,
 			effortLevel: "medium",
@@ -98,6 +98,7 @@ export const GROUPS: readonly Group[] = [
 			},
 			autoCompactWindow: 300_000,
 			idleCompaction: false,
+			subagentPromptCacheTtl: "1h",
 			env: {
 				// 140,000 tokens of the 300,000 window less its 20,000 output reserve.
 				CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: "50.0000",

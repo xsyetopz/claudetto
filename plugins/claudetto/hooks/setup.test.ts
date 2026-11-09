@@ -682,6 +682,7 @@ test("a clean write holds each planned key, only in the settings file, and no su
 
 	expect(valueAt(written, ["minimumVersion"])).toBe("2.1.318");
 	expect(valueAt(written, ["workflowSizeGuideline"])).toBe("unrestricted");
+	expect(valueAt(written, ["subagentPromptCacheTtl"])).toBe("1h");
 	for (const key of [
 		"workflowKeywordTriggerEnabled",
 		"enableWorkflows",

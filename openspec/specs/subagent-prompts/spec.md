@@ -25,7 +25,7 @@ The restructured bodies SHALL keep every rule of the `0.2.0` bodies, unless the 
 
 ### Requirement: The Report Format Is One Block
 
-Each subagent body SHALL state its report format in one section, as tags the parent can find. `Hephaestus` keeps `<result>`, `<changed>`, `<checks>`, and `<blocks>`.
+Each subagent body SHALL state its report format in one section, as tags the parent can find. `Heracles` keeps `<result>`, `<changed>`, `<checks>`, and `<blocks>`.
 
 #### Scenario: Report Tags
 
@@ -38,17 +38,17 @@ Each subagent body SHALL apply the FAFO method of the root prompt within its own
 
 #### Scenario: Check Fails after an Edit
 
-- **WHEN** the check of a `Hephaestus` task fails on a defect in the task's files
-- **THEN** `Hephaestus` finds and fixes the cause, reruns the check, and reports both runs
+- **WHEN** the check of a `Heracles` task fails on a defect in the task's files
+- **THEN** `Heracles` finds and fixes the cause, reruns the check, and reports both runs
 
 #### Scenario: Permission Denied
 
 - **WHEN** a tool call of a subagent is denied
 - **THEN** the subagent tries no way around the denial, finishes the other parts, and names the denied call and the command the parent would run in `<blocks>`
 
-#### Scenario: Hephaestus Block Lines
+#### Scenario: Heracles Block Lines
 
-- **WHEN** the new `Hephaestus.md` is read
+- **WHEN** the new `Heracles.md` is read
 - **THEN** it no longer holds "When a permission rule, a hook, or a check blocks you, end the task" or "When a check fails, stop the work that it gates"
 
 ### Requirement: No Subagent Type Runs the Root Prompt

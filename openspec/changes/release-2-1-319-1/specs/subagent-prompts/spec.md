@@ -90,7 +90,7 @@ Each subagent body SHALL tell the agent to carry the task out with its own tools
 - **WHEN** an Artemis task needs a file written or a command run, which its tools lack
 - **THEN** Artemis says so and names the command, and runs none
 
-#### Scenario: Hephaestus Block Lines
+#### Scenario: Heracles Block Lines
 
 - **WHEN** `Heracles.md` is read
 - **THEN** it holds "ask nothing back: decide, do, and check"
