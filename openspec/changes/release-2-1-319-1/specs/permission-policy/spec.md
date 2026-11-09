@@ -126,12 +126,18 @@ The gate SHALL judge the `command` of a `Monitor` call by the same rules as a `B
 
 ### Requirement: A /tmp Folder Carries Its Session's Marker
 
-The gate SHALL deny a `mkdir` or `mktemp` of a folder directly below `/tmp` (or `/private/tmp`) when the same command writes no `.created-by-claudetto` file and this session did not mark or find the folder there already, and SHALL deny a `Write`, `Edit`, or `NotebookEdit` that would make such a folder. The denial SHALL give the one command that makes the folder and its marker together.
+The gate SHALL deny a `mkdir` or `mktemp` of a folder directly below `/tmp` (or `/private/tmp`) or below the sandbox's `/tmp/claude-<uid>`, when the command writes no `.created-by-claudetto` file and this session did not mark or find the folder, and SHALL deny a `Write`, `Edit`, or `NotebookEdit` that would make one. A variable set by an earlier assignment-only command of the call SHALL be expanded first. The denial SHALL give the one command that makes the folder and its marker together.
 
 #### Scenario: A Folder Made with No Marker
 
 - **WHEN** the agent runs `mkdir -p /tmp/probe` alone
 - **THEN** the call is denied with the `mkdir` and marker line
+
+#### Scenario: A Folder Made Through a Variable in the Sandbox Temp Base
+
+- **WHEN** the agent runs `S=/tmp/claude-501/gate20 && mkdir -p $S`
+- **THEN** the call is denied with the marker line for `/tmp/claude-501/gate20`
+- **AND** the lab test is `gate/processes.test.ts`, the `gateTmpMarker("/tmp/claude-501/gate20")` case
 
 #### Scenario: A Folder That Is There
 
@@ -141,12 +147,19 @@ The gate SHALL deny a `mkdir` or `mktemp` of a folder directly below `/tmp` (or 
 
 ### Requirement: A /tmp Removal Needs This Session's Marker
 
-The gate SHALL deny an `rm` under `/tmp` of a top folder whose marker does not hold this session's id, and of any path with `..`. A marker counts when a non-error `Bash` call of this session wrote it, and the file holds this session's id.
+The gate SHALL deny an `rm` under `/tmp` of a top folder whose marker does not hold this session's id, and of any path with `..`. The sandbox's temp base `/tmp/claude-<uid>` SHALL be a base like `/tmp` itself: each folder in it is a top with its own marker, and the base is no top. A marker counts when a non-error `Bash` call of this session wrote it, and the file holds this session's id.
 
 #### Scenario: A Folder of Another Session
 
 - **WHEN** the agent runs `rm -rf /tmp/other` and its marker holds another session's id
 - **THEN** the call is denied
+
+#### Scenario: A Folder in the Sandbox Temp Base
+
+- **WHEN** the agent runs `rm -rf /tmp/claude-501/gate20` and its marker holds this session's id
+- **THEN** the call passes
+- **AND** `rm -rf /tmp/claude-501/other` with no marker of this session, and `rm -rf /tmp/claude-501` itself, are denied
+- **AND** the lab test is `gate/processes.test.ts`, the `/tmp/claude-501` cases
 
 ### Requirement: The Session Removes Only What It Made
 
@@ -248,12 +261,12 @@ The gate SHALL answer `allow` to a `Bash` call whose engine verdict is an `ask` 
 
 ### Requirement: A Gate Failure Asks
 
-When the gate throws while it judges a call, it SHALL answer `ask` with a text that says the gate failed and a person must approve the call. A failed scan of a tool result SHALL withhold the result and name the failure.
+When the gate throws while it judges a call, it SHALL answer `ask` with the text "The gate failed: <error>. A person must approve this call.", where `<error>` is the failure's message, or its kind when it has no message, so the person can file the fault. The catch SHALL read the failure from the `next` argument of the handler and SHALL NOT call `next`, which would run the hooks beneath. A failed scan of a tool result SHALL withhold the result and name the failure.
 
 #### Scenario: The Gate Fails
 
 - **WHEN** a part of the check throws
-- **THEN** the verdict is `ask`
+- **THEN** the verdict is `ask`, and its reason matches "The gate failed: .+. A person must approve"
 - **AND** the lab test is `gate.test.ts`, "a gate that fails holds the call for a person"
 
 ### Requirement: Each Ask and Deny Is Logged

@@ -264,6 +264,15 @@ The "Subagent cap" group SHALL write `env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` 
 - **WHEN** the login record holds another plan, or the session uses an API key
 - **THEN** no cap is written
 
+### Requirement: Setup Caps Subagent Nesting at One
+
+The setup env group SHALL write `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` as `"1"`, and its description SHALL name subagents that start subagents among what it turns off. Claude Code reads that variable and drops the `Agent` tool from a subagent at that depth, so no `tool.call` hook denies a nested agent.
+
+#### Scenario: A Clean Write
+
+- **WHEN** setup writes the env group
+- **THEN** `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is `"1"` (`hooks/setup/settings.test.ts`)
+
 ### Requirement: The Protected Paths Group Denies Each Wall's Reads
 
 The "Protected paths" group SHALL write `permissions.deny` `Read(<wall>/**)` for each `protectedPaths` entry, in the form the startup wall notice accepts: `~/` for a path under `~`, `$HOME`, or `${HOME}`, and `//` for any other. With no entry it SHALL be no group.

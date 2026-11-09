@@ -1,3 +1,20 @@
+## ADDED Requirements
+
+### Requirement: A Linter's Unsafe Fixes Are Denied
+
+The patch rule `claudetto:lint-unsafe-fix` SHALL deny `oxlint`, `biome`, or `ruff` run with `--fix-suggestions`, `--fix-dangerously`, `--unsafe`, or `--unsafe-fixes`, and its denial SHALL send the agent to the safe `--fix` and Edit. The safe `--fix` and `--write` SHALL pass.
+
+#### Scenario: Unsafe Fix
+
+- **WHEN** the command is `oxlint --fix-suggestions src`, `biome check --write --unsafe .`, or `ruff check --fix --unsafe-fixes`
+- **THEN** the gate denies it, naming `claudetto:lint-unsafe-fix`
+
+#### Scenario: Safe Fix
+
+- **WHEN** the command is `oxlint --fix src`, `biome check --write .`, `ruff check --fix`, or `oxlint --help`
+- **THEN** the gate gives no verdict
+- **AND** the lab test is `gate/rules.test.ts`, "a linter's unsafe fixes are denied, its safe fixes pass"
+
 ## MODIFIED Requirements
 
 ### Requirement: The Gate Keeps Only What the Rules Do Not Cover

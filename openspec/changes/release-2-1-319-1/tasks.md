@@ -22,6 +22,15 @@
 - [x] 2.10 Setup (item B): keep one popup per step; Haiku explains each and recommends an option, listed first (the person's choice, 2026-11-09).
 
 - [x] 2.13 Auto-mode classifier (ISSUES 2026-11-09 item 5): `Agent` denies an off-form call and `ToolSearch` rewrites only its result, so no hook changes a call input (the "no verdict" case); the missing reason is out of reach, as the server gives no explanation.
+- [x] 2.14 permission-policy, session-hygiene: `385dd89c` reads the sandbox TMPDIR `/tmp/claude-<uid>` as a temp base and expands variables in made paths (`processes.ts`).
+- [x] 2.15 dangerous-commands: `1057652f` denies a linter's unsafe fixes by `claudetto:lint-unsafe-fix`.
+- [x] 2.16 permission-policy: `e3ae2525` asks with the failure text when the gate itself fails.
+- [x] 2.17 claim-check: `96b6838b` adds the plain-text `options` fault (interactive only); `6ecff6d7` removes the padding fault it first added, and `Concise.md` states the reply form positively.
+- [x] 2.18 agent-conduct: `d229220b`, `5dbbd84b` set the root prompt's dispute, credential, and waited-on task wording and the `Concise.md` text; the pin extractor reads a fault list as a task.
+- [x] 2.19 surface-trim: `08ea9a56` names `cat`, `head`, `tail`, `sed`, `awk`, and `echo` in the Bash text.
+- [x] 2.20 setup, subagent-prompts: `16ae5c74` added a hook deny for a nested agent and `5444dcfc` removed it, so setup writes `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` as 1 and the engine caps nesting.
+- [x] 2.21 constraint-ledger: `f82eb074` resets the message kind to `task` on `session.compact`.
+- [x] 2.22 Docs and build: `ffc48ca9`, `0d55975b` record the changes in `CHANGELOG.md`; `8d7a7260` loads the handover probe's `.env` with `--env-file`; `e11debed` updates `bun.lock` for jscpd 5.4.3.
 
 ## 3. Handover Probe
 

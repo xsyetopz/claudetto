@@ -57,6 +57,15 @@ The subagent cache TTL SHALL be set only by the `subagentPromptCacheTtl` setting
 - **WHEN** the logged runs show fewer than 1 in 7 subagent runs with a gap over 300s between requests
 - **THEN** the value moves to `5m`, because the 1h write premium cost about 25% of subagent input on the 2026-11-09 sample and saved no miss there
 
+### Requirement: The Spawn Depth Caps Nesting
+
+A subagent SHALL start no agent of its own, and the cap SHALL be the built-in `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` that setup writes as 1. The plugin SHALL hold no `tool.call` deny and no `AGENT_NESTED` text for it, because the engine drops the `Agent` tool from a subagent at that depth.
+
+#### Scenario: A Subagent at the Depth
+
+- **WHEN** a subagent runs at depth 1
+- **THEN** the engine lists no `Agent` tool for it, and `delegation.ts` holds no nested-agent check
+
 ## MODIFIED Requirements
 
 ### Requirement: Sectioned Subagent Bodies

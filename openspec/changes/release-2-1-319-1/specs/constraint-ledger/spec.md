@@ -44,6 +44,16 @@ On the first prompt of a process, when the session already holds an earlier mess
 - **THEN** that prompt's context holds the sentence
 - **AND** the lab test is `pin.test.ts`, "a resumed session's first prompt waits for the constraint its earlier messages hold"
 
+### Requirement: A Compaction Ends the Remark Turn
+
+On `session.compact`, the ledger SHALL reset the message kind to `task`, because the summary that follows is a user message no person wrote and the answer-first gate would read it as an unanswered remark and deny the first tool call of the resumed turn. The extractor SHALL read a list of faults the person pastes as a task, and not as a limit.
+
+#### Scenario: Resumed After Compaction
+
+- **WHEN** the last person message was a remark, the session compacts, and the summary message arrives
+- **THEN** the first `Bash` call of the resumed turn is not denied
+- **AND** the lab test is `pin.test.ts`, "after a compaction the summary is no new remark, so the resumed turn's first call passes"
+
 ## MODIFIED Requirements
 
 ### Requirement: A Remark Is Answered Before Any Tool Runs

@@ -58,7 +58,7 @@ A match SHALL stay unless the conditions of the scenarios below hold.
 
 ### Requirement: Marked Temp Folders Go
 
-Hygiene SHALL remove a top-level folder of the temp bases (`CLAUDE_CODE_TMPDIR`, `/tmp`, the system temp folder) when a `temp` rule of the trash file names it, it holds the `.created-by-claudetto` marker, and the marker names a session that is no longer alive, once the folder is older than `probeCleanupPeriodMinutes` (60 when unset). A session is alive when its id is the `--session` argument or appears in a file under `~/.claude/sessions`. A folder with no marker SHALL stay.
+Hygiene SHALL remove a top-level folder of the temp bases (`CLAUDE_CODE_TMPDIR`, `/tmp`, `/tmp/claude-<uid>`, the system temp folder) when a `temp` rule of the trash file names it, it holds the `.created-by-claudetto` marker, and the marker names a session that is no longer alive, once the folder is older than `probeCleanupPeriodMinutes` (60 when unset). A session is alive when its id is the `--session` argument or appears in a file under `~/.claude/sessions`. A folder with no marker SHALL stay.
 
 #### Scenario: Dead Owner
 

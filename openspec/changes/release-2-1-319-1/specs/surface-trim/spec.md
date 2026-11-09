@@ -124,6 +124,16 @@ Setup SHALL write `env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` as `SILENT_TURN_RE
 - **WHEN** the user picks "Features off" in setup
 - **THEN** `env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` holds `SILENT_TURN_REMINDER` (`setup.test.ts`, "a clean write holds each planned key, only in the settings file, and no subagentStatusLine")
 
+### Requirement: The Bash Text Names the File Commands
+
+The claudetto `Bash` text SHALL name `cat`, `head`, `tail`, `sed`, `awk`, and `echo` as the shell commands that read or change a file, as the stock text does: files go through `Read`, `Edit`, `Write`, and the search tools unless the user asks for a shell command, so the agent does not reach for them and the gate need not refuse the call.
+
+#### Scenario: The Text Names Each Command
+
+- **WHEN** `TOOL_TEXTS["Bash"]` is read
+- **THEN** it holds each of the six names in backticks
+- **AND** the lab test is `surface.test.ts`, "our Bash text names the shell commands that read or edit a file, as the stock text does"
+
 ## MODIFIED Requirements
 
 ### Requirement: A Tool Text Ships Only While It Beats the Stock Text
