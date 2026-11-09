@@ -172,12 +172,32 @@ const creates = (
 	return verb === "checkout" || verb === "switch" ? { branch: named } : {};
 };
 
+const ASSIGNED = /^([A-Za-z_]\w*)=(.*)$/s;
+const VARIABLE = /\$(?:\{(\w+)\}|(\w+))/g;
+
+/** The words of each command with the variables that earlier assignment-only commands of the same call set put in; any other variable stays as written. */
+const expanded = (commands: Command[]): Command[] => {
+	const set = new Map<string, string>();
+	return commands.map((c) => {
+		const words = c.words.map((w) =>
+			w.replace(VARIABLE, (whole, braced?: string, bare?: string) => set.get(braced ?? bare ?? "") ?? whole),
+		);
+		const assigned = words.map((w) => ASSIGNED.exec(w));
+		if (assigned.every((m) => m !== null)) {
+			for (const [, name = "", value = ""] of assigned) {
+				set.set(name, value);
+			}
+		}
+		return { ...c, words };
+	});
+};
+
 /** The worktree paths and branches the non-error calls in `past` created, and the ids of the isolated workers they started. */
 export const createdOf = (past: Past[]) => {
 	const made = past
 		.filter((t) => t.tool === "Bash" && !t.isError)
 		.flatMap((t) =>
-			parse(fieldOf(t.input, "command") ?? "").commands.map((c) => {
+			expanded(parse(fieldOf(t.input, "command") ?? "").commands).map((c) => {
 				const { name, args } = programOf(c);
 				return name === "git" ? creates(args) : {};
 			}),

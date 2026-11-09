@@ -57,7 +57,7 @@ test("a number past the last paragraph fills nothing", async ($: Engine, on: On)
 test("session.start registers /reply", async ($: Engine, on: On) => {
 	const names: string[] = [];
 	on("session.start", () => ({ cwd: "/repo" }));
-	on("tool.register", () => ({ value: undefined }));
+	on("tool.register", (_$, e) => ({ value: { tool: `mcp__claudetto__${e.name}` } }));
 	on("command.register", (_$, e) => {
 		names.push(e.name);
 		return { value: { command: e.name } };

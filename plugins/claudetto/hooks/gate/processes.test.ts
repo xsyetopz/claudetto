@@ -157,6 +157,16 @@ denied("git worktree remove /w/old", gateWorktreeRemove("/w/old"), [
 allowed("git worktree remove /w/new", [
 	{ command: "git worktree add -b feat /w/new", text: "" },
 ]);
+// ISSUES 2026-11-09 item 20: the add named its path through a variable set earlier in the same call.
+allowed("git worktree remove --force $TMPDIR/m", [
+	{ command: "M=$TMPDIR/m && git worktree add -q -b x $M main", text: "" },
+]);
+allowed("git worktree remove /w/v", [
+	{ command: 'D="/w/v"; git worktree add "${D}"', text: "" },
+]);
+denied("git worktree remove $TMPDIR/n", gateWorktreeRemove("$TMPDIR/n"), [
+	{ command: "M=$TMPDIR/m && git worktree add $M", text: "" },
+]);
 allowed("git worktree remove --force /w/ent", [
 	{ tool: "EnterWorktree", text: "Created worktree at /w/ent", command: "" },
 ]);

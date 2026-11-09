@@ -32,6 +32,7 @@ Before 1.0.0, a release can change or remove behavior.
 ### Fixed
 
 - The claim check counts a popup answer as the person's words.
+- The worktree gate lets an agent remove a worktree it added through a variable set earlier in the same command, such as `M=$TMPDIR/w && git worktree add $M`.
 - The run limits count only file-tool writes that ran.
 - The gate sends only a lone file read to `Read`, and names the file in place of a `head -n` count or a `sed` script.
 - A remark that an earlier request covers counts as a task.
