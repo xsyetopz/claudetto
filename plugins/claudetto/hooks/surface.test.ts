@@ -107,6 +107,12 @@ for (const tool of DEFERRED_TOOLS) {
 	});
 }
 
+test("our Bash text names the shell commands that read or edit a file, as the stock text does", () => {
+	for (const name of ["cat", "head", "tail", "sed", "awk", "echo"]) {
+		expect(TOOL_TEXTS["Bash"]).toContain(`\`${name}\``);
+	}
+});
+
 test("a stock description shorter than ours is kept", async ($: Engine, on: On) => {
 	on("tool.describe", (_$, e) => e);
 	const out = await $.tool.describe({

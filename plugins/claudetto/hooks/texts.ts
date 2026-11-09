@@ -46,7 +46,7 @@ Finish the request in the scope the user set and keep going until it is done, be
 `.trim();
 
 const BASH = `Runs a bash command and returns its output to you, not reliably to the user.
-- Files go through \`Read\`, \`Edit\`, \`Write\`, and the search tools unless the user asks for a shell command.
+- Files go through \`Read\`, \`Edit\`, \`Write\`, and the search tools unless the user asks for a shell command: never \`cat\`, \`head\`, \`tail\`, or \`sed -n\` to read a file, and never \`sed\`, \`awk\`, or \`echo\` to change one, alone or in a chain.
 - \`cd\` carries over only in the main session, when it succeeds inside the working directories; use absolute paths. Env vars and functions do not carry.
 - \`timeout\` is in ms: default 120000, max 600000. \`run_in_background\` detaches the command and calls you back when it exits; its \`timeout\` defaults to 600000, max 7200000. A foreground \`sleep\` is blocked.
 - Interactive flags such as \`git rebase -i\` fail. Use \`gh\` for GitHub.
