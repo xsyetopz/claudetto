@@ -329,7 +329,7 @@ test("the features-off group writes every switch and environment variable", () =
 
 const words = (text: string): string[] => text.split(" ");
 
-test("the sandbox group lists what is dangerous: home-wide writes, denies for files that run later and for secret stores, any host and service", () => {
+test("the sandbox group lists what is dangerous: home-wide writes, denies for files that run later and for secret stores, any host, service, and local port", () => {
 	// `~/.ssh` and `~/.gnupg` stay readable for commit signing; "the sandbox's denyRead leaves the signing keys readable" pins that.
 	expect(groupNamed("Sandbox").settings).toEqual({
 		sandbox: {
@@ -343,7 +343,11 @@ test("the sandbox group lists what is dangerous: home-wide writes, denies for fi
 				),
 				denyRead: words("~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials"),
 			},
-			network: { allowedDomains: ["*"], allowMachLookup: ["*"] },
+			network: {
+				allowedDomains: ["*"],
+				allowMachLookup: ["*"],
+				allowLocalBinding: true,
+			},
 		},
 	});
 });

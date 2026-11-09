@@ -211,7 +211,12 @@ export const GROUPS: readonly Group[] = [
 						"~/.git-credentials",
 					],
 				},
-				network: { allowedDomains: ["*"], allowMachLookup: ["*"] },
+				// A test server or a fake API binds a localhost port.
+				network: {
+					allowedDomains: ["*"],
+					allowMachLookup: ["*"],
+					allowLocalBinding: true,
+				},
 			},
 		},
 	},

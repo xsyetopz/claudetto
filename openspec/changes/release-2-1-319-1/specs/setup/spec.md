@@ -275,7 +275,7 @@ The "Protected paths" group SHALL write `permissions.deny` `Read(<wall>/**)` for
 
 ### Requirement: Haiku Explains Each Setup Question and Recommends an Answer
 
-Setup SHALL keep one question per step, and before each it SHALL send the question, with each secret betterleaks finds redacted, and its options to Haiku. When Haiku answers with JSON naming one of the options and a reason, the question SHALL end with a "Recommended:" line holding that option and the reason, and that option SHALL be listed first; the options keep their labels, so the person's pick means what it meant before. When the scan or the Haiku call fails, or the answer names no option, the question SHALL go as it was.
+Setup SHALL keep one question per step and SHALL send each question, redacted by betterleaks, with its options to Haiku. When Haiku names one of the options and a reason, the question SHALL end with a "Recommended:" line holding both, and that option SHALL be listed first, with every label unchanged.
 
 #### Scenario: Haiku Recommends
 
@@ -284,7 +284,7 @@ Setup SHALL keep one question per step, and before each it SHALL send the questi
 
 #### Scenario: No Usable Answer
 
-- **WHEN** Haiku names a label that is not an option, or does not answer
+- **WHEN** Haiku names a label that is not an option or `""`, does not answer, or the secret scan fails
 - **THEN** the question and its options are as they were ("a recommendation that names no option leaves the question as it was")
 
 #### Scenario: A Secret in the Question
