@@ -2,7 +2,7 @@
 
 ### Requirement: One Channel per Question
 
-A question for the person SHALL go only through the popup, and a plain `- ` bullet under `## What I Need from You` SHALL hold only a `! <command>` the person must run, with no checkbox, because nobody ticks one in a reply (the person, 2026-11-09). The output style, the Stop check, and the `claudetto-you-should-know` agent SHALL agree on this, so one question reaches the person once.
+A question for the person SHALL go only through the popup, and a plain `- ` bullet under `## What I Need From You` SHALL hold only a `! <command>` the person must run, with no checkbox, because nobody ticks one in a reply (the person, 2026-11-09). The output style, the Stop check, and the `claudetto-you-should-know` agent SHALL agree on this, so one question reaches the person once.
 
 #### Scenario: A Question Written as an Item
 
@@ -97,6 +97,15 @@ The agents under `plugins/claudetto/agents/` SHALL each hold a plain body of two
 - **THEN** it holds no `model` and no `tools`
 
 ## MODIFIED Requirements
+
+### Requirement: The Output Style Hands Over Commands
+
+The "What I Need From You" rule of `output-styles/Concise.md` SHALL list only what the user alone can do, each as a plain `- ! <command>` bullet. The heading SHALL capitalize every word (the person, 2026-11-09). The style SHALL tell the model to report each experiment and its result.
+
+#### Scenario: Login Needed
+
+- **WHEN** a step needs an interactive login
+- **THEN** the reply gives the `! <command>` to run as its one bullet under `## What I Need From You`
 
 ### Requirement: Code Rules Guard Only Trust Boundaries
 

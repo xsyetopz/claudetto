@@ -181,7 +181,7 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 
 #### Scenario: Open Items Under Any Heading
 
-- **WHEN** `- [ ]` items sit under `## Open`, `## What I Need from You`, or no heading
+- **WHEN** `- [ ]` items sit under `## Open`, `## What I Need From You`, or no heading
 - **THEN** the stop is blocked and the items are listed
 
 #### Scenario: An Item Is a Question
@@ -215,17 +215,17 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 
 #### Scenario: The Request List the Output Style Prescribes
 
-- **WHEN** the reply lists `- [ ] Send what the empty message was meant to say.` under `## What I Need from You`, with no `! <command>`
+- **WHEN** the reply lists `- [ ] Send what the empty message was meant to say.` under `## What I Need From You`, with no `! <command>`
 - **THEN** the stop is blocked and the item is listed, and a plain `- ` bullet that carries `! <command>` passes
 
 #### Scenario: A Command in a Checkbox
 
-- **WHEN** the reply lists `- [ ] ! gh auth login` under `## What I Need from You`
+- **WHEN** the reply lists `- [ ] ! gh auth login` under `## What I Need From You`
 - **THEN** the stop is blocked, and the block lists the line and says to move it into a `- ! <command>` bullet with no checkbox, because nobody ticks a checkbox in a reply (the person, 2026-11-09)
 
 #### Scenario: Two Commands at Once
 
-- **WHEN** the reply lists two `- ! <command>` bullets under `## What I Need from You`
+- **WHEN** the reply lists two `- ! <command>` bullets under `## What I Need From You`
 - **THEN** the stop is blocked once, the block names both commands, and tells the model to keep the one the work needs first and ask for the other in a later reply
 - **AND** a reply with one `- ! <command>` bullet passes
 

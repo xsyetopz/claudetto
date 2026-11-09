@@ -245,9 +245,9 @@ export const COMMAND_FORM = (v: {
 	[
 		...(v.stray.length > 0 || v.headless
 			? [
-					"The reply names a command for the user outside a plain `- ! <command>` bullet under `## What I Need from You`.",
+					"The reply names a command for the user outside a plain `- ! <command>` bullet under `## What I Need From You`.",
 					...v.stray.map((line) => `- ${line}`),
-					"Move each into a `- ! <command>` bullet, with no checkbox, under one `## What I Need from You` heading.",
+					"Move each into a `- ! <command>` bullet, with no checkbox, under one `## What I Need From You` heading.",
 				]
 			: []),
 		...(v.several.length > 0

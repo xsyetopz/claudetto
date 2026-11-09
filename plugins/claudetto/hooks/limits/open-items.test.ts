@@ -83,7 +83,7 @@ test("open items block under any heading or none", async ($: Engine, on: On) => 
 	lab(on);
 
 	const open = await stop($, "## Open\n- [ ] wire the hook");
-	const need = await stop($, "## What I Need from You\n- [ ] pick a name");
+	const need = await stop($, "## What I Need From You\n- [ ] pick a name");
 	const bare = await stop($, "- [ ] run it");
 
 	expect(open.block).toContain("wire the hook");
@@ -104,7 +104,7 @@ test("a plain bullet that gives a `! command` passes, a paid run included", asyn
 
 	const out = await stop(
 		$,
-		"## What I Need from You\n- paid eval: approve it with `! bun run paid-eval`",
+		"## What I Need From You\n- paid eval: approve it with `! bun run paid-eval`",
 	);
 
 	expect(out.block).toBeUndefined();
@@ -113,7 +113,7 @@ test("a plain bullet that gives a `! command` passes, a paid run included", asyn
 test("a `! command` in a checkbox item blocks and asks for a plain bullet", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await stop($, "## What I Need from You\n- [ ] ! gh auth login");
+	const out = await stop($, "## What I Need From You\n- [ ] ! gh auth login");
 
 	expect(out.block).toContain("- [ ] ! gh auth login");
 	expect(out.block).toContain("with no checkbox");
@@ -197,7 +197,7 @@ test(
 );
 
 const INCIDENT =
-	"Done items 1-3.\n\n## What I Need from You\n- [ ] Send what the empty message was meant to say.";
+	"Done items 1-3.\n\n## What I Need From You\n- [ ] Send what the empty message was meant to say.";
 
 test("the recorded incident reply, in the form the output style prescribes, blocks", async ($: Engine, on: On) => {
 	lab(on);
@@ -207,12 +207,12 @@ test("the recorded incident reply, in the form the output style prescribes, bloc
 	expect(out.block).toContain("Send what the empty message was meant to say");
 });
 
-test("a What I Need from You bullet with a ! command passes", async ($: Engine, on: On) => {
+test("a What I Need From You bullet with a ! command passes", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
 		$,
-		"## What I Need from You\n- Log in: `! gh auth login`. Send back the account name. Meanwhile I write the tests.",
+		"## What I Need From You\n- Log in: `! gh auth login`. Send back the account name. Meanwhile I write the tests.",
 	);
 
 	expect(out.block).toBeUndefined();
@@ -243,7 +243,7 @@ test("a `!` makes a bullet a command at its start, after a space, a backtick, or
 			"log in with ! gh auth login",
 			"run `!  gh auth login`",
 			"run (! gh auth login)",
-		].map((item) => stop($, `## What I Need from You\n- ${item}`)),
+		].map((item) => stop($, `## What I Need From You\n- ${item}`)),
 	);
 	const blocked = await Promise.all(
 		["fix this! Then retry", "run `!gh auth login`"].map((item) =>
@@ -334,7 +334,7 @@ test("a reply already in form gets no block", async ($: Engine, on: On) => {
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- ! sudo systemctl enable foo",
+		"Wrote the unit file.\n\n## What I Need From You\n- ! sudo systemctl enable foo",
 	);
 	const plain = await stop($, "Wrote the unit file. Tests pass.");
 
@@ -360,7 +360,7 @@ test("items with a ! command and no heading block", async ($: Engine, on: On) =>
 
 	const out = await stop($, "- ! gh auth login");
 
-	expect(out.block).toContain("## What I Need from You");
+	expect(out.block).toContain("## What I Need From You");
 });
 
 test("the form passes: one command in an item under the heading, no question in the text", async ($: Engine, on: On) => {
@@ -368,7 +368,7 @@ test("the form passes: one command in an item under the heading, no question in 
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- ! sudo systemctl enable foo",
+		"Wrote the unit file.\n\n## What I Need From You\n- ! sudo systemctl enable foo",
 	);
 
 	expect(out.block).toBeUndefined();
@@ -379,7 +379,7 @@ test("two ! command items block once, naming both, and keep the one the work nee
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- ! sudo systemctl enable foo\n- ! gh auth login",
+		"Wrote the unit file.\n\n## What I Need From You\n- ! sudo systemctl enable foo\n- ! gh auth login",
 	);
 
 	expect(out.block).toContain("! sudo systemctl enable foo");

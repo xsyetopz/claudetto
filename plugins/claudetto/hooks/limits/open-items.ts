@@ -12,7 +12,7 @@ const USER_COMMAND = /(?:^|[\s`(])!\s+\S/;
 const COMMAND_LINE =
 	/^\s*!\s+\S|`!\s+[^`]+`|\bsudo\s+\S|\byou\s+(?:need to|must|should|have to|can)\s+run\s+`[^`]+`/i;
 
-const HEADING = /^#{1,6}\s+What I Need from You\s*$/m;
+const HEADING = /^#{1,6}\s+What I Need From You\s*$/m;
 
 interface Turn {
 	readonly asking: boolean;
