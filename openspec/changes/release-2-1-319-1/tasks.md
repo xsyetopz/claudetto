@@ -22,7 +22,13 @@
 - [ ] 3.2 Build the four-arm probe harness and run it with no paid call against the fake API.
 - [ ] 3.3 Run the paid arms after the person approves, record the rows under `docs/`, and set `handoverThresholdTokens` from them.
 
-## 4. Release
+## 4. Research Slices
 
-- [ ] 4.1 Add the release entry to `CHANGELOG.md` with the version string unchanged at `2.1.319`.
-- [ ] 4.2 Delete `ISSUES-2026-11-09-1422.md` once each item is fixed or recorded as out of reach.
+- [ ] 4.1 Sandbox (issue item 17): from the measured pass and fail table, write the delta for a sandbox that blocks only destructive, dangerous, or leaking actions.
+- [ ] 4.2 Subagents (issue item 18): from the measured runs, write the delta for when the root delegates, at which model, effort, and cache TTL.
+- [ ] 4.3 Display (issue item 19): delete `plugins/claudetto/hooks/fold.ts` and its `register.ts` entry, per `specs/surface-trim/spec.md`, and check in a fresh session that a grouped `grep` result folds.
+
+## 5. Release
+
+- [ ] 5.1 Add the release entry to `CHANGELOG.md` with the version string unchanged at `2.1.319`.
+- [ ] 5.2 Delete `ISSUES-2026-11-09-1422.md` once each item is fixed or recorded as out of reach.
