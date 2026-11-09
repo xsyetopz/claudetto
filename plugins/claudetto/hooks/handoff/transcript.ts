@@ -19,9 +19,10 @@ interface Tail {
 	readonly decisions: readonly string[];
 }
 
-const WRITING_TOOLS = ["Write", "Edit", "NotebookEdit"];
+export const WRITING_TOOLS = ["Write", "Edit", "NotebookEdit"] as const;
+const WRITING: ReadonlySet<string> = new Set(WRITING_TOOLS);
 
-const pathOf = (input: Record<string, unknown>): string | undefined =>
+export const pathOf = (input: Record<string, unknown>): string | undefined =>
 	[input["file_path"], input["notebook_path"], input["path"]].find(
 		(value): value is string => typeof value === "string" && value !== "",
 	);
@@ -42,7 +43,7 @@ export const readMessages = (messages: readonly SessionMessage[]): Tail => {
 			.filter((turn) => turn.text !== ""),
 		paths: [...new Set(touches.map((touch) => touch.path))],
 		written: touches
-			.filter((touch) => WRITING_TOOLS.includes(touch.tool))
+			.filter((touch) => WRITING.has(touch.tool))
 			.map((touch) => touch.path),
 		decisions: messages
 			.flatMap((message) => message.toolUses)
@@ -51,10 +52,10 @@ export const readMessages = (messages: readonly SessionMessage[]): Tail => {
 	};
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
+export const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
 
-const lineOf = (line: string): unknown => {
+export const lineOf = (line: string): unknown => {
 	try {
 		return JSON.parse(line);
 	} catch {

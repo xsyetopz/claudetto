@@ -8,6 +8,7 @@ import { limits } from "./limits.ts";
 import { notify } from "./notify.ts";
 import { stringOption } from "./options.ts";
 import { pin } from "./pin.ts";
+import { runs } from "./runs.ts";
 import { setup } from "./setup.ts";
 import { slices } from "./slices.ts";
 import { surface } from "./surface.ts";
@@ -21,6 +22,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	surface(on, options);
 	pin(on);
 	delegation(on);
+	runs(on);
 	decide(on, options);
 	handoff(on, options);
 	hygiene(on, options);
