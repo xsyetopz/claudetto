@@ -5,7 +5,6 @@ import {
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
 	GATE_ENDLESS_WAIT,
-	gateBranchDelete,
 	gateKillPid,
 	gateRmTmp,
 	gateTmpMarker,
@@ -26,6 +25,7 @@ const lab = (
 	on: On,
 	past: Earlier[] = [],
 	marked: Record<string, string> = {},
+	said: string[] = [],
 ) => {
 	scanner(on);
 	on("session.cwd", () => ({ value: "/p" }));
@@ -36,6 +36,7 @@ const lab = (
 	on("fs.read", (_$, e) => ({ value: marked[e.path] ?? "" }));
 	on("session.messages", () => ({
 		value: [
+			...said.map((text) => ({ role: "user" as const, text, toolUses: [] })),
 			{
 				role: "assistant",
 				text: "",
@@ -143,6 +144,12 @@ const allowed = (
 		expect((await run($, command)).decision).toBe("allow");
 	});
 
+const asks = (command: string, past: Earlier[] = []) =>
+	test(`${command} keeps asking as not owned`, async ($: Engine, on: On) => {
+		lab(on, past);
+		expect((await run($, command)).decision).toBe("ask");
+	});
+
 denied("rm -rf /tmp/other/x", gateRmTmp("/tmp/other/x"));
 denied("rm -f /private/tmp/other", gateRmTmp("/private/tmp/other"));
 denied("rm -rf /tmp", gateRmTmp("/tmp"));
@@ -174,17 +181,30 @@ denied(
 	gateWorktreeRemove(".claude/worktrees/agent-zz9"),
 	[WORKER],
 );
-denied(
-	"git branch -D worktree-agent-zz9",
-	gateBranchDelete("worktree-agent-zz9"),
-	[WORKER],
-);
+asks("git branch -D worktree-agent-zz9", [WORKER]);
 allowed("git branch -D worktree-agent-a1b2c3", [WORKER]);
 
-denied("git branch -D theirs", gateBranchDelete("theirs"));
-denied("git branch -d --force theirs", gateBranchDelete("theirs"), [
+asks("git branch -D theirs");
+asks("git branch -d --force theirs", [
 	{ command: "git branch theirs", text: "", isError: true },
 ]);
+
+for (const said of [
+	"delete all other local branches",
+	"Remove the branch old-feature, it is merged.",
+]) {
+	test(`The Person Asked: after "${said}", git branch -D old-feature runs`, async ($: Engine, on: On) => {
+		lab(on, [], {}, [said]);
+		expect((await run($, "git branch -D old-feature")).decision).toBe("allow");
+	});
+}
+
+for (const said of ["Do not delete branch old-feature.", "old-feature is out."]) {
+	test(`No Request: after "${said}", git branch -D old-feature asks`, async ($: Engine, on: On) => {
+		lab(on, [], {}, [said]);
+		expect((await run($, "git branch -D old-feature")).decision).toBe("ask");
+	});
+}
 for (const make of [
 	"git branch mine",
 	"git checkout -b mine",
@@ -207,15 +227,8 @@ allowed("kill -9 4242", [{ command: "sleep 60 & echo $!", text: "4242" }]);
 denied("rm -rf /tmp/mine /tmp/other", gateRmTmp("/tmp/other"), [], {
 	[MARK]: "S1",
 });
-denied("git branch -D mine theirs", gateBranchDelete("theirs"), [
-	{ command: "git branch mine", text: "" },
-]);
+asks("git branch -D mine theirs", [{ command: "git branch mine", text: "" }]);
 
-const asks = (command: string, past: Earlier[] = []) =>
-	test(`${command} keeps asking as not owned`, async ($: Engine, on: On) => {
-		lab(on, past);
-		expect((await run($, command)).decision).toBe("ask");
-	});
 const MINE = [{ command: "git branch mine", text: "" }];
 
 allowed("git update-ref -d refs/heads/mine", MINE);

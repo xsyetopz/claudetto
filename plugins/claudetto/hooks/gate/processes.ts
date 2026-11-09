@@ -1,7 +1,6 @@
 import {
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
-	gateBranchDelete,
 	gateKillPid,
 	gateRmTmp,
 	gateTmpMarker,
@@ -111,6 +110,8 @@ export interface Owns {
 	standing: (top: string) => boolean;
 	path: (path: string) => boolean;
 	branch: (name: string) => boolean;
+	/** A branch a message of the person asked to delete, by its name or as one of "the other branches". */
+	asked: (name: string) => boolean;
 }
 
 export const NOBODY: Owns = {
@@ -119,6 +120,7 @@ export const NOBODY: Owns = {
 	standing: () => false,
 	path: () => false,
 	branch: () => false,
+	asked: () => false,
 };
 
 /** The top folders below /tmp that a command names, whose marker file the caller reads. */
@@ -190,11 +192,29 @@ export const createdOf = (past: Past[]) => {
 	};
 };
 
+const DELETES = /\b(?:delete|remove|drop|prune)\b/i;
+const NEGATED = /\b(?:not|never|no)\b|n't\b/i;
+const OTHER_BRANCHES = /\b(?:other|all)\b.*\bbranches\b/i;
+const escaped = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const sentencesOf = (texts: readonly string[]): string[] =>
+	texts.flatMap((t) => t.split(/[.!?]\s+|\n/));
+
+// "Do not delete old-feature" names the branch too, so a sentence counts only when it asks for the delete and does not forbid it.
+const asksDelete = (sentence: string, branch: string): boolean =>
+	DELETES.test(sentence) &&
+	!NEGATED.test(sentence) &&
+	(OTHER_BRANCHES.test(sentence) ||
+		new RegExp(`(?:^|[\\s\`'"])${escaped(branch)}(?:$|[\\s\`'".,;:!?])`).test(
+			sentence,
+		));
+
 /** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
 export const ownsOf = (
 	past: Past[],
 	marked: Set<string>,
 	standing: Set<string>,
+	said: readonly string[] = [],
 ): Owns => {
 	const { paths, branches, workers } = createdOf(past);
 	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
@@ -209,6 +229,7 @@ export const ownsOf = (
 		branch: (name) =>
 			branches.includes(name) ||
 			workers.some((id) => name === `worktree-agent-${id}`),
+		asked: (name) => sentencesOf(said).some((s) => asksDelete(s, name)),
 	};
 };
 
@@ -263,7 +284,7 @@ const isForceDelete = (flags: string[]): boolean =>
 const plain = (words: string[]): string[] =>
 	words.filter((w) => !w.startsWith("-"));
 
-/** Denies `rm` under /tmp of a top folder without this session's marker, `git worktree remove` of a path this session did not create, and a forced branch delete of a branch it did not create. */
+/** Denies `rm` under /tmp of a top folder without this session's marker, `git worktree remove` of a path this session did not create. */
 export const ownedVerdict = (
 	name: string,
 	args: string[],
@@ -282,15 +303,6 @@ export const ownedVerdict = (
 		return path === undefined || own.path(path)
 			? undefined
 			: deny(gateWorktreeRemove(path));
-	}
-	if (
-		verb === "branch" &&
-		isForceDelete(rest.filter((w) => w.startsWith("-")))
-	) {
-		const stranger = plain(rest).find((b) => !own.branch(b));
-		return stranger === undefined
-			? undefined
-			: deny(gateBranchDelete(stranger));
 	}
 	return undefined;
 };
@@ -318,7 +330,7 @@ export const ownedMove = (name: string, args: string[], own: Owns): boolean => {
 	);
 };
 
-/** Tells whether a command only removes /tmp folders or force-deletes branches that this session owns; the vendored rules `fs:recursively_delete` and `git:force_delete_branch` then do not apply. */
+/** Tells whether a command only removes /tmp folders or force-deletes branches that this session owns or the person asked to delete; the vendored rules `fs:recursively_delete` and `git:force_delete_branch` then do not apply. */
 export const ownedRemoval = (c: Command, own: Owns): boolean => {
 	const { name, args } = programOf(c);
 	if (ownedVerdict(name, args, own)) {
@@ -332,6 +344,8 @@ export const ownedRemoval = (c: Command, own: Owns): boolean => {
 	}
 	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
 	return (
-		verb === "branch" && isForceDelete(rest.filter((w) => w.startsWith("-")))
+		verb === "branch" &&
+		isForceDelete(rest.filter((w) => w.startsWith("-"))) &&
+		plain(rest).every((b) => own.branch(b) || own.asked(b))
 	);
 };

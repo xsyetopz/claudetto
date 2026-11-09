@@ -33,6 +33,7 @@ import {
 } from "./gate/walled.ts";
 import { listOption } from "./options.ts";
 import { redactAll, redactWith, secretsIn } from "./secrets.ts";
+import { isPersonMessage } from "./verify.ts";
 import {
 	GATE_CHECK_FAILED,
 	GATE_ENDLESS_WAIT,
@@ -101,10 +102,12 @@ const ownershipOf = async ($: EngineInterface, command: string) => {
 	const tops = TMP_TOUCH.test(command) ? tmpTops(command) : [];
 	const kept = async (has: (top: string) => Promise<boolean>) =>
 		new Set((await Promise.all(tops.map(async (t) => ((await has(t)) ? t : undefined)))).filter((t) => t !== undefined));
+	const messages = OWNED.test(command) ? await $.session.messages() : [];
 	return ownsOf(
-		OWNED.test(command) ? await hostOf($).past() : [],
+		messages.flatMap((m) => m.toolUses),
 		await kept((top) => isMarked($, top)),
 		await kept((top) => $.fs.exists(top)),
+		messages.filter(isPersonMessage).map((m) => m.text),
 	);
 };
 
