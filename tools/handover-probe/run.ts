@@ -6,6 +6,8 @@ import { type LogRecord, startFake } from "./server.ts";
 import { TURNS } from "./task.ts";
 
 const PLUGIN_DIR = resolve(import.meta.dir, "../../plugins/claudetto");
+/** A 200,000-token window: the default model has 1,000,000, so 25% would be out of reach of a 40-turn task. */
+const MODEL = "claude-sonnet-4-5";
 const SETTLE_MS = 1_500;
 const TURN_TIMEOUT_MS = 60_000;
 
@@ -77,6 +79,8 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 			"--output-format",
 			"stream-json",
 			"--verbose",
+			"--model",
+			MODEL,
 			"--plugin-dir",
 			PLUGIN_DIR,
 			"--settings",
