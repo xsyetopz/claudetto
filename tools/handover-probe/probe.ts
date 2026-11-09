@@ -12,7 +12,7 @@ const arms = wanted.length === 0 ? ARMS : ARMS.filter((a) => wanted.includes(a.n
 
 if (paid && !process.env["ANTHROPIC_API_KEY"] && !process.env["CLAUDE_CODE_OAUTH_TOKEN"]) {
 	console.error(
-		"--paid needs ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in the environment: each run gets a fresh CLAUDE_CONFIG_DIR with no login. `claude setup-token` prints a token.",
+		"--paid needs ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in the environment: each run gets a fresh CLAUDE_CONFIG_DIR with no login. `claude setup-token` makes a long-lived token.",
 	);
 	process.exit(1);
 }
