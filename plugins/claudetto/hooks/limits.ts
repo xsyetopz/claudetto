@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 import { boundOutputHooks } from "./limits/bound-output.ts";
 import { holdHooks } from "./limits/hold.ts";
+import { lineFileHooks } from "./limits/line-file.ts";
 import { priceStepHooks } from "./limits/price-step.ts";
 import { budgetHooks, stopHooks, subagentStopHooks } from "./limits/stop.ts";
 
@@ -12,4 +13,5 @@ export const limits = (on: On, options: PluginOptions): void => {
 	subagentStopHooks(on);
 	budgetHooks(on);
 	boundOutputHooks(on, options);
+	lineFileHooks(on);
 };
