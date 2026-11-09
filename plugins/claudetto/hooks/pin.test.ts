@@ -205,6 +205,17 @@ test("Yet Another Fault: the extractor is told that a remark a standing instruct
 	);
 });
 
+test("the extractor is told that a fault list and an act nobody asked for are tasks, not disputes", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [], [], seen);
+	await submit($, "you were not tasked to restore it");
+	const prompt = seen.join("\n");
+	expect(prompt).toContain("or a list of faults or issues to resolve");
+	expect(prompt).toContain(
+		'a report that the assistant did what nobody asked ("you were not tasked to restore it"), which also sets a limit against that act',
+	);
+});
+
 test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
 	lab(on, [
 		{
