@@ -8,14 +8,14 @@ export const HANDOFF_NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
 
 export const HANDOFF_SECTIONS = [
 	"Goal",
-	"Standing instructions",
-	"Decisions log",
-	"Current state",
-	"In progress",
-	"Next steps",
-	"Key files and symbols",
-	"Gotchas and dead ends",
-	"Open questions",
+	"Standing Instructions",
+	"Decisions Log",
+	"Current State",
+	"In Progress",
+	"Next Steps",
+	"Key Files And Symbols",
+	"Gotchas And Dead Ends",
+	"Open Questions",
 ];
 
 const FRACTION = /\..*$/;

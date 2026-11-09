@@ -57,17 +57,17 @@ export const toolHandoffText = (
 ): string => {
 	const body: Readonly<Record<string, string>> = {
 		Goal: fields.goal,
-		"Standing instructions": fields.standing,
-		"Decisions log": fields.decisions,
-		"Current state": fields.state,
-		"Next steps": fields.nextPrompt,
+		"Standing Instructions": fields.standing,
+		"Decisions Log": fields.decisions,
+		"Current State": fields.state,
+		"Next Steps": fields.nextPrompt,
 	};
 	return layout(`Written by Claude at ${at}.`, (section) =>
 		HANDOFF_SECTIONS.includes(section)
 			? [
 					body[section] ?? "None given.",
 					"",
-					...(section === "Current state" ? gitLines(git, at) : []),
+					...(section === "Current State" ? gitLines(git, at) : []),
 				]
 			: [],
 	);

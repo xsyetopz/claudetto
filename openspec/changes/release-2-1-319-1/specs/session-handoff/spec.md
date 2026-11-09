@@ -121,12 +121,12 @@ Every text the handoff path keeps or sends SHALL pass the secret scanner (`secre
 
 ### Requirement: The Code-Built Handoff Has Caps
 
-The code-built handoff SHALL keep the last 12 turns under Current state, the last 20 touched file paths under Key files and symbols, and the last 100 human prompts under Standing instructions. It SHALL cut each quoted text, and each question under Decisions log, to 600 characters and end the cut with an ellipsis. Human prompts SHALL come from the whole transcript file, so an instruction older than the last 12 turns stays.
+The code-built handoff SHALL keep the last 12 turns under Current State, the last 20 touched file paths under Key Files And Symbols, and the last 100 human prompts under Standing Instructions. It SHALL cut each quoted text, and each question under Decisions Log, to 600 characters and end the cut with an ellipsis. Human prompts SHALL come from the whole transcript file, so an instruction older than the last 12 turns stays.
 
 #### Scenario: Old Instruction
 
 - **WHEN** an instruction is older than the last twelve turns
-- **THEN** it is still under Standing instructions (`handoff.test.ts`, "an instruction older than the last twelve turns stays in the handoff")
+- **THEN** it is still under Standing Instructions (`handoff.test.ts`, "an instruction older than the last twelve turns stays in the handoff")
 
 #### Scenario: Long Turn
 
@@ -146,7 +146,7 @@ The plugin SHALL ship `commands/handoff.md`, whose description is "Hand this wor
 
 ### Requirement: Handoff Content
 
-Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed title line `# Handoff`, a source line, then the nine `##` sections in the order Goal, Standing instructions, Decisions log, Current state, In progress, Next steps, Key files and symbols, Gotchas and dead ends, Open questions. The source line SHALL read `Written by Claude at <UTC time>.` for the tool's file and `Built by claudetto from the transcript at <UTC time>, with no model call.` for the code-built file. No other `#` or `##` heading SHALL appear. The code-built file SHALL fill each section it cannot fill with the line `None found in the transcript.`, and the tool's file SHALL fill each section the tool has no field for with `None given.`.
+Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed title line `# Handoff`, a source line, then the nine `##` sections in the order Goal, Standing Instructions, Decisions Log, Current State, In Progress, Next Steps, Key Files And Symbols, Gotchas And Dead Ends, Open Questions. The source line SHALL read `Written by Claude at <UTC time>.` for the tool's file and `Built by claudetto from the transcript at <UTC time>, with no model call.` for the code-built file. No other `#` or `##` heading SHALL appear. The code-built file SHALL fill each section it cannot fill with the line `None found in the transcript.`, and the tool's file SHALL fill each section the tool has no field for with `None given.`.
 
 #### Scenario: Claude Wrote One
 
@@ -172,7 +172,7 @@ Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed ti
 #### Scenario: The Code-Built Fallback Fills What Code Can Read
 
 - **WHEN** code builds the handoff from the messages (`who96/claude-code-context-handoff`, MIT)
-- **THEN** the recent turns go under Current state, the touched file paths go under Key files and symbols, the human prompts go under Standing instructions, and the text of each `AskUserQuestion` call goes under Decisions log
+- **THEN** the recent turns go under Current State, the touched file paths go under Key Files And Symbols, the human prompts go under Standing Instructions, and the text of each `AskUserQuestion` call goes under Decisions Log
 - **AND** every other section holds `None found in the transcript.`
 
 ### Requirement: Claudetto Names the Nine Sections

@@ -68,14 +68,14 @@ test("the tool writes the file with its fields under the nine headings and no ot
 	const headings = text.split("\n").filter((line) => line.startsWith("## "));
 	expect(headings).toEqual([
 		"## Goal",
-		"## Standing instructions",
-		"## Decisions log",
-		"## Current state",
-		"## In progress",
-		"## Next steps",
-		"## Key files and symbols",
-		"## Gotchas and dead ends",
-		"## Open questions",
+		"## Standing Instructions",
+		"## Decisions Log",
+		"## Current State",
+		"## In Progress",
+		"## Next Steps",
+		"## Key Files And Symbols",
+		"## Gotchas And Dead Ends",
+		"## Open Questions",
 	]);
 	expect(text).toContain("ship the cut");
 	expect(text).toContain("table over regex");
@@ -90,7 +90,7 @@ test("Git State Is Dated: the tool's handoff states the git status line as of it
 	const text = files[0]?.text ?? "";
 	const at = /Written by Claude at (\S+)\./.exec(text)?.[1];
 	expect(at).toBeDefined();
-	expect(text.split("## Current state")[1]?.split("## In progress")[0]).toContain(
+	expect(text.split("## Current State")[1]?.split("## In Progress")[0]).toContain(
 		`Git as of ${at}: \`## main...origin/main [ahead 3]\``,
 	);
 });

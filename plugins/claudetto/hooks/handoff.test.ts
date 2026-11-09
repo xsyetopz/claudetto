@@ -92,11 +92,11 @@ test("an instruction older than the last twelve turns stays in the handoff", asy
 	await compactWith($, longSession());
 
 	const text = files[0]?.text ?? "";
-	const standing = text.split("## Standing instructions")[1] ?? "";
-	expect(standing.split("## Decisions log")[0]).toContain(
+	const standing = text.split("## Standing Instructions")[1] ?? "";
+	expect(standing.split("## Decisions Log")[0]).toContain(
 		"The staged deletions are mine",
 	);
-	expect(text.split("## Current state")[1]).not.toContain("staged deletions");
+	expect(text.split("## Current State")[1]).not.toContain("staged deletions");
 });
 
 test("Fallback File: the code-built handoff's git line carries the write time", async ($: Engine, on: On) => {
@@ -107,7 +107,7 @@ test("Fallback File: the code-built handoff's git line carries the write time", 
 	const text = files[0]?.text ?? "";
 	const at = /from the transcript at (\S+),/.exec(text)?.[1];
 	expect(at).toBeDefined();
-	expect(text.split("## Current state")[1]).toContain(
+	expect(text.split("## Current State")[1]).toContain(
 		`Git as of ${at}: \`## main...origin/main [ahead 3]\``,
 	);
 	expect(text).not.toContain("M a.ts");
@@ -119,12 +119,12 @@ test("a session with no human statement writes no invented text under the two se
 	await compactWith($, [said("user", "hi"), said("assistant", "hello")]);
 
 	const text = files[0]?.text ?? "";
-	const standing = text.split("## Standing instructions")[1] ?? "";
-	const decisions = text.split("## Decisions log")[1] ?? "";
-	expect(standing.split("## Decisions log")[0]?.trim()).toBe(
+	const standing = text.split("## Standing Instructions")[1] ?? "";
+	const decisions = text.split("## Decisions Log")[1] ?? "";
+	expect(standing.split("## Decisions Log")[0]?.trim()).toBe(
 		"None found in the transcript.",
 	);
-	expect(decisions.split("## Current state")[0]?.trim()).toBe(
+	expect(decisions.split("## Current State")[0]?.trim()).toBe(
 		"None found in the transcript.",
 	);
 });

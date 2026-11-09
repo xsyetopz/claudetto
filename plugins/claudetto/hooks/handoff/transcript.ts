@@ -128,9 +128,9 @@ export const handoffText = (
 	}
 	const paths = tail.paths.slice(-PATHS).map((path) => `- \`${path}\``);
 	const filled: Readonly<Record<string, string[]>> = {
-		"Standing instructions": listed(prompts.slice(-PROMPTS)),
-		"Decisions log": listed(tail.decisions),
-		"Current state": [
+		"Standing Instructions": listed(prompts.slice(-PROMPTS)),
+		"Decisions Log": listed(tail.decisions),
+		"Current State": [
 			...gitLines(git, startedAt),
 			...turns.flatMap((turn) => [
 				`**${turn.role === "user" ? "User" : "Claude"}:**`,
@@ -139,7 +139,7 @@ export const handoffText = (
 				"",
 			]),
 		],
-		"Key files and symbols": paths.length > 0 ? [...paths, ""] : NONE,
+		"Key Files And Symbols": paths.length > 0 ? [...paths, ""] : NONE,
 	};
 	return layout(
 		`${BUILT_BY_CODE} from the transcript at ${startedAt}, with no model call.`,
