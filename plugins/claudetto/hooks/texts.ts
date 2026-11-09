@@ -334,6 +334,9 @@ export const secretScanFailed = (why: string): string =>
 // Gate: refusals of a shell command or a file write.
 export const GATE_READ_FILE = (file: string): string =>
 	`Use \`Read\` to read a file, not the shell: call \`Read\` with \`file_path\` \`${file}\` (absolute). The command did not run.`;
+/** The deny for a switch, checkout, hard reset, or rebase that would rewrite files the sandbox keeps the agent from writing. */
+export const gateProtectedMove = (files: readonly string[]): string =>
+	`This command would rewrite files the sandbox denies you write to, so git would stop partway and leave the tree half moved:\n${files.map((f) => `- \`${f}\``).join("\n")}\nNothing ran. Ask the user to run the command as \`! <command>\`, or to commit or set aside these files first.`;
 export const GATE_WRITE_FILE =
 	"Use `Write` to write a whole file, not the shell.";
 export const GATE_SYSTEM_WRITE = "This call writes to a system folder.";

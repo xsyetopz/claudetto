@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { scanner } from "../secrets.mock.ts";
+import { bash, scanner } from "../secrets.mock.ts";
 import {
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
@@ -52,8 +52,6 @@ const lab = (
 	}));
 	on("tool.check", () => ({ decision: "allow" }));
 };
-const run = ($: Engine, command: string) =>
-	$.tool.check({ tool: "Bash", input: { command } });
 
 for (const command of [
 	"pkill -f probe",
@@ -62,7 +60,7 @@ for (const command of [
 ]) {
 	test(`${command} is denied with the plain text`, async ($: Engine, on: On) => {
 		lab(on);
-		const v = await run($, command);
+		const v = await bash($, command);
 		expect(v.decision).toBe("deny");
 		expect(v.reason).toContain(GATE_KILL_BROAD);
 	});
@@ -70,19 +68,19 @@ for (const command of [
 
 test("kill of a pid no result shows is denied", async ($: Engine, on: On) => {
 	lab(on);
-	const v = await run($, "kill -9 4242");
+	const v = await bash($, "kill -9 4242");
 	expect(v.decision).toBe("deny");
 	expect(v.reason).toContain(gateKillPid("4242"));
 });
 
 test("kill of a pid a background command printed passes", async ($: Engine, on: On) => {
 	lab(on, [{ command: "sleep 60 & echo $!", text: "4242" }]);
-	expect((await run($, "kill 4242")).decision).toBe("allow");
+	expect((await bash($, "kill 4242")).decision).toBe("allow");
 });
 
 test("a pid printed by a command that was not backgrounded is denied", async ($: Engine, on: On) => {
 	lab(on, [{ command: "pgrep node", text: "4242" }]);
-	expect((await run($, "kill 4242")).decision).toBe("deny");
+	expect((await bash($, "kill 4242")).decision).toBe("deny");
 });
 
 for (const command of [
@@ -90,10 +88,13 @@ for (const command of [
 	"kill -l",
 	"kill %1",
 	"sleep 9 & kill $!",
+	"claude --help",
+	"claude plugin test --help",
+	`ls ${RELEASE}`,
 ]) {
 	test(`${command} passes`, async ($: Engine, on: On) => {
 		lab(on);
-		expect((await run($, command)).decision).toBe("allow");
+		expect((await bash($, command)).decision).toBe("allow");
 	});
 }
 
@@ -104,20 +105,9 @@ for (const command of [
 ]) {
 	test(`${command} is denied and points at cc-inspect`, async ($: Engine, on: On) => {
 		lab(on);
-		const v = await run($, command);
+		const v = await bash($, command);
 		expect(v.decision).toBe("deny");
 		expect(v.reason).toContain(GATE_RELEASE_RUN);
-	});
-}
-
-for (const command of [
-	"claude --help",
-	"claude plugin test --help",
-	`ls ${RELEASE}`,
-]) {
-	test(`${command} passes`, async ($: Engine, on: On) => {
-		lab(on);
-		expect((await run($, command)).decision).toBe("allow");
 	});
 }
 
@@ -130,7 +120,7 @@ const denied = (
 ) =>
 	test(`${command} is denied as not owned`, async ($: Engine, on: On) => {
 		lab(on, past, marked);
-		const v = await run($, command);
+		const v = await bash($, command);
 		expect(v.decision).toBe("deny");
 		expect(v.reason).toContain(reason);
 	});
@@ -141,13 +131,13 @@ const allowed = (
 ) =>
 	test(`${command} passes as owned`, async ($: Engine, on: On) => {
 		lab(on, past, marked);
-		expect((await run($, command)).decision).toBe("allow");
+		expect((await bash($, command)).decision).toBe("allow");
 	});
 
 const asks = (command: string, past: Earlier[] = []) =>
 	test(`${command} keeps asking as not owned`, async ($: Engine, on: On) => {
 		lab(on, past);
-		expect((await run($, command)).decision).toBe("ask");
+		expect((await bash($, command)).decision).toBe("ask");
 	});
 
 denied("rm -rf /tmp/other/x", gateRmTmp("/tmp/other/x"));
@@ -195,14 +185,14 @@ for (const said of [
 ]) {
 	test(`The Person Asked: after "${said}", git branch -D old-feature runs`, async ($: Engine, on: On) => {
 		lab(on, [], {}, [said]);
-		expect((await run($, "git branch -D old-feature")).decision).toBe("allow");
+		expect((await bash($, "git branch -D old-feature")).decision).toBe("allow");
 	});
 }
 
 for (const said of ["Do not delete branch old-feature.", "old-feature is out."]) {
 	test(`No Request: after "${said}", git branch -D old-feature asks`, async ($: Engine, on: On) => {
 		lab(on, [], {}, [said]);
-		expect((await run($, "git branch -D old-feature")).decision).toBe("ask");
+		expect((await bash($, "git branch -D old-feature")).decision).toBe("ask");
 	});
 }
 for (const make of [
@@ -213,7 +203,7 @@ for (const make of [
 ]) {
 	test(`git branch -D of a branch made by ${make} passes`, async ($: Engine, on: On) => {
 		lab(on, [{ command: make, text: "" }]);
-		expect((await run($, "git branch -D mine")).decision).toBe("allow");
+		expect((await bash($, "git branch -D mine")).decision).toBe("allow");
 	});
 }
 
@@ -313,5 +303,5 @@ for (const command of [
 }
 test("the same wait loop in the foreground is not denied, since the Bash timeout ends it", async ($: Engine, on: On) => {
 	lab(on);
-	expect((await run($, WAIT)).decision).not.toBe("deny");
+	expect((await bash($, WAIT)).decision).not.toBe("deny");
 });

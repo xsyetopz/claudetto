@@ -1,4 +1,5 @@
 import type { EventOf, On } from "claude-code";
+import type { Engine } from "claude-code/testing";
 import { SCANNER } from "./secrets.ts";
 
 type Run = EventOf["process.run"];
@@ -25,3 +26,7 @@ export const scanned = (e: Run, secrets: readonly string[] = []) => {
 export const scanner = (on: On, secrets: readonly string[] = []): void => {
 	on("process.run", (_$, e, next) => scanned(e, secrets) ?? next(e));
 };
+
+/** The gate's verdict on one Bash command. */
+export const bash = ($: Engine, command: string) =>
+	$.tool.check({ tool: "Bash", input: { command } });

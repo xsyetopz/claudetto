@@ -24,6 +24,7 @@ import {
 	saw,
 } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
+import { movesOf, protectedChanges } from "./gate/switch.ts";
 import { deny, fieldOf, type Verdict } from "./gate/verdict.ts";
 import {
 	namedPaths,
@@ -38,6 +39,7 @@ import {
 	GATE_CHECK_FAILED,
 	GATE_ENDLESS_WAIT,
 	GATE_READ_ONLY,
+	gateProtectedMove,
 	GATE_SYSTEM_WRITE,
 	gateRule,
 	gateTmpMarker,
@@ -151,6 +153,12 @@ const ownVerdict = async (
 		endlessWait(command)
 	) {
 		return deny(GATE_ENDLESS_WAIT);
+	}
+	// Seen live: a `git switch` stopped on the sandbox-denied `.claude/skills` files and left the tree half moved.
+	const moves = tool === "Bash" && command !== undefined ? movesOf(command) : [];
+	const touched = moves.length === 0 ? [] : await protectedChanges($, moves);
+	if (touched.length > 0) {
+		return deny(gateProtectedMove(touched));
 	}
 	if ((tool === "Bash" || tool === "Monitor") && command !== undefined) {
 		const present = await presentFiles($);
