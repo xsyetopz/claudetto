@@ -46,6 +46,7 @@ Items the person raised in the session on 2026-11-09, after the issues file:
 | --- | --- | --- |
 | A: each start logs "claudetto walls off `~/.claudetto-holdout`, but your settings hold no `Read(~/.claudetto-holdout/**)`" | permission-policy: walls; setup writes the deny | `plugin.json:107-113` default wall, `gate.ts:221-229` notice, `setup/settings.ts:76` writes only `DENIED_TOOLS` |
 | B: setup asks a write-or-skip question per step; a cheap model should talk and decide | setup | `hooks/setup.ts`, `hooks/setup/steps.ts` |
+| C: on task 2.8 the agent wrote a test that the removed faults stay gone; the person: "adding tests for removed features should be forbidden. it is not a 'compatibility' phase", "claudetto should actually endorse this", "treating every pre-release project as 'legacy compatibility' and 'v1' is grounds for troubles like this" | agent-conduct | `texts.ts:32` `<defects>` asks for a failing test first and says nothing on removals or pre-release status |
 
 ## Audit (Task 1.2)
 
@@ -114,7 +115,19 @@ Each uncovered behavior is kept and gets a requirement in task 1.3, unless the p
 - Removed: permission-policy "A Secret Stays off the Command Line" with `GATE_ENV_VALUES` and `GATE_ENV_DUMP`; the building-blocks spec; constraint-ledger "An Ask Waits for the Newest Issues File" with the claim-check `unfiled` fault.
 - Removed: the grader faults `asks`, `jargon`, `confesses`, `narrates` (`texts.ts:485-504`). `unfixed` and `unseen` stay and get requirements.
 - Kept as work to build ("unbuilt extras may need to be built"): run-limits "End Stuck Agents", compaction-path "The Code Path Is Offered Again", session-hygiene "Stale Generated Files Go", low-hitl fail closed when the classifier is down.
-- Kept, with the spec moved to the code, on the person's word that claudetto replaces a built-in that costs too many tokens on purpose: the `ask-user-question` and `monitor` tools replace AskUserQuestion and Monitor (prompt-footprint:64 names them as replacements, not duplicates); the `Budget:` line on a 10% band change (window-budget:10); the `Explore` result type, which the engine sends with no `agentId`/SendMessage/`<usage>` trailer (`Ann = new Set(["Explore","Plan"])`, `chunk-w4eat4qp.js:639`; trailer skip `chunk-158pvgb9.js:62649`; observed with cc-inspect search).
+- Kept, with the spec moved to the code, on the person's word that claudetto replaces a built-in that costs too many tokens on purpose: the `ask-user-question` and `monitor` tools replace AskUserQuestion and Monitor (prompt-footprint:64 names them as replacements, not duplicates); the `Budget:` line on a 10% band change (window-budget:10); the `Explore` result type, which the engine sends with no `agentId`/SendMessage/`<usage>` trailer (`Ann = new Set(["Explore","Plan"])`, `chunk-w4eat4qp.js:639`; trailer skip `chunk-158pvgb9.js:62825`; observed with cc-inspect search).
+
+### Probes of the Three Kept Items (2026-11-09, Fake API, cc-inspect `cli`)
+
+The person asked for these to be probed before their specs move.
+
+| Item | Hypothesis | Result |
+| --- | --- | --- |
+| Explore type | With the rename the result has no `agentId:` trailer; without it, it does | Confirmed: with `delegation.ts:122` removed from a copy, `agentId:` appears in the next request; with the plugin as is, it does not. Size about 194 B per result, computed from the engine template, not measured. |
+| Wrapper tools | The wrapper costs fewer bytes than the stock tool | First request: neither the stock tools nor the wrappers are in `tools`, with or without the plugin, so the wrapper adds 0 B up front (observed by tool names). Loaded size: wrapper 398 B and 845 B (computed from `texts.ts:164-202`); stock size unmeasured, because `cli` returns no request bodies. Open. |
+| `Budget:` line | The line enters a prompt after the first turn and sits after the cache breakpoint | Unmeasured: `-p` submits one prompt, so the `prompt.submit` line never fires, and `cli` returns no bodies. Open. |
+
+The two open rows need request bodies and a multi-prompt run; filed as `www.clawdipedia.cc/ISSUES-2026-11-09-1343.md` items 1 and 4.
 
 ## Handover Instead of Compaction
 
