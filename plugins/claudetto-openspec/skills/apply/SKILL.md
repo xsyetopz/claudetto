@@ -11,7 +11,7 @@ The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, lo
 4. Work the unticked tasks in order. Keep each edit to what its task says. After a task is done, change its `- [ ]` to `- [x]` in tasks.md, in the same turn.
 5. Stop when a task needs a decision, hits a denial, or needs something only the user can run. Do not guess past it.
 
-## Ending a pause or a report
+## Ending A Pause Or A Report
 
 End every pause and every final report by copying each task you leave unticked as its `- [ ]` line, exactly as `tasks.md` has it, with the blocker beneath it. The blocker is one of:
 
