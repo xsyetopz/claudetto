@@ -276,7 +276,10 @@ export const gate = (on: On, options: PluginOptions): void => {
 				: own;
 		await log($, e, verdict);
 		return verdict;
-	}).catch(() => ({ decision: "ask", reason: GATE_CHECK_FAILED }));
+	}).catch((_$, _e, next) => ({
+		decision: "ask",
+		reason: GATE_CHECK_FAILED(next.error.message ?? next.error.kind),
+	}));
 
 	// `classic.PermissionRequest` does not fire in `-p`, so `tool.check` carries the same verdict.
 	on("classic.PermissionRequest", async ($, e, next) => {

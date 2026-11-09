@@ -298,6 +298,8 @@ test("a gate that fails holds the call for a person", async ($: Engine, on: On) 
 	});
 
 	expect(verdict.decision).toBe("ask");
+	// The person who approves sees why the gate failed, so the fault can be filed.
+	expect(verdict.reason).toMatch(/The gate failed: .+\. A person must approve/);
 });
 
 test("the same tool with another input is not refused after two denials", async ($: Engine, on: On) => {
