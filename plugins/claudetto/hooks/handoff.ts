@@ -76,6 +76,13 @@ const promptsOf = async (
 	}
 };
 
+const gitStatusOf = async ($: EngineInterface): Promise<string> => {
+	const r = await $.process
+		.run(["git", "status", "-sb"])
+		.catch(() => undefined);
+	return r?.exitCode === 0 ? r.stdout : "";
+};
+
 /** Never throws: each failure is one `notWritten` line, because a hook that throws is skipped. */
 const writeHandoff = async (
 	$: EngineInterface,
@@ -96,7 +103,12 @@ const writeHandoff = async (
 			return;
 		}
 		const text = await redactOf($)(
-			handoffText(tail, await promptsOf($, transcript), at.toISOString()),
+			handoffText(
+				tail,
+				await promptsOf($, transcript),
+				at.toISOString(),
+				await gitStatusOf($),
+			),
 		);
 		if (text !== "") {
 			await $.fs.write(atRoot(await $.session.root(), path), text);
@@ -162,6 +174,7 @@ const callSession = ($: EngineInterface): Session => ({
 	taken: async (name) => $.store.set(readBackKey(await $.session.root()), name),
 	abort: (turnId) => $.turn.abort({ turnId }),
 	log: (line) => $.ui.log(line),
+	gitStatus: () => gitStatusOf($),
 	later: (work) => {
 		$.clock.after(0, () => {
 			work().catch(() => undefined);

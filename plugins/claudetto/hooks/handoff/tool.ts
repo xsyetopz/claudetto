@@ -1,4 +1,4 @@
-import { HANDOFF_SECTIONS, layout } from "./layout.ts";
+import { gitLines, HANDOFF_SECTIONS, layout } from "./layout.ts";
 
 const text = (description: string) => ({ type: "string", description });
 
@@ -50,7 +50,11 @@ export const fieldsOf = (
 	return missing.length > 0 ? { missing } : { fields };
 };
 
-export const toolHandoffText = (fields: HandoffFields, at: string): string => {
+export const toolHandoffText = (
+	fields: HandoffFields,
+	at: string,
+	git: string,
+): string => {
 	const body: Readonly<Record<string, string>> = {
 		Goal: fields.goal,
 		"Standing instructions": fields.standing,
@@ -60,7 +64,11 @@ export const toolHandoffText = (fields: HandoffFields, at: string): string => {
 	};
 	return layout(`Written by Claude at ${at}.`, (section) =>
 		HANDOFF_SECTIONS.includes(section)
-			? [body[section] ?? "None given.", ""]
+			? [
+					body[section] ?? "None given.",
+					"",
+					...(section === "Current state" ? gitLines(git, at) : []),
+				]
 			: [],
 	);
 };

@@ -22,6 +22,8 @@ export interface Session {
 	readonly log: (line: string) => void;
 	/** Runs `work` from a timer: `$.command.run` is queued until the session is idle, and it is not idle while the call waits. */
 	readonly later: (work: () => Promise<void>) => void;
+	/** What `git status -sb` prints, or nothing when git fails. */
+	readonly gitStatus: () => Promise<string>;
 }
 
 /** One registration's state: whether a handoff runs, and the main loop's turn, which the tool ends. */
@@ -91,7 +93,7 @@ export const handOff = async (
 	let first: string;
 	try {
 		const text = await session.redact(
-			toolHandoffText(read.fields, at.toISOString()),
+			toolHandoffText(read.fields, at.toISOString(), await session.gitStatus()),
 		);
 		await session.write(path, text);
 		first = `${readBackText(name, text)}\n\n${await session.redact(read.fields.nextPrompt)}`;

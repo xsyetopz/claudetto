@@ -47,6 +47,7 @@ const fake = (over: Partial<Session> = {}) => {
 		},
 		log: (line) => calls.push(`log:${line}`),
 		later: (work) => queued.push(work),
+		gitStatus: () => Promise.resolve("## main...origin/main [ahead 3]"),
 		...over,
 	};
 	return { session, calls, files, queued };
@@ -79,6 +80,19 @@ test("the tool writes the file with its fields under the nine headings and no ot
 	expect(text).toContain("ship the cut");
 	expect(text).toContain("table over regex");
 	expect(files[0]?.path).toMatch(HANDOFF_PATH);
+});
+
+test("Git State Is Dated: the tool's handoff states the git status line as of its write time", async () => {
+	const { session, files } = fake();
+
+	await handOff(session, idle(), FIELDS);
+
+	const text = files[0]?.text ?? "";
+	const at = /Written by Claude at (\S+)\./.exec(text)?.[1];
+	expect(at).toBeDefined();
+	expect(text.split("## Current state")[1]?.split("## In progress")[0]).toContain(
+		`Git as of ${at}: \`## main...origin/main [ahead 3]\``,
+	);
 });
 
 test("a call without a required field writes nothing and names the field", async () => {

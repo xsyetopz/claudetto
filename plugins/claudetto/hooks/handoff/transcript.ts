@@ -1,5 +1,11 @@
 import type { SessionMessage } from "claude-code";
-import { BUILT_BY_CODE, HANDOFF_DIR, HANDOFF_NAME, layout } from "./layout.ts";
+import {
+	BUILT_BY_CODE,
+	gitLines,
+	HANDOFF_DIR,
+	HANDOFF_NAME,
+	layout,
+} from "./layout.ts";
 
 const TURNS = 12;
 const PATHS = 20;
@@ -113,6 +119,7 @@ export const handoffText = (
 	tail: Tail,
 	prompts: readonly string[],
 	startedAt: string,
+	git: string,
 ): string => {
 	const turns = tail.turns.slice(-TURNS);
 	if (!turns.some((turn) => turn.role === "user")) {
@@ -122,12 +129,15 @@ export const handoffText = (
 	const filled: Readonly<Record<string, string[]>> = {
 		"Standing instructions": listed(prompts.slice(-PROMPTS)),
 		"Decisions log": listed(tail.decisions),
-		"Current state": turns.flatMap((turn) => [
-			`**${turn.role === "user" ? "User" : "Claude"}:**`,
-			"",
-			...quoted(turn.text),
-			"",
-		]),
+		"Current state": [
+			...gitLines(git, startedAt),
+			...turns.flatMap((turn) => [
+				`**${turn.role === "user" ? "User" : "Claude"}:**`,
+				"",
+				...quoted(turn.text),
+				"",
+			]),
+		],
 		"Key files and symbols": paths.length > 0 ? [...paths, ""] : NONE,
 	};
 	return layout(

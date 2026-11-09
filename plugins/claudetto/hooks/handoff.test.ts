@@ -31,7 +31,7 @@ const longSession = (): SessionMessage[] => [
 
 const KEY = `sk-ant-oat01-${"Q7rK2mZx9Lp4Vb8N".repeat(5)}`;
 
-const startup = (on: On): void => {
+const startup = (on: On, git = ""): void => {
 	on("classic.SessionStart", () => ({}));
 	on("session.version", () => ({
 		value: {
@@ -49,7 +49,7 @@ const startup = (on: On): void => {
 			scanned(e, [KEY]) ?? {
 				value: {
 					exitCode: 0,
-					stdout: "",
+					stdout: e.argv[0] === "git" ? git : "",
 					stderr: "",
 					isStdoutTruncated: false,
 					isStderrTruncated: false,
@@ -58,7 +58,7 @@ const startup = (on: On): void => {
 	);
 };
 
-const lab = (on: On, jsonl: string) => {
+const lab = (on: On, jsonl: string, git = "") => {
 	const files: { path: string; text: string }[] = [];
 	on("session.root", () => ({ value: "/repo" }));
 	on("fs.write", (_$, e) => {
@@ -68,7 +68,7 @@ const lab = (on: On, jsonl: string) => {
 	on("fs.read", () => ({ value: jsonl }));
 	on("ui.log", () => ({ value: undefined }));
 	on("session.compact", () => ({ skip: "core ran" }));
-	startup(on);
+	startup(on, git);
 	return files;
 };
 
@@ -97,6 +97,20 @@ test("an instruction older than the last twelve turns stays in the handoff", asy
 		"The staged deletions are mine",
 	);
 	expect(text.split("## Current state")[1]).not.toContain("staged deletions");
+});
+
+test("Fallback File: the code-built handoff's git line carries the write time", async ($: Engine, on: On) => {
+	const files = lab(on, human("go"), "## main...origin/main [ahead 3]\n M a.ts\n");
+
+	await compactWith($, longSession());
+
+	const text = files[0]?.text ?? "";
+	const at = /from the transcript at (\S+),/.exec(text)?.[1];
+	expect(at).toBeDefined();
+	expect(text.split("## Current state")[1]).toContain(
+		`Git as of ${at}: \`## main...origin/main [ahead 3]\``,
+	);
+	expect(text).not.toContain("M a.ts");
 });
 
 test("a session with no human statement writes no invented text under the two sections", async ($: Engine, on: On) => {
@@ -584,6 +598,12 @@ test("the read-back line tells a code-built handoff from one Claude wrote", () =
 	).toContain("built by code");
 	expect(readBackText("a.md", "# Handoff\n\nWritten by Claude")).toContain(
 		"written by Claude",
+	);
+});
+
+test("Remote Moved After the Handoff: the read-back says to run git status -sb before reporting branch or push state", () => {
+	expect(readBackText("a.md", "# Handoff\n\nWritten by Claude")).toContain(
+		"Run `git status -sb` before you report branch or push state",
 	);
 });
 

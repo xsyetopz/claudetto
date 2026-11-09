@@ -27,6 +27,12 @@ export const handoffPath = (at: Date): string =>
 /** The engine resolves a relative path against the shell's directory, which a `cd` moves, and the project root stays. */
 export const atRoot = (root: string, path: string): string => `${root}/${path}`;
 
+/** The first line of `git status -sb`, dated, because the remote can move after the handoff is written. */
+export const gitLines = (status: string, at: string): string[] => {
+	const head = status.split("\n")[0] ?? "";
+	return head === "" ? [] : [`Git as of ${at}: \`${head}\``, ""];
+};
+
 export const layout = (
 	source: string,
 	body: (section: string) => readonly string[],

@@ -14,7 +14,7 @@
 - [x] 2.4 run-limits: count only writes that ran (`slices.ts:128-139`), and replace `SLICE_OTHERS` (`texts.ts:66-69`) with the commit-under-its-source text.
 - [x] 2.5 permission-policy: branch gate asks or allows (`processes.ts:286-293`), fix the Read redirect parse (`gate/rules.ts:120-121`), add the protected-path check before a switch, and read standing instructions in the work gate.
 - [x] 2.6 agent-conduct: one channel per question across `Concise.md:23`, `limits/open-items.ts:12`, and `claudetto-you-should-know`.
-- [ ] 2.7 session-handoff: date the git state in the handoff and the fallback, and add the `git status -sb` line to the read-back.
+- [x] 2.7 session-handoff: date the git state in the handoff and the fallback, and add the `git status -sb` line to the read-back.
 - [x] 2.8 Removals from 1.2: delete `GATE_ENV_VALUES`, `GATE_ENV_DUMP` (`texts.ts:335-342`) and the grader faults `asks`, `jargon`, `confesses`, `narrates` (`texts.ts:485-504`) with their tests and CHANGELOG lines.
 - [ ] 2.9 Walls (item A): setup writes `Read(<wall>/**)` to `permissions.deny` for each `protectedPaths` entry, so the start notice (`gate.ts:221-229`) stays silent after setup.
 - [x] 2.11 Removals (item C): the injected rules say a removal deletes the feature's code, tests, and docs and adds no test that it stays gone, and that a pre-release project (version below 1.0.0, or the person says so) keeps no compatibility path for what it drops (`texts.ts:32`).

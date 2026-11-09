@@ -415,7 +415,7 @@ export const contextManagementText = (): string =>
 	`When the conversation grows long, finish the task in hand, then call \`${HANDOFF_CALL}\`, which writes this layout to \`${HANDOFF_DIR}/\` and starts the next window from it:\n\n\`\`\`markdown\n${layout("Written by Claude at <UTC time>.", () => []).replace(BLANK_LINES, "\n")}\`\`\`\nCite plans, specs, issues, commits, and diffs by path or URL. Write \`[REDACTED]\` for a key or a token.`;
 
 export const readBackText = (name: string, text: string): string =>
-	`The handoff below was ${text.includes(BUILT_BY_CODE) ? "built by code from the transcript, so it holds no reasons" : "written by Claude in the session that ended"}. It is \`${HANDOFF_DIR}/${name}\`.\n\n${text}`;
+	`The handoff below was ${text.includes(BUILT_BY_CODE) ? "built by code from the transcript, so it holds no reasons" : "written by Claude in the session that ended"}. It is \`${HANDOFF_DIR}/${name}\`. Run \`git status -sb\` before you report branch or push state, because its git line holds only as of the time it names.\n\n${text}`;
 
 export const STALE_HANDOFF = (name: string, days: number): string =>
 	`The newest handoff is ${days} days old, so none was injected. It is \`${HANDOFF_DIR}/${name}\`.`;
