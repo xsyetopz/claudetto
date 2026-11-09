@@ -20,7 +20,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
-- Three prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
+- Four prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
 - `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]`; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone.
 - The subagent cache TTL is set once, in `subagentPromptCacheTtl`, in place of `cacheTtl` in each agent file.
 - The status line measures context against the compaction window, paints with the Claude Code theme's colours, and flows its items into up to four rows.

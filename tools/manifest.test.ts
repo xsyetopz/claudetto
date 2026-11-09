@@ -55,7 +55,7 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	);
 	expect(requests).toContain("such a bullet holds that command and never a question.");
 	expect(requests).toContain(
-		"Ask through the popup before you assume or guess anything the request leaves open.",
+		"Ask through the popup only for what the user alone holds; settle the rest from the conversation and the repository, and state your reading.",
 	);
 });
 
