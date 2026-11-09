@@ -234,7 +234,7 @@ export const ASK_FORM = (tool: string, items: readonly string[]): string =>
 	[
 		"The reply puts a question to the user as a checklist item.",
 		...items.map((item) => `- [ ] ${item}`),
-		`A checklist item without \`! \` is a question, whether it reads "Tell me where X is", "give me the ID", or "enable Bash". Ask each with ${tool} and delete it from the reply.`,
+		`A checklist item is a question, whether it reads "Tell me where X is", "give me the ID", or "enable Bash". Ask each with ${tool} and delete it from the reply.`,
 	].join("\n");
 
 export const COMMAND_FORM = (v: {
@@ -245,14 +245,14 @@ export const COMMAND_FORM = (v: {
 	[
 		...(v.stray.length > 0 || v.headless
 			? [
-					"The reply names a command for the user outside a `- [ ] ! <command>` item under `## What I Need from You`.",
+					"The reply names a command for the user outside a plain `- ! <command>` bullet under `## What I Need from You`.",
 					...v.stray.map((line) => `- ${line}`),
-					"Move each into a `- [ ] ! <command>` item under one `## What I Need from You` heading.",
+					"Move each into a `- ! <command>` bullet, with no checkbox, under one `## What I Need from You` heading.",
 				]
 			: []),
 		...(v.several.length > 0
 			? [
-					"The reply lists more than one `- [ ] ! <command>` item:",
+					"The reply lists more than one `- ! <command>` bullet:",
 					...v.several,
 					"Keep the one the work needs first, and ask for the next in a later reply, after the person has run it.",
 				]

@@ -181,14 +181,14 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 
 #### Scenario: Open Items Under Any Heading
 
-- **WHEN** `- [ ]` items sit under `## Open`, `## What I Need from You`, or no heading, and carry no `! <command>`
+- **WHEN** `- [ ]` items sit under `## Open`, `## What I Need from You`, or no heading
 - **THEN** the stop is blocked and the items are listed
 
 #### Scenario: An Item Is a Question
 
-- **WHEN** an open item carries no `! <command>`
+- **WHEN** a reply holds a `- [ ]` item
 - **THEN** the block says the item is a question, to ask it through the ask tool, and to delete it from the reply
-- **AND** the lab test is `limits/open-items.test.ts`, "an item without a ! command is a question: the block says to ask it and delete the item"
+- **AND** the lab test is `limits/open-items.test.ts`, "a checkbox item is a question: the block says to ask it and delete the item"
 
 #### Scenario: An Open Ask
 
@@ -216,13 +216,18 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 #### Scenario: The Request List the Output Style Prescribes
 
 - **WHEN** the reply lists `- [ ] Send what the empty message was meant to say.` under `## What I Need from You`, with no `! <command>`
-- **THEN** the stop is blocked and the item is listed, and a `- [ ]` item that carries `! <command>` passes
+- **THEN** the stop is blocked and the item is listed, and a plain `- ` bullet that carries `! <command>` passes
+
+#### Scenario: A Command in a Checkbox
+
+- **WHEN** the reply lists `- [ ] ! gh auth login` under `## What I Need from You`
+- **THEN** the stop is blocked, and the block lists the line and says to move it into a `- ! <command>` bullet with no checkbox, because nobody ticks a checkbox in a reply (the person, 2026-11-09)
 
 #### Scenario: Two Commands at Once
 
-- **WHEN** the reply lists two `- [ ] ! <command>` items under `## What I Need from You`
+- **WHEN** the reply lists two `- ! <command>` bullets under `## What I Need from You`
 - **THEN** the stop is blocked once, the block names both commands, and tells the model to keep the one the work needs first and ask for the other in a later reply
-- **AND** a reply with one `- [ ] ! <command>` item passes
+- **AND** a reply with one `- ! <command>` bullet passes
 
 #### Scenario: A Paid Run That Waits for the User
 

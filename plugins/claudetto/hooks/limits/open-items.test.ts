@@ -102,18 +102,27 @@ test("a plain bullet under an Open heading is no task item", async ($: Engine, o
 	expect(out.block).toBeUndefined();
 });
 
-test("an open item that gives a `! command` passes, a paid run included", async ($: Engine, on: On) => {
+test("a plain bullet that gives a `! command` passes, a paid run included", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
 		$,
-		"## What I Need from You\n- [ ] paid eval: approve it with `! bun run paid-eval`",
+		"## What I Need from You\n- paid eval: approve it with `! bun run paid-eval`",
 	);
 
 	expect(out.block).toBeUndefined();
 });
 
-test("an item without a ! command is a question: the block says to ask it and delete the item", async ($: Engine, on: On) => {
+test("a `! command` in a checkbox item blocks and asks for a plain bullet", async ($: Engine, on: On) => {
+	lab(on);
+
+	const out = await stop($, "## What I Need from You\n- [ ] ! gh auth login");
+
+	expect(out.block).toContain("- [ ] ! gh auth login");
+	expect(out.block).toContain("with no checkbox");
+});
+
+test("a checkbox item is a question: the block says to ask it and delete the item", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
@@ -121,7 +130,7 @@ test("an item without a ! command is a question: the block says to ask it and de
 		"- [ ] Tell me where the repo is\n- [ ] give me the ID\n- [ ] enable Bash",
 	);
 
-	expect(out.block).toContain("A checklist item without `! ` is a question");
+	expect(out.block).toContain("A checklist item is a question");
 	expect(out.block).toContain("Ask each with AskUserQuestion and delete it");
 	for (const item of [
 		"Tell me where the repo is",
@@ -199,12 +208,12 @@ test("the recorded incident reply, in the form the output style prescribes, bloc
 	expect(out.block).toContain("Send what the empty message was meant to say");
 });
 
-test("a What I Need from You item with a ! command passes", async ($: Engine, on: On) => {
+test("a What I Need from You bullet with a ! command passes", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
 		$,
-		"## What I Need from You\n- [ ] Log in: `! gh auth login`. Send back the account name. Meanwhile I write the tests.",
+		"## What I Need from You\n- Log in: `! gh auth login`. Send back the account name. Meanwhile I write the tests.",
 	);
 
 	expect(out.block).toBeUndefined();
@@ -226,7 +235,7 @@ test("an item is listed by its text alone, whatever the bullet, indent, spacing,
 	}
 });
 
-test("a `!` excuses an item at its start, after a space, a backtick, or a paren, with spaces after it", async ($: Engine, on: On) => {
+test("a `!` makes a bullet a command at its start, after a space, a backtick, or a paren, with spaces after it", async ($: Engine, on: On) => {
 	lab(on);
 
 	const excused = await Promise.all(
@@ -235,7 +244,7 @@ test("a `!` excuses an item at its start, after a space, a backtick, or a paren,
 			"log in with ! gh auth login",
 			"run `!  gh auth login`",
 			"run (! gh auth login)",
-		].map((item) => stop($, `## What I Need from You\n- [ ] ${item}`)),
+		].map((item) => stop($, `## What I Need from You\n- ${item}`)),
 	);
 	const blocked = await Promise.all(
 		["fix this! Then retry", "run `!gh auth login`"].map((item) =>
@@ -295,7 +304,10 @@ test("a backtick command the reply asks the user to run without ! is stray", () 
 		commandForm("You need to run `gh auth login` first.").stray,
 	).toHaveLength(1);
 	expect(commandForm("Run `bun dev` to start it.").stray).toEqual([]);
-	expect(commandForm("- [ ] ! gh auth login").stray).toEqual([]);
+	expect(commandForm("- ! gh auth login").stray).toEqual([]);
+	expect(commandForm("- [ ] ! gh auth login").stray).toEqual([
+		"- [ ] ! gh auth login",
+	]);
 });
 
 test("a question item names AskUserQuestion, or the mcp tool when the session lists it", async ($: Engine, on: On) => {
@@ -325,7 +337,7 @@ test("a reply already in form costs nothing: no block and no tool.list call", as
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo",
+		"Wrote the unit file.\n\n## What I Need from You\n- ! sudo systemctl enable foo",
 	);
 	const plain = await stop($, "Wrote the unit file. Tests pass.");
 
@@ -341,7 +353,7 @@ test("a command outside an item blocks: a ! line, a sudo code block, sudo in pro
 	const code = await stop($, "Install:\n```sh\nsudo apt install jq\n```");
 	const prose = await stop($, "You need to run sudo systemctl restart foo.");
 
-	expect(bang.block).toContain("`- [ ] ! <command>` item");
+	expect(bang.block).toContain("`- ! <command>` bullet");
 	expect(bang.block).toContain("! gh auth login");
 	expect(code.block).toContain("sudo apt install jq");
 	expect(prose.block).toContain("sudo systemctl restart foo");
@@ -350,7 +362,7 @@ test("a command outside an item blocks: a ! line, a sudo code block, sudo in pro
 test("items with a ! command and no heading block", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await stop($, "- [ ] ! gh auth login");
+	const out = await stop($, "- ! gh auth login");
 
 	expect(out.block).toContain("## What I Need from You");
 });
@@ -360,7 +372,7 @@ test("the form passes: one command in an item under the heading, no question in 
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo",
+		"Wrote the unit file.\n\n## What I Need from You\n- ! sudo systemctl enable foo",
 	);
 
 	expect(out.block).toBeUndefined();
@@ -371,7 +383,7 @@ test("two ! command items block once, naming both, and keep the one the work nee
 
 	const out = await stop(
 		$,
-		"Wrote the unit file.\n\n## What I Need from You\n- [ ] ! sudo systemctl enable foo\n- [ ] ! gh auth login",
+		"Wrote the unit file.\n\n## What I Need from You\n- ! sudo systemctl enable foo\n- ! gh auth login",
 	);
 
 	expect(out.block).toContain("! sudo systemctl enable foo");

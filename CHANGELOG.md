@@ -86,7 +86,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The handover and the handoff writer are one, and a handoff carries every standing instruction and decision you stated, not only the last 12 turns.
 - A resume no longer injects a handoff older than the resumed transcript.
 - The Stop open-items check has an off switch and accepts only blockers the hook can verify.
-- A question the reply leaves to you goes to the `AskUserQuestion` popup, and a command only you can run is a `- [ ] ! <command>` item under one "What I Need from You" heading, one per reply. A Stop reply that types a question as an item, puts a command outside that form, or lists two or more command items is blocked.
+- A question the reply leaves to you goes to the `AskUserQuestion` popup, and a command only you can run is a plain `- ! <command>` bullet under one "What I Need from You" heading, one per reply. A Stop reply that types a question as a checkbox item, puts a command outside that form (in a checkbox included), or lists two or more command bullets is blocked.
 - Tools are deferred only when the session has `ToolSearch`, so a `--tools` list without it keeps the prompt cache from the second request on.
 - `Artemis`, `Metis`, and `Heracles` ask for a one-hour prompt cache.
 - The stall rule ends the turn at the first Stop block after a stretch with no file change, so a `/goal` pauses after one check.

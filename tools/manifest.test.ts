@@ -48,12 +48,12 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	);
 
 	expect(requests).toContain(
-		"as a `- [ ] ! <command>` item under one `## What I Need from You` heading",
+		"as a `- ! <command>` bullet under one `## What I Need from You` heading",
 	);
 	expect(requests).toContain(
 		"Ask each question for the user once, through the popup (`mcp__claudetto__ask-user-question`, or `AskUserQuestion` when that tool is absent)",
 	);
-	expect(requests).toContain("such an item holds that command and never a question.");
+	expect(requests).toContain("such a bullet holds that command and never a question.");
 	expect(requests).toContain(
 		"Ask through the popup before you assume or guess anything the request leaves open.",
 	);
