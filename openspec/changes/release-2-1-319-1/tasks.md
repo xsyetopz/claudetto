@@ -3,7 +3,7 @@
 ## 1. Audit
 
 - [x] 1.1 Map each item of `ISSUES-2026-11-09-1422.md` to the spec in `openspec/specs/` and the code it touches, and record the map in `design.md`.
-- [ ] 1.2 Re-audit each rule, gate, and hook against `openspec/specs/` (issue item 16), and list what no spec or issue keeps.
+- [x] 1.2 Re-audit each rule, gate, and hook against `openspec/specs/` (issue item 16), and list what no spec or issue keeps.
 - [ ] 1.3 Write the spec deltas for what 1.2 finds, then validate the change.
 
 ## 2. Fixes, One Slice and One Commit Each, Failing Test First
@@ -15,6 +15,9 @@
 - [ ] 2.5 permission-policy: branch gate asks or allows (`processes.ts:286-293`), fix the Read redirect parse (`gate/rules.ts:120-121`), add the protected-path check before a switch, and read standing instructions in the work gate.
 - [ ] 2.6 agent-conduct: one channel per question across `Concise.md:23`, `limits/open-items.ts:12`, and `claudetto-you-should-know`.
 - [ ] 2.7 session-handoff: date the git state in the handoff and the fallback, and add the `git status -sb` line to the read-back.
+- [ ] 2.8 Removals from 1.2: delete `GATE_ENV_VALUES`, `GATE_ENV_DUMP` (`texts.ts:335-342`) and the grader faults `asks`, `jargon`, `confesses`, `narrates` (`texts.ts:485-504`) with their tests and CHANGELOG lines.
+- [ ] 2.9 Walls (item A): setup writes `Read(<wall>/**)` to `permissions.deny` for each `protectedPaths` entry, so the start notice (`gate.ts:221-229`) stays silent after setup.
+- [ ] 2.10 Setup (item B): replace the per-step write-or-skip popups with a cheap model that explains and decides; design the shape with the person first.
 
 ## 3. Handover Probe
 
