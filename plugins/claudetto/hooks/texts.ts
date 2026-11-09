@@ -515,6 +515,14 @@ export const GRADE_FAULTS = {
 		test: 'The reply reports the failed command below as the outcome or a blocker, its error names a fix the assistant can apply itself (a token or env file it holds, a flag, a path, a dependency), and it did not rerun. "Not logged in" or "run /login" counts when a user message names a token or env file. Not this fault: a fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission).',
 		fix: "Your reply reports a failed command whose error names a fix you can supply (a token or env file, a flag, a path, a dependency). Apply it, rerun the command, and report what the rerun shows.",
 	},
+	padding: {
+		test: 'The reply holds a sentence that carries no fact about the work: an apology or self-blame ("my mistake", "sorry"), agreement or validation of the user ("you\'re right", "good call", "you didn\'t need to"), thanks or praise, an account of the assistant\'s own obedience ("I\'ve stopped as you asked"), an offer or pleasantry ("whenever you like", "let me know"), or a restatement of a step the user ran or a fact the user stated in the messages below. Not this fault: a correction that states the corrected fact, or a result the user has not seen.',
+		fix: "Delete each sentence that apologizes, agrees with or validates the user, thanks or praises, describes your own obedience, offers more, or restates what the user ran or said. Keep the facts and results, open with the first of them, and resend.",
+	},
+	options: {
+		test: 'The reply ends by asking the user to choose, in its own text, between options or a yes or no ("Pick one", "Option A … Option B", "Should I …?", "Want me to …?"), instead of a call to the ask tool. Not this fault: a `! <command>` the user alone can run, or a report with no choice to make.',
+		fix: "Your reply asks the user to choose in plain text. Delete the choice from the text, call mcp__claudetto__ask-user-question with the question and its options, and end the reply on the result.",
+	},
 } as const;
 
 export type GradeFault = keyof typeof GRADE_FAULTS;

@@ -156,7 +156,26 @@ const FIXES = {
 	credited: "credits the user",
 	rules: "recited the rules",
 	fallback: "fallback or a compatibility path",
+	padding: "Delete each sentence that apologizes",
+	options: "call mcp__claudetto__ask-user-question",
 };
+
+test("every turn is offered the padding and options faults", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("I fixed it."), used("Read")], '{"faults":[]}', seen);
+	await stop($);
+	expect(seen[0]).toContain("- padding:");
+	expect(seen[0]).toContain("- options:");
+});
+
+test("a headless turn, which no ask reaches, is not offered the options fault", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [user("I fixed it."), used("Read")], '{"faults":[]}', seen);
+	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
+	await stop($);
+	expect(seen[0]).toContain("- padding:");
+	expect(seen[0]).not.toContain("- options:");
+});
 
 for (const [code, fix] of Object.entries(FIXES)) {
 	test(`the ${code} fault blocks once with its own fix`, async ($: Engine, on: On) => {

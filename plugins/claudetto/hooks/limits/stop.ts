@@ -117,13 +117,16 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
-/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`; a failed last Bash call offers `unfixed`. */
+/** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`; a failed last Bash call offers `unfixed`; a headless session, which no ask reaches, is not offered `options`. */
 export const offeredCodes = (
 	looked: boolean,
 	failed: boolean,
+	interactive: boolean,
 ): GradeFault[] => [
 	"credited",
 	"fallback",
+	"padding",
+	...(interactive ? (["options"] as const) : []),
 	...(looked ? [] : (["unchecked", "rules"] as const)),
 	...(failed ? (["unfixed"] as const) : []),
 ];
@@ -140,13 +143,14 @@ const gradeBlock = async (
 		readonly background_tasks?: readonly BackgroundTaskSummary[] | undefined;
 	},
 	denied: ReadonlySet<string>,
+	interactive: boolean,
 ) => {
 	const reply = e.last_assistant_message ?? "";
 	const turn = claimTurn(await $.session.messages(), denied);
 	if (reply === "") {
 		return;
 	}
-	const codes = offeredCodes(turn.looked, turn.failed !== "");
+	const codes = offeredCodes(turn.looked, turn.failed !== "", interactive);
 	const grade = async (
 		model: "haiku" | "sonnet",
 		list: readonly GradeFault[],
@@ -247,7 +251,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		const block =
 			(await filesBlock($, e)) ??
 			(isOpenItemsOn ? await openBlock($, e, interactive) : undefined) ??
-			(await gradeBlock($, e, denied));
+			(await gradeBlock($, e, denied, interactive));
 		if (block !== undefined) {
 			return { ...answer, block };
 		}
