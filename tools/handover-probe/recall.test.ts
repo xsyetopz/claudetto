@@ -36,6 +36,15 @@ test("an answer needs every keyword, in any case", () => {
 	expect(score.correct).toHaveLength(9);
 });
 
+test("a paraphrase from paid run 2 scores, and a wrong fact does not", () => {
+	const answers = [...perfect];
+	answers[2] = "Money is stored as whole numbers of cents, never as floats.";
+	answers[8] = "Migrations are SQL files that only move forward. The first one is named `0001_init.sql`.";
+	expect(scoreRecall(answers).correct).toHaveLength(10);
+	answers[2] = "Money is a float in dollars.";
+	expect(scoreRecall(answers).lost).toEqual(["q3-money"]);
+});
+
 test("a missing answer scores as lost", () => {
 	expect(scoreRecall(perfect.slice(0, 7)).lost).toHaveLength(3);
 });

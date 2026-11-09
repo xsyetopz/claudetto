@@ -1,7 +1,7 @@
 export interface Question {
 	readonly id: string;
 	readonly ask: string;
-	/** Every keyword must appear in the answer, in any case. */
+	/** Every keyword must appear in the answer, in any case. A keyword is the fact's core word, because a real model paraphrases: "whole numbers of cents", "only move forward". */
 	readonly expect: readonly string[];
 }
 
@@ -20,7 +20,7 @@ export const QUESTIONS: readonly Question[] = [
 	{
 		id: "q3-money",
 		ask: "Recall: how is money represented?",
-		expect: ["integer cents"],
+		expect: ["cents"],
 	},
 	{
 		id: "q4-ids",
@@ -50,7 +50,7 @@ export const QUESTIONS: readonly Question[] = [
 	{
 		id: "q9-migrations",
 		ask: "Recall: how do migrations work, and what is the first one named?",
-		expect: ["forward-only", "0001_init.sql"],
+		expect: ["forward", "0001_init.sql"],
 	},
 	{
 		id: "q10-time",

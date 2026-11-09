@@ -63,16 +63,31 @@ test("the relay forwards the request and logs the upstream usage, context, and h
 });
 
 test("errorOf returns the text of the last turn when it ended in an error", () => {
-	const result = (is_error: boolean, result: string) => JSON.stringify({ type: "result", is_error, result });
+	const result = (is_error: boolean, result: string) =>
+		`${is_error ? "" : `${JSON.stringify({ type: "assistant" })}\n`}${JSON.stringify({ type: "result", is_error, result })}`;
 	expect(errorOf(`${result(false, "ok")}\n${result(true, "Invalid auth token")}\n`)).toBe("Invalid auth token");
 	expect(errorOf(`${result(true, "old")}\n${result(false, "ok")}\n`)).toBeUndefined();
 	expect(errorOf("")).toBeUndefined();
 });
 
+const assistant = JSON.stringify({ type: "assistant" });
+
 test("answersOf takes the last 10 turn results across the stream files", () => {
-	const line = (result: string) => JSON.stringify({ type: "result", result });
-	const first = `${[line("a"), JSON.stringify({ type: "assistant" }), line("b")].join("\n")}\n`;
+	const line = (result: string) => `${assistant}\n${JSON.stringify({ type: "result", result })}`;
+	const first = `${[line("a"), line("b")].join("\n")}\n`;
 	const second = `${Array.from({ length: 10 }, (_, i) => line(`r${i}`)).join("\n")}\n`;
 	expect(answersOf([first, second])).toEqual(Array.from({ length: 10 }, (_, i) => `r${i}`));
 	expect(answersOf([`${first}{"type":"res`])).toEqual(["a", "b"]);
+});
+
+test("a clear's or a handover's own result is not a turn result", () => {
+	const line = (result: string) => JSON.stringify({ type: "result", result });
+	const handover = [
+		JSON.stringify({ type: "command_lifecycle" }),
+		JSON.stringify({ type: "system", subtype: "compact_boundary" }),
+		JSON.stringify({ type: "user" }),
+		line(""),
+	];
+	const stream = `${[assistant, line("q1"), ...handover, assistant, line("q2")].join("\n")}\n`;
+	expect(answersOf([stream])).toEqual(["q1", "q2"]);
 });

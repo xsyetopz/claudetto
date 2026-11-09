@@ -96,12 +96,28 @@ export const startRelay = (opts: { readonly log: string; readonly upstream: stri
 	return { port: server.port ?? 0, stop: () => void server.stop(true) };
 };
 
-/** The result of each finished turn in `stream-json` outputs, in order. The text after the last newline may still be in the middle of a write, so it is left out. */
-const resultLines = (streams: readonly string[]): readonly { is_error?: boolean; result?: string }[] =>
-	streams
-		.flatMap((s) => s.split("\n").slice(0, -1))
-		.map((l) => JSON.parse(l))
-		.filter((e) => e.type === "result");
+interface StreamEvent {
+	readonly type: string;
+	readonly is_error?: boolean;
+	readonly result?: string;
+}
+
+/** The result of each finished turn in `stream-json` outputs, in order. The text after the last newline may still be in the middle of a write, so it is left out. A clear or a handover ends in a result of its own with no `assistant` event before it; that result answers no prompt. */
+const resultLines = (streams: readonly string[]): readonly StreamEvent[] => {
+	const turns: StreamEvent[] = [];
+	let answered = false;
+	for (const e of streams.flatMap((s) => s.split("\n").slice(0, -1)).map((l) => JSON.parse(l) as StreamEvent)) {
+		if (e.type === "assistant") {
+			answered = true;
+		} else if (e.type === "result") {
+			if (answered || e.is_error) {
+				turns.push(e);
+			}
+			answered = false;
+		}
+	}
+	return turns;
+};
 
 export const resultsOf = (streams: readonly string[]): readonly string[] =>
 	resultLines(streams).map((e) => String(e.result ?? ""));
