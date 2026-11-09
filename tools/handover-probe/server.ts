@@ -174,7 +174,11 @@ export const startFake = (opts: {
 			if (url.pathname.endsWith("/count_tokens")) {
 				return Response.json({ input_tokens: 100 });
 			}
-			const { body, lastUserText, kind, ttls, toolNames } = requestFacts(await req.text());
+			const raw = await req.text();
+			if (process.env["PROBE_BODIES"] !== undefined) {
+				appendFileSync(process.env["PROBE_BODIES"], `${JSON.stringify({ raw })}\n`);
+			}
+			const { body, lastUserText, kind, ttls, toolNames } = requestFacts(raw);
 			const requestId = `req_fake_${++n}`;
 			const total = fakeContextTokens(body.messages);
 			const prefix = textOf(body.messages[0]);
