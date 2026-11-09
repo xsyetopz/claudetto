@@ -4,7 +4,7 @@ import type { Event } from "./events.ts";
 export const WINDOW = 200_000;
 
 /** Never reached by the 40-turn task, so the handover stays off. */
-const OFF = 100_000_000;
+export const OFF = 100_000_000;
 
 export interface Arm {
 	readonly name: string;
@@ -15,8 +15,8 @@ export interface Arm {
 	readonly handoffOnBoundary: boolean;
 	/** `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`: the built-in compaction's place, as a percent of the window; none turns it off. */
 	readonly autoCompactPct: number | undefined;
-	/** `/compact` is sent after these turns (0-based). */
-	readonly compactAfter: readonly number[];
+	/** After this many built-in compactions the run restarts with `--continue`, the built-in compaction off and the handover on: `/compact` is off in claudetto, and one threshold pair cannot order two compactions before a handover. */
+	readonly handoverAfterCompactions?: number;
 	readonly expects: string;
 }
 
@@ -26,7 +26,6 @@ const fork = (pct: number): Arm => ({
 	handoverTokens: (WINDOW * pct) / 100,
 	handoffOnBoundary: false,
 	autoCompactPct: undefined,
-	compactAfter: [],
 	expects: `handovers, the first at ${pct}%`,
 });
 
@@ -37,7 +36,6 @@ export const ARMS: readonly Arm[] = [
 		handoverTokens: OFF,
 		handoffOnBoundary: true,
 		autoCompactPct: undefined,
-		compactAfter: [],
 		expects: "3 clears with handoffs",
 	},
 	fork(25),
@@ -49,16 +47,15 @@ export const ARMS: readonly Arm[] = [
 		handoverTokens: OFF,
 		handoffOnBoundary: false,
 		autoCompactPct: 78,
-		compactAfter: [],
 		expects: "a compaction near 140,000 tokens",
 	},
 	{
 		name: "D",
 		label: "two built-in compactions, then a handover",
 		handoverTokens: WINDOW / 2,
+		handoverAfterCompactions: 2,
 		handoffOnBoundary: false,
-		autoCompactPct: undefined,
-		compactAfter: [9, 19],
+		autoCompactPct: 28,
 		expects: "2 compactions, then 1 handover",
 	},
 ];
