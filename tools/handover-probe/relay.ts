@@ -97,12 +97,20 @@ export const startRelay = (opts: { readonly log: string; readonly upstream: stri
 };
 
 /** The result of each finished turn in `stream-json` outputs, in order. The text after the last newline may still be in the middle of a write, so it is left out. */
-export const resultsOf = (streams: readonly string[]): readonly string[] =>
+const resultLines = (streams: readonly string[]): readonly { is_error?: boolean; result?: string }[] =>
 	streams
 		.flatMap((s) => s.split("\n").slice(0, -1))
 		.map((l) => JSON.parse(l))
-		.filter((e) => e.type === "result")
-		.map((e) => String(e.result ?? ""));
+		.filter((e) => e.type === "result");
+
+export const resultsOf = (streams: readonly string[]): readonly string[] =>
+	resultLines(streams).map((e) => String(e.result ?? ""));
+
+/** The text of the last turn's result when that turn ended in an error, such as a refused credential. */
+export const errorOf = (stream: string): string | undefined => {
+	const last = resultLines([stream]).at(-1);
+	return last?.is_error ? String(last.result ?? "") : undefined;
+};
 
 /** The model's answers to the recall questions: the results of the last 10 turns. */
 export const answersOf = (streams: readonly string[]): readonly string[] => resultsOf(streams).slice(-10);

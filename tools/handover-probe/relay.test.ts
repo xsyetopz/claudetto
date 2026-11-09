@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { answersOf, startRelay } from "./relay.ts";
+import { answersOf, errorOf, startRelay } from "./relay.ts";
 
 const SSE = [
 	["message_start", { message: { id: "msg_1", usage: { input_tokens: 7, cache_read_input_tokens: 900, cache_creation_input_tokens: 93, cache_creation: { ephemeral_5m_input_tokens: 93, ephemeral_1h_input_tokens: 0 }, output_tokens: 1 } } }],
@@ -60,6 +60,13 @@ test("the relay forwards the request and logs the upstream usage, context, and h
 		lastUserText: "Decision 1.",
 		usage: { cache_read_input_tokens: 900, output_tokens: 42 },
 	});
+});
+
+test("errorOf returns the text of the last turn when it ended in an error", () => {
+	const result = (is_error: boolean, result: string) => JSON.stringify({ type: "result", is_error, result });
+	expect(errorOf(`${result(false, "ok")}\n${result(true, "Invalid auth token")}\n`)).toBe("Invalid auth token");
+	expect(errorOf(`${result(true, "old")}\n${result(false, "ok")}\n`)).toBeUndefined();
+	expect(errorOf("")).toBeUndefined();
 });
 
 test("answersOf takes the last 10 turn results across the stream files", () => {

@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { type Arm, OFF } from "./arms.ts";
 import { eventsOf } from "./events.ts";
-import { answersOf, resultsOf, startRelay } from "./relay.ts";
+import { answersOf, errorOf, resultsOf, startRelay } from "./relay.ts";
 import { type LogRecord, startFake } from "./server.ts";
 import { TURNS } from "./task.ts";
 
@@ -153,6 +153,13 @@ export const runArm = async (arm: Arm, index: number, paid: boolean): Promise<Ru
 		const before = resultsIn(streamOf(dir, phase));
 		send(turn.prompt);
 		await finished(dir, phase, before);
+		const error = errorOf(streamOf(dir, phase));
+		if (error !== undefined) {
+			proc.kill();
+			fake.stop();
+			sink.stop(true);
+			throw new Error(`arm ${arm.name} run ${index}, turn ${i + 1}: ${error} (run dir ${dir})`);
+		}
 		await settle(log);
 		for (const r of readLog(log)) {
 			if (!turnOf.has(r.n)) {
