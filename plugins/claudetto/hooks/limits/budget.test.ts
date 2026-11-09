@@ -148,7 +148,7 @@ test("a seven-day share of 90% or more adds the share as a fact and no instructi
 
 test("the root prompt carries the instruction for a seven-day share of 90% or more", () => {
 	expect(ROOT_PROMPT).toContain("seven-day limit at 90% or more");
-	expect(ROOT_PROMPT).toContain("work in the main thread");
+	expect(ROOT_PROMPT).toContain("work in main thread");
 	expect(ROOT_PROMPT).toContain(
 		"after a reply that spent over 1% of the week, say how much remains",
 	);
