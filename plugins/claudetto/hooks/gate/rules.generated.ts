@@ -969,6 +969,15 @@ export const GENERATED = {
 			"regex": "(?:^|\\s)(?:curl|wget)\\s+.*\\|\\s*(?:sudo\\s+(?:-\\S+\\s+)*|env\\s+(?:-\\S+\\s+)*|exec\\s+)?(?:\\S*\\/)?(?:bash|sh|zsh|fish|dash|ksh|ash)(?:\\s|$)",
 			"flags": "",
 			"filters": []
+		},
+		{
+			"id": "claudetto:lint-unsafe-fix",
+			"decision": "deny",
+			"description": "A linter's unsafe fixes can change what the code does, and one deleted working code. Run the safe `--fix`, read each remaining suggestion, and apply it with Edit.",
+			"feed": "parsed",
+			"regex": "(?:^|\\s)(?:\\S*\\/)?(?:oxlint|biome|ruff)\\s(?:.*\\s)?(?:--fix-suggestions|--fix-dangerously|--unsafe|--unsafe-fixes)(?:=\\S*)?(?:\\s|$)",
+			"flags": "",
+			"filters": []
 		}
 	],
 	"fixtures": [

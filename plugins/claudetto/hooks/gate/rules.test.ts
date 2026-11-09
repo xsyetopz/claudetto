@@ -207,6 +207,30 @@ test("root and home are deleted by no spelling", () => {
 	);
 });
 
+test("a linter's unsafe fixes are denied, its safe fixes pass", () => {
+	for (const command of [
+		"oxlint --fix-suggestions src",
+		"oxlint --fix --fix-dangerously",
+		"bunx oxlint --fix-suggestions",
+		"biome check --write --unsafe .",
+		"ruff check --fix --unsafe-fixes",
+		"./node_modules/.bin/oxlint --fix-suggestions",
+	]) {
+		const verdict = judge(command, NONE);
+
+		expect(verdict?.decision).toBe("deny");
+		expect(verdict?.reason).toContain("claudetto:lint-unsafe-fix");
+	}
+	for (const command of [
+		"oxlint --fix src",
+		"biome check --write .",
+		"ruff check --fix",
+		"oxlint --help",
+	]) {
+		expect(decision(command)).toBeUndefined();
+	}
+});
+
 test("a recursive delete of a folder that is no root passes", () => {
 	for (const command of ["rm -rf tmp/x", "rm /", "ls -R /", "ls -R ~"]) {
 		expect(decision(command)).toBeUndefined();
