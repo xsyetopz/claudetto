@@ -5,7 +5,7 @@ import { type Arm, OFF } from "./arms.ts";
 import { eventsOf } from "./events.ts";
 import { answersOf, errorOf, resultsOf, startRelay } from "./relay.ts";
 import { type LogRecord, startFake } from "./server.ts";
-import { TURNS } from "./task.ts";
+import { promptOf, TURNS } from "./task.ts";
 
 const PLUGIN_DIR = resolve(import.meta.dir, "../../plugins/claudetto");
 const SETTLE_MS = 1_500;
@@ -151,7 +151,7 @@ export const runArm = async (arm: Arm, index: number, paid: boolean): Promise<Ru
 		eventsOf(readLog(log)).filter((e) => e.type === "compaction").length;
 	for (const [i, turn] of TURNS.entries()) {
 		const before = resultsIn(streamOf(dir, phase));
-		send(turn.prompt);
+		send(promptOf(turn, arm));
 		await finished(dir, phase, before);
 		const error = errorOf(streamOf(dir, phase));
 		if (error !== undefined) {

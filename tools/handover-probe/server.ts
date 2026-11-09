@@ -1,6 +1,7 @@
 import { appendFileSync } from "node:fs";
 import { FORK_PROMPT } from "../../plugins/claudetto/hooks/texts.ts";
 import { fakeContextTokens, fakeUsage } from "./fake.ts";
+import { HANDOFF_ASK } from "./task.ts";
 import type { Usage } from "./usage.ts";
 
 export type Kind = "main" | "fork" | "summarizer" | "other";
@@ -193,7 +194,7 @@ export const startFake = (opts: {
 					: kind === "summarizer"
 						? { text: "<summary>FAKE summary of the conversation.</summary>" }
 						: opts.handoffOnBoundary &&
-								lastUserText.includes("This ends the task: hand off.") &&
+								lastUserText.includes(HANDOFF_ASK) &&
 								body.tools?.some((t) => t.name === "mcp__claudetto__handoff")
 							? { tool: "mcp__claudetto__handoff", input: HANDOFF_INPUT }
 							: { text: "FAKE reply." };
