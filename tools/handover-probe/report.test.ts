@@ -11,7 +11,7 @@ if (arm === undefined) {
 
 const records = [
 	rec(1, {}),
-	rec(2, { kind: "summarizer", contextTokens: 145_000 }),
+	rec(2, { kind: "summarizer", contextTokens: 55_000 }),
 	rec(3, {}),
 	rec(4, {}),
 	rec(5, {}),
@@ -34,7 +34,7 @@ test("an event shows its summarizer request and the 3 requests after it, once ea
 });
 
 test("the table names the expected events and the verdict", () => {
-	expect(table).toContain("a compaction near 140,000 tokens");
+	expect(table).toContain("a compaction near 53,000 tokens");
 	expect(table).toContain("1 compaction");
 });
 

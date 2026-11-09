@@ -7,7 +7,7 @@ The default of `handoverThresholdTokens` SHALL change only when a probe of four 
 #### Scenario: The Four Arms
 
 - **WHEN** the probe is set up
-- **THEN** its arms are: never compact, with a handoff and a clear at each task boundary; a forked handover at 25%, 50%, and 70% of the window; the built-in compaction near 140,000 tokens; and two built-in compactions followed by a handover
+- **THEN** its arms are: never compact, with a handoff and a clear at each task boundary; a forked handover at 35,000, 45,000, and 53,000 tokens; the built-in compaction near 53,000 tokens; and two built-in compactions at 40,000 tokens followed by a handover at 45,000, all inside the 25,000 to 65,000 tokens that the 40 real turns span
 - **AND** each run records the summarizer request and the first three requests after each event
 
 #### Scenario: Probe Not Run
@@ -17,7 +17,7 @@ The default of `handoverThresholdTokens` SHALL change only when a probe of four 
 
 #### Scenario: A Cheaper Arm with Equal Recall
 
-- **WHEN** the forked handover at 50% costs less than the built-in arm in all three runs and loses no recall question the built-in arm keeps
+- **WHEN** a forked handover costs less than the built-in arm in all three runs and loses no recall question the built-in arm keeps
 - **THEN** the default moves to that threshold and the result is recorded with its rows
 
 #### Scenario: Paid Runs

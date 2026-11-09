@@ -25,9 +25,11 @@ Each run's `ANTHROPIC_BASE_URL` points at a relay on `127.0.0.1` (`relay.ts`), w
 | Arm | What fires | How |
 | --- | --- | --- |
 | A | a handoff and a clear at each of 3 task boundaries | the fake model calls `mcp__claudetto__handoff` on a prompt that ends a task; the handover threshold is off |
-| B25, B50, B70 | a forked handover at 25%, 50%, 70% of a 200,000 window | `handoverThresholdTokens` of 50,000, 100,000, 140,000 |
-| C | the built-in compaction near 140,000 | `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=78`; the handover is off |
-| D | two built-in compactions, then a handover | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=28` until 2 compactions, then a restart with `--continue`, the compaction off, and a threshold of 100,000 |
+| B35, B45, B53 | a forked handover at 35,000, 45,000, 53,000 tokens | `handoverThresholdTokens` of those counts |
+| C | the built-in compaction near 53,000 | `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` at 53,000 of the 180,000 left after the 20,000 output reserve; the handover is off |
+| D | two built-in compactions at 40,000, then a handover at 45,000 | the percent for 40,000 until 2 compactions, then a restart with `--continue`, the compaction off, and a threshold of 45,000 |
+
+A real 40-turn run spans about 25,000 to 65,000 tokens (paid run 1), so every threshold sits inside that span.
 
 ## Files
 

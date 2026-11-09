@@ -1,7 +1,10 @@
 import type { Event } from "./events.ts";
 
-/** The window the fake context is measured against. */
+/** `CLAUDE_CODE_AUTO_COMPACT_WINDOW`. */
 export const WINDOW = 200_000;
+
+/** `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is a percent of the window less a 20,000 output reserve (`L4` and `Ure` in Claude Code 2.1.319). */
+const EFFECTIVE = WINDOW - 20_000;
 
 /** Never reached by the 40-turn task, so the handover stays off. */
 export const OFF = 100_000_000;
@@ -13,21 +16,28 @@ export interface Arm {
 	readonly handoverTokens: number;
 	/** The fake model calls the handoff tool where a prompt ends a task. */
 	readonly handoffOnBoundary: boolean;
-	/** `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`: the built-in compaction's place, as a percent of the window; none turns it off. */
+	/** `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`; none turns the built-in compaction off. */
 	readonly autoCompactPct: number | undefined;
 	/** After this many built-in compactions the run restarts with `--continue`, the built-in compaction off and the handover on: `/compact` is off in claudetto, and one threshold pair cannot order two compactions before a handover. */
 	readonly handoverAfterCompactions?: number;
 	readonly expects: string;
 }
 
-const fork = (pct: number): Arm => ({
-	name: `B${pct}`,
-	label: `forked handover at ${pct}% of the window`,
-	handoverTokens: (WINDOW * pct) / 100,
+const pctAt = (tokens: number): number => (tokens * 100) / EFFECTIVE;
+
+const thousands = (tokens: number): string => tokens.toLocaleString("en-US");
+
+/** A real 40-turn run spans about 25,000 to 65,000 tokens (paid run 1), so every threshold sits inside that span. */
+const fork = (tokens: number): Arm => ({
+	name: `B${tokens / 1000}`,
+	label: `forked handover at ${thousands(tokens)} tokens`,
+	handoverTokens: tokens,
 	handoffOnBoundary: false,
 	autoCompactPct: undefined,
-	expects: `handovers, the first at ${pct}%`,
+	expects: `handovers, the first at ${thousands(tokens)} tokens`,
 });
+
+const C_AT = 53_000;
 
 export const ARMS: readonly Arm[] = [
 	{
@@ -38,32 +48,33 @@ export const ARMS: readonly Arm[] = [
 		autoCompactPct: undefined,
 		expects: "3 clears with handoffs",
 	},
-	fork(25),
-	fork(50),
-	fork(70),
+	fork(35_000),
+	fork(45_000),
+	fork(53_000),
 	{
 		name: "C",
-		label: "built-in compaction near 140,000 tokens",
+		label: `built-in compaction near ${thousands(C_AT)} tokens`,
 		handoverTokens: OFF,
 		handoffOnBoundary: false,
-		autoCompactPct: 78,
-		expects: "a compaction near 140,000 tokens",
+		autoCompactPct: pctAt(C_AT),
+		expects: `a compaction near ${thousands(C_AT)} tokens`,
 	},
 	{
 		name: "D",
-		label: "two built-in compactions, then a handover",
-		handoverTokens: WINDOW / 2,
+		label: "two built-in compactions at 40,000 tokens, then a handover at 45,000",
+		handoverTokens: 45_000,
 		handoverAfterCompactions: 2,
 		handoffOnBoundary: false,
-		autoCompactPct: 28,
-		expects: "2 compactions, then 1 handover",
+		autoCompactPct: pctAt(40_000),
+		expects: "2 compactions, then handovers",
 	},
 ];
 
 const names = (events: readonly Event[]): string =>
 	events.map((e) => e.type).join(", ") || "none";
 
-const NEAR_140K = [130_000, 160_000] as const;
+/** Claude Code checks an estimate, so a real compaction can start under its threshold: paid run 1 saw 49,416 for 50,400. The fake moves in steps of 5,000. */
+const NEAR_C = [C_AT - 5_000, C_AT + 5_000] as const;
 
 /** "ok", or why the arm's event did not fire as the spec says. */
 export const verdict = (arm: Arm, events: readonly Event[]): string => {
@@ -77,24 +88,22 @@ export const verdict = (arm: Arm, events: readonly Event[]): string => {
 			if (c === undefined) {
 				return `no compaction, got ${names(events)}`;
 			}
-			return c.tokens >= NEAR_140K[0] && c.tokens <= NEAR_140K[1]
+			return c.tokens >= NEAR_C[0] && c.tokens <= NEAR_C[1]
 				? "ok"
-				: `the first compaction at ${c.tokens} FAKE tokens is not near 140,000`;
+				: `the first compaction at ${c.tokens} tokens is not near ${thousands(C_AT)}`;
 		}
 		case "D":
-			return names(events) === "compaction, compaction, handover"
+			return /^compaction, compaction(, handover)+$/.test(names(events))
 				? "ok"
-				: `expected compaction, compaction, handover, got ${names(events)}`;
+				: `expected 2 compactions, then handovers, got ${names(events)}`;
 		default: {
 			const h = events.find((e) => e.type === "handover");
 			if (h === undefined) {
 				return `no handover, got ${names(events)}`;
 			}
-			const pct = Number(arm.name.slice(1));
-			const floor = (WINDOW * pct) / 100;
-			return h.tokens >= floor
+			return h.tokens >= arm.handoverTokens
 				? "ok"
-				: `the first handover at ${h.tokens} FAKE tokens fired before ${floor}`;
+				: `the first handover at ${h.tokens} tokens fired before ${arm.handoverTokens}`;
 		}
 	}
 };
