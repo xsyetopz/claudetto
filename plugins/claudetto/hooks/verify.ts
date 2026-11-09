@@ -82,13 +82,6 @@ export const claimTurn = (
 					(use) => !(NOT_A_LOOK.has(use.tool) || denied.has(use.tool_use_id)),
 				),
 			),
-		asked: messages
-			.slice(start + 1)
-			.some((m) =>
-				m.toolUses.some(
-					(use) => ASK_TOOL.test(use.tool) && !denied.has(use.tool_use_id),
-				),
-			),
 		results: messages
 			.slice(start + 1)
 			.flatMap((m) => m.toolUses)

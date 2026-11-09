@@ -332,14 +332,10 @@ export const secretScanFailed = (why: string): string =>
 	`The secret scanner \`betterleaks\` failed, so this text was withheld (${why}). Install it with \`brew install betterleaks\`, or run \`/claudetto:setup\`.`;
 
 // Gate: refusals of a shell command or a file write.
-export const GATE_ENV_VALUES =
-	"This prints the values of an env file. `Read` shows its names with the values hidden, and `grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' <file>` lists the names.";
 export const GATE_READ_FILE = (file: string): string =>
 	`Use \`Read\` to read a file, not the shell: call \`Read\` with \`file_path\` \`${file}\` (absolute). Nothing in this command ran; send the rest of it alone.`;
 export const GATE_WRITE_FILE =
 	"Use `Write` to write a whole file, not the shell.";
-export const GATE_ENV_DUMP =
-	"This command prints every environment variable, and variables can hold secrets.";
 export const GATE_SYSTEM_WRITE = "This call writes to a system folder.";
 export const GATE_HOOK_WRITE =
 	"This command changes a plugin's hooks folder, and a hook is a gate on the agent.";
@@ -482,25 +478,9 @@ export const GRADE_FAULTS = {
 		test: 'The reply is itself a plan, goal, prompt, or proposal, and it keeps a fallback, a compatibility path, the old code, or an "if X is missing, do Y" branch that no user message asked for. Not this fault: a report of work done, or how existing code behaves.',
 		fix: "Your goal, plan, or proposal keeps a fallback or a compatibility path the user did not ask for. Delete it, name the one road and its done state, and resend.",
 	},
-	asks: {
-		test: 'The reply leaves a choice or an input to the user in prose (a question, "tell me", "let me know", "if you want X, I\'ll"), or picks something the request left open (a name, value, limit, version, path, or default), even when it says so ("I assumed", "I went with"). A value the reply names that the request did not, such as a version or a branch name, counts as a pick. Not this fault: a report whose every value the request or the workspace fixed, or a command the user must run.',
-		fix: "Your reply leaves a choice or an input to the user in prose, or picks something the request left open. Ask it now with AskUserQuestion (one question per open point, your pick first), and delete the prose question, offer, or assumption.",
-	},
 	unseen: {
 		test: 'The reply points by name alone ("the setup block", "that setting", "the earlier error") at something that appears only in the tool output below, which the user has not seen, without its text or value, and no user or earlier assistant message gave it. Not this fault: a reply that gives the text or value, reports its own edit and test result, or names only what the user wrote or was shown.',
 		fix: "Your reply names something from tool output the user has not seen in full. Resend it with the exact text or value, its file:line, its source, and what you do not know, and name each key to press or answer to give.",
-	},
-	jargon: {
-		test: "The reply uses a label the session made up or saw only in tool output (like R9, M1, or a case code), with no plain meaning beside it and no message that explained it. Not this fault: a file, function, command, or setting name the user wrote or works with.",
-		fix: "Your reply uses names or ids the user was not given a meaning for. Say each in plain words, keep a name only with a short gloss, and resend.",
-	},
-	confesses: {
-		test: 'The reply apologizes for or narrates the assistant\'s own conduct ("my mistake", "sorry, I", "I was wrong to") in place of the fact, the result, or the change. Not this fault: a reply that states what is true now, what changed, or what a check showed.',
-		fix: "Your reply talks about your own conduct. Resend it with the fact, the result, and what you changed, and no remark on yourself.",
-	},
-	narrates: {
-		test: 'The reply ends on a step it promises ("Next I\'ll…", "I\'m now making…") in place of a result, or lists as open, left, or remaining a step the assistant could still take with its own tools (a command, test, check, edit, or commit), so the turn ends with the work undone. Not this fault: an open item that waits on the user, a denial, a paid run that needs approval, or a user message that said to leave it.',
-		fix: "Your reply ends on a step you say you will take, or lists as open a step you can still take. Do that step now, or report the result you have, and resend.",
 	},
 	unfixed: {
 		test: 'The reply reports the failed command below as the outcome or a blocker, its error names a fix the assistant can apply itself (a token or env file it holds, a flag, a path, a dependency), and it did not rerun. "Not logged in" or "run /login" counts when a user message names a token or env file. Not this fault: a fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission).',

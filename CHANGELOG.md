@@ -5,6 +5,12 @@ This file records the notable changes to this project.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Before 1.0.0, a release can change or remove behavior.
 
+## [Unreleased]
+
+### Removed
+
+- The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
+
 ## [2.1.319] - 2026-11-07
 
 ### Added

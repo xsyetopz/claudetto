@@ -74,59 +74,6 @@ test("a turn that read the workspace is not offered the unchecked-claim or rules
 	expect(seen[0]).not.toContain("- rules:");
 });
 
-test("a reply that leaves a choice to the user in prose gets one block that says to ask", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	const reply = "I picked Python 3.12. Tell me if you want another.";
-	lab(
-		on,
-		[user("Which Python should CI use?"), used("Read")],
-		found("asks", "I picked Python 3.12."),
-		seen,
-	);
-	const out = await stop($, false, reply);
-	expect(out.block).toContain("Ask it now with AskUserQuestion");
-	expect(seen[0]).toContain("- asks:");
-	expect((await stop($, true, reply)).block).toBeUndefined();
-});
-
-test("a turn that made an ask call is not offered the asks fault", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	lab(
-		on,
-		[user("pick a port"), used("mcp__claudetto__ask-user-question")],
-		found("asks"),
-		seen,
-	);
-	expect((await stop($)).block).toBeUndefined();
-	expect(seen[0]).not.toContain("- asks:");
-});
-
-test("a headless session, which has no AskUserQuestion, is not offered the asks fault", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	lab(on, [user("Which Python should CI use?"), used("Read")], found("asks", "I picked Python 3.12."), seen);
-	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
-	expect((await stop($, false, "I picked Python 3.12.")).block).toBeUndefined();
-	expect(seen[0]).not.toContain("- asks:");
-});
-
-test("a refused ask call does not keep the asks fault from being offered", async ($: Engine, on: On) => {
-	const refused: string[] = [];
-	const messages = [
-		user("pick a port"),
-		{
-			role: "assistant",
-			text: "",
-			toolUses: [{ tool: "AskUserQuestion", tool_use_id: "t9", input: {} }],
-		},
-	];
-	lab(on, messages, found("asks"), refused);
-	on("tool.check", () => ({ decision: "deny", reason: "off" }));
-	await $.tool.check({ tool: "AskUserQuestion", input: {}, tool_use_id: "t9" });
-	await stop($, true);
-	await stop($);
-	expect(refused.at(-1)).toContain("- asks:");
-});
-
 test("a turn whose only lookup was denied is still offered the unchecked-claim fault", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	const messages = [
@@ -263,6 +210,9 @@ test("several faults make one block that holds each fix", async ($: Engine, on: 
 	const block = (await stop($)).block ?? "";
 	expect(block).toContain("recited the rules");
 	expect(block).toContain("credits the user");
+	expect(block).toContain(
+		"The user reads only your last message: keep the answer to their message in it.",
+	);
 });
 
 test("a fault whose quote is not in the reply passes", async ($: Engine, on: On) => {
@@ -450,55 +400,6 @@ test("the grader sees the latest 8 tool results, 400 characters each", async ($:
 	expect(sonnet).not.toContain("x".repeat(400));
 });
 
-test("a reply with unexplained ids gets one block that asks for plain words", async ($: Engine, on: On) => {
-	const reply = "R9 and M1 are done.";
-	const seen: string[] = [];
-	lab(on, [user("status?")], found("jargon", "R9 and M1"), seen);
-	expect((await stop($, false, reply)).block).toContain("plain words");
-	expect(seen[0]).toContain("- jargon:");
-	// A coding reply names functions and files; only made-up labels are the fault.
-	expect(seen[0]).toContain(
-		"Not this fault: a file, function, command, or setting name the user wrote or works with.",
-	);
-	expect((await stop($, true, reply)).block).toBeUndefined();
-});
-
-test("a reply that ends on a promised next step gets one block that asks for the step", async ($: Engine, on: On) => {
-	const reply = "I'm now making the change.";
-	const seen: string[] = [];
-	lab(on, [user("fix it")], found("narrates", "I'm now making"), seen);
-	expect((await stop($, false, reply)).block).toContain("Do that step now");
-	expect(seen[0]).toContain("- narrates:");
-	expect((await stop($, true, reply)).block).toBeUndefined();
-});
-
-test("a reply that lists a step it could still take as open is graded for it and blocked", async ($: Engine, on: On) => {
-	const reply = "Fixed the parser.\n\nStill open: run the test suite.";
-	const seen: string[] = [];
-	lab(on, [user("fix it")], found("narrates", "Still open: run the test suite."), seen);
-	expect((await stop($, false, reply)).block).toContain("lists as open a step you can still take");
-	expect(seen[0]).toContain("lists as open, left, or remaining a step");
-});
-
-test("a clean reply is not blocked for jargon or narration", async ($: Engine, on: On) => {
-	lab(on, [user("status?")], '{"faults":[]}');
-	expect(
-		(await stop($, false, "The total now skips no rows.")).block,
-	).toBeUndefined();
-});
-
-test("a reply that confesses its own conduct gets one block that asks for the fact", async ($: Engine, on: On) => {
-	const reply = "My mistake: I should not have used pkill.";
-	const seen: string[] = [];
-	lab(on, [user("status?")], found("confesses", "My mistake"), seen);
-	const block = (await stop($, false, reply)).block;
-	expect(block).toContain("your own conduct");
-	expect(block).toContain(
-		"The user reads only your last message: keep the answer to their message in it.",
-	);
-	expect(seen[0]).toContain("- confesses:");
-	expect((await stop($, true, reply)).block).toBeUndefined();
-});
 
 const failedRun = (text: string, command: string, id = "t") => ({
 	role: "assistant",
