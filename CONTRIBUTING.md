@@ -40,8 +40,8 @@ Tests give commands to the guards as strings and never run a guarded command.
 ## Changelog
 
 Add an entry under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md), opening that section above the newest release when it is absent.
-Set the same version in all four manifests: `package.json`, `.claude-plugin/marketplace.json`, `plugins/claudetto/.claude-plugin/plugin.json`, and `plugins/claudetto-you-should-know/.claude-plugin/plugin.json`.
-`just validate` fails when they disagree, through `tools/manifests.ts`.
+Set the same version in `package.json` and in `metadata.version` of `.claude-plugin/marketplace.json`; `just release-version` fails when they disagree.
+A `plugin.json` holds no `version`, so Claude Code versions each install by its commit and every commit on `main` updates it.
 The merge into `main` is the release, and no tag is cut.
 
 ## Conduct and Security

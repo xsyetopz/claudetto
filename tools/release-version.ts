@@ -3,13 +3,8 @@
 import { $, file, semver } from "bun";
 
 const ROOT = `${import.meta.dir}/..`;
-const MANIFESTS = [
-	"package.json",
-	".claude-plugin/marketplace.json",
-	"plugins/claudetto/.claude-plugin/plugin.json",
-	"plugins/claudetto-you-should-know/.claude-plugin/plugin.json",
-	"plugins/claudetto-openspec/.claude-plugin/plugin.json",
-];
+// The plugin manifests carry no version: Claude Code then versions each install by its commit, so every commit on `main` updates it.
+const MANIFESTS = ["package.json", ".claude-plugin/marketplace.json"];
 const VERSION = /^(\d+\.\d+\.\d+)(?:\+(\d+))?$/;
 
 const TAG = /^v(\d+\.\d+\.\d+)$/;

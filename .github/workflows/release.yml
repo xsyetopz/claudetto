@@ -4,8 +4,8 @@ name: release
 # `workflow_run` fires when `ci` ends, and the job runs only for a `success` on a push to `main`, so a red or
 # a cancelled `ci`, a pull request, and a feature branch tag nothing.
 # The tags are `v<version>` for the repository, from `package.json`, and `<plugin>--v<version>` for each plugin
-# in `.claude-plugin/marketplace.json`, from its own `plugin.json`. A tag that exists is left alone, so a run
-# with no version bump does nothing.
+# in `.claude-plugin/marketplace.json`, with that same version: a `plugin.json` holds none, so each commit
+# updates installs. A tag that exists is left alone, so a run with no version bump does nothing.
 on:
   workflow_run:
     workflows: [ci]
@@ -42,10 +42,9 @@ jobs:
           tags=()
           root=$(jq -er .version package.json)
           tags+=("v$root")
-          while read -r name source; do
-            version=$(jq -er .version "$source/.claude-plugin/plugin.json")
-            tags+=("$name--v$version")
-          done < <(jq -r '.plugins[] | "\(.name) \(.source)"' .claude-plugin/marketplace.json)
+          while read -r name; do
+            tags+=("$name--v$root")
+          done < <(jq -r '.plugins[].name' .claude-plugin/marketplace.json)
 
           created=()
           for tag in "${tags[@]}"; do

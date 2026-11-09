@@ -1,7 +1,6 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto-you-should-know",
-	"version": "2.1.319",
 	"description": "Shows a short note above the prompt when a side check finds something about the work you likely missed. Off by default; once on, one small request every sixth step, no telemetry.",
 	"author": {
 		"name": "xsyetopz"
