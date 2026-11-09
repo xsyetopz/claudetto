@@ -43,12 +43,15 @@ const textOf = (m: Message | undefined): string =>
 
 const SUMMARIZER = /create a detailed summary/i;
 
-export const classify = (lastText: string): Kind =>
+/** A side request (a grader, a classifier) carries no tools. A fork repeats the main request, so it keeps them. */
+export const classify = (lastText: string, tools: number): Kind =>
 	lastText.startsWith(FORK_PROMPT.slice(0, 40))
 		? "fork"
 		: SUMMARIZER.test(lastText)
 			? "summarizer"
-			: "main";
+			: tools === 0
+				? "other"
+				: "main";
 
 const FAKE_HANDOFF = [
 	"# Handoff",
@@ -146,7 +149,7 @@ export const startFake = (opts: {
 	readonly handoffOnBoundary: boolean;
 }): Fake => {
 	let n = 0;
-	let previous = { prefix: "", total: 0 };
+	const previous = new Map<string, number>();
 	const server = Bun.serve({
 		port: 0,
 		async fetch(req) {
@@ -160,7 +163,7 @@ export const startFake = (opts: {
 			const raw = await req.text();
 			const body = JSON.parse(raw) as Body;
 			const lastUserText = textOf(body.messages.findLast((m) => m.role === "user"));
-			const kind = classify(lastUserText);
+			const kind = classify(lastUserText, body.tools?.length ?? 0);
 			const requestId = `req_fake_${++n}`;
 			const total = fakeContextTokens(body.messages);
 			const prefix = textOf(body.messages[0]);
@@ -168,13 +171,13 @@ export const startFake = (opts: {
 			const usage = {
 				...fakeUsage({
 					total,
-					previous: prefix === previous.prefix ? previous.total : 0,
+					previous: previous.get(prefix) ?? 0,
 					ttl: ttls.at(-1) === "1h" ? "1h" : "5m",
 				}),
 				output_tokens: 5,
 			};
 
-			previous = { prefix, total };
+			previous.set(prefix, total);
 			const reply: Reply =
 				kind === "fork"
 					? { text: FAKE_HANDOFF }
