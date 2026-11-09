@@ -1,26 +1,7 @@
 import { expect, test } from "bun:test";
 import { ARMS, type Arm, WINDOW, verdict } from "./arms.ts";
 import { type Event, eventsOf } from "./events.ts";
-import type { LogRecord } from "./server.ts";
-
-const rec = (n: number, over: Partial<LogRecord>): LogRecord => ({
-	n,
-	path: "/v1/messages",
-	host: "127.0.0.1:1",
-	requestId: `req_${n}`,
-	kind: "main",
-	calledHandoff: false,
-	contextTokens: 50_000,
-	toolNames: [],
-	lastUserText: "",
-	cacheControlTtls: [],
-	usage: {
-		output_tokens: 5,
-		cache_read_input_tokens: 0,
-		cache_creation_input_tokens: 0,
-	},
-	...over,
-});
+import { rec } from "./testing.ts";
 
 const arm = (name: string): Arm => {
 	const found = ARMS.find((a) => a.name === name);
