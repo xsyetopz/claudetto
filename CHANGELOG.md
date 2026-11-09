@@ -17,6 +17,9 @@ Before 1.0.0, a release can change or remove behavior.
 - `/claudetto:setup` writes a `Read` deny to `permissions.deny` for each protected path, so the start notice stays silent after setup.
 - The gate denies a branch switch that would rewrite a sandbox-protected file.
 - Each `/claudetto:setup` question ends with Haiku's recommended option and why, and lists that option first. Secrets are redacted before Haiku sees the question, and when Haiku is unsure or fails, the question shows unchanged.
+- The gate denies a linter's unsafe fixes (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes` of `oxlint`, `biome`, `ruff`); the safe `--fix` still runs.
+- A subagent or teammate cannot start an agent of its own.
+- The Stop grader flags padding (apology, agreement, thanks, an account of the agent's own obedience, offers, restating what the user ran or said) and, in an interactive session, a choice asked in plain text in place of the popup.
 
 ### Changed
 
@@ -28,10 +31,13 @@ Before 1.0.0, a release can change or remove behavior.
 - Each question for the user goes through the popup only.
 - A handoff dates its git state, and the read-back checks it again.
 - The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
+- The root prompt drops an act the user says nobody asked for, and finds a credential's name in the repo's `.env` files before it asks; the Concise style corrects without agreeing and does not restate what the user ran or said; the Stop note on background tasks says to follow a waited-on task with the monitor.
 
 ### Fixed
 
 - The claim check counts a popup answer as the person's words.
+- When the gate itself fails, it asks with the failure text and no longer runs the hooks beneath it.
+- The temp-folder gate treats the sandbox `TMPDIR`, `/tmp/claude-<uid>`, as a temp base, so a folder made there gets its marker, and it expands a variable set earlier in the command in the path it made.
 - The worktree gate lets an agent remove a worktree it added through a variable set earlier in the same command, such as `M=$TMPDIR/w && git worktree add $M`.
 - The run limits count only file-tool writes that ran.
 - The gate sends only a lone file read to `Read`, and names the file in place of a `head -n` count or a `sed` script.
