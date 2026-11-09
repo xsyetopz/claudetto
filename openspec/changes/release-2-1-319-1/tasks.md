@@ -25,7 +25,7 @@
 
 - [x] 3.1 Run the fake-API `/compact` probe with `--debug-file` and record the summarizer's `cache_control`, per `specs/compaction-path/spec.md`.
 - [x] 3.2 Build the four-arm probe harness and run it with no paid call against the fake API.
-- [ ] 3.3 Run the paid arms after the person approves, record the rows under `docs/`, and set `handoverThresholdTokens` from them.
+- [x] 3.3 Run the paid arms after the person approves, record the rows under `docs/`, and set `handoverThresholdTokens` from them.
 
 ## 4. Research Slices
 
