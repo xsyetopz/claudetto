@@ -164,9 +164,6 @@ export const AGENT_TEXT =
 export const agentForm = (type: string, background: boolean): string =>
 	`Send this call again as subagent_type "${type}"${background ? " with run_in_background: false" : ""}. Nothing ran: a hook that changes a call's input makes auto mode skip its review of every call in the same response, so claudetto refuses this call instead of fixing it.`;
 
-export const AGENT_NESTED =
-	"A subagent starts no agent of its own. Do this part yourself with your tools, or name it in your report as left for the lead.";
-
 export const REPLY_COMMAND = "reply";
 
 export const REPLY_SPEC = {

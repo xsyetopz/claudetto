@@ -18,7 +18,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies a branch switch that would rewrite a sandbox-protected file.
 - Each `/claudetto:setup` question ends with Haiku's recommended option and why, and lists that option first. Secrets are redacted before Haiku sees the question, and when Haiku is unsure or fails, the question shows unchanged.
 - The gate denies a linter's unsafe fixes (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes` of `oxlint`, `biome`, `ruff`); the safe `--fix` still runs.
-- A subagent or teammate cannot start an agent of its own.
+- `/claudetto:setup` sets `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to `1`, so a subagent has no `Agent` tool and cannot start an agent of its own.
 - The Stop grader flags padding (apology, agreement, thanks, an account of the agent's own obedience, offers, restating what the user ran or said) and, in an interactive session, a choice asked in plain text in place of the popup.
 
 ### Changed

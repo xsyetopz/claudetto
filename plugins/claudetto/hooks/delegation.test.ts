@@ -62,17 +62,6 @@ for (const [type, background, form] of refused) {
 	});
 }
 
-for (const type of ["claudetto:Heracles", "fork"]) {
-	test(`a subagent's own ${type} spawn is refused, so it hands the part back in its report`, async ($: Engine, on: On) => {
-		const seen = lab(on);
-
-		const out = await $.tool.call({ ...call(type), agentId: "a8e99e41" });
-
-		expect(seen).toEqual([]);
-		expect(out.deny).toContain("in your report");
-	});
-}
-
 test("a call in the exact form reaches the engine as it was", async ($: Engine, on: On) => {
 	const seen = lab(on);
 

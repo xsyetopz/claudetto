@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { deferral } from "./surface.ts";
-import { AGENT_NESTED, AGENT_TEXT, agentForm } from "./texts.ts";
+import { AGENT_TEXT, agentForm } from "./texts.ts";
 
 const PREFIX = "claudetto:";
 
@@ -80,10 +80,6 @@ export const delegation = (on: On): void => {
 
 	// A rewritten input voids auto mode's server review of every call in the response, so an off call is refused with its exact form, never changed.
 	on("tool.call", { tool: "Agent" }, async (_$, e, next) => {
-		// A subagent that spawns its own leaves the lead an agent it never asked for and cannot see.
-		if (e.agentId !== undefined) {
-			return { deny: AGENT_NESTED };
-		}
 		if (e.subagent_type === "fork") {
 			return next(e);
 		}
