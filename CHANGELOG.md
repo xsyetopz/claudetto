@@ -7,9 +7,36 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+### Added
+
+- Each finished subagent run is logged to `.claude/claudetto/runs.jsonl`, with whether the root agent edited the same files within its next 3 turns.
+- The root agent gives each edit task the command that checks it, and runs that command when the report arrives, before it builds on it.
+- The injected rules say a removal deletes the feature's code, tests, and docs, adds no test that it stays gone, and keeps no compatibility path before 1.0.0.
+- The `openspec` tool validates the main specs with no change open, and adds `init`, `new`, `list`, and the status graph.
+- `/claudetto:setup` writes a `Read` deny to `permissions.deny` for each protected path, so the start notice stays silent after setup.
+- The gate denies a branch switch that would rewrite a sandbox-protected file.
+
+### Changed
+
+- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]`; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone.
+- The subagent cache TTL is set once, in `subagentPromptCacheTtl`, in place of `cacheTtl` in each agent file.
+- The status line measures context against the compaction window, paints with the Claude Code theme's colours, and flows its items into up to four rows.
+- The constraint ledger keeps a constraint only with the person's quoted words, and lifts it when the person allows it.
+- Each question for the user goes through the popup only.
+- A handoff dates its git state, and the read-back checks it again.
+- The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
+
+### Fixed
+
+- The claim check counts a popup answer as the person's words.
+- The run limits count only file-tool writes that ran.
+- The gate sends only a lone file read to `Read`, and names the file in place of a `head -n` count or a `sed` script.
+- A remark that an earlier request covers counts as a task.
+
 ### Removed
 
 - The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
+- The `fold` hook is gone, so grouped tool results keep Claude Code's own fold.
 
 ## [2.1.319] - 2026-11-07
 

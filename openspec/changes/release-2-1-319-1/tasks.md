@@ -42,5 +42,5 @@
 
 ## 5. Release
 
-- [ ] 5.1 Add the release entry to `CHANGELOG.md` with the version string unchanged at `2.1.319`.
+- [x] 5.1 Add the release entry to `CHANGELOG.md` with the version string unchanged at `2.1.319`.
 - [ ] 5.2 Delete `ISSUES-2026-11-09-1422.md` once each item is fixed or recorded as out of reach.
