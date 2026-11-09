@@ -179,7 +179,100 @@ test("File Compatibility: x- keys in .openspec.yaml are read and kept", async ($
 	expect(tree.get(`${C}/c/.openspec.yaml`)).toBe(yaml);
 });
 
-test("skip_specs with a malformed .openspec.yaml is reported", async ($: Engine, on: On) => {
+const S = "/repo/openspec/specs";
+const bare = base.replace(/\n#### Scenario[\s\S]*$/, "\n");
+
+test("No Active Change: validate checks each main spec", async ($: Engine, on: On) => {
+	memory(on, {
+		[`${C}/archive/2026-01-01-old/proposal.md`]: "# P\n",
+		[`${S}/a/spec.md`]: base,
+	});
+	expect(await call($, {})).toBe("specs/a: valid");
+});
+
+test("A Main Spec Without a Scenario: validate names the spec and the requirement", async ($: Engine, on: On) => {
+	memory(on, { ...change(), [`${S}/run-limits/spec.md`]: bare });
+	const out = await call($, {});
+	expect(out).toContain("c: valid");
+	expect(out).toContain("specs/run-limits: INVALID");
+	expect(out).toContain('Requirement "Thing": Requirement must have at least one scenario');
+});
+
+test("Empty Project: init writes the layout, and validate then passes", async ($: Engine, on: On) => {
+	const { tree, runs } = memory(on, {});
+	expect(await call($, { action: "init" })).toContain("openspec/config.yaml");
+	expect([...tree.keys()].sort()).toEqual([
+		"/repo/openspec/changes/archive/.gitkeep",
+		"/repo/openspec/config.yaml",
+		"/repo/openspec/specs/.gitkeep",
+	]);
+	expect(tree.get("/repo/openspec/config.yaml")).toBe("schema: spec-driven\n");
+	expect(await call($, {})).not.toContain("INVALID");
+	expect(runs).toEqual([]);
+});
+
+test("Existing Layout: init changes no file", async ($: Engine, on: On) => {
+	const { tree } = memory(on, { "/repo/openspec/config.yaml": "schema: x\n" });
+	expect(await call($, { action: "init" })).toContain("already set up");
+	expect([...tree.keys()]).toEqual(["/repo/openspec/config.yaml"]);
+	expect(tree.get("/repo/openspec/config.yaml")).toBe("schema: x\n");
+});
+
+test("Valid Name: new writes the change's .openspec.yaml", async ($: Engine, on: On) => {
+	const { tree } = memory(on, change());
+	await call($, { action: "new", change: "add-init" });
+	expect(tree.get(`${C}/add-init/.openspec.yaml`)).toBe(
+		"schema: spec-driven\ncreated: 2026-11-06\n",
+	);
+});
+
+test("Taken Name: new names the archived folder and writes nothing", async ($: Engine, on: On) => {
+	const files = { ...change(), [`${C}/archive/2026-11-09-add-init/proposal.md`]: "# P\n" };
+	const { tree } = memory(on, files);
+	const out = await call($, { action: "new", change: "add-init" });
+	expect(out).toContain("archive/2026-11-09-add-init");
+	expect(tree.size).toBe(Object.keys(files).length);
+});
+
+test("New refuses a name that is not kebab-case or is an active change", async ($: Engine, on: On) => {
+	const { tree } = memory(on, change());
+	const size = tree.size;
+	expect(await call($, { action: "new", change: "Add_Init" })).toContain("kebab-case");
+	expect(await call($, { action: "new", change: "c" })).toContain("c");
+	expect(await call($, { action: "new" })).toContain("`new` needs `change`");
+	expect(tree.size).toBe(size);
+});
+
+test("Proposal Only: status marks proposal done, specs and design ready, tasks blocked", async ($: Engine, on: On) => {
+	memory(on, { [`${C}/c/proposal.md`]: "# P\n" });
+	expect(await call($, { action: "status", change: "c" })).toBe(
+		"c: proposal done, specs ready, design ready, tasks blocked; 0/0 tasks",
+	);
+});
+
+test("Archived Changes: status lists them after the active changes", async ($: Engine, on: On) => {
+	memory(on, {
+		...change(),
+		[`${C}/archive/2026-01-01-a/proposal.md`]: "# P\n",
+		[`${C}/archive/2026-01-02-b/proposal.md`]: "# P\n",
+	});
+	expect(await call($, { action: "status" })).toBe(
+		"c: 1/1 tasks\narchive/2026-01-01-a\narchive/2026-01-02-b",
+	);
+});
+
+test("Two Specs: list names each spec with its requirement count", async ($: Engine, on: On) => {
+	const req = (n: string) =>
+		`### Requirement: ${n}\nThe system SHALL ${n}.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n`;
+	memory(on, {
+		[`${C}/archive/.gitkeep`]: "",
+		[`${S}/a/spec.md`]: `## Purpose\nP.\n\n## Requirements\n\n${req("x")}${req("y")}${req("z")}`,
+		[`${S}/b/spec.md`]: `## Purpose\nP.\n\n## Requirements\n\n${req("x")}`,
+	});
+	expect(await call($, { action: "list" })).toBe("a 3\nb 1");
+});
+
+test("skip_specs with a malformed .openspec.yaml is reported",async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({

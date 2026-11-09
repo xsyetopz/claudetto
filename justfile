@@ -43,7 +43,7 @@ validate:
     claude plugin validate --strict plugins/claudetto-you-should-know
     claude plugin validate --strict plugins/claudetto-openspec
     claude plugin validate --strict .claude-plugin/marketplace.json
-    bunx openspec validate --all --strict
+    bun tools/openspec-validate.ts
 
 # Run each plugin's mod tests against stubbed events
 # Regenerate the gate rules from the pinned shellfirm release and the patch.

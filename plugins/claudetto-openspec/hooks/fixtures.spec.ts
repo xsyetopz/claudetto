@@ -18,7 +18,7 @@ import { dirname, join } from "./fs.ts";
 import { openspec } from "./openspec.ts";
 import { type Issue, type Report, validateSpec } from "./spec-rules.ts";
 import { missingCheckboxes, numberingIssues, scanTasks } from "./tasks.ts";
-import { NEEDS_CHANGE } from "./texts.ts";
+import { needsChange } from "./texts.ts";
 import { discoverDeltas, issueKey, validateDir } from "./validate.ts";
 
 const CRLF = /\r\n?/g;
@@ -511,11 +511,13 @@ describe("archive", () => {
 		const [change, opts]: [string | undefined, Obj | null | undefined] =
 			rec.args.args;
 		if (!change) {
-			// Upstream prompts for a change; the tool's archive call without one is answered by NEEDS_CHANGE.
+			// Upstream prompts for a change; the tool's archive call without one is answered by needsChange.
 			test(`archive.execute ${rec.test}`, async () => {
 				const { root } = await materialize(rec);
 				const deps = { fs: nodeFs, run: spawnArgv, root, date: "2026-11-05" };
-				expect(await openspec(deps, { action: "archive" })).toBe(NEEDS_CHANGE);
+				expect(await openspec(deps, { action: "archive" })).toBe(
+					needsChange("archive"),
+				);
 				expect(await snapshot(root)).toEqual(texts(rec.before));
 				count(name, "diverged: no change name: tool asks for one");
 			});
