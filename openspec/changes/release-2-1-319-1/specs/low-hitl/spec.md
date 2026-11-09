@@ -39,9 +39,11 @@ When a `typesafeApiKey` is set, claudetto SHALL register the tool `mcp__claudett
 - **WHEN** no key is set
 - **THEN** no tool is registered, so the model never sees a tool it cannot call
 
+## ADDED Requirements
+
 ### Requirement: No Hook Changes a Call's Input in Auto Mode
 
-No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of that call and of every other call in the same response (`serverClassifierInputRewritten`, cause `sibling_changed`), and each of them comes back with "gave no verdict" until it is sent again alone (read in `chunk-nxrsh8va.js` and `chunk-24jdhyyr.js`). The `Agent` hook SHALL deny a call that is not in its exact form (`subagent_type` `claudetto:Artemis`, `claudetto:Metis`, or `claudetto:Heracles`, and an explicit `run_in_background` for Artemis and Metis) with the form to send, and the `ToolSearch` hook SHALL rewrite only the result.
+No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for Artemis and Metis) and name the form to send; the `ToolSearch` hook SHALL rewrite only the result.
 
 #### Scenario: An Agent Call Off Its Form
 
@@ -57,3 +59,8 @@ No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.3
 ### Requirement: An Unexplained Server Denial Is Out of Reach
 
 The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. claudetto SHALL keep reporting a call denied twice that way with the `!` form.
+
+#### Scenario: Denied Twice with No Reason
+
+- **WHEN** auto mode denies the same `make deploy` call twice with "(it gave no explanation)"
+- **THEN** the gate denies a third send and names the command as `` `! make deploy` `` for the user (`hooks/gate.test.ts`)
