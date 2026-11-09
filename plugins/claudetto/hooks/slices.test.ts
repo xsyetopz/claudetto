@@ -50,6 +50,7 @@ const lab = (
 	runs: string[][] = [],
 	answer = '{"faults":[]}',
 	stopped: { block?: string } = {},
+	write: { isError?: true; result: unknown; text?: string } = { result: {} },
 ) => {
 	on("process.run", (_$, e, next) => {
 		if (e.argv[0] === "git") {
@@ -87,7 +88,7 @@ const lab = (
 	on("tool.check", (_$, e) => ({
 		decision: e.tool === "Bash" ? commit : "allow",
 	}));
-	on("tool.call", () => ({ result: {} }));
+	on("tool.call", (_$, e) => (e.tool === "Write" ? write : { result: {} }));
 };
 
 const edit = ($: Engine, file_path = "/repo/src/a.ts") =>
@@ -213,20 +214,27 @@ test("a stop another check blocked keeps that block", async ($: Engine, on: On) 
 	expect((await stop($)).block).toBe("Other check.");
 });
 
-test("a file changed through Bash, such as sed -i, is blocked and named", async ($: Engine, on: On) => {
-	const repo = fakeRepo();
+const OTHERS = "changed this session by a command, the user, or a tool";
+
+const started = async ($: Engine, on: On, dirty: Record<string, string> = {}) => {
+	const repo = fakeRepo(dirty);
 	lab(on, repo);
 	await submit($);
+	return repo;
+};
+
+test("a file changed through Bash, such as sed -i, is not the agent's and is asked for under its source", async ($: Engine, on: On) => {
+	const repo = await started($, on);
 	repo.dirty["/repo/src/b.ts"] = " M";
 	repo.hash["/repo/src/b.ts"] = "h1";
 	await bash($, "sed -i s/a/b/ src/b.ts");
-	expect((await stop($)).block).toContain("`src/b.ts`");
+	const out = (await stop($)).block ?? "";
+	expect(out).not.toContain("These files you changed");
+	expect(out).toContain(`${OTHERS}, and are not committed:\n- \`src/b.ts\``);
 });
 
 test("the plugin's saved test output is not listed among the files to commit", async ($: Engine, on: On) => {
-	const repo = fakeRepo({ [A]: " M" });
-	lab(on, repo);
-	await submit($);
+	const repo = await started($, on, { [A]: " M" });
 	repo.dirty["/repo/.claude/claudetto/output/output-t1.txt"] = "??";
 	await bash($, "bun test");
 	await edit($);
@@ -241,12 +249,13 @@ test("a file in another repo that an Edit wrote is blocked and named", async ($:
 	expect((await stop($)).block).toContain("z.ts");
 });
 
-test("a file another hand changed after the agent wrote it is left alone", async ($: Engine, on: On) => {
-	const repo = fakeRepo({ [A]: " M" });
-	lab(on, repo);
+test("a file another hand changed after the agent wrote it is asked for under its source, not as the agent's", async ($: Engine, on: On) => {
+	const repo = await started($, on, { [A]: " M" });
 	await edit($);
 	repo.hash[A] = "user";
-	expect((await stop($)).block).toBeUndefined();
+	const out = (await stop($)).block ?? "";
+	expect(out).not.toContain("These files you changed");
+	expect(out).toContain("`src/a.ts`");
 });
 
 test("a file dirty before the session and not moved is left alone", async ($: Engine, on: On) => {
@@ -256,51 +265,58 @@ test("a file dirty before the session and not moved is left alone", async ($: En
 	expect((await stop($)).block).toBeUndefined();
 });
 
-test("a file dirty before the session that Bash then changes is blocked", async ($: Engine, on: On) => {
-	const repo = fakeRepo({ [A]: " M" });
-	lab(on, repo);
-	await submit($);
+test("a file dirty before the session that Bash then changes is asked for under its source", async ($: Engine, on: On) => {
+	const repo = await started($, on, { [A]: " M" });
 	repo.hash[A] = "h1";
 	await bash($, "sed -i s/a/b/ src/a.ts");
-	expect((await stop($)).block).toContain("`src/a.ts`");
+	expect((await stop($)).block).toContain(`${OTHERS}, and are not committed:\n- \`src/a.ts\``);
 });
 
-test("a user edit after the agent shows in the next prompt's context once, marked as the agent's file", async ($: Engine, on: On) => {
-	const repo = fakeRepo({ [A]: " M" });
-	lab(on, repo);
+test("Denied Write: a write the sandbox refused marks no file, so the stop passes", async ($: Engine, on: On) => {
+	const skill = "/repo/.claude/skills/openspec-propose/SKILL.md";
+	lab(on, fakeRepo({ [skill]: " D" }), "allow", [], undefined, {}, {
+		isError: true,
+		result: "denied",
+		text: "denied",
+	});
 	await submit($);
+	await $.tool.call({ tool: "Write", tool_use_id: "t4", file_path: skill, content: "x" });
+	expect((await stop($)).block).toBeUndefined();
+});
+
+test("A Dependency Bump Nobody Claimed: after the agent's slice is committed, the install's files are asked for as their own commit that names the source", async ($: Engine, on: On) => {
+	const repo = await started($, on);
 	await edit($);
-	repo.hash[A] = "user";
-	const first = (await submit($)).context?.join("\n") ?? "";
-	expect(first).toContain(
-		"changed by someone else: `src/a.ts` (you last wrote it)",
+	repo.dirty["/repo/package.json"] = " M";
+	repo.dirty["/repo/bun.lock"] = " M";
+	repo.hash["/repo/package.json"] = "p1";
+	repo.hash["/repo/bun.lock"] = "l1";
+	const out = (await stop($)).block ?? "";
+	expect(out).not.toContain("These files you changed");
+	expect(out).toContain("- `package.json`\n- `bun.lock`");
+	expect(out).toContain(
+		"Commit them as their own commit, apart from your slices, with a message that names their likely source, such as the user, a formatter, or an install.",
 	);
-	expect((await submit($)).context ?? []).toEqual([]);
+	expect(out).not.toMatch(/leave (them|it) out|do not commit/i);
 });
 
-test("a changed file the agent never wrote shows in the context", async ($: Engine, on: On) => {
+test("The Person Said Not to Commit: a no-commit constraint asks for no commit of another's files", async ($: Engine, on: On) => {
 	const repo = fakeRepo();
-	lab(on, repo);
+	lab(on, repo, "deny");
 	await submit($);
+	repo.dirty["/repo/package.json"] = " M";
+	repo.hash["/repo/package.json"] = "p1";
+	expect((await stop($)).block).toBeUndefined();
+});
+
+test("a stop with both lists names the agent's files under its own heading and the others under theirs", async ($: Engine, on: On) => {
+	const repo = await started($, on, { [A]: " M" });
+	repo.hash[A] = "h1";
+	await edit($);
 	repo.dirty["/repo/README.md"] = " M";
 	repo.hash["/repo/README.md"] = "u";
-	expect(((await submit($)).context ?? []).join("\n")).toContain(
-		"changed by someone else: `README.md`.",
-	);
+	const out = (await stop($)).block ?? "";
+	expect(out).toContain("These files you changed are not committed:\n- `src/a.ts`\n");
+	expect(out).toContain(`${OTHERS}, and are not committed:\n- \`README.md\`\n`);
 });
 
-test("no change, and a file dirty since before the session, add no context", async ($: Engine, on: On) => {
-	lab(on, fakeRepo({ [A]: " M" }));
-	await submit($);
-	expect((await submit($)).context ?? []).toEqual([]);
-});
-
-test("the agent's own Bash edit is not listed as someone else's", async ($: Engine, on: On) => {
-	const repo = fakeRepo();
-	lab(on, repo);
-	await submit($);
-	repo.dirty[A] = " M";
-	repo.hash[A] = "h1";
-	await bash($, "sed -i s/a/b/ src/a.ts");
-	expect((await submit($)).context ?? []).toEqual([]);
-});

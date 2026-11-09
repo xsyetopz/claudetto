@@ -2,7 +2,7 @@ import type { EngineInterface, On } from "claude-code";
 import { BOUND_OUTPUT_DIR } from "./limits/bound-output.ts";
 import { didWrite, WRITERS } from "./limits/stop.ts";
 import { PERSON, rootOf } from "./pin.ts";
-import { SLICE_COMMIT, SLICE_OTHERS } from "./texts.ts";
+import { SLICE_COMMIT } from "./texts.ts";
 
 const RENAMED = /^[RC]/;
 
@@ -76,13 +76,13 @@ const shown = async ($: EngineInterface, paths: readonly string[]) => {
 };
 
 /**
- * Files the agent wrote, by the hash it left them with: an `Edit`, `Write`, or `NotebookEdit` hashes its file, and a Bash call counts each
- * file in the cwd's repo whose change status or content moved across it. A file another hand changed since has another hash and is left
- * alone; so is a file that was dirty before the session and has not moved. The one `git status` of a Bash call or prompt is the only sweep.
+ * Files the agent wrote, by the hash it left them with: only an `Edit`, `Write`, or `NotebookEdit` that ran counts, since a Bash call cannot
+ * tell the agent's change from a formatter's or the user's. Every other file in the cwd's repo that moved since the session's first prompt,
+ * a file the agent wrote and another hand changed since included, is asked for as its own commit under its likely source.
  */
 export const slices = (on: On): void => {
 	const mine = new Map<string, string>();
-	// The cwd repo's changed files at the last sweep; absent until the first prompt takes the session's start.
+	// The cwd repo's changed files at the session's first prompt.
 	let known: Map<string, string> | undefined;
 	let interactive = true;
 	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
@@ -90,32 +90,8 @@ export const slices = (on: On): void => {
 		return next(e);
 	});
 	on("prompt.submit", { origin: { kind: PERSON } }, async ($, e, next) => {
-		const now = await dirty($);
-		const others = [...now].filter(([path, hash]) =>
-			mine.has(path)
-				? mine.get(path) !== hash
-				: known !== undefined && known.get(path) !== hash,
-		);
-		const wrote = others.map(([path]) => mine.has(path));
-		for (const [path] of others) {
-			mine.delete(path);
-		}
-		known = now;
-		const names = await shown(
-			$,
-			others.map(([path]) => path),
-		);
-		return others.length === 0
-			? next(e)
-			: next({
-					...e,
-					context: [
-						...(e.context ?? []),
-						SLICE_OTHERS(
-							names.map((path, i) => ({ path, wrote: wrote[i] === true })),
-						),
-					],
-				});
+		known ??= await dirty($);
+		return next(e);
 	});
 	on("tool.call", { tool: WRITERS }, async ($, e, next) => {
 		const answer = await next(e);
@@ -125,22 +101,9 @@ export const slices = (on: On): void => {
 		}
 		return answer;
 	});
-	on("tool.call", { tool: "Bash" }, async ($, e, next) => {
-		const answer = await next(e);
-		if (known !== undefined) {
-			const after = await dirty($);
-			for (const [path, hash] of after) {
-				if (known.get(path) !== hash && mine.get(path) !== hash) {
-					mine.set(path, hash);
-				}
-			}
-			known = after;
-		}
-		return answer;
-	});
 	on("classic.Stop", { stop_hook_active: false }, async ($, e, next) => {
 		const answer = await next(e);
-		if (answer.block !== undefined || mine.size === 0) {
+		if (answer.block !== undefined || (mine.size === 0 && known === undefined)) {
 			return answer;
 		}
 		const commit = await $.tool.check({
@@ -170,8 +133,23 @@ export const slices = (on: On): void => {
 			),
 		);
 		const changed = own.filter((_, i) => (status[i] ?? "") !== "");
-		return changed.length === 0
+		const others =
+			known === undefined
+				? []
+				: [...(await dirty($))]
+						.filter(
+							([path, hash]) =>
+								known?.get(path) !== hash && !changed.includes(path),
+						)
+						.map(([path]) => path);
+		return changed.length === 0 && others.length === 0
 			? answer
-			: { ...answer, block: SLICE_COMMIT(await shown($, changed)) };
+			: {
+					...answer,
+					block: SLICE_COMMIT(
+						await shown($, changed),
+						await shown($, others),
+					),
+				};
 	});
 };

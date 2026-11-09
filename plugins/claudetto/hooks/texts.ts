@@ -58,15 +58,15 @@ const BASH = `Runs a bash command and returns its output to you, not reliably to
 const KEEP_ANSWER =
 	"The user reads only your last message: keep the answer to their message in it.";
 
-/** The block for a Stop that leaves files the session changed uncommitted. */
-export const SLICE_COMMIT = (files: readonly string[]): string =>
-	`These files you changed are not committed:\n${files.map((f) => `- \`${f}\``).join("\n")}\nCommit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.\n${KEEP_ANSWER}`;
+const listed = (files: readonly string[]): string =>
+	files.map((f) => `- \`${f}\`\n`).join("");
 
-/** The context line for a prompt that finds files changed since the last one by someone else, so the model keeps the edits and does not claim them. */
-export const SLICE_OTHERS = (
-	files: readonly { path: string; wrote: boolean }[],
+/** The block for a Stop that leaves files the session changed uncommitted: the agent's own, then those of another source. */
+export const SLICE_COMMIT = (
+	own: readonly string[],
+	others: readonly string[],
 ): string =>
-	`Since your last turn, changed by someone else: ${files.map((f) => `\`${f.path}\`${f.wrote ? " (you last wrote it)" : ""}`).join(", ")}. Keep those edits; do not claim them.`;
+	`${own.length === 0 ? "" : `These files you changed are not committed:\n${listed(own)}Commit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.\n`}${others.length === 0 ? "" : `These files changed this session by a command, the user, or a tool, and are not committed:\n${listed(others)}Commit them as their own commit, apart from your slices, with a message that names their likely source, such as the user, a formatter, or an install.\n`}${KEEP_ANSWER}`;
 
 const READ = `Reads a file by absolute \`file_path\`: 2000 lines by default, numbered from 1 as \`cat -n\` does. Read the part you need with \`offset\` and \`limit\`.
 It also shows images and notebooks, and a PDF over 10 pages needs \`pages\`.
