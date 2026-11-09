@@ -125,7 +125,6 @@ export const offeredCodes = (
 ): GradeFault[] => [
 	"credited",
 	"fallback",
-	"padding",
 	...(interactive ? (["options"] as const) : []),
 	...(looked ? [] : (["unchecked", "rules"] as const)),
 	...(failed ? (["unfixed"] as const) : []),

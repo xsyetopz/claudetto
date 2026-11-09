@@ -19,7 +19,7 @@ Before 1.0.0, a release can change or remove behavior.
 - Each `/claudetto:setup` question ends with Haiku's recommended option and why, and lists that option first. Secrets are redacted before Haiku sees the question, and when Haiku is unsure or fails, the question shows unchanged.
 - The gate denies a linter's unsafe fixes (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes` of `oxlint`, `biome`, `ruff`); the safe `--fix` still runs.
 - `/claudetto:setup` sets `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to `1`, so a subagent has no `Agent` tool and cannot start an agent of its own.
-- The Stop grader flags padding (apology, agreement, thanks, an account of the agent's own obedience, offers, restating what the user ran or said) and, in an interactive session, a choice asked in plain text in place of the popup.
+- The Stop grader flags, in an interactive session, a choice asked in plain text in place of the popup.
 
 ### Changed
 
@@ -31,7 +31,7 @@ Before 1.0.0, a release can change or remove behavior.
 - Each question for the user goes through the popup only.
 - A handoff dates its git state, and the read-back checks it again.
 - The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
-- The root prompt drops an act the user says nobody asked for, and finds a credential's name in the repo's `.env` files before it asks; the Concise style corrects without agreeing and does not restate what the user ran or said; the Stop note on background tasks says to follow a waited-on task with the monitor.
+- The root prompt drops an act the user says nobody asked for, and finds a credential's name in the repo's `.env` files before it asks; the Concise style says only what to write: a correction opens with the corrected fact, and each sentence of a reply carries a fact, a result, or a step the person has not yet seen; the Stop note on background tasks says to follow a waited-on task with the monitor.
 
 ### Fixed
 

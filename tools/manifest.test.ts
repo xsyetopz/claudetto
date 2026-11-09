@@ -70,13 +70,13 @@ test("the output style says what an agent message and a user reply hold", async 
 	);
 
 	expect(rules).toContain(
-		"holds only the task, the inputs it lacks, and the done-check, with no greeting, thanks, or context it can read",
+		"holds only the task, the inputs it lacks, and the done-check;",
 	);
 	expect(rules).toContain(
 		"send one per agent, and a follow-up only when its report leaves the task undone",
 	);
 	expect(rules).toContain(
-		"plain English a non-expert can follow, with no pleasantries, praise, or filler",
+		"each sentence carries a fact, a result, or a step the person has not yet seen",
 	);
 });
 
