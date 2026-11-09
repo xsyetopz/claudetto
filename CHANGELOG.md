@@ -36,6 +36,7 @@ Before 1.0.0, a release can change or remove behavior.
 ### Fixed
 
 - The claim check counts a popup answer as the person's words.
+- The `Bash` tool text names `cat`, `head`, `tail`, `sed`, `awk`, and `echo` as commands not to read or change a file with, as the stock text does, so the agent stops sending reads the gate refuses.
 - When the gate itself fails, it asks with the failure text and no longer runs the hooks beneath it.
 - The temp-folder gate treats the sandbox `TMPDIR`, `/tmp/claude-<uid>`, as a temp base, so a folder made there gets its marker, and it expands a variable set earlier in the command in the path it made.
 - The worktree gate lets an agent remove a worktree it added through a variable set earlier in the same command, such as `M=$TMPDIR/w && git worktree add $M`.
