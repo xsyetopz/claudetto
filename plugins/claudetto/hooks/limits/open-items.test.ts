@@ -19,7 +19,6 @@ const withUse = (use: {
 	toolUses: [{ tool_use_id: "t1", input: {}, ...use }],
 });
 
-let tools: string[] = ["AskUserQuestion"];
 let listed = 0;
 
 const lab = (on: On, ...turn: SessionMessage[]): void => {
@@ -32,9 +31,7 @@ const lab = (on: On, ...turn: SessionMessage[]): void => {
 	listed = 0;
 	on("tool.list", () => {
 		listed += 1;
-		return {
-			value: tools.map((name) => ({ name, description: "", mcp: false })),
-		};
+		return { value: [] };
 	});
 };
 
@@ -131,7 +128,9 @@ test("a checkbox item is a question: the block says to ask it and delete the ite
 	);
 
 	expect(out.block).toContain("A checklist item is a question");
-	expect(out.block).toContain("Ask each with AskUserQuestion and delete it");
+	expect(out.block).toContain(
+		"Ask each with mcp__claudetto__ask-user-question and delete it",
+	);
 	for (const item of [
 		"Tell me where the repo is",
 		"give me the ID",
@@ -310,21 +309,19 @@ test("a backtick command the reply asks the user to run without ! is stray", () 
 	]);
 });
 
-test("a question item names AskUserQuestion, or the mcp tool when the session lists it", async ($: Engine, on: On) => {
+test("a question item names the claudetto ask tool, with no tool.list call", async ($: Engine, on: On) => {
 	lab(on);
-	const plain = await stop($, "- [ ] Which region should I use?");
-	tools = ["AskUserQuestion", "mcp__claudetto__ask-user-question"];
-	const mcp = await stop($, "- [ ] Which region should I use?");
-	tools = ["AskUserQuestion"];
 
-	expect(plain.block).toContain("Ask each with AskUserQuestion and");
-	expect(plain.block).toContain("Which region should I use?");
-	expect(mcp.block).toContain(
+	const out = await stop($, "- [ ] Which region should I use?");
+
+	expect(out.block).toContain(
 		"Ask each with mcp__claudetto__ask-user-question and",
 	);
+	expect(out.block).toContain("Which region should I use?");
+	expect(listed).toBe(0);
 });
 
-test("a headless session, which has no AskUserQuestion, gets no ask block for a question item and still gets the command block", async ($: Engine, on: On) => {
+test("a headless session, where no ask reaches anyone, gets no ask block for a question item and still gets the command block", async ($: Engine, on: On) => {
 	lab(on);
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
 
@@ -332,7 +329,7 @@ test("a headless session, which has no AskUserQuestion, gets no ask block for a 
 	expect((await stop($, "You need to run `gh auth login` first.")).block).toBeDefined();
 });
 
-test("a reply already in form costs nothing: no block and no tool.list call", async ($: Engine, on: On) => {
+test("a reply already in form gets no block", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
@@ -343,7 +340,6 @@ test("a reply already in form costs nothing: no block and no tool.list call", as
 
 	expect(out.block).toBeUndefined();
 	expect(plain.block).toBeUndefined();
-	expect(listed).toBe(0);
 });
 
 test("a command outside an item blocks: a ! line, a sudo code block, sudo in prose", async ($: Engine, on: On) => {

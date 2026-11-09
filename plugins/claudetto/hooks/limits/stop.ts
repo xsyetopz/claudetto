@@ -97,11 +97,7 @@ const openBlock = async (
 	if (items.length === 0 || !interactive) {
 		return;
 	}
-	const names = (await $.tool.list()).map((tool) => tool.name);
-	return ASK_FORM(
-		names.find((name) => name === ASK_MCP) ?? "AskUserQuestion",
-		items,
-	);
+	return ASK_FORM(ASK_MCP, items);
 };
 
 const filesBlock = async (
@@ -204,7 +200,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 	const denied = new Set<string>();
 	const asked = new Map<string, string>();
 	const noticeTasks = tasksNotice();
-	// A headless session has no AskUserQuestion, and the claudetto ask tool forwards to it, so no ask can reach anyone.
+	// A headless session has no person to answer, so no ask can reach anyone.
 	let interactive = true;
 	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
 		interactive = e.isInteractive;
