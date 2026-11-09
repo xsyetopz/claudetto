@@ -19,20 +19,6 @@ Setup SHALL write the `autoMode` setting to the user settings file and SHALL NOT
 - **WHEN** setup runs
 - **THEN** `claude auto-mode config` shows the claudetto entries, tagged as added alongside the defaults
 
-### Requirement: Keep the Built-in Rules
-
-Each list that setup writes SHALL hold `$defaults` unless the classifier trim of D20 picked a rung without it. The picked rung is the one with the fewest characters at the least regression against the built-in classifier.
-
-#### Scenario: Defaults Kept
-
-- **WHEN** no trim rung without `$defaults` was picked
-- **THEN** each list holds `$defaults`, and `claude auto-mode config` does not say "replacing defaults"
-
-#### Scenario: Trim Picked
-
-- **WHEN** the D20 reading picked a rung without `$defaults`
-- **THEN** setup writes that rung, and the setup test checks it against the recorded rung
-
 ### Requirement: Describe the Environment
 
 Setup SHALL fill `autoMode.environment` with the facts of the project, such as the check commands, so that the classifier allows routine work without a prompt. Setup SHALL take the facts from the project and from `/auto-mode-setup` proposals (task 6.3), and SHALL NOT invent a rule. A rule that treats a git remote as a trusted repository has no source and is held back in `prd.md`.
@@ -44,7 +30,7 @@ Setup SHALL fill `autoMode.environment` with the facts of the project, such as t
 
 ### Requirement: Review the Rules with the Built-in Critique
 
-Before a release, the rules SHALL pass `claude auto-mode critique`, and each finding SHALL be fixed or answered in `docs/auto-mode.md`.
+Before a release, the rules SHALL pass `claude auto-mode critique`, and each finding SHALL be fixed or answered in the `design.md` of the change that ships them.
 
 #### Scenario: Critique
 
@@ -53,16 +39,16 @@ Before a release, the rules SHALL pass `claude auto-mode critique`, and each fin
 
 ### Requirement: Settle Safe Calls before the Classifier
 
-A call that a permission rule or a hook already settles SHALL NOT reach the classifier, because the classifier runs only for calls that would otherwise ask. Claudetto SHALL measure the share of calls that reach it.
+A call that a permission rule or a hook already settles SHALL NOT reach the classifier, because the classifier runs only for calls that would otherwise ask.
 
 #### Scenario: Settled by Rule
 
 - **WHEN** an `allow` rule covers a read-only call
-- **THEN** the call runs and `window-budget` records no `classifier` row for it
+- **THEN** the call runs and the classifier is not asked
 
 ### Requirement: Narrow Rules Keep Calls from the Classifier
 
-Every tool call that claudetto can settle with a narrow allow rule MUST NOT reach the classifier, because one classifier request has a `system[1]` of `140,015` characters and `141,962` in all on `2.1.317`, which is larger than three first requests of `46,084` characters (`docs/prompt/machinery.md`, `docs/surfaces.md`).
+Every tool call that claudetto can settle with a narrow allow rule MUST NOT reach the classifier, because one classifier request has a `system[1]` of `140,015` characters on `2.1.314` (`d581df3b:openspec/changes/archive/2026-10-31-release-0-1-0/decisions.md`, D37) and `141,962` in all on `2.1.317`, which is larger than three first requests of `46,084` characters (both in `d581df3b:openspec/changes/archive/2026-11-03-release-0-3-0/tasks.md`).
 
 #### Scenario: Routine Call with a Rule
 
@@ -86,21 +72,6 @@ Setup MUST NOT set `autoMode.classifyAllShell` to `true`, because it suspends ev
 
 - **WHEN** setup finishes
 - **THEN** `classifyAllShell` is unset or `false`
-
-### Requirement: Measure the Classifier Cost
-
-The recorder of `window-budget` SHALL tag classifier requests with the source `classifier`, and the report SHALL give their count and window points. The recorder SHALL measure per login whether a plan counts classifier requests against its limits, and SHALL NOT assume it.
-
-#### Scenario: Plan Charge Not Sourced
-
-- **WHEN** the report states a plan charge for classifier requests
-- **THEN** it cites rows of this login, because no page sources the claim: an earlier text cited a `claude.com` article with no URL and no date, a `search_docs` call for "classifier cost" over `clawdipedia` found no page that says it, and the claim is held back in `prd.md`
-- **AND** the classifier request with custom rules carries a system prompt of about 75,000 characters (`prompts/auto-classifier-custom`)
-
-#### Scenario: Report
-
-- **WHEN** the report runs after a week of auto mode
-- **THEN** it lists classifier requests per day and the points they moved, or prints "not measured"
 
 ### Requirement: Use Narrow Allow Rules
 
@@ -148,7 +119,12 @@ Allow rules that setup writes SHALL be narrow, such as `Bash(npm test)`, and set
 
 ### Requirement: Let the Sandbox Settle Shell Commands
 
-Setup SHALL enable the sandbox where the platform supports it, so that `autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call. Setup SHALL set `sandbox.allowUnsandboxedCommands` to `false` and SHALL add `denyRead` for secret paths, because the sandbox reads most of the machine by default, including `~/.ssh`. Source: `sandboxing` on `code.claude.com`.
+Setup SHALL enable the built-in sandbox where the platform supports it, with the keys of the `sandbox` spec, so that `autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call. Setup SHALL set `allowUnsandboxedCommands` to `false`, add `denyRead` for cloud-credential files, and set `network.allowedDomains` to `["*"]` and `filesystem.allowWrite` to the temp folder and the tool caches.
+
+#### Scenario: Least Friction
+
+- **WHEN** the groups are chosen
+- **THEN** no domain is listed by hand, per the user on 2026-11-06: "just block the truly destructive stuff and let the rest pass free" (source: `sandboxing` on `code.claude.com`)
 
 #### Scenario: Sandboxed Command
 
@@ -157,7 +133,7 @@ Setup SHALL enable the sandbox where the platform supports it, so that `autoAllo
 
 #### Scenario: Secret Read
 
-- **WHEN** a sandboxed command reads `~/.ssh`
+- **WHEN** a sandboxed command reads a path in `denyRead`
 - **THEN** the read is denied by `denyRead`
 
 ### Requirement: Do Not Trip the Circuit Breaker
@@ -176,11 +152,17 @@ Auto mode pauses prompting after 3 denials in a row or 20 in total. Claudetto SH
 
 ### Requirement: Choose the Classifier Model by Measurement
 
-The classifier model and claudetto's own auto mode (Jev first, then `claude-haiku-5-5` at `high` or `claude-sonnet-5-5` at `medium`, D36) SHALL be chosen by a paid A/B on the `just eval` cases against the built-in classifier run locally with `CLAUDE_CODE_AUTO_MODE_SERVER=0` (D17, D19). `CLAUDE_CODE_AUTO_MODE_MODEL` needs `2.1.302` or later, and a server-configured model wins, so the A/B SHALL record which model answered.
+The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode: the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register no `tool.check` hook that judges a permission.
+
+#### Scenario: Measured Route
+
+- **WHEN** the measurement of 2026-11-06 on 30 cases is read (`ISSUES-2026-11-04-1500.md`, "Task 5.29: route A against route B")
+- **THEN** the built-in classifier matched 30 of 30 and the Haiku route 29 of 30, with a stable miss on `push-unnamed-branch`, so the built-in classifier ships
+- **AND** `CLAUDE_CODE_AUTO_MODE_MODEL` does not change the model, because a server-configured model wins (`feature-map.md`, "Decisions of the user, 2026-11-05"; task 3.1; `tasks.md` 5.29)
 
 #### Scenario: No Evidence
 
-- **WHEN** no A/B reading exists
+- **WHEN** no measurement exists
 - **THEN** setup does not set `CLAUDE_CODE_AUTO_MODE_MODEL` and no Jev hook decides a permission
 
 ### Requirement: Fail Closed When the Classifier Is Down
@@ -200,15 +182,6 @@ Claudetto's `deny` rules and its `hard_deny` entries SHALL stay in every tier, b
 
 - **WHEN** the model runs `git push` and the user did not ask for it
 - **THEN** the call is blocked in every tier
-
-### Requirement: Protected Files Are Gated by a Hook
-
-Edits to protected paths (secrets, settings, hook scripts) SHALL be gated by a `PreToolUse` hook and not left to the classifier, because an independent evaluation found that in-project file edits fall outside what the classifier evaluates (arXiv 2604.04978: 36.8% of state-changing actions, and an end-to-end false negative rate of 81.0% on its ambiguous workload, against 17% that the vendor reports on real traffic). The docs also point to a hook or the sandbox for firm lines (`references.md`).
-
-#### Scenario: Edit of a Protected File
-
-- **WHEN** the model edits a protected path with `Edit` or `Write`
-- **THEN** the hook blocks or holds the call, whatever mode is active
 
 ### Requirement: A Decision of the Model Goes to a Registered Tool
 
@@ -247,11 +220,11 @@ When a decision needs a person, the system SHALL defer the question until the pr
 - **WHEN** work reaches a choice that needs a person and other work can go on
 - **THEN** the other work goes on first, and the choice is asked once with a brief
 
-### Requirement: The Classifier Request Is Read per Rung
+### Requirement: Setup Replaces the Built-in Lists
 
-`just capture` SHALL read the classifier request in characters with no model call, for each rung of D20: the built-in lists, custom lists, empty lists, and each `CLAUDE_CODE_AUTO_MODE_*` env key of `2.1.314` that changes the request.
+Each `autoMode` list that setup writes SHALL replace the built-in list and name no `$defaults`, because the lists without it cut the classifier request from 140,281 to 63,413 characters (`settings-review.txt`, cl3).
 
-#### Scenario: Rung Reading
+#### Scenario: Lists Written
 
-- **WHEN** `just capture` runs a rung
-- **THEN** it prints the characters of each part of the classifier request
+- **WHEN** setup writes `autoMode`
+- **THEN** no list names `$defaults`, and `claude auto-mode config` says it replaces the defaults

@@ -55,12 +55,12 @@ A rebuild that calls a model MUST call `$.model.complete` with an explicit `mode
 #### Scenario: One Check
 
 - **WHEN** the observer runs a check
-- **THEN** it makes exactly one `$.model.complete` call, on the cheap model and effort that the tier row names, with the fixed instructions in a `cache: true` block and the reply bounded by `maxTokens`
+- **THEN** it makes exactly one `$.model.complete` call, on the model and effort that the plugin's `userConfig` options name, with the fixed instructions in a `cache: true` block and the reply bounded by `maxTokens`
 
 #### Scenario: A Request for More on an Offer
 
 - **WHEN** the person asks for more on an offer
-- **THEN** the explanation that the check's own reply already carried is shown with no second call, and a call is made only when that reply carried none
+- **THEN** the explanation that the check's own reply already carried is shown with no second call, and an offer whose reply carried no explanation shows no way to ask for more
 
 #### Scenario: The Price Is Not in Any Source We Hold
 

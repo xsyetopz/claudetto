@@ -21,7 +21,7 @@ The status line command SHALL build its output from its stdin JSON and from boun
 
 ### Requirement: Fixed Defects of the Old Line
 
-The rebuilt line SHALL NOT show defects D1 to D4 and D7 of `/tmp/ccx/report-statusline.md`. Each has a test with the input that showed it.
+The rebuilt line SHALL NOT show defects D1 to D4 and D7 of the status-line defect report of 2026-10, kept outside this repo. Each has a test with the input that showed it.
 
 #### Scenario: Old Defect Input
 
@@ -39,21 +39,26 @@ A missing field or input that is not JSON SHALL print a short line and exit 0, n
 
 ### Requirement: Setup Writes Both Lines
 
-Setup SHALL write `statusLine` and `subagentStatusLine` as commands at the plugin root, and keep a value the user set.
+Setup SHALL write `statusLine` as a command at the plugin root with `refreshInterval` 5, and keep a value the user set whole. `subagentStatusLine` SHALL ship in the plugin's root `settings.json`, and setup SHALL NOT write it.
 
 #### Scenario: User Line Kept
 
 - **WHEN** `statusLine` is already set to another command
 - **THEN** setup keeps it and the report says so
 
+#### Scenario: Subagent Line from the Plugin
+
+- **WHEN** the plugin is enabled
+- **THEN** `subagentStatusLine` comes from the plugin's root `settings.json` and no setup step writes it
+
 ### Requirement: `/statusline` Is Answered Without a Model Call
 
-The built-in `/statusline` with no arguments SHALL write claudetto's `statusLine` and `subagentStatusLine` to the user settings file and print a report of what it wrote. It SHALL make no model call and add nothing to the context. A line the user already set SHALL be kept, and the report SHALL say it was kept.
+The built-in `/statusline` with no arguments SHALL write claudetto's `statusLine` to the user settings file and print a report of what it wrote. It SHALL make no model call and add nothing to the context. A line the user already set SHALL be kept, and the report SHALL say it was kept.
 
 #### Scenario: No Line Set
 
 - **WHEN** the user runs `/statusline` and the settings file has no `statusLine`
-- **THEN** both keys are written with claudetto's command, the report names the file, and no model request is sent
+- **THEN** the key is written with claudetto's command, the report names the file, and no model request is sent
 
 #### Scenario: User Line Kept
 
@@ -64,20 +69,6 @@ The built-in `/statusline` with no arguments SHALL write claudetto's `statusLine
 
 - **WHEN** the settings file is not a JSON object
 - **THEN** nothing is written, and the report names the file to fix
-
-### Requirement: `/statusline` With Arguments
-
-`/statusline <text>` SHALL run the built-in command when the settings do not deny `Agent(statusline-setup)`. When they deny it, claudetto SHALL answer with no model call, saying the built-in agent is denied and naming the rule to remove.
-
-#### Scenario: Agent Denied
-
-- **WHEN** the user runs `/statusline show the time` and `permissions.deny` holds `Agent(statusline-setup)`
-- **THEN** no model request is sent, and the answer names `Agent(statusline-setup)` in `permissions.deny`
-
-#### Scenario: Agent Allowed
-
-- **WHEN** the user runs `/statusline show the time` and nothing denies `Agent(statusline-setup)`
-- **THEN** the built-in command runs
 
 ### Requirement: Branch of a Plain Checkout
 
@@ -169,3 +160,17 @@ The status line SHALL name the likely cause of the last cache miss when `prompt_
 
 - **WHEN** `prompt_cache.misses` is 0
 - **THEN** no cause part is shown
+
+### Requirement: `/statusline` With Text Uses an Edit Text
+
+`/statusline <text>` SHALL replace the built-in command's prompt, through `skill.prompt`, with claudetto's edit text, so the main model edits the setting under the stock grant. It SHALL NOT pass the call through to the built-in command, and it SHALL NOT answer with a denial text.
+
+#### Scenario: Text Given
+
+- **WHEN** the user runs `/statusline show the time`
+- **THEN** the main model receives the edit text in place of the built-in prompt
+
+#### Scenario: The Built-in Agent Is Withheld
+
+- **WHEN** the built-in `statusline-setup` agent is withheld by `agent.offer`
+- **THEN** `/statusline <text>` still works, and no answer names `Agent(statusline-setup)` in `permissions.deny`

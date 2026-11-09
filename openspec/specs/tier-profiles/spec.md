@@ -9,76 +9,44 @@ Setup therefore reads no plan. The premise that "settings that drive cost differ
 
 ## Requirements
 
-### Requirement: One Row per Tier
-
-The system SHALL define a row for each of `claude_pro`, `default_claude_max_5x`, and `default_claude_max_20x`, with subagent cap, subagent model, main model, effort, context cap, and handoff threshold.
-
-#### Scenario: Source of the Ids and Values
-
-- **WHEN** a row is written
-- **THEN** its id is a key of the plan-cap table, which the tier reader fills from `organizationRateLimitTier` or `organizationType` of `.claude.json`. The archived implementation holds both as evidence of the ids (`archive/plugins/claudetto/modules/setup/limits.ts:7-11` and `archive/plugins/claudetto/modules/setup/domain/plan.ts`)
-- **AND** its first values are the code values of `design.md`, with the version caveat stated there
-
-#### Scenario: Handoff Threshold
-
-- **WHEN** a row sets the handoff threshold of a model that is not a Haiku model
-- **THEN** it SHALL be 140,000, and the row SHALL cite `just compaction-cost`, the replay of this login's own sessions that prices the real work at each threshold
-- **AND** the value SHALL be 140,000 rather than the 130,000 minimum, because 140,000 is the only threshold inside the within-1% band of every lost-work charge from the measured 20.1 turns to twice it under both summary models
-- **AND** the derived `AUTOCOMPACT_PCT` SHALL be `50.0000`, so the engine compacts at exactly 140,000 of the 280,000 effective window
-
-#### Scenario: A Cheaper Threshold Is Not Taken
-
-- **WHEN** the replay shows a threshold cheaper than the one a row sets, as 130,000 is by `$1.57` of `$501.70` against 140,000
-- **THEN** the row SHALL keep 140,000, because a difference inside the 1% band is smaller than the replay's own 8% to 11% validation error, and 130,000 would cost the exact derivation: it fires at 129,999 and needs a Haiku window of 213,846
-- **AND** the value SHALL change again only on new rows or on the user's word, as it did twice on 2026-10-28, from 225,000 to 200,000 on the replay and then to 140,000 once the lost-work charge was measured
-
-#### Scenario: Any Tier
-
-- **WHEN** setup runs for any login
-- **THEN** it writes the snippet of `SNIPPET_ROW`, which is the snippet of every row, and reads no plan, because no written key differs by tier
-- **AND** `subagentCap` reaches no settings key for any login; the `agent.spawn` hook holds the cap from the `subagentCap` option instead
-
-#### Scenario: A Row Starts to Differ
-
-- **WHEN** a later reading gives one row a different value for a key `tierSnippet` writes
-- **THEN** `tests/claudetto/tiers.test.ts` fails, because it checks that every row gives the snippet of `SNIPPET_ROW`, so the plan reading is added before the wrong plan can be served
-
 ### Requirement: Keys Are Checked
 
-Every key that a row sets SHALL exist in the settings schema or the installed binary, and a test SHALL pin it.
+Every key that a group of `hooks/setup/settings.ts` sets SHALL exist in the settings schema or the installed binary, and a test SHALL pin it.
 
 #### Scenario: Missing Key
 
-- **WHEN** the installed Claude Code does not know a key of a row
+- **WHEN** the installed Claude Code does not know a key of a group
 - **THEN** the pin test fails and names the key
 
 ### Requirement: Agents Inherit the Tier
 
-Agent files SHALL carry no `model:` line, so that `CLAUDE_CODE_SUBAGENT_MODEL` from the row decides. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27). Which model the row names is read from `docs/models.md`, and this spec assigns none.
+Setup SHALL write `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5` in the "Models and windows" group. An agent file that names no `model:` line, as `Heracles` does, SHALL run on it. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27).
 
 #### Scenario: Subagent Model
 
-- **WHEN** a plugin agent starts with no model passed in the call
-- **THEN** it runs on the model of the tier row
+- **WHEN** a plugin agent with no `model:` line starts with no model passed in the call
+- **THEN** it runs on `claude-sonnet-5-5`
 
 ### Requirement: Context Cap per Model
 
-A Haiku 5.5 session SHALL stay below 100,000 prompt tokens, because the pricing page bills longer prompts at five times the rate, and cache reads and writes count toward the length. The trigger SHALL be the handoff threshold, which the archived tree names `HAIKU_HANDOFF_TRIGGER_TOKENS`, because `autoCompactWindow` accepts 100K to 1M only. The matching `autoCompactWindow` of a Haiku row SHALL be 200,000, which at `AUTOCOMPACT_PCT` of `50.0000` makes the engine compact at exactly 90,000.
+The "Models and windows" group SHALL write `autoCompactWindow` 300,000 and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` `50.0000`, so that Claude Code compacts at 140,000 tokens, half of the 280,000 effective window. It SHALL write `autoCompactWindow` 200,000 under `modelSettings` for `claude-haiku-5-5`, which compacts at exactly 90,000, below the 100,000 prompt tokens where the pricing page bills five times the rate (cache reads and writes count).
 
 #### Scenario: Haiku Margin
 
 - **WHEN** the trigger value is chosen
-- **THEN** it is 90,000, and the row cites the Anthropic page `about-claude/models/optimizing-for-cost-and-intelligence`, which states under "Cache repeated context" that "In Anthropic's test with 10,000-token turns, a trigger of 90,000 cost 70% less per request than the default" (read 2026-10-28, `references.md`). The archived tree holds the same value (`archive/plugins/claudetto/modules/session/limits.ts:26`), and the saving is a vendor test at a 10,000-token turn size and not our measurement, so task 8.7 checks it against our own rows and does not derive it
+- **THEN** it is 90,000, and the Anthropic page `about-claude/models/optimizing-for-cost-and-intelligence` states under "Cache repeated context" that "In Anthropic's test with 10,000-token turns, a trigger of 90,000 cost 70% less per request than the default" (read 2026-10-28)
+- **AND** that saving is a vendor test at a 10,000-token turn size and not our measurement
 
 #### Scenario: Haiku Session
 
 - **WHEN** the main model is Haiku 5.5
-- **THEN** the handoff trigger fires below 100,000 prompt tokens
+- **THEN** the engine compacts at 90,000, below 100,000 prompt tokens
 
 #### Scenario: Other Models
 
 - **WHEN** the main model is Opus 5.5 or Sonnet 5.5
-- **THEN** the cap comes from the tier row, and the row cites `references.md`. Vendor sources publish no quality cliff for these models, and the community figures there are opinions, so no cliff is claimed
+- **THEN** the engine compacts at exactly 140,000 of the 280,000 effective window
+- **AND** the value is 140,000 because it is the only threshold inside the within-1% band of every lost-work charge from the measured 20.1 turns to twice it under both summary models, and 130,000 would need a Haiku window of 213,846. Vendor sources publish no quality cliff for these models, so none is claimed
 
 ### Requirement: User Values Stay
 
@@ -86,23 +54,23 @@ A value that the user set, and an option that the user rejected, SHALL stay unti
 
 #### Scenario: Existing Key
 
-- **WHEN** the user's settings already hold a key of the row with another value
-- **THEN** setup keeps the user's value and lists it as skipped
+- **WHEN** the user's settings already hold a key of a group with another value
+- **THEN** setup shows both values and keeps the user's unless the user answers "Replace mine too"
 
 ### Requirement: Setup Asks What to Keep
 
-Setup SHALL run from inside Claude Code with no checkout of this repository, no `bun`, and no `just`, SHALL ask which groups of keys to keep, and SHALL write no key of a group the user discarded. It SHALL cost the session no model tokens (the user, 2026-10-30: "it will ask what to keep, meaning the rest get discarded, upon lightweight setup command", and "we need least-costly (tokens, characters) approach that *works*").
+Setup SHALL run from inside Claude Code with no checkout of this repository, no `bun`, and no `just`, SHALL ask per group of keys whether to write it, and SHALL write no key of a group the user discarded. It SHALL cost the session no model tokens (the user, 2026-10-30: "it will ask what to keep, meaning the rest get discarded, upon lightweight setup command", and "we need least-costly (tokens, characters) approach that *works*").
 
 #### Scenario: The Dialog
 
 - **WHEN** `/claudetto:setup` runs with a person to ask
-- **THEN** one `$.ui.ask` dialog offers the groups of `plugins/claudetto/src/tiers/groups.ts`, between two and four of them because `$.ui.ask` accepts no other count, and every key the snippet sets sits in exactly one group
+- **THEN** one dialog per group of `GROUPS` in `plugins/claudetto/hooks/setup/settings.ts` offers "Smaller prompt", "Auto mode", "Models and windows", "Worktrees", "Features off", and "Status line", and every key setup writes sits in exactly one group
 
 #### Scenario: A Fact of This Repository Is Not Shipped
 
 - **WHEN** a value would carry a reading of this repository rather than a value true of any machine
-- **THEN** the snippet SHALL NOT hold it, because the command writes the snippet for every user
-- **AND** `autoMode` SHALL hold the claudetto suite of `plugins/claudetto/src/automode/rules.ts`, whose `environment` list names no fact of one repository, and the group "Sandbox and auto mode" SHALL offer it (D39)
+- **THEN** no group SHALL hold it, because the command writes the groups for every user
+- **AND** the "Auto mode" group SHALL hold the lists of `plugins/claudetto/hooks/setup/auto-mode.ts`, whose `environment` list names no fact of one repository
 
 #### Scenario: A Discarded Group
 
@@ -118,12 +86,12 @@ Setup SHALL run from inside Claude Code with no checkout of this repository, no 
 
 - **WHEN** the command answers
 - **THEN** it returns `text` and no `context`, so the person reads the report and the model reads nothing of it
-- **AND** the only cost is the row in the command listing, measured at 48 characters of the first request by `just capture --arm plugin --shipped` (31,909 against 31,861 with no command)
+- **AND** the only cost is the row in the command listing, measured at 48 characters of the first request (31,909 against 31,861 with no command) before task 17.13 (`e20d11df`)
 
 #### Scenario: A Settings Hook Is Not the Mechanism
 
 - **WHEN** a `settings.read` hook answers the keys in place of a settings file
-- **THEN** the readers that build the first request do not take the answer: `just capture --arm plugin` read 61,353 characters and 12 tool schemas with the hook and no file, against 31,861 and 9 with the file, and the engine logged `an answer without deniedMcpServers: unset for the reader`
+- **THEN** in `-p` mode the hook changes 1 of 7 measured keys (`design.md`, "Settings reach the session by the narrowest route that a probe confirms")
 - **AND** a real settings file SHALL be the mechanism, because a plugin's own `settings` key reaches only `agent` and `subagentStatusLine`
 
 ### Requirement: No Promise of Plan Share
@@ -132,26 +100,17 @@ The system SHALL NOT state a saving as a share of plan limits without a measurem
 
 #### Scenario: Setup Report
 
-- **WHEN** setup reports the row it wrote
-- **THEN** the report names the keys and values, and gives no percentage of a limit
+- **WHEN** setup reports what it wrote
+- **THEN** the report names the groups written, and gives no percentage of a limit
 
 ### Requirement: The Snippet Holds the Planned Keys
 
-The snippet SHALL hold `$schema`, `minimumVersion: "2.1.316"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, `statusLine`, and `subagentStatusLine`, and setup SHALL write only `~/.claude/settings.json`.
+The groups SHALL hold `$schema`, `minimumVersion: "2.1.318"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, and `statusLine`, and setup SHALL write its settings keys only to `~/.claude/settings.json`. It SHALL NOT write `subagentStatusLine`, which the plugin's root `settings.json` ships.
 
 #### Scenario: Clean Write
 
 - **WHEN** setup writes to an empty settings file
 - **THEN** `jq` reads each key above with its value, and `~/.claude.json` is unchanged
-
-### Requirement: The Haiku Summary Runs at High
-
-The compaction summary call on Haiku 5.5 SHALL use effort `high`, apart from the tier row's `effort`, which stays the main session's `effortLevel` (D16).
-
-#### Scenario: Summary Call
-
-- **WHEN** `session.compact` is answered by the summary
-- **THEN** the call names `claude-haiku-5-5` and effort `high`
 
 ### Requirement: A Tool Result Does Not Carry a Haiku Request Past the Price Step
 
@@ -191,7 +150,7 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** the sum is computed
 - **THEN** the prompt is read from the `usage` of the step that made the call, and the result's size is estimated from its text
-- **AND** the check is needed because the handoff trigger is checked between calls (`docs/window-weights.md`)
+- **AND** the check is needed because the handoff trigger is checked between calls (`plugins/claudetto/hooks/limits/price-step.ts`, tested by `price-step.test.ts` in the same folder)
 
 #### Scenario: The Wait Ends before the Hook Budget
 
@@ -200,7 +159,7 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 ### Requirement: Every Alias and the Default Resolve to the Row's Models
 
-The tier snippet SHALL write `ANTHROPIC_DEFAULT_MODEL`, `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, and `ANTHROPIC_DEFAULT_HAIKU_MODEL` under `env`, each set to a full model ID of the row, so that `default`, `opus`, `sonnet`, `haiku`, `opusplan`, and an agent's `model:` alias never resolve to an older model.
+The "Models and windows" group SHALL write `ANTHROPIC_DEFAULT_MODEL`, `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, and `ANTHROPIC_DEFAULT_HAIKU_MODEL` under `env`, each set to a full model ID of `claude-opus-5-5`, `claude-sonnet-5-5`, or `claude-haiku-5-5`, so that `default`, `opus`, `sonnet`, `haiku`, `opusplan`, and an agent's `model:` alias never resolve to an older model.
 
 #### Scenario: Default Is Opus 5 on the Account
 
@@ -212,18 +171,9 @@ The tier snippet SHALL write `ANTHROPIC_DEFAULT_MODEL`, `ANTHROPIC_DEFAULT_OPUS_
 - **WHEN** a setting or an agent names `opusplan` or `opus`
 - **THEN** the plan or main request names `claude-opus-5-5`, not `claude-opus-5`
 
-### Requirement: A Model Off the Row Is Shown
-
-When a response of the main thread or a subagent names a model that the row does not name, claudetto SHALL show the user one line with the model it got and the model the row names, once per session and model.
-
-#### Scenario: Silent Opus 5
-
-- **WHEN** the row names `claude-opus-5-5` and a response names `claude-opus-5`
-- **THEN** the user sees a line naming both, in the first turn it happens
-
 ### Requirement: New Worktrees Start at the Branch Tip
 
-Setup SHALL write `worktree.baseRef: "head"` when the key is unset, in a dialog group that names the key and what it does. Setup SHALL NOT replace a `worktree.baseRef` the user set, nor offer to replace it.
+Setup SHALL write `worktree.baseRef: "head"` when the key is unset, in the "Worktrees" group that names the key and what it does. Setup SHALL replace a `worktree.baseRef` the user set only when the user answers "Replace mine too".
 
 #### Scenario: Unset Key
 
@@ -233,4 +183,23 @@ Setup SHALL write `worktree.baseRef: "head"` when the key is unset, in a dialog 
 #### Scenario: The User's Own Value
 
 - **WHEN** the settings hold `worktree.baseRef: "fresh"` and setup runs
-- **THEN** the value stays `"fresh"`, and the setup dialog does not list `worktree.baseRef`
+- **THEN** the value stays `"fresh"` unless the user answers "Replace mine too"
+
+### Requirement: Subagent Cap by Plan
+
+Setup SHALL read the plan from `oauthAccount.organizationRateLimitTier` and `oauthAccount.organizationType` in the login record, `$CLAUDE_CONFIG_DIR/.claude.json` or else `~/.claude.json`. For a plan with a 5-hour window, setup SHALL offer a "Subagent cap" group that writes `env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. For Ultra, which has no 5-hour window, and for a plan claudetto does not know, setup SHALL offer no cap.
+
+#### Scenario: Pro
+
+- **WHEN** the login record names `claude_pro` and setup runs
+- **THEN** setup offers the "Subagent cap" group with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "3"`
+
+#### Scenario: Max
+
+- **WHEN** the login record names `default_claude_max_5x` and setup runs
+- **THEN** setup offers the "Subagent cap" group with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "4"`
+
+#### Scenario: Ultra
+
+- **WHEN** the login record names `default_claude_max_20x` and setup runs
+- **THEN** setup offers no subagent cap group

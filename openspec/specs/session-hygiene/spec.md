@@ -86,9 +86,9 @@ Hygiene SHALL refuse a root inside `~/.claude/projects` or `~/.claude/plugins`, 
 
 ### Requirement: No Request Growth
 
-Hygiene SHALL add no model call, tool, command, skill, or prompt text. The free capture of the first request SHALL read the same totals before and after a hygiene change.
+Hygiene SHALL add no model call, tool, command, skill, or prompt text. The prompt bytes that `just prompt-bytes` prints from fixed inputs SHALL read the same totals before and after a hygiene change.
 
 #### Scenario: Capture After a Change
 
-- **WHEN** `just capture --shipped` and `just capture --shipped --interactive` run after a hygiene change
-- **THEN** the `plugin` and `plain` totals equal the readings taken before it
+- **WHEN** `just prompt-bytes` runs after a hygiene change
+- **THEN** its totals equal the readings taken before it
