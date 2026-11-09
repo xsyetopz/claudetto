@@ -43,9 +43,8 @@ test("a missing answer scores as lost", () => {
 test("lostAgainst lists the questions the baseline keeps and the arm loses", () => {
 	const baseline = scoreRecall(perfect);
 	const arm = scoreRecall(perfect.map((a, i) => (i === 2 || i === 5 ? "" : a)));
-	expect(lostAgainst(arm, baseline)).toEqual([
-		QUESTIONS[2]?.id,
-		QUESTIONS[5]?.id,
-	]);
+	expect(lostAgainst(arm, baseline)).toEqual(
+		QUESTIONS.filter((_, i) => i === 2 || i === 5).map((q) => q.id),
+	);
 	expect(lostAgainst(baseline, arm)).toEqual([]);
 });
