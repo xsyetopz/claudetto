@@ -46,3 +46,51 @@ The subagent cache TTL SHALL be set only by the `subagentPromptCacheTtl` setting
 
 - **WHEN** the logged runs show fewer than 1 in 7 subagent runs with a gap over 300s between requests
 - **THEN** the value moves to `5m`, because the 1h write premium cost about 25% of subagent input on the 2026-11-09 sample and saved no miss there
+
+## MODIFIED Requirements
+
+### Requirement: Sectioned Subagent Bodies
+
+Each subagent body that claudetto ships SHALL be two plain paragraphs with no XML section: the first says the role, what to do, and the tools to use; the second says what the final message holds. Each rule SHALL say what to do (`agents/Artemis.md:9-11`, `agents/Metis.md:9-11`, `agents/Heracles.md:7-9`).
+
+#### Scenario: Body Shape
+
+- **WHEN** the check reads any file in `agents/`
+- **THEN** the body is two plain paragraphs, and the check fails and names the file when it holds an XML section tag
+
+### Requirement: No Rule Lost in the Restructure
+
+The shipped bodies SHALL keep every rule of the `0.2.0` bodies, unless the change log of this change names the rule as dropped and gives the reason. The frontmatter SHALL hold `name`, `description`, and where set `model` and `tools`; no agent sets `effort` or `omitClaudeMd`.
+
+#### Scenario: Rule Kept
+
+- **WHEN** a reviewer compares each `0.2.0` body line with the new body
+- **THEN** each line has a counterpart, or appears in the list of dropped rules with its reason
+
+### Requirement: The Report Format Is One Block
+
+Each subagent body SHALL state its report format in its second paragraph as plain prose, with no tag. Artemis ends with one `path:line` and a short excerpt per finding. Metis returns steps, files, risks, and the check command. Heracles ends with what it did, what it checked and the result, and what is left, and marks each defect it reports reproduced, with the command and output, or read, with its `file:line`.
+
+#### Scenario: Report Tags
+
+- **WHEN** a subagent finishes a task
+- **THEN** its final message follows the second paragraph of its body, and holds no tag
+
+### Requirement: Subagents Try Another Route before Reporting a Block
+
+Each subagent body SHALL tell the agent to carry the task out with its own tools and files and not to ask the parent back: Heracles "decides, does, and checks" (`agents/Heracles.md:7`). A need outside its tools, such as a file to write or a command to run for a read-only agent, SHALL be reported with the command named (`agents/Artemis.md:11`). Metis SHALL name what it could not find instead of guessing (`agents/Metis.md:11`).
+
+#### Scenario: Check Fails after an Edit
+
+- **WHEN** the check of a `Heracles` task fails on a defect in the task's files
+- **THEN** `Heracles` finds the cause, fixes it, reruns the check, and reports what it checked and the result
+
+#### Scenario: Permission Denied
+
+- **WHEN** an Artemis task needs a file written or a command run, which its tools lack
+- **THEN** Artemis says so and names the command, and runs none
+
+#### Scenario: Hephaestus Block Lines
+
+- **WHEN** `Heracles.md` is read
+- **THEN** it holds "ask nothing back: decide, do, and check"

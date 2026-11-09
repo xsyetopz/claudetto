@@ -4,7 +4,7 @@
 
 - [x] 1.1 Map each item of `ISSUES-2026-11-09-1422.md` to the spec in `openspec/specs/` and the code it touches, and record the map in `design.md`.
 - [x] 1.2 Re-audit each rule, gate, and hook against `openspec/specs/` (issue item 16), and list what no spec or issue keeps.
-- [ ] 1.3 Write the spec deltas for what 1.2 finds, then validate the change.
+- [x] 1.3 Write the spec deltas for what 1.2 finds, then validate the change.
 
 ## 2. Fixes, One Slice and One Commit Each, Failing Test First
 

@@ -472,7 +472,7 @@ test("a misnamed handoff Claude wrote is copied to a valid name, and one line na
 	expect(seen.lines[0]).toContain(".claude/claudetto/handoffs/handoff-");
 });
 
-test("a misnamed handoff that cannot be read leaves the code-built file, and one line names it and the cause", async ($: Engine, on: On) => {
+test("a misnamed handoff that cannot be read writes no file, and one line names it and the cause", async ($: Engine, on: On) => {
 	const seen = world(on);
 
 	await compactWith($, writtenAs(MISNAMED));
