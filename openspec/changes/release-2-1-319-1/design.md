@@ -139,6 +139,18 @@ Read on 2026-11-09 in the 2.1.319 engine and the Mods types; no runtime probe ra
 - Reported by other users, pasted by the person on 2026-11-09: compaction costs more tokens than it saves, and a handoff file kept current in real time plus `/clear` at a milestone, while the cache is warm, works better; splitting a task into small subagent tasks on a lesser model, with only the context each needs, saves tokens; a tool that keeps command output in a local searchable store beats `cmd | tail -40 | grep foo`, which can miss what was needed. One user's complaint: the agent redid a finished UI design in place of using it. These are reports, not measurements, and feed tasks 3 and 4.2.
 - Decision: keep the forked handover as the path inside a task and the handoff tool plus clear at task boundaries; change the threshold only from the four-arm probe in `specs/compaction-path/spec.md`, because the existing data has one run per arm.
 
+## Free Fake-API Probes (2026-11-09, Claude Code 2.1.319, cc-inspect `code` `cli`)
+
+Each run is `-p probe-parent-prompt-7731` with one scripted `Agent` call whose prompt is `probe-child-prompt-4419`, and cc-inspect's `query` names each request whose body holds a text. The child is the request whose tool list lacks `Agent`.
+
+| Task | Hypothesis | Prediction | Run | Result |
+| --- | --- | --- | --- | --- |
+| 4.2.1 TTL | `subagentPromptCacheTtl` sets the `ttl` of the subagent's requests and not of the main loop's | Under `1h`, `"ttl":"1h"` only in the child; under `5m`, no `ttl` field | settings `{"subagentPromptCacheTtl":"1h"}`, then `"5m"`; queries `"ttl":"1h"`, `"ttl":"5m"`, `"cache_control":{"type":"ephemeral"}` | Confirmed. `1h`: found in request 4 (the general-purpose child) and the side requests 2, 3, 6, 7; not in main requests 1, 5, 8. `5m`: `"ttl":"1h"` and `"ttl":"5m"` in no request; bare `{"type":"ephemeral"}` in all 8. |
+| 4.2.1 fork | With `CLAUDE_CODE_FORK_SUBAGENT=1`, a fork child resends the parent's prefix; a fresh child does not | Parent prompt in the fork child's request, not in the fresh child's | env `CLAUDE_CODE_FORK_SUBAGENT=1`, `subagent_type` `fork`, then `general-purpose`; query each prompt | Confirmed with `subagent_type: "fork"`: 4 requests, all with the parent's tool list; parent prompt in all 4; child prompt in 2, 3, 4. Fresh child (request 4 of 8): own tool list, no parent prompt. Without `subagent_type`, the env alone gave a fresh general-purpose child: the engine picks a fork only by `subagent_type: "fork"`, "never the default" (`chunk-24jdhyyr.js:2400027`). |
+| 4.2.1 fork TTL | The fork child takes `subagentPromptCacheTtl` | `"ttl":"1h"` in the fork child only | as above, with `{"subagentPromptCacheTtl":"1h"}` | Confirmed: only request 2 (the fork child) holds `"ttl":"1h"`; the parent stays at 5m. Whether a 1h child marker after the parent's 5m prefix still reads that prefix from cache needs a paid run; unmeasured. |
+| 3.1 | The summarizer request keeps `cache_control` on the parent's prefix, because `skipCacheWrite` moves the marker back one message (`chunk-24jdhyyr.js:2589218`, `:2695646`) | `cache_control` present, before the summarize prompt | `.claudetto/cc-inspect-handover/fake-api-bodies/compact-probe.sh` | Not run. The sandbox refused a local port (`Bun.serve`: `EADDRINUSE` on port 0), and cc-inspect `cli` returns no bodies and runs one prompt per fresh session (`code` `run` `/compact` gave `requests: []`). |
+| 3.2 | — | — | — | Not built: it needs the same multi-prompt, body-logging fake API as 3.1. |
+
 ## Risks
 
 - The re-audit can widen the change past the issues file. Task 1.2 lists each removal for review before any code moves.
