@@ -21,6 +21,8 @@
 - [x] 2.12 One command at a time (item D): `Concise.md:23` asks for at most one `- ! <command>` bullet per reply, with no checkbox (the person, 2026-11-09), and the Stop check (`limits/open-items.ts`, text at `texts.ts:245-247`) blocks a reply with two or more, per `specs/agent-conduct/spec.md` and `specs/run-limits/spec.md`; failing test first in `limits/open-items.test.ts`.
 - [x] 2.10 Setup (item B): keep one popup per step; Haiku explains each and recommends an option, listed first (the person's choice, 2026-11-09).
 
+- [x] 2.13 Auto-mode classifier (ISSUES 2026-11-09 item 5): `Agent` denies an off-form call and `ToolSearch` rewrites only its result, so no hook changes a call input (the "no verdict" case); the missing reason is out of reach, as the server gives no explanation.
+
 ## 3. Handover Probe
 
 - [x] 3.1 Run the fake-API `/compact` probe with `--debug-file` and record the summarizer's `cache_control`, per `specs/compaction-path/spec.md`.

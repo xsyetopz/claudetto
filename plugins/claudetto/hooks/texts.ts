@@ -159,7 +159,10 @@ export const offCommandText = (command: string): string =>
 // Delegation: the Agent tool text and the ask and monitor tool specs.
 
 export const AGENT_TEXT =
-	'Start a subagent for independent work: parallel tasks, a side task, or a search across many files. It knows only your prompt and returns one report the user does not see; relay what matters. subagent_type: "claudetto:Artemis" searches read-only, "claudetto:Metis" plans, "claudetto:Heracles" does the rest and runs when omitted; "fork" copies your context. Pass run_in_background: false with Artemis or Metis. Heracles runs in the background and notifies you when it ends: never predict its result. Give an edit task the command that checks it, and run that command when the report arrives, before you build on it. Do a few tool calls yourself instead. isolation "worktree" gives it its own git worktree.';
+	'Start a subagent for independent work: parallel tasks, a side task, or a search across many files. It knows only your prompt and returns one report the user does not see; relay what matters. subagent_type: "claudetto:Artemis" searches read-only, "claudetto:Metis" plans, "claudetto:Heracles" does the rest; always pass one of these, in full; "fork" copies your context. Pass run_in_background: false with Artemis or Metis. Heracles runs in the background and notifies you when it ends: never predict its result. Give an edit task the command that checks it, and run that command when the report arrives, before you build on it. Do a few tool calls yourself instead. isolation "worktree" gives it its own git worktree.';
+
+export const agentForm = (type: string, background: boolean): string =>
+	`Send this call again as subagent_type "${type}"${background ? " with run_in_background: false" : ""}. Nothing ran: a hook that changes a call's input makes auto mode skip its review of every call in the same response, so claudetto refuses this call instead of fixing it.`;
 
 export const REPLY_COMMAND = "reply";
 

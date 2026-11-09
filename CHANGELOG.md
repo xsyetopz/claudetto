@@ -35,6 +35,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The run limits count only file-tool writes that ran.
 - The gate sends only a lone file read to `Read`, and names the file in place of a `head -n` count or a `sed` script.
 - A remark that an earlier request covers counts as a task.
+- No claudetto hook changes a tool call input any more, so auto mode keeps its review of the other calls in the response: `Agent` denies an off-form call with the form to send, and `ToolSearch` rewrites only its result.
 
 ### Removed
 

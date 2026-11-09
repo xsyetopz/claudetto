@@ -36,52 +36,43 @@ const call = (subagent_type?: string, run_in_background?: boolean) => ({
 	...(run_in_background === undefined ? {} : { run_in_background }),
 });
 
-const cases: [string | undefined, string, boolean | undefined][] = [
-	[undefined, "claudetto:Heracles", undefined],
-	["", "claudetto:Heracles", undefined],
-	["general-purpose", "claudetto:Heracles", undefined],
-	["claude", "claudetto:Heracles", undefined],
-	["Explore", "claudetto:Artemis", false],
-	["Plan", "claudetto:Metis", false],
-	["Artemis", "claudetto:Artemis", false],
-	["claudetto:Artemis", "claudetto:Artemis", false],
-	["claudetto:Metis", "claudetto:Metis", false],
-	["claudetto:Heracles", "claudetto:Heracles", undefined],
-	["Heracles", "claudetto:Heracles", undefined],
+const H = 'subagent_type "claudetto:Heracles"';
+const refused: [string | undefined, boolean | undefined, string][] = [
+	[undefined, undefined, H],
+	["", undefined, H],
+	["general-purpose", undefined, H],
+	["claude", undefined, H],
+	["Heracles", undefined, H],
+	["Explore", false, 'subagent_type "claudetto:Artemis".'],
+	["Plan", false, 'subagent_type "claudetto:Metis".'],
+	["Explore", undefined, 'subagent_type "claudetto:Artemis" with run_in_background: false'],
+	["Artemis", true, 'subagent_type "claudetto:Artemis"'],
+	["claudetto:Artemis", undefined, 'subagent_type "claudetto:Artemis" with run_in_background: false'],
+	["claudetto:Metis", undefined, 'subagent_type "claudetto:Metis" with run_in_background: false'],
 ];
 
-for (const [type, want, background] of cases) {
-	test(`a call typed ${JSON.stringify(type)} reaches the engine as ${want}`, async ($: Engine, on: On) => {
+for (const [type, background, form] of refused) {
+	test(`a call typed ${JSON.stringify(type)} is refused with its exact form, never rewritten`, async ($: Engine, on: On) => {
 		const seen = lab(on);
 
-		await $.tool.call(call(type));
+		const out = await $.tool.call(call(type, background));
 
-		expect(seen).toEqual([
-			{
-				subagent_type: want,
-				...(background === undefined ? {} : { run_in_background: background }),
-			},
-		]);
+		expect(seen).toEqual([]);
+		expect(out.deny).toContain(form);
 	});
 }
 
-test("run_in_background that the caller set is kept for Artemis", async ($: Engine, on: On) => {
+test("a call in the exact form reaches the engine as it was", async ($: Engine, on: On) => {
 	const seen = lab(on);
 
-	await $.tool.call(call("Explore", true));
+	await $.tool.call(call("claudetto:Artemis", true));
+	await $.tool.call(call("claudetto:Artemis", false));
+	await $.tool.call(call("claudetto:Heracles"));
 
 	expect(seen).toEqual([
 		{ subagent_type: "claudetto:Artemis", run_in_background: true },
-	]);
-});
-
-test("a call that needs no change reaches the engine as it was", async ($: Engine, on: On) => {
-	const seen = lab(on);
-
-	await $.tool.call(call("claudetto:Artemis", false));
-
-	expect(seen).toEqual([
 		{ subagent_type: "claudetto:Artemis", run_in_background: false },
+		{ subagent_type: "claudetto:Heracles" },
 	]);
 });
 
@@ -98,7 +89,7 @@ for (const type of ["fork", "statusline-setup", "claude-code-guide"]) {
 test("the result of an Artemis call reads as Explore", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await $.tool.call(call("Explore"));
+	const out = await $.tool.call(call("claudetto:Artemis", false));
 
 	expect(out.result).toMatchObject({ agentType: "Explore" });
 });
@@ -106,7 +97,7 @@ test("the result of an Artemis call reads as Explore", async ($: Engine, on: On)
 test("the result of a Heracles call keeps its agent type", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await $.tool.call(call());
+	const out = await $.tool.call(call("claudetto:Heracles"));
 
 	expect(out.result).toMatchObject({ agentType: "claudetto:Heracles" });
 });
@@ -408,41 +399,28 @@ test("a search that lists neither tool is returned as it came", async ($: Engine
 	expect(out.result).toMatchObject({ matches: ["Bash"] });
 });
 
-test("a query that does not name AskUserQuestion reaches ToolSearch as it was", async ($: Engine, on: On) => {
+test("a query reaches ToolSearch as it was, even one that names AskUserQuestion", async ($: Engine, on: On) => {
 	const queries = stockSearch(on, ["Monitor"]);
-
-	await Promise.all(
-		["select:Monitor", "monitor", "ask the user", "select:Read,Edit"].map(
-			(query) => $.tool.call(search(query)),
-		),
-	);
-
-	expect(queries.sort((a, b) => a.localeCompare(b))).toEqual([
-		"ask the user",
-		"monitor",
+	const sent = [
 		"select:Monitor",
-		"select:Read,Edit",
-	]);
+		"ask the user",
+		"select:Read,askuserquestion",
+		"+askuserquestion",
+	];
+
+	await Promise.all(sent.map((query) => $.tool.call(search(query))));
+
+	expect(queries.sort((a, b) => a.localeCompare(b))).toEqual(
+		[...sent].sort((a, b) => a.localeCompare(b)),
+	);
 });
 
-test("a query that names AskUserQuestion is rewritten to ask", async ($: Engine, on: On) => {
-	const queries = stockSearch(on, [ASK]);
+test("a query that names AskUserQuestion gets the wrapper in its result", async ($: Engine, on: On) => {
+	stockSearch(on, ["AskUserQuestion"]);
 
-	await Promise.all(
-		[
-			"select:AskUserQuestion",
-			"select:Read,askuserquestion",
-			"AskUserQuestion",
-			"+askuserquestion",
-		].map((query) => $.tool.call(search(query))),
-	);
+	const out = await $.tool.call(search("select:AskUserQuestion"));
 
-	expect(queries.sort((a, b) => a.localeCompare(b))).toEqual([
-		`select:${ASK}`,
-		`select:${ASK}`,
-		`select:${ASK}`,
-		`select:Read,${ASK}`,
-	]);
+	expect(out.result).toMatchObject({ matches: [ASK] });
 });
 
 test("a result that lists the stock ask lists the wrapper once", async ($: Engine, on: On) => {

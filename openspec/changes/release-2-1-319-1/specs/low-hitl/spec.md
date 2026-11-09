@@ -38,3 +38,22 @@ When a `typesafeApiKey` is set, claudetto SHALL register the tool `mcp__claudett
 
 - **WHEN** no key is set
 - **THEN** no tool is registered, so the model never sees a tool it cannot call
+
+### Requirement: No Hook Changes a Call's Input in Auto Mode
+
+No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of that call and of every other call in the same response (`serverClassifierInputRewritten`, cause `sibling_changed`), and each of them comes back with "gave no verdict" until it is sent again alone (read in `chunk-nxrsh8va.js` and `chunk-24jdhyyr.js`). The `Agent` hook SHALL deny a call that is not in its exact form (`subagent_type` `claudetto:Artemis`, `claudetto:Metis`, or `claudetto:Heracles`, and an explicit `run_in_background` for Artemis and Metis) with the form to send, and the `ToolSearch` hook SHALL rewrite only the result.
+
+#### Scenario: An Agent Call Off Its Form
+
+- **WHEN** the model calls `Agent` with `subagent_type` `Explore`, or with none
+- **THEN** the call is denied with the exact form to send and nothing runs, and the other calls of the response keep their review
+- **AND** the lab tests are `delegation.test.ts`, "a call typed ... is refused with its exact form, never rewritten"
+
+#### Scenario: A ToolSearch Query Naming AskUserQuestion
+
+- **WHEN** a `ToolSearch` query names `AskUserQuestion`
+- **THEN** the query reaches `ToolSearch` as written and the result lists `mcp__claudetto__ask-user-question` in its place
+
+### Requirement: An Unexplained Server Denial Is Out of Reach
+
+The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. claudetto SHALL keep reporting a call denied twice that way with the `!` form.

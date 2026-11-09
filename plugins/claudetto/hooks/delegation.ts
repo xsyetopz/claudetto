@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { deferral } from "./surface.ts";
-import { AGENT_TEXT } from "./texts.ts";
+import { AGENT_TEXT, agentForm } from "./texts.ts";
 
 const PREFIX = "claudetto:";
 
@@ -51,26 +51,6 @@ const text = (value: unknown): string =>
 const OLD_ASK = "AskUserQuestion";
 const NEW_ASK = "mcp__claudetto__ask-user-question";
 
-const SELECT = "select:";
-
-const namesAsk = (token: string): boolean =>
-	(token.startsWith("+") ? token.slice(1) : token).toLowerCase() ===
-	OLD_ASK.toLowerCase();
-
-// A query that names the stock ask tool goes to the claudetto one; any other query is returned as it came.
-const askQuery = (query: string): string => {
-	if (query.startsWith(SELECT)) {
-		const names = query.slice(SELECT.length).split(",");
-		return names.some((name) => namesAsk(name.trim()))
-			? SELECT +
-					names
-						.map((name) => (namesAsk(name.trim()) ? NEW_ASK : name))
-						.join(",")
-			: query;
-	}
-	return query.split(" ").some(namesAsk) ? SELECT + NEW_ASK : query;
-};
-
 const WRAPPERS: ReadonlyMap<string, string> = new Map([
 	["Monitor", "mcp__claudetto__monitor"],
 	[OLD_ASK, NEW_ASK],
@@ -98,6 +78,7 @@ export const delegation = (on: On): void => {
 		description: AGENT_TEXT,
 	}));
 
+	// A rewritten input voids auto mode's server review of every call in the response, so an off call is refused with its exact form, never changed.
 	on("tool.call", { tool: "Agent" }, async (_$, e, next) => {
 		if (e.subagent_type === "fork") {
 			return next(e);
@@ -109,15 +90,10 @@ export const delegation = (on: On): void => {
 		const oneShot = ONE_SHOT.has(agent);
 		const type = qualified(agent);
 		const foreground = oneShot && e.run_in_background === undefined;
-		const out = await next(
-			e.subagent_type === type && !foreground
-				? e
-				: {
-						...e,
-						subagent_type: type,
-						...(foreground ? { run_in_background: false } : {}),
-					},
-		);
+		if (e.subagent_type !== type || foreground) {
+			return { deny: agentForm(type, foreground) };
+		}
+		const out = await next(e);
 		return oneShot && !out.isError && out.result !== undefined && !out.deny
 			? { ...out, result: { ...out.result, agentType: "Explore" } }
 			: out;
@@ -198,10 +174,9 @@ export const delegation = (on: On): void => {
 		...deferral(await $.tool.list()),
 	}));
 
-	// The query is rewritten only when it names AskUserQuestion (a rewritten call sends the response's later calls to the local classifier in auto mode); the result is rewritten for every query.
+	// Only the result is rewritten: a rewritten query would void auto mode's server review of the response's other calls.
 	on("tool.call", { tool: "ToolSearch" }, async (_$, e, next) => {
-		const query = askQuery(e.query);
-		const out = await next(query === e.query ? e : { ...e, query });
+		const out = await next(e);
 		const result = out.isError || out.deny ? undefined : out.result;
 		const matches = result && wrapMatches(result.matches);
 		return result && matches ? { result: { ...result, matches } } : out;
