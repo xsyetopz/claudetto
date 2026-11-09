@@ -1,7 +1,8 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { Arm } from "./arms.ts";
+import { type Arm, OFF } from "./arms.ts";
+import { eventsOf } from "./events.ts";
 import { type LogRecord, startFake } from "./server.ts";
 import { TURNS } from "./task.ts";
 
@@ -61,17 +62,23 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 			},
 		},
 	});
-	const settings = {
-		pluginConfigs: {
-			"claudetto@inline": {
-				options: { handoverThresholdTokens: arm.handoverTokens },
+	const phased = arm.handoverAfterCompactions !== undefined;
+	/** Phase 1 runs the arm as set; the phase after the compactions has the built-in compaction off and the handover on. */
+	const start = (phase: 1 | 2) => {
+		const handover = phased && phase === 1 ? OFF : arm.handoverTokens;
+		const compacting = arm.autoCompactPct !== undefined && phase === 1;
+		const settings = {
+			pluginConfigs: {
+				"claudetto@inline": {
+					options: { handoverThresholdTokens: handover },
+				},
 			},
-		},
-	};
-	const proc = Bun.spawn(
+		};
+		return Bun.spawn(
 		[
 			"claude",
 			"-p",
+			...(phase === 2 ? ["--continue"] : []),
 			"--input-format",
 			"stream-json",
 			"--output-format",
@@ -84,13 +91,13 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 			"--allowedTools",
 			"mcp__claudetto__handoff",
 			"--debug-file",
-			join(dir, "debug.log"),
+			join(dir, `debug-${phase}.log`),
 		],
 		{
 			cwd: project,
 			stdin: "pipe",
-			stdout: Bun.file(join(dir, "stream.jsonl")),
-			stderr: Bun.file(join(dir, "stderr.txt")),
+			stdout: Bun.file(join(dir, `stream-${phase}.jsonl`)),
+			stderr: Bun.file(join(dir, `stderr-${phase}.txt`)),
 			env: {
 				...process.env,
 				ANTHROPIC_BASE_URL: `http://127.0.0.1:${fake.port}`,
@@ -103,30 +110,37 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 				DISABLE_TELEMETRY: "1",
 				ENABLE_TOOL_SEARCH: "false",
 				CLAUDE_CODE_AUTO_COMPACT_WINDOW: "200000",
-				...(arm.autoCompactPct === undefined
-					? { DISABLE_AUTO_COMPACT: "1" }
-					: { CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(arm.autoCompactPct) }),
+				...(compacting
+					? { CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(arm.autoCompactPct) }
+					: { DISABLE_AUTO_COMPACT: "1" }),
 			},
 		},
-	);
+		);
+	};
 	const turnOf = new Map<number, number>();
+	let phase: 1 | 2 = 1;
+	let proc = start(phase);
 	const send = (text: string) => {
 		proc.stdin.write(
 			`${JSON.stringify({ type: "user", message: { role: "user", content: text } })}\n`,
 		);
 		proc.stdin.flush();
 	};
+	const compactions = () =>
+		eventsOf(readLog(log)).filter((e) => e.type === "compaction").length;
 	for (const [i, turn] of TURNS.entries()) {
 		send(turn.prompt);
 		await settle(log);
-		if (arm.compactAfter.includes(i)) {
-			send("/compact");
-			await settle(log);
-		}
 		for (const r of readLog(log)) {
 			if (!turnOf.has(r.n)) {
 				turnOf.set(r.n, i);
 			}
+		}
+		if (phase === 1 && phased && compactions() >= (arm.handoverAfterCompactions ?? 0)) {
+			proc.stdin.end();
+			await proc.exited;
+			phase = 2;
+			proc = start(phase);
 		}
 	}
 	proc.stdin.end();

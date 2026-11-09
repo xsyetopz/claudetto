@@ -25,14 +25,16 @@ for (const { arm, runs } of results) {
 }
 
 const all = results.flatMap((r) => r.runs);
-const hosts = [...new Set(all.flatMap((r) => r.hosts))];
+const foreign = all.filter((r) => r.hosts.length !== 1 || !r.hosts[0]?.startsWith("127.0.0.1:"));
 const outside = all.flatMap((r) => r.outside);
 const requests = all.reduce((n, r) => n + r.records.length, 0);
 console.log("### Egress\n");
-console.log(`- ${requests} requests reached the fake server, under the hosts: ${hosts.join(", ")}`);
+console.log(
+	`- ${requests} requests reached the fake server in ${all.length} runs; ${foreign.length} runs had a request under a host other than their own 127.0.0.1:port`,
+);
 console.log(
 	`- ${outside.length} connection attempts to any other host reached the proxy sink${outside.length === 0 ? "" : `: ${outside.join("; ")}`}`,
 );
 console.log("- key: sk-ant-fake; ANTHROPIC_BASE_URL: the fake server; CLAUDE_CONFIG_DIR: a temp dir per run");
 console.log("- recall: not scored, a fake model recalls nothing; the 10 questions and the scorer are in recall.ts for the paid run");
-console.log(`- run dirs (requests.jsonl, debug.log, stream.jsonl): ${all.map((r) => r.dir).join(" ")}`);
+console.log(`- run dirs (requests.jsonl, debug-<phase>.log, stream-<phase>.jsonl): ${all.map((r) => r.dir).join(" ")}`);

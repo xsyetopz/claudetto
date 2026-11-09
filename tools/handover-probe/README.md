@@ -19,7 +19,7 @@ Every token count the fake server returns is FAKE: it is `20,000 + 5,000 × huma
 | A | a handoff and a clear at each of 3 task boundaries | the fake model calls `mcp__claudetto__handoff` on a prompt that ends a task; the handover threshold is off |
 | B25, B50, B70 | a forked handover at 25%, 50%, 70% of a 200,000 window | `handoverThresholdTokens` of 50,000, 100,000, 140,000 |
 | C | the built-in compaction near 140,000 | `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=78`; the handover is off |
-| D | two built-in compactions, then a handover | `/compact` after turns 10 and 20, then a threshold of 100,000 |
+| D | two built-in compactions, then a handover | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=28` until 2 compactions, then a restart with `--continue`, the compaction off, and a threshold of 100,000 |
 
 ## Files
 
