@@ -177,11 +177,13 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Sandbox",
-		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folder, except the files that run later (shell startup files, git config, SSH, launch agents, and the PATH folders in your home folder). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, runs ps, top, sysctl, and launchctl list outside the sandbox, and cannot retry outside the sandbox.",
+		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folder, except the files that run later (shell startup files, git config, SSH, launch agents, and the PATH folders in your home folder). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and cannot retry outside the sandbox.",
 		settings: {
 			sandbox: {
 				enabled: true,
 				allowUnsandboxedCommands: false,
+				// Go tools such as `gh` verify TLS through `com.apple.trustd.agent`; without it they fail with `x509: OSStatus -26276`.
+				enableWeakerNetworkIsolation: true,
 				// Read-only commands that fail sandboxed under every key: `ps` and `top` are setuid root, and `sysctl` reads a fixed name list.
 				excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
 				filesystem: {

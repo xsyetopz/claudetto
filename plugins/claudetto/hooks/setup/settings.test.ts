@@ -336,6 +336,7 @@ test("the sandbox group lists what is dangerous: home-wide writes, denies for fi
 		sandbox: {
 			enabled: true,
 			allowUnsandboxedCommands: false,
+			enableWeakerNetworkIsolation: true,
 			excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
 			filesystem: {
 				allowWrite: ["~/", "/Volumes/", "/private/tmp"],

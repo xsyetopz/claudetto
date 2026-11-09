@@ -24,7 +24,7 @@ Before 1.0.0, a release can change or remove behavior.
 ### Changed
 
 - Four prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
-- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]`; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone.
+- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone.
 - The root prompt has the agent weigh a disputed claim as a third party's claim before it checks it.
 - The root prompt drops "the" where the reader already knows the referent, in the style of instruction labels. It shrinks from 5,205 to 5,041 bytes.
 - The plugin manifests no longer pin a `version`, so `claude plugin update` and auto-update pick up each commit on `main`. The pinned `2.1.319` had kept installs on their cached copy. The release tags each plugin with the version in `package.json`.

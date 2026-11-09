@@ -2,7 +2,7 @@
 
 ### Requirement: Setup Turns On the Built-in Sandbox With Least Friction
 
-The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block into the user's `settings.json`, through the fill and replace choice of the other groups. The block SHALL list what is dangerous, not what is safe: `enabled: true`, `allowUnsandboxedCommands: false`, `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, and `network.allowLocalBinding` `true`, so a test server or a fake API can bind a localhost port (the person's choice, 2026-11-09). Setup SHALL NOT add a per-tool entry, such as one tool's cache folder.
+The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block into the user's `settings.json`, through the fill and replace choice of the other groups. The block SHALL list what is dangerous, not what is safe: `enabled: true`, `allowUnsandboxedCommands: false`, `enableWeakerNetworkIsolation: true` (the person's choice, 2026-11-10: "allow both"), `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, and `network.allowLocalBinding` `true`, so a test server or a fake API can bind a localhost port (the person's choice, 2026-11-09). Setup SHALL NOT add a per-tool entry, such as one tool's cache folder.
 
 #### Scenario: A Write Outside the Allowed Paths
 
@@ -35,6 +35,11 @@ The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block 
 
 - **WHEN** a sandboxed command needs a macOS service, such as `pgrep`, `scutil --dns`, `pbpaste`, or `diskutil list`
 - **THEN** it runs, because `allowMachLookup` `["*"]` becomes `(global-name-prefix "")` (`chunk-fcp0yk24.js`, 2.1.319); on the fake API these four returned 0 with the entry and 3, 1, 1, 1 without it (2026-11-09)
+
+#### Scenario: A Go Tool Verifies a TLS Certificate
+
+- **WHEN** a sandboxed Go program such as `gh` verifies a certificate through `com.apple.trustd.agent`
+- **THEN** the trust service answers, under `enableWeakerNetworkIsolation` alone and under `allowMachLookup` `["*"]` alone; with neither, the check fails `x509: OSStatus -26276` (an offline Go `x509.Verify` probe on the fake API, 2.1.321, 2026-11-10)
 
 #### Scenario: A Request to Any Host
 
