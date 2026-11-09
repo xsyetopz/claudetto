@@ -151,6 +151,20 @@ test("the Agent text picks a type from the agent list or leaves the work to the 
 	expect(out.description).toContain("Do a few tool calls yourself instead");
 });
 
+test("A Delegated Edit Comes Back with Its Check: the Agent text sends the check command and runs it on the report", async ($: Engine, on: On) => {
+	on("tool.describe", (_$, e) => e);
+
+	const out = await $.tool.describe({
+		tool: "Agent",
+		description: "Launch a new agent",
+		provider: { plugin: "engine", tier: "core" },
+	});
+
+	expect(out.description).toContain(
+		"Give an edit task the command that checks it, and run that command when the report arrives, before you build on it.",
+	);
+});
+
 const LISTING = [
 	"Available agent types for the Agent tool:",
 	"- claudetto:Artemis: search",

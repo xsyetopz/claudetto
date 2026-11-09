@@ -28,6 +28,16 @@ An edit slice SHALL carry the command that checks it, and the root SHALL run tha
 - **WHEN** a Heracles report says done and the check command fails
 - **THEN** the run is logged as redone, and the root fixes or re-sends the slice with the failure text
 
+#### Scenario: The Agent Text Carries the Rule
+
+- **WHEN** the root reads the `Agent` tool description
+- **THEN** it holds "Give an edit task the command that checks it, and run that command when the report arrives, before you build on it." (`hooks/texts.ts`, `AGENT_TEXT`)
+
+#### Scenario: A Run Is Logged after 3 Root Turns
+
+- **WHEN** a subagent stops without a block, and the root then finishes 3 turns
+- **THEN** `.claude/claudetto/runs.jsonl` gains one line with `agent`, `model`, `durationSeconds`, `requests` (one per message id), `cacheHitRate`, `maxGapSeconds`, `files`, and `rootEditedWithin3Turns`, true when the root edited one of those files in those turns (`hooks/runs.ts`)
+
 #### Scenario: The Log Decides the Model
 
 - **WHEN** 10 or more edit runs are logged and the redo rate at Sonnet for a kind of slice exceeds the cost saved against the root doing it
