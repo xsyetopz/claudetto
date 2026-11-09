@@ -9,6 +9,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- `/reply` quotes your mouse selection, or paragraph N of the last reply (`/reply N`), into the prompt as a `Re:` block.
 - Each finished subagent run is logged to `.claude/claudetto/runs.jsonl`, with whether the root agent edited the same files within its next 3 turns.
 - The root agent gives each edit task the command that checks it, and runs that command when the report arrives, before it builds on it.
 - The injected rules say a removal deletes the feature's code, tests, and docs, adds no test that it stays gone, and keeps no compatibility path before 1.0.0.

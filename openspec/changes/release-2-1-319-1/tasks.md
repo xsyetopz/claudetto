@@ -41,6 +41,8 @@
 - [x] 4.5 Status line flow: replace the fixed row groups of `rowsOf` (`statusline/rows.ts:24-39`) with one item sequence wrapped at the width, up to `MAX_ROWS`.
 - [x] 4.6 Status line colours: write the `theme` name into the session file, add the palettes to `statusline/color.ts` (`:11-13, 49, 64-65`) for the six built-in themes from `chunk-w5ysqthb.js`, and add the palette-drift test.
 
+- [x] 4.7 Reply quote: add `hooks/reply.ts` and its test, register `/reply` at `session.start`, per `specs/reply-quote/spec.md`.
+
 ## 5. Release
 
 - [x] 5.1 Add the release entry to `CHANGELOG.md` with the version string unchanged at `2.1.319`.

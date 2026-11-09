@@ -8,11 +8,12 @@ import { limits } from "./limits.ts";
 import { notify } from "./notify.ts";
 import { stringOption } from "./options.ts";
 import { pin } from "./pin.ts";
+import { reply } from "./reply.ts";
 import { runs } from "./runs.ts";
 import { setup } from "./setup.ts";
 import { slices } from "./slices.ts";
 import { surface } from "./surface.ts";
-import { ASK_SPEC, DECIDE_SPEC, MONITOR_SPEC } from "./texts.ts";
+import { ASK_SPEC, DECIDE_SPEC, MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
 
 // Registration order is wrap order: `slices` is outermost, so it asks for a commit only after every other Stop check passed; `limits` bounds what every later hook adds.
 export const register = (on: On, options: PluginOptions): void => {
@@ -28,12 +29,14 @@ export const register = (on: On, options: PluginOptions): void => {
 	hygiene(on, options);
 	notify(on, options);
 	gate(on, options);
+	reply(on);
 
 	// The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
 		await $.tool.register(ASK_SPEC);
 		await $.tool.register(MONITOR_SPEC);
+		await $.command.register(REPLY_SPEC);
 		if (stringOption(options, "typesafeApiKey")) {
 			await $.tool.register(DECIDE_SPEC);
 		}

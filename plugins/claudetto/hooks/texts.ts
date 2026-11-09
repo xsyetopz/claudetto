@@ -161,6 +161,15 @@ export const offCommandText = (command: string): string =>
 export const AGENT_TEXT =
 	'Start a subagent for independent work: parallel tasks, a side task, or a search across many files. It knows only your prompt and returns one report the user does not see; relay what matters. subagent_type: "claudetto:Artemis" searches read-only, "claudetto:Metis" plans, "claudetto:Heracles" does the rest and runs when omitted; "fork" copies your context. Pass run_in_background: false with Artemis or Metis. Heracles runs in the background and notifies you when it ends: never predict its result. Give an edit task the command that checks it, and run that command when the report arrives, before you build on it. Do a few tool calls yourself instead. isolation "worktree" gives it its own git worktree.';
 
+export const REPLY_COMMAND = "reply";
+
+export const REPLY_SPEC = {
+	name: REPLY_COMMAND,
+	description:
+		"Quote the selected text, or paragraph N of the last reply, into the prompt.",
+	argumentHint: "[N]",
+};
+
 export const ASK_SPEC = {
 	name: "ask-user-question",
 	isDeferred: true,

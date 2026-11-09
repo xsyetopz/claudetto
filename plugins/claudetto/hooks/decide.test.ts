@@ -71,6 +71,7 @@ const registered = async ($: Engine, on: On) => {
 		names.push(e.name);
 		return { value: { tool: `mcp__claudetto__${e.name}` } };
 	});
+	on("command.register", (_$, e) => ({ value: { command: e.name } }));
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
 	return names.filter((name) => name === "decide");
 };
