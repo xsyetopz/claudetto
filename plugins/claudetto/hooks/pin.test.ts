@@ -345,6 +345,21 @@ test("an unreadable kind leaves the message a task", async ($: Engine, on: On) =
 	);
 });
 
+test("after a compaction the summary is no new remark, so the resumed turn's first call passes", async ($: Engine, on: On) => {
+	const messages: unknown[] = [person, spoken("Nobody did; I misread the task.")];
+	lab(on, [], messages, [], "remark");
+	on("session.compact", () => ({ skip: "core ran" }));
+	await submit($, person.text);
+	expect((await check($, "Grep", {})).decision).not.toBe("deny");
+	await $.session.compact({ trigger: "auto", messages: messages as SessionMessage[] });
+	messages.splice(0, messages.length, {
+		role: "user",
+		text: "This session is being continued from a previous conversation that ran out of context.",
+		toolUses: [],
+	});
+	expect((await check($, "Bash", { command: "ls" })).decision).not.toBe("deny");
+});
+
 test("the call that retries after the deny passes once, with no text, because the turn has moved on", async ($: Engine, on: On) => {
 	const messages: unknown[] = [person];
 	lab(on, [], messages, [], "remark");

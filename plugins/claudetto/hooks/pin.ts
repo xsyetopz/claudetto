@@ -249,6 +249,8 @@ export const pin = (on: On): void => {
 	});
 	on("session.compact", async (_$, e, next) => {
 		await pending;
+		// The summary that follows is a user message no person wrote: the answer-first gate would read it as an unanswered remark.
+		kind = "task";
 		return ledger.length === 0
 			? next(e)
 			: next({ ...e, instructions: PIN_COMPACT(e.instructions, ledger) });
