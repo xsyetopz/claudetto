@@ -273,6 +273,25 @@ The "Protected paths" group SHALL write `permissions.deny` `Read(<wall>/**)` for
 - **WHEN** `protectedPaths` holds `~/.claudetto-holdout`, `$HOME/b`, and `/srv/holdout/`
 - **THEN** the deny list holds `Read(~/.claudetto-holdout/**)`, `Read(~/b/**)`, and `Read(//srv/holdout/**)`, and the startup notice finds no wall unguarded (`hooks/setup.test.ts`, "each protected path gets a Read deny that silences the startup wall notice", "the default protected path gets its Read deny", "with no protected path, setup writes no Read deny")
 
+### Requirement: Haiku Explains Each Setup Question and Recommends an Answer
+
+Setup SHALL keep one question per step, and before each it SHALL send the question, with each secret betterleaks finds redacted, and its options to Haiku. When Haiku answers with JSON naming one of the options and a reason, the question SHALL end with a "Recommended:" line holding that option and the reason, and that option SHALL be listed first; the options keep their labels, so the person's pick means what it meant before. When the scan or the Haiku call fails, or the answer names no option, the question SHALL go as it was.
+
+#### Scenario: Haiku Recommends
+
+- **WHEN** Haiku answers `{"pick":"Skip","why":"..."}` to a write-or-skip question
+- **THEN** the question ends with `Recommended: Skip.` and the reason, and `Skip` is the first option (`hooks/setup.test.ts`, "each setup question ends with Haiku's recommendation, and that option comes first")
+
+#### Scenario: No Usable Answer
+
+- **WHEN** Haiku names a label that is not an option, or does not answer
+- **THEN** the question and its options are as they were ("a recommendation that names no option leaves the question as it was")
+
+#### Scenario: A Secret in the Question
+
+- **WHEN** a question shows a value betterleaks flags
+- **THEN** Haiku's prompt holds `[REDACTED]` in its place ("Haiku never sees a secret that a setup question shows")
+
 ### Requirement: `/statusline` Is Described as Making No Model Call
 
 The `command.describe` hook SHALL give `/statusline` the description "Write claudetto's status line, with no model call".

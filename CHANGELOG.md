@@ -15,6 +15,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The `openspec` tool validates the main specs with no change open, and adds `init`, `new`, `list`, and the status graph.
 - `/claudetto:setup` writes a `Read` deny to `permissions.deny` for each protected path, so the start notice stays silent after setup.
 - The gate denies a branch switch that would rewrite a sandbox-protected file.
+- Each `/claudetto:setup` question ends with Haiku's recommended option and why, and lists that option first. Secrets are redacted before Haiku sees the question, and when Haiku is unsure or fails, the question shows unchanged.
 
 ### Changed
 

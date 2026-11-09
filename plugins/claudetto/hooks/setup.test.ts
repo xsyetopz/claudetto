@@ -16,6 +16,14 @@ interface Lab {
 	readonly mtimes: Map<string, number>;
 	readonly written: Written[];
 	readonly shown: string[];
+	/** The option labels of each dialog, in the order drawn. */
+	readonly offered: (readonly string[])[];
+	/** Each prompt Haiku got. */
+	readonly prompts: string[];
+	/** Haiku's answer text; unset, Haiku does not answer. */
+	advice: string | undefined;
+	/** The values the betterleaks stub flags. */
+	secrets: string[];
 	/** Each header, option label, and option description a dialog drew. */
 	readonly drawn: string[];
 	readonly logs: string[];
@@ -44,6 +52,10 @@ const lab = (
 		mtimes: new Map(),
 		written: [],
 		shown: [],
+		offered: [],
+		prompts: [],
+		advice: undefined,
+		secrets: [],
 		drawn: [],
 		logs: [],
 		store: new Map(),
@@ -80,7 +92,7 @@ const lab = (
 		return { value: undefined };
 	});
 	on("process.run", (_$, e) => {
-		const scan = scanned(e);
+		const scan = scanned(e, state.secrets);
 		if (scan) {
 			return scan;
 		}
@@ -99,6 +111,21 @@ const lab = (
 	on("store.set", (_$, e) => {
 		state.store.set(e.key, e.value);
 		return { value: undefined };
+	});
+	on("model.complete", (_$, e) => {
+		state.prompts.push(e.prompt);
+		const usage = {
+			input_tokens: 1,
+			output_tokens: 1,
+			cache_read_input_tokens: 0,
+			cache_creation_input_tokens: 0,
+		};
+		return {
+			value:
+				state.advice === undefined
+					? { isAnswered: false as const, reason: "empty-reply" as const, usage }
+					: { isAnswered: true as const, text: state.advice, usage },
+		};
 	});
 	on("clock.now", () => ({ value: 0 }));
 	on("session.version", () => ({
@@ -125,6 +152,7 @@ const lab = (
 			(o: { label: string }) => o.label,
 		);
 		state.shown.push(question);
+		state.offered.push(options);
 		state.drawn.push(
 			String(first?.header ?? ""),
 			...(first?.options ?? []).flatMap(
@@ -289,7 +317,54 @@ test("a second run with everything in place asks nothing and writes nothing", as
 	);
 });
 
-test("the ignore dialog says it narrows Grep and not Glob", async ($: Engine, on: On) => {
+test("each setup question ends with Haiku's recommendation, and that option comes first", async ($: Engine, on: On) => {
+	const state = lab(on, "{}", () => "Skip");
+	state.advice = JSON.stringify({ pick: "Skip", why: "You set it yourself." });
+
+	await run($, "claudetto:setup");
+
+	const skippable = state.offered.flatMap((options, i) =>
+		options.includes("Skip") ? [i] : [],
+	);
+	expect(skippable.length).toBeGreaterThan(0);
+	for (const i of skippable) {
+		expect(state.shown[i]).toEndWith(
+			"\n\nRecommended: Skip. You set it yourself.",
+		);
+		expect(state.offered[i]?.[0]).toBe("Skip");
+	}
+});
+
+test("a recommendation that names no option leaves the question as it was", async ($: Engine, on: On) => {
+	const plain = lab(on, "{}", () => "Skip");
+	await run($, "claudetto:setup");
+	const before = { shown: [...plain.shown], offered: [...plain.offered] };
+	plain.shown.length = 0;
+	plain.offered.length = 0;
+	plain.advice = JSON.stringify({ pick: "Maybe", why: "No such option." });
+
+	await run($, "claudetto:setup");
+
+	expect(plain.prompts.length).toBeGreaterThan(0);
+	expect(plain.shown).toEqual(before.shown);
+	expect(plain.offered).toEqual(before.offered);
+});
+
+test("Haiku never sees a secret that a setup question shows", async ($: Engine, on: On) => {
+	const state = lab(on, "{}", () => "Skip");
+	state.secrets = ["DISABLE_TELEMETRY"];
+	state.advice = JSON.stringify({ pick: "Skip", why: "-" });
+
+	await run($, "claudetto:setup");
+
+	expect(state.shown.some((q) => q.includes("DISABLE_TELEMETRY"))).toBe(true);
+	expect(state.prompts.some((p) => p.includes("[REDACTED]"))).toBe(true);
+	expect(state.prompts.some((p) => p.includes("DISABLE_TELEMETRY"))).toBe(
+		false,
+	);
+});
+
+test("the ignore dialog says it narrows Grep and not Glob",async ($: Engine, on: On) => {
 	const state = lab(
 		on,
 		"{}",

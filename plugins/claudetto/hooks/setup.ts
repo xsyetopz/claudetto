@@ -29,7 +29,13 @@ import {
 	starterPart,
 	toolPart,
 } from "./setup/steps.ts";
-import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./setup/text.ts";
+import { redact } from "./secrets.ts";
+import {
+	recommended,
+	SETUP_ADVICE,
+	STATUSLINE_DESCRIPTION,
+	statuslineEdit,
+} from "./setup/text.ts";
 import {
 	diskLine,
 	isBelowFloor,
@@ -112,16 +118,48 @@ const writeFile = async (
 
 const ANSWERED = "The user answered: ";
 
+const ADVICE_MS = 20_000;
+
+/** Haiku's pick and reason, or undefined when the scan, the call, or the answer fails; the question goes as it was then, so setup never waits on advice. */
+const adviceOf = async (
+	$: EngineInterface,
+	question: string,
+	options: readonly string[],
+): Promise<{ pick: string; why: string } | undefined> => {
+	try {
+		const shown = await redact((argv, init) => $.process.run(argv, init), question);
+		const r = await $.model.complete({
+			model: "haiku",
+			prompt: SETUP_ADVICE(shown, options),
+			maxTokens: 200,
+			timeoutMs: ADVICE_MS,
+		});
+		const { pick, why } = JSON.parse(r.isAnswered ? r.text : "");
+		return options.includes(pick) && typeof why === "string"
+			? { pick, why }
+			: undefined;
+	} catch {
+		return undefined;
+	}
+};
+
 /** The stock dialog is denied outside `mcp__claudetto__ask-user-question`, so a question goes through that tool; it rejects when the dialog is dismissed. */
 const ask = async (
 	$: EngineInterface,
 	question: string,
 	options: readonly string[],
 ): Promise<string> => {
+	const advice = await adviceOf($, question, options);
 	const out = await $.tool.call({
 		tool: "mcp__claudetto__ask-user-question",
-		question,
-		options,
+		question:
+			advice === undefined
+				? question
+				: question + recommended(advice.pick, advice.why),
+		options:
+			advice === undefined
+				? options
+				: [advice.pick, ...options.filter((o) => o !== advice.pick)],
 	});
 	const result = typeof out.result === "string" ? out.result : "";
 	if (!result.startsWith(ANSWERED)) {
