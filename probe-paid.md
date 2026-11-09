@@ -6,305 +6,250 @@ Expected: 3 clears with handoffs. Token counts and usage are the real API's.
 
 | run | verdict | events | recall |
 | --- | --- | --- | --- |
-| 1 | ok | 3 clears, 0 compactions, 0 handovers | 9/10, lost q9-migrations |
+| 1 | ok | 3 clears, 0 compactions, 0 handovers | 10/10 |
 | 2 | ok | 3 clears, 0 compactions, 0 handovers | 10/10 |
 | 3 | ok | 3 clears, 0 compactions, 0 handovers | 10/10 |
 
 | run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| run 1 | clear | 9 | 32909 | event | main | req_011CgsftWPhyCPx9AcZYhWwX | 32320 | 0 | 585 | 1608 |
-| run 1 |  |  | 26556 | +1 | main | req_011CgsfugvFD3YTiXTf5o1xK | 24321 | 0 | 2233 | 173 |
-| run 1 |  |  | 884 | +2 | other | req_011CgsfurjrcHX4q2nH1eSGh | 0 | 0 | 0 | 205 |
-| run 1 |  |  | 27666 | +3 | main | req_011Cgsfuryk5FTkDsc9FToEg | 26554 | 0 | 1110 | 909 |
-| run 1 | clear | 19 | 44534 | event | main | req_011Cgsg9jfbbogZN4ddFGapm | 44080 | 0 | 452 | 1776 |
-| run 1 |  |  | 26944 | +1 | main | req_011CgsgAv2DeUKv5eGtJmQpU | 24321 | 0 | 2621 | 143 |
-| run 1 |  |  | 889 | +2 | other | req_011CgsgB5LYoDxAMDG6t31NC | 0 | 0 | 0 | 193 |
-| run 1 |  |  | 28062 | +3 | main | req_011CgsgB5YCxEiF8Z778RmCR | 26942 | 0 | 1118 | 176 |
-| run 1 | clear | 29 | 36904 | event | main | req_011CgsgKThBPB4WrP9QxNBnT | 36511 | 0 | 391 | 1754 |
-| run 1 |  |  | 26964 | +1 | main | req_011CgsgLRrLboLSamyPqEoN3 | 24321 | 0 | 2641 | 171 |
-| run 1 |  |  | 882 | +2 | other | req_011CgsgLabgzY9yHXT134YZW | 0 | 0 | 0 | 239 |
-| run 1 |  |  | 28066 | +3 | main | req_011CgsgLaksEmvhxvz63wiZZ | 26962 | 0 | 1102 | 352 |
-| run 2 | clear | 9 | 28685 | event | main | req_011Cgsge6PoKxEemxjFcQRdW | 28244 | 0 | 437 | 1032 |
-| run 2 |  |  | 26349 | +1 | main | req_011CgsgeoU6rUJRH7fDTME93 | 24321 | 0 | 2026 | 144 |
-| run 2 |  |  | 884 | +2 | other | req_011CgsgexCD3MRnfR1etZBuH | 0 | 0 | 0 | 190 |
-| run 2 |  |  | 27561 | +3 | main | req_011CgsgexJuPpM59vpAw3o9v | 26347 | 0 | 1212 | 464 |
-| run 2 | clear | 19 | 47806 | event | main | req_011CgsgumfNg1bwM2rvfahPs | 47321 | 0 | 483 | 1731 |
-| run 2 |  |  | 26803 | +1 | main | req_011Cgsgvvw19DB9aVKmPLzKW | 24321 | 0 | 2480 | 121 |
-| run 2 |  |  | 27758 | +2 | main | req_011Cgsgw47cWGhaikD29xUFq | 26801 | 0 | 955 | 219 |
-| run 2 |  |  | 886 | +3 | other | req_011CgsgwDSw4ghWXeQ56wq2A | 0 | 0 | 0 | 175 |
-| run 2 | clear | 29 | 38781 | event | main | req_011Cgsh6d2Gef3v9r5rSJcHH | 38327 | 0 | 452 | 2201 |
-| run 2 |  |  | 26842 | +1 | main | req_011Cgsh7wmR4o1q6TDujcRwT | 24321 | 0 | 2519 | 148 |
-| run 2 |  |  | 27827 | +2 | main | req_011Cgsh85KbSy4fYQn3uQsQ8 | 26840 | 0 | 985 | 196 |
-| run 2 |  |  | 879 | +3 | other | req_011Cgsh8FdxFXyd1afmorNF9 | 0 | 0 | 0 | 214 |
-| run 3 | clear | 9 | 30476 | event | main | req_011CgshMQHDvjXBUKRyxo8mp | 29941 | 0 | 531 | 1371 |
-| run 3 |  |  | 26448 | +1 | main | req_011CgshNQPT2xXff51bARbHk | 24321 | 0 | 2125 | 180 |
-| run 3 |  |  | 27566 | +2 | main | req_011CgshNZj2969ZJL4Mo1K2s | 26446 | 0 | 1118 | 183 |
-| run 3 |  |  | 887 | +3 | other | req_011CgshNZcacS8wJbP6QFxqi | 0 | 0 | 0 | 480 |
-| run 3 | clear | 19 | 47420 | event | main | req_011Cgshdw8JcL8Rk9TE3SfdA | 46982 | 0 | 436 | 2654 |
-| run 3 |  |  | 27253 | +1 | main | req_011Cgshfdkr9uNzihKT3XSsQ | 24321 | 0 | 2930 | 123 |
-| run 3 |  |  | 28351 | +2 | main | req_011CgshfmCKXUSEEcKFoiy2H | 27251 | 0 | 1098 | 218 |
-| run 3 |  |  | 891 | +3 | other | req_011Cgshfm7rwbkwxiekoTyB6 | 0 | 0 | 0 | 384 |
-| run 3 | clear | 29 | 39906 | event | main | req_011CgshqLotnQWPV2f2sgrMx | 39707 | 0 | 197 | 2332 |
-| run 3 |  |  | 27492 | +1 | main | req_011Cgshrh36t1zzkjm8f5SvP | 24321 | 0 | 3169 | 126 |
-| run 3 |  |  | 28508 | +2 | main | req_011Cgshroa1DHJgyoa213CwE | 27490 | 0 | 1016 | 209 |
-| run 3 |  |  | 884 | +3 | other | req_011CgshrxYFyUAraQ64rUW9S | 0 | 0 | 0 | 130 |
+| run 1 | clear | 9 | 28041 | event | main | req_011CgsjduwMZZFo7fuy4qetD | 27839 | 0 | 200 | 1060 |
+| run 1 |  |  | 26104 | +1 | main | req_011CgsjeboDp8BNWUvuV5b6F | 24321 | 0 | 1781 | 131 |
+| run 1 |  |  | 27172 | +2 | main | req_011CgsjejjDA3h4kX4LGdEia | 26102 | 0 | 1068 | 172 |
+| run 1 |  |  | 885 | +3 | other | req_011CgsjejeGDS8D37LKKPUMX | 0 | 0 | 0 | 105 |
+| run 1 | clear | 19 | 46629 | event | main | req_011CgsjtiQyWwLV1C5QLgT4D | 46121 | 0 | 506 | 1847 |
+| run 1 |  |  | 26801 | +1 | main | req_011CgsjuzMhmDqjAUTiNEyhR | 24321 | 0 | 2478 | 104 |
+| run 1 |  |  | 890 | +2 | other | req_011Cgsjv7fVnH5yJYhajuv3w | 0 | 0 | 0 | 228 |
+| run 1 |  |  | 27842 | +3 | main | req_011Cgsjv7iim87W9pn5RftuQ | 26799 | 0 | 1041 | 416 |
+| run 1 | clear | 29 | 38080 | event | main | req_011Cgsk57xMSzxwE4M6FwkF3 | 37528 | 0 | 550 | 1983 |
+| run 1 |  |  | 27193 | +1 | main | req_011Cgsk6EMbxHaakCsZJBK9B | 24321 | 0 | 2870 | 115 |
+| run 1 |  |  | 883 | +2 | other | req_011Cgsk6NEsLMzrwFvdnLLJ4 | 0 | 0 | 0 | 202 |
+| run 1 |  |  | 28238 | +3 | main | req_011Cgsk6NMoxjD7mSuHZdRrP | 27191 | 0 | 1045 | 397 |
+| run 2 | clear | 9 | 32118 | event | main | req_011CgskKezJjfpDBg5LHs5wo | 31496 | 0 | 618 | 1126 |
+| run 2 |  |  | 26221 | +1 | main | req_011CgskLRq4TeBaLC6sqj4ee | 24321 | 0 | 1898 | 112 |
+| run 2 |  |  | 27167 | +2 | main | req_011CgskLYqVCFdJQ8vLX4znP | 26219 | 0 | 946 | 766 |
+| run 2 |  |  | 2307 | +3 | other | req_011CgskM8cEkwKsQ4oH6c9yC | 0 | 0 | 0 | 391 |
+| run 2 | clear | 19 | 42982 | event | main | req_011CgskYQGtA9ufYH7m9Y3ZW | 42533 | 0 | 447 | 1800 |
+| run 2 |  |  | 27000 | +1 | main | req_011CgskZcRehggZ57LyFnixJ | 24321 | 0 | 2677 | 214 |
+| run 2 |  |  | 889 | +2 | other | req_011CgskZnY7DjxccyPCySvB8 | 0 | 0 | 0 | 146 |
+| run 2 |  |  | 28292 | +3 | main | req_011CgskZnY7rpQcDBGN7MWns | 26998 | 0 | 1292 | 740 |
+| run 2 | clear | 29 | 36106 | event | main | req_011Cgskh7fzgBizUzEYSGm52 | 35681 | 0 | 423 | 1704 |
+| run 2 |  |  | 26920 | +1 | main | req_011Cgski6RNNBRXX6hEeNhQn | 24321 | 0 | 2597 | 256 |
+| run 2 |  |  | 882 | +2 | other | req_011CgskiHA2TMft3An28kzhL | 0 | 0 | 0 | 203 |
+| run 2 |  |  | 28374 | +3 | main | req_011CgskiHJi2h2RVEMZG6aef | 26918 | 0 | 1454 | 626 |
+| run 3 | clear | 9 | 31745 | event | main | req_011CgskzTN97JcCEKHDargtJ | 31297 | 0 | 444 | 1306 |
+| run 3 |  |  | 26290 | +1 | main | req_011Cgsm1Nm71AjxpS9KukejB | 24321 | 0 | 1967 | 103 |
+| run 3 |  |  | 27376 | +2 | main | req_011Cgsm1VFmmBRP67mS2sfXP | 26288 | 0 | 1086 | 661 |
+| run 3 |  |  | 2580 | +3 | other | req_011Cgsm21Fpca7f35RmMCG7k | 0 | 0 | 0 | 420 |
+| run 3 | clear | 19 | 32779 | event | main | req_011Cgsm8c2Wq11oMkZoMN7CZ | 32665 | 0 | 112 | 1308 |
+| run 3 |  |  | 26463 | +1 | main | req_011Cgsm9TcXManjeeF9NJW7B | 24321 | 0 | 2140 | 187 |
+| run 3 |  |  | 27588 | +2 | main | req_011Cgsm9dGx7PRgh1rq1b6YE | 26461 | 0 | 1125 | 124 |
+| run 3 |  |  | 890 | +3 | other | req_011Cgsm9dDyK7t5L2FiuuTj5 | 0 | 0 | 0 | 569 |
+| run 3 | clear | 29 | 37545 | event | main | req_011CgsmLcCGLCfZXL51yhJZU | 37032 | 0 | 511 | 1205 |
+| run 3 |  |  | 26297 | +1 | main | req_011CgsmMN6xynNL3WEsKzZNt | 24321 | 0 | 1974 | 253 |
+| run 3 |  |  | 883 | +2 | other | req_011CgsmMYu78GZbPXaXWDKnN | 0 | 0 | 0 | 204 |
+| run 3 |  |  | 27481 | +3 | main | req_011CgsmMYzoqu3neQaT2Mg2a | 26295 | 0 | 1184 | 417 |
 
-### Arm B25: forked handover at 25% of the window
+### Arm B35: forked handover at 35,000 tokens
 
-Expected: handovers, the first at 25%. Token counts and usage are the real API's.
-
-| run | verdict | events | recall |
-| --- | --- | --- | --- |
-| 1 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-| 2 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 8/10, lost q3-money q9-migrations |
-| 3 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-
-| run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| run 1 | clear | 9 | 29583 | event | main | req_011CgsfpozWZd5ND59KNLGKC | 29206 | 0 | 373 | 1318 |
-| run 1 |  |  | 26395 | +1 | main | req_011CgsfqhimLDaDjdruVbp4R | 24321 | 0 | 2072 | 121 |
-| run 1 |  |  | 884 | +2 | other | req_011Cgsfr3wS5DYWPiCJeBjJX | 0 | 0 | 0 | 493 |
-| run 1 |  |  | 27454 | +3 | main | req_011Cgsfr97jhNzXpE3FtbB76 | 26393 | 0 | 1059 | 781 |
-| run 1 | clear | 19 | 44339 | event | main | req_011Cgsg5Sg2XrHNn8WtwVWxn | 43520 | 0 | 817 | 2064 |
-| run 1 |  |  | 26452 | +1 | main | req_011Cgsg6gaipPQNqKqFprQyB | 24321 | 0 | 2129 | 226 |
-| run 1 |  |  | 889 | +2 | other | req_011Cgsg6r6DJKi5LqrhSPcvG | 0 | 0 | 0 | 170 |
-| run 1 |  |  | 29158 | +3 | main | req_011Cgsg6rEe4rVeRpWqLAhui | 26450 | 0 | 2706 | 447 |
-| run 1 | clear | 29 | 41349 | event | main | req_011CgsgEjjhCE7rVW5bCCVM1 | 40465 | 0 | 882 | 1874 |
-| run 1 |  |  | 26697 | +1 | main | req_011CgsgFr9BdCb6U2qE1cCUj | 24321 | 0 | 2374 | 240 |
-| run 1 |  |  | 882 | +2 | other | req_011CgsgG2xaA9yDdDUrdYdt6 | 0 | 0 | 0 | 213 |
-| run 1 |  |  | 29345 | +3 | main | req_011CgsgG36VuSXwJCMLifNt2 | 26695 | 0 | 2648 | 281 |
-| run 2 | clear | 9 | 31839 | event | main | req_011CgsgW16qfjrnHSwdxJ47b | 31261 | 0 | 574 | 1408 |
-| run 2 |  |  | 26287 | +1 | main | req_011CgsgWzRBR1wiCi3wmFR19 | 24321 | 0 | 1964 | 136 |
-| run 2 |  |  | 27297 | +2 | main | req_011CgsgX9FkgB6ZipAhHAPXV | 26285 | 0 | 1010 | 364 |
-| run 2 |  |  | 1882 | +3 | other | req_011CgsgXRESLXNM2BT2axQ7H | 0 | 0 | 0 | 273 |
-| run 2 | clear | 19 | 45256 | event | main | req_011CgsgkGH3Rtb6WZQww2UgY | 44821 | 0 | 433 | 1533 |
-| run 2 |  |  | 26662 | +1 | main | req_011CgsgmG5QNBA5rjwEL97fY | 24321 | 0 | 2339 | 181 |
-| run 2 |  |  | 891 | +2 | other | req_011CgsgmPinXYmQ4pdveVgQ2 | 0 | 0 | 0 | 241 |
-| run 2 |  |  | 27782 | +3 | main | req_011CgsgmPo1FBouagGgRnczn | 26660 | 0 | 1120 | 243 |
-| run 2 | clear | 29 | 38313 | event | main | req_011CgsguKLLpc2HjPY9a43zt | 37859 | 0 | 452 | 1352 |
-| run 2 |  |  | 26529 | +1 | main | req_011Cgsgv6SimthJyGTkbNFr2 | 24321 | 0 | 2206 | 285 |
-| run 2 |  |  | 884 | +2 | other | req_011CgsgvH4CLQZQXgCrtM8rq | 0 | 0 | 0 | 230 |
-| run 2 |  |  | 30917 | +3 | main | req_011CgsgvHAPdc6kQxwACk9GP | 26527 | 0 | 4388 | 432 |
-| run 3 | clear | 9 | 30823 | event | main | req_011Cgsh9wgkp2j5pA9nkSoXe | 30136 | 0 | 683 | 1510 |
-| run 3 |  |  | 26589 | +1 | main | req_011CgshAyPEKMDTyADNvitNS | 24321 | 0 | 2266 | 165 |
-| run 3 |  |  | 885 | +2 | other | req_011CgshB92vNpeNf5WXg4Sy6 | 0 | 0 | 0 | 176 |
-| run 3 |  |  | 27710 | +3 | main | req_011CgshB997LiDU5qtCqp77F | 26587 | 0 | 1121 | 556 |
-| run 3 | clear | 19 | 41544 | event | main | req_011CgshNsXMQ13rcC8LucftF | 41109 | 0 | 433 | 1388 |
-| run 3 |  |  | 26566 | +1 | main | req_011CgshPmqpdjYFMmJ6L9Khx | 24321 | 0 | 2243 | 85 |
-| run 3 |  |  | 27484 | +2 | main | req_011CgshPtqWWs5v3YVqRJmie | 26564 | 0 | 918 | 206 |
-| run 3 |  |  | 889 | +3 | other | req_011CgshQ5GpJNxzC6AgxFkUi | 0 | 0 | 0 | 186 |
-| run 3 | clear | 29 | 37014 | event | main | req_011CgshYJLMR6AuwX2QbraR7 | 36576 | 0 | 436 | 1326 |
-| run 3 |  |  | 26483 | +1 | main | req_011CgshZ2oEnrYs2pBZoGHxV | 24321 | 0 | 2160 | 177 |
-| run 3 |  |  | 882 | +2 | other | req_011CgshZC27hTQBxYyaE8mdX | 0 | 0 | 0 | 157 |
-| run 3 |  |  | 27591 | +3 | main | req_011CgshZC5qM14RkqJDXymSe | 26481 | 0 | 1108 | 236 |
-
-### Arm B50: forked handover at 50% of the window
-
-Expected: handovers, the first at 50%. Token counts and usage are the real API's.
+Expected: handovers, the first at 35,000 tokens. Token counts and usage are the real API's.
 
 | run | verdict | events | recall |
 | --- | --- | --- | --- |
-| 1 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 9/10, lost q3-money |
-| 2 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-| 3 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 9/10, lost q8-tests |
+| 1 | ok | 0 clears, 0 compactions, 3 handovers | 10/10 |
+| 2 | ok | 0 clears, 0 compactions, 7 handovers | 1/10, lost q1-store q2-runtime q3-money q4-ids q5-http q6-auth q7-logs q8-tests q9-migrations |
+| 3 | ok | 0 clears, 0 compactions, 5 handovers | 2/10, lost q2-runtime q3-money q5-http q6-auth q7-logs q8-tests q9-migrations q10-time |
 
 | run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| run 1 | clear | 9 | 26956 | event | main | req_011Cgsfnwg4cBscC6jsDT5CU | 26753 | 0 | 201 | 731 |
-| run 1 |  |  | 25757 | +1 | main | req_011CgsfoS3swJaFLXZNof21Q | 24321 | 0 | 1434 | 153 |
-| run 1 |  |  | 886 | +2 | other | req_011CgsfoavRprA8L92gai11i | 0 | 0 | 0 | 249 |
-| run 1 |  |  | 26840 | +3 | main | req_011Cgsfobc6zfT2WeNKebrZw | 25755 | 0 | 1083 | 185 |
-| run 1 | clear | 19 | 46841 | event | main | req_011Cgsg4rd9xpzaJM6U3Rgkc | 46051 | 0 | 788 | 1852 |
-| run 1 |  |  | 26950 | +1 | main | req_011Cgsg5z1vbMGpUwzaCKUWU | 24321 | 0 | 2627 | 152 |
-| run 1 |  |  | 28040 | +2 | main | req_011Cgsg698MkVZ3PdpSfALTP | 26948 | 0 | 1090 | 195 |
-| run 1 |  |  | 891 | +3 | other | req_011Cgsg68wTWTBPvNbG1nZ5x | 0 | 0 | 0 | 537 |
-| run 1 | clear | 29 | 41412 | event | main | req_011CgsgFh7UFZSxjcLnP8kNh | 40640 | 0 | 770 | 1604 |
-| run 1 |  |  | 26826 | +1 | main | req_011CgsgGg7iKrTyCrhr1frrr | 24321 | 0 | 2503 | 162 |
-| run 1 |  |  | 27919 | +2 | main | req_011CgsgGprKnCR7kA6rB66Cn | 26824 | 0 | 1093 | 185 |
-| run 1 |  |  | 884 | +3 | other | req_011CgsgGpkdM6kQB2PxVWrLS | 0 | 0 | 0 | 446 |
-| run 2 | clear | 9 | 30329 | event | main | req_011CgsgXdmWD18jNmGgxkBG4 | 29615 | 0 | 710 | 1479 |
-| run 2 |  |  | 26532 | +1 | main | req_011CgsgYdXdcVgVEzLKqtkVR | 24321 | 0 | 2209 | 105 |
-| run 2 |  |  | 27624 | +2 | main | req_011CgsgYom3FU4dgVQiTJvSV | 26530 | 0 | 1092 | 904 |
-| run 2 |  |  | 2354 | +3 | other | req_011CgsgZQvPAXn2czPvgncDx | 0 | 0 | 0 | 502 |
-| run 2 | clear | 19 | 40784 | event | main | req_011CgsgkB6Emf9U5KboywRjw | 40407 | 0 | 375 | 1519 |
-| run 2 |  |  | 26615 | +1 | main | req_011Cgsgm8kNvG7WcaiNDDyFk | 24321 | 0 | 2292 | 215 |
-| run 2 |  |  | 890 | +2 | other | req_011CgsgmJPKY5PfQrYjbQgPt | 0 | 0 | 0 | 247 |
-| run 2 |  |  | 27819 | +3 | main | req_011CgsgmJnsnc61czuNDkYug | 26613 | 0 | 1204 | 322 |
-| run 2 | clear | 29 | 34800 | event | main | req_011Cgsgto6fjaofFSzMVC93M | 34566 | 0 | 232 | 1656 |
-| run 2 |  |  | 26483 | +1 | main | req_011CgsgunSG7MpF6i5PGxMTv | 24321 | 0 | 2160 | 85 |
-| run 2 |  |  | 27412 | +2 | main | req_011Cgsguu8b42NtqBCwA6qkc | 26481 | 0 | 929 | 77 |
-| run 2 |  |  | 27509 | +3 | main | req_011CgsguyynBEGXa6TqrH9WK | 27410 | 0 | 97 | 371 |
-| run 3 | clear | 9 | 27464 | event | main | req_011CgshCjvB39Y6j2BMMKbKd | 27268 | 0 | 194 | 886 |
-| run 3 |  |  | 25915 | +1 | main | req_011CgshDLurEwPCJUhhk3N1q | 24321 | 0 | 1592 | 185 |
-| run 3 |  |  | 884 | +2 | other | req_011CgshDVaEt1t9jVed9cpGG | 0 | 0 | 0 | 198 |
-| run 3 |  |  | 27039 | +3 | main | req_011CgshDVgwgZZQdNHw1LNWp | 25913 | 0 | 1124 | 175 |
-| run 3 | clear | 19 | 49267 | event | main | req_011CgshVoDqHiqAEX1oF4Enc | 48675 | 0 | 590 | 1537 |
-| run 3 |  |  | 26584 | +1 | main | req_011CgshWrZn98mernRdn4ybG | 24321 | 0 | 2261 | 144 |
-| run 3 |  |  | 893 | +2 | other | req_011CgshWzYFGW1igQqC1XV4m | 0 | 0 | 0 | 193 |
-| run 3 |  |  | 27667 | +3 | main | req_011CgshWzeh5CwTBibJXJ3jH | 26582 | 0 | 1083 | 163 |
-| run 3 | clear | 29 | 38236 | event | main | req_011CgshftAGgGpPDjWU2qh7U | 37717 | 0 | 517 | 1730 |
-| run 3 |  |  | 26759 | +1 | main | req_011CgshgtSurNmt3s23uKdVy | 24321 | 0 | 2436 | 192 |
-| run 3 |  |  | 886 | +2 | other | req_011Cgshh4qEbnehDWo9e5PuL | 0 | 0 | 0 | 176 |
-| run 3 |  |  | 27944 | +3 | main | req_011Cgshh51uhWDKcDA1F3TpP | 26757 | 0 | 1185 | 303 |
+| run 1 | handover | 12 | 36803 | event | fork | req_011CgsjjDrm4SAsKuT9TReyn | 36108 | 648 | 0 | 248 |
+| run 1 |  |  | 37072 | +1 | main | req_011CgsjjSdxXpTjCfdqGFcFP | 36756 | 295 | 0 | 1691 |
+| run 1 |  |  | 1036 | +2 | other | req_011CgsjkULB89Vt8qNNb1hKL | 0 | 0 | 0 | 247 |
+| run 1 |  |  | 36785 | +3 | main | req_011CgsjkUN9ydg9weaHDxTBV | 36108 | 0 | 673 | 467 |
+| run 1 | handover | 18 | 36267 | event | fork | req_011CgsjtT2moegB2fC2csrtm | 35256 | 964 | 0 | 2547 |
+| run 1 |  |  | 1370 | +1 | other | req_011CgsjuycorsHRJtqL9Mfxr | 0 | 0 | 0 | 360 |
+| run 1 |  |  | 36249 | +2 | main | req_011Cgsjuyh2X2p9aXJTQ8DgT | 35256 | 0 | 989 | 415 |
+| run 1 |  |  | 36868 | +3 | main | req_011CgsjvEhAjZyd6ZJdsoQUz | 36245 | 0 | 621 | 942 |
+| run 1 | handover | 27 | 35762 | event | fork | req_011Cgsk4jXjdJoRu3cDum84D | 35552 | 163 | 0 | 297 |
+| run 1 |  |  | 36080 | +1 | main | req_011Cgsk4xwP6RX6SwKqEdD2g | 35715 | 344 | 0 | 1751 |
+| run 1 |  |  | 35744 | +2 | main | req_011Cgsk61PzJJK8PZ7V1KcfG | 35552 | 0 | 188 | 230 |
+| run 1 |  |  | 1786 | +3 | other | req_011Cgsk61HYsaLNVEHBG461m | 0 | 0 | 0 | 745 |
+| run 2 | handover | 11 | 36497 | event | fork | req_011CgskPKyRKkANSerTXbcXX | 35861 | 589 | 0 | 2172 |
+| run 2 |  |  | 1010 | +1 | other | req_011CgskQibj6decbskqj7tzg | 0 | 0 | 0 | 281 |
+| run 2 |  |  | 36479 | +2 | main | req_011CgskQighD6CTH7mpGAWLM | 35861 | 0 | 614 | 169 |
+| run 2 |  |  | 36680 | +3 | main | req_011CgskQta1QABBN29hAG126 | 36475 | 0 | 203 | 466 |
+| run 2 | handover | 15 | 41251 | event | fork | req_011Cgskdse4owwvM4eCJM9fB | 40480 | 724 | 0 | 330 |
+| run 2 |  |  | 41657 | +1 | main | req_011Cgske8ABMsHged7oaim8p | 41204 | 377 | 0 | 3106 |
+| run 2 |  |  | 41233 | +2 | main | req_011CgskfvwYeTCmX6zqqwKwC | 40480 | 0 | 749 | 180 |
+| run 2 |  |  | 1287 | +3 | other | req_011Cgskfw12gysNqSqj7onhx | 0 | 0 | 0 | 346 |
+| run 2 | handover | 20 | 36036 | event | fork | req_011CgsknGVCnRx2tHpzC8SBY | 35391 | 598 | 0 | 3526 |
+| run 2 |  |  | 1608 | +1 | other | req_011CgskpEwkJkX13XHJm761Y | 0 | 0 | 0 | 380 |
+| run 2 |  |  | 36018 | +2 | main | req_011CgskpF4hDcdLgyHD2NyWy | 35391 | 0 | 623 | 336 |
+| run 2 |  |  | 36686 | +3 | main | req_011CgskpT5kJsPnzh8GzGTfV | 36014 | 0 | 670 | 431 |
+| run 2 | handover | 27 | 36325 | event | fork | req_011CgskwSgt151z3YtN8Kync | 35928 | 350 | 0 | 375 |
+| run 2 |  |  | 36721 | +1 | main | req_011CgskwiTAnWRL6Bzh87hzj | 36278 | 422 | 0 | 3582 |
+| run 2 |  |  | 36307 | +2 | main | req_011CgskyY5tBRDdAhDn2civF | 35928 | 0 | 375 | 138 |
+| run 2 |  |  | 1977 | +3 | other | req_011CgskyXzvirUNAqrRQFSSB | 0 | 0 | 0 | 283 |
+| run 2 | handover | 32 | 38364 | event | fork | req_011Cgsm5BXnShem5GkpwKwhG | 37758 | 559 | 0 | 3165 |
+| run 2 |  |  | 2265 | +1 | other | req_011Cgsm6zgiyZwTCayPYYqJS | 0 | 0 | 0 | 339 |
+| run 2 |  |  | 38333 | +2 | main | req_011Cgsm6znBGamVTUHFLF93m | 37758 | 0 | 571 | 505 |
+| run 2 |  |  | 3526 | +3 | other | req_011Cgsm7MsC3H5owDBfsJQoE | 0 | 0 | 0 | 584 |
+| run 2 | handover | 35 | 35758 | event | fork | req_011CgsmA7vczvMXz6psLeLLu | 35365 | 346 | 0 | 432 |
+| run 2 |  |  | 36151 | +1 | main | req_011CgsmAT73rUXECkWsf3ubh | 35711 | 419 | 0 | 3075 |
+| run 2 |  |  | 2522 | +2 | other | req_011CgsmC76qAJx9EanG8Rps3 | 0 | 0 | 0 | 548 |
+| run 2 |  |  | 35735 | +3 | main | req_011CgsmC7WP1qSHqmAM2J4nH | 35365 | 0 | 366 | 325 |
+| run 2 | handover | 38 | 37023 | event | fork | req_011CgsmFZ5rnRQ8JtGQBLqq9 | 36211 | 765 | 0 | 3551 |
+| run 2 |  |  | 2771 | +1 | other | req_011CgsmHTkCC8kMnm44u2pvV | 0 | 0 | 0 | 356 |
+| run 2 |  |  | 37001 | +2 | main | req_011CgsmHTr9LbnzouTpNneny | 36211 | 0 | 786 | 294 |
+| run 2 |  |  | 38577 | +3 | main | req_011CgsmHf8JUF8WJNHPFtVTx | 36997 | 0 | 1578 | 792 |
+| run 3 | handover | 12 | 37454 | event | fork | req_011CgsmW3zZBGTraaE7ufBum | 36631 | 776 | 0 | 287 |
+| run 3 |  |  | 37762 | +1 | main | req_011CgsmWHHW8ZU7t36YJgp71 | 37407 | 334 | 0 | 2436 |
+| run 3 |  |  | 37436 | +2 | main | req_011CgsmXppqYqTaqN1NVG1Ey | 36631 | 0 | 801 | 129 |
+| run 3 |  |  | 1036 | +3 | other | req_011CgsmXpi9VFMPFEP2eXGbq | 0 | 0 | 0 | 274 |
+| run 3 | handover | 18 | 35888 | event | fork | req_011CgsmfdWBWZc87y9ctDNWJ | 35176 | 665 | 0 | 305 |
+| run 3 |  |  | 36214 | +1 | main | req_011Cgsmft2Yc1ArVdhSaVfGF | 35841 | 352 | 0 | 3316 |
+| run 3 |  |  | 35870 | +2 | main | req_011Cgsmhm3R5RYZHjhxJV3jF | 35176 | 0 | 690 | 291 |
+| run 3 |  |  | 1365 | +3 | other | req_011CgsmhkoGiYwc7Pk5rNDPM | 0 | 0 | 0 | 408 |
+| run 3 | handover | 25 | 35803 | event | fork | req_011Cgsmp6qDHn56YtA6ZXy7P | 35363 | 393 | 0 | 226 |
+| run 3 |  |  | 36050 | +1 | main | req_011CgsmpHnmUwXeQAHP5oVLn | 35756 | 273 | 0 | 3875 |
+| run 3 |  |  | 1719 | +2 | other | req_011CgsmrLx562VTWWu2pBdeG | 0 | 0 | 0 | 336 |
+| run 3 |  |  | 35785 | +3 | main | req_011CgsmrMuNpWzmUZi8z9T2H | 35363 | 0 | 418 | 291 |
+| run 3 | handover | 30 | 35695 | event | fork | req_011CgsmwhT1Y7pr5f9fsagTr | 35091 | 557 | 0 | 224 |
+| run 3 |  |  | 35940 | +1 | main | req_011Cgsmwu8iXVYNrQWymjhXM | 35648 | 271 | 0 | 3938 |
+| run 3 |  |  | 35670 | +2 | main | req_011Cgsmyzv3Uf9oUP586THwJ | 35091 | 0 | 575 | 113 |
+| run 3 |  |  | 2032 | +3 | other | req_011CgsmyzgeHCfaDJBreBBph | 0 | 0 | 0 | 379 |
+| run 3 | handover | 39 | 36046 | event | fork | req_011Cgsn6zFJRkpobeyWsDrRp | 35721 | 278 | 0 | 2945 |
+| run 3 |  |  | 2383 | +1 | other | req_011Cgsn8hrcupgMhYUH4XqVv | 0 | 0 | 0 | 492 |
+| run 3 |  |  | 36020 | +2 | main | req_011Cgsn8kb5NJuPi54tCDiVn | 35721 | 0 | 295 | 246 |
+| run 3 |  |  | 3037 | +3 | other | req_011Cgsn914iqx7oig6VUaJq2 | 0 | 0 | 0 | 594 |
 
-### Arm B70: forked handover at 70% of the window
+### Arm B45: forked handover at 45,000 tokens
 
-Expected: handovers, the first at 70%. Token counts and usage are the real API's.
+Expected: handovers, the first at 45,000 tokens. Token counts and usage are the real API's.
 
 | run | verdict | events | recall |
 | --- | --- | --- | --- |
-| 1 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-| 2 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-| 3 | no handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 8/10, lost q3-money q9-migrations |
+| 1 | ok | 0 clears, 0 compactions, 1 handover | 10/10 |
+| 2 | ok | 0 clears, 0 compactions, 1 handover | 9/10, lost q3-money |
+| 3 | ok | 0 clears, 0 compactions, 2 handovers | 8/10, lost q2-runtime q3-money |
 
 | run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| run 1 | clear | 9 | 29822 | event | main | req_011CgsfqG88LV2AbcphRqc9P | 29539 | 0 | 279 | 1026 |
-| run 1 |  |  | 26008 | +1 | main | req_011CgsfrKgDt2GQLu8SXk7SN | 24321 | 0 | 1685 | 127 |
-| run 1 |  |  | 885 | +2 | other | req_011CgsfriGmyTrQXNVTWVMWd | 0 | 0 | 0 | 242 |
-| run 1 |  |  | 27072 | +3 | main | req_011CgsfrpiUgDjDWRKzvRVky | 26006 | 0 | 1064 | 361 |
-| run 1 | clear | 19 | 45636 | event | main | req_011Cgsg7sJvF69h4VJJLXYtV | 45118 | 0 | 516 | 1570 |
-| run 1 |  |  | 1129 | +1 | other | req_011Cgsg929kvQzywzD64BLb9 | 0 | 0 | 0 | 348 |
-| run 1 |  |  | 47288 | +2 | main | req_011Cgsg92GCRFFvzMGwmNinJ | 45634 | 0 | 1650 | 556 |
-| run 1 |  |  | 48043 | +3 | main | req_011Cgsg9SdQTHL4zryPXpCCi | 47284 | 0 | 757 | 765 |
-| run 1 | clear | 29 | 59957 | event | main | req_011CgsgK8dxD3Ycj6g9R7xre | 59382 | 0 | 573 | 1782 |
-| run 1 |  |  | 26751 | +1 | main | req_011CgsgLGG8YEaFiDTSZc5z7 | 24321 | 0 | 2428 | 149 |
-| run 1 |  |  | 883 | +2 | other | req_011CgsgLRG7ry4sj1rLKS1bN | 0 | 0 | 0 | 224 |
-| run 1 |  |  | 27839 | +3 | main | req_011CgsgLRHMNHJCexUCcLrLM | 26749 | 0 | 1088 | 404 |
-| run 2 | clear | 9 | 31496 | event | main | req_011Cgsgc21L9pQmHDkDMsip4 | 30856 | 0 | 636 | 963 |
-| run 2 |  |  | 25968 | +1 | main | req_011CgsgcfR7PWHy7DHpZev6x | 24321 | 0 | 1645 | 142 |
-| run 2 |  |  | 884 | +2 | other | req_011Cgsgco4UsPqt4kjs9apxi | 0 | 0 | 0 | 182 |
-| run 2 |  |  | 27041 | +3 | main | req_011CgsgcoDAnKPYnG2jZCVPU | 25966 | 0 | 1073 | 385 |
-| run 2 | clear | 19 | 33262 | event | main | req_011CgsgkRviCeZXMPr9R73Kw | 33080 | 0 | 180 | 1110 |
-| run 2 |  |  | 26145 | +1 | main | req_011Cgsgm8KLiabXb1Ffm3nPx | 24321 | 0 | 1822 | 131 |
-| run 2 |  |  | 27266 | +2 | main | req_011CgsgmFUT3KvywuFRerHbm | 26143 | 0 | 1121 | 585 |
-| run 2 |  |  | 2446 | +3 | other | req_011CgsgmfvcGssE19oK1yDjZ | 0 | 0 | 0 | 205 |
-| run 2 | clear | 29 | 33923 | event | main | req_011CgsgtrQM5qeDRRpNAtHYJ | 33636 | 0 | 285 | 1469 |
-| run 2 |  |  | 26408 | +1 | main | req_011CgsguhHwMH7Vjzo5bwcnK | 24321 | 0 | 2085 | 160 |
-| run 2 |  |  | 878 | +2 | other | req_011CgsguqbkM69GGn9t6dfDR | 0 | 0 | 0 | 425 |
-| run 2 |  |  | 27549 | +3 | main | req_011Cgsguqgy82VtbSdBqiXKu | 26406 | 0 | 1141 | 579 |
-| run 3 | clear | 9 | 28323 | event | main | req_011Cgsh9zXv56ufNCpDCRdyR | 28151 | 0 | 168 | 972 |
-| run 3 |  |  | 25957 | +1 | main | req_011CgshAf3ux64CvkJqEAUC6 | 24321 | 0 | 1634 | 125 |
-| run 3 |  |  | 26909 | +2 | main | req_011CgshAnZccsjLh9Gw1dAcc | 25955 | 0 | 952 | 483 |
-| run 3 |  |  | 2219 | +3 | other | req_011CgshB8Ug9jLbpCHRwzoec | 0 | 0 | 0 | 10 |
-| run 3 | clear | 19 | 47646 | event | main | req_011CgshQeULjVgXYNs6pckeF | 46884 | 0 | 760 | 2035 |
-| run 3 |  |  | 26683 | +1 | main | req_011CgshRv3V95QYs3rmEcX1g | 24321 | 0 | 2360 | 210 |
-| run 3 |  |  | 27832 | +2 | main | req_011CgshS69TLqWex75mEJzHZ | 26681 | 0 | 1149 | 277 |
-| run 3 |  |  | 890 | +3 | other | req_011CgshS63VY5wzvRnm1WpDC | 0 | 0 | 0 | 223 |
-| run 3 | clear | 29 | 40766 | event | main | req_011Cgshb2D4pzo6QaEzY2XZK | 40098 | 0 | 666 | 1499 |
-| run 3 |  |  | 26632 | +1 | main | req_011CgshbtW1BrR254YywjfWe | 24321 | 0 | 2309 | 369 |
-| run 3 |  |  | 883 | +2 | other | req_011Cgshc8HxbJH8qvC1Suvxu | 0 | 0 | 0 | 131 |
-| run 3 |  |  | 28197 | +3 | main | req_011Cgshc8NRyp6bB7BBRvGq8 | 26630 | 0 | 1565 | 349 |
+| run 1 | handover | 17 | 47848 | event | fork | req_011CgsjuK3akM7FvMG2STfng | 46460 | 1341 | 0 | 2728 |
+| run 1 |  |  | 1166 | +1 | other | req_011Cgsjw6gjepCySNJ8NWqse | 0 | 0 | 0 | 372 |
+| run 1 |  |  | 47830 | +2 | main | req_011Cgsjw6mT7AzDnV3zHW5Q3 | 46460 | 0 | 1366 | 410 |
+| run 1 |  |  | 48385 | +3 | main | req_011CgsjwPYVioq97pLHMjETt | 47826 | 0 | 557 | 2324 |
+| run 2 | handover | 19 | 45702 | event | fork | req_011CgskZSikFk9tcoqHr4Q18 | 45232 | 423 | 0 | 287 |
+| run 2 |  |  | 46010 | +1 | main | req_011CgskZgA8nAjYchgxJYqas | 45655 | 334 | 0 | 2435 |
+| run 2 |  |  | 1218 | +2 | other | req_011CgskbDixcKxM6q3WVwoZC | 0 | 0 | 0 | 274 |
+| run 2 |  |  | 45684 | +3 | main | req_011CgskbDoRfFXmz2hJSGJbn | 45232 | 0 | 448 | 459 |
+| run 3 | handover | 15 | 46553 | event | fork | req_011CgsmA5CRfzESMuZYYn4wB | 46039 | 467 | 0 | 224 |
+| run 3 |  |  | 46798 | +1 | main | req_011CgsmAGEhHt31LbAxWZxad | 46506 | 271 | 0 | 2057 |
+| run 3 |  |  | 1114 | +2 | other | req_011CgsmBbLReC1ig57FjjAnK | 0 | 0 | 0 | 315 |
+| run 3 |  |  | 46535 | +3 | main | req_011CgsmBbT7QryYkqSCYPPvn | 46039 | 0 | 492 | 448 |
+| run 3 | handover | 32 | 45595 | event | fork | req_011CgsmTNziWXX1DuuKQww1b | 45288 | 260 | 0 | 295 |
+| run 3 |  |  | 45911 | +1 | main | req_011CgsmTdBEv5fEvuT7NDkPE | 45548 | 342 | 0 | 2334 |
+| run 3 |  |  | 1715 | +2 | other | req_011CgsmV3P496aUbVf7QZ38P | 0 | 0 | 0 | 285 |
+| run 3 |  |  | 45564 | +3 | main | req_011CgsmV3T2CRxwEfoSXVAFZ | 45288 | 0 | 272 | 215 |
 
-### Arm C: built-in compaction near 140,000 tokens
+### Arm B53: forked handover at 53,000 tokens
 
-Expected: a compaction near 140,000 tokens. Token counts and usage are the real API's.
+Expected: handovers, the first at 53,000 tokens. Token counts and usage are the real API's.
 
 | run | verdict | events | recall |
 | --- | --- | --- | --- |
-| 1 | no compaction, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 9/10, lost q3-money |
-| 2 | no compaction, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-| 3 | no compaction, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
+| 1 | ok | 0 clears, 0 compactions, 1 handover | 10/10 |
+| 2 | ok | 0 clears, 0 compactions, 1 handover | 8/10, lost q3-money q9-migrations |
+| 3 | ok | 0 clears, 0 compactions, 1 handover | 8/10, lost q3-money q9-migrations |
 
 | run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| run 1 | clear | 9 | 27806 | event | main | req_011CgsfoX8iEBUC8Yvi2wVMF | 27497 | 0 | 305 | 1272 |
-| run 1 |  |  | 26179 | +1 | main | req_011CgsfpNz6fAY4jFNUcrmkj | 24321 | 0 | 1856 | 110 |
-| run 1 |  |  | 27127 | +2 | main | req_011CgsfpaLjRBWeokAeb3G7U | 26177 | 0 | 948 | 583 |
-| run 1 |  |  | 2380 | +3 | other | req_011Cgsfq13HVF3PsbfffYSrF | 0 | 0 | 0 | 198 |
-| run 1 | clear | 19 | 48766 | event | main | req_011Cgsg6McTHcaRNX16BnEjL | 48119 | 0 | 645 | 1689 |
-| run 1 |  |  | 26802 | +1 | main | req_011Cgsg7TCaY5BKidHWRfsmW | 24321 | 0 | 2479 | 108 |
-| run 1 |  |  | 890 | +2 | other | req_011Cgsg7aRugaiAG5rbbfocA | 0 | 0 | 0 | 467 |
-| run 1 |  |  | 27979 | +3 | main | req_011Cgsg7aYrdsaHPr4eWBsLw | 26800 | 0 | 1177 | 332 |
-| run 1 | clear | 29 | 40850 | event | main | req_011CgsgJe9CjfvqBRvtmzPfc | 40260 | 0 | 588 | 3089 |
-| run 1 |  |  | 27568 | +1 | main | req_011CgsgLRrLEphQR5ANztTMs | 24321 | 0 | 3245 | 111 |
-| run 1 |  |  | 28644 | +2 | main | req_011CgsgLYbthWYKEYTZmRyRq | 27566 | 0 | 1076 | 304 |
-| run 1 |  |  | 883 | +3 | other | req_011CgsgLkzWkQJQGzUSrkDPS | 0 | 0 | 0 | 175 |
-| run 2 | clear | 9 | 31887 | event | main | req_011Cgsgb4LhT6o8EaZyW5Qux | 31479 | 0 | 404 | 1353 |
-| run 2 |  |  | 994 | +1 | other | req_011Cgsgc7K4dP8VTtNCVXDPd | 0 | 0 | 0 | 252 |
-| run 2 |  |  | 33322 | +2 | main | req_011Cgsgc7J4sAV3XyaHzmQYL | 31883 | 0 | 1435 | 327 |
-| run 2 |  |  | 33685 | +3 | main | req_011CgsgcPrUmtAEN4SR2MGk8 | 33318 | 0 | 365 | 106 |
-| run 2 | clear | 19 | 52526 | event | main | req_011CgsgpZ7BVEh1CkJiZwoJt | 51897 | 0 | 627 | 2258 |
-| run 2 |  |  | 27460 | +1 | main | req_011CgsgqutcJBC6pr1aM5hJ2 | 24321 | 0 | 3137 | 123 |
-| run 2 |  |  | 28665 | +2 | main | req_011Cgsgr2k86wHLzJtwcz7Nu | 27458 | 0 | 1205 | 283 |
-| run 2 |  |  | 886 | +3 | other | req_011CgsgrDuadpVetATV9gZ4Y | 0 | 0 | 0 | 192 |
-| run 2 | clear | 29 | 41333 | event | main | req_011Cgsh21Gqs2L6RNY4yT473 | 40773 | 0 | 558 | 1334 |
-| run 2 |  |  | 26496 | +1 | main | req_011Cgsh2nzvnBngKSaPdviox | 24321 | 0 | 2173 | 216 |
-| run 2 |  |  | 879 | +2 | other | req_011Cgsh2yooyPfZXK41K94zy | 0 | 0 | 0 | 220 |
-| run 2 |  |  | 27641 | +3 | main | req_011Cgsh2yyUt7PtgCpcj9EAy | 26494 | 0 | 1145 | 246 |
-| run 3 | clear | 9 | 27683 | event | main | req_011CgshEnZiZ9wzGYjFeQ38Y | 27454 | 0 | 227 | 907 |
-| run 3 |  |  | 25931 | +1 | main | req_011CgshFQQjoNrk4z3xJAbxf | 24321 | 0 | 1608 | 228 |
-| run 3 |  |  | 883 | +2 | other | req_011CgshFbYTut4qQTQaFBQfp | 0 | 0 | 0 | 547 |
-| run 3 |  |  | 27108 | +3 | main | req_011CgshFbdByEzamtAAjEmAg | 25929 | 0 | 1177 | 457 |
-| run 3 | clear | 19 | 46008 | event | main | req_011CgshWRPh7wc7LeFG9BnfZ | 45412 | 0 | 594 | 2241 |
-| run 3 |  |  | 27092 | +1 | main | req_011CgshXvVgivAgnrRTsWcfw | 24321 | 0 | 2769 | 252 |
-| run 3 |  |  | 890 | +2 | other | req_011CgshY7qKbQqqY9uo1YPnA | 0 | 0 | 0 | 249 |
-| run 3 |  |  | 28333 | +3 | main | req_011CgshY7w2R9kFFiTdnVqiV | 27090 | 0 | 1241 | 293 |
-| run 3 | clear | 29 | 37917 | event | main | req_011CgshfyvnUGyqKLsLK9rjK | 37383 | 0 | 532 | 1013 |
-| run 3 |  |  | 26138 | +1 | main | req_011Cgshgccew6Nr2GZKYxReS | 24321 | 0 | 1815 | 176 |
-| run 3 |  |  | 883 | +2 | other | req_011Cgshgn5BV4KDQCXkjpuPr | 0 | 0 | 0 | 166 |
-| run 3 |  |  | 27245 | +3 | main | req_011CgshgnB8XonAouhsZsEES | 26136 | 0 | 1107 | 291 |
+| run 1 | handover | 27 | 54337 | event | fork | req_011Cgsk1TzWSZ6ZQHGsPecWG | 53512 | 778 | 0 | 265 |
+| run 1 |  |  | 54623 | +1 | main | req_011Cgsk1iMx9fjeLC47NaswF | 54290 | 312 | 0 | 2154 |
+| run 1 |  |  | 54319 | +2 | main | req_011Cgsk35Yh4PZgVVqgDQG25 | 53512 | 0 | 803 | 283 |
+| run 1 |  |  | 1426 | +3 | other | req_011Cgsk35QWxx7a3w4oydUf7 | 0 | 0 | 0 | 420 |
+| run 2 | handover | 25 | 53469 | event | fork | req_011CgskcqtbvoBFKwjQqdSmE | 53045 | 377 | 0 | 2114 |
+| run 2 |  |  | 1374 | +1 | other | req_011CgskeBGDaxmSv3g2vF1ZT | 0 | 0 | 0 | 221 |
+| run 2 |  |  | 53451 | +2 | main | req_011CgskeBHT87Cg8BoFfqR1t | 53045 | 0 | 402 | 510 |
+| run 2 |  |  | 54130 | +3 | main | req_011CgskeULNRP9vEpT8gc1Xd | 53447 | 0 | 681 | 379 |
+| run 3 | handover | 23 | 55235 | event | fork | req_011CgsmEGHn3Da4c7jd2k1kb | 54307 | 881 | 0 | 320 |
+| run 3 |  |  | 55576 | +1 | main | req_011CgsmEYxdSjKZr5pxC3TCH | 55188 | 367 | 0 | 2303 |
+| run 3 |  |  | 1322 | +2 | other | req_011CgsmG1WazJasZ14NqV3hM | 0 | 0 | 0 | 235 |
+| run 3 |  |  | 55217 | +3 | main | req_011CgsmG1uPrcz3Xnok51uVe | 54307 | 0 | 906 | 454 |
 
-### Arm D: two built-in compactions, then a handover
+### Arm C: built-in compaction near 53,000 tokens
 
-Expected: 2 compactions, then 1 handover. Token counts and usage are the real API's.
+Expected: a compaction near 53,000 tokens. Token counts and usage are the real API's.
 
 | run | verdict | events | recall |
 | --- | --- | --- | --- |
-| 1 | expected compaction, compaction, handover, got clear, clear, compaction, clear, clear | 4 clears, 1 compaction, 0 handovers | 10/10 |
-| 2 | expected compaction, compaction, handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
-| 3 | expected compaction, compaction, handover, got clear, clear, clear | 3 clears, 0 compactions, 0 handovers | 10/10 |
+| 1 | ok | 0 clears, 1 compaction, 0 handovers | 10/10 |
+| 2 | ok | 0 clears, 1 compaction, 0 handovers | 10/10 |
+| 3 | no compaction, got none | 0 clears, 0 compactions, 0 handovers | 10/10 |
 
 | run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| run 1 | clear | 9 | 27410 | event | main | req_011CgsfoHwyDyib4zDmaJGvY | 27169 | 0 | 237 | 1074 |
-| run 1 |  |  | 26073 | +1 | main | req_011Cgsfp3f1RfvtHQexCpjuZ | 24321 | 0 | 1750 | 163 |
-| run 1 |  |  | 885 | +2 | other | req_011CgsfpG5sZv84X8zcQ24YW | 0 | 0 | 0 | 248 |
-| run 1 |  |  | 27174 | +3 | main | req_011CgsfpGg67mPrNhhbHiXcu | 26071 | 0 | 1101 | 186 |
-| run 1 | clear | 19 | 47420 | event | main | req_011Cgsg54n9Vvd8daYYfguiC | 46678 | 0 | 740 | 2071 |
-| run 1 |  |  | 1129 | +1 | other | req_011Cgsg6YmfKeumWXBF5d7pQ | 0 | 0 | 0 | 223 |
-| run 1 |  |  | 49416 | +2 | summarizer | req_011Cgsg6jRsgDWq1E2CrfrSp | 46678 | 396 | 0 | 3825 |
-| run 1 |  |  | 31214 | +3 | main | req_011Cgsg98S2dw7WDwQTykLjw | 24321 | 0 | 6891 | 510 |
-| run 1 | compaction | 20 | 49416 | event | summarizer | req_011Cgsg6jRsgDWq1E2CrfrSp | 46678 | 396 | 0 | 3825 |
-| run 1 |  |  | 31214 | +1 | main | req_011Cgsg98S2dw7WDwQTykLjw | 24321 | 0 | 6891 | 510 |
-| run 1 |  |  | 32218 | +2 | main | req_011Cgsg9UyYaCBiSVpazp7N2 | 31212 | 0 | 1004 | 570 |
-| run 1 |  |  | 1264 | +3 | other | req_011Cgsg9vxyvFmyK1SQ9tmNJ | 0 | 0 | 0 | 324 |
-| run 1 | clear | 26 | 38840 | event | main | req_011CgsgFFuezGhHcpLTYtJcG | 38247 | 0 | 591 | 2657 |
-| run 1 |  |  | 27347 | +1 | main | req_011CgsgGoDbfMqCV3YyFmnLM | 24321 | 0 | 3024 | 152 |
-| run 1 |  |  | 890 | +2 | other | req_011CgsgGwdNG7S7tY4KKmsaD | 0 | 0 | 0 | 310 |
-| run 1 |  |  | 28438 | +3 | main | req_011CgsgGwmYnpGYhaJ7iehjE | 27345 | 0 | 1091 | 402 |
-| run 1 | clear | 29 | 31331 | event | main | req_011CgsgK7NK7UFSc98nMiQRz | 30779 | 0 | 550 | 1421 |
-| run 1 |  |  | 26522 | +1 | main | req_011CgsgKyBiagQZqct3J7n1S | 24321 | 0 | 2199 | 143 |
-| run 1 |  |  | 883 | +2 | other | req_011CgsgL89iEhiWbSheAndoc | 0 | 0 | 0 | 185 |
-| run 1 |  |  | 27596 | +3 | main | req_011CgsgL8HARsCLSRu848emA | 26520 | 0 | 1074 | 248 |
-| run 2 | clear | 9 | 28441 | event | main | req_011CgsgXk13RPZ5Nh8qDWvyc | 28254 | 0 | 185 | 966 |
-| run 2 |  |  | 26157 | +1 | main | req_011CgsgYShm7biwHeyS3tkPS | 24321 | 0 | 1834 | 201 |
-| run 2 |  |  | 27307 | +2 | main | req_011CgsgYdXPJaxKZXcBeLUFP | 26155 | 0 | 1150 | 185 |
-| run 2 |  |  | 885 | +3 | other | req_011CgsgYd94hJVBz49wiiGq9 | 0 | 0 | 0 | 395 |
-| run 2 | clear | 19 | 36203 | event | main | req_011CgsgiRUd4oFraY9fyuoSw | 35985 | 0 | 216 | 1268 |
-| run 2 |  |  | 26103 | +1 | main | req_011CgsgjGmXcTHVyi2doiQNP | 24321 | 0 | 1780 | 113 |
-| run 2 |  |  | 27185 | +2 | main | req_011CgsgjPgkEsndNiR1iyVMt | 26101 | 0 | 1082 | 654 |
-| run 2 |  |  | 2299 | +3 | other | req_011CgsgjvHkmQSuHirN8yhGG | 0 | 0 | 0 | 294 |
-| run 2 | clear | 29 | 34065 | event | main | req_011CgsgsLSkgPedJDoiW7ERU | 33894 | 0 | 169 | 1037 |
-| run 2 |  |  | 26220 | +1 | main | req_011CgsgszaTDFwTxRgrCozr4 | 24321 | 0 | 1897 | 92 |
-| run 2 |  |  | 27148 | +2 | main | req_011Cgsgt6uTHCkoH6tm28MVP | 26218 | 0 | 928 | 546 |
-| run 2 |  |  | 2270 | +3 | other | req_011CgsgtY5mUvHET7SqUB6Ys | 0 | 0 | 0 | 247 |
-| run 3 | clear | 9 | 34949 | event | main | req_011CgshCBqN5Ema2sfHrV7Hf | 34594 | 0 | 353 | 1230 |
-| run 3 |  |  | 26373 | +1 | main | req_011CgshD2WK6b7ZGRYFn35d3 | 24321 | 0 | 2050 | 203 |
-| run 3 |  |  | 883 | +2 | other | req_011CgshDCb2zcducmvoNH9eY | 0 | 0 | 0 | 167 |
-| run 3 |  |  | 27532 | +3 | main | req_011CgshDCgk9VxAz3mA1PjTb | 26371 | 0 | 1159 | 475 |
-| run 3 | clear | 19 | 33438 | event | main | req_011CgshMgLcv7vjLSj7kwSWd | 33280 | 0 | 156 | 1472 |
-| run 3 |  |  | 26777 | +1 | main | req_011CgshNdgf5LMapehTX3Vow | 24321 | 0 | 2454 | 118 |
-| run 3 |  |  | 891 | +2 | other | req_011CgshNmUDosS3VoTzKCeSs | 0 | 0 | 0 | 191 |
-| run 3 |  |  | 28001 | +3 | main | req_011CgshNmddesoroycU6bhNy | 26775 | 0 | 1224 | 730 |
-| run 3 | clear | 29 | 34977 | event | main | req_011CgshXUprTYSXYsSY2YjrN | 34761 | 0 | 214 | 1419 |
-| run 3 |  |  | 26732 | +1 | main | req_011CgshYJ8wqVNxa7QAjU4gS | 24321 | 0 | 2409 | 137 |
-| run 3 |  |  | 884 | +2 | other | req_011CgshYRmaEFW75BMNBWkf5 | 0 | 0 | 0 | 404 |
-| run 3 |  |  | 28142 | +3 | main | req_011CgshYRvWULFEYmmg1N6Fw | 26730 | 0 | 1410 | 632 |
+| run 1 | compaction | 22 | 54907 | event | summarizer | req_011CgsjwyrWKcHkCNHJ7Qvz5 | 52570 | 315 | 0 | 4511 |
+| run 1 |  |  | 30326 | +1 | main | req_011CgsjziuRENNpDoSKM79bS | 24321 | 0 | 6003 | 625 |
+| run 1 |  |  | 2310 | +2 | other | req_011Cgsk1BybHSTniRsALdtkq | 0 | 0 | 0 | 373 |
+| run 1 |  |  | 2682 | +3 | other | req_011Cgsk1BwrQKwJghDKbvr73 | 0 | 0 | 0 | 296 |
+| run 2 | compaction | 24 | 54742 | event | summarizer | req_011CgskbQFj1z82ypzERYTVm | 52062 | 439 | 0 | 3923 |
+| run 2 |  |  | 29942 | +1 | main | req_011CgskdkibA78M1eano8PkJ | 24321 | 0 | 5619 | 462 |
+| run 2 |  |  | 30497 | +2 | main | req_011Cgske5pYVDmKemjJBNzZ9 | 29940 | 0 | 555 | 813 |
+| run 2 |  |  | 1566 | +3 | other | req_011Cgsked7UDaUJHSA2hKFcG | 0 | 0 | 0 | 332 |
+
+### Arm D: two built-in compactions at 40,000 tokens, then a handover at 45,000
+
+Expected: 2 compactions, then handovers. Token counts and usage are the real API's.
+
+| run | verdict | events | recall |
+| --- | --- | --- | --- |
+| 1 | ok | 0 clears, 2 compactions, 2 handovers | 9/10, lost q3-money |
+| 2 | ok | 0 clears, 2 compactions, 1 handover | 10/10 |
+| 3 | ok | 0 clears, 2 compactions, 1 handover | 9/10, lost q3-money |
+
+| run | event | turn | ctx | request | kind | requestId | cache read | cache write 5m | cache write 1h | output |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| run 1 | compaction | 11 | 37924 | event | summarizer | req_011CgsjoX7SrysKGUypTtSSh | 35647 | 221 | 0 | 3468 |
+| run 1 |  |  | 34602 | +1 | main | req_011CgsjqinEDhctyX7BxHB7e | 24321 | 0 | 10279 | 1098 |
+| run 1 |  |  | 35798 | +2 | main | req_011CgsjrUUmxxA3v4togsmZQ | 34600 | 0 | 1194 | 1083 |
+| run 1 |  |  | 874 | +3 | other | req_011CgsjsBBkTatgTuuJnSMth | 0 | 0 | 0 | 224 |
+| run 1 | compaction | 14 | 40998 | event | summarizer | req_011CgsjunU5oRGM8eJjSNnDj | 38842 | 128 | 0 | 3967 |
+| run 1 |  |  | 29957 | +1 | main | req_011CgsjxD5jmhUVtUr4XYWP9 | 24321 | 0 | 5634 | 429 |
+| run 1 |  |  | 30495 | +2 | main | req_011CgsjxXWFwqcWXBgZiBsAn | 29955 | 0 | 538 | 735 |
+| run 1 |  |  | 1528 | +3 | other | req_011Cgsjy2PLMnzsD7H2ELHwR | 0 | 0 | 0 | 333 |
+| run 1 | handover | 26 | 47455 | event | fork | req_011CgskCNjoqTViDwrF9sFVc | 46474 | 934 | 0 | 2710 |
+| run 1 |  |  | 1192 | +1 | other | req_011CgskE3sJ4Ktq2UMsJ34o3 | 0 | 0 | 0 | 179 |
+| run 1 |  |  | 47437 | +2 | main | req_011CgskE4z1eC9fTTYeHxFso | 46474 | 0 | 959 | 330 |
+| run 1 |  |  | 47935 | +3 | main | req_011CgskEKJyaJ3KCoDfWTVFy | 47433 | 0 | 500 | 810 |
+| run 1 | handover | ? | 46370 | event | fork | req_011CgskUVS5ScSLGgbEXpNe4 | 45746 | 577 | 0 | 2982 |
+| run 2 | compaction | 11 | 34479 | event | summarizer | req_011CgskhRN7vMHH1vvrbN4LP | 32162 | 222 | 0 | 2981 |
+| run 2 |  |  | 32860 | +1 | main | req_011CgskjHKEApnBkG8q7BJqG | 24321 | 0 | 8537 | 773 |
+| run 2 |  |  | 3710 | +2 | other | req_011CgskjqKpWcfVb3aWA1KuY | 0 | 0 | 0 | 252 |
+| run 2 |  |  | 2549 | +3 | other | req_011CgskjqHqovgnDNaBe79oj | 0 | 0 | 0 | 617 |
+| run 2 | compaction | 13 | 41893 | event | summarizer | req_011CgsknVDSCYeZgy9AtkZt9 | 39322 | 310 | 0 | 3659 |
+| run 2 |  |  | 33260 | +1 | main | req_011Cgskpk9AYGbUVUHDRKmaX | 24321 | 0 | 8937 | 135 |
+| run 2 |  |  | 33562 | +2 | main | req_011CgskpsB6HyLYwZepaoMfM | 33258 | 0 | 302 | 435 |
+| run 2 |  |  | 870 | +3 | other | req_011CgskqMHmvUYcERt6x2LQR | 0 | 0 | 0 | 134 |
+| run 2 | handover | 23 | 45862 | event | fork | req_011CgskzC3uB6gBrSAE3Fzm8 | 45080 | 735 | 0 | 296 |
+| run 2 |  |  | 46234 | +1 | main | req_011CgskzPsZ1i26ezt88He8g | 45815 | 343 | 0 | 2943 |
+| run 2 |  |  | 1104 | +2 | other | req_011Cgsm2A8rUHf9PBjDFt4oU | 0 | 0 | 0 | 236 |
+| run 2 |  |  | 45844 | +3 | main | req_011Cgsm2AF44afxCmYgS8v84 | 45080 | 0 | 760 | 292 |
+| run 3 | compaction | 11 | 35826 | event | summarizer | req_011CgsmVsR4ALk1ffZKbZTSQ | 33735 | 78 | 0 | 2629 |
+| run 3 |  |  | 36561 | +1 | main | req_011CgsmXZRdn3UF2GYLFmKon | 24321 | 0 | 12238 | 827 |
+| run 3 |  |  | 2574 | +2 | other | req_011CgsmYC4HWYDRX86rcSCA8 | 0 | 0 | 0 | 556 |
+| run 3 |  |  | 3742 | +3 | other | req_011CgsmYC3YYKoJuxTxjBvdD | 0 | 0 | 0 | 433 |
+| run 3 | compaction | 13 | 41216 | event | summarizer | req_011CgsmaVv8jS1484pZh2xo2 | 39008 | 86 | 0 | 4210 |
+| run 3 |  |  | 30059 | +1 | main | req_011CgsmdGiiZS8RvgemYuGQN | 24321 | 0 | 5736 | 121 |
+| run 3 |  |  | 30281 | +2 | main | req_011CgsmdRpQriKgo1N7FrBad | 30057 | 0 | 222 | 509 |
+| run 3 |  |  | 1498 | +3 | other | req_011CgsmdsL5KwnopcPhENyvV | 0 | 0 | 0 | 328 |
+| run 3 | handover | 25 | 46644 | event | fork | req_011CgsmrgWZUYazKwomLv652 | 45999 | 598 | 0 | 3180 |
+| run 3 |  |  | 1186 | +1 | other | req_011Cgsmtbz1KDJFr4fTaXJvB | 0 | 0 | 0 | 238 |
+| run 3 |  |  | 46626 | +2 | main | req_011Cgsmtcby35a27uuJQ6UWA | 45999 | 0 | 623 | 339 |
+| run 3 |  |  | 47294 | +3 | main | req_011CgsmtqCjyXUx55QSxqMqu | 46622 | 0 | 670 | 634 |
 
 ### Egress
 
-- 3324 requests reached the relay in 18 runs; 0 runs had a request under a host other than their own 127.0.0.1:port
-- 0 connection attempts to any other host reached the proxy sink
+- 3362 requests reached the relay in 18 runs; 0 runs had a request under a host other than their own 127.0.0.1:port
+- 1 connection attempts to any other host reached the proxy sink: CONNECT api.anthropic.com:443 HTTP/1.1
 - key: the caller's; ANTHROPIC_BASE_URL: the relay, which forwards to the real API; CLAUDE_CONFIG_DIR: a temp dir per run
-- run dirs (requests.jsonl, debug-<phase>.log, stream-<phase>.jsonl): /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-A-1-fXBSlh /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-A-2-pdNtFz /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-A-3-xT0MAV /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B25-1-eKwaXt /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B25-2-kcuKkR /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B25-3-nCp13V /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B50-1-HklWXf /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B50-2-tNcvsQ /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B50-3-GvBpTu /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B70-1-52Zai0 /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B70-2-KfK3rT /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B70-3-g7NbCf /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-C-1-ZUnG3B /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-C-2-0kZFip /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-C-3-6BPxpW /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-D-1-4ZDrE2 /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-D-2-k40dth /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-D-3-EO0dJs
+- run dirs (requests.jsonl, debug-<phase>.log, stream-<phase>.jsonl): /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-A-1-Dp01EL /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-A-2-ZTtBpK /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-A-3-mbgqDW /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B35-1-zFzwcX /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B35-2-VSIVVp /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B35-3-38hnAR /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B45-1-4HCNhH /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B45-2-ZNNYZ5 /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B45-3-oZzIkO /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B53-1-I07nfR /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B53-2-t7g2UW /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-B53-3-VD1FXs /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-C-1-NLfeso /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-C-2-LkhtZM /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-C-3-tJQxeV /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-D-1-QNBb9G /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-D-2-VyFDl1 /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/probe-D-3-O3nFM5
