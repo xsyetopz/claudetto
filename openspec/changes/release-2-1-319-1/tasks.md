@@ -25,7 +25,9 @@
 ## 4. Research Slices
 
 - [ ] 4.1 Sandbox (issue item 17): from the measured pass and fail table, write the delta for a sandbox that blocks only destructive, dangerous, or leaking actions.
-- [ ] 4.2 Subagents (issue item 18): from the measured runs, write the delta for when the root delegates, at which model, effort, and cache TTL.
+- [ ] 4.2 Subagents (issue item 18): move the TTL into `subagentPromptCacheTtl` and drop `cacheTtl` from the agent files, add the run log and the check-on-return rule, and remove the stale `Hephaestus` name from `openspec/specs/subagent-prompts/spec.md`, per `specs/subagent-prompts/spec.md`.
+- [ ] 4.2.1 Run the free fake-API probes: fork against fresh prefix sharing with `CLAUDE_CODE_FORK_SUBAGENT=1`, and the `ttl` on each request under `subagentPromptCacheTtl` `5m` and `1h`.
+- [ ] 4.2.2 After 10 or more logged edit runs, set the delegation cut-offs and the TTL from the log.
 - [ ] 4.3 Display (issue item 19): delete `plugins/claudetto/hooks/fold.ts` and its `register.ts` entry, per `specs/surface-trim/spec.md`, and check in a fresh session that a grouped `grep` result folds.
 
 ## 5. Release
