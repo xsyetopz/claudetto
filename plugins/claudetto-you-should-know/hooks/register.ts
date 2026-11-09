@@ -323,6 +323,19 @@ const addToLog = (mem: Memory, entry: string): void => {
 	mem.log = [...mem.log, entry].slice(-LIMITS.logEntries);
 };
 
+const ASK = /^(?:AskUserQuestion|mcp__claudetto__ask-user-question)$/;
+
+const questionOf = (x: unknown): string[] =>
+	typeof x === "object" && x !== null && "question" in x && typeof x.question === "string"
+		? [x.question]
+		: [];
+
+// claudetto's ask tool takes one `question`; the built-in takes a `questions` list.
+const questionsOf = (input: unknown): string[] =>
+	typeof input === "object" && input !== null && "questions" in input && Array.isArray(input.questions)
+		? input.questions.flatMap(questionOf)
+		: questionOf(input);
+
 export const register = (on: On, options: PluginOptions): void => {
 	const settings = settingsOf(options);
 	const enabled = options["sideCheckEnabled"] === true;
@@ -354,6 +367,15 @@ export const register = (on: On, options: PluginOptions): void => {
 			const id = await $.session.id().catch(() => undefined);
 			if (id !== undefined) {
 				mem.typedPast.set(id, (mem.typedPast.get(id) ?? 0) + 1);
+			}
+		}
+		return next(e);
+	});
+
+	on("tool.call", { tool: ASK }, (_$, e, next) => {
+		if (enabled) {
+			for (const q of questionsOf(e)) {
+				addToLog(mem, logEntry("assistant", `asked the person: ${q}`));
 			}
 		}
 		return next(e);

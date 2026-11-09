@@ -510,6 +510,39 @@ test(
 );
 
 test(
+	"One Question, One Prompt: the log holds each popup question as asked, so the check does not repeat it",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on);
+		on("tool.call", () => ({ result: "Yes" }));
+		await $.tool.call({
+			tool: "mcp__claudetto__ask-user-question",
+			question: "Write items 11 to 13?",
+			options: ["Yes", "No"],
+		});
+		await $.tool.call({
+			tool: "AskUserQuestion",
+			questions: [
+				{
+					question: "Keep the cap?",
+					header: "Cap",
+					options: [
+						{ label: "Yes", description: "Keep it." },
+						{ label: "No", description: "Drop it." },
+					],
+					multiSelect: false,
+				},
+			],
+		});
+		await stepsTo($, f, "t1", 6);
+		const body = f.asked[0]?.promptBlocks?.[1]?.text ?? "";
+		expect(body).toContain(
+			"assistant: asked the person: Write items 11 to 13?\nassistant: asked the person: Keep the cap?",
+		);
+	},
+);
+
+test(
 	"the fixed instructions allow a line only for a consequence and name the Heads up tag",
 	ON,
 	async ($: Engine, on: On) => {
