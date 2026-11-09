@@ -8,6 +8,7 @@
 
 - The version string stays `2.1.319` in `package.json` and the plugin manifests. The work happens on branch `feat/2.1.319+1`; `+1` is SemVer build metadata and appears only in the branch name.
 - Each open item of `ISSUES-2026-11-09-1422.md` (`## 2026-11-09` items 1-16 and the open items under `## 2026-11-02`) is fixed, or recorded as out of reach with its evidence.
+- The items the person raised during the change (A to D in `design.md`) are fixed too; D limits a reply to one `!` command for the person at a time.
 - The re-audit (item 16) checks each rule, gate, and hook against the specs in `openspec/specs/`, and removes what no spec or issue keeps.
 
 ## Capabilities

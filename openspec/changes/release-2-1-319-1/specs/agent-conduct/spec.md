@@ -14,6 +14,15 @@ A question for the person SHALL go only through the popup, and a `- [ ]` item un
 - **WHEN** the agent asks one question through the popup
 - **THEN** no checklist item and no side-agent nudge repeats it
 
+### Requirement: One Command at a Time
+
+A reply SHALL hold at most one `- [ ] ! <command>` item, the one the work needs first, and the next SHALL come in a later reply after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). `output-styles/Concise.md` SHALL say so.
+
+#### Scenario: Several Commands Only the Person Can Run
+
+- **WHEN** the work needs three commands only the person can run
+- **THEN** the reply lists the first as its one `- [ ] ! <command>` item, and the next reply, after the person's run, lists the second
+
 ### Requirement: Text Between Tool Calls Holds a Finding
 
 `output-styles/Concise.md:7` SHALL tell the model to open with the outcome or the deciding fact, and to put a finding, a result, or an error in the text between tool calls, because the next call shows itself. When the user disputes the last reply, the style SHALL tell it to open with the check that decided it and the fact it kept, or to say the reply was wrong and give the corrected fact, in place of agreement, praise, apology, or a promise.

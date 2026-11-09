@@ -46,6 +46,7 @@ Items the person raised in the session on 2026-11-09, after the issues file:
 | --- | --- | --- |
 | A: each start logs "claudetto walls off `~/.claudetto-holdout`, but your settings hold no `Read(~/.claudetto-holdout/**)`" | permission-policy: walls; setup writes the deny | `plugin.json:107-113` default wall, `gate.ts:221-229` notice, `setup/settings.ts:76` writes only `DENIED_TOOLS` |
 | B: setup asks a write-or-skip question per step; a cheap model should talk and decide | setup | `hooks/setup.ts`, `hooks/setup/steps.ts` |
+| D: the agent asks for several `!` commands in one reply, while the person's `!` runs and messages queue; the person: "One-at-a-Time would be ideal" | agent-conduct, run-limits: at most one `! <command>` item per reply, enforced at Stop | `Concise.md:23`, `limits/open-items.ts`, `texts.ts:245-247` |
 | C: on task 2.8 the agent wrote a test that the removed faults stay gone; the person: "adding tests for removed features should be forbidden. it is not a 'compatibility' phase", "claudetto should actually endorse this", "treating every pre-release project as 'legacy compatibility' and 'v1' is grounds for troubles like this" | agent-conduct | `texts.ts:32` `<defects>` asks for a failing test first and says nothing on removals or pre-release status |
 
 ## Audit (Task 1.2)

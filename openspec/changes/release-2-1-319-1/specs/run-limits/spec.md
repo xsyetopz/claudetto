@@ -162,7 +162,7 @@ At Stop, the system SHALL report the background tasks still running, using `back
 
 ### Requirement: Open Items at Stop
 
-At Stop, the system SHALL block a stop once when the final reply holds an open Markdown task item (`- [ ]`, under any bullet or number) that carries no `! <command>`, unless an `AskUserQuestion` of the turn is open, which means asked and not yet answered. A question of an earlier turn, a refused call, and a denial in a tool result SHALL excuse no item. The block SHALL list each item and SHALL tell the model to ask each through the ask tool the session lists and to delete it from the reply. A session with no one to answer SHALL get no such block. The check SHALL read only that syntax and the turn's tool calls, and a `userConfig` switch MUST turn it off.
+At Stop, the system SHALL block a stop once when the final reply holds an open Markdown task item (`- [ ]`, under any bullet or number) that carries no `! <command>`, unless an `AskUserQuestion` of the turn is open, which means asked and not yet answered. A question of an earlier turn, a refused call, and a denial in a tool result SHALL excuse no item. The block SHALL list each item and SHALL tell the model to ask each through the ask tool the session lists and to delete it from the reply. A session with no one to answer SHALL get no such block. The system SHALL also block a stop once when the final reply holds more than one `! <command>` item, and the block SHALL tell the model to keep the one the work needs first and to ask for the next after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). The check SHALL read only that syntax and the turn's tool calls, and a `userConfig` switch MUST turn it off.
 
 #### Scenario: Prose That Mentions a Remaining Budget
 
@@ -217,6 +217,12 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 
 - **WHEN** the reply lists `- [ ] Send what the empty message was meant to say.` under `## What I Need from You`, with no `! <command>`
 - **THEN** the stop is blocked and the item is listed, and a `- [ ]` item that carries `! <command>` passes
+
+#### Scenario: Two Commands at Once
+
+- **WHEN** the reply lists two `- [ ] ! <command>` items under `## What I Need from You`
+- **THEN** the stop is blocked once, the block names both commands, and tells the model to keep the one the work needs first and ask for the other in a later reply
+- **AND** a reply with one `- [ ] ! <command>` item passes
 
 #### Scenario: A Paid Run That Waits for the User
 
