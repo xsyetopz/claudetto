@@ -29,11 +29,17 @@ const lab = (
 		};
 	});
 };
-const submit = ($: Engine, text = "Make it pass.") =>
+const submit = ($: Engine, text = "Make it pass. Nothing should change on disk.") =>
 	$.prompt.submit({ text, wait: false, origin: { kind: "composer" } });
 const check = ($: Engine, tool: string, input: Record<string, unknown>) =>
 	$.tool.check({ tool, input });
-const RO = [{ text: "Nothing should change on disk.", rule: "read-only" }];
+const RO = [
+	{
+		text: "Nothing should change on disk.",
+		rule: "read-only",
+		quote: "Nothing should change on disk.",
+	},
+];
 
 test("a constraint found on one prompt rides the next prompt as context, and the first prompt is not held for it", async ($: Engine, on: On) => {
 	lab(on, RO);
@@ -92,8 +98,8 @@ test("read-only denies Edit, Write and writing Bash and lets reads through", asy
 });
 
 test("no-commit denies git commit only", async ($: Engine, on: On) => {
-	lab(on, [{ text: "Do not commit.", rule: "no-commit" }]);
-	await submit($);
+	lab(on, [{ text: "Do not commit.", rule: "no-commit", quote: "do not commit" }]);
+	await submit($, "Fix it, but do not commit.");
 	expect(
 		(await check($, "Bash", { command: "git commit -m x" })).decision,
 	).toBe("deny");
@@ -108,9 +114,10 @@ test("only-files denies an edit of another file", async ($: Engine, on: On) => {
 			text: "Only touch src/config.ts.",
 			rule: "only-files",
 			files: ["src/config.ts"],
+			quote: "Only touch src/config.ts.",
 		},
 	]);
-	await submit($);
+	await submit($, "Only touch src/config.ts.");
 	expect(
 		(await check($, "Edit", { file_path: "/p/src/config.ts" })).decision,
 	).not.toBe("deny");
@@ -147,8 +154,56 @@ test("the extractor is told that a file to change or a claim about the code is n
 	);
 });
 
+test("each entry rides the note with the person's words that set it", async ($: Engine, on: On) => {
+	lab(on, [{ ...RO[0], quote: "nothing should change  on disk" }]);
+	await submit($);
+	await check($, "Read", { file_path: "/p/a.ts" });
+	expect((await submit($)).context?.join("\n")).toContain(
+		'Nothing should change on disk. (the user: "nothing should change  on disk")',
+	);
+});
+
+for (const [name, quote] of [
+	["no quote", undefined],
+	["a quote only the agent's reply holds", "leave package.json alone"],
+] as const) {
+	test(`Agent Text Read as a Constraint: an entry with ${name} is dropped`, async ($: Engine, on: On) => {
+		lab(
+			on,
+			[{ text: "Leave alone package.json.", rule: "none", quote }],
+			[{ role: "assistant", text: "I will leave package.json alone.", toolUses: [] }],
+		);
+		await submit($, "Commit the rest.");
+		await check($, "Read", { file_path: "/p/a.ts" });
+		expect((await submit($, "Go on.")).context ?? []).toEqual([]);
+	});
+}
+
+test("the extractor is told to quote the user, that a fact is no limit, that a later go-ahead lifts one, and that pasted material with a request is a task", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(on, [], [], seen);
+	await submit($);
+	const prompt = seen.join("\n");
+	expect(prompt).toContain(
+		'"quote": the user\'s exact words that set it, copied from one of the user\'s messages',
+	);
+	expect(prompt).toContain('a statement of fact ("2-1-319 is out") is not a limit');
+	expect(prompt).toContain(
+		'Drop a limit once a later message of the user allows the act it forbids ("commit those"',
+	);
+	expect(prompt).toContain(
+		'pasted material followed by a request ("continue from here") is a task',
+	);
+});
+
 test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
-	lab(on, [{ text: "Stop asking questions.", rule: "no-questions" }]);
+	lab(on, [
+		{
+			text: "Stop asking questions.",
+			rule: "no-questions",
+			quote: "stop asking questions",
+		},
+	]);
 	await submit($, "stop asking questions. fix the problems");
 	const asks = await Promise.all([
 		$.tool.call({

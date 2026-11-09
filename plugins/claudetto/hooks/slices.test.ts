@@ -194,7 +194,7 @@ test("a no-commit constraint from the user, through the ledger, lets the stop pa
 		fakeRepo({ [A]: " M" }),
 		"allow",
 		[],
-		'{"kind":"task","constraints":[{"text":"Do not commit.","rule":"no-commit"}]}',
+		'{"kind":"task","constraints":[{"text":"Do not commit.","quote":"do not commit","rule":"no-commit"}]}',
 	);
 	await $.prompt.submit({
 		text: "Fix it, but do not commit.",

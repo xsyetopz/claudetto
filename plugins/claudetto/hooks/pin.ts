@@ -56,8 +56,23 @@ const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
 ]);
 const isRule = (x: unknown): x is PinConstraint["rule"] => RULES.has(x);
 
-const toConstraint = (c: unknown): PinConstraint[] => {
-	if (!(isRecord(c) && typeof c["text"] === "string" && isRule(c["rule"]))) {
+const flat = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+
+// An entry stands only on words a message of the person holds, so a remark or the agent's own text sets none.
+const toConstraint = (c: unknown, said: string[]): PinConstraint[] => {
+	if (
+		!(
+			isRecord(c) &&
+			typeof c["text"] === "string" &&
+			typeof c["quote"] === "string" &&
+			flat(c["quote"]) !== "" &&
+			isRule(c["rule"])
+		)
+	) {
+		return [];
+	}
+	const quote = flat(c["quote"]);
+	if (!said.some((t) => flat(t).includes(quote))) {
 		return [];
 	}
 	const files = c["files"];
@@ -65,6 +80,7 @@ const toConstraint = (c: unknown): PinConstraint[] => {
 		{
 			text: c["text"],
 			rule: c["rule"],
+			quote: c["quote"],
 			...(Array.isArray(files) ? { files: files.map(String) } : {}),
 		},
 	];
@@ -83,7 +99,10 @@ interface Extraction {
 	kind: PinKind;
 }
 
-const parseLedger = (text: string): Extraction | undefined => {
+const parseLedger = (
+	text: string,
+	said: string[],
+): Extraction | undefined => {
 	try {
 		const json: unknown = JSON.parse(
 			text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),
@@ -92,7 +111,7 @@ const parseLedger = (text: string): Extraction | undefined => {
 		const kind = isRecord(json) ? json["kind"] : undefined;
 		return Array.isArray(list)
 			? {
-					constraints: list.flatMap(toConstraint),
+					constraints: list.flatMap((c) => toConstraint(c, said)),
 					kind: isKind(kind) ? kind : "task",
 				}
 			: undefined;
@@ -164,13 +183,14 @@ const extractLedger = async (
 	text: string,
 	previous: PinConstraint[],
 ): Promise<Extraction | undefined> => {
+	const history = await personTexts($);
 	const r = await $.model.complete({
 		model: "haiku",
-		prompt: PIN_EXTRACT(await personTexts($), previous, text),
+		prompt: PIN_EXTRACT(history, previous, text),
 		maxTokens: 600,
 		timeoutMs: 20_000,
 	});
-	return r.isAnswered ? parseLedger(r.text) : undefined;
+	return r.isAnswered ? parseLedger(r.text, [...history, text]) : undefined;
 };
 
 /** The repo root as the cwd spells it: `cdup` is `git rev-parse --show-cdup`, one `../` per level up. */
