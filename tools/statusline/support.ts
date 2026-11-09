@@ -10,8 +10,11 @@ export const BASE = {
 	model: { id: "claude-opus-5-5", display_name: "Opus 5.5" },
 	effort: { level: "high" },
 	cost: { total_cost_usd: 0 },
-	context_window: { used_percentage: 40, context_window_size: 200_000 },
+	context_window: { total_input_tokens: 80_000, context_window_size: 200_000 },
 };
+
+/** The line file of a session on the dark theme with a 200k compaction window. */
+const LINE = { changes: [], window: 200_000, theme: "dark" };
 
 export type Fields = Record<string, unknown>;
 
@@ -21,10 +24,10 @@ export const linesOf = (
 	env: Record<string, string | undefined> = { COLUMNS: "120", NO_COLOR: "1" },
 	base: Fields = BASE,
 ): string[] =>
-	plain(statusOf(JSON.stringify({ ...base, ...fields }), env, NOW)).split("\n");
+	plain(statusOf(JSON.stringify({ ...base, ...fields }), env, NOW, LINE)).split("\n");
 
 export const raw = (
 	fields: Fields,
 	env: Record<string, string | undefined> = { COLUMNS: "120" },
 	base: Fields = BASE,
-): string => statusOf(JSON.stringify({ ...base, ...fields }), env, NOW);
+): string => statusOf(JSON.stringify({ ...base, ...fields }), env, NOW, LINE);

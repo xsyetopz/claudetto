@@ -90,22 +90,21 @@ export const modelText = ({ input, paint }: Ctx): Text => {
 		.join(" ");
 };
 
-/** `◫ ctx 40% of 200k`, with the percent in the usage gradient. */
-export const contextText = ({ input, paint }: Ctx): Text => {
-	const window = sub(input, "context_window");
-	const used = num(window?.["used_percentage"]);
-	if (used === undefined) {
+/**
+ * `◫ ctx 33% of 300k`, with the percent in the usage gradient. The window is the one compaction runs against, from
+ * the line file, since stdin's `used_percentage` is measured against the model's window.
+ */
+export const contextText = ({ input, local, paint }: Ctx): Text => {
+	const tokens = num(sub(input, "context_window")?.["total_input_tokens"]);
+	if (tokens === undefined || local.window === undefined) {
 		return undefined;
 	}
-	const size = num(window?.["context_window_size"]);
-	const percent = Math.round(used);
+	const percent = Math.round((tokens / local.window) * 100);
 	return [
 		paint.dim(`${ICON.context} ctx`),
 		paint.level(percent)(`${percent}%`),
-		size ? paint.dim(`of ${windowText(size)}`) : "",
-	]
-		.filter(Boolean)
-		.join(" ");
+		paint.dim(`of ${windowText(local.window)}`),
+	].join(" ");
 };
 
 /** The dollars are a client-side estimate, so the line hides them (a choice) when `rate_limits` reports a window. */

@@ -1,5 +1,7 @@
 import { open, readdir, stat } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
+import { lineFilePath } from "../hooks/limits/heartbeat.ts";
+import { num, parse, str } from "./input.ts";
 
 /** One OpenSpec change folder and the boxes of its `tasks.md`. */
 export interface Change {
@@ -15,6 +17,10 @@ export interface Local {
 	changes: readonly Change[];
 	/** Whether claudetto's hooks stopped while the session went on, read by `hooksOff`. */
 	hooksOff?: boolean;
+	/** The window compaction runs against, from the line file, read by `readLine`. */
+	window?: number;
+	/** The Claude Code theme name, from the line file, read by `readLine`. */
+	theme?: string;
 }
 
 /** The file calls of the reader, so a test can record each path. */
@@ -31,6 +37,7 @@ export const NO_LOCAL: Local = { changes: [] };
 
 /** The caps on each read, on the walk to the repository root, and on the changes listed; choices that bound the work per refresh. */
 const HEAD_CAP = 4096;
+const LINE_CAP = 1024;
 const TASKS_CAP = 256 * 1024;
 const MAX_PARENTS = 32;
 const MAX_CHANGES = 32;
@@ -129,6 +136,25 @@ const changesOf = async (dir: string, files: Files): Promise<Change[]> => {
 		}),
 	);
 	return found.flat();
+};
+
+/** The window and the theme the claudetto mod wrote for `session` under `dir` after its last turn. */
+export const readLine = async (
+	dir: string,
+	session: string | undefined,
+	files: Files = NODE_FILES,
+): Promise<Pick<Local, "window" | "theme">> => {
+	const text =
+		session === undefined
+			? undefined
+			: await files.read(join(dir, lineFilePath(session)), LINE_CAP);
+	const line = text === undefined ? undefined : parse(text);
+	const window = num(line?.["window"]);
+	const theme = str(line?.["theme"]);
+	return {
+		...(window !== undefined && window > 0 ? { window } : {}),
+		...(theme === undefined ? {} : { theme }),
+	};
 };
 
 /** The branch and the OpenSpec changes of the project folder `dir`, read with capped file reads and no child process. */

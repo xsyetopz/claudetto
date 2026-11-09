@@ -233,7 +233,7 @@ describe("bad input prints a short line", () => {
 
 	test("a field of a wrong type is left out and the rest prints", () => {
 		const lines = linesOf({
-			context_window: { used_percentage: "x" },
+			context_window: { total_input_tokens: "x" },
 			model: 5,
 		});
 		expect(lines.join("\n")).not.toContain("ctx");

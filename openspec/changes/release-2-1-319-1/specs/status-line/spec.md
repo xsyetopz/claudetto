@@ -72,7 +72,7 @@ The line SHALL paint each part with the colour of the active Claude Code theme's
 #### Scenario: The Table for Each Name
 
 - **WHEN** the line picks a palette
-- **THEN** it maps the name as the engine's `RK` does (`chunk-w5ysqthb.js` offset 21135): `light`, `light-ansi`, `dark-ansi`, `light-daltonized`, `dark-daltonized` to their tables, and any other name to `dark`
+- **THEN** it maps the name as the engine's `RK` does (`chunk-w5ysqthb.js` offset 21034): `light`, `light-ansi`, `dark-ansi`, `light-daltonized`, `dark-daltonized` to their tables, and any other name to `dark`
 
 #### Scenario: No Theme File
 
