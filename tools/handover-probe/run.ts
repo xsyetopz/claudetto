@@ -1,14 +1,15 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { type Arm, OFF } from "./arms.ts";
 import { eventsOf } from "./events.ts";
+import { answersOf, resultsOf, startRelay } from "./relay.ts";
 import { type LogRecord, startFake } from "./server.ts";
 import { TURNS } from "./task.ts";
 
 const PLUGIN_DIR = resolve(import.meta.dir, "../../plugins/claudetto");
 const SETTLE_MS = 1_500;
-const TURN_TIMEOUT_MS = 60_000;
+const TURN_TIMEOUT_MS = 600_000;
 
 export interface RunResult {
 	readonly records: readonly LogRecord[];
@@ -17,6 +18,8 @@ export interface RunResult {
 	readonly outside: readonly string[];
 	readonly dir: string;
 	readonly turnOf: ReadonlyMap<number, number>;
+	/** The results of the last 10 turns: the recall answers. */
+	readonly answers: readonly string[];
 }
 
 const readLog = (path: string): LogRecord[] =>
@@ -26,6 +29,22 @@ const readLog = (path: string): LogRecord[] =>
 		.map((l) => JSON.parse(l) as LogRecord);
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Phase 2 runs only in an arm that restarts, so its file may not exist. */
+const streamOf = (dir: string, phase: 1 | 2): string => {
+	const path = join(dir, `stream-${phase}.jsonl`);
+	return existsSync(path) ? readFileSync(path, "utf8") : "";
+};
+
+const resultsIn = (stream: string): number => resultsOf([stream]).length;
+
+/** Waits for the turn's `result` line: a real turn can pause longer than the quiet period between its requests. */
+const finished = async (dir: string, phase: 1 | 2, before: number): Promise<void> => {
+	const start = Date.now();
+	while (resultsIn(streamOf(dir, phase)) <= before && Date.now() - start < TURN_TIMEOUT_MS) {
+		await sleep(200);
+	}
+};
 
 /** Waits until the server log has been quiet for `SETTLE_MS`: a handover or a clear runs from a timer after the turn's result. */
 const settle = async (log: string): Promise<void> => {
@@ -43,14 +62,16 @@ const settle = async (log: string): Promise<void> => {
 };
 
 /** One run of one arm: a fresh scratch project and config dir, the fake API, and the plugin from the repo. Nothing leaves 127.0.0.1: a proxy sink catches any CONNECT. */
-export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
+export const runArm = async (arm: Arm, index: number, paid: boolean): Promise<RunResult> => {
 	const dir = mkdtempSync(join(process.env["TMPDIR"] ?? tmpdir(), `probe-${arm.name}-${index}-`));
 	const project = join(dir, "project");
 	mkdirSync(project);
 	Bun.spawnSync(["git", "init", "-q"], { cwd: project });
 	const log = join(dir, "requests.jsonl");
 	writeFileSync(log, "");
-	const fake = startFake({ log, handoffOnBoundary: arm.handoffOnBoundary });
+	const fake = paid
+		? startRelay({ log, upstream: process.env["ANTHROPIC_BASE_URL"] ?? "https://api.anthropic.com" })
+		: startFake({ log, handoffOnBoundary: arm.handoffOnBoundary });
 	const outside: string[] = [];
 	const sink = Bun.listen({
 		hostname: "127.0.0.1",
@@ -101,7 +122,7 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 			env: {
 				...process.env,
 				ANTHROPIC_BASE_URL: `http://127.0.0.1:${fake.port}`,
-				ANTHROPIC_API_KEY: "sk-ant-fake",
+				...(paid ? {} : { ANTHROPIC_API_KEY: "sk-ant-fake" }),
 				CLAUDE_CONFIG_DIR: join(dir, "config"),
 				HTTPS_PROXY: `http://127.0.0.1:${sink.port}`,
 				HTTP_PROXY: `http://127.0.0.1:${sink.port}`,
@@ -129,7 +150,9 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 	const compactions = () =>
 		eventsOf(readLog(log)).filter((e) => e.type === "compaction").length;
 	for (const [i, turn] of TURNS.entries()) {
+		const before = resultsIn(streamOf(dir, phase));
 		send(turn.prompt);
+		await finished(dir, phase, before);
 		await settle(log);
 		for (const r of readLog(log)) {
 			if (!turnOf.has(r.n)) {
@@ -154,5 +177,6 @@ export const runArm = async (arm: Arm, index: number): Promise<RunResult> => {
 		outside,
 		dir,
 		turnOf,
+		answers: answersOf([streamOf(dir, 1), streamOf(dir, 2)]),
 	};
 };

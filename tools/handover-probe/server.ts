@@ -53,6 +53,19 @@ export const classify = (lastText: string, tools: number): Kind =>
 				? "other"
 				: "main";
 
+/** What the log needs from a request body, the same for the fake server and the relay. */
+export const requestFacts = (raw: string) => {
+	const body = JSON.parse(raw) as Body;
+	const lastUserText = textOf(body.messages.findLast((m) => m.role === "user"));
+	return {
+		body,
+		lastUserText,
+		kind: classify(lastUserText, body.tools?.length ?? 0),
+		ttls: [...raw.matchAll(/"ttl":"(\w+)"/g)].map((m) => m[1] ?? ""),
+		toolNames: (body.tools ?? []).map((t) => t.name),
+	};
+};
+
 const FAKE_HANDOFF = [
 	"# Handoff",
 	"",
@@ -160,14 +173,10 @@ export const startFake = (opts: {
 			if (url.pathname.endsWith("/count_tokens")) {
 				return Response.json({ input_tokens: 100 });
 			}
-			const raw = await req.text();
-			const body = JSON.parse(raw) as Body;
-			const lastUserText = textOf(body.messages.findLast((m) => m.role === "user"));
-			const kind = classify(lastUserText, body.tools?.length ?? 0);
+			const { body, lastUserText, kind, ttls, toolNames } = requestFacts(await req.text());
 			const requestId = `req_fake_${++n}`;
 			const total = fakeContextTokens(body.messages);
 			const prefix = textOf(body.messages[0]);
-			const ttls = [...raw.matchAll(/"ttl":"(\w+)"/g)].map((m) => m[1] ?? "");
 			const usage = {
 				...fakeUsage({
 					total,
@@ -196,7 +205,7 @@ export const startFake = (opts: {
 				kind,
 				calledHandoff: "tool" in reply,
 				contextTokens: total,
-				toolNames: (body.tools ?? []).map((t) => t.name),
+				toolNames,
 				lastUserText: lastUserText.slice(0, 200),
 				cacheControlTtls: ttls,
 				usage,

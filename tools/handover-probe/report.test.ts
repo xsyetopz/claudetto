@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import { ARMS } from "./arms.ts";
+import { QUESTIONS } from "./recall.ts";
 import { renderArm } from "./report.ts";
 import { rec } from "./testing.ts";
 
@@ -17,7 +18,7 @@ const records = [
 	rec(6, {}),
 ];
 
-const table = renderArm(arm, [{ records, turnOf: new Map([[2, 21]]) }]);
+const table = renderArm(arm, [{ records, turnOf: new Map([[2, 21]]), answers: [] }], false);
 
 test("the table says its numbers are fake", () => {
 	expect(table).toContain("FAKE");
@@ -40,4 +41,11 @@ test("the table names the expected events and the verdict", () => {
 test("usage columns come from the requestId's row", () => {
 	const first = table.split("\n").find((l) => l.includes("req_2")) ?? "";
 	expect(first).toContain("| 200 | 20 | 0 | 2 |");
+});
+
+test("a paid table drops the FAKE label and scores recall per run", () => {
+	const answers = QUESTIONS.map((q, i) => (i === 3 ? "" : q.expect.join(" ")));
+	const paid = renderArm(arm, [{ records, turnOf: new Map(), answers }], true);
+	expect(paid).not.toContain("FAKE");
+	expect(paid).toContain("| 1 | ok | 0 clears, 1 compaction, 0 handovers | 9/10, lost q4-ids |");
 });

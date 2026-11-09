@@ -1,5 +1,6 @@
 import { type Arm, verdict } from "./arms.ts";
 import { type Event, eventsOf } from "./events.ts";
+import { scoreRecall } from "./recall.ts";
 import type { LogRecord } from "./server.ts";
 import { type UsageEntry, usageByRequest } from "./usage.ts";
 
@@ -7,6 +8,7 @@ export interface RunRecords {
 	readonly records: readonly LogRecord[];
 	/** The turn (0-based) each request number was sent in. */
 	readonly turnOf: ReadonlyMap<number, number>;
+	readonly answers: readonly string[];
 }
 
 const AFTER = 3;
@@ -21,25 +23,32 @@ const summary = (events: readonly Event[]): string =>
 		.map((t) => count(events, t))
 		.join(", ");
 
+const recall = (answers: readonly string[]): string => {
+	const { correct, lost } = scoreRecall(answers);
+	return `${correct.length}/${correct.length + lost.length}${lost.length === 0 ? "" : `, lost ${lost.join(" ")}`}`;
+};
+
 const row = (cells: readonly (string | number)[]): string =>
 	`| ${cells.join(" | ")} |`;
 
 /** One table of events per run, then the verdict per run: the event's request and the 3 after it, with the usage the fake server answered, once per `requestId`. */
-export const renderArm = (arm: Arm, runs: readonly RunRecords[]): string => {
+export const renderArm = (arm: Arm, runs: readonly RunRecords[], paid: boolean): string => {
 	const out = [
 		`### Arm ${arm.name}: ${arm.label}`,
 		"",
-		`Expected: ${arm.expects}. Every token count below is FAKE: the fake server scales it per human turn, nothing was billed.`,
+		paid
+			? `Expected: ${arm.expects}. Token counts and usage are the real API's.`
+			: `Expected: ${arm.expects}. Every token count below is FAKE: the fake server scales it per human turn, nothing was billed.`,
 		"",
-		row(["run", "verdict", "events"]),
-		row(["---", "---", "---"]),
+		row(["run", "verdict", "events", ...(paid ? ["recall"] : [])]),
+		row(["---", "---", "---", ...(paid ? ["---"] : [])]),
 	];
 	const detail = [
 		row([
 			"run",
 			"event",
 			"turn",
-			"FAKE ctx",
+			paid ? "ctx" : "FAKE ctx",
 			"request",
 			"kind",
 			"requestId",
@@ -52,7 +61,7 @@ export const renderArm = (arm: Arm, runs: readonly RunRecords[]): string => {
 	];
 	for (const [i, run] of runs.entries()) {
 		const events = eventsOf(run.records);
-		out.push(row([i + 1, verdict(arm, events), summary(events)]));
+		out.push(row([i + 1, verdict(arm, events), summary(events), ...(paid ? [recall(run.answers)] : [])]));
 		const usage = new Map(
 			usageByRequest(
 				run.records.map<UsageEntry>((r) => ({

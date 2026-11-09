@@ -12,6 +12,14 @@ It runs each arm three times against a fake Messages API on `127.0.0.1` and prin
 
 Every token count the fake server returns is FAKE: it is `20,000 + 5,000 × human turns in the request body`, so it falls when a compaction or a handover shortens the messages. It tests that each arm's event fires where the spec says, not what the arm costs.
 
+## Run it paid (task 3.3)
+
+```sh
+CLAUDE_CODE_OAUTH_TOKEN=… bun tools/handover-probe/probe.ts --paid
+```
+
+Each run's `ANTHROPIC_BASE_URL` points at a relay on `127.0.0.1` (`relay.ts`), which forwards every request to the real API (or to the caller's `ANTHROPIC_BASE_URL`) and logs the usage the API returned. It needs `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`), because each run's config dir has no login. The table scores recall: the last 10 turn results against `recall.ts`. The token counts are real, so an arm whose threshold the real context never reaches shows no event.
+
 ## Arms
 
 | Arm | What fires | How |
