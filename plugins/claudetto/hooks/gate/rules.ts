@@ -67,8 +67,23 @@ const writesWhole = (
 			name === "echo" ||
 			(name === "cat" && operands(args).length === 0)));
 
+const VALUED = {
+	head: ["-n", "-c", "--lines", "--bytes"],
+	tail: ["-n", "-c", "--lines", "--bytes"],
+	sed: ["-e", "-f", "--expression", "--file"],
+} as Record<string, string[]>;
+
+/** The files a `head`, `tail`, `sed`, or `cat` prints: the operands without a count or a script, which is not a file. */
+export const printedFiles = (name: string, args: string[]): string[] => {
+	const valued = VALUED[name] ?? [];
+	const rest = args.filter((_, i) => !valued.includes(args[i - 1] ?? ""));
+	const files = operands(rest);
+	const scripted = valued.some((f) => args.includes(f));
+	return name === "sed" && !scripted ? files.slice(1) : files;
+};
+
 export const printsFile = (name: string, args: string[]): boolean => {
-	const files = operands(args);
+	const files = printedFiles(name, args);
 	if (name === "cat" || name === "head") {
 		return files.length > 0;
 	}
@@ -78,7 +93,7 @@ export const printsFile = (name: string, args: string[]): boolean => {
 			!flagsOf(args).some((f) => f === "-f" || f === "-F" || f === "--follow")
 		);
 	}
-	return name === "sed" && flagsOf(args).includes("-n") && files.length > 1;
+	return name === "sed" && flagsOf(args).includes("-n") && files.length > 0;
 };
 
 export const writeTargets = (
@@ -120,7 +135,7 @@ const commandVerdicts = (
 		writesWhole(name, args, redirected) ? deny(GATE_WRITE_FILE) : undefined,
 		// The file is the last operand: one before it can be a `head -n` count or a `sed` script.
 		alone && !redirected && printsFile(name, args)
-			? deny(GATE_READ_FILE(operands(args).at(-1) ?? ""))
+			? deny(GATE_READ_FILE(printedFiles(name, args).at(-1) ?? ""))
 			: undefined,
 	];
 };

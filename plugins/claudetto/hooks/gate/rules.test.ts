@@ -62,6 +62,29 @@ test("A sed Range: the Read redirect names the file, never the sed script", () =
 	);
 });
 
+test("A Count Flag: the Read redirect names the file, never the count", () => {
+	for (const command of [
+		"head -n 5 hooks/texts.ts",
+		"tail -n +3 hooks/texts.ts",
+		"sed -n -e 5p hooks/texts.ts",
+	]) {
+		expect(judge(command, NONE)?.reason).toContain(
+			"`file_path` `hooks/texts.ts`",
+		);
+	}
+});
+
+test("A Count Flag: a count with no file reads stdin and passes", () => {
+	for (const command of [
+		"head -n 5",
+		"tail -n +3",
+		"head -n5",
+		"sed -n -e 5p",
+	]) {
+		expect(decision(command)).toBeUndefined();
+	}
+});
+
 test("A Compound Command: a read inside a compound command is not refused", () => {
 	for (const command of [
 		"git log -1 && head -5 CHANGELOG.md",
