@@ -81,9 +81,6 @@ const agentHooks = (on: On): void => {
 
 	// A rewritten input voids auto mode's server review of every call in the response, so an off call is refused with its exact form, never changed.
 	on("tool.call", { tool: "Agent" }, async (_$, e, next) => {
-		if (e.subagent_type === "fork") {
-			return next(e);
-		}
 		const agent = agentFor(e.subagent_type);
 		if (agent === undefined) {
 			return next(e);
@@ -99,7 +96,9 @@ const agentHooks = (on: On): void => {
 			? { ...out, result: { ...out.result, agentType: "Explore" } }
 			: out;
 	});
+};
 
+const listingHook = (on: On): void => {
 	// The listing's header and footer cost bytes the agent lines do not.
 	on(
 		"prompt.attachment",
@@ -192,6 +191,7 @@ const searchHooks = (on: On): void => {
 
 export const delegation = (on: On): void => {
 	agentHooks(on);
+	listingHook(on);
 	askHooks(on);
 	monitorHooks(on);
 	searchHooks(on);

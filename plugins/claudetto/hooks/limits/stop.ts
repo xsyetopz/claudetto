@@ -135,30 +135,52 @@ const watchRefusedCalls = (on: On, denied: Set<string>): void => {
 	});
 };
 
+/** What the hooks before Stop record for it. */
+interface Turn {
+	wrote: boolean;
+	// A headless session has no person to answer, so no ask can reach anyone.
+	interactive: boolean;
+	readonly denied: Set<string>;
+}
+
+const watchTurn = (on: On, turn: Turn): void => {
+	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
+		turn.interactive = e.isInteractive;
+		return next(e);
+	});
+	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
+		const answer = await next(e);
+		turn.wrote ||= didWrite(answer);
+		return answer;
+	});
+	watchRefusedCalls(on, turn.denied);
+};
+
+const stopBlock = async (
+	$: EngineInterface,
+	e: Parameters<typeof gradeBlock>[1],
+	turn: Turn,
+	isOpenItemsOn: boolean,
+): Promise<string | undefined> =>
+	(AGREES.test(e.last_assistant_message?.trim() ?? "")
+		? AGREE_OPENER
+		: undefined) ??
+	(await filesBlock($, e)) ??
+	(isOpenItemsOn ? await openBlock($, e, turn.interactive) : undefined) ??
+	(await gradeBlock($, e, turn.denied, turn.interactive));
+
 /**
  * Stop: the stall rule, then the named-files, open-items, and graded-reply checks, then the background-task list, then the cleanup of what the session created. The flag, the task key and
  * the budget band sit in this closure: no `await` stands between a read and its write.
  */
 export const stopHooks = (on: On, options: PluginOptions): void => {
 	const isOpenItemsOn = switchOption(options, "openItemsCheckEnabled");
-	let wrote = false;
-	const denied = new Set<string>();
 	const noticeTasks = tasksNotice();
-	// A headless session has no person to answer, so no ask can reach anyone.
-	let interactive = true;
-	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
-		interactive = e.isInteractive;
-		return next(e);
-	});
-	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
-		const answer = await next(e);
-		wrote ||= didWrite(answer);
-		return answer;
-	});
-	watchRefusedCalls(on, denied);
+	const turn: Turn = { wrote: false, interactive: true, denied: new Set() };
+	watchTurn(on, turn);
 	on("classic.Stop", async ($, e, next) => {
-		const stretchWrote = wrote;
-		wrote = false;
+		const stretchWrote = turn.wrote;
+		turn.wrote = false;
 		const answer = await next(e);
 		if (answer.block !== undefined) {
 			return stretchWrote ? answer : stallStop(answer.block);
@@ -166,13 +188,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		if (e.stop_hook_active) {
 			return closed($, e, answer);
 		}
-		const block =
-			(AGREES.test(e.last_assistant_message?.trim() ?? "")
-				? AGREE_OPENER
-				: undefined) ??
-			(await filesBlock($, e)) ??
-			(isOpenItemsOn ? await openBlock($, e, interactive) : undefined) ??
-			(await gradeBlock($, e, denied, interactive));
+		const block = await stopBlock($, e, turn, isOpenItemsOn);
 		if (block !== undefined) {
 			return { ...answer, block };
 		}

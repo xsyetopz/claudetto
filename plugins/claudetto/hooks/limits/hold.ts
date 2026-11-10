@@ -53,21 +53,16 @@ const spawnHook = (
 	});
 };
 
-/**
- * The ledgers sit in the closure of one registration: the hooks share one process, and no `await`
- * stands between a ledger's read and its write, so no version check is needed.
- */
-export const holdHooks = (on: On, options: PluginOptions): void => {
-	const limits: Limits = limitsOf(options);
-	let calls: readonly number[] = [];
-	let failures: Failures = {};
-	const started = new Map<string, number>();
-	spawnHook(on, limits, started);
+const failureHook = (
+	on: On,
+	limits: Limits,
+	ledger: { failures: Failures },
+): void => {
 	// A user's interrupt did not fail by itself, so it is not counted.
 	on("classic.PostToolUseFailure", async ($, e, next) => {
 		if (e.is_interrupt !== true) {
-			failures = withFailure(
-				failures,
+			ledger.failures = withFailure(
+				ledger.failures,
 				{ tool: e.tool_name, input: e.tool_input, error: e.error },
 				await $.clock.now(),
 				limits.windowMs,
@@ -75,6 +70,19 @@ export const holdHooks = (on: On, options: PluginOptions): void => {
 		}
 		return next(e);
 	});
+};
+
+/**
+ * The ledgers sit in the closure of one registration: the hooks share one process, and no `await`
+ * stands between a ledger's read and its write, so no version check is needed.
+ */
+export const holdHooks = (on: On, options: PluginOptions): void => {
+	const limits: Limits = limitsOf(options);
+	let calls: readonly number[] = [];
+	const started = new Map<string, number>();
+	spawnHook(on, limits, started);
+	const ledger: { failures: Failures } = { failures: {} };
+	failureHook(on, limits, ledger);
 	// A query has no `tool_use_id` and is not a call, so it counts for nothing.
 	on("tool.check", { tool: [ANY_TOOL] }, async ($, e, next) => {
 		if (e.tool_use_id === undefined) {
@@ -86,7 +94,7 @@ export const holdHooks = (on: On, options: PluginOptions): void => {
 				e.agentId === undefined ? undefined : started.get(e.agentId),
 				now,
 				limits,
-			) ?? failedText(failures, e, now, limits);
+			) ?? failedText(ledger.failures, e, now, limits);
 		if (failed !== undefined) {
 			return { decision: "deny", reason: failed };
 		}

@@ -1,4 +1,10 @@
-import type { EngineInterface, HookBudget, On, TurnUsage } from "claude-code";
+import type {
+	EngineInterface,
+	HookBudget,
+	On,
+	TurnStepChunk,
+	TurnUsage,
+} from "claude-code";
 
 import { atRoot } from "../handoff/layout.ts";
 import { WITHHELD } from "../texts.ts";
@@ -106,27 +112,23 @@ const readingOf = (
 	});
 };
 
-/**
- * The engine runs a tool while its step still streams, so a call can finish before the stop chunk: each call of a
- * bounded step waits on its own step. `turn.step` also writes the heartbeat, since the loader takes one
- * `turn.step` hook without a matcher.
- */
-export const priceStepHooks = (on: On): void => {
-	// Keyed by `tool_use_id`, which names one call in one step on any loop.
-	const byCall = new Map<string, Step>();
+const stepHook = (on: On, byCall: Map<string, Step>): void => {
 	on("turn.step", async function* ($, e, next) {
 		const beat = beatOf($);
 		const step = boundable(e.model) ? newStep() : undefined;
+		const note = async (chunk: TurnStepChunk): Promise<void> => {
+			if (chunk.kind === "tool" && step !== undefined) {
+				byCall.set(chunk.id, step);
+			} else if (chunk.kind === "stop") {
+				step?.settle(chunk.usage);
+				await beat();
+			}
+		};
 		await beat();
 		const stream = next(e);
 		try {
 			for await (const chunk of stream) {
-				if (chunk.kind === "tool" && step !== undefined) {
-					byCall.set(chunk.id, step);
-				} else if (chunk.kind === "stop") {
-					step?.settle(chunk.usage);
-					await beat();
-				}
+				await note(chunk);
 				yield chunk;
 			}
 			return await stream.result;
@@ -134,6 +136,9 @@ export const priceStepHooks = (on: On): void => {
 			step?.settle(null);
 		}
 	});
+};
+
+const callHook = (on: On, byCall: Map<string, Step>): void => {
 	on("tool.call", async ($, e, next) => {
 		const step = byCall.get(e.tool_use_id);
 		byCall.delete(e.tool_use_id);
@@ -158,4 +163,16 @@ export const priceStepHooks = (on: On): void => {
 		step.passed += bound.tokens;
 		return answer;
 	});
+};
+
+/**
+ * The engine runs a tool while its step still streams, so a call can finish before the stop chunk: each call of a
+ * bounded step waits on its own step. `turn.step` also writes the heartbeat, since the loader takes one
+ * `turn.step` hook without a matcher.
+ */
+export const priceStepHooks = (on: On): void => {
+	// Keyed by `tool_use_id`, which names one call in one step on any loop.
+	const byCall = new Map<string, Step>();
+	stepHook(on, byCall);
+	callHook(on, byCall);
 };

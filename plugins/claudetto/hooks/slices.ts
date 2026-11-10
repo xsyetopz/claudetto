@@ -138,6 +138,35 @@ const movedSince = async (
 				)
 				.map(([path]) => path);
 
+const writeHook = (on: On, mine: Map<string, string>): void => {
+	on("tool.call", { tool: WRITERS }, async ($, e, next) => {
+		const answer = await next(e);
+		const path = "file_path" in e ? e.file_path : e.notebook_path;
+		if (didWrite(answer)) {
+			const awaited2 = await hashes($, [path]);
+			mine.set(path, awaited2[0] ?? "");
+		}
+		return answer;
+	});
+};
+
+/** The block that asks for the commits; none when no commit could be made or nothing moved. */
+const sliceBlock = async (
+	$: EngineInterface,
+	mine: ReadonlyMap<string, string>,
+	known: ReadonlyMap<string, string> | undefined,
+	interactive: boolean,
+): Promise<string | undefined> => {
+	if (!(await commitPossible($, interactive))) {
+		return undefined;
+	}
+	const changed = await changedOf($, mine);
+	const others = await movedSince($, known, changed);
+	return changed.length === 0 && others.length === 0
+		? undefined
+		: SLICE_COMMIT(await shown($, changed), await shown($, others));
+};
+
 /**
  * Files the agent wrote, by the hash it left them with: only an `Edit`, `Write`, or `NotebookEdit` that ran counts, since a Bash call cannot
  * tell the agent's change from a formatter's or the user's. Every other file in the cwd's repo that moved since the session's first prompt,
@@ -156,15 +185,7 @@ export const slices = (on: On): void => {
 		known ??= await dirty($);
 		return next(e);
 	});
-	on("tool.call", { tool: WRITERS }, async ($, e, next) => {
-		const answer = await next(e);
-		const path = "file_path" in e ? e.file_path : e.notebook_path;
-		if (didWrite(answer)) {
-			const awaited2 = await hashes($, [path]);
-			mine.set(path, awaited2[0] ?? "");
-		}
-		return answer;
-	});
+	writeHook(on, mine);
 	on("classic.Stop", { stop_hook_active: false }, async ($, e, next) => {
 		const answer = await next(e);
 		if (
@@ -173,16 +194,7 @@ export const slices = (on: On): void => {
 		) {
 			return answer;
 		}
-		if (!(await commitPossible($, interactive))) {
-			return answer;
-		}
-		const changed = await changedOf($, mine);
-		const others = await movedSince($, known, changed);
-		return changed.length === 0 && others.length === 0
-			? answer
-			: {
-					...answer,
-					block: SLICE_COMMIT(await shown($, changed), await shown($, others)),
-				};
+		const block = await sliceBlock($, mine, known, interactive);
+		return block === undefined ? answer : { ...answer, block };
 	});
 };

@@ -177,6 +177,16 @@ const onSettingsRead: HookFor<"settings.read"> = async ($, e, next) => {
 	};
 };
 
+const onDescribe: HookFor<"tool.describe"> = async ($, e, next) => {
+	const answer = await next(e);
+	const ours = TOOL_TEXTS[e.tool] ?? answer.description;
+	const description =
+		ours.length < answer.description.length ? ours : answer.description;
+	return DEFERRED_TOOLS.includes(e.tool)
+		? { ...answer, description, ...deferral(await $.tool.list()) }
+		: { ...answer, description };
+};
+
 const textHooks = (on: On): void => {
 	on("prompt.compose", () => ({
 		sections: [{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" }],
@@ -185,15 +195,7 @@ const textHooks = (on: On): void => {
 	on(
 		"tool.describe",
 		{ tool: [...new Set([...Object.keys(TOOL_TEXTS), ...DEFERRED_TOOLS])] },
-		async ($, e, next) => {
-			const answer = await next(e);
-			const ours = TOOL_TEXTS[e.tool] ?? answer.description;
-			const description =
-				ours.length < answer.description.length ? ours : answer.description;
-			return DEFERRED_TOOLS.includes(e.tool)
-				? { ...answer, description, ...deferral(await $.tool.list()) }
-				: { ...answer, description };
-		},
+		onDescribe,
 	);
 
 	on("prompt.attachment", { type: "plan_mode" }, async (_$, e, next) => {
@@ -213,7 +215,7 @@ const textHooks = (on: On): void => {
 	);
 };
 
-const guardHooks = (on: On, options: PluginOptions): void => {
+const bunRuleHook = (on: On, options: PluginOptions): void => {
 	on(
 		"classic.SessionStart",
 		{ source: ["startup", "clear", "compact"] },
@@ -234,6 +236,10 @@ const guardHooks = (on: On, options: PluginOptions): void => {
 				: answer;
 		},
 	);
+};
+
+const guardHooks = (on: On, options: PluginOptions): void => {
+	bunRuleHook(on, options);
 
 	on("tool.call", { tool: "Read" }, (_$, e, next) =>
 		switchOption(options, "readGuardEnabled") &&
