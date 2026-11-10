@@ -1,9 +1,9 @@
 import { type Command, parse, programOf } from "./gate/shell-words.ts";
 import { fieldOf } from "./gate/verdict.ts";
 import type { PinConstraint } from "./texts-handoff.ts";
+import { isWriter } from "./tools.ts";
 
 const IN_PLACE = /^-[a-z]*i/u;
-const WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 const WRITE_PROGRAMS = new Set([
 	"tee",
 	"mv",
@@ -70,15 +70,13 @@ export const breaks = (
 	const bash = (git?: Set<string>, anyWrite?: boolean): boolean =>
 		command !== undefined && bashWrites(command, git, anyWrite);
 	const rules: Record<PinConstraint["rule"], () => boolean> = {
-		"read-only": () => WRITERS.has(tool) || bash(),
+		"read-only": () => isWriter(tool) || bash(),
 		"no-commit": () => bash(new Set(["commit"]), false),
 		"no-push": () => bash(new Set(["push"]), false),
 		"only-files": () => {
 			const path =
 				fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path") ?? "";
-			return (
-				WRITERS.has(tool) && !(c.files ?? []).some((f) => path.endsWith(f))
-			);
+			return isWriter(tool) && !(c.files ?? []).some((f) => path.endsWith(f));
 		},
 		"no-questions": () => false,
 		none: () => false,

@@ -1,6 +1,5 @@
 import type { EngineInterface, On, SessionMessage } from "claude-code";
 
-import { isRecord } from "./decide/jev.ts";
 import { deny } from "./gate/verdict.ts";
 import { breaks } from "./pin-rules.ts";
 import {
@@ -13,10 +12,10 @@ import {
 	type PinConstraint,
 	type PinKind,
 } from "./texts-handoff.ts";
+import { ANY_TOOL, isRecord } from "./tools.ts";
 import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/u;
-const ANY_TOOL = /^/u;
 const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
 	"read-only",
 	"no-commit",

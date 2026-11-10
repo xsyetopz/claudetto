@@ -1,7 +1,7 @@
 // Each question is keyed by its index, so two questions with the same text stay two decisions.
 
 import { JEV_GIVE_BACK, jevFailed, jevSaid, jevSilent } from "../texts-gate.ts";
-import { isRecord } from "./jev.ts";
+import { isRecord } from "../tools.ts";
 
 /** Fixed, not scaled by the option count, so more options never make a weaker pick pass. */
 const PICK_MIN = 0.75;

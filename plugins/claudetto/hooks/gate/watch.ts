@@ -2,6 +2,7 @@ import type { EngineInterface, On } from "claude-code";
 
 import { redactAll, redactWith, secretsIn } from "../secrets.ts";
 import { GATE_CHECK_FAILED, GATE_READ_ONLY, gateRule } from "../texts-gate.ts";
+import { ANY_TOOL } from "../tools.ts";
 import {
 	type Denials,
 	DENIALS_PER_CALL_MAX,
@@ -18,8 +19,6 @@ import { deny, fieldOf, type Verdict } from "./verdict.ts";
 
 const STRICTNESS = ["allow", "ask", "deny"];
 const PERSON = /^(?:composer|bridge)$/u;
-// Another feature owns the unmatched `tool.check`; this pattern matches every tool name.
-const ANY_TOOL = /^/u;
 
 /** What the hooks keep between calls: the denials of this session so far. */
 export interface Memory {
@@ -87,7 +86,11 @@ export const watchTools = (on: On, walls: Walls, memory: Memory): void => {
 };
 
 /** The permission and prompt events: a denial is remembered, and a new message from the person clears them. */
-export const watchDenials = (on: On, walls: Walls, memory: Memory): void => {
+export const watchPermissionEvents = (
+	on: On,
+	walls: Walls,
+	memory: Memory,
+): void => {
 	// `classic.PermissionRequest` does not fire in `-p`, so `tool.check` carries the same verdict.
 	on("classic.PermissionRequest", async ($, e, next) => {
 		const answer = await next(e);

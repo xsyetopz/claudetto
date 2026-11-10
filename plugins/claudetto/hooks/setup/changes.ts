@@ -1,12 +1,6 @@
 import { wallRule } from "../gate/walled.ts";
-import {
-	type Group,
-	isRecord,
-	type Json,
-	leaves,
-	setAt,
-	valueAt,
-} from "./settings.ts";
+import { isRecord } from "../tools.ts";
+import { type Group, type Json, leaves, setAt, valueAt } from "./settings.ts";
 
 export interface Change {
 	readonly path: string;

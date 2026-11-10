@@ -1,5 +1,6 @@
 import type { SessionMessage } from "claude-code";
 
+import { isRecord, isWriter } from "../tools.ts";
 import {
 	BUILT_BY_CODE,
 	gitLines,
@@ -19,9 +20,6 @@ interface Tail {
 	readonly written: readonly string[];
 	readonly decisions: readonly string[];
 }
-
-export const WRITING_TOOLS = ["Write", "Edit", "NotebookEdit"] as const;
-const WRITING: ReadonlySet<string> = new Set(WRITING_TOOLS);
 
 export const pathOf = (input: Record<string, unknown>): string | undefined =>
 	[input["file_path"], input["notebook_path"], input["path"]].find(
@@ -44,7 +42,7 @@ export const readMessages = (messages: readonly SessionMessage[]): Tail => {
 			.filter((turn) => turn.text !== ""),
 		paths: [...new Set(touches.map((touch) => touch.path))],
 		written: touches
-			.filter((touch) => WRITING.has(touch.tool))
+			.filter((touch) => isWriter(touch.tool))
 			.map((touch) => touch.path),
 		decisions: messages
 			.flatMap((message) => message.toolUses)
@@ -52,9 +50,6 @@ export const readMessages = (messages: readonly SessionMessage[]): Tail => {
 			.map((use) => shorten(use.text ?? "")),
 	};
 };
-
-export const isRecord = (value: unknown): value is Record<string, unknown> =>
-	typeof value === "object" && value !== null;
 
 export const lineOf = (line: string): unknown => {
 	try {

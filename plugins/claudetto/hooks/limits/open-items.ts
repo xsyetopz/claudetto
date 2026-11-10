@@ -6,7 +6,7 @@ const OPEN_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+\[ \]\s+(.*\S)\s*$/u;
 const BULLET = /^\s*(?:[-*+]|\d+[.)])\s+(?!\[[ xX]\])(.*\S)\s*$/u;
 
 /** The syntax of a blocker the user can run: `! <command>`. */
-const USER_COMMAND = /(?:^|[\s`(])!\s+\S/u;
+const COMMAND_STEP_WITHIN = /(?:^|[\s`(])!\s+\S/u;
 
 /** A line that tells the user to run something: a `! <command>` line or span, `sudo`, or a backtick command after "you need to run" with no `! `. */
 const COMMAND_LINE =
@@ -42,7 +42,7 @@ export const openItems = (reply: string, turn: Turn): readonly string[] =>
 
 const holdsCommand = (pattern: RegExp, line: string): boolean => {
 	const item = pattern.exec(line)?.[1];
-	return item !== undefined && USER_COMMAND.test(item);
+	return item !== undefined && COMMAND_STEP_WITHIN.test(item);
 };
 
 const inItem = (line: string): boolean => holdsCommand(BULLET, line);

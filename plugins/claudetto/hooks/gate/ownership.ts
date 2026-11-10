@@ -1,10 +1,11 @@
 import type { EngineInterface } from "claude-code";
 
+import { GATE_SYSTEM_WRITE, gateTmpMarker } from "../texts-gate.ts";
 import { isPersonMessage } from "../verify.ts";
 import { POLICY_FILES } from "./packages.ts";
-import { MARKER, ownsOf, tmpTops } from "./processes.ts";
-import { judge } from "./rules.ts";
-import type { Verdict } from "./verdict.ts";
+import { MARKER, ownsOf, tmpTopOf, tmpTops } from "./processes.ts";
+import { judge, systemPath } from "./rules.ts";
+import { deny, type Verdict } from "./verdict.ts";
 
 // Only a command that could need the transcript or a marker file reads them.
 const OWNED = /\b(?:kill|worktree|branch|update-ref)\b/u;
@@ -64,4 +65,16 @@ export async function commandVerdict(
 	return own === undefined
 		? undefined
 		: { ...own, reason: `${own.reason} (\`${command}\`)` };
+}
+
+/** The verdict on a file write to `path`. A write makes its missing folders, so it would make a /tmp folder no marker names (seen live, 18.41). */
+export async function writeVerdict(
+	$: EngineInterface,
+	path: string,
+): Promise<Verdict | undefined> {
+	const top = tmpTopOf(path);
+	if (top !== undefined && top !== path && !(await $.fs.exists(top))) {
+		return deny(gateTmpMarker(top));
+	}
+	return systemPath(path) ? deny(GATE_SYSTEM_WRITE) : undefined;
 }

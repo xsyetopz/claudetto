@@ -1,5 +1,6 @@
 import type { AgentInfo, PluginOptions } from "claude-code";
 
+import { signature } from "../gate/denials.ts";
 import { numberOption } from "../options.ts";
 import {
 	DENY_CALLS,
@@ -102,9 +103,6 @@ interface Failure {
 }
 
 export type Failures = Readonly<Record<string, Failure>>;
-
-export const signature = (tool: string, input: unknown): string =>
-	`${tool}\n${JSON.stringify(input)}`;
 
 export const withFailure = (
 	held: Failures | undefined,

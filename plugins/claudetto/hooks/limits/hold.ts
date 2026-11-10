@@ -1,5 +1,6 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
+import { ANY_TOOL } from "../tools.ts";
 import {
 	admitCall,
 	admitStart,
@@ -26,8 +27,6 @@ const heavyTokens = async ($: EngineInterface): Promise<number | undefined> => {
 		return undefined;
 	}
 };
-
-const ANY_TOOL = /./u;
 
 const spawnHook = (
 	on: On,

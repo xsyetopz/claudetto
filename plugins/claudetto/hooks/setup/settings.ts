@@ -1,4 +1,5 @@
 import { SILENT_TURN_REMINDER } from "../texts.ts";
+import { isRecord } from "../tools.ts";
 import { AUTO_MODE } from "./auto-mode.ts";
 
 const HAIKU = "claude-haiku-5-5";
@@ -225,9 +226,6 @@ export const GROUPS: readonly Group[] = [
 	},
 	STATUS_LINE,
 ];
-
-export const isRecord = (value: unknown): value is Json =>
-	typeof value === "object" && value !== null && !Array.isArray(value);
 
 // A status line is one command with its options, so a user's own line stays whole.
 const WHOLE = "statusLine";

@@ -3,6 +3,7 @@ import type { EngineInterface, On, PluginOptions } from "claude-code";
 import { parse, programOf } from "../gate/shell-words.ts";
 import { atRoot } from "../handoff/layout.ts";
 import { numberOption } from "../options.ts";
+import { isRecord } from "../tools.ts";
 
 const HEAD_SHARE = 0.4;
 
@@ -67,9 +68,6 @@ export const BOUND_OUTPUT_DIR = ".claude/claudetto/output";
 const DEFAULT_OUTPUT_CHARS = 8000;
 
 const STREAMS = ["stdout", "stderr"] as const;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-	typeof value === "object" && value !== null;
 
 /** The whole text a result carries, which is what the file holds. */
 const fullTextOf = (result: unknown): string | undefined => {

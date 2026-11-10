@@ -1,6 +1,5 @@
 import type {
 	BackgroundTaskSummary,
-	BuiltinToolName,
 	EngineInterface,
 	On,
 	PluginOptions,
@@ -16,13 +15,12 @@ import {
 	STALL_STOP,
 	STOP_TASKS,
 } from "../texts.ts";
+import { ANY_TOOL, WRITERS } from "../tools.ts";
 import { ASK_MCP } from "../verify.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 import { gradeBlock } from "./grade.ts";
 import { namedPaths } from "./named-files.ts";
 import { commandForm, openItems, turnOf } from "./open-items.ts";
-
-const ANY_TOOL = /^/u;
 
 /** How the CLI words a refused ask; a headless refusal repeats the ask's reason instead. */
 const REFUSED =
@@ -30,13 +28,6 @@ const REFUSED =
 
 const AGREES =
 	/^(?:you(?:['’]| a)re (?:right|correct)|(?:good|great|fair) (?:catch|point|call)|fair enough|agreed\b)/iu;
-
-/** The tools whose result is a file the session changed. */
-export const WRITERS = [
-	"Edit",
-	"NotebookEdit",
-	"Write",
-] satisfies BuiltinToolName[];
 
 /** A write that ran: a denied or failed one wrote nothing. */
 export const didWrite = (answer: {
@@ -117,7 +108,7 @@ const filesBlock = async (
 };
 
 /** Collects the ids of the calls a refusal ended into `denied`. A denied call reaches `tool.call` as an error, the same as one that ran and failed; only `tool.check` tells them apart. */
-const watchDenials = (on: On, denied: Set<string>): void => {
+const watchRefusedCalls = (on: On, denied: Set<string>): void => {
 	const asked = new Map<string, string>();
 	on("tool.check", { tool: ANY_TOOL }, async (_$, e, next) => {
 		const verdict = await next(e);
@@ -164,7 +155,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 		wrote ||= didWrite(answer);
 		return answer;
 	});
-	watchDenials(on, denied);
+	watchRefusedCalls(on, denied);
 	on("classic.Stop", async ($, e, next) => {
 		const stretchWrote = wrote;
 		wrote = false;

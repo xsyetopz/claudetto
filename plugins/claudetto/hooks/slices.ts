@@ -1,9 +1,10 @@
 import type { EngineInterface, On } from "claude-code";
 
 import { BOUND_OUTPUT_DIR } from "./limits/bound-output.ts";
-import { didWrite, WRITERS } from "./limits/stop.ts";
+import { didWrite } from "./limits/stop.ts";
 import { PERSON, rootOf } from "./pin.ts";
 import { SLICE_COMMIT } from "./texts.ts";
+import { WRITERS } from "./tools.ts";
 
 const RENAMED = /^[RC]/u;
 

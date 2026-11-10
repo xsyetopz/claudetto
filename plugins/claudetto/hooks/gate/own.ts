@@ -1,21 +1,13 @@
 import type { EngineInterface } from "claude-code";
 
-import {
-	GATE_ENDLESS_WAIT,
-	GATE_SYSTEM_WRITE,
-	gateProtectedMove,
-	gateTmpMarker,
-} from "../texts-gate.ts";
+import { GATE_ENDLESS_WAIT, gateProtectedMove } from "../texts-gate.ts";
+import { isWriter } from "../tools.ts";
 import { endlessWait } from "./kill.ts";
-import { commandVerdict } from "./ownership.ts";
-import { tmpTopOf } from "./processes.ts";
+import { commandVerdict, writeVerdict } from "./ownership.ts";
 import type { Host, Recreation } from "./recreate.ts";
-import { systemPath } from "./rules.ts";
 import { movesOf, protectedChanges } from "./switch.ts";
 import { deny, fieldOf, type Verdict } from "./verdict.ts";
 import { namedPaths, spellsWall, walledVerdict } from "./walled.ts";
-
-const FILE_WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
 
 /** The protected paths and what the session saw of the files, which a verdict reads. */
 export interface Walls {
@@ -89,17 +81,6 @@ async function moveVerdict(
 	return touched.length > 0 ? deny(gateProtectedMove(touched)) : undefined;
 }
 
-async function writeVerdict(
-	$: EngineInterface,
-	path: string,
-	top: string | undefined,
-): Promise<Verdict | undefined> {
-	if (top !== undefined && top !== path && !(await $.fs.exists(top))) {
-		return deny(gateTmpMarker(top));
-	}
-	return systemPath(path) ? deny(GATE_SYSTEM_WRITE) : undefined;
-}
-
 /** The verdict the gate itself gives a call, before the engine's own, or nothing. */
 export async function ownVerdict(
 	$: EngineInterface,
@@ -129,9 +110,8 @@ export async function ownVerdict(
 		return commandVerdict($, command);
 	}
 	const path = fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path");
-	if (!FILE_WRITERS.has(tool) || path === undefined) {
+	if (!isWriter(tool) || path === undefined) {
 		return undefined;
 	}
-	// A write makes its missing folders, so it would make a /tmp folder no marker names (seen live, 18.41).
-	return writeVerdict($, path, tmpTopOf(path));
+	return writeVerdict($, path);
 }

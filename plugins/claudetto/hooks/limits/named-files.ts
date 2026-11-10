@@ -2,7 +2,7 @@ import { type Command, parse } from "../gate/shell-words.ts";
 
 const FENCE = /^\s*```/u;
 const SPAN = /`([^`\n]*)`/gu;
-const USER_COMMAND = /^!\s+(\S.*)$/u;
+const WHOLE_COMMAND_STEP = /^!\s+(\S.*)$/u;
 
 /** Commands that make their operands, all of them or the last one, so a missing path there is no fault. */
 const MAKES_ALL = new Set(["mkdir", "touch"]);
@@ -19,7 +19,9 @@ export const userCommands = (reply: string): string[] => {
 		const texts = fenced
 			? [line]
 			: [...line.matchAll(SPAN)].map((span) => span[1] ?? "");
-		return texts.flatMap((text) => USER_COMMAND.exec(text.trim())?.[1] ?? []);
+		return texts.flatMap(
+			(text) => WHOLE_COMMAND_STEP.exec(text.trim())?.[1] ?? [],
+		);
 	});
 };
 

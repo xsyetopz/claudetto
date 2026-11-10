@@ -1,5 +1,7 @@
 // `fetch` and `sleep` come from the caller, so a test passes plain values.
 
+import { isRecord } from "../tools.ts";
+
 // `POST /v1/systemone` and the model alias `jev-latest`: https://docs.typesafe.ai/api/system-one.md
 const JEV_API = "https://api.typesafe.ai/v1/systemone";
 
@@ -38,9 +40,6 @@ interface JevTransport {
 		options?: { readonly signal: AbortSignal },
 	) => Promise<unknown>;
 }
-
-export const isRecord = (x: unknown): x is Record<string, unknown> =>
-	typeof x === "object" && x !== null && !Array.isArray(x);
 
 const expires = async (
 	sleep: JevTransport["sleep"],

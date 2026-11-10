@@ -1,17 +1,12 @@
 import type { EngineInterface, On } from "claude-code";
 
 import { atRoot } from "./handoff/layout.ts";
-import {
-	isRecord,
-	lineOf,
-	pathOf,
-	WRITING_TOOLS,
-} from "./handoff/transcript.ts";
+import { lineOf, pathOf } from "./handoff/transcript.ts";
+import { isRecord, isWriter, WRITERS } from "./tools.ts";
 
 /** One JSON line per delegated run, read by hand to set the delegation cut-offs and the subagent cache TTL. */
 export const RUN_LOG = ".claude/claudetto/runs.jsonl";
 
-const WRITERS: ReadonlySet<string> = new Set(WRITING_TOOLS);
 // The engine takes one unmatched hook per event in a module, and `limits` holds those; each matcher here takes every value.
 const BOTH = [true, false];
 const ROOT_TURNS = 3;
@@ -31,7 +26,7 @@ const writtenIn = (message: Record<string, unknown>): string[] => {
 	return (Array.isArray(content) ? content : []).flatMap((block: unknown) => {
 		const path =
 			isRecord(block) &&
-			WRITERS.has(String(block["name"])) &&
+			isWriter(String(block["name"])) &&
 			isRecord(block["input"])
 				? pathOf(block["input"])
 				: undefined;
@@ -147,7 +142,7 @@ const trackStops = (on: On, started: Started, pending: Pending[]): void => {
 };
 
 const trackEdits = (on: On, pending: readonly Pending[]): void => {
-	on("tool.call", { tool: WRITING_TOOLS }, (_$, e, next) => {
+	on("tool.call", { tool: WRITERS }, (_$, e, next) => {
 		const path = pathOf(e);
 		if (e.agentId === undefined && path !== undefined) {
 			for (const run of pending.filter((p) => p.files.includes(path))) {

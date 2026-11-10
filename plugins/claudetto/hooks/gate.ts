@@ -5,7 +5,7 @@ import { newRecreation } from "./gate/recreate.ts";
 import { unguarded } from "./gate/walled.ts";
 import {
 	type Memory,
-	watchDenials,
+	watchPermissionEvents,
 	watchResults,
 	watchTools,
 } from "./gate/watch.ts";
@@ -33,6 +33,6 @@ export const gate = (on: On, options: PluginOptions): void => {
 
 	const memory: Memory = { denials: {} };
 	watchTools(on, walls, memory);
-	watchDenials(on, walls, memory);
+	watchPermissionEvents(on, walls, memory);
 	watchResults(on, walls);
 };
