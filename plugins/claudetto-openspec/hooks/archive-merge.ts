@@ -60,7 +60,7 @@ export const replaceRequirements = (md: string, list: Block[]) => {
 		.replace(TRAILING_NEWLINES, "\n");
 };
 
-// A new capability takes the Purpose its delta carries (#1413), unless that text would hide or
+// A new capability takes the Purpose its delta carries, unless that text would hide or
 // split the spec: a comment, a heading, an open fence, or nothing but a code sample.
 // Comments are blanked to NULs, newlines kept, so a commented-out header is not found and a Purpose
 // that holds a comment shows it.

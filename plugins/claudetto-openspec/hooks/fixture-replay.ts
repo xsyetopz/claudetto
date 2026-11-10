@@ -40,7 +40,7 @@ const expectedSummary = (r: Report) => {
 	});
 };
 type Sum = ReturnType<typeof summary>;
-// Upstream warns where the plugin refuses (#2195): same files, ERROR instead.
+// Upstream warns where the plugin refuses: same files, ERROR instead.
 const asError = (s: Sum) => ({
 	valid: s.valid && !s.issues.some((i) => i.startsWith("WARNING|")),
 	issues: s.issues.map((i) => i.replace("WARNING|", "ERROR|")),
@@ -57,13 +57,13 @@ const classify = (actual: Sum, want: Sum): Result => {
 	}
 	const stricter = asError(want);
 	if (same(actual, stricter)) {
-		return { actual, expected: want, diverged: "warning->error (#2195)" };
+		return { actual, expected: want, diverged: "warning->error" };
 	}
-	// #2173: the plugin names a stray file or repeats a root error; upstream's own errors all remain.
+	// The plugin names a stray file or repeats a root error; upstream's own errors all remain.
 	const added = actual.issues.filter((i) => !stricter.issues.includes(i));
 	return stricter.issues.every((i) => actual.issues.includes(i)) &&
 		added.every((i) => i.startsWith("ERROR|"))
-		? { actual, expected: want, diverged: "extra stray-file error (#2173)" }
+		? { actual, expected: want, diverged: "extra stray-file error" }
 		: { actual, expected: want };
 };
 

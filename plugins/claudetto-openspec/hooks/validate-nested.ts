@@ -1,4 +1,4 @@
-// Upstream's namespace-folder rule (#1846): which folders under changes/ wrap further changes.
+// Upstream's namespace-folder rule: which folders under changes/ wrap further changes.
 import { type Fs, join, safeList } from "./fs.ts";
 import { discoverDeltas } from "./validate-discover.ts";
 

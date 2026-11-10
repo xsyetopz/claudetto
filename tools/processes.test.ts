@@ -3,7 +3,7 @@ import { expect, test } from "bun:test";
 import { file, Glob } from "bun";
 
 const PLUGIN = `${import.meta.dir}/../plugins/claudetto`;
-// `$.process.run` resolves when its process exits; these start one that can outlive the hook (task 18.17).
+// `$.process.run` resolves when its process exits; these start one that can outlive the hook.
 const LONG_LIVED_TS =
 	/\$\.process\.spawn|\bBun\.spawn|["'](?:node:)?child_process["']|\.unref\(\)/u;
 const LONG_LIVED_SH = /(?:^|[\s;])(?:nohup|setsid|disown)\s|&\s*$/mu;

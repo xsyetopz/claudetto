@@ -90,7 +90,7 @@ test("Archive Refuses Open Tasks: names 1.2 and moves nothing", async ($: Engine
 	expect(tree.has("/repo/openspec/specs/cap/spec.md")).toBe(false);
 });
 
-test("Archive has no override for open tasks (#2006, #1652)", async ($: Engine, on: On) => {
+test("Archive has no override for open tasks", async ($: Engine, on: On) => {
 	const { runs } = memory(
 		on,
 		change({ [`${C}/c/tasks.md`]: "- [ ] 1.1 open\n" }),
@@ -111,7 +111,7 @@ test("Archive merges, moves with mv, and writes the main spec", async ($: Engine
 	);
 });
 
-test("A Notes File beside a Delta: validation names it and archive merges nothing (#2173)", async ($: Engine, on: On) => {
+test("A Notes File beside a Delta: validation names it and archive merges nothing", async ($: Engine, on: On) => {
 	const { runs, tree } = memory(
 		on,
 		change({ [`${C}/c/specs/cap/notes/extra.md`]: "notes\n" }),
@@ -126,7 +126,7 @@ test("A Notes File beside a Delta: validation names it and archive merges nothin
 	expect(tree.has("/repo/openspec/specs/cap/spec.md")).toBe(false);
 });
 
-test("An unknown delta section fails validation (#2195)", async ($: Engine, on: On) => {
+test("An unknown delta section fails validation", async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({
@@ -136,7 +136,7 @@ test("An unknown delta section fails validation (#2195)", async ($: Engine, on: 
 	expect(await call($, { change: "c" })).toContain("CHANGED");
 });
 
-test("Validate fails what archive would refuse (#1112)", async ($: Engine, on: On) => {
+test("Validate fails what archive would refuse", async ($: Engine, on: On) => {
 	const files = change({
 		[`${C}/c/specs/cap/spec.md`]: delta(
 			"MODIFIED",
@@ -163,7 +163,7 @@ test("MODIFIED that drops a scenario fails (kept from upstream)", async ($: Engi
 	expect(await call($, { change: "c" })).toContain("T");
 });
 
-test("MODIFIED that replaces a scenario by two keeps upstream's verdict: invalid, naming the omitted one (#1697)", async ($: Engine, on: On) => {
+test("MODIFIED that replaces a scenario by two keeps upstream's verdict: invalid, naming the omitted one", async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({

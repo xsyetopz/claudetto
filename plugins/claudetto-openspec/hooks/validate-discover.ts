@@ -38,8 +38,8 @@ const byPath = (x: { path: string }, y: { path: string }) =>
 const byText = (x: string, y: string) => (x < y ? -1 : 1);
 
 // spec.md files below specs/ are deltas keyed by their directory. Any other file is one the merge
-// drops: `unread` holds the .md files with a delta section (upstream's list), `stray` the rest
-// (#2173). Dot entries and symlinked directories are not followed.
+// drops: `unread` holds the .md files with a delta section (upstream's list), `stray` the rest.
+// Dot entries and symlinked directories are not followed.
 export const discoverDeltas = async (fs: Fs, specsDir: string) => {
 	const found: Found[] = [];
 	const unread: { path: string; expected: string }[] = [];

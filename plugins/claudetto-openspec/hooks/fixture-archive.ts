@@ -93,7 +93,7 @@ const divergence = (rec: Rec, threw: boolean, blocked?: string) => {
 	const reasons = [
 		{
 			hit: threw && !wantThrew && hasOpenTasks(rec),
-			why: "open tasks refused (#2006)",
+			why: "open tasks refused",
 		},
 		{
 			hit: blocked === "link_escapes" && retiring(rec),
