@@ -12,7 +12,8 @@ Each slice is one commit, with its failing test first where it changes behavior.
 - [x] 1.6 Confirm each dead export and impossible guard of decision 17 by a search or a type check. Done: P11, P22, P23, P31. Six exports and three guards have a use and stay.
 - [ ] 1.7 Remove the two clones that `4e4f73ca` added (`limits/verify.test.ts [102-107]` against `[117-122]`, and `handoff.mock.ts [28-35]` against `limits/open-items.mock.ts [6-13]`). Check: `just clones` exits 0.
 - [ ] 1.8 Repair the 13 INVALID main specs: shorten each of the 17 requirement texts over 500 characters by moving detail into a scenario, write the 2 placeholder Purpose sections, and give the `surface-trim` scenario "Loaded in Full" its THEN step. Change no requirement's meaning. Check: `just validate` exits 0.
-- [ ] 1.9 Ask the person to run `bun test tools/manifest.test.ts` outside the sandbox. If the two failing tests pass there, give the code under test its `ps` reader as a parameter and pass a fake in the tests, so `just verify` is green inside the sandbox too. If they fail there too, fix the cause. Check: `just verify` exits 0.
+- [ ] 1.9 The person's run in a plain shell passed 11 of 11, so the sandbox causes the two failures in `tools/manifest.test.ts` (P37). Take the niceness out of the test "a job count and a memory limit the user set are kept", which is about the three variables. Split the other test in two: one asserts the three variables, and one asserts niceness 10, reads it with `perl -e 'print getpriority(0,0)'` instead of `ps`, and is skipped with a stated reason where a probe `renice` is refused. Check: `just verify` exits 0 inside the sandbox, and all tests of the file run and pass in a plain shell.
+- [ ] 1.10 Write a failing test in `tools/manifest.test.ts`: after three session starts the env file holds the `renice` line once (today it holds three, and this session's file holds 12, P39). Then make the `SessionStart` command in `plugins/claudetto/hooks/hooks.json` append only when the file does not yet hold that line. Check: `bun test tools/manifest.test.ts` passes, and the test "after two session starts" still passes.
 
 ## 2. Structure, with No Behavior Change
 
@@ -71,7 +72,7 @@ Each slice is one commit, with its failing test first where it changes behavior.
 
 ## 8. Finish
 
-- [ ] 8.1 Update `README.md` (what a key sends and where it is read), `.env.example`, and `CHANGELOG.md` (the breaking changes, and the three numbers of 1.1 before and after, each with its command).
+- [ ] 8.1 Update `README.md` (what a key sends, where it is read, and that a sandboxed command keeps niceness 0 because the sandbox refuses `renice`), `.env.example`, and `CHANGELOG.md` (the breaking changes, and the three numbers of 1.1 before and after, each with its command).
 - [ ] 8.2 Run `just check` and `just verify`, and fix each failure at its cause.
 - [ ] 8.3 Call the tool with `{action:"validate", change:"feat-2-1-321"}` and fix every issue.
 - [ ] 8.4 Write a failing lab test in `plugins/claudetto-openspec/hooks`: a change whose MODIFIED requirement grows from under 500 characters in the main spec to 501 validates with no warning today (P36). Then make the change check warn in that case and only in that case, as the `lean-openspec` delta requires. Check: both scenarios of the delta pass, the ported upstream cases still pass, and this change still validates.
