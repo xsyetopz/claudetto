@@ -4,7 +4,7 @@ import { $, file, semver } from "bun";
 
 const ROOT = `${import.meta.dir}/..`;
 // The plugin manifests carry no version: Claude Code then versions each install by its commit, so every commit on `main` updates it.
-const MANIFESTS = ["package.json", ".claude-plugin/marketplace.json"];
+const MANIFESTS = ["package.json"];
 const VERSION = /^(\d+\.\d+\.\d+)(?:\+(\d+))?$/u;
 
 const TAG = /^v(\d+\.\d+\.\d+)$/u;
@@ -69,19 +69,13 @@ const lines = async (
 };
 
 const manifestVersion = (json: unknown): string => {
-	if (typeof json === "object" && json !== null) {
-		if ("version" in json && typeof json.version === "string") {
-			return json.version;
-		}
-		if (
-			"metadata" in json &&
-			typeof json.metadata === "object" &&
-			json.metadata !== null &&
-			"version" in json.metadata &&
-			typeof json.metadata.version === "string"
-		) {
-			return json.metadata.version;
-		}
+	if (
+		typeof json === "object" &&
+		json !== null &&
+		"version" in json &&
+		typeof json.version === "string"
+	) {
+		return json.version;
 	}
 	throw new Error("A manifest carries no version.");
 };

@@ -16,7 +16,7 @@ export interface Group {
 export const MINIMUM_VERSION = "2.1.318";
 
 // User settings do not expand `${CLAUDE_PLUGIN_ROOT}`, and the plugin cache holds one folder per version, so the shell picks the newest at each run.
-const LAUNCHER = `$(ls -d "\${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline`;
+const LAUNCHER = `$(ls -d "\${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plugins/cache/xsyetopz/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline`;
 
 const STATUS_LINE_COMMAND = `bun --no-env-file "${LAUNCHER}"`;
 

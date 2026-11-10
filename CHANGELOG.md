@@ -25,6 +25,9 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies a linter's unsafe fixes (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes` of `oxlint`, `biome`, `ruff`); the safe `--fix` still runs.
 - `/claudetto:setup` sets `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to `1`, so a subagent has no `Agent` tool and cannot start an agent of its own.
 - The Stop grader flags, in an interactive session, a choice asked in plain text in place of the popup.
+- The gate sends a file read piped into a program that only shows it, such as `cat a.ts | head` or `cat a.ts | sed -n '1,5p'`, to `Read`. A read piped into a program that works on it, such as `wc`, still runs.
+- The Stop check blocks a final reply that opens by agreeing with the user, such as "You're right" or "Good catch", and asks for the fact the check decided.
+- The Stop grader flags a reply that leaves a step undone because a call was refused when the refusal named a change to the call, such as a command form or a flag. The agent changes the call as the reason says and sends it again. An action a denial declined stays declined.
 - Hygiene runs `mo clean` at each session start, with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`.
 
 ### Changed
@@ -44,6 +47,7 @@ Before 1.0.0, a release can change or remove behavior.
 - A handoff dates its git state, and the read-back checks it again.
 - The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
 - The root prompt drops an act the user says nobody asked for, and finds a credential's name in the repo's `.env` files before it asks; the Concise style says only what to write: a correction opens with the corrected fact, and each sentence of a reply carries a fact, a result, or a step the person has not yet seen; the Stop note on background tasks says to follow a waited-on task with the monitor.
+- The plugins move to the `xsyetopz` marketplace, which lists every xsyetopz plugin: add it with `/plugin marketplace add xsyetopz/bedrock` and install `claudetto@xsyetopz`. This repo no longer ships its own `claudetto` marketplace; the status line finds claudetto under `plugins/cache/xsyetopz/`.
 
 ### Fixed
 

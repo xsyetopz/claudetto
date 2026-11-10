@@ -13,11 +13,11 @@ Plugins that tune Claude Code for coding at the lowest token cost. They use only
 In Claude Code:
 
 ```text
-/plugin marketplace add xsyetopz/claudetto
-/plugin install claudetto@claudetto
+/plugin marketplace add xsyetopz/bedrock
+/plugin install claudetto@xsyetopz
 ```
 
-Install `claudetto-you-should-know@claudetto` or `claudetto-openspec@claudetto` the same way.
+Install `claudetto-you-should-know@xsyetopz` or `claudetto-openspec@xsyetopz` the same way. The `xsyetopz` marketplace lists every xsyetopz plugin.
 
 ## Setup
 

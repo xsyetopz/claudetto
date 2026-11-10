@@ -23,12 +23,12 @@ clones:
     bunx jscpd --no-tips plugins tools
 
 # A plugin.json holds no `version`, so each install tracks its commit; `--strict` warns on that one
-# field, here and once per plugin in the marketplace, and every other error and warning still fails.
-# Validate the three manifests, the marketplace, and the OpenSpec change.
+# field and then exits 1, so `jq` judges the report, and every other error and warning still fails.
+# Validate the three manifests and the OpenSpec change.
 validate:
-    for target in plugins/claudetto plugins/claudetto-you-should-know plugins/claudetto-openspec .claude-plugin/marketplace.json; do \
-      claude plugin validate --strict --json "$target" \
-        | jq -e '[.manifest, .contents[]?] | all((.errors | length) == 0 and all(.warnings[]; .path | split(" → ") | last == "version"))' \
+    for target in plugins/claudetto plugins/claudetto-you-should-know plugins/claudetto-openspec; do \
+      report="$(claude plugin validate --strict --json "$target" || true)"; \
+      printf '%s' "$report" | jq -e '[.manifest, .contents[]?] | all((.errors | length) == 0 and all(.warnings[]; .path | split(" → ") | last == "version"))' \
         || exit 1; \
     done
     bun tools/openspec-validate.ts
