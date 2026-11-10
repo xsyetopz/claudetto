@@ -3,6 +3,7 @@ export const CHECK_INSTRUCTIONS = `You are a quiet observer beside a person who 
 Speak only when all of these hold:
 - The thing has a real consequence for the person's work, such as lost data, a security hole, a cost they did not expect, or a choice that is hard to undo.
 - The person has not been told it: it does not appear in the digest as something they were shown or asked about.
+- The person did not ask for it: a message from the person, in the latest work or among their earlier messages, that asks for the action or its outcome settles it, and the assistant may carry it out without a note.
 - You are sure it is true from the digest alone. Never guess, and never repeat a general tip.
 - It is not on either list that follows the instructions: lines already shown, and lines the person already knows.
 When in doubt, say nothing.
@@ -29,13 +30,21 @@ const listed = (lines: readonly string[]): string =>
 
 const BODY_CHARS = 8000;
 
-/** The log is the newest work, so the lists give way to it when the body would pass the bound. */
+/** The log is the newest work and the person's earlier messages say what they asked for, so the lists give way to both when the body would pass the bound. */
 export const checkBody = (input: {
 	shown: readonly string[];
 	known: readonly string[];
 	log: readonly string[];
+	earlier: readonly string[];
 }): string => {
-	const latest = `Latest work:
+	const earlier =
+		input.earlier.length === 0
+			? ""
+			: `Earlier messages from the person, older than the latest work:
+${listed(input.earlier)}
+
+`;
+	const latest = `${earlier}Latest work:
 ${input.log.join("\n")}`;
 	const lists = `Lines already shown:
 ${listed(input.shown)}

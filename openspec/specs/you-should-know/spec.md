@@ -58,12 +58,17 @@ When the person sends two prompts past an offer without answering it, the observ
 
 ### Requirement: One Bounded Request
 
-A check MUST make one `$.model.complete` request with the model and effort from the options and `maxTokens` 512, whose body is the lines already shown, the lines the person knows, and the last 8 log entries of at most 992 characters each, at most 8,000 characters in all.
+A check MUST make one `$.model.complete` request with the model and effort from the options and `maxTokens` 512, whose body is the lines already shown, the lines the person knows, the last 3 of the person's messages that left the log, of at most 400 characters each, and the last 8 log entries of at most 800 characters each, at most 8,000 characters in all. A message the person sent asks for what it names, so the check MUST NOT note an action the person asked for.
 
 #### Scenario: A Long Session
 
 - **WHEN** the log holds more than 8 entries
 - **THEN** the request carries only the last 8, each cut to its bound
+
+#### Scenario: A Request Before a Burst of Calls
+
+- **WHEN** the person sends a message and the assistant then makes 9 tool calls
+- **THEN** the next request still carries that message
 
 ### Requirement: Reply Parsing
 

@@ -29,6 +29,7 @@ interface Memory {
 	readonly inFlight: Map<string, Promise<string | undefined>>;
 	readonly turns: Map<string, string>;
 	log: readonly string[];
+	earlier: readonly string[];
 }
 
 interface Settings {
@@ -124,6 +125,7 @@ const runCheck = async (
 		shown: await loadLines($, STORE.shown),
 		known: await loadLines($, STORE.known),
 		log: mem.log,
+		earlier: mem.earlier,
 	});
 	const result = await $.model.complete({
 		...settings,
@@ -192,8 +194,15 @@ const onStep = async (
 	}
 };
 
+// A burst of tool calls pushes the person's request out of the log, and a check without it reads the asked-for action as unasked.
 const addToLog = (mem: Memory, entry: string): void => {
-	mem.log = [...mem.log, entry].slice(-LIMITS.logEntries);
+	const log = [...mem.log, entry];
+	const dropped = log
+		.slice(0, -LIMITS.logEntries)
+		.filter((e) => e.startsWith("person: "))
+		.map((e) => e.slice(0, LIMITS.askChars));
+	mem.earlier = [...mem.earlier, ...dropped].slice(-LIMITS.earlierAsks);
+	mem.log = log.slice(-LIMITS.logEntries);
 };
 
 const logHooks = (on: On, mem: Memory): void => {
@@ -269,6 +278,7 @@ export const register = (on: On, options: PluginOptions): void => {
 		inFlight: new Map(),
 		turns: new Map(),
 		log: [],
+		earlier: [],
 	};
 	logHooks(on, mem);
 	viewHooks(on, mem);

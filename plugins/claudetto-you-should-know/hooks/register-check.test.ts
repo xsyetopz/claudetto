@@ -73,6 +73,22 @@ test(
 );
 
 test(
+	"a person's message stays in the check after enough tool calls to push it out of the log",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on);
+		await typed($, "push both repos yourself");
+		await inOrder([1, 2, 3, 4, 5, 6, 7, 8, 9], (n) =>
+			$.tool.call({ tool: "Bash", command: `echo ${n}` }),
+		);
+		await act($, f, "t1");
+		const body = f.body();
+		expect(logOf(body).join("\n")).not.toContain("push both repos");
+		expect(body).toContain("push both repos yourself");
+	},
+);
+
+test(
 	"a check body lists the lines already shown and the lines the person knows",
 	ON,
 	async ($: Engine, on: On) => {
