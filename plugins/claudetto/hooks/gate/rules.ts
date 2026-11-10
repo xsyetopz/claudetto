@@ -43,10 +43,25 @@ const FILE_REDIRECTS = new Set([">", ">|", "&>"]);
 export const systemPath = (path: string): boolean =>
 	SYSTEM.some((d) => path === d || path.startsWith(`${d}/`));
 
+const VIEWERS = new Set(["cat", "head", "less", "more", "nl", "tail"]);
+
+/** Whether a pipe ends in a program that only shows its input, so the read before it is a file read. */
+const shows = (c: Command | undefined): boolean => {
+	if (c === undefined) {
+		return false;
+	}
+	const { name, args } = programOf(c);
+	return (
+		VIEWERS.has(name) ||
+		(name === "sed" && args.some((a) => a === "-n" || a === "--quiet"))
+	);
+};
+
 const commandVerdicts = (
 	c: Command,
 	has: (file: string) => boolean,
 	own: Owns,
+	next: Command | undefined,
 ): (Verdict | undefined)[] => {
 	const { name, args } = programOf(c);
 	const redirected = c.redirects.some(
@@ -65,8 +80,8 @@ const commandVerdicts = (
 			: undefined,
 		writesWhole(name, args, redirected) ? deny(GATE_WRITE_FILE) : undefined,
 		edited === undefined ? undefined : deny(GATE_EDIT_FILE(edited)),
-		// The file is the last operand: one before it can be a `head -n` count or a `sed` script. A read piped into another command feeds it, so it stays.
-		!c.into && !redirected && printsFile(name, args)
+		// The file is the last operand: one before it can be a `head -n` count or a `sed` script. A read piped into a program that works on it, such as `wc`, stays.
+		(!c.into || shows(next)) && !redirected && printsFile(name, args)
 			? deny(GATE_READ_FILE(printedFiles(name, args).at(-1) ?? ""))
 			: undefined,
 	];
@@ -92,7 +107,9 @@ const judgeText = (
 			command,
 			parsed.commands.filter((c) => !ownedRemoval(c, own)),
 		),
-		...parsed.commands.flatMap((c) => commandVerdicts(c, has, own)),
+		...parsed.commands.flatMap((c, i) =>
+			commandVerdicts(c, has, own, c.into ? parsed.commands[i + 1] : undefined),
+		),
 		markerVerdict(command, parsed.commands, own),
 		maskedExitVerdict(parsed.commands),
 	]);

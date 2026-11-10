@@ -23,6 +23,10 @@ const CHAINED_READS = [
 	"cd src && sed -n '1,5p' a.ts",
 	"ls; cat src/a.ts",
 	"git status && head -20 src/a.ts",
+	"cat .just/swift.just | head -0",
+	"cat src/a.ts | tail -5",
+	"head -40 src/a.ts | less",
+	"cat src/a.ts | sed -n '1,5p'",
 ];
 
 for (const command of CHAINED_READS) {
@@ -63,6 +67,7 @@ const KEPT = [
 	"bun run lint > /tmp/lint.log 2>&1; echo $?",
 	"git log --oneline | head -5",
 	"cat src/a.ts | wc -l",
+	"cat src/a.ts | sed 's/a/b/' > /tmp/out.ts",
 	"find src -name '*.ts' -exec grep -l x {} +",
 	"bun fmt src/a.ts plugins/b.ts",
 	"bun fmt --check",

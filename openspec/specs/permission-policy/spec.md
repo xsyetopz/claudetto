@@ -115,7 +115,7 @@ The branch gate SHALL ask, not deny, before `git branch -D` of a branch this ses
 
 ### Requirement: The Read Redirect Parses Only a File Operand
 
-The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is not an option or a `sed` script, and SHALL apply to a read anywhere in a chain. A read piped into another command SHALL run as it is, because its output feeds that command.
+The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is not an option or a `sed` script, and SHALL apply to a read anywhere in a chain. A read piped into a command that works on its output SHALL run as it is. A read piped into a command that only shows it, `cat`, `head`, `less`, `more`, `nl`, `tail`, or `sed -n`, SHALL be denied like a read on its own, because the pipe is still a file read.
 
 #### Scenario: A sed Range
 
@@ -131,6 +131,11 @@ The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take
 
 - **WHEN** the agent runs `cat src/a.ts | wc -l`
 - **THEN** the command runs
+
+#### Scenario: A Read Piped Into a Viewer
+
+- **WHEN** the agent runs `cat src/a.ts | head -5`
+- **THEN** the gate denies it and names `Read` on `src/a.ts`
 
 ### Requirement: A Switch That Would Touch a Protected Path Stops First
 
