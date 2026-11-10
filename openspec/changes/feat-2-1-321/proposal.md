@@ -6,21 +6,24 @@ The plugins make each bounded judgment a different way. The Stop check sends one
 
 TypeSafe's Jev answers typed questions with calibrated probabilities at $0.042 per million input tokens, and the plugin already ships a Jev client for the `mcp__claudetto__decide` tool. The `decide` spec bans Jev from every hook, so the client serves one tool.
 
-The code around those sites grew by accretion. Measured on `cc07c1c9`: `plugins/claudetto/hooks` holds 9,985 source lines, `jscpd` reports 34.9% duplicated lines across the repo, five copies of `isRecord` exist, about 25 `catch` sites drop the error, and `plugins/claudetto-openspec/hooks/fixtures` ships 57,093 lines of test data inside the installed plugin.
+The code around those sites grew by accretion. Measured on `12a3f8a1`, each figure with its probe in `design.md`: `plugins/claudetto/hooks` holds 9,985 source lines; `isRecord`, `ANY_TOOL`, and the list of writing tools have four definitions each; 64 of 92 `catch` sites bind no error; 2 of the 25 `tool.check` and `tool.call` gating hooks carry a `.catch`, and a guard that throws without one allows the call; and 96% of the installed `claudetto-openspec` plugin (2,291,528 of 2,394,380 bytes) is test data that only Bun-run specs load.
+
+`just check` is red before this change: `verify`, `clones`, and `validate` each exit 1. The change turns it green first.
 
 ## What Changes
 
 - **One Decider.** A new module owns every typed question, its options, its thresholds, the Jev client, and the Haiku fallback. Each caller gets a bounded answer (`yes`, `no`, `unsettled`, or an option name) and holds its own truth table in code.
 - **Jev in hooks.** **BREAKING:** the ban on Jev in `tool.check` and `Stop` hooks goes. With a key, the hook sites below send session text to `api.typesafe.ai`, redacted by the secret scan first.
-- **Haiku 5.5 at `high` effort as the fallback.** A missing key, a refused key, a rate limit, an overload, a network failure, or a missed deadline sends the same typed questions to `claude-haiku-5-5`. A question Jev leaves in its unsettled band goes the same way at the sites that opt in.
+- **Haiku 5.5 at `high` effort as the fallback.** A missing key, a refused key (401 or 403), a rate limit, an overload, a network failure, a missed deadline, a request Jev rejects, a failed secret scan, or a state over the size bound sends the same typed questions to `claude-haiku-5-5`. A question Jev leaves in its unsettled band goes the same way at the sites that opt in.
 - **Claim check on typed questions.** One Jev request with one Noul per atomic judgment replaces the Haiku prompt and the parallel Sonnet call. Code maps the answers to the faults.
 - **Constraint ledger on typed questions.** Code splits the person's message into sentences, and the Decider answers whether each one sets a constraint, which rule it is, what kind of message it is, and whether it lifts an entry. Each entry is the person's sentence, so no entry can hold words the person did not write.
 - **Branch gate on a typed question.** A Noul replaces the `DELETES`, `NEGATED`, and `OTHER_BRANCHES` regular expressions in `gate/asked.ts`.
-- **BREAKING: one key source.** The Decider and the `decide` tool read `TYPESAFE_API_KEY` from the environment. The `typesafeApiKey` `userConfig` option is deleted.
-- **Structure.** One registration file per plugin, one copy of each shared helper, `$` passed directly instead of through forwarding interfaces, and no test, test support, or fixture inside an installed plugin (version 2.1.319 of `claudetto-openspec` installs 2.2 MB of fixtures).
-- **Faults.** A guard hook refuses through a `.catch` instead of failing open, and every other caught fault is logged with its cause.
-- **Agent-seen text.** Every description fits 200 characters, and every model call names its model, its effort, and a measured `maxTokens`. Each prompt, description, and hook text is reviewed against the prompting guides in `clawdipedia-docs`.
-- **Removals.** Dead exports, guards for states the types rule out, the unused `disable` and `override` paths of the rule vendoring script, internal notes in source, and the stale `decideProvider` line in `.env.example`.
+- **BREAKING: one key source.** The Decider and the `decide` tool read `TYPESAFE_API_KEY` from the environment, which means the launching shell or the settings `env` block. A project `.env` file is not read. The `typesafeApiKey` `userConfig` option, which the keychain held, is deleted.
+- **Structure.** One registration file per plugin, one definition of each shared helper, `$` passed directly instead of through forwarding interfaces, and no Bun-run test file or fixture inside a plugin folder. Lab tests and their mocks stay, because the lab loads a test only from inside the plugin folder.
+- **Faults.** Each `tool.check` and `tool.call` registration carries its own `.catch` and refuses instead of failing open, and every other caught fault is logged with its cause. The secret scan of a structured tool result reads each string as raw text.
+- **Agent-seen text.** Every description fits 200 characters, against 18 of 59 that pass it today, and every model call names its model, its effort, and a measured `maxTokens`. Each prompt, description, and hook text is reviewed against the prompting guides in `clawdipedia-docs`.
+- **Removals.** Three dead definitions, three guards for states the engine rules out, the `disable` and `override` paths of the rule vendoring script (its patch file uses only `add`), internal notes in source, and the stale `decideProvider` line in `.env.example`.
+- **A green baseline.** The two new clones go, the 13 invalid main specs are repaired without a change of meaning, and the two tests that need `ps` are settled.
 
 Each move to the Decider ships only after a recorded check on stored cases shows it keeps or beats the current behavior, as `mod-architecture` already requires. A site whose check fails keeps its current code, and its delta leaves this change.
 
@@ -38,12 +41,14 @@ Each move to the Decider ships only after a recorded check on stored cases shows
 - `constraint-ledger`: The Decider answers per sentence of the person's message, and the ledger is updated in place.
 - `permission-policy`: The branch gate asks the Decider whether the person asked for the delete.
 - `mod-architecture`: New requirements for registration, shared helpers, shipped folders, and faults.
+- `lean-openspec`: The change check warns on a MODIFIED requirement that grows past 500 characters, so a change that validates does not turn a valid main spec invalid at its archive.
 
 ## Impact
 
-- **Code:** `plugins/claudetto/hooks` (`decide.ts`, `decide/`, `limits/grade.ts`, `limits/verify.ts`, `texts-grade.ts`, `pin.ts`, `gate/asked.ts`, `register*.ts`, `limits.ts`, and each file that holds a duplicated helper), every `plugins/*/hooks` folder (tests, test support, and fixtures move to `tests/`), `plugins/claudetto-you-should-know/hooks` (faults are logged), `scripts/vendor-rules.ts`, and `tools/` (new checks).
-- **Settings:** `typesafeApiKey` is removed from `plugins/claudetto/.claude-plugin/plugin.json`. `hygieneEnabled` (307 characters), `protectedPaths` (212), and the `claudetto-you-should-know` plugin description (247) are shortened.
+- **Code:** `plugins/claudetto/hooks` (`decide.ts`, `decide/`, `limits/grade.ts`, `verify.ts`, `texts-grade.ts`, `pin.ts`, `gate/asked.ts`, `gate/watch.ts`, `register*.ts`, `limits.ts`, and each file that holds a duplicated helper), `plugins/claudetto-openspec/hooks` and `plugins/claudetto/hooks/secrets.spec.ts` (Bun-run specs, fixture helpers, and fixtures move to `tests/`), `plugins/claudetto-you-should-know/hooks` (faults are logged), `scripts/vendor-rules.ts`, and `tools/` (new checks, and `nodeFs`).
+- **Specs:** 13 main specs under `openspec/specs/` are repaired so that `just validate` passes.
+- **Settings:** `typesafeApiKey` is removed from `plugins/claudetto/.claude-plugin/plugin.json`. The 18 descriptions over 200 characters are shortened: 11 rewritten built-in tool texts, the agent text, three registered tools, two `userConfig` options, and one plugin description (the list is in `design.md`, P26).
 - **Data:** With `TYPESAFE_API_KEY` set, the person's messages, the final reply, and up to 8 tool results per turn go to `api.typesafe.ai` after redaction. Without the key, no request reaches that host.
-- **Cost:** A Jev request replaces two model calls at each Stop. The recorded checks are paid runs and wait for the person's approval and budget.
+- **Cost:** A Jev request replaces two model calls at each Stop. The recorded checks and the description eval are paid runs and wait for the person's approval and budget.
 - **Docs:** `README.md`, `.env.example`, and `CHANGELOG.md`.
-- **Not changed:** `claudetto-you-should-know` keeps its own Haiku call until a probe shows that one plugin can share a noun with another. Setup advice stays on Haiku, because its output is a written reason.
+- **Not changed:** `claudetto-you-should-know` keeps its own Haiku call. The probe ran: one plugin can reach a noun another adds, but then it does not load alone and the lab cannot test it. Setup advice stays on Haiku, because its output is a written reason.

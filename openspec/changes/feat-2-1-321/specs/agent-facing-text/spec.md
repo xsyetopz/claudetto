@@ -2,7 +2,7 @@
 
 ### Requirement: A Description Fits 200 Characters
 
-Each description a model or a person reads to choose a piece SHALL hold at most 200 characters: the `description` of each plugin, skill, command, agent, output style, registered tool, and `userConfig` option. A repository test SHALL read every such description and fail on a longer one.
+Each description a model or a person reads to choose a piece SHALL hold at most 200 characters: the `description` of each plugin, skill, command, agent, output style, registered tool, and `userConfig` option, and each text a hook puts in place of a built-in tool's description. A repository test SHALL read every such description and fail on a longer one.
 
 #### Scenario: A Long Option Description
 
@@ -13,6 +13,11 @@ Each description a model or a person reads to choose a piece SHALL hold at most 
 
 - **WHEN** a hook registers a tool through `$.tool.register`
 - **THEN** its description holds at most 200 characters, and each detail a caller needs for one parameter sits in that parameter's own description
+
+#### Scenario: A Rewritten Built-In Tool
+
+- **WHEN** a hook replaces the description of `Bash`, which holds 1,177 characters today
+- **THEN** the new text holds at most 200 characters, and each rule that left it sits in a parameter description or the root prompt, or is dropped with a recorded reason
 
 ### Requirement: Each Model Call Names Its Model, Effort, and Token Room
 
@@ -40,7 +45,7 @@ Each prompt a hook builds SHALL put its fixed instructions first, in a block mar
 #### Scenario: Two Requests in One Session
 
 - **WHEN** a hook sends two requests with different session text
-- **THEN** both begin with the same cached block, byte for byte
+- **THEN** the first block the hook supplies is the same in both, byte for byte, and carries the cache mark; the engine's own header may come before it
 
 ### Requirement: An Instruction States the Action and Its Reason
 

@@ -44,17 +44,37 @@ When `TYPESAFE_API_KEY` is set in the environment, the Decider SHALL send one re
 
 ### Requirement: Haiku Answers When Jev Does Not
 
-The Decider SHALL send the same state and questions to `claude-haiku-5-5` at effort `high`, in one `$.model.complete` call, whenever Jev gives no full set of answers: the key is missing, Jev refuses the key, Jev is unavailable, or Jev rejects the request.
+The Decider SHALL send the same state and questions to `claude-haiku-5-5` at effort `high`, in one `$.model.complete` call, whenever Jev gives no full set of answers: the key is missing, Jev refuses the key, Jev is unavailable, Jev rejects the request, or the redacted state is over the size bound.
 
 #### Scenario: No Key
 
 - **WHEN** `TYPESAFE_API_KEY` is not set and a site asks a question
 - **THEN** no request reaches `api.typesafe.ai`, and Haiku answers
 
+#### Scenario: A Key Only in a Project File
+
+- **WHEN** the key sits only in the project's `.env` file, which the environment reader does not see
+- **THEN** the Decider acts as with no key, and `README.md` names the launching shell and the settings `env` block as the places that work
+
 #### Scenario: An Overloaded Server
 
-- **WHEN** Jev answers 429, 529, or a 5xx status, or the request fails on the network
+- **WHEN** Jev answers 429, 529, or a 5xx status
 - **THEN** Haiku answers this call, and the next call tries Jev again
+
+#### Scenario: A Request That Throws
+
+- **WHEN** `$.http.fetch` throws, as it does for a closed port and for another plugin's denial of the URL
+- **THEN** the Decider catches the throw, logs its text, and Haiku answers this call
+
+#### Scenario: A Status No Other Scenario Names
+
+- **WHEN** Jev answers a status other than 200, 400, 401, 403, 413, 415, 422, 429, 529, or 5xx
+- **THEN** Haiku answers this call, the log holds the status, and the next call tries Jev again
+
+#### Scenario: A State over the Size Bound
+
+- **WHEN** the redacted state is longer than the Decider's size bound
+- **THEN** no request reaches `api.typesafe.ai`, the log holds the length, and Haiku answers
 
 #### Scenario: A Defective Request
 
@@ -68,6 +88,11 @@ After Jev answers 401 or 403, the Decider SHALL send no further request to Jev i
 #### Scenario: A Refused Key
 
 - **WHEN** Jev answers 401
+- **THEN** Haiku answers this call, and the next call in the session sends nothing to Jev
+
+#### Scenario: A Request with No Usable Key
+
+- **WHEN** Jev answers 403
 - **THEN** Haiku answers this call, and the next call in the session sends nothing to Jev
 
 ### Requirement: Each Departure from Jev Is Logged
@@ -119,11 +144,16 @@ A question set MAY ask for escalation. For such a set, the Decider SHALL send ea
 
 ### Requirement: Session Text Reaches TypeSafe Only with a Key and Only Redacted
 
-The Decider SHALL pass the state through the plugin's secret scan before any request to Jev, and SHALL send the redacted state. When the scan fails, it MUST send nothing to Jev and SHALL take the fallback. With no key set, no hook SHALL send any request to `api.typesafe.ai`.
+The Decider SHALL pass each string of the state through the plugin's secret scan as raw text before it builds a request to Jev, and SHALL build the request from the redacted strings. It MUST NOT scan the serialised request instead, because a rule anchored to the start of a line misses a secret there. When the scan fails, it MUST send nothing to Jev and SHALL take the fallback. With no key set, no hook SHALL send any request to `api.typesafe.ai`.
 
 #### Scenario: A Token in Tool Output
 
 - **WHEN** the state holds a value the secret scan flags
+- **THEN** the request to Jev holds the redacted value
+
+#### Scenario: A Secret After a Line Break
+
+- **WHEN** a state field holds a line break followed by `export API_TOKEN=` and a value
 - **THEN** the request to Jev holds the redacted value
 
 #### Scenario: The Scan Fails

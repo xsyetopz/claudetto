@@ -2,36 +2,92 @@
 
 ## Context
 
-Each statement below carries its source. "Measured" means a command ran on `cc07c1c9` on 2026-11-10. "Cited" names a page. "Hypothesis" means no check has run yet, and a task in `tasks.md` runs it.
+Each statement below carries its source. "Measured" means a command ran on `cc07c1c9` or `12a3f8a1` on 2026-11-10 with Claude Code 2.1.322, and a code such as P16 points at its row in the Probe Record at the end of this file. "Cited" names a page. "Hypothesis" means no check has run, and the section "What Stays a Hypothesis" says why and what settles it.
+
+### How the Probes Ran
+
+Every probe was free. A probe of the engine ran a throwaway plugin under `$TMPDIR/probe-321/mods/<plugin>` against the fake Messages API of `tools/handover-probe/server.ts`:
+
+```sh
+bun fake-run.ts <label> <plugin> [<plugin>...]
+```
+
+`fake-run.ts` starts the fake API and runs `claude -p ok --max-turns 1 --no-session-persistence --setting-sources "" --plugin-dir <plugin> --debug-file <label>.debug.log` with `ANTHROPIC_BASE_URL` at the fake port, a made-up API key, a throwaway `CLAUDE_CONFIG_DIR`, `CLAUDE_CODE_MAX_RETRIES=0`, and the proxies at a closed port. Each probe hook writes its finding with `$.ui.log`, and the debug log holds the line. `PROBE_DEAD=1` points the model endpoint at a closed port. A probe of the lab ran `claude plugin test <folder>`. No probe sent the person's TypeSafe key or made a model call.
 
 ### What the Code Does Today
 
-- **Stop check** (`limits/grade.ts`, `limits/verify.ts`, `texts-grade.ts`). `VERIFY_GRADE` builds one prompt that lists up to eight faults. Each fault's test is one long sentence with "Not this fault:" exclusions, and the `deferred` test joins six conditions with "or". Haiku answers free JSON with `maxTokens` 300, and a second Sonnet call judges `unseen`. A finding counts only when its quote is a substring of the reply. A bad answer reads as a clean reply (`verify.ts:128`, read by a subagent, not rerun).
+- **Stop check** (`limits/grade.ts`, `verify.ts`, `texts-grade.ts`). `VERIFY_GRADE` builds one prompt that lists up to eight faults. Each fault's test is one long sentence with "Not this fault:" exclusions, and the `deferred` test joins six conditions with "or". Haiku answers free JSON with `maxTokens` 300, and a second Sonnet call judges `unseen`. A finding counts only when its quote is a substring of the reply. A bad answer reads as a clean reply: `parseFaults` ends in `catch { return []; }` (`verify.ts:101-130`, read directly).
+- **Stop check state** (`verify.ts:18-93`, read directly). The state holds up to 30 person messages, 6 assistant messages, and 8 tool results. Each tool result is cut to 120 characters of its argument and 400 of its text. The person messages, the assistant messages, and the reply have no cap.
 - **Constraint ledger** (`pin.ts`). One Haiku call (`model: "haiku"`, `maxTokens` 600, `timeoutMs` 20,000) returns the whole ledger and the message kind. Code then drops each entry whose quote no person message holds.
 - **Branch gate** (`gate/asked.ts`). Three regular expressions decide whether the person asked for a delete: `DELETES`, `NEGATED`, and `OTHER_BRANCHES`.
-- **`decide` tool** (`decide.ts`, `decide/jev.ts`, `decide/judge.ts`). The only Jev client. It reads the `typesafeApiKey` option.
-- **Model calls.** Measured: no `$.model.complete` call in `plugins/claudetto/hooks` passes `effort`, and `maxTokens` is 200, 300, or 600.
+- **`decide` tool** (`decide.ts`, `decide/jev.ts`, `decide/judge.ts`). The only Jev client. It reads the `typesafeApiKey` option, which the manifest marks `sensitive`. It makes three tries and races each against a 5,000 ms timer, because `$.http.fetch` takes no signal (`decide/jev.ts:6-9,59`).
+- **Model calls.** Measured (P32): `plugins/*/hooks` holds four `$.model.complete` sites (`limits/grade.ts`, `pin.ts`, `setup/engine.ts`, and `claudetto-you-should-know/hooks/register.ts`). None passes `effort`, each names an alias or a setting, and `maxTokens` is 200, 300, 512, or 600.
 
 ### Sizes, Measured
 
-| What | Now |
-|---|---|
-| Source lines, `plugins/claudetto/hooks` (no tests, no `rules.generated`) | 9,985 |
-| Test lines, same folder | 14,157 |
-| Fixture lines, `plugins/claudetto-openspec/hooks/fixtures` | 57,093 |
-| Fixture bytes in installed `claudetto-openspec` 2.1.319 | 2.2 MB |
-| Duplicated lines, whole repo (`jscpd`) | 34.9% of 43,099 |
-| `userConfig` descriptions over 200 characters | 2 (`hygieneEnabled` 307, `protectedPaths` 212) |
-| Plugin descriptions over 200 characters | 1 (`claudetto-you-should-know`, 247) |
+| What | Now | Probe |
+|---|---|---|
+| Source lines, `plugins/claudetto/hooks` (no tests, no `rules.generated`) | 9,985 | P1 |
+| Test lines, same folder | 14,157 | P1 |
+| Fixture lines, `plugins/claudetto-openspec/hooks/fixtures` | 57,093 | P1 |
+| Files and bytes in `plugins/claudetto` | 237 files, 1,050,483 bytes | P5 |
+| Of those, lab tests and mocks | 88 files, 449,289 bytes | P5 |
+| Of those, Bun-run test files | 1 file, 3,458 bytes (`hooks/secrets.spec.ts`) | P5 |
+| Files and bytes in `plugins/claudetto-openspec` | 66 files, 2,394,380 bytes | P5 |
+| Of those, Bun-run specs, fixture helpers, and fixtures | 32 files, 2,291,528 bytes (96%) | P5 |
+| Files and bytes in `plugins/claudetto-you-should-know` | 18 files, 91,457 bytes (8 lab files, 38,391 bytes) | P5 |
+| Clones under the gate's settings (`exact`, `ast`; `.jscpd.json`) | 19 clones, 193 of 43,099 lines (0.45%) | P2 |
+| Clones that pair two source files | 0 | P2 |
+| Clones not in `.jscpd-baseline.json` | 2 | P1 |
+| `catch` sites in hook source | 92, of which 64 bind no error | P4 |
+| Gating hooks with a `.catch` | `claudetto` 2 of 50, `claudetto-openspec` 0 of 1, `claudetto-you-should-know` 0 of 3 | P18 |
+| Descriptions over 200 characters | 18 of 59 | P26 |
+
+An earlier draft of this file gave "34.9% duplicated lines". That number came from the kind set `exact`, `renamed`, `similar`, where one line counts once per clone it sits in: the same run reports 147.2% for TOML. It is a count of overlapping clones and not a share, so this change does not use it (P2).
+
+### Baseline of `just check`
+
+Measured on `12a3f8a1`, each recipe run alone (P1):
+
+| Recipe | Exit | What it reports |
+|---|---|---|
+| Type check | 0 | 260 files, no error |
+| `verify` | 1 | 925 of 927 tests pass. Two tests in `tools/manifest.test.ts` fail after `sh: /bin/ps: Operation not permitted`. |
+| `clones` | 1 | "Found 19 clones (2 new)". Both came with `4e4f73ca`: `hooks/limits/verify.test.ts [102:59-107:28]` against `[117:79-122:28]`, and `hooks/handoff.mock.ts [28:14-35:3]` against `hooks/limits/open-items.mock.ts [6:14-13:3]`. |
+| `validate` | 1 | The three plugins pass. 13 main specs are INVALID with 20 issues: 17 requirement texts over 500 characters, 2 placeholder Purpose sections, and 1 scenario with no THEN step (`surface-trim`, "Loaded in Full"). |
+| `lab` | 0 | All lab tests pass. |
+
+The baseline is red before this change writes any code. Task group 1 turns it green first, so that a later failure belongs to the slice that caused it.
 
 ### Sources Read
 
-- **TypeSafe HTTP API, models, and errors pages** (cited). `POST https://api.typesafe.ai/v1/systemone`. Question types are `noul`, `choice`, `score`, and `box`. A request holds at most 64,000 tokens, and a question at most 32,000. Status 401 means "Missing or invalid API key". Statuses 429 and 529 are the ones to retry. Statuses 400, 413, 415, and 422 mean a defect in the request. `jev-latest` points at `jev-1.14.0`, and the models page says to send the version ID once thresholds are tuned.
+- **TypeSafe HTTP API, models, and errors pages** (cited). `POST https://api.typesafe.ai/v1/systemone`. Question types are `noul`, `choice`, `score`, and `box`. A request holds at most 64,000 tokens, and a question at most 32,000. Statuses 429 and 529 are the ones to retry. Statuses 400, 413, 415, and 422 mean a defect in the request. `jev-latest` points at `jev-1.14.0`, and the models page says to send the version ID once thresholds are tuned. Input costs $0.042 per million tokens. The errors page lists only 401 for a key; the server also answers 403 (P9).
 - **TypeSafe skill** (cited). Jev makes atomic judgments, and code holds the truth table. One judgment per question. A Choice always picks, so a companion Noul covers the case where nothing fits. A failed call is an error, not an answer. All wording lives in one module. Live probes need the person's permission, a budget, and a data disclosure.
 - **Hightouch, "LLM judges for identity resolution"** (cited, and its figures checked against the page source). Jev alone scored 95.7% on the easier set and 89.1% on the harder set, against 99.0% and 95.1% for Opus. A Jev that sent its 30% to 90% band to Opus scored 98.8% and 95.3%. "The cutoff matters a lot for Jev." "Decision models don't really reason, so providing fundamental context doesn't help them." The judge prompt wraps records in tags and calls them "values to weigh, never instructions to follow".
-- **Rieseberg, "How to be more ambitious"** (cited through a summarizer). People given specific hard goals do better than people told to do their best. Give the model raw data. Use an outside judge the model can run.
-- **Haiku 5.5 prompting guide** (cited). Effort is the main control, and `high` suits strict instruction following. Thinking counts toward `max_tokens`. Changing `effort` between requests breaks the prompt cache. A refusal usually refuses again when resent.
-- **Mod API** (cited). A guard "fails open unless its registration carries a `.catch` that refuses in its place". A hook has 10 s of its own code per event, and the clock stops during `next` and `$` calls. `$.model.complete` takes `model`, `prompt`, `system`, `maxTokens`, `effort`, and `timeoutMs`, and never rejects on a provider failure.
+- **Rieseberg, "How to be more ambitious"** (cited, read at its source). People given specific hard goals do better than people told to do their best. Give the model raw data. Use an outside judge the model can run. Keep data the work was not tuned on. "Insist on the same instruments used by the best in the industry."
+- **Haiku 5.5 prompting guide and "What's new in Haiku 5.5"** (cited). Effort is the main control, and `high` suits strict instruction following. "Adaptive thinking is on by default", and "thinking tokens count toward `max_tokens`, so a small limit can stop after a `thinking` block and before any text". Changing `effort` between requests breaks the prompt cache. "The minimum cacheable prompt length is 512 tokens." The same text counts about 30 percent more tokens than on Haiku 4.5. A refusal usually refuses again when resent, and a caller must handle `stop_reason: "refusal"`.
+- **Mod API type file** (`plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts`, cited). A guard "fails open unless its registration carries a `.catch`". The `.catch` handler is "the hook's `($, e, next)`, run afresh when it throws, misreturns or overruns". `$.model.complete` takes `model`, `prompt`, `system`, `maxTokens` (default 1,024), `effort`, and `timeoutMs`. `$.http.fetch(url, init?)` takes no signal and no timeout. `$.env.get(name)` needs a string literal.
+
+### What the Engine Does, Measured
+
+- **Order.** Within one plugin, the first registration is the outermost (P12). A module that registers one event twice with no matcher does not load (P12).
+- **A guard with no `.catch` fails open.** A `tool.check` hook that throws gives `{"decision":"allow"}`, and the command runs (P16). A hook whose own code runs past 10 s is skipped the same way (P19).
+- **A `.catch` answers for the plugin's whole chain on that call.** A `.catch` on any registration whose matcher matches the call answers for a throw in any hook of that plugin on that event, whichever is outer. A `.catch` on a registration whose matcher does not match the call does not answer, and neither does a `.catch` in another plugin (P17).
+- **On `tool.call`, only the throwing hook's own `.catch` stops the tool.** A hook that throws before `next` and carries a `.catch` refuses, and the tool does not run (P35). A hook that throws before `next` with no `.catch` of its own is skipped, the tool runs, and a sibling's `.catch` then only withholds the result (P34). On `tool.check` the sibling's `.catch` is enough, because the check ends before the tool starts (P17).
+- **A `.catch` also answers for an overrun**, with `next.error.kind` `timeout` and no `message` (P30).
+- **A `tool.call` hook that throws after `next` answered cannot undo the call.** The tool ran once, the caller gets `{ deny: "Bash ran, and a plugin withheld its result: …" }`, and a `next(e)` inside the `.catch` returns the earlier answer without a second run and without a throw (P30, P34).
+- **The first parameter of a `.catch` handler is `$`.** `$.ui.log` works on it (P34).
+- **The hook clock.** A hook has 10 s of its own code. A 12 s wait inside a `$` call costs nothing (P19).
+- **`tool_use_id`.** A `$.tool.check` query has none. A `$.tool.call` carries `toolu_plugin_<32 hex>`, and its nested check carries the same ID (P11).
+- **`$.env.get`** sees the launching shell's variables and the `env` block of the settings. It does not see a project `.env` file (P13).
+- **`$.http.fetch`.** Another plugin's denial and a closed port both arrive as a thrown `HooksError`. A 200 returns `{ status, ok, headers, text }` (P14).
+- **`$.model.complete`.** The alias `haiku` is sent as `claude-haiku-5-5`. The engine sends `max_tokens` as `maxTokens` plus 2,048, sends `effort` as `output_config.effort`, and sends no `thinking` field, so thinking stays on. A block with `cache: true` carries `cache_control: {"type":"ephemeral"}`. An unreachable API gives `{ isAnswered: false, reason: "api-error", status: null }` after about 1.3 s with no rejection, a passed `timeoutMs` gives `reason: "aborted"`, and an unknown `effort` throws (P10, P20).
+- **The first `system` block is not the hook's.** The engine puts `x-anthropic-billing-header: cc_version=2.1.322.<3 hex>; …` first, with a suffix that differs on every request, and the hook's cached block second (P21).
+- **Globals in a hooks module.** `setTimeout`, `Intl.Segmenter`, `crypto`, `TextEncoder`, `URL`, and `structuredClone` exist. `Bun`, `process`, `require`, `fetch`, and `AbortSignal.timeout` do not (P15).
+- **Imports.** A hooks module cannot import a Node API, a package, or a JSON file (P7).
+- **`claude plugin validate --strict --json`** lists each gating hook with its `module`, `pattern`, `hook`, and `hasCatch`, and notes each module's environment reads and `$` calls (P18).
+- **An install copies every file** in the plugin folder. `.npmignore`, `.claudeignore`, `.pluginignore`, `.gitattributes export-ignore`, and `package.json` `files` remove nothing (P5).
+- **The lab loads a test only from inside the plugin folder** (P6).
 
 ## Goals
 
@@ -40,20 +96,25 @@ Each goal is a number a command can check.
 1. One module holds every Decider question, option, threshold, and client. Proof: no other file in `plugins/*/hooks` names `api.typesafe.ai`.
 2. With a key, a Stop makes one Jev request and no model call when Jev settles every question. Today it makes one or two model calls.
 3. Source lines in `plugins/claudetto/hooks` fall from 9,985 to 8,000 or fewer. The gate in `mod-architecture` stays "must not grow"; 8,000 is the target.
-4. `jscpd` reports no exact clone among the source files under `plugins/*/hooks`, leaving out tests and `rules.generated`.
-5. No `catch` in a hook drops its error: each one refuses, logs, or rethrows.
-6. An installed plugin holds no test, test support, or fixture file.
-7. No description (ncluding in Agent Skills) is longer than 200 characters.
+4. Each helper that decision 13 names has one definition, against 4, 4, 4, and 2 today, and `just clones` reports 0 new clones, against 2 today. The goal no longer says "no exact clone among the source files", because that is already true (P2).
+5. No `catch` in a hook drops its error, against 64 of 92 today. `claude plugin validate --strict --json` reports `hasCatch: true` for each `tool.check` and `tool.call` gating hook, against 2 of 22 in `claudetto`, 0 of 1 in `claudetto-openspec`, and 0 of 2 in `claudetto-you-should-know` today.
+6. No plugin folder holds a file that only a Bun-run test loads. `plugins/claudetto-openspec` falls from 2,394,380 bytes to about 103,000. Lab tests and their mocks stay, because the lab loads a test only from inside the plugin folder (P6).
+7. No description (including in Agent Skills) is longer than 200 characters, against 18 of 59 today.
 8. Each site that moves to the Decider scores at least as well as today's code on stored cases it was not tuned on.
+9. `just check` passes: today three of its recipes fail (P1).
 
 ## Non-Goals
 
-- **`claudetto-you-should-know` on the Decider.** The plugin installs without `claudetto`, and a second Jev client would break goal 1. Sharing needs a noun that one plugin declares and another receives. Whether the manifest `types` and `dependencies` keys do that is a hypothesis. Task 1.4 probes it, and the result opens a later change. This change only makes the plugin log its faults.
-- **Setup advice on the Decider.** Its output is a written reason for a person, it runs once per setup step, and no code branches on a probability. It stays on Haiku and gets `effort` and a measured `maxTokens`.
-- **Jev for command syntax.** `gate/kill.ts`, `gate/pipefail.ts`, `wording-tests.ts`, and `limits/named-files.ts` read commands and paths, which code parses exactly. The `AGREES` opener test in `limits/stop.ts` is one anchored pattern on the first words of a reply. Deterministic steps stay in code.
-- **`runs.ts`.** The `subagent-prompts` spec requires `runs.jsonl`, and the `run-limits` spec rests a limit on its data. It stays.
-- **The three handoff writers.** `mod-architecture` already settles them: one name, one root, one layout, three triggers.
-- **Replacing the Bash parser or `yaml.ts` with a package.** Hypothesis: a hooks module cannot import Node APIs or packages. Task 1.3 probes it. If the probe shows it can, a later change replaces them.
+Each non-goal names the probe that settled it.
+
+- **`claudetto-you-should-know` on the Decider.** The plugin installs without `claudetto`, and a second Jev client would break goal 1. Measured (P8): a noun that one plugin adds reaches the `$` of another plugin in a live session, with or without a `dependencies` entry. A consumer that lists the provider in `dependencies` does not load when the provider is absent, and the lab cannot run a test that reaches the noun. Sharing the Decider would therefore make `claudetto-you-should-know` unusable alone or untested, so it keeps its own Haiku call. This change gives that call `effort` and a full model ID, and makes the plugin log its faults.
+- **Setup advice on the Decider.** Read directly (`setup/engine.ts:89-93`): the call returns `pick`, which reorders the options a person sees, and `why`, which is text shown to the person. No code branches on a probability. It stays on Haiku and gets `effort` and a measured `maxTokens`.
+- **Jev for command syntax.** `gate/kill.ts`, `gate/pipefail.ts`, `wording-tests.ts`, and `limits/named-files.ts` read commands and paths with patterns and make no model call (read directly). The `AGREES` opener test in `limits/stop.ts` is one anchored pattern on the first words of a reply. Deterministic steps stay in code.
+- **`runs.ts`.** The `subagent-prompts` spec requires `runs.jsonl`, and the `run-limits` spec rests a limit on its data. Its exports `RUN_LOG` and `runStats` have importers (P23). It stays.
+- **The three handoff writers.** `mod-architecture` already settles them (`openspec/specs/mod-architecture/spec.md:17-20`): one name, one root, one layout, three triggers.
+- **Replacing the Bash parser or `yaml.ts` with a package.** Measured (P7): the loader refuses the import of `node:path`, of a package, and of a JSON file from a hooks module. Both stay as hand-written code.
+- **A shared helper between plugins.** Measured (P6, P7): a hooks module cannot import from outside its plugin folder. A helper that two plugins need stays defined once per plugin.
+- **An exclude list for installs.** Measured (P5): no ignore file and no manifest key removes a file from an install. Decision 15 moves files instead.
 - **Source and test citations in specs this change does not modify.** Each requirement this change restates drops its `file:line` and test-title citations, because the rebuild moves both. The rest keep theirs until a change touches them.
 
 ## Decisions
@@ -91,25 +152,29 @@ The person's diagram has two phases: a Reasoner that extracts, and a Decider tha
 
 ### 4. One Fallback Road
 
-`settle` tries Jev once, with a 5,000 ms deadline. Any other outcome than a full set of answers sends the same questions to Haiku.
+`settle` tries Jev once and races the request against a 5,000 ms timer, as `decide/jev.ts` does today. Any other outcome than a full set of answers sends the same questions to Haiku.
 
 | Jev outcome | What `settle` does |
 |---|---|
 | No `TYPESAFE_API_KEY` | Fallback. No request to TypeSafe. |
+| The secret scan fails | Fallback. No request to TypeSafe. |
+| The redacted state is longer than the size bound | Fallback. No request to TypeSafe. One log line holds the length. |
 | 200 with an answer for every question | Thresholds turn each answer into a bounded answer. |
 | 401 or 403 | Fallback. Jev is off for the rest of the session. One log line names `TYPESAFE_API_KEY`. |
-| 429, 529, 5xx, network failure, missed deadline | Fallback for this request. One log line names the cause. |
+| 429, 529, 5xx, a thrown `$.http.fetch`, a missed deadline | Fallback for this request. One log line names the cause. |
 | 400, 413, 415, 422 | Fallback for this request. One error line holds the status and at most 200 characters of the body, because the request is defective. |
-| The secret scan fails | Fallback. No request to TypeSafe. |
 
-The fallback is one `$.model.complete` call: `model: "claude-haiku-5-5"`, `effort: "high"`, the same state and questions, and a JSON answer keyed by question name. A `yes` or an option must come with evidence copied word for word from a state field, and code turns an answer without it into `unsettled`. A reply that is not answered, or does not parse, makes every question `unsettled` and logs the cause. Nothing is resent.
+The fallback is one `$.model.complete` call: `model: "claude-haiku-5-5"`, `effort: "high"`, the same state and questions, and a JSON answer keyed by question name. A `yes` or an option must come with evidence copied word for word from a state field, and code turns an answer without it into `unsettled`. A reply with `isAnswered: false`, or one that does not parse, makes every question `unsettled` and logs its `reason`. Nothing is resent.
 
 **Reasons:**
 
 - The person named the fallback model and its effort, and named the cases: a missing, invalid, or expired key, or Jev being unavailable for a moment.
 - One try in a hook, because the fallback is the second road. The `decide` tool keeps its three tries, because it has no fallback: it hands the question back to a stronger model.
 - The evidence rule keeps today's substring check, which stops a model from naming a fault it cannot point at.
-- Status 403 for an expired key is a hypothesis: the errors page lists only 401. Task 1.5 records what a refused key returns.
+- Measured (P9): the server answers 403 to a request with no `Authorization` header ("Must supply an API key!") and 401 to a made-up key ("Cannot authenticate with the server."). Both mean the key cannot work in this session, so both turn Jev off. The status of an expired key stays a hypothesis; any status outside this table takes the row of a network failure with the status in its log line, so an expired key falls back either way.
+- Measured (P14): a network failure and another plugin's denial of the URL both throw from `$.http.fetch`, so `settle` catches the throw, logs it, and falls back.
+- Measured (P20): `$.model.complete` returns `isAnswered: false` for an unreachable API and for a passed `timeoutMs` and does not reject, so the fallback needs no `try` around the call. An unknown `effort` throws, which a literal `"high"` rules out at compile time.
+- The size bound saves a request that would answer 413 at every Stop of a session that holds a pasted log (P33). Task 5.2 sets the bound in characters from Jev's measured token counts. Until then the 413 row covers the case.
 - A defective request still falls back, so the check keeps working while the error line gets the defect fixed.
 
 ### 5. The Unsettled Band Escalates at Sites That Opt In
@@ -126,19 +191,29 @@ Each question set carries its own Noul thresholds, starting at 0.7 and 0.3, and 
 
 ### 7. One Key Source: `TYPESAFE_API_KEY`
 
-`$.env.get("TYPESAFE_API_KEY")` is the only source. The `typesafeApiKey` option, its `userConfig` entry, and its tests are deleted. `.env.example` loses its `decideProvider` wording.
+`$.env.get("TYPESAFE_API_KEY")` is the only source. The `typesafeApiKey` option, its `userConfig` entry, and its tests are deleted. `.env.example` loses its `decideProvider` wording. `README.md` says where the variable must be set.
 
-**Reason:** The person named the variable. Two sources would need a precedence rule and two docs. `$.env.get` is already called 12 times in the hooks (measured).
+**Reasons:**
+
+- The person named the variable. Two sources would need a precedence rule and two docs.
+- Measured (P13): `$.env.get` reads the launching shell and the settings `env` block, and does not read a project `.env` file. A key that sits only in the repository's `.env` is therefore not seen, and the Decider takes the fallback as if no key were set. `README.md` names the two places that work.
+- Measured (P32): the hooks already call `$.env.get` 12 times in 6 files, so the reader adds no new kind of access.
+- The check is the validator's own note: `claude plugin validate --strict --json` lists each module's environment reads (P18), and a repository test reads that list.
+- The cost is stated under Risks: the removed option was kept in the keychain, and a settings `env` block is plain text.
 
 ### 8. Session Text Goes to TypeSafe Only with a Key, and Only Redacted
 
-The hook sites send the person's messages, the reply, and tool output. `settle` runs the state through `redact` from `secrets.ts` first. With no key, or when the scan fails, the state stays with the model provider the session already uses.
+The hook sites send the person's messages, the reply, and tool output. `settle` passes each string of the state through `redact` from `secrets.ts` on its own, as raw text, and builds the request from the redacted strings. With no key, or when the scan fails, the state stays with the model provider the session already uses.
 
-**Reason:** The `decide` spec promised that no transcript reaches TypeSafe. This change ends that promise for hook sites, so it replaces it with a narrower one a test can check. Setting the key is the person's consent, and `README.md` says what the key sends.
+**Reasons:**
+
+- The `decide` spec promised that no transcript reaches TypeSafe. This change ends that promise for hook sites, so it replaces it with a narrower one a test can check. Setting the key is the person's consent, and `README.md` says what the key sends.
+- Measured (P24): the scanner's `secret-named-assignment` rule is anchored to the start of a line. A planted `export API_TOKEN=…` was found in raw text and missed inside the `JSON.stringify` form of the same state, where a line break is the two characters `\n`. Scanning the serialised request would leak it.
+- Measured (P24): one scan of a clean 3,298-character state takes about 40 ms, and about 127 ms when a keyword matches. The strings are joined with line breaks and scanned in one process, so a Stop pays one process start.
 
 ### 9. Claim Check: One Request, Atomic Nouls
 
-State has named fields: `person_messages`, `shown_messages`, `opening_message`, `reply`, `tool_output`, `background_tasks`, `failed_command`. Code still decides which faults to offer (a look this turn, an interactive session, a failed last `Bash` call, tool output present) and leaves out the Nouls of a fault it does not offer.
+State has named fields: `person_messages`, `shown_messages`, `opening_message`, `reply`, `tool_output`, `background_tasks`, `failed_command`. Code still decides which faults to offer (a look this turn, an interactive session, a failed last `Bash` call, tool output present) and leaves out the Nouls of a fault it does not offer. The state keeps today's counts (30, 6, and 8) and today's cut of each tool result.
 
 Starting question set. Task 5.2 settles the wording on cases:
 
@@ -158,12 +233,13 @@ An `unsettled` Noul counts as the answer that clears the fault, so doubt never b
 **Reasons:**
 
 - "Beware the or": today's `deferred` test is six judgments in one sentence, and each "Not this fault" clause is a judgment of its own.
-- One request, because the questions share state, and state is read and paid for once.
+- One request, because the questions share state, and state is read and paid for once. Computed from the cited price (P33): a 10,000-token state costs $0.00042 per Stop, and a full 64,000-token request costs $0.0027.
 - The Sonnet call goes, because two Nouls ask the `unseen` judgment directly in the request that already holds the tool output. Task 5.2 compares them with the Sonnet call on stored cases, and the fault keeps the Sonnet call if the Nouls score lower.
+- The state is not cut further in this change. The TypeSafe skill says to truncate only when the cut does not remove context the questions need, and no case run has shown which cut is safe. The size bound of decision 4 handles a state too long for Jev.
 
 ### 10. Constraint Ledger: Per-Sentence Questions, Updated in Place
 
-On each typed prompt, code splits the message into sentences and sends one request with the message, the sentences, and the current entries as state.
+On each typed prompt, code splits the message into sentences with `Intl.Segmenter` and sends one request with the message, the sentences, and the current entries as state.
 
 | Question | Type | Read when |
 |---|---|---|
@@ -179,6 +255,7 @@ A sentence with `restricts` yes becomes an entry whose text is the sentence. A `
 - The spec records two defects where Haiku wrote an entry the person never said. An entry that is the person's own sentence cannot repeat them, and the quote check becomes unnecessary code.
 - The `kind` question needs no extraction, so it rides the same request, and `tool.check` waits on one fast request.
 - The ledger is updated in place, because a full re-read of every message on every prompt grows with the session.
+- Measured (P15, P25): `Intl.Segmenter` exists in a hooks module, so the split needs no hand-written pattern. On a message with five pasted log lines it gave ten segments: each log line is one segment, "Same for the lockfile." stands alone, and ``Use `rg`, not grep; e.g. `rg -n foo`.`` stays whole across its "e.g.".
 
 ### 11. Branch Gate: One Noul
 
@@ -190,45 +267,160 @@ A sentence with `restricts` yes becomes an entry whose text is the sentence. A `
 
 `register-first.ts`, `register-last.ts`, and the pass-through `limits.ts` fold into `register.ts`, which calls each group in today's order: `slices`, `limits`, `setup`, `surface`, `pin`, `delegation`, `runs`, then `decide`, `handoff`, `hygiene`, `notify`, `gate`, `wordingTests`, `reply`.
 
-**Reason:** "A plugin's registrations nest in order, first outermost" (hooks page), so the order is behavior and one file shows it whole.
+**Reasons:**
+
+- Measured (P12): the first registration is the outermost, so the order is behavior and one file shows it whole.
+- Measured (P18): each plugin already loads every hook through the one module `./register.ts`, so the merge changes no `hooks.json`.
+- Measured (P12): a module that registers one event twice without a matcher does not load. The merge keeps each group's matchers as they are.
 
 ### 13. One Copy of Each Shared Helper, and `$` Without Wrappers
 
-`isRecord` (five copies), `ANY_TOOL`, the three writer lists, `signature`, `USER_COMMAND`, `watchDenials`, and `textOf` each get one home. The `Io`, `Session`, and `Files` interfaces that only forward to `$` are removed, and their callers take `$`.
+Measured (P3), with each definition's place:
 
-**Reason:** Each copy can drift from the others. A forwarding interface with one implementation is an abstraction with no second user.
+| Name | Definitions today | What this change does |
+|---|---|---|
+| `isRecord` | 4: `handoff/transcript.ts:56`, `decide/jev.ts:42`, `setup/settings.ts:229`, `limits/bound-output.ts:71` | One definition, three imports |
+| `ANY_TOOL` | 4: `pin.ts:19`, `gate/watch.ts:22`, `limits/stop.ts:25` (`/^/u`), `limits/hold.ts:30` (`/./u`) | One definition; a test first shows `/./u` and `/^/u` match the same tool names |
+| The list `Edit`, `NotebookEdit`, `Write` | 4: `handoff/transcript.ts:23`, `limits/stop.ts:35`, `pin-rules.ts:6`, `gate/own.ts:18` | One definition. `gate/recreate.ts:6` also holds `Read` and stays its own list. |
+| `signature` | 2: `gate/denials.ts:12`, `limits/admit.ts:106` | One definition |
+| `USER_COMMAND` | 2 different patterns: `limits/named-files.ts:5`, `limits/open-items.ts:9` | Each gets a name that says what it matches. No merge. |
+| `watchDenials` | 2 different functions: `limits/stop.ts:120`, `gate/watch.ts:90` | Each gets a name that says what it watches. No merge. |
+| `textOf` | 2: `setup/steps.ts:51`, `setup/engine.ts:42` | One definition if a read shows they do the same work, else two names |
+
+The `Io`, `Session`, and `Files` interfaces that only forward to `$` are removed, and their callers take `$`.
+
+**Reason:** Each copy can drift from the others. Two things under one name mislead a reader more than two copies do. A forwarding interface with one implementation is an abstraction with no second user. An earlier draft said "five copies" of `isRecord` and "three" writer lists; the search found four of each.
 
 ### 14. A Guard Refuses on a Fault, and Every Other Fault Is Logged
 
-Each `tool.check` and gating `tool.call` registration carries a `.catch` that refuses with the failure text. Every other `catch` logs the cause through `$.ui.log` or rethrows. `claudetto-you-should-know` keeps its faults away from the person, as its spec requires, and logs them.
+Each `tool.check` and `tool.call` registration carries its own `.catch` that refuses with the failure text. The text is `next.error.message`, or the `kind` when there is no message. Every other `catch` logs the cause through `$.ui.log` or rethrows. `claudetto-you-should-know` keeps its faults away from the person, as its spec requires, and logs them.
 
-**Reason:** A guard without a `.catch` fails open (hooks page). A dropped error hides the defect that caused it.
+**Reasons:**
 
-### 15. An Install Holds Only What Runs
+- Measured (P16): a `tool.check` hook that threw gave `allow`, and the command ran. The log said `hook failed: … (tool.check; skipped; what is below it ran in its place)`.
+- Measured (P19): a hook that ran past its 10 s budget was skipped with `allow` in the same way. Measured (P30): with a `.catch` the same overrun refuses, and its failure has `kind` `timeout` and no `message`, which is why the text falls back to the kind.
+- Measured (P17): one `.catch` answers for every hook of the plugin on that event and call. A `.catch` on the guards therefore also refuses when a sibling hook that only rewrites a result throws. That is the intended direction: a fault in the chain stops the call and names itself, and the log holds the cause.
+- Measured (P34, P35): on `tool.call` a sibling's `.catch` comes too late. A hook that throws before `next` stops the tool only when the `.catch` is its own; otherwise the tool runs and the result is withheld. This is why the rule is one `.catch` per registration and not one per event. Inferred, not yet run on `claudetto` itself: the `.catch` of `watchResults` on every tool already withholds the result when any other `tool.call` hook of the plugin throws, after the tool ran.
+- Measured (P30, P34): a `.catch` that answers after `next` ran cannot undo the tool. The engine says so in the refusal ("Bash ran, and a plugin withheld its result"). A `next(e)` in the `.catch` returns the earlier answer; it runs nothing and throws nothing. A `tool.call` `.catch` therefore returns its refusal and calls nothing.
+- The check is the validator's report (P18): a repository test runs `claude plugin validate --strict --json` and fails on a `tool.check` or `tool.call` gating hook whose `hasCatch` is false. No hand-written scan of the source is needed.
+- A dropped error hides the defect that caused it: 64 of 92 `catch` sites bind no error today (P4).
 
-Hypothesis: the plugin manifest or the marketplace entry can leave paths out of an install. Task 1.2 checks the plugin reference. If it can, tests stay beside their source and the manifest leaves them out. If it cannot, tests, test support, and fixtures move to `tests/<plugin>/`.
+### 15. A Plugin Folder Holds No Bun-Run Test File
 
-**Reason:** The requirement is the outcome, and the cheaper road to it depends on a fact not yet checked.
+Bun-run test files leave the plugin folders: `fixtures.spec.ts`, `upstream.spec.ts`, the four `fixture-*.ts` helpers, `fixture-kit.ts`, and the `fixtures` folder of `claudetto-openspec` move to `tests/claudetto-openspec/`, and `secrets.spec.ts` of `claudetto` moves to `tests/claudetto/`. `nodeFs`, which `tools/openspec-validate.ts` imports from `fixture-kit.ts`, moves to `tools/`, because a tool uses it. Lab tests (`*.test.ts`), the eight `*.mock.ts` files, and `memory-fs.ts` stay beside their source.
+
+**Reasons:**
+
+- Measured (P5): an install copies every file, and nothing leaves a path out. The earlier hypothesis of an exclude list is refuted.
+- Measured (P6): the lab refuses a test outside the plugin folder three ways. A harness whose `hooks.json` names a module outside its folder, and one whose `hooks` folder is a symbolic link to the plugin's, both stop with `no hooks module to load; hooks/hooks.json names none in "modules" (path-traversal)`. A test that imports the plugin's source by a relative path stops with `cannot import "../../plugins/probe-install/hooks/kinds.ts" …: it is outside the plugin's folder`.
+- The Bun-run files are 2,291,528 of the 2,394,380 bytes of `claudetto-openspec` (P5), so moving them removes 96% of the install.
+- The 88 lab files of `claudetto` (449,289 bytes) stay in its install. No measured road removes them, and the requirement says so instead of promising it.
 
 ### 16. Every Model Call States Its Model, Effort, and Token Room
 
-Each `$.model.complete` call names `claude-haiku-5-5`, passes `effort`, and sets `maxTokens` from the largest output usage seen on that call's stored cases plus a quarter. Fixed instructions come first as a cached block, and session text follows inside named tags with a line that calls it data.
+Each `$.model.complete` call names a full model ID, passes `effort`, and sets `maxTokens` from the largest output usage seen on that call's stored cases plus a quarter. Fixed instructions come first as a block with `cache: true`, and session text follows inside named tags with a line that calls it data. The Decider's fallback uses `high` for every request, the escalated ones among them.
 
-**Reason:** The Haiku 5.5 guide: thinking counts toward `max_tokens`, a change of effort breaks the cache, and the account's rules count only the three 5.5 model IDs. The tag-and-label form is what the Hightouch judge prompt uses against injected instructions.
+**Reasons:**
+
+- The Haiku 5.5 guide: thinking counts toward `max_tokens`, a change of effort breaks the cache, and the account's rules count only the three 5.5 model IDs. The tag-and-label form is what the Hightouch judge prompt uses against injected instructions.
+- Measured (P10): the engine adds 2,048 to `maxTokens` and sends no `thinking` field, so thinking is on and has 2,048 tokens of room before it eats the answer's. Whether thinking at `high` passes 2,048 on these prompts is a hypothesis that task 5.2 measures, and the usage rule above covers it either way, because recorded output usage includes thinking.
+- Measured (P10): `cache: true` reaches the API as `cache_control: {"type":"ephemeral"}`. Cited: a block under 512 tokens is not cached on Haiku 5.5, so the fallback's fixed block (the instructions and every question set's wording) must reach that length for the mark to pay.
+- Measured (P21): the engine's billing header sits before the hook's block and changes on every request. Whether the cache is still read is a hypothesis. Task 5.2 reads `usage.cache_read_input_tokens` on the second request of a run and records it.
 
 ### 17. Dead Code Goes with Its Tests
 
-Removed: the unused exports the audit listed (`admit.signature`, `RUN_LOG`, `runStats`, `DEFERRED_TOOLS`, `OFF_SKILLS`, `skillOverridesFor`, `assertedPhrases`, `userCommands`, `offeredCodes`, `JevError.status`, and `render` in `spec-merge.ts`), the guards for states the types rule out, and the `disable` and `override` code in `scripts/vendor-rules.ts`, whose patch file is empty. Each item is confirmed unused by a search before it goes.
+Each item was checked by a search or a type check (P22, P23, P31):
 
-**Reason:** The audit came from static reads by subagents, so each finding is a hypothesis until a search confirms it.
+| Item | Finding | What this change does |
+|---|---|---|
+| `JevError.status`, `render` (`spec-merge.ts:140`), the copy of `signature` in `limits/admit.ts` | No use outside the definition | Delete |
+| `assertedPhrases`, `offeredCodes`, `Verdict` (`decide/judge.ts:26`) | Used only in their own file | Drop `export` |
+| `RUN_LOG`, `runStats`, `DEFERRED_TOOLS`, `OFF_SKILLS`, `skillOverridesFor`, `userCommands` | A test imports each | Keep. The audit was wrong. |
+| `tool_use_id === undefined` guards in `limits/price-step.ts:139-140` and `limits/bound-output.ts:152-153` | `tool.call` always carries an ID (P11) | Delete, with the comment in `bound-output.ts` that says otherwise |
+| `e.type !== "plan_mode" \|\|` in `surface.ts:203` | The matcher already narrows the type; the type check passes without it | Delete |
+| `tool_use_id` guards in `limits/stop.ts:124,127` and `limits/hold.ts:81` | A `tool.check` query has no ID (P11) | Keep |
+| The two-branch call in `cleanup.ts:95-98` | Collapsing it raises two type errors | Keep |
+| `disable` and `override` in `scripts/vendor-rules.ts:150-181` | `rules.patch.json` holds five `add` rules and empty `disable` and `override` lists | Delete the two code paths and the two empty keys. Keep `add`. |
+
+**Reason:** The audit came from static reads by subagents, and six of its eleven "unused" exports have importers. A removal follows a search, not a report.
 
 ## Risks
 
 - **Jev scores below today's prompts on a site.** Task group 5 runs stored cases through both before any site moves. A site that scores lower keeps its code, and the `update` skill removes its delta.
 - **Stored cases are few.** The spec scenarios and lab tests give labelled cases. More come from past sessions, which hold the person's text, so Task 5.1 asks before it reads them and before it sends any.
-- **A sentence that leans on the one before it** ("Same for the lockfile.") makes a ledger entry that reads poorly alone. Task 5.4 includes such cases, and the entry takes the whole line if they fail.
-- **A pasted log makes hundreds of sentences.** A request holds 64,000 tokens. Task 4.6 caps the sentences per message at a count the cases support and logs a message that passes it.
-- **The secret scan adds a process start to each Stop.** Task 4.4 measures it. The scan runs only when a key is set.
-- **Stop can wait longer:** 5 s for Jev and then the Haiku timeout, against one Haiku timeout today. Waits on `$` calls do not count against the 10 s hook budget.
+- **The key moves from the keychain to plain text.** The `typesafeApiKey` option is `sensitive`, so Claude Code keeps it in the keychain. A settings `env` block is a plain file, and a shell profile is too. The person named the variable, so the change follows it, and `README.md` says to prefer the shell's own secret store over a settings file. Keeping the option instead is a one-line reversal of decision 7.
+- **A key in the repository's `.env` is silently unused.** `$.env.get` does not read that file (P13), and a missing key logs nothing, so the Decider would run on Haiku with no sign. `README.md` and `.env.example` name the two places that work, and task 4.6 writes both.
+- **A sentence that leans on the one before it** ("Same for the lockfile.") makes a ledger entry that reads poorly alone (P25). Task 5.4 includes such cases, and the entry takes the whole line if they fail.
+- **A pasted log makes one question per line** (P25). A request holds 64,000 tokens. Task 5.4 sets a cap on the sentences per message at a count the cases support, and task 6.4 builds it and logs a message that passes it.
+- **A long session overflows Jev.** The person's messages have no cap (P33), so a pasted log can pass 64,000 tokens at every Stop. The size bound of decision 4 sends such a state straight to Haiku.
+- **A refusing `.catch` blocks work when a non-guard hook breaks.** One `.catch` answers for the plugin's whole chain (P17). A defect in a result rewriter now refuses the call with its own failure text, where it was skipped before. Task 3.1 gives each guard a test, and the refusal text names the failure.
+- **The secret scan adds a process start to each Stop:** 40 ms on a clean state and 127 ms on a keyword match (P24). The scan runs only when a key is set.
+- **Stop can wait longer:** 5 s for Jev and then the Haiku timeout, against one Haiku timeout today. Waits on `$` calls do not count against the 10 s hook budget (P19).
+- **A 200-character cap moves rules out of tool texts.** `TOOL_TEXTS.Bash` holds 1,177 characters and `AGENT_TEXT` 1,173 (P26). Each rule that leaves a description goes to the parameter it concerns or to the root prompt, or is dropped with a recorded reason. Task 7.5 keeps the added prompt bytes from growing, and a paid `claude plugin eval --ablation` run, on the person's approval, checks that behavior holds.
+- **Files under `tests/` leave the clone scan.** `.jscpd.json` scans `plugins` and `tools`, and the shared config stays as it is. The moved files are Bun specs and recorded fixtures.
 - **Removing `typesafeApiKey` breaks installs that set it.** The person allowed breaking changes for this release, so no second key source stays. `CHANGELOG.md` names the variable to set.
 - **Moving helpers changes hook order by accident.** Each structural slice runs the whole suite before and after, and changes no test's expected value.
+
+### Defects Found Outside This Change's First Scope
+
+- **`gate/watch.ts:128-132` scans a structured result in JSON form.** A tool result with no `text` and a non-string `result` is passed to the scanner as `JSON.stringify(result)`, where the line-anchored rule misses a secret after a line break (P24). Task 3.4 fixes it with a failing test first.
+- **`gate/watch.ts:150-152` rests on a false comment.** The comment says the replay "rethrows what failed beneath, so only a failed scan withholds the result". Measured (P34): `next(e)` in a `.catch` returns the earlier answer when a sibling hook threw, so the handler withholds the result for any `tool.call` fault of the plugin. The handler also names its first parameter `_error`, and it is `$`. Task 3.1 rewrites the handler to return its refusal and call nothing.
+- **The change check passes a requirement text that the main-spec check rejects.** `spec-rules.ts:127` warns on a text over 500 characters only under ADDED, and `spec-rules.ts:237` warns for every requirement of a main spec (P36). A MODIFIED requirement that grows past the limit therefore validates, archives, and turns `just validate` red. Upstream 1.16.0 leaves MODIFIED alone on purpose (`dist/core/validation/validator.js:268-271`: "its text is the existing requirement, which the specs instruction says to keep whole"), which is right for a text that was already long and wrong for one the change makes long. `lean-openspec` lets the validator differ only by a fix its spec names, so this change adds that requirement: warn only when the main spec's text is within the limit and the MODIFIED text is not. Task 8.4 writes the failing test first.
+- **`just validate` reads less than the validator reports.** `claude plugin validate --strict --json` answers `success: false` for all three plugins because of one `version` warning each, and `ICON_MISSING` for `claudetto-openspec`. The recipe's filter passes them on purpose. This change leaves the recipe as it is and names the gap here.
+
+## What Stays a Hypothesis
+
+Each of these needs a paid call, the person's key, or a run outside the sandbox, so no free probe can settle it.
+
+| Hypothesis | Why no probe ran | What settles it |
+|---|---|---|
+| An expired key answers 401 or 403 | No expired key can be made | The first real expiry; decision 4 falls back for any status |
+| The two failures in `tools/manifest.test.ts` come from the sandbox | `ps` is refused in the sandbox (`operation not permitted: ps`, P29), and the run outside it was denied by the permission classifier | The person runs `bun test tools/manifest.test.ts` in a plain shell (task 1.9) |
+| The prompt cache is read despite the changing billing header | The fake API returns no cache usage | Task 5.2 reads `usage.cache_read_input_tokens` |
+| Thinking at `high` stays under 2,048 tokens on the Decider's prompts | Needs a real Haiku call | Task 5.2 records output usage per case |
+| How many characters fit in Jev's 64,000 tokens | Needs the person's key | Task 5.2 records the token count Jev reports, or the largest state it accepts |
+| Jev scores at least as well as today's prompts | Needs the person's key and cases | Task group 5 |
+| Cutting 18 descriptions to 200 characters keeps behavior | Needs full paid sessions | Task 7.6, on approval |
+
+## Probe Record
+
+Each row gives the hypothesis, the prediction, the command, and the result. Commands that start with `bun fake-run.ts` ran in `$TMPDIR/probe-321`, as "How the Probes Ran" describes.
+
+| ID | Hypothesis and prediction | Command | Result |
+|---|---|---|---|
+| P1 | `just check` is green on HEAD; each recipe exits 0. | `just verify`, `just clones`, `just validate`, `just lab`, each alone; `wc -l` over the source, test, and fixture files | Refuted. `verify`, `clones`, and `validate` exit 1, as the baseline table shows. `lab` exits 0. |
+| P2 | The repository holds 34.9% duplicated lines. | `mcp__jscpd__get_statistics` with the default kinds, then with `["exact","renamed","similar"]` | Refuted. Default kinds: 19 clones (18 exact, 1 `ast`), 193 of 43,099 lines, 0.45%. Wider kinds: 703 clones, 15,063 lines, 34.95%, with TOML at 147.2%. No clone pairs two source files; one pairs `setup/groups.test.ts` with `setup/settings.ts`. |
+| P3 | `isRecord` has five copies and the writer list three. | `rg` for each definition in `plugins/claudetto/hooks`, tests left out | Refuted: four and four. Decision 13 lists every definition. |
+| P4 | About 25 `catch` sites drop the error. | `rg` for `catch {`, `catch (`, and `.catch(` in `plugins/*/hooks`, tests and mocks left out | Refuted: 92 sites, 64 bind no error (32 bare `catch {`, 32 `.catch(() => …)`). `claudetto` 49, `claudetto-openspec` 8, `claudetto-you-should-know` 7. |
+| P5 | A manifest key or an ignore file leaves paths out of an install. | Install `probe-install` from a local `git-subdir` marketplace into a throwaway `CLAUDE_CONFIG_DIR`, once with each of `.npmignore`, `.claudeignore`, `.pluginignore`, `.gitattributes export-ignore`, and `package.json` `files`; list the installed files. Count files and bytes per plugin folder by kind. | Refuted. Every file is copied each time. The counts are in the sizes table. |
+| P6 | A lab test can live outside the plugin folder. | `claude plugin test` on `tests/harness-a` (`hooks.json` names a module outside), `tests/harness-b` (the test imports the plugin's source), `tests/harness-s` (`hooks` is a symbolic link), and a bare `tests/probe-install` | Refuted four ways: `path-traversal` for `harness-a` and `harness-s`; `cannot import … it is outside the plugin's folder` for `harness-b`; `there is no hooks/hooks.json` for the bare folder. The same tests pass inside `plugins/probe-install` (2 pass). |
+| P7 | A hooks module cannot import a Node API, a package, or JSON. | `claude plugin test mods/probe-node`, `claude plugin test mods/probe-pkg`, `bun fake-run.ts json probe-json` | Confirmed. `cannot import "node:path" …: a hooks module imports its own files by relative path and "claude-code", nothing else`; the same text for the package; and for JSON `data.json is not named like code and was not loaded`. |
+| P8 | A noun one plugin adds reaches a plugin that names it in `dependencies`. | `claude -p` with `--plugin-dir` for `probe-provider` and `probe-consumer` in both orders, for `probe-consumer` alone, and for `probe-nodep` with and without the provider, each with `--debug-file` | The noun reaches the consumer live in both orders, and reaches `probe-nodep` with no `dependencies` entry. The consumer alone does not load. `claude plugin test` cannot reach the noun. |
+| P9 | A refused key answers 401. | `curl -s -o nokey.body -w '%{http_code}'` to `https://api.typesafe.ai/v1/systemone` with no `Authorization` header, then with a made-up key | No header: 403, `"Must supply an API key! Check your request and try again."` Made-up key: 401, `"Cannot authenticate with the server. Please check your API key and try again."` |
+| P10 | `$.model.complete` sends `maxTokens` as `max_tokens` and the alias as given. | `PROBE_BODIES=model.bodies.jsonl bun fake-run.ts model probe-model` | Refuted in part. `haiku` is sent as `claude-haiku-5-5`. `maxTokens` 300 is sent as `max_tokens` 2,348, and 2,000 as 4,048. `effort` is `output_config.effort`. No `thinking`, `stream`, or tools. A `cache: true` block carries `cache_control: {"type":"ephemeral"}`. |
+| P11 | A `tool.call` hook can see no `tool_use_id`. | `bun fake-run.ts toolid probe-caller` | Refuted. `$.tool.call` carries `toolu_plugin_<32 hex>` and its nested check the same ID. Only a `$.tool.check` query has none. |
+| P12 | The first registration is outermost. | `bun fake-run.ts misc probe-misc probe-caller2` | Confirmed: `A before`, `B before`, `B after`, `A after`. A first version of the probe that registered `session.start` twice did not load: `on("session.start") is registered twice without a matcher`. |
+| P13 | `$.env.get` reads a project `.env` file. | `PROBE_SHELL=from-shell bun fake-run.ts misc probe-misc probe-caller2`, with `PROBE_DOTENV` in `proj/.env` and `PROBE_SETTINGS` in `--settings` | Refuted: `shell=from-shell dotenv=undefined settings=from-settings`. |
+| P14 | `$.http.fetch` returns a status for every failure. | Same run as P12 | Refuted. Another plugin's denial throws `HooksError: … $.http.fetch: probe-misc denies this url`. A closed port throws `… failed: ECONNREFUSED`. A 200 returns `{ status, ok, headers, text }`. |
+| P15 | `Intl.Segmenter` and `setTimeout` exist in a hooks module, and `fetch` does not. | `claude plugin test mods/probe-globals` | Confirmed. `Bun`, `process`, `require`, `fetch`, and `AbortSignal.timeout` are undefined. `setTimeout`, `Intl.Segmenter`, `crypto`, `TextEncoder`, `URL`, and `structuredClone` exist. |
+| P16 | A guard with no `.catch` allows the call when it throws. | `bun fake-run.ts open probe-open` | Confirmed. `$.tool.check` gives `{"decision":"allow"}`, `$.tool.call` runs the command (`stdout: "THROW_A"`), and the log says `tool.check hook skipped: threw Error: guard A broke`. The guard with a `.catch` gives `{"decision":"deny","reason":"guard C refused: Error: guard C broke"}`. |
+| P17 | A `.catch` answers only for its own registration. | `bun fake-run.ts misc probe-misc probe-caller2`, `bun fake-run.ts open2 probe-open2`, `bun fake-run.ts cross probe-open probe-open2` | Refuted. An inner hook's `.catch` answered for the outer hook's throw (`guard B refused: guard A broke`), and an outer hook's `.catch` for the inner hook's (`outer catch refused: inner guard broke`). A `.catch` on a `Read` matcher did not answer for a `Bash` call, and a `.catch` in a second plugin did not answer for the first plugin's throw. |
+| P18 | The validator can list guards without a `.catch`. | `claude plugin validate --strict --json plugins/<plugin>` for the three plugins | Confirmed. `contents[].gatingHooks[]` holds `module`, `pattern`, `hook`, `hasCatch`. `claudetto`: 50 gating hooks, 2 with a `.catch` (`tool.check` 1 of 5, `tool.call` 1 of 17). Environment reads of `claudetto`: `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CONFIG_DIR`, `HOME`, `PATH`. Each plugin loads all hooks through `./register.ts`. |
+| P19 | The 10 s clock stops during a `$` call. | `bun fake-run.ts fail probe-fail` | Confirmed. A 12 s `$.process.run` gives `allow` after 12,021 ms with no failure. A 12 s `setTimeout` in the hook's own code is cut at 10,009 ms: `tool.check hook skipped: ran past its 10s budget`, result `allow`. |
+| P20 | `$.model.complete` never rejects. | `bun fake-run.ts fail probe-fail`, then `PROBE_DEAD=1 bun fake-run.ts dead probe-fail` | Confirmed for a provider failure: `{ isAnswered: false, reason: "api-error", status: null, error: "server_error" }` after about 1,270 ms, and `reason: "aborted"` for `timeoutMs: 1`. Refuted for a bad argument: `effort: "extreme"` throws `HooksError: … effort must be one of low, medium, high, xhigh, max`. |
+| P21 | The hook's cached block is the first `system` block. | Read `system` in `model.bodies.jsonl` and `fail.bodies.jsonl` | Refuted. The first block is `x-anthropic-billing-header: cc_version=2.1.322.<3 hex>; cc_entrypoint=sdk-cli;` with a different suffix in each of five requests and no cache mark. The hook's block is second. |
+| P22 | The guard in `surface.ts:203` and the branch in `cleanup.ts:95-98` are dead. | In a throwaway worktree, remove each and run `bun check` | The `surface.ts` guard is dead: no error. The `cleanup.ts` branch is real: two errors, one of them `Type 'undefined' is not assignable to type 'string'`. |
+| P23 | The eleven exports the audit listed are unused. | `rg` for each name across `plugins`, `tools`, and `scripts` | Three are unused, two are used only in their own file (as is `Verdict`, which the audit missed), and six have a test that imports them. Decision 17 lists each. |
+| P24 | Redacting the serialised state finds what a raw scan finds. | `bun leaks-time.ts`, which calls `secretsIn` from `plugins/claudetto/hooks/secrets.ts` ten times per case | Refuted. A planted `export API_TOKEN=abcdefgh12345678ZYXW` gives `secrets=0` inside `JSON.stringify` output and `secrets=1` as raw text. Time: 38.8 to 43.5 ms on a clean 3,298-character state, about 127 ms with a keyword match. A first version of the probe did not pass the plugin's scanner config and was discarded. |
+| P25 | `Intl.Segmenter` splits a pasted log into usable sentences. | `claude plugin test mods/probe-globals` (`segment2.test.ts`) | Ten segments: `"Fix this. "`, `"Same for the lockfile.\n"`, five log lines as one segment each, `"Do not push. "`, ``"Use `rg`, not grep; e.g. `rg -n foo`. "``, `"Done?"`. |
+| P26 | Three descriptions pass 200 characters. | `bun desc-len.ts`, which imports each description constant and manifest, plus a count of the 13 frontmatter descriptions | Refuted: 18 of 59. `TOOL_TEXTS.Bash` 1,177, `AGENT_TEXT` 1,173, `TOOL_TEXTS.SendMessage` 947, `DECIDE_SPEC` 748, the `openspec` tool 684, `EnterWorktree` 553, `MONITOR_SPEC` 451, `ExitWorktree` 347, `hygieneEnabled` 307, `ListAgents` 304, `Read` 303, `WebFetch` 301, `NotebookEdit` 293, `Edit` 255, the `claudetto-you-should-know` plugin 247, `Skill` 246, `WebSearch` 223, `protectedPaths` 212. All 13 frontmatter descriptions fit; the longest holds 151. |
+| P27 | `claude plugin details` can measure the plugin's prompt cost. | `claude plugin details claudetto` with the model endpoint at a closed port | Refuted. It lists 3 skills, 3 agents, and 2 classic hooks, about 113 always-on tokens. It does not see registered tools, the root prompt, tool texts, or the output style. `tools/prompt-bytes.ts` stays the measure. |
+| P28 | A harness whose `hooks` folder is a symbolic link passes the lab. | `claude plugin test tests/harness-s` | Refuted: `path-traversal` (the third case of P6). |
+| P29 | `ps` runs in the sandbox. | `ps -o nice= -p $$` | Refuted: `operation not permitted: ps`. |
+| P30 | A `next(e)` in a `tool.call` `.catch` runs the tool a second time, and an overrun ignores a `.catch`. | `bun fake-run.ts catch probe-catch` | Both refuted. The command ran once with and without the replay (`wc -l`: 1 and 1). The caller gets `{"deny":"Bash ran, and a plugin withheld its result: call catch refused: hook broke after the tool ran"}`, and the log says `tool.call hook refused after its next() was answered: what ran beneath it is not undone`. The overrun refuses after 10,004 ms: `check catch refused: kind=timeout message=none`. |
+| P31 | The patch file of the rule vendoring script is empty. | Read `plugins/claudetto/hooks/gate/rules.patch.json`; `rg 'disable\|override' scripts/vendor-rules.ts` | Refuted. `disable` and `override` are empty lists, and `add` holds five rules. The two paths are `scripts/vendor-rules.ts:150-181`. |
+| P32 | `$.env.get` is called 12 times, and no model call passes `effort`. | `rg -c '\$\.env\.get\('` and `rg '\$\.model\.complete\('` over `plugins`, tests and mocks left out | Confirmed: 12 calls in 6 files, all in `claudetto`. Four model call sites, none with `effort`. |
+| P33 | The Stop check's state is bounded. | Read `verify.ts:18-93`; multiply the cited price | Refuted. Tool results are bounded at 8 × 520 characters. The 30 person messages, the 6 assistant messages, and the reply are not. A 10,000-token state costs $0.00042 and a 64,000-token request $0.0027. |
+| P34 | On `tool.call`, a sibling's `.catch` stops the tool as it does on `tool.check`, and its `next(e)` rethrows what failed beneath. | `bun fake-run.ts catch2 probe-catch2`: an outer hook on every tool with a `.catch`, and an inner hook on `Bash` that throws before `next` with none | Both refuted. The command ran (its output file exists), and the caller gets `{"deny":"Bash ran, and a plugin withheld its result: outer call catch refused: inner call hook broke"}`. `next(e)` in the `.catch` returned the tool's answer and did not throw. A plain command passes. |
+| P35 | A `tool.call` hook's own `.catch` stops the tool when the hook throws before `next`. | `bun fake-run.ts catch3 probe-catch3 probe-catch4`: one hook with its own `.catch`, and in a second plugin an inner hook with its own `.catch` under an outer hook with none | Confirmed for both: `{"deny":"own catch refused: own hook broke before next"}` and `{"deny":"inner catch refused: inner hook broke before next"}`, with no "ran" prefix, and neither output file exists. |
+| P36 | A change the tool calls valid leaves the main specs valid after an archive. | Read `plugins/claudetto-openspec/hooks/spec-rules.ts:127` and `:237`, and `node_modules/@fission-ai/openspec/dist/core/validation/validator.js:268-278` (1.16.0); measure each requirement text of this change's deltas and of the main specs with `awk` | Refuted. The change check warns on a text over 500 characters only for an ADDED requirement, as upstream does by design, and the main-spec check warns for every requirement, which `just validate` counts as INVALID. Three MODIFIED requirements of this change held 1,083, 1,070, and 570 characters while the tool said `valid`; one of them holds 417 in the main spec today. They now hold 472, 488, and under 420, with the detail moved into scenarios. |

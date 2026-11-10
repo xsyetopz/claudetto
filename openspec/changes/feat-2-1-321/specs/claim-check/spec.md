@@ -2,12 +2,27 @@
 
 ### Requirement: Graded Faults Get One Block
 
-At `classic.Stop`, after the named-files and open-items checks, when none of them blocked, the mod SHALL ask the Decider, in one call over one state, the Nouls of each offered fault (`credited`, `fallback`, `deferred`, `unchecked`, `rules`, `unfixed`, and in an interactive session `options`). Each Noul SHALL ask one judgment, and code SHALL decide each fault from its Nouls. On a finding it SHALL block once with each found fault's fix. It SHALL NOT block when `stop_hook_active` is set, and a fault SHALL NOT hold when a Noul it needs is `unsettled` or when the Decider fails, and a failure SHALL be logged with its cause. The Decider SHALL be asked about no fault for padding, because naming those sentences in a question puts their words into context; the output style states the reply's form in positive terms instead. The `options` fault SHALL fire when the reply ends by asking the person to choose in its own text, and its fix SHALL send the agent to `mcp__claudetto__ask-user-question`. A headless session, which no ask reaches, SHALL NOT be offered `options`.
+At `classic.Stop`, after the named-files and open-items checks, when none of them blocked, the mod SHALL ask the Decider, in one call over one state, one Noul per judgment of each offered fault, and code SHALL decide each fault from its Nouls. On a finding it SHALL block once with each found fault's fix. It SHALL NOT block when `stop_hook_active` is set. A fault SHALL NOT hold when a Noul it needs is `unsettled` or when the Decider fails, and a failure SHALL be logged with its cause.
+
+#### Scenario: The Offered Faults
+
+- **WHEN** a Stop reaches the Decider
+- **THEN** each fault it asks about is one of `credited`, `fallback`, `deferred`, `unchecked`, `rules`, `unfixed`, and `options`, and no other
 
 #### Scenario: A Choice in Plain Text
 
 - **WHEN** an interactive reply ends with a choice between options in its own text
 - **THEN** `options` is offered, and a finding of it blocks once with the fix that names `mcp__claudetto__ask-user-question`
+
+#### Scenario: A Headless Session
+
+- **WHEN** the session is headless, so no ask reaches a person
+- **THEN** `options` is not offered
+
+#### Scenario: A Second Stop of One Turn
+
+- **WHEN** `stop_hook_active` is set
+- **THEN** the turn is not blocked
 
 #### Scenario: Work Left to the Person
 
@@ -17,7 +32,8 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 #### Scenario: No Padding Fault
 
 - **WHEN** the Decider is asked its questions
-- **THEN** no question and no fault is named `padding`
+- **THEN** no question and no fault is named `padding`, because naming padded sentences in a question puts their words into context
+- **AND** the output style states the reply's form in positive terms instead
 
 #### Scenario: A Quote Not in the Reply
 
