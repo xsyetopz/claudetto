@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
 import { RUN_LOG, runStats } from "./runs.ts";
 import { scanner } from "./secrets.mock.ts";
 
@@ -12,14 +13,29 @@ const usage = (read: number, created: number) => ({
 	cache_read_input_tokens: read,
 });
 
-const line = (id: string, at: string, read: number, created: number, content: unknown[] = []) =>
+const line = (
+	id: string,
+	at: string,
+	read: number,
+	created: number,
+	content: unknown[] = [],
+) =>
 	JSON.stringify({
 		type: "assistant",
 		timestamp: at,
-		message: { id, model: "claude-sonnet-5-5", usage: usage(read, created), content },
+		message: {
+			id,
+			model: "claude-sonnet-5-5",
+			usage: usage(read, created),
+			content,
+		},
 	});
 
-const EDIT = { type: "tool_use", name: "Edit", input: { file_path: "/repo/x.ts" } };
+const EDIT = {
+	type: "tool_use",
+	name: "Edit",
+	input: { file_path: "/repo/x.ts" },
+};
 
 // Each request spans several lines with one message id, so it counts once.
 const JSONL = [
@@ -44,7 +60,10 @@ interface Lab {
 }
 
 const lab = (on: On, block = false): Lab => {
-	const state: Lab = { files: new Map([[TRANSCRIPT, JSONL]]), clock: mock.clock(on, { now: 1000 }) };
+	const state: Lab = {
+		files: new Map([[TRANSCRIPT, JSONL]]),
+		clock: mock.clock(on, { now: 1000 }),
+	};
 	scanner(on);
 	on("agent.list", () => ({ value: [] }));
 	on("session.messages", () => ({ value: [] }));
@@ -90,7 +109,22 @@ const spawnAndStop = async ($: Engine, state: Lab) => {
 };
 
 const rootTurn = ($: Engine) =>
-	$.turn.complete({ durationMs: 1, isAborted: false, reason: "answer", turnId: "t", answer: "" });
+	$.turn.complete({
+		durationMs: 1,
+		isAborted: false,
+		reason: "answer",
+		turnId: "t",
+		answer: "",
+	});
+
+const edit = ($: Engine, file_path: string, by: { agentId?: string } = {}) =>
+	$.tool.call({
+		tool: "Edit",
+		file_path,
+		old_string: "a",
+		new_string: "b",
+		...by,
+	});
 
 const logged = (state: Lab): unknown[] =>
 	(state.files.get(LOG) ?? "")
@@ -102,7 +136,7 @@ test("Redone: the root edits a file the run edited, and the run is logged after 
 	const state = lab(on);
 
 	await spawnAndStop($, state);
-	await $.tool.call({ tool: "Edit", file_path: "/repo/x.ts", old_string: "a", new_string: "b" });
+	await edit($, "/repo/x.ts");
 	await rootTurn($);
 	await rootTurn($);
 	expect(logged(state)).toEqual([]);
@@ -126,14 +160,23 @@ test("Kept: no root edit of its files, and a subagent's own turns and edits do n
 	const state = lab(on);
 
 	await spawnAndStop($, state);
-	await $.tool.call({ tool: "Edit", file_path: "/repo/x.ts", old_string: "a", new_string: "b", agentId: "a2" });
-	await $.tool.call({ tool: "Edit", file_path: "/repo/y.ts", old_string: "a", new_string: "b" });
-	await $.turn.complete({ durationMs: 1, isAborted: false, reason: "answer", turnId: "s", answer: "", agentId: "a2" });
+	await edit($, "/repo/x.ts", { agentId: "a2" });
+	await edit($, "/repo/y.ts");
+	await $.turn.complete({
+		durationMs: 1,
+		isAborted: false,
+		reason: "answer",
+		turnId: "s",
+		answer: "",
+		agentId: "a2",
+	});
 	await rootTurn($);
 	await rootTurn($);
 	await rootTurn($);
 
-	expect(logged(state)).toEqual([expect.objectContaining({ rootEditedWithin3Turns: false })]);
+	expect(logged(state)).toEqual([
+		expect.objectContaining({ rootEditedWithin3Turns: false }),
+	]);
 });
 
 test("A Blocked Stop records no run", async ($: Engine, on: On) => {
