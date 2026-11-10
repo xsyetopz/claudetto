@@ -1,4 +1,5 @@
-import { archive, ArchiveBlocked, type Run } from "./archive.ts";
+import { ArchiveBlocked } from "./archive-merge.ts";
+import { archive, type Run } from "./archive.ts";
 import type { Fs } from "./fs.ts";
 import { create, init } from "./layout.ts";
 import { checkSpec, mainSpecs, requirementCount } from "./main-specs.ts";
@@ -32,8 +33,12 @@ export interface Deps {
 	date: string;
 }
 
+// A model-supplied value as text for a refusal or a name check; an object shows as JSON.
+const shown = (value: unknown) =>
+	typeof value === "string" ? value : (JSON.stringify(value) ?? "");
+
 // The name becomes a path segment, so it is checked where the model's input enters.
-const NAME = /^[\w][\w.-]*$/;
+const NAME = /^[\w][\w.-]*$/u;
 
 const report = (name: string, r: Report) =>
 	[
@@ -80,7 +85,7 @@ const checkedChange = async (d: Deps, change: unknown) => {
 		return { change };
 	}
 	if (typeof change !== "string" || !NAME.test(change)) {
-		return { refusal: badName(String(change)) };
+		return { refusal: badName(shown(change)) };
 	}
 	if (!(await d.fs.exists(changeDir(d.root, change)))) {
 		return { refusal: noChange(change) };
@@ -99,9 +104,10 @@ const everything = async (d: Deps, names: string[]) => {
 };
 
 const overview = async (d: Deps, names: string[]) => {
+	const awaited = await archivedChanges(d.fs, d.root);
 	const lines = [
 		await status(d, names, false),
-		...(await archivedChanges(d.fs, d.root)).map(archivedLine),
+		...awaited.map((item) => archivedLine(item)),
 	].filter(Boolean);
 	return lines.length > 0 ? lines.join("\n") : NO_CHANGES;
 };
@@ -117,7 +123,7 @@ const openNew = (d: Deps, change: unknown) => {
 	if (change === undefined) {
 		return needsChange("new");
 	}
-	return create(d.fs, d.root, String(change), d.date);
+	return create(d.fs, d.root, shown(change), d.date);
 };
 
 export const openspec = async (d: Deps, call: Call): Promise<string> => {

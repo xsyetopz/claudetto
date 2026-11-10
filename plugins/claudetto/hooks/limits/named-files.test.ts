@@ -10,8 +10,9 @@ import { scanner } from "../secrets.mock.ts";
 import { namedPaths, userCommands } from "./named-files.ts";
 
 // This file tests the file check alone: the command-form check would block its bare `! <command>` replies first.
-const test = (name: string, run: TestBody) =>{ 
-	labTest(name, { options: { openItemsCheckEnabled: false } }, run); };
+const test = (name: string, run: TestBody) => {
+	labTest(name, { options: { openItemsCheckEnabled: false } }, run);
+};
 
 const INCIDENT = "Run the dump:\n- [ ] `! bun /tmp/probe-cmds-scripts/dump.ts`";
 
@@ -45,7 +46,8 @@ test("the incident text with the file missing blocks and names the path", async 
 test("the incident text with the file present passes", async ($: Engine, on: On) => {
 	lab(on, ["/tmp/probe-cmds-scripts/dump.ts"]);
 
-	expect((await stop($, INCIDENT)).block).toBeUndefined();
+	const awaited = await stop($, INCIDENT);
+	expect(awaited.block).toBeUndefined();
 });
 
 test("a path the command makes passes while absent", async ($: Engine, on: On) => {
@@ -84,7 +86,8 @@ test("a ~/ path is read under HOME", async ($: Engine, on: On) => {
 test("a command not marked with `!` is not checked", async ($: Engine, on: On) => {
 	lab(on);
 
-	expect((await stop($, "See `/tmp/none.ts`.")).block).toBeUndefined();
+	const awaited2 = await stop($, "See `/tmp/none.ts`.");
+	expect(awaited2.block).toBeUndefined();
 });
 
 test("a subagent's final report with a missing file is blocked", async ($: Engine, on: On) => {

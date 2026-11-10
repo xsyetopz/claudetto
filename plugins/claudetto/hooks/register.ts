@@ -1,36 +1,15 @@
 import type { On, PluginOptions } from "claude-code";
 
-import { decide } from "./decide.ts";
-import { delegation } from "./delegation.ts";
-import { gate } from "./gate.ts";
-import { handoff } from "./handoff.ts";
-import { hygiene } from "./hygiene.ts";
-import { limits } from "./limits.ts";
-import { notify } from "./notify.ts";
 import { stringOption } from "./options.ts";
-import { pin } from "./pin.ts";
-import { reply } from "./reply.ts";
-import { runs } from "./runs.ts";
-import { setup } from "./setup.ts";
-import { slices } from "./slices.ts";
-import { surface } from "./surface.ts";
-import { ASK_SPEC, DECIDE_SPEC, MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
+import { registerFirst } from "./register-first.ts";
+import { registerLast } from "./register-last.ts";
+import { DECIDE_SPEC } from "./texts-gate.ts";
+import { ASK_SPEC, MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
 
-// Registration order is wrap order: `slices` is outermost, so it asks for a commit only after every other Stop check passed; `limits` bounds what every later hook adds.
+// Registration order is wrap order, and `registerFirst` goes before `registerLast`.
 export const register = (on: On, options: PluginOptions): void => {
-	slices(on);
-	limits(on, options);
-	setup(on, options);
-	surface(on, options);
-	pin(on);
-	delegation(on);
-	runs(on);
-	decide(on, options);
-	handoff(on, options);
-	hygiene(on, options);
-	notify(on, options);
-	gate(on, options);
-	reply(on);
+	registerFirst(on, options);
+	registerLast(on, options);
 
 	// The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.
 	on("session.start", async ($, e, next) => {
@@ -38,7 +17,7 @@ export const register = (on: On, options: PluginOptions): void => {
 		await $.tool.register(ASK_SPEC);
 		await $.tool.register(MONITOR_SPEC);
 		await $.command.register(REPLY_SPEC);
-		if (stringOption(options, "typesafeApiKey")) {
+		if (stringOption(options, "typesafeApiKey") !== "") {
 			await $.tool.register(DECIDE_SPEC);
 		}
 		return out;

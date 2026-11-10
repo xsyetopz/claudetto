@@ -19,7 +19,7 @@ test("a shell command that names a walled path in any spelling is denied", () =>
 		"cat a | grep x ~/.claudetto-holdout/f",
 		'true && grep -c x "$HOME/.claudetto-holdout/f"',
 		"head '/home/u/.claudetto-holdout/f'",
-		"wc -l < ${HOME}/.claudetto-holdout/f",
+		["wc -l < $", "{HOME}/.claudetto-holdout/f"].join(""),
 		"cd ~ && cat .claudetto-holdout/f",
 		"cd /tmp; cd ~/x/..; tail .claudetto-holdout/f",
 		'bash -c "head ~/.claudetto-holdout/f"',

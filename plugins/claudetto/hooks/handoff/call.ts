@@ -3,7 +3,7 @@ import {
 	HANDOFF_MISSING,
 	HANDOFF_UNSAVED,
 	readBackText,
-} from "../texts.ts";
+} from "../texts-handoff.ts";
 import { handoffPath } from "./layout.ts";
 import { fieldsOf, toolHandoffText } from "./tool.ts";
 
@@ -45,7 +45,7 @@ const restoreGoal = async (
 		await session.setGoal(goal);
 	} catch (error) {
 		session.log(
-			`The session was cleared and its goal \`${goal}\` was not set again (${error})`,
+			`The session was cleared and its goal \`${goal}\` was not set again (${String(error)})`,
 		);
 	}
 };
@@ -60,7 +60,7 @@ const clearAndSubmit = async (
 		await session.clear();
 	} catch (error) {
 		session.log(
-			`The handoff is in \`${name}\`, and the clear failed (${error})`,
+			`The handoff is in \`${name}\`, and the clear failed (${String(error)})`,
 		);
 		return;
 	}
@@ -70,7 +70,7 @@ const clearAndSubmit = async (
 		await session.submit(text);
 	} catch (error) {
 		session.log(
-			`The session was cleared, and the handoff \`${name}\` was not sent (${error})`,
+			`The session was cleared, and the handoff \`${name}\` was not sent (${String(error)})`,
 		);
 	}
 };
@@ -112,7 +112,9 @@ export const handOff = async (
 	// Ending the turn spares the request that would read the whole context only to answer this result.
 	if (state.turn !== undefined) {
 		await session.abort(state.turn).catch((error: unknown) => {
-			session.log(`The turn could not be ended after the handoff (${error})`);
+			session.log(
+				`The turn could not be ended after the handoff (${String(error)})`,
+			);
 		});
 	}
 	return `The handoff is saved to \`${path}\`. The session clears when this turn ends. End your turn.`;

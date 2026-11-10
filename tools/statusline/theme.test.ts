@@ -12,7 +12,7 @@ import {
 import { plain } from "../../plugins/claudetto/statusline/width.ts";
 import { NOW } from "./support.ts";
 
-const ESC = String.fromCharCode(27);
+const ESC = String.fromCodePoint(27);
 const ROOT = await mkdtemp(join(tmpdir(), "claudetto-theme-"));
 afterAll(() => rm(ROOT, { recursive: true, force: true }));
 
@@ -82,6 +82,18 @@ describe("colours follow the Claude Code theme", () => {
 
 describe("the line file the mod writes", () => {
 	const project = join(ROOT, "project");
+	const rows = (id: string) =>
+		subagentsWithFiles(
+			JSON.stringify({
+				session_id: id,
+				cwd: project,
+				tasks: [
+					{ id: "t", name: "x", status: "running", startTime: NOW - 5000 },
+				],
+			}),
+			env,
+			NOW,
+		);
 	const session = "s/1";
 	const input = (fields: object) =>
 		JSON.stringify({
@@ -103,18 +115,6 @@ describe("the line file the mod writes", () => {
 	});
 
 	test("the subagent rows take their colour from the same file", async () => {
-		const rows = (id: string) =>
-			subagentsWithFiles(
-				JSON.stringify({
-					session_id: id,
-					cwd: project,
-					tasks: [
-						{ id: "t", name: "x", status: "running", startTime: NOW - 5000 },
-					],
-				}),
-				env,
-				NOW,
-			);
 		expect(await rows(session)).toContain(String.raw`\u001b[1mx\u001b[0m`);
 		expect(await rows("none")).not.toContain(String.raw`\u001b`);
 	});

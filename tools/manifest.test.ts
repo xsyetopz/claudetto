@@ -5,14 +5,27 @@ import { join } from "node:path";
 
 import { file, spawn } from "bun";
 
-const PATH_CHOICE = /compaction|summary/i;
+const PATH_CHOICE = /compaction|summary/iu;
+
+const recordOf = (value: unknown): Record<string, unknown> => {
+	if (typeof value !== "object" || value === null || Array.isArray(value)) {
+		throw new Error("not an object");
+	}
+	return Object.fromEntries(Object.entries(value));
+};
+const firstOf = (value: unknown): unknown => {
+	if (!Array.isArray(value)) {
+		throw new TypeError("not a list");
+	}
+	return value[0];
+};
 
 // The lab cannot read the manifest: a hooks module imports only its own code and "claude-code".
 test("no plugin option chooses the compaction path or a summary model", async () => {
-	const { userConfig } = await file(
+	const plugin: unknown = await file(
 		`${import.meta.dir}/../plugins/claudetto/.claude-plugin/plugin.json`,
 	).json();
-	const keys = Object.keys(userConfig);
+	const keys = Object.keys(recordOf(recordOf(plugin).userConfig));
 
 	expect(keys).toContain("handoverThresholdTokens");
 	expect(keys.filter((k) => PATH_CHOICE.test(k))).toEqual([]);
@@ -84,12 +97,17 @@ test("the output style says what an agent message and a user reply hold", async 
 });
 
 // 18.28: with the hooks module not running, the setup command would reach Claude as bare tags, so a plain hook blocks it; the module's `command.run` serves it first when it runs.
-const hookCommand = async (event: string): Promise<string> =>
-	(
-		await file(
-			`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`,
-		).json()
-	).hooks[event][0].hooks[0].command;
+const hookCommand = async (event: string): Promise<string> => {
+	const config: unknown = await file(
+		`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`,
+	).json();
+	const group = recordOf(firstOf(recordOf(recordOf(config).hooks)[event]));
+	const { command } = recordOf(firstOf(group.hooks));
+	if (typeof command !== "string") {
+		throw new TypeError(`the ${event} hook has no command`);
+	}
+	return command;
+};
 
 const runPromptHook = async (prompt: string): Promise<string> => {
 	const proc = spawn(["sh", "-c", await hookCommand("UserPromptSubmit")], {
@@ -103,18 +121,20 @@ const runPromptHook = async (prompt: string): Promise<string> => {
 
 test("a prompt that starts with /claudetto:setup is blocked with a plain reason", async () => {
 	const outs = await Promise.all(
-		["/claudetto:setup", "/claudetto:setup now"].map(runPromptHook),
+		["/claudetto:setup", "/claudetto:setup now"].map((entry) =>
+			runPromptHook(entry),
+		),
 	);
-	for (const out of outs.map((o) => JSON.parse(o))) {
+	for (const out of outs.map((o) => recordOf(JSON.parse(o)))) {
 		expect(out.decision).toBe("block");
-		expect(out.reason).toContain("Restart Claude Code");
+		expect(String(out.reason)).toContain("Restart Claude Code");
 	}
 });
 
 // Claude's Bash commands source this file: nice 10 lets the user's apps win the CPU, and one core stays out of cargo and Go builds. `make` and CMake are left alone, since make runs one job by default.
 const startedShell = async (env: Record<string, string>): Promise<string> => {
 	const envFile = join(await mkdtemp(join(tmpdir(), "envfile-")), "env");
-	const run = async (command: string) =>
+	const run = (command: string) =>
 		new Response(
 			spawn(["sh", "-c", command], {
 				env: { ...process.env, ...env, CLAUDE_ENV_FILE: envFile },
@@ -131,13 +151,16 @@ const startedShell = async (env: Record<string, string>): Promise<string> => {
 
 test("a Bash command runs at nice 10 with one core kept out of cargo and Go, after two session starts", async () => {
 	const jobs = Math.max(availableParallelism() - 1, 1);
-	expect((await startedShell({})).trim()).toBe(`10 ${jobs} ${jobs}`);
+	const awaited = await startedShell({});
+	expect(awaited.trim()).toBe(`10 ${jobs} ${jobs}`);
 });
 
 test("a job count the user set is kept", async () => {
-	expect(
-		(await startedShell({ CARGO_BUILD_JOBS: "3", GOMAXPROCS: "2" })).trim(),
-	).toBe("10 3 2");
+	const awaited2 = await startedShell({
+		CARGO_BUILD_JOBS: "3",
+		GOMAXPROCS: "2",
+	});
+	expect(awaited2.trim()).toBe("10 3 2");
 });
 
 test("other prompts are not blocked", async () => {
@@ -146,6 +169,6 @@ test("other prompts are not blocked", async () => {
 		"/claudetto:handoff",
 		"run /claudetto:setup",
 		"/claudetto:setupx",
-	].map(runPromptHook);
+	].map((entry) => runPromptHook(entry));
 	expect(await Promise.all(outs)).toEqual(["", "", "", ""]);
 });

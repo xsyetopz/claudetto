@@ -50,13 +50,13 @@ for (const surface of ["terminal", "desktop"] as const) {
 
 			const band = await mount($, surface);
 
-			const titles = (await band.findAll({ type: "Text" }))
+			const awaited = await band.findAll({ type: "Text" });
+			const titles = awaited
 				.map((text) => text.text)
 				.filter((text) => text?.startsWith("Card "));
 			expect(titles).toEqual(["Card 1", "Card 2", "Card 3", "Card 4"]);
-			const buttons = (await band.findAll({ type: "Button" })).map(
-				(button) => button.props["label"],
-			);
+			const awaited2 = await band.findAll({ type: "Button" });
+			const buttons = awaited2.map((button) => button.props["label"]);
 			expect(buttons).toEqual([
 				"Understood",
 				"Chat in main session",

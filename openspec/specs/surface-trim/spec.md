@@ -264,7 +264,6 @@ A session with no `ToolSearch` SHALL list the four tools of `DEFERRED_TOOLS` in 
 #### Scenario: Loaded in Full
 
 - **WHEN** the engine describes `Read`, `Write`, or `ListAgents`
-- **THEN** none is deferred ("Read and Write are sent in full, not behind ToolSearch", "DEFERRED_TOOLS is Skill, Workflow, ScheduleWakeup, ReportFindings, and ListAgents stays loaded (18.18)")
 
 ### Requirement: Bundled Skills Are Turned Off
 
@@ -338,4 +337,3 @@ The claudetto `Bash` text SHALL name `cat`, `head`, `tail`, `sed`, `awk`, and `e
 
 - **WHEN** `TOOL_TEXTS["Bash"]` is read
 - **THEN** it holds each of the six names in backticks
-- **AND** the lab test is `surface.test.ts`, "our Bash text names the shell commands that read or edit a file, as the stock text does"

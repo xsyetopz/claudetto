@@ -11,7 +11,7 @@ const out = await openspec(
 	},
 	{ action: "validate" },
 );
-console.log(out);
-if (/: INVALID\b/.test(out)) {
-	process.exit(1);
+process.stdout.write(`${out}\n`);
+if (/: INVALID\b/u.test(out)) {
+	process.exitCode = 1;
 }

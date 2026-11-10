@@ -4,7 +4,7 @@ import { HANDOFF_NAME } from "./layout.ts";
 export const newestHandoff = (names: readonly string[]): string | undefined =>
 	names
 		.filter((name) => HANDOFF_NAME.test(name))
-		.sort()
+		.toSorted()
 		.at(-1);
 
 /** Keyed by project root: the store is one file for the whole login. */

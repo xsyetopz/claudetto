@@ -1,9 +1,11 @@
 import type { Stats } from "node:fs";
 import { lstat, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
-import { join, resolve, sep } from "node:path";
+import { join } from "node:path";
 
 import { MARKER } from "../gate/processes.ts";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
+import type { Args } from "./args.ts";
+import { guardOf, realOr, refusal, trashRoots } from "./roots.ts";
 import {
 	checkoutOf,
 	heldPaths,
@@ -14,16 +16,6 @@ import {
 	tempRule,
 	type Trash,
 } from "./trash.ts";
-
-interface Args {
-	readonly dryRun: boolean;
-	readonly session?: string;
-	readonly days?: number;
-	readonly handoffDays?: number;
-	readonly sessionDays?: number;
-	readonly probeMinutes?: number;
-	readonly trashDays?: number;
-}
 
 interface Host {
 	readonly cwd: string;
@@ -50,84 +42,24 @@ interface Report {
 
 const MINUTE_MS = 60_000;
 const DAY_MS = 86_400_000;
-const NUMBER_FLAGS = new Map<
-	string,
-	"days" | "handoffDays" | "sessionDays" | "probeMinutes" | "trashDays"
->([
-	["--days", "days"],
-	["--handoff-days", "handoffDays"],
-	["--session-days", "sessionDays"],
-	["--probe-minutes", "probeMinutes"],
-	["--trash-days", "trashDays"],
-]);
 // Mole's `mo purge` waits as long before it calls a build folder old (lib/clean/project.sh MIN_AGE_DAYS).
 const TRASH_DAYS = 7;
 
-const numberArg = (flag: string, value: string | undefined): number => {
-	const n = Number(value);
-	if (!Number.isInteger(n) || n < (flag === "--days" ? 1 : 0)) {
-		throw new Error(`${flag} needs a whole number, and 0 turns a kind off`);
-	}
-	return n;
-};
-
-export const parseArgs = (argv: readonly string[]): Args => {
-	let args: Args = { dryRun: false };
-	const rest = [...argv];
-	for (let arg = rest.shift(); arg !== undefined; arg = rest.shift()) {
-		const key = NUMBER_FLAGS.get(arg);
-		switch (arg) {
-			case "--dry-run": {
-				args = { ...args, dryRun: true };
-				break;
-			}
-			case "--session": {
-				args = { ...args, session: rest.shift() ?? "" };
-				break;
-			}
-			default: {
-				if (key === undefined) {
-					throw new Error(`Unknown argument ${arg}`);
-				}
-				args = { ...args, [key]: numberArg(arg, rest.shift()) };
-			}
-		}
-	}
-	return args;
-};
-
-const namesIn = async (dir: string) =>
-	(await readdir(dir, { withFileTypes: true }).catch(() => [])).filter(
-		(entry) => !entry.isSymbolicLink(),
+const namesIn = (dir: string) =>
+	readdir(dir, { withFileTypes: true }).then(
+		(entries) => entries.filter((entry) => !entry.isSymbolicLink()),
+		() => [],
 	);
-
-const within = (path: string, parent: string): boolean =>
-	path === parent || path.startsWith(parent + sep);
-
-const realOr = (path: string): Promise<string> =>
-	realpath(path).catch(() => resolve(path));
-
-/** Why `root` must not be swept, or nothing. */
-const refusal = async (root: string, home: string) => {
-	const [real, realHome] = await Promise.all([realOr(root), realOr(home)]);
-	if (real === realHome) {
-		return "is the home folder";
-	}
-	return ["projects", "plugins"]
-		.filter((part) => within(real, join(realHome, ".claude", part)))
-		.map((part) => `is inside ~/.claude/${part}`)[0];
-};
 
 /** Each `claude-<uid>` folder that exists and that `uid` owns, once per real path. */
 const tempRoots = async (bases: readonly string[], uid: number) => {
 	const found = await Promise.all(
 		bases.map(async (base) => {
 			const real = await realpath(join(base, `claude-${uid}`)).catch(
-				() => {},
+				() => void 0,
 			);
-			return real !== undefined && (await stat(real)).uid === uid
-				? real
-				: undefined;
+			const info = real === undefined ? undefined : await stat(real);
+			return info?.uid === uid ? real : undefined;
 		}),
 	);
 	return [...new Set(found.filter((root) => root !== undefined))];
@@ -155,16 +87,20 @@ const inFolder = async (
 	limitMs: number,
 	wanted: (name: string) => boolean,
 	isDir = false,
-): Promise<Candidate[]> =>
-	(await namesIn(dir))
+): Promise<Candidate[]> => {
+	const entries = await namesIn(dir);
+	return entries
 		.filter((e) => (isDir ? e.isDirectory() : e.isFile()) && wanted(e.name))
 		.map((e) => ({ kind, path: join(dir, e.name), limitMs }));
+};
 
 /** The newest handoff by name stays: the resume reads that one back. */
-const handoffsOf = async (dir: string, limitMs: number) =>
-	(await inFolder("handoff", dir, limitMs, (n) => HANDOFF_NAME.test(n)))
-		.sort((a, b) => a.path.localeCompare(b.path))
-		.slice(0, -1);
+const handoffsOf = async (dir: string, limitMs: number) => {
+	const all = await inFolder("handoff", dir, limitMs, (n) =>
+		HANDOFF_NAME.test(n),
+	);
+	return all.toSorted((a, b) => a.path.localeCompare(b.path)).slice(0, -1);
+};
 
 const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 	const sessionMs = (args.sessionDays ?? args.days ?? host.days) * DAY_MS;
@@ -208,37 +144,53 @@ const markedTemp = async (
 ) => {
 	const bases = [...new Set(await Promise.all(host.tempBases.map(realOr)))];
 	const found = await Promise.all(
-		bases.map(async (base) =>
-			Promise.all(
-				(await namesIn(base))
+		bases.map(async (base) => {
+			const entries = await namesIn(base);
+			const items = await Promise.all(
+				entries
 					.filter((entry) => entry.isDirectory())
 					.map(async (entry) => {
 						const rule = tempRule(trash, entry.name);
 						const path = join(base, entry.name);
-						const owner = (
-							await readFile(join(path, MARKER), "utf8").catch(() => "")
-						).trim();
+						const marker = await readFile(join(path, MARKER), "utf8").catch(
+							() => "",
+						);
 						// A missing marker reads as "", which every text includes, so an unmarked folder stays.
-						return rule && !live.includes(owner)
+						return rule && !live.includes(marker.trim())
 							? [{ kind: rule.id, path, limitMs }]
 							: [];
 					}),
-			),
-		),
+			);
+			return items.flat();
+		}),
 	);
-	return found.flat(2);
+	return found.flat();
 };
 
-/** Each project folder a project rule names that `keepReason` lets go; nothing when the running processes cannot be read. */
+/** Each folder a project rule names, under the project or a Mole purge path, that `keepReason` lets go; nothing when the running processes cannot be read. */
 const builtTrash = async (trash: Trash, limitMs: number, host: Host) => {
 	const held = limitMs > 0 ? await heldPaths(host.uid) : undefined;
 	if (held === undefined) {
 		return [];
 	}
-	const own = await checkoutOf(host.cwd);
-	const found = await projectTrash(host.cwd, trash, (dir) =>
-		readdir(dir, { withFileTypes: true }).catch(() => []),
+	const [own, realHome, roots] = await Promise.all([
+		checkoutOf(host.cwd),
+		realOr(host.home),
+		trashRoots(host.cwd, host.home),
+	]);
+	const walks = await Promise.all(
+		roots.map((root) =>
+			projectTrash(root, trash, (dir) =>
+				guardOf(dir, realHome) === undefined
+					? readdir(dir, { withFileTypes: true }).catch(() => [])
+					: Promise.resolve([]),
+			),
+		),
 	);
+	// A root inside another root is walked twice.
+	const found = [
+		...new Map(walks.flat().map((item) => [item.path, item])).values(),
+	];
 	const kept = await Promise.all(
 		found.map(async (item) =>
 			(await keepReason(item.path, limitMs, held, own)) === undefined
@@ -269,21 +221,24 @@ const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 };
 
 // A folder's own size is its entry list; `du` counts what removing it frees.
-const sizeOf = async (path: string, info: Stats): Promise<number> =>
-	info.isDirectory()
-		? Number((await output(["du", "-sk", path], "/"))?.split("\t")[0] ?? 0) *
-			1024
-		: info.size;
+const sizeOf = async (path: string, info: Stats): Promise<number> => {
+	if (!info.isDirectory()) {
+		return info.size;
+	}
+	const du = await output(["du", "-sk", path], "/");
+	return Number(du?.split("\t")[0] ?? 0) * 1024;
+};
 
 export const sweep = async (args: Args, host: Host): Promise<Report> => {
 	const why = await refusal(host.cwd, host.home);
 	if (why !== undefined) {
 		return { removed: [], refused: [`hygiene refused ${host.cwd}: ${why}`] };
 	}
+	const listed = await candidates(args, host);
 	const found = await Promise.all(
-		(await candidates(args, host)).map(async (item) => {
+		listed.map(async (item) => {
 			// A Nix result link counts by its own time, and its store path may be gone.
-			const info = await lstat(item.path).catch(() => {});
+			const info = await lstat(item.path).catch(() => void 0);
 			return info !== undefined && host.now - info.mtimeMs > item.limitMs
 				? [
 						{

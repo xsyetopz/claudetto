@@ -32,17 +32,23 @@ const itemsOf = (ctx: Ctx): string[] =>
 	].filter((item): item is string => Boolean(item));
 
 /** The items joined by one gap, with a new row only when the next item does not fit `columns`; the last row takes the rest. */
-const rowsOf = (ctx: Ctx, columns: number): string[] =>
-	itemsOf(ctx).reduce<string[]>((rows, item) => {
+const rowsOf = (ctx: Ctx, columns: number): string[] => {
+	const rows: string[] = [];
+	for (const item of itemsOf(ctx)) {
 		const last = rows.at(-1);
 		if (last === undefined) {
-			return [item];
+			rows.push(item);
+			continue;
 		}
 		const joined = `${last}${ITEM_GAP}${item}`;
-		return width(joined) <= columns || rows.length === MAX_ROWS
-			? [...rows.slice(0, -1), joined]
-			: [...rows, item];
-	}, []);
+		if (width(joined) <= columns || rows.length === MAX_ROWS) {
+			rows[rows.length - 1] = joined;
+		} else {
+			rows.push(item);
+		}
+	}
+	return rows;
+};
 
 /** The rows with clock times when each fits `columns`, otherwise with countdowns, and each row still too wide is cut at `columns`. */
 export const renderRows = (

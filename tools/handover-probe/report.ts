@@ -31,37 +31,81 @@ const recall = (answers: readonly string[]): string => {
 const row = (cells: readonly (string | number)[]): string =>
 	`| ${cells.join(" | ")} |`;
 
+const DETAIL_COLUMNS = (paid: boolean): string[] => [
+	"run",
+	"event",
+	"turn",
+	paid ? "ctx" : "FAKE ctx",
+	"request",
+	"kind",
+	"requestId",
+	"cache read",
+	"cache write 5m",
+	"cache write 1h",
+	"output",
+];
+
+const expectedLine = (arm: Arm, paid: boolean): string =>
+	paid
+		? `Expected: ${arm.expects}. Token counts and usage are the real API's.`
+		: `Expected: ${arm.expects}. Every token count below is FAKE: the fake server scales it per human turn, nothing was billed.`;
+
+const usageOf = (
+	run: RunRecords,
+): Map<string, ReturnType<typeof usageByRequest>[number]> =>
+	new Map(
+		usageByRequest(
+			run.records.map<UsageEntry>((r) => ({
+				requestId: r.requestId,
+				usage: r.usage,
+			})),
+		).map((u) => [u.requestId, u]),
+	);
+
+const detailRows = (
+	run: RunRecords,
+	events: readonly Event[],
+	label: string,
+): string[] => {
+	const usage = usageOf(run);
+	return events.flatMap((e) =>
+		run.records.slice(e.index, e.index + 1 + AFTER).map((r, k) => {
+			const u = usage.get(r.requestId);
+			return row([
+				label,
+				k === 0 ? e.type : "",
+				k === 0 ? (run.turnOf.get(e.n) ?? "?") : "",
+				r.contextTokens,
+				k === 0 ? "event" : `+${k}`,
+				r.kind,
+				r.requestId,
+				u?.cacheRead ?? 0,
+				u?.write5m ?? 0,
+				u?.write1h ?? 0,
+				u?.output ?? 0,
+			]);
+		}),
+	);
+};
+
 /** One table of events per run, then the verdict per run: the event's request and the 3 after it, with the usage the fake server answered, once per `requestId`. */
 export const renderArm = (
 	arm: Arm,
 	runs: readonly RunRecords[],
 	paid: boolean,
 ): string => {
+	const recallColumn = paid ? ["recall"] : [];
 	const out = [
 		`### Arm ${arm.name}: ${arm.label}`,
 		"",
-		paid
-			? `Expected: ${arm.expects}. Token counts and usage are the real API's.`
-			: `Expected: ${arm.expects}. Every token count below is FAKE: the fake server scales it per human turn, nothing was billed.`,
+		expectedLine(arm, paid),
 		"",
-		row(["run", "verdict", "events", ...(paid ? ["recall"] : [])]),
-		row(["---", "---", "---", ...(paid ? ["---"] : [])]),
+		row(["run", "verdict", "events", ...recallColumn]),
+		row(["---", "---", "---", ...recallColumn.map(() => "---")]),
 	];
 	const detail = [
-		row([
-			"run",
-			"event",
-			"turn",
-			paid ? "ctx" : "FAKE ctx",
-			"request",
-			"kind",
-			"requestId",
-			"cache read",
-			"cache write 5m",
-			"cache write 1h",
-			"output",
-		]),
-		row(Array(11).fill("---")),
+		row(DETAIL_COLUMNS(paid)),
+		row(Array.from({ length: 11 }, () => "---")),
 	];
 	for (const [i, run] of runs.entries()) {
 		const events = eventsOf(run.records);
@@ -73,35 +117,7 @@ export const renderArm = (
 				...(paid ? [recall(run.answers)] : []),
 			]),
 		);
-		const usage = new Map(
-			usageByRequest(
-				run.records.map<UsageEntry>((r) => ({
-					requestId: r.requestId,
-					usage: r.usage,
-				})),
-			).map((u) => [u.requestId, u]),
-		);
-		for (const e of events) {
-			const window = run.records.slice(e.index, e.index + 1 + AFTER);
-			for (const [k, r] of window.entries()) {
-				const u = usage.get(r.requestId);
-				detail.push(
-					row([
-						`run ${i + 1}`,
-						k === 0 ? e.type : "",
-						k === 0 ? (run.turnOf.get(e.n) ?? "?") : "",
-						r.contextTokens,
-						k === 0 ? "event" : `+${k}`,
-						r.kind,
-						r.requestId,
-						u?.cacheRead ?? 0,
-						u?.write5m ?? 0,
-						u?.write1h ?? 0,
-						u?.output ?? 0,
-					]),
-				);
-			}
-		}
+		detail.push(...detailRows(run, events, `run ${i + 1}`));
 	}
 	return [...out, "", ...detail, ""].join("\n");
 };

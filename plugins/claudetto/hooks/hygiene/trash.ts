@@ -18,8 +18,8 @@ export interface Trash {
 
 interface Entry {
 	readonly name: string;
-	isDirectory(): boolean;
-	isSymbolicLink(): boolean;
+	readonly isDirectory: () => boolean;
+	readonly isSymbolicLink: () => boolean;
 }
 
 export interface Found {
@@ -35,37 +35,42 @@ export const PROJECT_TRASH = ".claude/claudetto/trash.toml";
 // Gitleaks writes Go regexes, where a leading `(?i)` sets the flag for the whole pattern.
 const goRegex = (source: string): RegExp =>
 	source.startsWith("(?i)")
-		? new RegExp(source.slice(4), "i")
-		: new RegExp(source);
-
-const pathsOf = (lists: unknown): RegExp[] =>
-	(Array.isArray(lists) ? lists : []).flatMap((list) =>
-		(Array.isArray(list?.paths) ? list.paths : []).map(goRegex),
-	);
-
-const rulesOf = (file: string, raw: unknown): Rule[] =>
-	(Array.isArray(raw) ? raw : []).map((rule, i) => {
-		if (typeof rule?.id !== "string" || typeof rule?.path !== "string") {
-			throw new TypeError(`${file}: rule ${i + 1} needs an id and a path`);
-		}
-		if (rule.regex !== undefined) {
-			throw new Error(
-				`${file}: rule ${rule.id} has a regex, but trash rules match folders by path only`,
-			);
-		}
-		return {
-			id: rule.id,
-			path: goRegex(rule.path),
-			temp: Array.isArray(rule.tags) && rule.tags.includes("temp"),
-			gcroot: Array.isArray(rule.tags) && rule.tags.includes("gcroot"),
-			keep: pathsOf(rule.allowlists),
-		};
-	});
+		? new RegExp(source.slice(4), "iu")
+		: new RegExp(source, "u");
 
 const table = (value: unknown): Record<string, unknown> =>
 	typeof value === "object" && value !== null
 		? Object.fromEntries(Object.entries(value))
 		: {};
+
+const listOf = (value: unknown): unknown[] =>
+	Array.isArray(value) ? value : [];
+
+const pathsOf = (lists: unknown): RegExp[] =>
+	listOf(lists).flatMap((list) =>
+		listOf(table(list)["paths"]).map((item) => goRegex(String(item))),
+	);
+
+const rulesOf = (file: string, raw: unknown): Rule[] =>
+	listOf(raw).map((item, i) => {
+		const rule = table(item);
+		const { id, path, tags } = rule;
+		if (typeof id !== "string" || typeof path !== "string") {
+			throw new TypeError(`${file}: rule ${i + 1} needs an id and a path`);
+		}
+		if (rule["regex"] !== undefined) {
+			throw new Error(
+				`${file}: rule ${id} has a regex, but trash rules match folders by path only`,
+			);
+		}
+		return {
+			id,
+			path: goRegex(path),
+			temp: Array.isArray(tags) && tags.includes("temp"),
+			gcroot: Array.isArray(tags) && tags.includes("gcroot"),
+			keep: pathsOf(rule["allowlists"]),
+		};
+	});
 
 const parsed = async (file: string) => {
 	const config = table(TOML.parse(await readFile(file, "utf8")));
@@ -82,8 +87,8 @@ const parsed = async (file: string) => {
 /** The project's trash file, or the plugin's, with a project file that extends the plugin's merged as gitleaks does. */
 export const loadTrash = async (cwd: string): Promise<Trash> => {
 	const base = await parsed(DEFAULT_PATH);
-	const own = await parsed(join(cwd, PROJECT_TRASH)).catch((error) => {
-		if (error?.code === "ENOENT") {
+	const own = await parsed(join(cwd, PROJECT_TRASH)).catch((error: unknown) => {
+		if (table(error)["code"] === "ENOENT") {
 			return;
 		}
 		throw error;
@@ -118,7 +123,7 @@ const matchOf = (trash: Trash, temp: boolean, rel: string, gcroot = false) =>
 			);
 
 /** Each folder under `root` that a project rule names, and each link into the Nix store that a `gcroot` rule names; the walk stops at a match, never enters `.git`, and never follows a link. */
-export const projectTrash = async (
+export const projectTrash = (
 	root: string,
 	trash: Trash,
 	list: (dir: string) => Promise<readonly Entry[]>,
@@ -131,7 +136,7 @@ export const projectTrash = async (
 				.map((entry) => {
 					const path = join(dir, entry.name);
 					const rule = matchOf(trash, false, relative(root, path));
-					return rule ? [{ id: rule.id, path }] : walk(path);
+					return rule ? Promise.resolve([{ id: rule.id, path }]) : walk(path);
 				}),
 		);
 		const links = await Promise.all(
@@ -140,9 +145,11 @@ export const projectTrash = async (
 				.map(async (entry) => {
 					const path = join(dir, entry.name);
 					const rule = matchOf(trash, false, relative(root, path), true);
-					return rule && (await readlink(path)).startsWith(NIX_STORE)
-						? [{ id: rule.id, path }]
-						: [];
+					if (!rule) {
+						return [];
+					}
+					const target = await readlink(path);
+					return target.startsWith(NIX_STORE) ? [{ id: rule.id, path }] : [];
 				}),
 		);
 		return [...found.flat(), ...links.flat()];
@@ -204,8 +211,10 @@ const within = (paths: readonly string[], dir: string) =>
 	paths.some((p) => p === dir || p.startsWith(dir + sep));
 
 /** The top folder of the git checkout holding `dir`, or nothing. */
-export const checkoutOf = async (dir: string): Promise<string | undefined> =>
-	(await output(["git", "rev-parse", "--show-toplevel"], dir))?.trim();
+export const checkoutOf = async (dir: string): Promise<string | undefined> => {
+	const top = await output(["git", "rev-parse", "--show-toplevel"], dir);
+	return top?.trim();
+};
 
 /** Why a project match must stay, or nothing: the session's own checkout, a process in its checkout or holding a file inside, a checkout used within the limit, content git does not ignore (a tracked file inside counts), or a recent change inside. */
 export const keepReason = async (
@@ -229,9 +238,11 @@ export const keepReason = async (
 	}
 	// Installs leave a dependency folder untouched for weeks while its checkout is in daily use, so the checkout's own activity decides too.
 	const minutes = String(-Math.ceil(limitMs / 60_000));
-	const index = (
-		await output(["git", "rev-parse", "--git-path", "index"], top)
-	)?.trim();
+	const awaited = await output(
+		["git", "rev-parse", "--git-path", "index"],
+		top,
+	);
+	const index = awaited?.trim();
 	const used = await output(
 		["find", index ?? "", "-mmin", minutes, "-print", "-quit"],
 		top,

@@ -11,7 +11,7 @@ import {
 	TOOL_TEXTS,
 } from "./texts.ts";
 
-// Skill is called by name, so the model needs no schema for it (task 5.21). Read and Write stay in full: deferred, they sent the model to `cat` through Bash, whose gate then denied the call (task 18.23). ListAgents stays loaded (task 18.18): 18.7 measured 0/8 sessions reaching a deferred ListAgents against 8/8 with it sent. Workflow, ScheduleWakeup, and ReportFindings go uncalled in 1.8's transcripts (task 2.13); setup denies them, and a session without setup still sends them in full.
+// Skill is called by name, so the model needs no schema for it. Read and Write stay in full: deferred, they sent the model to `cat` through Bash, whose gate then denied the call. ListAgents stays loaded: 0 of 8 sessions reached a deferred ListAgents, against 8 of 8 with it sent. Workflow, ScheduleWakeup, and ReportFindings go uncalled in recorded transcripts; setup denies them, and a session without setup still sends them in full.
 export const DEFERRED_TOOLS: readonly string[] = [
 	"Skill",
 	"Workflow",
@@ -19,7 +19,7 @@ export const DEFERRED_TOOLS: readonly string[] = [
 	"ReportFindings",
 ];
 
-// A deferred tool loads through ToolSearch. A session whose `--tools` leave it out lists the tool in full, and a flag set later would send it deferred from the second request on and rewrite the cache (task 18.26).
+// A deferred tool loads through ToolSearch. A session whose `--tools` leave it out lists the tool in full, and a flag set later would send it deferred from the second request on and rewrite the cache.
 export const deferral = (
 	tools: readonly { readonly name: string }[],
 ): { isDeferred?: true } =>
@@ -157,16 +157,13 @@ const onSettingsRead: HookFor<"settings.read"> = async ($, e, next) => {
 	const config =
 		(await $.env.get("CLAUDE_CONFIG_DIR")) ??
 		`${await $.env.get("HOME")}/.claude`;
-	const held = new Set(
-		(
-			await Promise.all([
-				namesIn($, ".claude/skills"),
-				namesIn($, ".claude/commands"),
-				namesIn($, `${config}/skills`),
-				namesIn($, `${config}/commands`),
-			])
-		).flat(),
-	);
+	const awaited = await Promise.all([
+		namesIn($, ".claude/skills"),
+		namesIn($, ".claude/commands"),
+		namesIn($, `${config}/skills`),
+		namesIn($, `${config}/commands`),
+	]);
+	const held = new Set(awaited.flat());
 	const own = answer.value["skillOverrides"];
 	return {
 		...answer,
@@ -180,7 +177,7 @@ const onSettingsRead: HookFor<"settings.read"> = async ($, e, next) => {
 	};
 };
 
-export const surface = (on: On, options: PluginOptions): void => {
+const textHooks = (on: On): void => {
 	on("prompt.compose", () => ({
 		sections: [{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" }],
 	}));
@@ -218,7 +215,9 @@ export const surface = (on: On, options: PluginOptions): void => {
 	on("skill.prompt", { skill: "init" }, (_$, e, next) =>
 		e.source === "built-in" ? { text: INTERVIEW_TEXT } : next(e),
 	);
+};
 
+const guardHooks = (on: On, options: PluginOptions): void => {
 	on(
 		"classic.SessionStart",
 		{ source: ["startup", "clear", "compact"] },
@@ -259,4 +258,9 @@ export const surface = (on: On, options: PluginOptions): void => {
 		{ command: [...OFF_COMMANDS] },
 		async (_$, e, next) => ({ ...(await next(e)), isHidden: true }),
 	);
+};
+
+export const surface = (on: On, options: PluginOptions): void => {
+	textHooks(on);
+	guardHooks(on, options);
 };

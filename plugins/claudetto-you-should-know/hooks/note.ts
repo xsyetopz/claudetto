@@ -6,7 +6,6 @@ import {
 } from "./texts.ts";
 
 export const LIMITS = {
-	checkEvery: 6,
 	clearAfterPrompts: 2,
 	freeIgnores: 2,
 	maxSkips: 16,
@@ -54,12 +53,12 @@ export interface Row {
 	readonly askedTurn: string;
 }
 
-const LEARN = /^learn[ \t]*:[ \t]*/i;
-const EXPLAIN = /^explain[ \t]*:[ \t]*/i;
-const TAG = /^tag[ \t]*:[ \t]*(.*)$/i;
-const FENCE = /^`{3}/;
-const FINAL_PERIOD = /\.$/;
-const TITLE = /^(?:\*\*([^*]+)\*\*|#{1,6}[ \t]*(.+))$/;
+const LEARN = /^learn[ \t]*:[ \t]*/iu;
+const EXPLAIN = /^explain[ \t]*:[ \t]*/iu;
+const TAG = /^tag[ \t]*:[ \t]*(.*)$/iu;
+const FENCE = /^`{3}/u;
+const FINAL_PERIOD = /\.$/u;
+const TITLE = /^(?:\*\*([^*]+)\*\*|#{1,6}[ \t]*(.+))$/u;
 
 export const parseReply = (text: string): Offer | undefined => {
 	const lines = text.split("\n").map((l) => l.trim());
@@ -86,7 +85,7 @@ export const parseReply = (text: string): Offer | undefined => {
 	return {
 		line: said,
 		tag:
-			tagValue?.toLowerCase().replaceAll(/[\s-]+/g, " ") === "heads up"
+			tagValue?.toLowerCase().replaceAll(/[\s-]+/gu, " ") === "heads up"
 				? "Heads up"
 				: DEFAULT_TAG,
 		explanation,
@@ -169,14 +168,14 @@ export const parseCards = (text: string): readonly Card[] => {
 	for (const raw of text.split("\n")) {
 		fenced = feed(drafts, raw, fenced);
 	}
-	return drafts.slice(0, LIMITS.cards).map(finish);
+	return drafts.slice(0, LIMITS.cards).map((entry) => finish(entry));
 };
 
 const INVISIBLE = /(?![︎️])\p{Default_Ignorable_Code_Point}/gu;
-const AT_MENTION = /(^|[\s。、？！])@(?!\s)/g;
+const AT_MENTION = /(^|[\s。、？！])@(?!\s)/gu;
 const PLACEHOLDER =
-	/\[(?:Pasted text|Image|\.\.\.Truncated text|✦ Team setup guide) #\d+(?: \+\d+ lines)?\.*\]/g;
-const ULTRA = /(ultra)(code|plan|review|think)/gi;
+	/\[(?:Pasted text|Image|\.\.\.Truncated text|✦ Team setup guide) #\d+(?: \+\d+ lines)?\.*\]/gu;
+const ULTRA = /(ultra)(code|plan|review|think)/giu;
 
 const neutralise = (text: string): string =>
 	text
@@ -198,7 +197,7 @@ const cardText = (card: Card): string =>
 export const draftFor = (tag: string, view: View): string => {
 	const body = [
 		`${tag} · ${view.line}`,
-		...parseCards(view.explanation).map(cardText),
+		...parseCards(view.explanation).map((entry) => cardText(entry)),
 	]
 		.join("\n\n")
 		.split("\n")
@@ -252,9 +251,6 @@ export const skipsAfter = (ignored: number): number =>
 		? 0
 		: Math.min(LIMITS.maxSkips, 2 ** (ignored - LIMITS.freeIgnores - 1));
 
-export const isCheckStep = (index: number): boolean =>
-	index > 0 && index % LIMITS.checkEvery === 0;
-
 export const logEntry = (who: "person" | "assistant", text: string): string =>
 	`${who}: ${text.trim()}`.slice(0, LIMITS.entryChars);
 
@@ -277,44 +273,3 @@ export const withRow = (rows: readonly Row[], row: Row): readonly Row[] =>
 			.filter((other) => other.id !== row.id)
 			.toSorted((a, b) => keepRank(b) - keepRank(a)),
 	].slice(0, LIMITS.sessionsMax);
-
-const isView = (value: unknown): value is View =>
-	typeof value === "object" &&
-	value !== null &&
-	"kind" in value &&
-	(value.kind === "offer" ||
-		value.kind === "asked" ||
-		value.kind === "explained") &&
-	"line" in value &&
-	typeof value.line === "string" &&
-	"explanation" in value &&
-	typeof value.explanation === "string" &&
-	"shownAt" in value &&
-	typeof value.shownAt === "number";
-
-const isRow = (value: unknown): value is Row =>
-	typeof value === "object" &&
-	value !== null &&
-	"id" in value &&
-	typeof value.id === "string" &&
-	"view" in value &&
-	(value.view === null || isView(value.view)) &&
-	"tag" in value &&
-	typeof value.tag === "string" &&
-	"offeredTurn" in value &&
-	typeof value.offeredTurn === "string" &&
-	"askedTurn" in value &&
-	typeof value.askedTurn === "string";
-
-export const rowsOf = (value: unknown): readonly Row[] =>
-	Array.isArray(value) ? value.filter(isRow) : [];
-
-export const linesOf = (value: unknown): readonly string[] =>
-	Array.isArray(value)
-		? value.filter((item): item is string => typeof item === "string")
-		: [];
-
-export const countOf = (value: unknown): number =>
-	typeof value === "number" && Number.isFinite(value) && value > 0
-		? Math.floor(value)
-		: 0;

@@ -1,4 +1,4 @@
-import { GATE_RECREATE } from "../texts.ts";
+import { GATE_RECREATE } from "../texts-gate.ts";
 import { operands, writeTargets } from "./rules.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
 import { ask, fieldOf, type Verdict } from "./verdict.ts";
@@ -63,7 +63,8 @@ const place = async (
 	p: string,
 ): Promise<string> => {
 	if (p === "~" || p.startsWith("~/")) {
-		state.home ??= (await host.home()).trim();
+		const awaited = await host.home();
+		state.home ??= awaited.trim();
 		return place(host, state, cwd, `${state.home}${p.slice(1)}`);
 	}
 	const path = flatten(p.startsWith("/") ? p : `${cwd}/${p}`);
@@ -103,9 +104,9 @@ const gone = async (
 	!state.removed.has(path) &&
 	!(await note(host, state, path));
 
-// `sed -i` on a missing file exits 1 and creates nothing. `touch` and the last operand of `ln` create what `writeTargets` leaves out.
+// `touch` and the last operand of `ln` create what `writeTargets` leaves out.
 const creates = (c: Command, name: string, args: string[]): string[] => {
-	if (name === "rm" || name === "sed") {
+	if (name === "rm") {
 		return [];
 	}
 	const files = operands(args);
@@ -116,16 +117,30 @@ const creates = (c: Command, name: string, args: string[]): string[] => {
 	];
 };
 
+/** Runs `each` on one item after another, since each call reads what the one before it recorded. */
+const inOrder = async <T extends object>(
+	items: readonly T[],
+	each: (item: T) => Promise<void>,
+	from = 0,
+): Promise<void> => {
+	const item = items[from];
+	if (item === undefined) {
+		return;
+	}
+	await each(item);
+	await inOrder(items, each, from + 1);
+};
+
 const bashRecreates = async (
 	host: Host,
 	state: Recreation,
 	cwd: string,
 	command: string,
 ): Promise<Verdict | undefined> => {
-	const programs = parse(command).commands.map((c) => ({
-		c,
-		...programOf(c),
-	}));
+	const programs = parse(command).commands.map((c) => {
+		const { name, args } = programOf(c);
+		return { c, name, args };
+	});
 	// Existence is read before the command runs, so an operand it creates is not "seen".
 	await Promise.all(
 		programs
@@ -134,7 +149,11 @@ const bashRecreates = async (
 	);
 	// A removal counts only once the command has run (`saw`); here it holds for the commands after it in the same text.
 	const removing = new Set<string>();
-	for (const { c, name, args } of programs) {
+	let recreated = false;
+	await inOrder(programs, async ({ c, name, args }) => {
+		if (recreated) {
+			return;
+		}
 		const lost = await Promise.all(
 			creates(c, name, args)
 				.filter((t) => !t.startsWith("/dev/"))
@@ -144,7 +163,8 @@ const bashRecreates = async (
 				}),
 		);
 		if (lost.some(Boolean)) {
-			return ask(GATE_RECREATE);
+			recreated = true;
+			return;
 		}
 		const removed = await Promise.all(
 			removals(name, args).map((r) => place(host, state, cwd, r)),
@@ -152,8 +172,8 @@ const bashRecreates = async (
 		for (const path of removed) {
 			removing.add(path);
 		}
-	}
-	return undefined;
+	});
+	return recreated ? ask(GATE_RECREATE) : undefined;
 };
 
 const filePath = (input: unknown): string | undefined =>
@@ -183,24 +203,28 @@ const afterBash = async (
 	command: string,
 ): Promise<void> => {
 	const cwd = await host.cwd();
-	await Promise.all(
-		parse(command).commands.flatMap((c) => {
-			const { name, args } = programOf(c);
-			return [
-				...(name === "ls" ? [listed(host, state, cwd, args)] : []),
-				...removals(name, args).map(async (r) => {
+	const work: Promise<void>[] = [];
+	for (const c of parse(command).commands) {
+		const { name, args } = programOf(c);
+		if (name === "ls") {
+			work.push(listed(host, state, cwd, args));
+		}
+		for (const r of removals(name, args)) {
+			work.push(
+				(async () => {
 					const path = await place(host, state, cwd, r);
 					// A failed `rm` leaves the file, so only a path that is gone was removed.
 					if (!(await host.exists(path))) {
 						state.removed.add(path);
 					}
-				}),
-			];
-		}),
-	);
+				})(),
+			);
+		}
+	}
+	await Promise.all(work);
 };
 
-// The main loop of 2.1.319 has no Glob or Grep, but an agent whose `tools` names them does (probe-18-1).
+// The main loop has no Glob or Grep, but an agent whose `tools` names them does.
 const LISTERS = new Set(["Glob", "Grep"]);
 
 /** Records what a successful call read, wrote, listed, or removed. A file tool takes an absolute path, so no folder is needed. */
@@ -223,7 +247,9 @@ export const saw = async (
 			text
 				.split("\n")
 				.filter((line) => line.startsWith("/"))
-				.map(async (line) =>{  see(state, await place(host, state, "", line)); }),
+				.map(async (line) => {
+					see(state, await place(host, state, "", line));
+				}),
 		);
 	}
 };
@@ -231,11 +257,12 @@ export const saw = async (
 // After a `--resume` the transcript holds the calls of the earlier run; a call without a text is still in flight, and the current one is. A transcript that cannot be read leaves the state empty, as a fresh session starts. It runs before the first call is recorded, so its older calls never overwrite a newer record.
 const replay = (host: Host, state: Recreation): Promise<void> => {
 	state.replayed ??= (async () => {
-		for (const t of await host.past().catch(() => [])) {
+		const calls = await host.past().catch(() => []);
+		await inOrder(calls, async (t) => {
 			if (t.text !== undefined && !t.isError) {
 				await saw(host, state, t.tool, t.input, t.text);
 			}
-		}
+		});
 	})();
 	return state.replayed;
 };

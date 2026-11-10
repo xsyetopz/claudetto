@@ -1,11 +1,11 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { answersOf, errorOf, startRelay } from "./relay.ts";
 
-const SSE = [
+const EVENTS: readonly (readonly [string, object])[] = [
 	[
 		"message_start",
 		{
@@ -41,12 +41,11 @@ const SSE = [
 		{ delta: { stop_reason: "tool_use" }, usage: { output_tokens: 42 } },
 	],
 	["message_stop", {}],
-]
-	.map(
-		([type, data]) =>
-			`event: ${type}\ndata: ${JSON.stringify({ type, ...(data as object) })}\n\n`,
-	)
-	.join("");
+];
+const SSE = EVENTS.map(
+	([type, data]) =>
+		`event: ${type}\ndata: ${JSON.stringify({ type, ...data })}\n\n`,
+).join("");
 
 const stops: (() => void)[] = [];
 afterEach(() => {
@@ -69,9 +68,9 @@ test("the relay forwards the request and logs the upstream usage, context, and h
 			});
 		},
 	});
-	stops.push(() => upstream.stop(true));
-	const log = join(mkdtempSync(join(tmpdir(), "relay-")), "requests.jsonl");
-	writeFileSync(log, "");
+	stops.push(() => void upstream.stop(true));
+	const log = join(await mkdtemp(join(tmpdir(), "relay-")), "requests.jsonl");
+	await Bun.write(log, "");
 	const relay = startRelay({
 		log,
 		upstream: `http://127.0.0.1:${upstream.port}`,
@@ -94,7 +93,8 @@ test("the relay forwards the request and logs the upstream usage, context, and h
 	expect(await res.text()).toBe(SSE);
 	expect(seen).toEqual([{ key: "sk-test", body }]);
 	await Bun.sleep(50);
-	const record = JSON.parse(readFileSync(log, "utf8").trim());
+	const logged = await Bun.file(log).text();
+	const record: unknown = JSON.parse(logged.trim());
 	expect(record).toMatchObject({
 		n: 1,
 		requestId: "req_real_1",
@@ -106,25 +106,32 @@ test("the relay forwards the request and logs the upstream usage, context, and h
 	});
 });
 
+const assistant = JSON.stringify({ type: "assistant" });
+
+const turnLine = (isError: boolean, text: string): string =>
+	`${isError ? "" : `${assistant}\n`}${JSON.stringify({ type: "result", is_error: isError, result: text })}`;
+
+const resultLine = (text: string): string =>
+	JSON.stringify({ type: "result", result: text });
+
+const answerLine = (text: string): string =>
+	`${assistant}\n${resultLine(text)}`;
+
 test("errorOf returns the text of the last turn when it ended in an error", () => {
-	const result = (is_error: boolean, result: string) =>
-		`${is_error ? "" : `${JSON.stringify({ type: "assistant" })}\n`}${JSON.stringify({ type: "result", is_error, result })}`;
 	expect(
-		errorOf(`${result(false, "ok")}\n${result(true, "Invalid auth token")}\n`),
+		errorOf(
+			`${turnLine(false, "ok")}\n${turnLine(true, "Invalid auth token")}\n`,
+		),
 	).toBe("Invalid auth token");
 	expect(
-		errorOf(`${result(true, "old")}\n${result(false, "ok")}\n`),
+		errorOf(`${turnLine(true, "old")}\n${turnLine(false, "ok")}\n`),
 	).toBeUndefined();
 	expect(errorOf("")).toBeUndefined();
 });
 
-const assistant = JSON.stringify({ type: "assistant" });
-
 test("answersOf takes the last 10 turn results across the stream files", () => {
-	const line = (result: string) =>
-		`${assistant}\n${JSON.stringify({ type: "result", result })}`;
-	const first = `${[line("a"), line("b")].join("\n")}\n`;
-	const second = `${Array.from({ length: 10 }, (_, i) => line(`r${i}`)).join("\n")}\n`;
+	const first = `${[answerLine("a"), answerLine("b")].join("\n")}\n`;
+	const second = `${Array.from({ length: 10 }, (_, i) => answerLine(`r${i}`)).join("\n")}\n`;
 	expect(answersOf([first, second])).toEqual(
 		Array.from({ length: 10 }, (_, i) => `r${i}`),
 	);
@@ -132,13 +139,12 @@ test("answersOf takes the last 10 turn results across the stream files", () => {
 });
 
 test("a clear's or a handover's own result is not a turn result", () => {
-	const line = (result: string) => JSON.stringify({ type: "result", result });
 	const handover = [
 		JSON.stringify({ type: "command_lifecycle" }),
 		JSON.stringify({ type: "system", subtype: "compact_boundary" }),
 		JSON.stringify({ type: "user" }),
-		line(""),
+		resultLine(""),
 	];
-	const stream = `${[assistant, line("q1"), ...handover, assistant, line("q2")].join("\n")}\n`;
+	const stream = `${[assistant, resultLine("q1"), ...handover, assistant, resultLine("q2")].join("\n")}\n`;
 	expect(answersOf([stream])).toEqual(["q1", "q2"]);
 });

@@ -98,9 +98,9 @@ test("blank text has no cards", () => {
 });
 
 test("the back-off is nothing for two ignores, doubles after, and stops at 16", () => {
-	expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 30].map(skipsAfter)).toEqual([
-		0, 0, 1, 2, 4, 8, 16, 16, 16, 16,
-	]);
+	expect(
+		[1, 2, 3, 4, 5, 6, 7, 8, 9, 30].map((item) => skipsAfter(item)),
+	).toEqual([0, 0, 1, 2, 4, 8, 16, 16, 16, 16]);
 });
 
 test("a line equal to a known line except for case and final period is a repeat", () => {
@@ -118,13 +118,15 @@ test("a list keeps its last 50 lines and moves a repeated line to the end", () =
 	expect(remember(["A.", "B."], "a")).toEqual(["B.", "a"]);
 });
 
+const openRowOf = (n: number): Row => ({
+	...blankRow(`r${n}`),
+	view: { kind: "offer", line: "L.", explanation: "", shownAt: 0 },
+});
+
 test("a 33rd session row evicts a closed row first", () => {
-	const open = (n: number): Row => ({
-		...blankRow(`r${n}`),
-		view: { kind: "offer", line: "L.", explanation: "", shownAt: 0 },
-	});
-	const rows = Array.from({ length: 32 }, (_, n) =>
-		n === 7 ? blankRow("r7") : open(n),
+	const rows = Array.from({ length: 32 }, (_, n) => openRowOf(n)).with(
+		7,
+		blankRow("r7"),
 	);
 	const ids = withRow(rows, blankRow("s1")).map((r) => r.id);
 	expect(ids).toHaveLength(LIMITS.sessionsMax);

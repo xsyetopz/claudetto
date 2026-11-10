@@ -1,4 +1,4 @@
-import { gatePackage } from "../texts.ts";
+import { gatePackage } from "../texts-gate.ts";
 import type { Verdict } from "./verdict.ts";
 
 const BUN_FOR_NPM: Record<string, string> = {
@@ -64,12 +64,14 @@ export const packageVerdict = (
 	args: string[],
 	has: (file: string) => boolean,
 ): Verdict | undefined => {
-	const lock = BUN_LOCKS.find(has);
+	const lock = BUN_LOCKS.find((item) => has(item));
 	const verb = args.find((a) => !a.startsWith("-")) ?? "";
 	const bunTool =
 		NPM_FAMILY.has(name) ||
-		(name === "deno" && DENO_PACKAGE.has(verb) && !DENO_FILES.some(has));
-	if (lock && bunTool) {
+		(name === "deno" &&
+			DENO_PACKAGE.has(verb) &&
+			!DENO_FILES.some((item) => has(item)));
+	if (lock !== undefined && bunTool) {
 		return {
 			decision: "deny",
 			reason: gatePackage(lock, `\`${bunFor(name, args)}\``, name),

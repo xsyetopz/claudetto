@@ -9,6 +9,9 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- A subagent that runs past `agentMaxMinutes` (default 15) has each further tool call refused and is told to report and end; `0` turns the limit off.
+- The gate denies a `git commit` or `git push` that runs after a pipe in the same command without an earlier `set -o pipefail`, because the pipe returns its last command's exit code and a failing check piped into `tail` would let the commit through.
+- The Stop grader flags a reply that leaves doable work to the user: a check on part of a set, an untested guess, or a run named as the next step.
 - `/reply` quotes your mouse selection, or paragraph N of the last reply (`/reply N`), into the prompt as a `Re:` block.
 - Each finished subagent run is logged to `.claude/claudetto/runs.jsonl`, with whether the root agent edited the same files within its next 3 turns.
 - The root agent gives each edit task the command that checks it, and runs that command when the report arrives, before it builds on it.
@@ -20,11 +23,15 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies a linter's unsafe fixes (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes` of `oxlint`, `biome`, `ruff`); the safe `--fix` still runs.
 - `/claudetto:setup` sets `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to `1`, so a subagent has no `Agent` tool and cannot start an agent of its own.
 - The Stop grader flags, in an interactive session, a choice asked in plain text in place of the popup.
+- Hygiene runs `mo clean` at each session start, with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`.
 
 ### Changed
 
+- `claudetto-you-should-know` checks before each main-loop tool call that can change something, in place of every sixth step. The call waits for the check. When the check has a note, the call is stopped, and the agent brings the note to you before it acts. Reads, searches, and questions to you run with no check.
 - Four prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
-- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone.
+- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone. Any other command the sandbox blocks, such as `claude -p` reading its login from the Keychain, can retry outside the sandbox. Auto mode's classifier or your approval decides each retry, so the agent runs the command itself and no longer hands it to you.
+- The root prompt casts the agent as an expert junior software engineer working in your repository, and has it report a defect it caused as a third-person bug report rather than an admission.
+- The rule modules that `scripts/vendor-rules.ts` generates pass through `bun fmt` before they are written, so each one stays within the 300-line lint limit after formatting and is unchanged by the format check.
 - The root prompt has the agent weigh a disputed claim as a third party's claim before it checks it.
 - The root prompt drops "the" where the reader already knows the referent, in the style of instruction labels. It shrinks from 5,205 to 5,041 bytes.
 - The plugin manifests no longer pin a `version`, so `claude plugin update` and auto-update pick up each commit on `main`. The pinned `2.1.319` had kept installs on their cached copy. The release tags each plugin with the version in `package.json`.
@@ -39,6 +46,7 @@ Before 1.0.0, a release can change or remove behavior.
 ### Fixed
 
 - The claim check counts a popup answer as the person's words.
+- Hygiene finds old build folders in other checkouts again: it walks each folder in Mole's `purge_paths` besides the project, and never enters `~/.claude/projects` or `~/.claude/plugins`. Before, it walked only the project, whose own checkout always stays, so it found nothing outside a nested checkout.
 - The answer-first gate no longer denies the first tool call after a compaction, because it no longer reads the summary as an unanswered remark.
 - The `Bash` tool text names `cat`, `head`, `tail`, `sed`, `awk`, and `echo` as commands not to read or change a file with, as the stock text does, so the agent stops sending reads the gate refuses.
 - When the gate itself fails, it asks with the failure text and no longer runs the hooks beneath it.

@@ -1,6 +1,6 @@
 import type { EngineInterface } from "claude-code";
 
-import { secretScanFailed } from "./texts.ts";
+import { secretScanFailed } from "./texts-gate.ts";
 
 export const SCANNER = "betterleaks";
 export const SCANNER_INSTALL = ["brew", "install", SCANNER] as const;
@@ -82,7 +82,9 @@ export const secretsIn = async (
 	}
 	const found: unknown = JSON.parse(result.stdout);
 	if (!Array.isArray(found)) {
-		throw new TypeError(secretScanFailed(`unexpected output: ${result.stdout}`));
+		throw new TypeError(
+			secretScanFailed(`unexpected output: ${result.stdout}`),
+		);
 	}
 	const secrets = found.map((f: { Secret?: unknown }) =>
 		typeof f.Secret === "string" ? f.Secret : "",
@@ -90,7 +92,7 @@ export const secretsIn = async (
 	// Longest first, so a secret inside a longer one does not split it.
 	return [...new Set(secrets)]
 		.filter((secret) => secret !== "")
-		.sort((a, b) => b.length - a.length);
+		.toSorted((a, b) => b.length - a.length);
 };
 
 export const redactWith = (

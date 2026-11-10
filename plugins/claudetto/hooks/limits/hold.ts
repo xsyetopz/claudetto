@@ -8,6 +8,7 @@ import {
 	type Failures,
 	type Limits,
 	limitsOf,
+	overtimeText,
 	runningCount,
 	withFailure,
 } from "./admit.ts";
@@ -19,23 +20,21 @@ const capOf = async ($: EngineInterface): Promise<number | undefined> => {
 
 const heavyTokens = async ($: EngineInterface): Promise<number | undefined> => {
 	try {
-		return (await $.session.usage()).context.tokens;
+		const awaited = await $.session.usage();
+		return awaited.context.tokens;
 	} catch {
 		return undefined;
 	}
 };
 
-const ANY_TOOL = /./;
+const ANY_TOOL = /./u;
 
-/**
- * The ledgers sit in the closure of one registration: the hooks share one process, and no `await`
- * stands between a ledger's read and its write, so no version check is needed.
- */
-export const holdHooks = (on: On, options: PluginOptions): void => {
-	const limits: Limits = limitsOf(options);
+const spawnHook = (
+	on: On,
+	limits: Limits,
+	started: Map<string, number>,
+): void => {
 	let starts: readonly number[] = [];
-	let calls: readonly number[] = [];
-	let failures: Failures = {};
 	on("agent.spawn", async ($, e, next) => {
 		const crowd = crowded(runningCount(await $.agent.list()), await capOf($));
 		if (crowd !== undefined) {
@@ -44,8 +43,27 @@ export const holdHooks = (on: On, options: PluginOptions): void => {
 		const now = await $.clock.now();
 		const admitted = admitStart(starts, now, limits);
 		starts = admitted.next;
-		return admitted.out === undefined ? next(e) : { deny: admitted.out };
+		if (admitted.out !== undefined) {
+			return { deny: admitted.out };
+		}
+		const out = await next(e);
+		if (out.agentId !== undefined) {
+			started.set(out.agentId, now);
+		}
+		return out;
 	});
+};
+
+/**
+ * The ledgers sit in the closure of one registration: the hooks share one process, and no `await`
+ * stands between a ledger's read and its write, so no version check is needed.
+ */
+export const holdHooks = (on: On, options: PluginOptions): void => {
+	const limits: Limits = limitsOf(options);
+	let calls: readonly number[] = [];
+	let failures: Failures = {};
+	const started = new Map<string, number>();
+	spawnHook(on, limits, started);
 	// A user's interrupt did not fail by itself, so it is not counted.
 	on("classic.PostToolUseFailure", async ($, e, next) => {
 		if (e.is_interrupt !== true) {
@@ -64,7 +82,12 @@ export const holdHooks = (on: On, options: PluginOptions): void => {
 			return next(e);
 		}
 		const now = await $.clock.now();
-		const failed = failedText(failures, e, now, limits);
+		const failed =
+			overtimeText(
+				e.agentId === undefined ? undefined : started.get(e.agentId),
+				now,
+				limits,
+			) ?? failedText(failures, e, now, limits);
 		if (failed !== undefined) {
 			return { decision: "deny", reason: failed };
 		}

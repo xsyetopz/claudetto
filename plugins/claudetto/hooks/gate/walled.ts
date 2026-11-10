@@ -1,10 +1,11 @@
-import { gateWalled } from "../texts.ts";
+import { gateWalled } from "../texts-gate.ts";
+import { baseName } from "./program-at.ts";
 import { flatten } from "./recreate.ts";
-import { baseName, parse, programOf } from "./shell-words.ts";
+import { parse, programOf } from "./shell-words.ts";
 import { deny, fieldOf, type Verdict } from "./verdict.ts";
 
-const HOME = /^(?:~|\$HOME|\$\{HOME\})(?=\/|$)/;
-const DENY_READ = /^Read\((.+)\/\*\*\)$/;
+const HOME = /^(?:~|\$HOME|\$\{HOME\})(?=\/|$)/u;
+const DENY_READ = /^Read\((.+)\/\*\*\)$/u;
 // A Glob pattern is relative to its `path`.
 const FILE_FIELDS: Readonly<Record<string, readonly string[]>> = {
 	Read: ["file_path"],
@@ -108,12 +109,13 @@ export const unguarded = (
 	const guarded = new Set(
 		rules.flatMap((r: unknown) => {
 			const body = typeof r === "string" ? DENY_READ.exec(r)?.[1] : undefined;
-			if (body?.startsWith("//")) {
+			if (body === undefined) {
+				return [];
+			}
+			if (body.startsWith("//")) {
 				return [flatten(body)];
 			}
-			return body !== undefined && HOME.test(body)
-				? [placed(body, home, "/")]
-				: [];
+			return HOME.test(body) ? [placed(body, home, "/")] : [];
 		}),
 	);
 	return walls.filter((w) => !guarded.has(placed(w, home, "/")));

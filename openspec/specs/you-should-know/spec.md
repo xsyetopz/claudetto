@@ -14,19 +14,33 @@ The observer MUST stay off unless the `sideCheckEnabled` option is exactly `true
 - **WHEN** the plugin is installed and no option is set
 - **THEN** no check runs and the store stays empty
 
-### Requirement: Check Cadence
+### Requirement: Check Before Each Action
 
-The observer SHALL consider a check on every sixth main-loop step of a turn, never on a subagent step, and only on the `terminal` or `desktop` surface. It MUST NOT start a check while a view is open, while a check is in flight, or in a turn that already got an offer.
+The observer SHALL consider a check before each main-loop tool call, only on the `terminal` or `desktop` surface. It SHALL skip a subagent's call, a question to the person (`AskUserQuestion`, `mcp__claudetto__ask-user-question`), and a call to a tool that changes nothing: `Read`, `Grep`, `Glob`, `ToolSearch`, `WebSearch`, `WebFetch`, and `ListAgents`. The call SHALL wait for the check, whose log ends with the call.
 
-#### Scenario: A Subagent Step
+#### Scenario: Nothing to Say
 
-- **WHEN** a subagent's step index is a multiple of six
-- **THEN** no check is considered
+- **WHEN** the check replies `learn: none`
+- **THEN** the call runs
 
-#### Scenario: A Check Already in Flight
+#### Scenario: A Subagent Call
 
-- **WHEN** the next sixth step arrives before the last check answered
-- **THEN** no second request is made
+- **WHEN** a subagent calls `Bash`
+- **THEN** no check runs
+
+### Requirement: A Note Stops the Call
+
+When the check shows an offer, the observer MUST deny the call with the offer's line and an instruction to bring the note to the person and wait for their answer. While this turn's offer is open, each further checked call MUST be denied with the same line and no new request. The observer MUST NOT start a check while another view is open or in a turn whose offer was closed. A call that arrives during a check SHALL share that check's result.
+
+#### Scenario: A Noted Push
+
+- **WHEN** the main loop calls `Bash` with `git push`, and the check replies with a line
+- **THEN** the push does not run, its deny carries the line, and the offer opens
+
+#### Scenario: Two Calls in One Response
+
+- **WHEN** two calls arrive before the check answered
+- **THEN** one request is made, and its offer denies both
 
 ### Requirement: Back-Off after Ignored Offers
 
@@ -62,7 +76,7 @@ The observer SHALL show an offer only for a reply whose first `learn:` line hold
 
 #### Scenario: A Late Reply
 
-- **WHEN** a reply arrives after the turn that asked for it ended
+- **WHEN** a reply arrives after the session that asked for it ended
 - **THEN** nothing is shown
 
 ### Requirement: The Offer and Its Views

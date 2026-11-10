@@ -1,9 +1,14 @@
 // Rules for one spec: its heading structure, purpose, and each requirement block. No file access.
 import {
 	type Block,
-	blocks,
 	fenceMask,
+	lineBreaks,
+	masked,
 	norm,
+} from "./spec-lines.ts";
+import { find, type Node, tree } from "./spec-tree.ts";
+import {
+	blocks,
 	requirementText,
 	scenarioBodies,
 	scenarios,
@@ -23,25 +28,20 @@ export interface Report {
 const MIN_PURPOSE = 50;
 const MAX_REQUIREMENT = 500;
 const PLACEHOLDER =
-	/TBD - created by archiving change [\s\S]*\. Update Purpose after archive\./;
+	/TBD - created by archiving change [\s\S]*\. Update Purpose after archive\./u;
 const MARKER = /^(?:TBD|TODO)(?![\p{L}\p{N}\p{M}_])/u;
 const MARKER_SOFT =
 	/^(?:TBD|TODO)(?![\p{L}\p{N}\p{M}_])(?=[ \t]*(?:$|\n|[:\-–—.,;()[\]{}]))/iu;
-const TRIGGER = /(?:\*\*|__)(?:WHEN|GIVEN):?(?:\*\*|__)|\b(?:WHEN|GIVEN)\b/i;
-const OUTCOME = /(?:\*\*|__)THEN:?(?:\*\*|__)|\bTHEN\b/i;
-const BARE_TRIGGER = /\b(?:WHEN|GIVEN)\b/;
-const BARE_OUTCOME = /\bTHEN\b/;
-const KEYWORD = /\b(SHALL|MUST)\b/;
-const BOM = /^﻿/;
-const LINE_BREAK = /\r\n?/g;
-const HEADING = /^(#{1,6})\s+(.+)$/;
-const HEADING_START = /^(#{1,6})\s+/;
-const HEADING_MARKS = /^(#{1,6})/;
-const REQUIREMENTS_H2 = /^##\s+Requirements\s*$/i;
-const ANY_H2 = /^##\s+/;
+const TRIGGER = /(?:\*\*|__)(?:WHEN|GIVEN):?(?:\*\*|__)|\b(?:WHEN|GIVEN)\b/iu;
+const OUTCOME = /(?:\*\*|__)THEN:?(?:\*\*|__)|\bTHEN\b/iu;
+const BARE_TRIGGER = /\b(?:WHEN|GIVEN)\b/u;
+const BARE_OUTCOME = /\bTHEN\b/u;
+const KEYWORD = /\b(SHALL|MUST)\b/u;
+const REQUIREMENTS_H2 = /^##\s+Requirements\s*$/iu;
+const ANY_H2 = /^##\s+/u;
 const DELTA_HEADER =
-	/^##\s+(ADDED|MODIFIED|REMOVED|RENAMED)\s+Requirements\s*$/i;
-const REQUIREMENT_H3 = /^###\s*Requirement:\s*(.+)\s*$/i;
+	/^##\s+(ADDED|MODIFIED|REMOVED|RENAMED)\s+Requirements\s*$/iu;
+const REQUIREMENT_H3 = /^###\s*Requirement:\s*(.+)\s*$/iu;
 
 export const report = (issues: Issue[], strict: boolean): Report => ({
 	valid: !issues.some(
@@ -56,13 +56,11 @@ export const at = (
 ): Issue => ({ level, path, message });
 
 export const hasKeyword = (text: string) => KEYWORD.test(text);
-export const lineBreaks = (md: string) =>
-	md.replace(BOM, "").replaceAll(LINE_BREAK, "\n");
 
 export const withoutFences = (md: string) => {
 	const lines = lineBreaks(md).split("\n");
 	const mask = fenceMask(lines);
-	return lines.filter((_, i) => !mask[i]).join("\n");
+	return lines.filter((_, i) => !masked(mask, i)).join("\n");
 };
 
 const missingKeyword = (prefix: string, name: string, soft: boolean) => {
@@ -77,7 +75,7 @@ const stepIssues = (raw: string, label: string, path: string): Issue[] =>
 	scenarios(raw).flatMap((s) => {
 		const body = s.raw.split("\n").slice(1);
 		const mask = fenceMask(s.raw.split("\n")).slice(1);
-		const live = body.filter((_, i) => !mask[i]);
+		const live = body.filter((_, i) => !masked(mask, i));
 		if (!(body.join("").trim() && s.labeled)) {
 			return [];
 		}
@@ -148,75 +146,6 @@ export const blockIssues = (
 	return [...out, ...stepIssues(b.raw, tag, path)];
 };
 
-interface Node {
-	level: number;
-	title: string;
-	content: string;
-	children: Node[];
-}
-
-// A node owns the text up to the next heading of its level or higher.
-const nodeEnd = (
-	lines: string[],
-	mask: boolean[],
-	from: number,
-	level: number,
-) => {
-	let end = from + 1;
-	while (
-		end < lines.length &&
-		(mask[end] || !closes(lines[end] ?? "", level))
-	) {
-		end++;
-	}
-	return end;
-};
-const closes = (line: string, level: number) =>
-	HEADING_START.test(line) &&
-	(HEADING_MARKS.exec(line)?.[1]?.length ?? 0) <= level;
-
-const tree = (md: string): Node[] => {
-	const lines = lineBreaks(md).split("\n");
-	const mask = fenceMask(lines);
-	const roots: Node[] = [];
-	const stack: Node[] = [];
-	for (const [i, line] of lines.entries()) {
-		const m = mask[i] ? null : HEADING.exec(line);
-		if (!m) {
-			continue;
-		}
-		const level = m[1]?.length ?? 1;
-		const node: Node = {
-			level,
-			title: (m[2] ?? "").trim(),
-			content: lines
-				.slice(i + 1, nodeEnd(lines, mask, i, level))
-				.join("\n")
-				.trim(),
-			children: [],
-		};
-		while ((stack.at(-1)?.level ?? 0) >= level && stack.length > 0) {
-			stack.pop();
-		}
-		(stack.at(-1)?.children ?? roots).push(node);
-		stack.push(node);
-	}
-	return roots;
-};
-
-const find = (nodes: Node[], title: string): Node | undefined => {
-	for (const n of nodes) {
-		const hit =
-			n.title.toLowerCase() === title.toLowerCase()
-				? n
-				: find(n.children, title);
-		if (hit) {
-			return hit;
-		}
-	}
-	return undefined;
-};
-
 interface Region {
 	start: number;
 	end: number;
@@ -258,7 +187,7 @@ const lineIssues = (line: string, i: number, r: Region): Issue[] => {
 const structureIssues = (md: string): Issue[] => {
 	const raw = lineBreaks(md).split("\n");
 	const mask = fenceMask(raw);
-	const lines = raw.map((l, i) => (mask[i] ? "" : l));
+	const lines = raw.map((l, i) => (masked(mask, i) ? "" : l));
 	const start = lines.findIndex((l) => REQUIREMENTS_H2.test(l));
 	const next =
 		start === -1 ? -1 : lines.findIndex((l, i) => i > start && ANY_H2.test(l));
@@ -274,7 +203,7 @@ const isPlaceholder = (purpose: string) => {
 	const lines = purpose.split("\n");
 	const mask = fenceMask(lines);
 	const prose = lines
-		.filter((_, i) => !mask[i])
+		.filter((_, i) => !masked(mask, i))
 		.join("\n")
 		.trim();
 	return (
@@ -344,7 +273,9 @@ export const validateSpec = (md: string, strict: boolean): Report => {
 		...structureIssues(md),
 		...purposeIssues(purpose),
 		...reqs.children.flatMap(childIssues),
-		...blocks(section(md, "Requirements") ?? "").flatMap(blockRules),
+		...blocks(section(md, "Requirements") ?? "").flatMap((item, index) =>
+			blockRules(item, index),
+		),
 	];
 	return report(issues, strict);
 };

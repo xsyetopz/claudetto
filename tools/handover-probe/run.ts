@@ -1,22 +1,15 @@
-import {
-	existsSync,
-	mkdirSync,
-	mkdtempSync,
-	readFileSync,
-	writeFileSync,
-} from "node:fs";
+import { mkdir, mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 import { type Arm, OFF } from "./arms.ts";
 import { eventsOf } from "./events.ts";
-import { answersOf, errorOf, resultsOf, startRelay } from "./relay.ts";
-import { type LogRecord, startFake } from "./server.ts";
-import { promptOf, TURNS } from "./task.ts";
+import { finished, readLog, resultsIn, settle, streamOf } from "./log-io.ts";
+import { answersOf, errorOf, startRelay } from "./relay.ts";
+import { type Fake, type LogRecord, startFake } from "./server.ts";
+import { promptOf, type Turn, TURNS } from "./task.ts";
 
 const PLUGIN_DIR = resolve(import.meta.dir, "../../plugins/claudetto");
-const SETTLE_MS = 1500;
-const TURN_TIMEOUT_MS = 600_000;
 
 export interface RunResult {
 	readonly records: readonly LogRecord[];
@@ -29,78 +22,78 @@ export interface RunResult {
 	readonly answers: readonly string[];
 }
 
-const readLog = (path: string): LogRecord[] =>
-	readFileSync(path, "utf8")
-		.split("\n")
-		.filter((l) => l !== "")
-		.map((l) => JSON.parse(l) as LogRecord);
+interface Setup {
+	readonly arm: Arm;
+	readonly paid: boolean;
+	readonly dir: string;
+	readonly project: string;
+	readonly fakePort: number;
+	readonly sinkPort: number;
+}
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/** Phase 2 runs only in an arm that restarts, so its file may not exist. */
-const streamOf = (dir: string, phase: 1 | 2): string => {
-	const path = join(dir, `stream-${phase}.jsonl`);
-	return existsSync(path) ? readFileSync(path, "utf8") : "";
+/** Phase 1 runs the arm as set; the phase after the compactions has the built-in compaction off and the handover on. */
+const settingsOf = (arm: Arm, phase: 1 | 2): string => {
+	const phased = arm.handoverAfterCompactions !== undefined;
+	const handover = phased && phase === 1 ? OFF : arm.handoverTokens;
+	return JSON.stringify({
+		pluginConfigs: {
+			"claudetto@inline": { options: { handoverThresholdTokens: handover } },
+		},
+	});
 };
 
-const resultsIn = (stream: string): number => resultsOf([stream]).length;
-
-/** Waits for the turn's `result` line: a real turn can pause longer than the quiet period between its requests. */
-const finished = async (
-	dir: string,
-	phase: 1 | 2,
-	before: number,
-): Promise<void> => {
-	const start = Date.now();
-	while (
-		resultsIn(streamOf(dir, phase)) <= before &&
-		Date.now() - start < TURN_TIMEOUT_MS
-	) {
-		await sleep(200);
-	}
+const envOf = (s: Setup, phase: 1 | 2): Record<string, string | undefined> => {
+	const compacting = s.arm.autoCompactPct !== undefined && phase === 1;
+	return {
+		...process.env,
+		ANTHROPIC_BASE_URL: `http://127.0.0.1:${s.fakePort}`,
+		...(s.paid ? {} : { ANTHROPIC_API_KEY: "sk-ant-fake" }),
+		CLAUDE_CONFIG_DIR: join(s.dir, "config"),
+		HTTPS_PROXY: `http://127.0.0.1:${s.sinkPort}`,
+		HTTP_PROXY: `http://127.0.0.1:${s.sinkPort}`,
+		NO_PROXY: "127.0.0.1,localhost",
+		CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
+		DISABLE_TELEMETRY: "1",
+		ENABLE_TOOL_SEARCH: "false",
+		CLAUDE_CODE_AUTO_COMPACT_WINDOW: "200000",
+		...(compacting
+			? { CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(s.arm.autoCompactPct) }
+			: { DISABLE_AUTO_COMPACT: "1" }),
+	};
 };
 
-/** Waits until the server log has been quiet for `SETTLE_MS`: a handover or a clear runs from a timer after the turn's result. */
-const settle = async (log: string): Promise<void> => {
-	const start = Date.now();
-	let last = readLog(log).length;
-	let quietSince = Date.now();
-	while (
-		Date.now() - quietSince < SETTLE_MS &&
-		Date.now() - start < TURN_TIMEOUT_MS
-	) {
-		await sleep(200);
-		const now = readLog(log).length;
-		if (now !== last) {
-			last = now;
-			quietSince = Date.now();
-		}
-	}
-};
-
-/** One run of one arm: a fresh scratch project and config dir, the fake API, and the plugin from the repo. Nothing leaves 127.0.0.1: a proxy sink catches any CONNECT. */
-export const runArm = async (
-	arm: Arm,
-	index: number,
-	paid: boolean,
-): Promise<RunResult> => {
-	const dir = mkdtempSync(
-		join(process.env.TMPDIR ?? tmpdir(), `probe-${arm.name}-${index}-`),
+const startClaude = (s: Setup, phase: 1 | 2) =>
+	Bun.spawn(
+		[
+			"claude",
+			"-p",
+			...(phase === 2 ? ["--continue"] : []),
+			"--input-format",
+			"stream-json",
+			"--output-format",
+			"stream-json",
+			"--verbose",
+			"--plugin-dir",
+			PLUGIN_DIR,
+			"--settings",
+			settingsOf(s.arm, phase),
+			"--allowedTools",
+			"mcp__claudetto__handoff",
+			"--debug-file",
+			join(s.dir, `debug-${phase}.log`),
+		],
+		{
+			cwd: s.project,
+			stdin: "pipe",
+			stdout: Bun.file(join(s.dir, `stream-${phase}.jsonl`)),
+			stderr: Bun.file(join(s.dir, `stderr-${phase}.txt`)),
+			env: envOf(s, phase),
+		},
 	);
-	const project = join(dir, "project");
-	mkdirSync(project);
-	Bun.spawnSync(["git", "init", "-q"], { cwd: project });
-	const log = join(dir, "requests.jsonl");
-	writeFileSync(log, "");
-	const fake = paid
-		? startRelay({
-				log,
-				upstream:
-					process.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com",
-			})
-		: startFake({ log, handoffOnBoundary: arm.handoffOnBoundary });
-	const outside: string[] = [];
-	const sink = Bun.listen({
+type Claude = ReturnType<typeof startClaude>;
+
+const startSink = (outside: string[]) =>
+	Bun.listen({
 		hostname: "127.0.0.1",
 		port: 0,
 		socket: {
@@ -110,113 +103,131 @@ export const runArm = async (
 			},
 		},
 	});
-	const phased = arm.handoverAfterCompactions !== undefined;
-	/** Phase 1 runs the arm as set; the phase after the compactions has the built-in compaction off and the handover on. */
-	const start = (phase: 1 | 2) => {
-		const handover = phased && phase === 1 ? OFF : arm.handoverTokens;
-		const compacting = arm.autoCompactPct !== undefined && phase === 1;
-		const settings = {
-			pluginConfigs: {
-				"claudetto@inline": {
-					options: { handoverThresholdTokens: handover },
-				},
-			},
-		};
-		return Bun.spawn(
-			[
-				"claude",
-				"-p",
-				...(phase === 2 ? ["--continue"] : []),
-				"--input-format",
-				"stream-json",
-				"--output-format",
-				"stream-json",
-				"--verbose",
-				"--plugin-dir",
-				PLUGIN_DIR,
-				"--settings",
-				JSON.stringify(settings),
-				"--allowedTools",
-				"mcp__claudetto__handoff",
-				"--debug-file",
-				join(dir, `debug-${phase}.log`),
-			],
-			{
-				cwd: project,
-				stdin: "pipe",
-				stdout: Bun.file(join(dir, `stream-${phase}.jsonl`)),
-				stderr: Bun.file(join(dir, `stderr-${phase}.txt`)),
-				env: {
-					...process.env,
-					ANTHROPIC_BASE_URL: `http://127.0.0.1:${fake.port}`,
-					...(paid ? {} : { ANTHROPIC_API_KEY: "sk-ant-fake" }),
-					CLAUDE_CONFIG_DIR: join(dir, "config"),
-					HTTPS_PROXY: `http://127.0.0.1:${sink.port}`,
-					HTTP_PROXY: `http://127.0.0.1:${sink.port}`,
-					NO_PROXY: "127.0.0.1,localhost",
-					CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
-					DISABLE_TELEMETRY: "1",
-					ENABLE_TOOL_SEARCH: "false",
-					CLAUDE_CODE_AUTO_COMPACT_WINDOW: "200000",
-					...(compacting
-						? { CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(arm.autoCompactPct) }
-						: { DISABLE_AUTO_COMPACT: "1" }),
-				},
-			},
+
+interface Run {
+	readonly setup: Setup;
+	readonly index: number;
+	readonly log: string;
+	readonly fake: Fake;
+	readonly sink: ReturnType<typeof startSink>;
+	readonly turnOf: Map<number, number>;
+	proc: Claude;
+	phase: 1 | 2;
+}
+
+const send = async (proc: Claude, text: string): Promise<void> => {
+	await proc.stdin.write(
+		`${JSON.stringify({ type: "user", message: { role: "user", content: text } })}\n`,
+	);
+	await proc.stdin.flush();
+};
+
+const compactions = async (log: string): Promise<number> =>
+	eventsOf(await readLog(log)).filter((e) => e.type === "compaction").length;
+
+const playTurn = async (run: Run, i: number, turn: Turn): Promise<void> => {
+	const { arm, dir } = run.setup;
+	const before = resultsIn(await streamOf(dir, run.phase));
+	await send(run.proc, promptOf(turn, arm));
+	await finished(dir, run.phase, before);
+	const error = errorOf(await streamOf(dir, run.phase));
+	if (error !== undefined) {
+		run.proc.kill();
+		run.fake.stop();
+		run.sink.stop(true);
+		throw new Error(
+			`arm ${arm.name} run ${run.index}, turn ${i + 1}: ${error} (run dir ${dir})`,
 		);
-	};
-	const turnOf = new Map<number, number>();
-	let phase: 1 | 2 = 1;
-	let proc = start(phase);
-	const send = (text: string) => {
-		proc.stdin.write(
-			`${JSON.stringify({ type: "user", message: { role: "user", content: text } })}\n`,
-		);
-		proc.stdin.flush();
-	};
-	const compactions = () =>
-		eventsOf(readLog(log)).filter((e) => e.type === "compaction").length;
-	for (const [i, turn] of TURNS.entries()) {
-		const before = resultsIn(streamOf(dir, phase));
-		send(promptOf(turn, arm));
-		await finished(dir, phase, before);
-		const error = errorOf(streamOf(dir, phase));
-		if (error !== undefined) {
-			proc.kill();
-			fake.stop();
-			sink.stop(true);
-			throw new Error(
-				`arm ${arm.name} run ${index}, turn ${i + 1}: ${error} (run dir ${dir})`,
-			);
-		}
-		await settle(log);
-		for (const r of readLog(log)) {
-			if (!turnOf.has(r.n)) {
-				turnOf.set(r.n, i);
-			}
-		}
-		if (
-			phase === 1 &&
-			phased &&
-			compactions() >= (arm.handoverAfterCompactions ?? 0)
-		) {
-			proc.stdin.end();
-			await proc.exited;
-			phase = 2;
-			proc = start(phase);
+	}
+	await settle(run.log);
+	for (const r of await readLog(run.log)) {
+		if (!run.turnOf.has(r.n)) {
+			run.turnOf.set(r.n, i);
 		}
 	}
-	proc.stdin.end();
-	await proc.exited;
-	fake.stop();
-	sink.stop(true);
-	const records = readLog(log);
+	const restarts = arm.handoverAfterCompactions !== undefined;
+	if (
+		run.phase === 1 &&
+		restarts &&
+		(await compactions(run.log)) >= (arm.handoverAfterCompactions ?? 0)
+	) {
+		await run.proc.stdin.end();
+		await run.proc.exited;
+		run.phase = 2;
+		run.proc = startClaude(run.setup, 2);
+	}
+};
+
+const playFrom = async (run: Run, i: number): Promise<void> => {
+	const turn = TURNS[i];
+	if (turn === undefined) {
+		return;
+	}
+	await playTurn(run, i, turn);
+	await playFrom(run, i + 1);
+};
+
+const finish = async (
+	run: Run,
+	outside: readonly string[],
+): Promise<RunResult> => {
+	const { dir } = run.setup;
+	await run.proc.stdin.end();
+	await run.proc.exited;
+	run.fake.stop();
+	run.sink.stop(true);
+	await run.fake.flushed();
+	const records = await readLog(run.log);
 	return {
 		records,
 		hosts: [...new Set(records.map((r) => r.host))],
 		outside,
 		dir,
-		turnOf,
-		answers: answersOf([streamOf(dir, 1), streamOf(dir, 2)]),
+		turnOf: run.turnOf,
+		answers: answersOf([await streamOf(dir, 1), await streamOf(dir, 2)]),
 	};
+};
+
+/** One run of one arm: a fresh scratch project and config dir, the fake API, and the plugin from the repo. Nothing leaves 127.0.0.1: a proxy sink catches any CONNECT. */
+export const runArm = async (
+	arm: Arm,
+	index: number,
+	paid: boolean,
+): Promise<RunResult> => {
+	const dir = await mkdtemp(
+		join(process.env.TMPDIR ?? tmpdir(), `probe-${arm.name}-${index}-`),
+	);
+	const project = join(dir, "project");
+	await mkdir(project);
+	await Bun.spawn(["git", "init", "-q"], { cwd: project }).exited;
+	const log = join(dir, "requests.jsonl");
+	await Bun.write(log, "");
+	const fake = paid
+		? startRelay({
+				log,
+				upstream: process.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com",
+			})
+		: startFake({ log, handoffOnBoundary: arm.handoffOnBoundary });
+	const outside: string[] = [];
+	const sink = startSink(outside);
+	const setup: Setup = {
+		arm,
+		paid,
+		dir,
+		project,
+		fakePort: fake.port,
+		sinkPort: sink.port,
+	};
+	const run: Run = {
+		setup,
+		index,
+		log,
+		fake,
+		sink,
+		turnOf: new Map<number, number>(),
+		proc: startClaude(setup, 1),
+		phase: 1,
+	};
+	await playFrom(run, 0);
+	return finish(run, outside);
 };

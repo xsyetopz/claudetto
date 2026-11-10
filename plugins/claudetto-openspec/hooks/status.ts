@@ -16,18 +16,18 @@ export interface Progress {
 	open: { line: number; text: string }[];
 }
 
-const dirsIn = async (fs: Fs, dir: string) =>
-	(await fs.list(dir))
+const dirsIn = async (fs: Fs, dir: string) => {
+	const entries = await fs.list(dir);
+	return entries
 		.filter((e) => e.kind === "dir" && !e.name.startsWith("."))
 		.map((e) => e.name)
-		.sort();
+		.toSorted();
+};
 
 export const activeChanges = async (fs: Fs, root: string) => {
 	const dir = join(root, "openspec", "changes");
-	if (!(await fs.exists(dir))) {
-		return;
-	}
-	return (await dirsIn(fs, dir)).filter((n) => n !== "archive");
+	const names = (await fs.exists(dir)) ? await dirsIn(fs, dir) : undefined;
+	return names?.filter((n) => n !== "archive");
 };
 
 export const archivedChanges = async (fs: Fs, root: string) => {
@@ -45,7 +45,7 @@ export const progress = async (
 		ARTIFACTS.map((a) => fs.exists(join(dir, a.file))),
 	);
 	const done = new Set(
-		ARTIFACTS.filter((_, i) => present[i]).map((a) => a.name),
+		ARTIFACTS.filter((_, i) => present[i] === true).map((a) => a.name),
 	);
 	const artifacts = ARTIFACTS.map((a) => {
 		if (done.has(a.name)) {

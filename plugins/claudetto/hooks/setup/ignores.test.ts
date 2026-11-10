@@ -11,11 +11,24 @@ const textOf = (
 	path: string,
 ): string | undefined => edits.find((edit) => edit.path === path)?.after;
 
+const heldText = (
+	edits: ReturnType<typeof ignoreEdits>,
+	path: string,
+): string => textOf(edits, path) ?? "";
+
+const onlyEdit = (edits: ReturnType<typeof ignoreEdits>) => {
+	const [edit] = edits;
+	if (edit === undefined) {
+		throw new Error("no edit");
+	}
+	return edit;
+};
+
 describe("a repo with no ignore file", () => {
 	test("both files are made, each as its block", () => {
 		const edits = ignoreEdits({ files: GO, tracked: GO }, {});
 
-		const gitignore = textOf(edits, ".gitignore") ?? "";
+		const gitignore = heldText(edits, ".gitignore");
 		expect(gitignore.startsWith(`${BLOCK_START}\n`)).toBe(true);
 		expect(gitignore.endsWith(`${BLOCK_END}\n`)).toBe(true);
 		expect(gitignore).toContain("\nvendor/\n");
@@ -59,7 +72,7 @@ describe("a repo with lines of its own", () => {
 
 		const edits = ignoreEdits({ files, tracked: files }, { gitignore: held });
 
-		const text = textOf(edits, ".gitignore") ?? "";
+		const text = heldText(edits, ".gitignore");
 		expect(text.startsWith(held)).toBe(true);
 		const block = text.slice(held.length);
 		expect(block).not.toContain(".DS_Store");
@@ -74,7 +87,7 @@ describe("a repo with lines of its own", () => {
 
 		const edits = ignoreEdits({ files, tracked: files }, { gitignore: held });
 
-		const text = textOf(edits, ".gitignore") ?? "";
+		const text = heldText(edits, ".gitignore");
 		expect(text.slice(0, held.length)).toBe(held);
 		expect(text.slice(held.length).startsWith(`\n${BLOCK_START}\n`)).toBe(true);
 	});
@@ -103,7 +116,7 @@ describe("a rerun", () => {
 
 		const after = ignoreEdits({ files, tracked: files }, { gitignore: held });
 
-		const text = textOf(after, ".gitignore") ?? "";
+		const text = heldText(after, ".gitignore");
 		expect(text.startsWith("top\n\n")).toBe(true);
 		expect(text.endsWith(`${BLOCK_END}\nbottom\n`)).toBe(true);
 		expect(text).toContain("\ntarget/\n");
@@ -138,10 +151,7 @@ describe("the dialog text", () => {
 describe("`settle`", () => {
 	test("rebuilds the text from the file as it is when the user answers", () => {
 		const edits = ignoreEdits({ files: GO, tracked: GO }, {});
-		const edit = edits[0];
-		if (edit === undefined) {
-			throw new Error("no edit");
-		}
+		const edit = onlyEdit(edits);
 
 		const text = settle(edit, "added meanwhile\n");
 

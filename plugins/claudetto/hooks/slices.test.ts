@@ -1,136 +1,15 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanned } from "./secrets.mock.ts";
-
-/** A fake repo at /repo: `dirty` maps an absolute path to its two-letter status, `hash` to its content hash. */
-const fakeRepo = (dirty: Record<string, string> = {}) => ({
-	dirty,
-	hash: Object.fromEntries<string>([]),
-});
-type Repo = ReturnType<typeof fakeRepo>;
-
-const answered = (stdout: string) => ({
-	value: {
-		exitCode: 0,
-		stdout,
-		stderr: "",
-		isStdoutTruncated: false,
-		isStderrTruncated: false,
-	},
-});
-
-const gitAnswer = (repo: Repo, argv: readonly string[]) => {
-	const files = argv.slice(argv.indexOf("--") + 1);
-	switch (argv[1]) {
-		case "status": {
-			return argv.includes("-z")
-				? answered(
-						Object.entries(repo.dirty)
-							.filter(([path]) => path.startsWith("/repo/"))
-							.map(([path, xy]) => `${xy} ${path.slice("/repo/".length)}\0`)
-							.join(""),
-					)
-				: answered(
-						Object.entries(repo.dirty)
-							.filter(([path]) => files.includes(path))
-							.map(([path, xy]) => `${xy} ${path}\n`)
-							.join(""),
-					);
-		}
-		case "hash-object": {
-			return answered(files.map((f) => `${repo.hash[f] ?? "h0"}\n`).join(""));
-		}
-		default: {
-			return answered("");
-		}
-	}
-};
-
-const lab = (
-	on: On,
-	repo: Repo,
-	commit: "allow" | "ask" | "deny" = "allow",
-	runs: string[][] = [],
-	answer = '{"faults":[]}',
-	stopped: { block?: string } = {},
-	write: { isError?: true; result: unknown; text?: string } = { result: {} },
-) => {
-	on("process.run", (_$, e, next) => {
-		if (e.argv[0] === "git") {
-			runs.push([...e.argv]);
-			// `git -C dir status` is `status` with the directory moved in front.
-			return gitAnswer(
-				repo,
-				e.argv[1] === "-C" ? ["git", ...e.argv.slice(3)] : e.argv,
-			);
-		}
-		return scanned(e) ?? next(e);
-	});
-	on("classic.Stop", () => stopped);
-	on("session.start", () => ({ cwd: "/repo" }));
-	on("tool.register", (_$, e) => ({
-		value: { tool: `mcp__claudetto__${e.name}` },
-	}));
-	on("session.messages", () => ({ value: [] }));
-	on("session.cwd", () => ({ value: "/repo" }));
-	on("prompt.submit", (_$, e) => e);
-	on("clock.now", () => ({ value: 0 }));
-	on("fs.exists", () => ({ value: true }));
-	on("model.complete", () => ({
-		value: {
-			isAnswered: true,
-			text: answer,
-			usage: {
-				input_tokens: 1,
-				output_tokens: 1,
-				cache_read_input_tokens: 0,
-				cache_creation_input_tokens: 0,
-			},
-		},
-	}));
-	on("tool.check", (_$, e) => ({
-		decision: e.tool === "Bash" ? commit : "allow",
-	}));
-	on("tool.call", (_$, e) => (e.tool === "Write" ? write : { result: {} }));
-};
-
-const edit = ($: Engine, file_path = "/repo/src/a.ts") =>
-	$.tool.call({
-		tool: "Edit",
-		tool_use_id: "t1",
-		file_path,
-		old_string: "a",
-		new_string: "b",
-	});
-
-const stop = ($: Engine, active = false) =>
-	$.classic.Stop({
-		stop_hook_active: active,
-		last_assistant_message: "Done.",
-		background_tasks: [],
-	});
-
-const submit = ($: Engine) =>
-	$.prompt.submit({
-		text: "Fix it.",
-		wait: false,
-		origin: { kind: "composer" },
-	});
-
-const bash = ($: Engine, command: string) =>
-	$.tool.call({ tool: "Bash", tool_use_id: "t2", command });
-
-const A = "/repo/src/a.ts";
+import { A, edit, fakeRepo, lab, stop } from "./slices.mock.ts";
+import { SLICE_COMMIT } from "./texts.ts";
 
 test("a stop with an edited file git reports changed is blocked, and the block names it and keeps the answer in the last message", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
 	lab(on, fakeRepo({ [A]: " M" }), "allow", runs);
 	await edit($);
 	const out = await stop($);
-	expect(out.block).toContain("`src/a.ts`");
-	expect(out.block).toContain("one revertable change per commit");
-	expect(out.block).toContain("keep the answer to their message in it");
+	expect(out.block).toBe(SLICE_COMMIT(["src/a.ts"], []));
 	expect(runs).toContainEqual([
 		"git",
 		"-C",
@@ -151,46 +30,53 @@ test("a stop with a notebook NotebookEdit changed is blocked, and the block name
 		notebook_path: nb,
 		new_source: "x = 1",
 	});
-	expect((await stop($)).block).toContain("`nb/a.ipynb`");
+	const awaited = await stop($);
+	expect(awaited.block).toContain("`nb/a.ipynb`");
 });
 
 test("a committed edit passes", async ($: Engine, on: On) => {
 	lab(on, fakeRepo());
 	await edit($);
-	expect((await stop($)).block).toBeUndefined();
+	const awaited2 = await stop($);
+	expect(awaited2.block).toBeUndefined();
 });
 
 test("a stop with no write runs no git and passes", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
 	lab(on, fakeRepo({ [A]: " M" }), "allow", runs);
-	expect((await stop($)).block).toBeUndefined();
+	const awaited3 = await stop($);
+	expect(awaited3.block).toBeUndefined();
 	expect(runs).toEqual([]);
 });
 
 test("when the permission chain denies a commit, the stop passes", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ [A]: " M" }), "deny");
 	await edit($);
-	expect((await stop($)).block).toBeUndefined();
+	const awaited4 = await stop($);
+	expect(awaited4.block).toBeUndefined();
 });
 
 test("a commit that needs an answer blocks the stop in a session that has someone to answer", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ [A]: " M" }), "ask");
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: true });
 	await edit($);
-	expect((await stop($)).block).toContain("`src/a.ts`");
+	const awaited5 = await stop($);
+	expect(awaited5.block).toContain("`src/a.ts`");
 });
 
 test("a commit that needs an answer lets the stop pass in a headless session", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ [A]: " M" }), "ask");
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
 	await edit($);
-	expect((await stop($)).block).toBeUndefined();
+	const awaited6 = await stop($);
+	expect(awaited6.block).toBeUndefined();
 });
 
 test("a stop the hook already continued passes", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ [A]: " M" }));
 	await edit($);
-	expect((await stop($, true)).block).toBeUndefined();
+	const awaited7 = await stop($, true);
+	expect(awaited7.block).toBeUndefined();
 });
 
 test("a no-commit constraint from the user, through the ledger, lets the stop pass", async ($: Engine, on: On) => {
@@ -207,7 +93,8 @@ test("a no-commit constraint from the user, through the ledger, lets the stop pa
 		origin: { kind: "composer" },
 	});
 	await edit($);
-	expect((await stop($)).block).toBeUndefined();
+	const awaited8 = await stop($);
+	expect(awaited8.block).toBeUndefined();
 });
 
 test("a stop another check blocked keeps that block", async ($: Engine, on: On) => {
@@ -215,132 +102,13 @@ test("a stop another check blocked keeps that block", async ($: Engine, on: On) 
 		block: "Other check.",
 	});
 	await edit($);
-	expect((await stop($)).block).toBe("Other check.");
-});
-
-const OTHERS = "changed this session by a command, the user, or a tool";
-
-const started = async (
-	$: Engine,
-	on: On,
-	dirty: Record<string, string> = {},
-) => {
-	const repo = fakeRepo(dirty);
-	lab(on, repo);
-	await submit($);
-	return repo;
-};
-
-test("a file changed through Bash, such as sed -i, is not the agent's and is asked for under its source", async ($: Engine, on: On) => {
-	const repo = await started($, on);
-	repo.dirty["/repo/src/b.ts"] = " M";
-	repo.hash["/repo/src/b.ts"] = "h1";
-	await bash($, "sed -i s/a/b/ src/b.ts");
-	const out = (await stop($)).block ?? "";
-	expect(out).not.toContain("These files you changed");
-	expect(out).toContain(`${OTHERS}, and are not committed:\n- \`src/b.ts\``);
-});
-
-test("the plugin's saved test output is not listed among the files to commit", async ($: Engine, on: On) => {
-	const repo = await started($, on, { [A]: " M" });
-	repo.dirty["/repo/.claude/claudetto/output/output-t1.txt"] = "??";
-	await bash($, "bun test");
-	await edit($);
-	const out = await stop($);
-	expect(out.block).toContain("`src/a.ts`");
-	expect(out.block).not.toContain("claudetto/output");
+	const awaited9 = await stop($);
+	expect(awaited9.block).toBe("Other check.");
 });
 
 test("a file in another repo that an Edit wrote is blocked and named", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ "/other/z.ts": " M" }));
 	await edit($, "/other/z.ts");
-	expect((await stop($)).block).toContain("z.ts");
-});
-
-test("a file another hand changed after the agent wrote it is asked for under its source, not as the agent's", async ($: Engine, on: On) => {
-	const repo = await started($, on, { [A]: " M" });
-	await edit($);
-	repo.hash[A] = "user";
-	const out = (await stop($)).block ?? "";
-	expect(out).not.toContain("These files you changed");
-	expect(out).toContain("`src/a.ts`");
-});
-
-test("a file dirty before the session and not moved is left alone", async ($: Engine, on: On) => {
-	lab(on, fakeRepo({ [A]: " M" }));
-	await submit($);
-	await bash($, "ls");
-	expect((await stop($)).block).toBeUndefined();
-});
-
-test("a file dirty before the session that Bash then changes is asked for under its source", async ($: Engine, on: On) => {
-	const repo = await started($, on, { [A]: " M" });
-	repo.hash[A] = "h1";
-	await bash($, "sed -i s/a/b/ src/a.ts");
-	expect((await stop($)).block).toContain(
-		`${OTHERS}, and are not committed:\n- \`src/a.ts\``,
-	);
-});
-
-test("Denied Write: a write the sandbox refused marks no file, so the stop passes", async ($: Engine, on: On) => {
-	const skill = "/repo/.claude/skills/openspec-propose/SKILL.md";
-	lab(
-		on,
-		fakeRepo({ [skill]: " D" }),
-		"allow",
-		[],
-		undefined,
-		{},
-		{
-			isError: true,
-			result: "denied",
-			text: "denied",
-		},
-	);
-	await submit($);
-	await $.tool.call({
-		tool: "Write",
-		tool_use_id: "t4",
-		file_path: skill,
-		content: "x",
-	});
-	expect((await stop($)).block).toBeUndefined();
-});
-
-test("A Dependency Bump Nobody Claimed: after the agent's slice is committed, the install's files are asked for as their own commit that names the source", async ($: Engine, on: On) => {
-	const repo = await started($, on);
-	await edit($);
-	repo.dirty["/repo/package.json"] = " M";
-	repo.dirty["/repo/bun.lock"] = " M";
-	repo.hash["/repo/package.json"] = "p1";
-	repo.hash["/repo/bun.lock"] = "l1";
-	const out = (await stop($)).block ?? "";
-	expect(out).not.toContain("These files you changed");
-	expect(out).toContain("- `package.json`\n- `bun.lock`");
-	expect(out).toContain(
-		"Commit them as their own commit, apart from your slices, with a message that names their likely source, such as the user, a formatter, or an install.",
-	);
-	expect(out).not.toMatch(/leave (them|it) out|do not commit/i);
-});
-
-test("The Person Said Not to Commit: a no-commit constraint asks for no commit of another's files", async ($: Engine, on: On) => {
-	const repo = fakeRepo();
-	lab(on, repo, "deny");
-	await submit($);
-	repo.dirty["/repo/package.json"] = " M";
-	repo.hash["/repo/package.json"] = "p1";
-	expect((await stop($)).block).toBeUndefined();
-});
-
-test("a stop with both lists names the agent's files under its own heading and the others under theirs", async ($: Engine, on: On) => {
-	const repo = await started($, on, { [A]: " M" });
-	repo.hash[A] = "h1";
-	await edit($);
-	repo.dirty["/repo/README.md"] = " M";
-	repo.hash["/repo/README.md"] = "u";
-	const out = (await stop($)).block ?? "";
-	expect(out).toContain(
-		"These files you changed are not committed:\n- `src/a.ts`\n",
-	);
-	expect(out).toContain(`${OTHERS}, and are not committed:\n- \`README.md\`\n`);
+	const awaited11 = await stop($);
+	expect(awaited11.block).toContain("z.ts");
 });

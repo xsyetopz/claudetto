@@ -4,10 +4,10 @@ import { statusOf } from "../../plugins/claudetto/statusline/main.ts";
 import { width } from "../../plugins/claudetto/statusline/width.ts";
 import { BASE, linesOf, NOW_S, raw } from "./support.ts";
 
-const LONG_WORD = /\S{30,}/;
-const RUN_OF_SPACES = / {2,}/;
-const CLOCK_RESET = /↻[A-Z][a-z]{2} \d+ at \d+(?::\d+)?(?:am|pm)/;
-const COUNTDOWN_RESET = /↻2d0h/;
+const LONG_WORD = /\S{30,}/u;
+const RUN_OF_SPACES = / {2,}/u;
+const CLOCK_RESET = /↻[A-Z][a-z]{2} \d+ at \d+(?::\d+)?(?:am|pm)/u;
+const COUNTDOWN_RESET = /↻2d0h/u;
 
 describe("items keep no column, so one gap stands between two items", () => {
 	test("no line holds a run of two spaces", () => {
@@ -109,7 +109,7 @@ describe("thinking and fast mode carry a label", () => {
 });
 
 describe("nothing is written on a render", () => {
-	test("the rate limits in the input leave the module free of any write", async () => {
+	test("the rate limits in the input leave the module free of any write", () => {
 		const written: string[] = [];
 		const write = globalThis.Bun.write;
 		Object.assign(globalThis.Bun, {
@@ -162,10 +162,10 @@ describe("boundary: no line reaches the terminal edge", () => {
 	});
 
 	test("the last escape of a cut colored line is a reset, so no color leaks past the dots", () => {
-		const escapes = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+		const escapes = new RegExp(`${String.fromCodePoint(27)}\\[[0-9;]*m`, "gu");
 		for (const line of raw(wide, { COLUMNS: "30" }).split("\n")) {
 			const last = line.match(escapes)?.at(-1);
-			expect(last).toBe(`${String.fromCharCode(27)}[0m`);
+			expect(last).toBe(`${String.fromCodePoint(27)}[0m`);
 		}
 	});
 

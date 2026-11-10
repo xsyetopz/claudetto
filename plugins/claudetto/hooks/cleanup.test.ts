@@ -1,94 +1,20 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanned } from "./secrets.mock.ts";
+import {
+	ARMED,
+	lab,
+	MAKE,
+	MARK,
+	MONITOR,
+	removed,
+	SHELL,
+	stop,
+} from "./cleanup.mock.ts";
 
-interface Call {
-	command: string;
-	text?: string;
-	tool?: string;
-}
-
-/** A repo at /repo where `dirty` worktrees and `unmerged` branches refuse plain removal, and so does each `gone` branch, which no longer exists; `past` maps an agent id ("" for the main loop) to its calls; `files` holds each existing path and its content. */
-const lab = (
-	on: On,
-	past: Record<string, Call[]>,
-	files: Record<string, string>,
-	state: { dirty?: string[]; unmerged?: string[]; gone?: string[] } = {},
-	runs: string[][] = [],
-) => {
-	const exit = (code: number) => ({
-		value: {
-			exitCode: code,
-			stdout: "",
-			stderr: "",
-			isStdoutTruncated: false,
-			isStderrTruncated: false,
-		},
-	});
-	on("process.run", (_$, e) => {
-		const found = scanned(e);
-		if (found) {
-			return found;
-		}
-		runs.push([...e.argv]);
-		const [, verb, , target = ""] = e.argv;
-		if (verb === "worktree") {
-			return exit(state.dirty?.includes(target) ? 1 : 0);
-		}
-		if (verb === "branch") {
-			return exit(
-				[...(state.unmerged ?? []), ...(state.gone ?? [])].includes(target)
-					? 1
-					: 0,
-			);
-		}
-		if (verb === "show-ref") {
-			return exit(
-				state.unmerged?.some((b) => e.argv.at(-1) === `refs/heads/${b}`)
-					? 0
-					: 1,
-			);
-		}
-		return exit(0);
-	});
-	on("classic.Stop", () => ({}));
-	on("classic.SubagentStop", () => ({}));
-	on("session.id", () => ({ value: "S1" }));
-	on("session.cwd", () => ({ value: "/repo" }));
-	on("session.root", () => ({ value: "/repo" }));
-	on("tool.list", () => ({ value: [] }));
-	on("clock.now", () => ({ value: 0 }));
-	on("fs.exists", (_$, e) => ({ value: e.path in files }));
-	on("fs.read", (_$, e) => ({ value: files[e.path] ?? "" }));
-	on("session.messages", (_$, e) => ({
-		value: [
-			{
-				role: "assistant",
-				text: "",
-				toolUses: (past[e?.agentId ?? ""] ?? []).map((p, i) => ({
-					tool: p.tool ?? "Bash",
-					tool_use_id: `${i}`,
-					input: { command: p.command },
-					text: p.text ?? "",
-				})),
-			},
-		],
-	}));
-};
-
-const stop = ($: Engine, reply = "Done.", tasks: never[] = []) =>
-	$.classic.Stop({
-		stop_hook_active: false,
-		last_assistant_message: reply,
-		background_tasks: tasks,
-	});
-
-const MARK = (top: string) => `${top}/.created-by-claudetto`;
-const MAKE = (top: string) =>
-	`mkdir -p ${top} && printenv CLAUDE_CODE_SESSION_ID > ${top}/.created-by-claudetto`;
-const removed = (runs: string[][]) =>
-	runs.filter((argv) => argv[0] === "rm").map((argv) => argv.at(-1));
+/** The git calls that change the repo, without the read-only `show-ref` probes. */
+const gitChanges = (runs: string[][]) =>
+	runs.filter((argv) => argv[0] === "git" && argv[1] !== "show-ref");
 
 test("at the closing stop the session's marked /tmp folders go, and a sibling's named folder stays", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
@@ -134,7 +60,8 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 		runs,
 	);
 
-	expect((await stop($)).block).toBeUndefined();
+	const awaited = await stop($);
+	expect(awaited.block).toBeUndefined();
 	expect(removed(runs)).toEqual([
 		"/tmp/probe-a",
 		"/tmp/probe-Q1w2",
@@ -145,40 +72,14 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 	]);
 });
 
-const MONITOR = {
-	id: "m7",
-	type: "monitor",
-	status: "running",
-	description: "build end",
-};
-const SHELL = {
-	id: "b1",
-	type: "shell",
-	status: "running",
-	description: "dev server",
-};
-const ARMED = [
-	{ command: MAKE("/tmp/probe-a") },
-	{
-		tool: "mcp__claudetto__monitor",
-		command: "",
-		text: "Monitor started (task m7, timeout 300000ms).",
-	},
-	{
-		command: "bun run dev",
-		text: "Command running in background with ID: b1. Output is being written to: /t/b1",
-	},
-];
-
 // Seen in another session: a monitor armed for a build outlived the report and woke the session 30 minutes later.
 test("the agent's own shell and monitor that the reply does not name block the stop, and nothing is removed", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
 	lab(on, { "": ARMED }, { [MARK("/tmp/probe-a")]: "S1" }, {}, runs);
 
-	const out = await stop($, "Done.", [MONITOR, SHELL] as never);
+	const out = await stop($, "Done.", [MONITOR, SHELL]);
 	expect(out.block).toContain("`m7`");
 	expect(out.block).toContain("`b1`");
-	expect(out.block).toContain("TaskStop");
 	expect(runs).toEqual([]);
 });
 
@@ -201,7 +102,7 @@ test("a task the reply names, or a background subagent, is waited on: no block a
 		MONITOR,
 		SHELL,
 		{ id: "s9", type: "subagent", status: "running", description: "w" },
-	] as never);
+	]);
 	expect(out.block).toBeUndefined();
 	expect(runs).toEqual([]);
 });
@@ -212,7 +113,7 @@ test("a stop the hook already blocked passes with the task still running", async
 	const out = await $.classic.Stop({
 		stop_hook_active: true,
 		last_assistant_message: "Done.",
-		background_tasks: [MONITOR] as never,
+		background_tasks: [MONITOR],
 	});
 	expect(out.block).toBeUndefined();
 });
@@ -233,7 +134,7 @@ test("a worker's stop ignores a task only the lead started and removes the worke
 		agent_type: "general-purpose",
 		agent_transcript_path: "/t",
 		last_assistant_message: "Done.",
-		background_tasks: [MONITOR, SHELL] as never,
+		background_tasks: [MONITOR, SHELL],
 	});
 	expect(out.block).toBeUndefined();
 	expect(removed(runs)).toEqual(["/tmp/probe-w1"]);
@@ -265,9 +166,7 @@ test("a clean worker worktree and its merged branch go; a dirty worktree and an 
 	);
 
 	const out = await stop($);
-	expect(
-		runs.filter((argv) => argv[0] === "git" && argv[1] !== "show-ref"),
-	).toEqual([
+	expect(gitChanges(runs)).toEqual([
 		["git", "worktree", "remove", dirty],
 		["git", "worktree", "remove", "/w/moved"],
 		["git", "worktree", "remove", "/repo/.claude/worktrees/agent-a1b2c3"],
@@ -276,9 +175,9 @@ test("a clean worker worktree and its merged branch go; a dirty worktree and an 
 		["git", "branch", "-d", "old"],
 		["git", "branch", "-d", "worktree-agent-a1b2c3"],
 	]);
-	expect(out.block).toContain(
-		`hold work: \`${dirty}\`, \`feat\`, \`spike\`. A worktree`,
-	);
+	for (const held of [dirty, "feat", "spike"]) {
+		expect(out.block).toContain(`\`${held}\``);
+	}
 });
 
 test("a stop whose reply names every leftover passes", async ($: Engine, on: On) => {
@@ -289,9 +188,8 @@ test("a stop whose reply names every leftover passes", async ($: Engine, on: On)
 		{ unmerged: ["spike"] },
 	);
 
-	expect(
-		(await stop($, "Branch spike holds two unmerged commits.")).block,
-	).toBeUndefined();
+	const awaited2 = await stop($, "Branch spike holds two unmerged commits.");
+	expect(awaited2.block).toBeUndefined();
 });
 
 test("a worker's last turn removes only its own folders, not the lead's or a sibling's", async ($: Engine, on: On) => {

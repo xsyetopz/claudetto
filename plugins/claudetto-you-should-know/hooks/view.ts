@@ -71,7 +71,7 @@ const cardOf = (t: Table, card: Card): RenderElement =>
 		flexDirection: "column",
 		marginBottom: 1,
 		children: [
-			t.Text({ bold: true, children: card.title }),
+			t.Text({ weight: "semibold", children: card.title }),
 			card.lead !== "" && t.Text({ children: card.lead }),
 			card.sketch.length > 0 &&
 				t.Code({
@@ -91,23 +91,20 @@ const bodyOf = (t: Table, view: View): readonly RenderNode[] => {
 		: [];
 };
 
-export const drawView = (
-	t: Table,
-	input: {
-		surface: RenderSurface;
-		view: View;
-		tag: string;
-		press: (key: ButtonKey) => void;
-	},
-): RenderElement => {
+interface DrawInput {
+	surface: RenderSurface;
+	view: View;
+	tag: string;
+	press: (key: ButtonKey) => void;
+}
+
+const headOf = (t: Table, input: DrawInput): RenderElement | false => {
 	const { view } = input;
-	const keys: Partial<ButtonProps> =
-		input.surface === "terminal" ? { plain: true } : {};
 	const marker =
 		input.surface === "terminal"
 			? [t.Box({ width: 2, flexShrink: 0, children: "*" })]
 			: [];
-	const head =
+	return (
 		view.kind !== "asked" &&
 		t.Box({
 			flexDirection: "row",
@@ -121,7 +118,14 @@ export const drawView = (
 					],
 				}),
 			],
-		});
+		})
+	);
+};
+
+export const drawView = (t: Table, input: DrawInput): RenderElement => {
+	const { view } = input;
+	const keys: Partial<ButtonProps> =
+		input.surface === "terminal" ? { plain: true } : {};
 	const choices = t.Box({
 		flexDirection: "row",
 		flexWrap: "wrap",
@@ -134,7 +138,9 @@ export const drawView = (
 					key: choice.key,
 					label: choice.label,
 					...(choice.key === "dismiss" ? { role: "dismiss" } : {}),
-					onPress: () =>{  input.press(choice.key); },
+					onPress: () => {
+						input.press(choice.key);
+					},
 				}),
 			}),
 		),
@@ -142,6 +148,6 @@ export const drawView = (
 	return t.Box({
 		flexDirection: "column",
 		marginTop: 1,
-		children: [head, ...bodyOf(t, view), choices],
+		children: [headOf(t, input), ...bodyOf(t, view), choices],
 	});
 };

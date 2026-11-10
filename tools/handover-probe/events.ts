@@ -11,14 +11,15 @@ export interface Event {
 	readonly tokens: number;
 }
 
-const typeOf = (r: LogRecord): Event["type"] | undefined =>
-	r.calledHandoff
-		? "clear"
-		: r.kind === "summarizer"
-			? "compaction"
-			: r.kind === "fork"
-				? "handover"
-				: undefined;
+const typeOf = (r: LogRecord): Event["type"] | undefined => {
+	if (r.calledHandoff) {
+		return "clear";
+	}
+	if (r.kind === "summarizer") {
+		return "compaction";
+	}
+	return r.kind === "fork" ? "handover" : undefined;
+};
 
 export const eventsOf = (records: readonly LogRecord[]): readonly Event[] =>
 	records.flatMap((r, index) => {

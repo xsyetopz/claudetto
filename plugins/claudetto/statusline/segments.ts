@@ -27,20 +27,24 @@ const LIMITS = ["five_hour", "seven_day"] as const;
 
 /** The CLI unloads a plugin whose hooks crash its worker and says that `/reload-plugins` brings it back. */
 export const hooksOffText = ({ local, paint }: Ctx): Text =>
-	local.hooksOff
+	local.hooksOff === true
 		? paint.limit(`${ICON.error} claudetto hooks off: /reload-plugins`)
 		: undefined;
 
 export const folderText = ({ input, paint }: Ctx): Text => {
 	const dir =
 		str(sub(input, "workspace")?.["current_dir"]) ?? str(input["cwd"]);
-	return dir ? paint.bold(`${ICON.folder} ${baseName(dir)}`) : undefined;
+	return dir === undefined
+		? undefined
+		: paint.bold(`${ICON.folder} ${baseName(dir)}`);
 };
 
 /** A plain checkout reports no branch on stdin. */
 export const branchText = ({ input, local, paint }: Ctx): Text => {
 	const name = str(sub(input, "worktree")?.["branch"]) ?? local.branch;
-	return name ? paint.branch(`${ICON.branch} ${name}`) : undefined;
+	return name === undefined
+		? undefined
+		: paint.branch(`${ICON.branch} ${name}`);
 };
 
 /** `⇄ #12 approved`, or `!12` for a GitLab merge request, in the color of the review state. */
@@ -53,7 +57,7 @@ export const prText = ({ input, paint }: Ctx): Text => {
 	const state = str(request?.["review_state"]);
 	const mark = request?.["kind"] === "mr" ? "!" : "#";
 	return paint.review(state)(
-		`${ICON.pr} ${mark}${number}${state ? ` ${state}` : ""}`,
+		`${ICON.pr} ${mark}${number}${state === undefined ? "" : ` ${state}`}`,
 	);
 };
 
@@ -76,13 +80,13 @@ export const specText = ({ local, paint }: Ctx): Text => {
 export const modelText = ({ input, paint }: Ctx): Text => {
 	const model = sub(input, "model");
 	const name = str(model?.["display_name"]) ?? str(model?.["id"]);
-	if (!name) {
+	if (name === undefined) {
 		return undefined;
 	}
 	const effort = str(sub(input, "effort")?.["level"]);
 	return [
 		paint.model(`${ICON.model} ${name}`),
-		effort ? paint.dim(effort) : "",
+		effort === undefined ? "" : paint.dim(effort),
 		sub(input, "thinking")?.["enabled"] === true ? paint.dim("think") : "",
 		input["fast_mode"] === true ? paint.warn("fast") : "",
 	]
@@ -138,7 +142,7 @@ const moneyText = (paint: Paint, window: LimitWindow): string => {
 	const { used_usd: usd, limit_usd: cap, period } = window;
 	return typeof usd === "number" && typeof cap === "number"
 		? paint.dim(
-				`$${Math.round(usd)}/$${Math.round(cap)}${period ? ` ${period}` : ""}`,
+				`$${Math.round(usd)}/$${Math.round(cap)}${period === undefined ? "" : ` ${period}`}`,
 			)
 		: "";
 };
@@ -202,7 +206,9 @@ const LIMIT_ROWS: readonly [string, string, number | undefined][] = [
 export const limitTexts = (ctx: Ctx): Text[] =>
 	LIMIT_ROWS.map(([label, key, spanS]) => {
 		const window = sub(sub(ctx.input, "rate_limits"), key);
-		return window ? limitText(label, windowOf(window), spanS, ctx) : undefined;
+		return window === undefined
+			? undefined
+			: limitText(label, windowOf(window), spanS, ctx);
 	});
 
 const CAUSE_MAX = 24;
@@ -236,12 +242,10 @@ export const cacheText = ({ input, paint, now }: Ctx): Text => {
 	const ttl = str(cache["ttl"]);
 	const ratio = hit === undefined ? "" : ` ${Math.round(hit * 100)}%`;
 	const body = cache["warm"]
-		? `${expires === undefined ? "warm" : span(expires * 1000 - now)}${ttl ? `/${ttl}` : ""}`
+		? `${expires === undefined ? "warm" : span(expires * 1000 - now)}${ttl === undefined ? "" : `/${ttl}`}`
 		: `cold${cold === undefined ? "" : ` +${thousands(cold)}`}`;
 	const miss = missText(cache);
 	return (cache["warm"] ? paint.ok : paint.inactive)(
 		`${ICON.cache} ${body}${ratio}${miss === undefined ? "" : ` ${miss}`}`,
 	);
 };
-
-export type { Paint };

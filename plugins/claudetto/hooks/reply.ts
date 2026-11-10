@@ -11,10 +11,15 @@ const quote = (text: string): string =>
 		.map((line) => `> ${line}`.trimEnd())
 		.join("\n")}\n\n`;
 
+const quoteRequest = (text: string) => ({
+	text: quote(text),
+	mode: "append" as const,
+});
+
 /** The paragraphs of a reply, split on blank lines. */
 const partsOf = (reply: string): string[] =>
 	reply
-		.split(/\n\s*\n/)
+		.split(/\n\s*\n/u)
 		.map((p) => p.trim())
 		.filter((p) => p !== "");
 
@@ -32,16 +37,18 @@ const outline = (parts: string[]): string =>
  */
 export const reply = (on: On): void => {
 	on("command.run", { command: REPLY_COMMAND }, async ($, e) => {
-		let part = ((await $.ui.selection())?.text ?? "").trim();
+		const awaited = await $.ui.selection();
+		let part = (awaited?.text ?? "").trim();
 		if (part === "") {
-			const last = (await $.session.messages()).findLast(
+			const awaited2 = await $.session.messages();
+			const last = awaited2.findLast(
 				(m) => m.role === "assistant" && m.text.trim() !== "",
 			);
 			if (last === undefined) {
 				return { text: "There is no reply to answer yet." };
 			}
 			const parts = partsOf(last.text);
-			const n = Number.parseInt(e.args, 10);
+			const n = Math.trunc(Number(e.args));
 			if (!(n >= 1 && n <= parts.length)) {
 				return {
 					text: `Select text with the mouse and run /${REPLY_COMMAND}, or pick a paragraph with /${REPLY_COMMAND} N:\n${outline(parts)}`,
@@ -49,10 +56,7 @@ export const reply = (on: On): void => {
 			}
 			part = parts[n - 1] ?? "";
 		}
-		const { isFilled } = await $.prompt.fill({
-			text: quote(part),
-			mode: "append",
-		});
+		const { isFilled } = await $.prompt.fill(quoteRequest(part));
 		return {
 			text: isFilled
 				? "Quoted into the prompt. Type your answer below it."

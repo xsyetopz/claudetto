@@ -21,7 +21,7 @@ export const listOption = (
 	key: string,
 ): readonly string[] => {
 	const value = options[key];
-	return Array.isArray(value) ? value : [];
+	return typeof value === "object" ? value : [];
 };
 
 export const stringOption = (options: PluginOptions, key: string): string => {

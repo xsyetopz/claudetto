@@ -56,7 +56,6 @@ Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed ti
 
 - **WHEN** Claude wrote a file in the template layout under `.claude/claudetto/handoffs/` in this session
 - **THEN** the compaction hook keeps that file and writes no code-built file beside it (`handoff.test.ts`, "a file Claude wrote is kept and no code-built one goes beside it")
-- **AND** the next session injects it with the line that Claude wrote it, and not the line that code built it (`handoff.test.ts`, "the read-back line tells a code-built handoff from one Claude wrote")
 
 #### Scenario: Fallback
 

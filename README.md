@@ -1,11 +1,11 @@
-# claudetto
+# Claudetto
 
 Plugins that tune Claude Code for coding at the lowest token cost. They use only Claude Code's official extension points (settings, hooks, skills, agents, and an output style) and patch nothing.
 
 ## Plugins
 
 - **claudetto** gates risky commands, scans every tool result for secrets, keeps test output short, hands a long session over to a fresh one, cleans up what a session leaves behind, and checks each final reply before it ends the turn.
-- **claudetto-you-should-know** shows a short note above the prompt when a side check finds something about the work you likely missed. It is off by default; once on, it sends one small request every sixth step and no telemetry.
+- **claudetto-you-should-know** shows a short note above the prompt when a side check finds something about the work you likely missed. It is off by default. Once on, it sends one small request before each action that can change something, and a note stops that action until you answer. It sends no telemetry.
 - **claudetto-openspec** runs the OpenSpec workflow through one deferred `openspec` tool and skills for propose, explore, apply, update, verify, and archive. It runs no `openspec` binary and makes no network calls.
 
 ## Install

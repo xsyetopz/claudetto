@@ -66,13 +66,15 @@ for (const command of [
 ]) {
 	test(`${command} is checked for protected files and denied when they differ`, async ($: Engine, on: On) => {
 		lab(on, SKILLS);
-		expect((await bash($, command)).decision).toBe("deny");
+		const awaited = await bash($, command);
+		expect(awaited.decision).toBe("deny");
 	});
 }
 
 test("No Difference: a switch with no protected file changed passes", async ($: Engine, on: On) => {
 	lab(on, []);
-	expect((await bash($, "git switch main")).decision).toBe("allow");
+	const awaited2 = await bash($, "git switch main");
+	expect(awaited2.decision).toBe("allow");
 });
 
 test("a hard reset compares the working tree, so an uncommitted protected file counts", async ($: Engine, on: On) => {
@@ -88,11 +90,13 @@ test("a hard reset compares the working tree, so an uncommitted protected file c
 	expect(diffs(runs)[0]?.[4]).toBe("--");
 });
 
+const firstDiff = (runs: string[][]): string[] => diffs(runs)[0] ?? [];
+
 test("a path the settings' sandbox denyWrite names is compared too", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
 	lab(on, [], runs, ["secrets/", "/p/vendor", "~/elsewhere"]);
 	await bash($, "git switch main");
-	const argv = diffs(runs)[0] ?? [];
+	const argv = firstDiff(runs);
 	expect(argv).toContain("secrets/");
 	expect(argv).toContain("/p/vendor");
 	expect(argv).not.toContain("~/elsewhere");
@@ -107,7 +111,8 @@ for (const command of [
 	test(`${command} moves no protected file and runs no diff`, async ($: Engine, on: On) => {
 		const runs: string[][] = [];
 		lab(on, SKILLS, runs);
-		expect((await bash($, command)).decision).not.toBe("deny");
+		const awaited3 = await bash($, command);
+		expect(awaited3.decision).not.toBe("deny");
 		expect(diffs(runs)).toEqual([]);
 	});
 }

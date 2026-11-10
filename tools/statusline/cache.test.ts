@@ -53,10 +53,10 @@ describe("the cache countdown", () => {
 	});
 });
 
-describe("the cache miss cause", () => {
-	const missed = (miss: Record<string, unknown>): string =>
-		cacheLine({ ...WARM, expires_at: NOW_S + 252, ...miss });
+const missed = (miss: Record<string, unknown>): string =>
+	cacheLine({ ...WARM, expires_at: NOW_S + 252, ...miss });
 
+describe("the cache miss cause", () => {
 	test("a miss with `tools_changed` adds `miss: tools changed`", () => {
 		expect(
 			missed({ misses: 1, last_miss_cause: { causes: ["tools_changed"] } }),

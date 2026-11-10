@@ -1,11 +1,11 @@
 import { expect, test } from "bun:test";
-import { realpathSync } from "node:fs";
+import { realpath } from "node:fs/promises";
 
 import { PALETTES } from "../../plugins/claudetto/statusline/color.ts";
 
 /** The theme switch of the engine (`RK` in `chunk-w5ysqthb.js`, 2.1.319), matched without its minified names. */
 const THEME_SWITCH =
-	/function \w+\(\w+\)\{switch\(\w+\)\{case"light":return (\w+);case"light-ansi":return (\w+);case"dark-ansi":return (\w+);case"light-daltonized":return (\w+);case"dark-daltonized":return (\w+);default:return (\w+)\}\}/;
+	/function \w+\(\w+\)\{switch\(\w+\)\{case"light":return (\w+);case"light-ansi":return (\w+);case"dark-ansi":return (\w+);case"light-daltonized":return (\w+);case"dark-daltonized":return (\w+);default:return (\w+)\}\}/u;
 const THEMES = [
 	"light",
 	"light-ansi",
@@ -33,41 +33,56 @@ const engineText = async (): Promise<string> => {
 		);
 	}
 	return Buffer.from(
-		await Bun.file(realpathSync(claude)).arrayBuffer(),
+		await Bun.file(await realpath(claude)).arrayBuffer(),
 	).toString("latin1");
+};
+
+const switchOf = (text: string): RegExpExecArray => {
+	const found = THEME_SWITCH.exec(text);
+	if (found === null) {
+		throw new Error("the theme switch is not in the engine");
+	}
+	return found;
+};
+
+const colorOf = (ansi: Map<string, number>, value: string) => {
+	const rgb = /^rgb\((\d+),(\d+),(\d+)\)$/u.exec(value);
+	return rgb === null
+		? ansi.get(value.replace(/^ansi:/u, ""))
+		: [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])];
+};
+
+const engineTable = (
+	text: string,
+	ansi: Map<string, number>,
+	found: RegExpExecArray,
+	i: number,
+) => {
+	const table = `${found[i + 1]}={autoAccept:`;
+	const start = text.lastIndexOf(table, found.index);
+	const body = text.slice(start, text.indexOf("}", start));
+	return Object.fromEntries(
+		ROLES.map((role) => [
+			role,
+			colorOf(
+				ansi,
+				new RegExp(`[{,]${role}:"([^"]+)"`, "u").exec(body)?.[1] ?? "",
+			),
+		]),
+	);
 };
 
 test("the copied palettes equal the engine's built-in theme tables", async () => {
 	const text = await engineText();
-	const found = THEME_SWITCH.exec(text);
-	expect(found).not.toBeNull();
+	const found = switchOf(text);
 	const at = text.indexOf(ANSI_TABLE);
 	const ansi = new Map(
 		[
-			...text.slice(at, text.indexOf("}", at)).matchAll(/(\w+):\[(\d+),39\]/g),
+			...text.slice(at, text.indexOf("}", at)).matchAll(/(\w+):\[(\d+),39\]/gu),
 		].map((m) => [m[1], Number(m[2])]),
 	);
-	const colorOf = (value: string) => {
-		const rgb = /^rgb\((\d+),(\d+),(\d+)\)$/.exec(value);
-		return rgb
-			? [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])]
-			: ansi.get(value.replace(/^ansi:/, ""));
-	};
 	const engine = Object.fromEntries(
-		THEMES.map((theme, i) => {
-			const table = `${found?.[i + 1]}={autoAccept:`;
-			const start = text.lastIndexOf(table, found?.index);
-			const body = text.slice(start, text.indexOf("}", start));
-			return [
-				theme,
-				Object.fromEntries(
-					ROLES.map((role) => [
-						role,
-						colorOf(new RegExp(`[{,]${role}:"([^"]+)"`).exec(body)?.[1] ?? ""),
-					]),
-				),
-			];
-		}),
+		THEMES.map((theme, i) => [theme, engineTable(text, ansi, found, i)]),
 	);
 	expect(PALETTES).toEqual(engine);
 });

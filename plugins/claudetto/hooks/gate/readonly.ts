@@ -17,8 +17,8 @@ const READS = new Set([
 ]);
 const GIT_READS = new Set(["status", "diff", "log"]);
 // `git diff --output=file` writes a file and `rg --pre cmd` runs one.
-const WRITES_OR_RUNS = /^--(?:output|pre)\b/;
-const FD = /^\d+$/;
+const WRITES_OR_RUNS = /^--(?:output|pre)\b/u;
+const FD = /^\d+$/u;
 
 // Only input redirects, `2>&1`, and `/dev/` targets leave no file behind.
 const quiet = (c: Command): boolean =>

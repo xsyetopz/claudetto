@@ -1,9 +1,9 @@
 import type { SessionMessage, ToolUseSummary } from "claude-code";
 
-import type { GradeFault } from "./texts.ts";
+import type { GradeFault } from "./texts-grade.ts";
 
 export const ASK_MCP = "mcp__claudetto__ask-user-question";
-export const ASK_TOOL = new RegExp(`^(?:AskUserQuestion|${ASK_MCP})$`);
+export const ASK_TOOL = new RegExp(`^(?:AskUserQuestion|${ASK_MCP})$`, "u");
 
 // A tool call that is not a lookup of the tool list does not ground a claim; every other call looked at the workspace.
 const NOT_A_LOOK = new Set(["ToolSearch"]);
@@ -31,8 +31,23 @@ const resultLine = (use: ToolUseSummary): string => {
 		use.input["file_path"],
 		use.input["pattern"],
 	].find((v) => typeof v === "string");
-	return `- ${use.tool} ${String(arg ?? "").slice(0, 120)}\n${(use.text ?? "").slice(0, RESULT_CHARS)}`;
+	return `- ${use.tool} ${(arg ?? "").slice(0, 120)}\n${(use.text ?? "").slice(0, RESULT_CHARS)}`;
 };
+
+const popupAnswers = (
+	messages: readonly SessionMessage[],
+	denied: ReadonlySet<string>,
+): string[] =>
+	messages
+		.flatMap((m) => m.toolUses)
+		.filter(
+			(use) =>
+				ASK_TOOL.test(use.tool) &&
+				use.text !== undefined &&
+				!use.isError &&
+				!denied.has(use.tool_use_id),
+		)
+		.map((use) => `Popup answer: ${use.text}`);
 
 /**
  * The person's message that opened the turn, the person messages before it, and whether any call since then looked at the workspace.
@@ -42,60 +57,42 @@ export const claimTurn = (
 	messages: readonly SessionMessage[],
 	denied: ReadonlySet<string> = new Set(),
 ) => {
-	const start = messages.findLastIndex(isPersonMessage);
-	const lastRun = messages
-		.slice(start + 1)
-		.flatMap((m) => m.toolUses)
-		.filter(
-			(use) =>
-				use.tool === "Bash" &&
-				use.text !== undefined &&
-				!denied.has(use.tool_use_id),
-		)
-		.at(-1);
+	const start = messages.findLastIndex((item) => isPersonMessage(item));
+	const turnUses = messages.slice(start + 1).flatMap((m) => m.toolUses);
+	const lastRun = turnUses.findLast(
+		(use) =>
+			use.tool === "Bash" &&
+			use.text !== undefined &&
+			!denied.has(use.tool_use_id),
+	);
 	return {
 		user: start === -1 ? "" : (messages[start]?.text ?? ""),
 		people: [
 			...messages
 				.slice(0, Math.max(start, 0))
-				.filter(isPersonMessage)
+				.filter((item) => isPersonMessage(item))
 				.slice(-EARLIER)
 				.map((m) => m.text),
 			// A popup answer is the person's choice too, in this turn as much as before it.
-			...messages
-				.flatMap((m) => m.toolUses)
-				.filter(
-					(use) =>
-						ASK_TOOL.test(use.tool) &&
-						use.text !== undefined &&
-						!use.isError &&
-						!denied.has(use.tool_use_id),
-				)
-				.map((use) => `Popup answer: ${use.text}`),
+			...popupAnswers(messages, denied),
 		],
 		shown: messages
 			.slice(0, Math.max(start, 0))
 			.filter((m) => m.role === "assistant" && m.text !== "")
 			.slice(-SHOWN)
 			.map((m) => m.text),
-		looked: messages
-			.slice(start + 1)
-			.some((m) =>
-				m.toolUses.some(
-					(use) => !(NOT_A_LOOK.has(use.tool) || denied.has(use.tool_use_id)),
-				),
-			),
-		results: messages
-			.slice(start + 1)
-			.flatMap((m) => m.toolUses)
+		looked: turnUses.some(
+			(use) => !(NOT_A_LOOK.has(use.tool) || denied.has(use.tool_use_id)),
+		),
+		results: turnUses
 			.filter((use) => use.text !== undefined && !NOT_A_LOOK.has(use.tool))
 			.slice(-RESULTS)
-			.map(resultLine),
+			.map((item) => resultLine(item)),
 		failed: lastRun?.isError ? resultLine(lastRun) : "",
 	};
 };
 
-const squash = (text: string): string => text.replaceAll(/\s+/g, " ");
+const squash = (text: string): string => text.replaceAll(/\s+/gu, " ");
 
 /**
  * The fault codes in a grader answer, read structurally: a JSON `faults` list whose entries name a code in `allowed` and quote words that stand in
@@ -114,17 +111,19 @@ export const parseFaults = (
 			typeof json === "object" && json !== null && "faults" in json
 				? json.faults
 				: undefined;
-		const found = new Set((Array.isArray(list) ? list : []).flatMap((entry: unknown) =>
-			typeof entry === "object" &&
-			entry !== null &&
-			"code" in entry &&
-			"quote" in entry &&
-			typeof entry.quote === "string" &&
-			entry.quote.trim() !== "" &&
-			squash(reply).includes(squash(entry.quote).trim())
-				? [entry.code]
-				: [],
-		));
+		const found = new Set(
+			(Array.isArray(list) ? list : []).flatMap((entry: unknown) =>
+				typeof entry === "object" &&
+				entry !== null &&
+				"code" in entry &&
+				"quote" in entry &&
+				typeof entry.quote === "string" &&
+				entry.quote.trim() !== "" &&
+				squash(reply).includes(squash(entry.quote).trim())
+					? [entry.code]
+					: [],
+			),
+		);
 		return allowed.filter((code) => found.has(code));
 	} catch {
 		return [];

@@ -33,7 +33,7 @@ const lab = (
 	}));
 	on("fs.exists", () => ({ value: false }));
 	on("process.run", async (_$, e) => {
-		if (e.argv[0]?.endsWith("claudetto-hygiene")) {
+		if (e.argv[0]?.endsWith("claudetto-hygiene") === true) {
 			launched.push({ argv: e.argv, cwd: e.init?.cwd });
 			return { value: await run() };
 		}

@@ -1,4 +1,4 @@
-export const CHECK_INSTRUCTIONS = `You are a quiet observer beside a person who is working with a coding assistant. You read a short digest of the latest work and decide whether one thing is worth interrupting them for. Most of the time it is not, and the right answer is to say nothing.
+export const CHECK_INSTRUCTIONS = `You are a quiet observer beside a person who is working with a coding assistant. You read a short digest of the latest work and decide whether one thing is worth interrupting them for. Its last entry is the tool call the assistant is about to make; the call waits for your answer, and a note stops it before it runs, so the person can decide first. Most of the time it is not, and the right answer is to say nothing.
 
 Speak only when all of these hold:
 - The thing has a real consequence for the person's work, such as lost data, a security hole, a cost they did not expect, or a choice that is hard to undo.
@@ -36,7 +36,7 @@ export const checkBody = (input: {
 	log: readonly string[];
 }): string => {
 	const latest = `Latest work:
-${input.log.length === 0 ? "(nothing yet)" : input.log.join("\n")}`;
+${input.log.join("\n")}`;
 	const lists = `Lines already shown:
 ${listed(input.shown)}
 
@@ -46,6 +46,10 @@ ${listed(input.known)}
 `;
 	return lists.slice(0, Math.max(0, BODY_CHARS - latest.length)) + latest;
 };
+
+/** The deny a noted call gets, so the assistant brings the note to the person before it acts. */
+export const stopFor = (line: string): string =>
+	`you-should-know stopped this call before it ran: ${line} Put this note in your reply to the person, and wait for their answer before you take the action, because the person decides whether it goes ahead.`;
 
 export const DRAFT_LEAD = "Here is a note offered by a side agent:";
 

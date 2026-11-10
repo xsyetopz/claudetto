@@ -91,16 +91,17 @@ export const humanPrompts = (jsonl: string): string[] =>
 			: [];
 	});
 
+const isHandoffName = (path: string): boolean =>
+	HANDOFF_NAME.test(path.replaceAll("\\", "/").split("/").at(-1) ?? "");
+
 /** Only a writing tool counts: a read of the injected handoff is not a new one. */
 export const ownHandoffs = (
 	tail: Tail,
 ): { readonly valid: boolean; readonly misnamed: string | undefined } => {
 	const own = tail.written.filter((path) => path.includes(HANDOFF_DIR));
-	const name = (path: string): boolean =>
-		HANDOFF_NAME.test(path.replaceAll("\\", "/").split("/").at(-1) ?? "");
 	return {
-		valid: own.some(name),
-		misnamed: own.findLast((path) => !name(path)),
+		valid: own.some((element) => isHandoffName(element)),
+		misnamed: own.findLast((path) => !isHandoffName(path)),
 	};
 };
 
@@ -109,12 +110,25 @@ const quoted = (text: string): string[] =>
 		.split("\n")
 		.map((line) => (line === "" ? ">" : `> ${line}`));
 
+const turnLines = (turn: Tail["turns"][number]): string[] => [
+	`**${turn.role === "user" ? "User" : "Claude"}:**`,
+	"",
+	...quoted(turn.text),
+	"",
+];
+
 const NONE = ["None found in the transcript.", ""];
 
-const listed = (items: readonly string[]): string[] =>
-	items.length === 0
-		? NONE
-		: items.flatMap((item) => [...quoted(item), ""]);
+const listed = (items: readonly string[]): string[] => {
+	if (items.length === 0) {
+		return NONE;
+	}
+	const lines: string[] = [];
+	for (const item of items) {
+		lines.push(...quoted(item), "");
+	}
+	return lines;
+};
 
 /** Empty for a transcript with no user turn, so the caller writes nothing. */
 export const handoffText = (
@@ -133,12 +147,7 @@ export const handoffText = (
 		"Decisions Log": listed(tail.decisions),
 		"Current State": [
 			...gitLines(git, startedAt),
-			...turns.flatMap((turn) => [
-				`**${turn.role === "user" ? "User" : "Claude"}:**`,
-				"",
-				...quoted(turn.text),
-				"",
-			]),
+			...turns.flatMap((turn) => turnLines(turn)),
 		],
 		"Key Files And Symbols": paths.length > 0 ? [...paths, ""] : NONE,
 	};

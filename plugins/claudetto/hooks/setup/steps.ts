@@ -7,7 +7,14 @@ import {
 	settle,
 } from "./ignores.ts";
 import { planStarter, previewOf, type StarterFile } from "./starter.ts";
-import { isOnPath, MOLE, noticeKey, PURGE_PATHS, type Tool } from "./tools.ts";
+import {
+	isOnPath,
+	listedPaths,
+	MOLE,
+	noticeKey,
+	PURGE_PATHS,
+	type Tool,
+} from "./tools.ts";
 
 const WRITE = "Write";
 const SKIP = "Skip";
@@ -15,23 +22,23 @@ const YES = "Yes";
 const NO = "No";
 
 export interface Io {
-	cwd(): Promise<string>;
+	cwd: () => Promise<string>;
 	/** The non-blank lines `git` prints for `args` in the folder, or none when `git` fails. */
-	git(args: readonly string[]): Promise<string[]>;
-	exists(path: string): Promise<boolean>;
-	read(path: string): Promise<string>;
-	write(path: string, text: string): Promise<void>;
+	git: (args: readonly string[]) => Promise<string[]>;
+	exists: (path: string) => Promise<boolean>;
+	read: (path: string) => Promise<string>;
+	write: (path: string, text: string) => Promise<void>;
 	/** The option picked; it throws when the question is dismissed. */
-	ask(
+	ask: (
 		question: string,
 		header: string,
 		options: readonly string[],
-	): Promise<string>;
-	path(): Promise<string | undefined>;
-	home(): Promise<string>;
+	) => Promise<string>;
+	path: () => Promise<string | undefined>;
+	home: () => Promise<string>;
 	/** Records that the tool's install was declined, so the launch notice stays quiet. */
-	decline(key: string): Promise<void>;
-	run(argv: readonly string[]): Promise<{ exitCode: number; text: string }>;
+	decline: (key: string) => Promise<void>;
+	run: (argv: readonly string[]) => Promise<{ exitCode: number; text: string }>;
 }
 
 const FILES_ARGS = ["ls-files", "--cached", "--others", "--exclude-standard"];
@@ -100,11 +107,13 @@ export const starterPart = async (io: Io): Promise<string | undefined> => {
 	} catch {
 		return dismissed("starter file");
 	}
-	return answer.trim() === WRITE
-		? (await Promise.all(files.map((file) => writeNew(io, cwd, file)))).join(
-				"\n",
-			)
-		: "Wrote no starter file.";
+	if (answer.trim() !== WRITE) {
+		return "Wrote no starter file.";
+	}
+	const written = await Promise.all(
+		files.map((file) => writeNew(io, cwd, file)),
+	);
+	return written.join("\n");
 };
 
 const writeEdit = async (
@@ -128,10 +137,11 @@ const writeEdit = async (
 /** The marked block of `.gitignore` and `.ignore`, shown as a diff in a dialog and written only on a yes. */
 export const ignoresPart = async (io: Io): Promise<string | undefined> => {
 	const cwd = await cwdOf(io);
-	if (
-		cwd === undefined ||
-		(await io.git(["rev-parse", "--is-inside-work-tree"]))[0] !== "true"
-	) {
+	if (cwd === undefined) {
+		return undefined;
+	}
+	const [inside] = await io.git(["rev-parse", "--is-inside-work-tree"]);
+	if (inside !== "true") {
 		return undefined;
 	}
 	const edits = ignoreEdits(await repoFiles(io), {
@@ -151,11 +161,13 @@ export const ignoresPart = async (io: Io): Promise<string | undefined> => {
 	} catch {
 		return dismissed("ignore file");
 	}
-	return answer.trim() === WRITE
-		? (await Promise.all(edits.map((edit) => writeEdit(io, cwd, edit)))).join(
-				"\n",
-			)
-		: "Wrote no ignore file.";
+	if (answer.trim() !== WRITE) {
+		return "Wrote no ignore file.";
+	}
+	const written = await Promise.all(
+		edits.map((edit) => writeEdit(io, cwd, edit)),
+	);
+	return written.join("\n");
 };
 
 /** A missing tool: its install command shown and run after a yes. */
@@ -205,14 +217,14 @@ export const purgePart = async (io: Io): Promise<string | undefined> => {
 	}
 	const home = await io.home();
 	const file = `${home}/${PURGE_PATHS}`;
-	const root =
-		(await io.git(["rev-parse", "--show-toplevel"]))[0] ?? (await io.cwd());
+	const awaited = await io.git(["rev-parse", "--show-toplevel"]);
+	const root = awaited[0] ?? (await io.cwd());
 	const text = (await io.exists(file)) ? await io.read(file) : "";
-	const listed = text
-		.split("\n")
-		.map((line) => line.trim().replace(/^~(?=\/|$)/, home))
-		.filter((dir) => dir !== "" && !dir.startsWith("#"));
-	if (listed.some((dir) => root === dir || root.startsWith(`${dir}/`))) {
+	if (
+		listedPaths(text, home).some(
+			(dir) => root === dir || root.startsWith(`${dir}/`),
+		)
+	) {
 		return undefined;
 	}
 	const gap = text === "" || text.endsWith("\n") ? "" : "\n";

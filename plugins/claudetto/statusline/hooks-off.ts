@@ -14,8 +14,7 @@ const HOOKS_OFF_MS = 5 * 60_000;
 const TAIL_CAP = 256 * 1024;
 const BEAT_CAP = 64;
 
-const ASSISTANT = /"type":"assistant"/;
-const TIMESTAMP = /"timestamp":"([^"]+)"/;
+const TIMESTAMP = /"timestamp":"([^"]+)"/u;
 
 const readTail = async (
 	path: string,
@@ -71,7 +70,7 @@ export const hooksOff = async (
 	if (reply === undefined) {
 		return false;
 	}
-	const beat = beatText?.trim() ? Number(beatText) : Number.NaN;
+	const beat = beatText?.trim() === "" ? Number.NaN : Number(beatText);
 	if (Number.isFinite(beat)) {
 		return reply - beat > HOOKS_OFF_MS;
 	}

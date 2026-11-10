@@ -1,8 +1,8 @@
 import { type Command, parse } from "../gate/shell-words.ts";
 
-const FENCE = /^\s*```/;
-const SPAN = /`([^`\n]*)`/g;
-const USER_COMMAND = /^!\s+(\S.*)$/;
+const FENCE = /^\s*```/u;
+const SPAN = /`([^`\n]*)`/gu;
+const USER_COMMAND = /^!\s+(\S.*)$/u;
 
 /** Commands that make their operands, all of them or the last one, so a missing path there is no fault. */
 const MAKES_ALL = new Set(["mkdir", "touch"]);
@@ -46,6 +46,6 @@ export const namedPaths = (
 	userCommands(reply).flatMap((command) =>
 		parse(command)
 			.commands.flatMap(readOperands)
-			.filter(isNamedPath)
+			.filter((item) => isNamedPath(item))
 			.map((path) => ({ path, command })),
 	);

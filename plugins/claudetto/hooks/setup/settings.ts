@@ -1,4 +1,3 @@
-import { wallRule } from "../gate/walled.ts";
 import { SILENT_TURN_REMINDER } from "../texts.ts";
 import { AUTO_MODE } from "./auto-mode.ts";
 
@@ -177,11 +176,12 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Sandbox",
-		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folder, except the files that run later (shell startup files, git config, SSH, launch agents, and the PATH folders in your home folder). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and cannot retry outside the sandbox.",
+		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folder, except the files that run later (shell startup files, git config, SSH, launch agents, and the PATH folders in your home folder). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and retries any other command the sandbox blocks outside it only after auto mode or you approve that retry.",
 		settings: {
 			sandbox: {
 				enabled: true,
-				allowUnsandboxedCommands: false,
+				// A command the sandbox blocks may retry outside it; the permission flow, not the sandbox, then decides each retry.
+				allowUnsandboxedCommands: true,
 				// Go tools such as `gh` verify TLS through `com.apple.trustd.agent`; without it they fail with `x509: OSStatus -26276`.
 				enableWeakerNetworkIsolation: true,
 				// Read-only commands that fail sandboxed under every key: `ps` and `top` are setuid root, and `sysctl` reads a fixed name list.
@@ -226,19 +226,13 @@ export const GROUPS: readonly Group[] = [
 	STATUS_LINE,
 ];
 
-export interface Change {
-	readonly path: string;
-	readonly had: unknown;
-	readonly wanted: unknown;
-}
-
-const isRecord = (value: unknown): value is Json =>
+export const isRecord = (value: unknown): value is Json =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
 // A status line is one command with its options, so a user's own line stays whole.
 const WHOLE = "statusLine";
 
-const leaves = (
+export const leaves = (
 	node: Json,
 	path: readonly string[] = [],
 ): { path: readonly string[]; value: unknown }[] =>
@@ -259,7 +253,7 @@ export const valueAt = (
 	return isRecord(settings) ? valueAt(settings[key], rest) : undefined;
 };
 
-const setAt = (
+export const setAt = (
 	settings: Json,
 	path: readonly string[],
 	value: unknown,
@@ -276,97 +270,4 @@ const setAt = (
 				? value
 				: setAt(isRecord(child) ? child : {}, rest, value),
 	};
-};
-
-const same = (a: unknown, b: unknown): boolean =>
-	JSON.stringify(a) === JSON.stringify(b);
-
-const isPermissionList = (path: readonly string[]): boolean =>
-	path[0] === "permissions";
-
-/** A permission list keeps every rule the user holds and adds ours. */
-const wantedAt = (path: readonly string[], had: unknown, value: unknown) =>
-	isPermissionList(path) && Array.isArray(had) && Array.isArray(value)
-		? [...had, ...value.filter((rule) => !had.includes(rule))]
-		: value;
-
-export const changesOf = (held: Json, group: Group): readonly Change[] =>
-	leaves(group.settings).flatMap(({ path, value }) => {
-		const had = valueAt(held, path);
-		const wanted = wantedAt(path, had, value);
-		return same(had, wanted) ? [] : [{ path: path.join("."), had, wanted }];
-	});
-
-/** `fill` writes the keys the user has not set and the rules a list lacks; `replace` writes the others too. */
-export const applyChanges = (
-	held: Json,
-	changes: readonly Change[],
-	mode: "fill" | "replace",
-): Json => {
-	let settings = held;
-	for (const change of changes) {
-		if (
-			mode === "replace" ||
-			change.had === undefined ||
-			change.path.startsWith("permissions.")
-		) {
-			settings = setAt(settings, change.path.split("."), change.wanted);
-		}
-	}
-	return settings;
-};
-
-// The plan's internal names in the login record. Ultra (`default_claude_max_20x`) has no 5-hour window, so it gets no cap; the caps are the author's choice.
-const SUBAGENT_CAPS: Readonly<Record<string, number>> = {
-	claude_pro: 3,
-	default_claude_max_5x: 4,
-};
-
-/** The subagent cap group for the plan in the login record, or `undefined` for Ultra, an API key, or a plan claudetto has no cap for. */
-export const capGroup = (login: Json | undefined): Group | undefined => {
-	const account = login?.["oauthAccount"];
-	const plan = (
-		isRecord(account)
-			? [account["organizationRateLimitTier"], account["organizationType"]]
-			: []
-	).find(
-		(name): name is string =>
-			typeof name === "string" && Object.hasOwn(SUBAGENT_CAPS, name),
-	);
-	const cap = plan === undefined ? undefined : SUBAGENT_CAPS[plan];
-	return cap === undefined
-		? undefined
-		: {
-				label: "Subagent cap",
-				why: `Caps the subagents that run at once at ${cap}: the ${plan} plan has a 5-hour window, and each subagent spends from it.`,
-				settings: {
-					env: { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: String(cap) },
-				},
-			};
-};
-
-/** The gate's wall vanishes with the plugin; a deny rule in the settings outlives it. */
-export const wallGroup = (walls: readonly string[]): Group | undefined =>
-	walls.length === 0
-		? undefined
-		: {
-				label: "Protected paths",
-				why: `Denies Read under ${walls.join(", ")}, the protectedPaths option, so Claude Code blocks the read even without the plugin and the startup notice stays silent.`,
-				settings: { permissions: { deny: walls.map(wallRule) } },
-			};
-
-export const settingsText = (settings: Json): string =>
-	`${JSON.stringify(settings, undefined, 2)}\n`;
-
-/** The settings a file holds, `{}` for no file, or `undefined` when the text is not a JSON object. */
-export const parseSettings = (text: string | undefined): Json | undefined => {
-	if (text === undefined) {
-		return {};
-	}
-	try {
-		const parsed: unknown = JSON.parse(text);
-		return isRecord(parsed) ? parsed : undefined;
-	} catch {
-		return undefined;
-	}
 };

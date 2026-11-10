@@ -1,4 +1,4 @@
-import type { HookBudget, On, TurnUsage } from "claude-code";
+import type { EngineInterface, HookBudget, On, TurnUsage } from "claude-code";
 
 import { atRoot } from "../handoff/layout.ts";
 import { WITHHELD } from "../texts.ts";
@@ -69,6 +69,43 @@ const newStep = (): Step => {
 const modelText = (result: unknown, text: string | undefined): string =>
 	text ?? (typeof result === "string" ? result : JSON.stringify(result));
 
+const beatOf = ($: EngineInterface) => async (): Promise<void> => {
+	try {
+		const [session, root, now] = await Promise.all([
+			$.session.id(),
+			$.session.root(),
+			$.clock.now(),
+		]);
+		await $.fs.write(atRoot(root, heartbeatPath(session)), String(now));
+	} catch {
+		// The status line reads a missing or old heartbeat as hooks that stopped.
+	}
+};
+
+/** The reading of `step`, or `null` when the stop chunk has not come by the time the hook's own budget runs short. The wait is the hook's own time, and a step can stream long after its calls. */
+const readingOf = (
+	$: EngineInterface,
+	step: Step,
+	remainingMs: number,
+	signal: AbortSignal,
+): Promise<TurnUsage | null> => {
+	const done = new AbortController();
+	const late = async (): Promise<null> => {
+		try {
+			await $.clock.sleep(
+				Math.max(0, Math.min(remainingMs, BUDGET_MS) - SPARE_MS),
+				{ signal: AbortSignal.any([signal, done.signal]) },
+			);
+		} catch {
+			// An aborted wait ends the same way as one that ran out.
+		}
+		return null;
+	};
+	return Promise.race([step.reading, late()]).finally(() => {
+		done.abort();
+	});
+};
+
 /**
  * The engine runs a tool while its step still streams, so a call can finish before the stop chunk: each call of a
  * bounded step waits on its own step. `turn.step` also writes the heartbeat, since the loader takes one
@@ -78,18 +115,7 @@ export const priceStepHooks = (on: On): void => {
 	// Keyed by `tool_use_id`, which names one call in one step on any loop.
 	const byCall = new Map<string, Step>();
 	on("turn.step", async function* ($, e, next) {
-		const beat = async (): Promise<void> => {
-			try {
-				const [session, root, now] = await Promise.all([
-					$.session.id(),
-					$.session.root(),
-					$.clock.now(),
-				]);
-				await $.fs.write(atRoot(root, heartbeatPath(session)), String(now));
-			} catch {
-				// The status line reads a missing or old heartbeat as hooks that stopped.
-			}
-		};
+		const beat = beatOf($);
 		const step = boundable(e.model) ? newStep() : undefined;
 		await beat();
 		const stream = next(e);
@@ -116,21 +142,11 @@ export const priceStepHooks = (on: On): void => {
 		if (step === undefined || answer.deny !== undefined) {
 			return answer;
 		}
-		// The wait is the hook's own time, and a step can stream long after its calls.
-		const done = new AbortController();
-		const late = async (): Promise<null> => {
-			try {
-				await $.clock.sleep(
-					Math.max(0, Math.min(next.budget.remainingMs, BUDGET_MS) - SPARE_MS),
-					{ signal: AbortSignal.any([next.signal, done.signal]) },
-				);
-			} catch {
-				// An aborted wait ends the same way as one that ran out.
-			}
-			return null;
-		};
-		const usage = await Promise.race([step.reading, late()]).finally(() =>{ 
-			done.abort(); },
+		const usage = await readingOf(
+			$,
+			step,
+			next.budget.remainingMs,
+			next.signal,
 		);
 		// A result counts with its `context`, since both land in the next request.
 		const chars =

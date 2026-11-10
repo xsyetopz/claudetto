@@ -9,16 +9,16 @@ export interface TaskIssue {
 }
 
 const TASK =
-	/^\s*(?:[-*+]|\d{1,9}[.)])\s*\[(?:\s*([^\]\s]?)\s*\](?![([])|\s+\])\s*(.*)/;
-const LIST_ITEM = /^\s*(?:[-*+]|\d{1,9}[.)])\s+\S/;
-const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)/;
-const FRONT_MATTER = /^-{3}\s*$/;
-const LEVEL_TWO = /^ {0,3}##(?!#)(?:[ \t]+|[ \t]*\r?$)/;
-const GROUP = /^ {0,3}##[ \t]+(\d+)\.(?:[ \t]|\r?$)/;
-const TASK_ID = /^(\d+(?:\.\d+)+(?:[A-Za-z]+)?)(?=\s|$)/;
-const LEADING_ZEROS = /^0+(?=\d)/;
-const LEADING_SPACE = /^[ \t]*/;
-const BOM = /^﻿/;
+	/^\s*(?:[-*+]|\d{1,9}[.)])\s*\[(?:\s*([^\]\s]?)\s*\](?![([])|\s+\])\s*(.*)/u;
+const LIST_ITEM = /^\s*(?:[-*+]|\d{1,9}[.)])\s+\S/u;
+const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)/u;
+const FRONT_MATTER = /^-{3}\s*$/u;
+const LEVEL_TWO = /^ {0,3}##(?!#)(?:[ \t]+|[ \t]*\r?$)/u;
+const GROUP = /^ {0,3}##[ \t]+(\d+)\.(?:[ \t]|\r?$)/u;
+const TASK_ID = /^(\d+(?:\.\d+)+(?:[A-Za-z]+)?)(?=\s|$)/u;
+const LEADING_ZEROS = /^0+(?=\d)/u;
+const LEADING_SPACE = /^[ \t]*/u;
+const BOM = /^﻿/u;
 
 const taskLine = (line: string) => TASK.exec(line);
 
@@ -58,7 +58,7 @@ const skipLine = (st: Scan, line: string) => {
 		if (!st.fence) {
 			st.fence = { ch: run[0] ?? "", len: run.length };
 		} else if (
-			run[0] === st.fence.ch &&
+			run.startsWith(st.fence.ch) &&
 			run.length >= st.fence.len &&
 			(f[2] ?? "").trim() === ""
 		) {
@@ -150,7 +150,7 @@ const docNumbering = (d: Doc, first: Seen) => {
 			group = GROUP.exec(line)?.[1];
 		}
 		const id = TASK_ID.exec((taskLine(line)?.[2] ?? "").trim())?.[1];
-		if (id && group !== undefined) {
+		if (id !== undefined && id !== "" && group !== undefined) {
 			issues.push(...idIssues(d, i + 1, id, group, first));
 		}
 	}
@@ -176,7 +176,7 @@ export const scanTasks = (content: string) => {
 	for (let i = skipFrontMatter(lines); i < lines.length; i++) {
 		const line = lines[i] ?? "";
 		const mark = skipLine(st, line) ? undefined : taskLine(line);
-		if (mark?.[1]) {
+		if (mark && (mark[1] ?? "") !== "") {
 			done++;
 		} else if (mark) {
 			open.push({ line: i + 1, text: line.trim() });

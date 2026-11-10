@@ -1,8 +1,8 @@
 import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits.ts";
 
 // Some ICU versions put a narrow no-break space (U+202F) before the meridiem, and others a plain space.
-const MERIDIAN_GAP = /[   ]([AP]M)/i;
-const PATH_SEPARATOR = /[\\/]/;
+const MERIDIAN_GAP = /[   ]([AP]M)/iu;
+const PATH_SEPARATOR = /[\\/]/u;
 
 /** `12000` as `12k`. */
 export const thousands = (n: number): string => `${Math.round(n / 1000)}k`;
@@ -51,7 +51,7 @@ export const clock = (sec: number, nowMs: number): string => {
 
 /** The last part of a path, for a folder name. */
 export const baseName = (dir: string): string =>
-	dir.split(PATH_SEPARATOR).filter(Boolean).pop() ?? dir;
+	dir.split(PATH_SEPARATOR).findLast(Boolean) ?? dir;
 
 /** `used_percentage` is in percent, and `resets_at` is in seconds. The spend limit only has the `usd` fields and `period`. */
 export interface LimitWindow {
@@ -77,18 +77,18 @@ export const paceOf = (
 	const used = window?.used_percentage;
 	const resetsAt = window?.resets_at;
 	if (typeof used !== "number" || !Number.isFinite(used)) {
-		return;
+		return undefined;
 	}
 	if (typeof resetsAt !== "number") {
-		return;
+		return undefined;
 	}
 	const left = resetsAt - nowS;
 	if (!(left >= 0 && left <= spanS)) {
-		return;
+		return undefined;
 	}
 	const elapsed = (spanS - left) / spanS;
 	if (elapsed < PACE_MIN_FRACTION) {
-		return;
+		return undefined;
 	}
 	const projected = used / elapsed;
 	const runsOut = used > 0 && used < 100 && projected > PROJECTED_RUNOUT;

@@ -14,7 +14,7 @@ export const MOLE: Tool = {
 	install: ["brew", "install", "mole"],
 	releases: "https://github.com/tw93/Mole/releases",
 	required: true,
-	why: "claudetto leaves cache and build-folder cleanup to Mole",
+	why: "claudetto runs Mole to clear caches at each session start",
 };
 
 export const TOOLS: readonly Tool[] = [
@@ -37,14 +37,20 @@ export const TOOLS: readonly Tool[] = [
 
 /** `mo purge` scans only these folders once the file names any, and its defaults miss most project roots. */
 export const PURGE_PATHS = ".config/mole/purge_paths";
+
+/** Each folder a `purge_paths` text lists, with a leading `~` read as `home`. */
+export const listedPaths = (text: string, home: string): string[] =>
+	text
+		.split("\n")
+		.map((line) => line.trim().replace(/^~(?=\/|$)/u, home))
+		.filter((dir) => dir !== "" && !dir.startsWith("#"));
 const FULL_PERCENT = 80;
 
 /** The line for `df -Pk` output once the volume is over 80% full, or nothing. */
 export const diskLine = (df: string): string | undefined => {
-	const [, , , available, capacity] = (df.trim().split("\n")[1] ?? "").split(
-		/\s+/,
-	);
-	const percent = Number.parseInt(capacity ?? "", 10);
+	const columns = (df.trim().split("\n")[1] ?? "").split(/\s+/u);
+	const available = columns[3];
+	const percent = Math.trunc(Number((columns[4] ?? "").replace("%", "")));
 	if (!(percent > FULL_PERCENT)) {
 		return undefined;
 	}
@@ -60,9 +66,8 @@ export const isOnPath = async (
 	exists: (file: string) => Promise<boolean>,
 ): Promise<boolean> => {
 	const folders = (path ?? "").split(":").filter((folder) => folder !== "");
-	return (await Promise.all(folders.map((f) => exists(`${f}/${name}`)))).some(
-		Boolean,
-	);
+	const awaited = await Promise.all(folders.map((f) => exists(`${f}/${name}`)));
+	return awaited.some(Boolean);
 };
 
 export const noticeLine = (tool: Tool, hasBrew: boolean): string =>

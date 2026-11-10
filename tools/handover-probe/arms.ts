@@ -95,7 +95,7 @@ export const verdict = (arm: Arm, events: readonly Event[]): string => {
 				: `the first compaction at ${c.tokens} tokens is not near ${thousands(C_AT)}`;
 		}
 		case "D": {
-			return /^compaction, compaction(, handover)+$/.test(names(events))
+			return /^compaction, compaction(, handover)+$/u.test(names(events))
 				? "ok"
 				: `expected 2 compactions, then handovers, got ${names(events)}`;
 		}

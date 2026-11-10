@@ -4,6 +4,7 @@ import { numberOption } from "../options.ts";
 import {
 	DENY_CALLS,
 	DENY_FAILED,
+	DENY_OVERTIME,
 	DENY_STARTS,
 	DENY_SUBAGENTS,
 } from "../texts.ts";
@@ -14,9 +15,11 @@ export interface Limits {
 	readonly callCap: number;
 	readonly heavyTokens: number;
 	readonly failLimit: number;
+	readonly agentMs: number;
 }
 
 export const limitsOf = (options: PluginOptions): Limits => ({
+	agentMs: numberOption(options, "agentMaxMinutes", 15, 0) * 60_000,
 	startCap: numberOption(options, "maxSubagentStarts", 12),
 	windowMs: numberOption(options, "limitPeriodSeconds", 600) * 1000,
 	callCap: numberOption(options, "maxHeavyToolCalls", 20),
@@ -120,6 +123,16 @@ export const withFailure = (
 		[key]: { count, error: call.error, last: now },
 	};
 };
+
+/** Why a subagent that started at `start` may not call again, or nothing. */
+export const overtimeText = (
+	start: number | undefined,
+	now: number,
+	limits: Limits,
+): string | undefined =>
+	start !== undefined && limits.agentMs > 0 && now - start > limits.agentMs
+		? DENY_OVERTIME(limits.agentMs / 60_000)
+		: undefined;
 
 export const failedText = (
 	held: Failures | undefined,

@@ -12,6 +12,9 @@ const arm = (name: string): Arm => {
 	return found;
 };
 
+const compactAt = (name: string): number =>
+	((arm(name).autoCompactPct ?? 0) * (WINDOW - 20_000)) / 100;
+
 const ev = (type: Event["type"], tokens: number): Event => ({
 	type,
 	n: 1,
@@ -48,9 +51,9 @@ test("C needs a compaction near 53,000 tokens and no handover", () => {
 });
 
 test("C and D place the compaction through a percent of the window less 20,000", () => {
-	const at = (name: string) =>
-		((arm(name).autoCompactPct ?? 0) * (WINDOW - 20_000)) / 100;
-	expect([at("C"), at("D")].map(Math.round)).toEqual([53_000, 40_000]);
+	expect(
+		[compactAt("C"), compactAt("D")].map((item) => Math.round(item)),
+	).toEqual([53_000, 40_000]);
 });
 
 test("D is two compactions, then only handovers", () => {

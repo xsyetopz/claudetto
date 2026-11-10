@@ -1,9 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
+import { firstText, HANDOFF_PATH } from "../handoff.mock.ts";
 import { type CallState, handOff, type Session } from "./call.ts";
-
-const HANDOFF_PATH =
-	/^\.claude\/claudetto\/handoffs\/handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
 
 const FIELDS = {
 	goal: "ship the cut",
@@ -46,8 +44,12 @@ const fake = (over: Partial<Session> = {}) => {
 			calls.push(`abort:${turnId}`);
 			return Promise.resolve();
 		},
-		log: (line) => calls.push(`log:${line}`),
-		later: (work) => queued.push(work),
+		log: (line) => {
+			calls.push(`log:${line}`);
+		},
+		later: (work) => {
+			queued.push(work);
+		},
 		gitStatus: () => Promise.resolve("## main...origin/main [ahead 3]"),
 		...over,
 	};
@@ -65,7 +67,7 @@ test("the tool writes the file with its fields under the nine headings and no ot
 
 	await handOff(session, idle(), FIELDS);
 
-	const text = files[0]?.text ?? "";
+	const text = firstText(files);
 	const headings = text.split("\n").filter((line) => line.startsWith("## "));
 	expect(headings).toEqual([
 		"## Goal",
@@ -88,8 +90,8 @@ test("Git State Is Dated: the tool's handoff states the git status line as of it
 
 	await handOff(session, idle(), FIELDS);
 
-	const text = files[0]?.text ?? "";
-	const at = /Written by Claude at (\S+)\./.exec(text)?.[1];
+	const text = firstText(files);
+	const at = /Written by Claude at (\S+)\./u.exec(text)?.[1];
 	expect(at).toBeDefined();
 	expect(
 		text.split("## Current State")[1]?.split("## In Progress")[0],
@@ -183,7 +185,7 @@ test("a write that fails comes back as the result and clears nothing", async () 
 
 	const result = await handOff(session, idle(), FIELDS);
 
-	expect(result).toContain("could not be saved");
+	expect(result).toContain("disk full");
 	expect(queued).toEqual([]);
 });
 

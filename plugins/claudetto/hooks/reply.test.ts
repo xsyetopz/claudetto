@@ -4,18 +4,18 @@ import { type Engine, expect, test } from "claude-code/testing";
 const REPLY_TEXT =
 	"First point.\nstill first.\n\nSecond point.\n\nThird point.";
 
+const MESSAGES: SessionMessage[] = [
+	{ role: "user", text: "q", toolUses: [] },
+	{ role: "assistant", text: REPLY_TEXT, toolUses: [] },
+	{ role: "assistant", text: "", toolUses: [] },
+];
+
 const lab = (on: On, selected?: string) => {
 	const filled: string[] = [];
 	on("ui.selection", () => ({
 		value: selected === undefined ? undefined : { text: selected },
 	}));
-	on("session.messages", () => ({
-		value: [
-			{ role: "user", text: "q", toolUses: [] },
-			{ role: "assistant", text: REPLY_TEXT, toolUses: [] },
-			{ role: "assistant", text: "", toolUses: [] },
-		] as SessionMessage[],
-	}));
+	on("session.messages", () => ({ value: MESSAGES }));
 	on("prompt.fill", (_$, e) => {
 		filled.push(`${e.mode}:${e.text}`);
 		return { isFilled: true };

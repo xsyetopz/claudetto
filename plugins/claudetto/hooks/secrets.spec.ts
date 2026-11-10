@@ -11,7 +11,7 @@ const runWith =
 	(path: string | undefined): Run =>
 	async (argv, init) => {
 		const child = spawn([...argv], {
-			stdin: new TextEncoder().encode(String(init?.stdin ?? "")),
+			stdin: new TextEncoder().encode(init?.stdin ?? ""),
 			env: { ...process.env, ...init?.env, PATH: path },
 			stdout: "pipe",
 			stderr: "pipe",
@@ -41,7 +41,8 @@ const KEYS = {
 	],
 	ANTHROPIC_API_KEY: [
 		"sk-ant-",
-		"api03-", // betterleaks:allow
+		// betterleaks:allow
+		"api03-",
 		"tGSU8po_799NksnRH9ucAUsdMlHUvTCQCyEZDz-TddJ8HyS5SUkCnD8zRA9a9SkpXz9w3QlY7Zkuvqd",
 	],
 	AWS_SECRET_ACCESS_KEY: ["2hpChYgCfrL1spNx", "nyVmihA+2O76UMFxFkM+R5Kj"],
@@ -102,7 +103,13 @@ test("a name that only contains a keyword inside a word is left alone", async ()
 });
 
 test("a missing scanner rejects with the install step", async () => {
-	await expect(secretsIn(runWith("/nonexistent"), "x")).rejects.toThrow(
-		"brew install betterleaks",
+	const failure = await secretsIn(runWith("/nonexistent"), "x").then(
+		() => null,
+		(error: unknown) => error,
+	);
+	expect(failure).toBeInstanceOf(Error);
+	expect(failure).toHaveProperty(
+		"message",
+		expect.stringContaining("brew install betterleaks"),
 	);
 });

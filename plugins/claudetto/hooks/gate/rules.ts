@@ -1,18 +1,19 @@
 import {
+	GATE_EDIT_FILE,
 	GATE_HOOK_WRITE,
 	GATE_READ_FILE,
 	GATE_UNREADABLE,
 	GATE_WRITE_FILE,
-} from "../texts.ts";
+} from "../texts-gate.ts";
+import { killVerdict, releaseVerdict } from "./kill.ts";
 import { packageVerdict } from "./packages.ts";
+import { maskedExitVerdict } from "./pipefail.ts";
 import {
-	killVerdict,
 	markerVerdict,
 	NOBODY,
 	ownedRemoval,
 	ownedVerdict,
 	type Owns,
-	releaseVerdict,
 } from "./processes.ts";
 import { refVerdict } from "./refs.ts";
 import { type Command, parse, programOf, scriptOf } from "./shell-words.ts";
@@ -29,7 +30,7 @@ const SYSTEM = [
 	"/Library",
 ];
 // Claude Code's own check already asks on `.claude/` and `.git/hooks/` in every Bash form and on a Write or Edit of `plugins/`, but not on a Bash write there.
-const PLUGIN_HOOKS = /(^|\/)plugins\/[^/]+\/hooks(\/|$)/;
+const PLUGIN_HOOKS = /(^|\/)plugins\/[^/]+\/hooks(\/|$)/u;
 const FILE_REDIRECTS = new Set([">", ">|", "&>"]);
 export const systemPath = (path: string): boolean =>
 	SYSTEM.some((d) => path === d || path.startsWith(`${d}/`));
@@ -42,7 +43,7 @@ const flagsOf = (args: string[]): string[] => {
 		.flatMap((a) =>
 			a.startsWith("--")
 				? [a.split("=")[0] ?? a]
-				: a.slice(1).map((c) => `-${c}`),
+				: Array.from(a.slice(1), (c) => `-${c}`),
 		);
 };
 
@@ -67,11 +68,13 @@ const writesWhole = (
 			name === "echo" ||
 			(name === "cat" && operands(args).length === 0)));
 
-const VALUED = {
+const IN_PLACE_EDITORS = new Set(["sed", "perl", "ruby"]);
+
+const VALUED: Record<string, string[]> = {
 	head: ["-n", "-c", "--lines", "--bytes"],
 	tail: ["-n", "-c", "--lines", "--bytes"],
 	sed: ["-e", "-f", "--expression", "--file"],
-} as Record<string, string[]>;
+};
 
 /** The files a `head`, `tail`, `sed`, or `cat` prints: the operands without a count or a script, which is not a file. */
 export const printedFiles = (name: string, args: string[]): string[] => {
@@ -102,9 +105,8 @@ export const writeTargets = (
 	args: string[],
 ): string[] => {
 	const files = operands(args);
-	const edits = name === "sed" && flagsOf(args).includes("-i");
 	const written =
-		name === "tee" || name === "rm" || edits
+		name === "tee" || name === "rm"
 			? files
 			: files.slice(name === "cp" || name === "mv" ? -1 : files.length);
 	return [
@@ -133,6 +135,9 @@ const commandVerdicts = (
 			? ask(GATE_HOOK_WRITE)
 			: undefined,
 		writesWhole(name, args, redirected) ? deny(GATE_WRITE_FILE) : undefined,
+		IN_PLACE_EDITORS.has(name) && flagsOf(args).includes("-i")
+			? deny(GATE_EDIT_FILE(operands(args).at(-1) ?? ""))
+			: undefined,
 		// The file is the last operand: one before it can be a `head -n` count or a `sed` script.
 		alone && !redirected && printsFile(name, args)
 			? deny(GATE_READ_FILE(printedFiles(name, args).at(-1) ?? ""))
@@ -164,6 +169,7 @@ const judgeText = (
 			commandVerdicts(c, has, own, parsed.commands.length === 1),
 		),
 		markerVerdict(command, parsed.commands, own),
+		maskedExitVerdict(parsed.commands),
 	]);
 };
 

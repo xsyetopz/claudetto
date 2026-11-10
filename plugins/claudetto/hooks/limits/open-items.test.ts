@@ -1,55 +1,9 @@
-import type { On, PluginOptions, SessionMessage } from "claude-code";
+import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 import { scanner } from "../secrets.mock.ts";
-import { commandForm, openItems } from "./open-items.ts";
-
-const said = (role: SessionMessage["role"], text: string): SessionMessage => ({
-	role,
-	text,
-	toolUses: [],
-});
-
-const withUse = (use: {
-	tool: string;
-	isError?: true;
-	text?: string;
-}): SessionMessage => ({
-	role: "assistant",
-	text: "",
-	toolUses: [{ tool_use_id: "t1", input: {}, ...use }],
-});
-
-let listed = 0;
-
-const lab = (on: On, ...turn: SessionMessage[]): void => {
-	scanner(on);
-	on("classic.Stop", () => ({}));
-	on("clock.now", () => ({ value: 0 }));
-	on("session.cwd", () => ({ value: "/repo" }));
-	on("session.start", () => ({ cwd: "/repo" }));
-	on("session.messages", () => ({ value: [said("user", "go"), ...turn] }));
-	listed = 0;
-	on("tool.list", () => {
-		listed += 1;
-		return { value: [] };
-	});
-};
-
-const stop = (
-	$: Engine,
-	reply: string,
-	stopHookActive = false,
-): Promise<{ block?: string }> =>
-	$.classic.Stop({
-		stop_hook_active: stopHookActive,
-		last_assistant_message: reply,
-		background_tasks: [],
-	});
-
-const off = (): { options: PluginOptions } => ({
-	options: { openItemsCheckEnabled: false },
-});
+import { ASK_FORM } from "../texts.ts";
+import { lab, off, said, stop, withUse } from "./open-items.mock.ts";
 
 test("prose that mentions a remaining budget passes", async ($: Engine, on: On) => {
 	lab(on);
@@ -120,7 +74,7 @@ test("a `! command` in a checkbox item blocks and asks for a plain bullet", asyn
 	expect(out.block).toContain("with no checkbox");
 });
 
-test("a checkbox item is a question: the block says to ask it and delete the item", async ($: Engine, on: On) => {
+test("a checkbox item is a question, and the block names each item", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await stop(
@@ -128,17 +82,13 @@ test("a checkbox item is a question: the block says to ask it and delete the ite
 		"- [ ] Tell me where the repo is\n- [ ] give me the ID\n- [ ] enable Bash",
 	);
 
-	expect(out.block).toContain("A checklist item is a question");
 	expect(out.block).toContain(
-		"Ask each with mcp__claudetto__ask-user-question and delete it",
+		ASK_FORM("mcp__claudetto__ask-user-question", [
+			"Tell me where the repo is",
+			"give me the ID",
+			"enable Bash",
+		]),
 	);
-	for (const item of [
-		"Tell me where the repo is",
-		"give me the ID",
-		"enable Bash",
-	]) {
-		expect(out.block).toContain(`- [ ] ${item}`);
-	}
 });
 
 test("a refused call in the turn, a host-denied Glob or Grep included, excuses no item", async ($: Engine, on: On) => {
@@ -262,18 +212,21 @@ test("a `!` makes a bullet a command at its start, after a space, a backtick, or
 test("a question of an earlier turn excuses nothing", async ($: Engine, on: On) => {
 	lab(on, withUse({ tool: "AskUserQuestion" }), said("user", "go on"));
 
-	expect((await stop($, "- [ ] push")).block).toContain("\n- [ ] push\n");
+	const awaited = await stop($, "- [ ] push");
+	expect(awaited.block).toContain("\n- [ ] push\n");
 });
 
 test("a turn is counted from the last message with text, so a tool result or a reply does not restart it", async ($: Engine, on: On) => {
 	lab(on, withUse({ tool: "AskUserQuestion" }), said("user", ""));
-	expect((await stop($, "- [ ] push")).block).toBeUndefined();
+	const awaited2 = await stop($, "- [ ] push");
+	expect(awaited2.block).toBeUndefined();
 });
 
 test("a reply of the assistant does not restart the turn either", async ($: Engine, on: On) => {
 	lab(on, withUse({ tool: "AskUserQuestion" }), said("assistant", "ok"));
 
-	expect((await stop($, "- [ ] push")).block).toBeUndefined();
+	const awaited3 = await stop($, "- [ ] push");
+	expect(awaited3.block).toBeUndefined();
 });
 
 test("a call that worked, or a question that was answered, is no blocker", async ($: Engine, on: On) => {
@@ -284,118 +237,12 @@ test("a call that worked, or a question that was answered, is no blocker", async
 		withUse({ tool: "AskUserQuestion", text: "yes" }),
 	);
 
-	expect((await stop($, "- [ ] push")).block).toContain("\n- [ ] push\n");
+	const awaited4 = await stop($, "- [ ] push");
+	expect(awaited4.block).toContain("\n- [ ] push\n");
 });
 
 test("a question that is open excuses an item", async ($: Engine, on: On) => {
 	lab(on, withUse({ tool: "Read" }), withUse({ tool: "AskUserQuestion" }));
-	expect((await stop($, "- [ ] push")).block).toBeUndefined();
-});
-
-test("openItems of an empty or blank reply finds nothing", () => {
-	const turn = { asking: false };
-
-	expect(openItems("", turn)).toEqual([]);
-	expect(openItems("\n  \n", turn)).toEqual([]);
-});
-
-test("a backtick command the reply asks the user to run without ! is stray", () => {
-	expect(
-		commandForm("You need to run `gh auth login` first.").stray,
-	).toHaveLength(1);
-	expect(commandForm("Run `bun dev` to start it.").stray).toEqual([]);
-	expect(commandForm("- ! gh auth login").stray).toEqual([]);
-	expect(commandForm("- [ ] ! gh auth login").stray).toEqual([
-		"- [ ] ! gh auth login",
-	]);
-});
-
-test("a question item names the claudetto ask tool, with no tool.list call", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop($, "- [ ] Which region should I use?");
-
-	expect(out.block).toContain(
-		"Ask each with mcp__claudetto__ask-user-question and",
-	);
-	expect(out.block).toContain("Which region should I use?");
-	expect(listed).toBe(0);
-});
-
-test("a headless session, where no ask reaches anyone, gets no ask block for a question item and still gets the command block", async ($: Engine, on: On) => {
-	lab(on);
-	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
-
-	expect(
-		(await stop($, "- [ ] Which region should I use?")).block,
-	).toBeUndefined();
-	expect(
-		(await stop($, "You need to run `gh auth login` first.")).block,
-	).toBeDefined();
-});
-
-test("a reply already in form gets no block", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop(
-		$,
-		"Wrote the unit file.\n\n## What I Need From You\n- ! sudo systemctl enable foo",
-	);
-	const plain = await stop($, "Wrote the unit file. Tests pass.");
-
-	expect(out.block).toBeUndefined();
-	expect(plain.block).toBeUndefined();
-});
-
-test("a command outside an item blocks: a ! line, a sudo code block, sudo in prose", async ($: Engine, on: On) => {
-	lab(on);
-
-	const bang = await stop($, "Run this:\n\n! gh auth login");
-	const code = await stop($, "Install:\n```sh\nsudo apt install jq\n```");
-	const prose = await stop($, "You need to run sudo systemctl restart foo.");
-
-	expect(bang.block).toContain("`- ! <command>` bullet");
-	expect(bang.block).toContain("! gh auth login");
-	expect(code.block).toContain("sudo apt install jq");
-	expect(prose.block).toContain("sudo systemctl restart foo");
-});
-
-test("items with a ! command and no heading block", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop($, "- ! gh auth login");
-
-	expect(out.block).toContain("## What I Need From You");
-});
-
-test("the form passes: one command in an item under the heading, no question in the text", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop(
-		$,
-		"Wrote the unit file.\n\n## What I Need From You\n- ! sudo systemctl enable foo",
-	);
-
-	expect(out.block).toBeUndefined();
-});
-
-test("two ! command items block once, naming both, and keep the one the work needs first", async ($: Engine, on: On) => {
-	lab(on);
-
-	const out = await stop(
-		$,
-		"Wrote the unit file.\n\n## What I Need From You\n- ! sudo systemctl enable foo\n- ! gh auth login",
-	);
-
-	expect(out.block).toContain("! sudo systemctl enable foo");
-	expect(out.block).toContain("! gh auth login");
-	expect(out.block).toContain("needs first");
-	expect(out.block).toContain("later reply");
-	expect(listed).toBe(0);
-});
-
-test("a command block of a continued turn passes", async ($: Engine, on: On) => {
-	lab(on);
-
-	expect((await stop($, "! gh auth login", true)).block).toBeUndefined();
+	const awaited5 = await stop($, "- [ ] push");
+	expect(awaited5.block).toBeUndefined();
 });

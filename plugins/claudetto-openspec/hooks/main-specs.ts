@@ -1,11 +1,11 @@
 import { type Fs, join } from "./fs.ts";
-import { type Report, validateSpec } from "./spec-rules.ts";
+import { type Issue, type Report, validateSpec } from "./spec-rules.ts";
 import { blocks, section } from "./spec.ts";
 import { requirementPath } from "./texts.ts";
-import { discoverDeltas } from "./validate.ts";
+import { discoverDeltas } from "./validate-discover.ts";
 
 // The rules number requirements by position; a main spec's report names them instead.
-const INDEX = /^requirements(?:\[(\d+)\]|\.(\d+))/;
+const INDEX = /^requirements(?:\[(\d+)\]|\.(\d+))/u;
 
 const requirementNames = (md: string) =>
 	blocks(section(md, "Requirements") ?? "").map((b) => b.name);
@@ -22,12 +22,11 @@ export const requirementCount = (md: string) => requirementNames(md).length;
 export const checkSpec = (md: string): Report => {
 	const names = requirementNames(md);
 	const report = validateSpec(md, true);
-	return {
-		...report,
-		issues: report.issues.map((i) => {
-			const m = INDEX.exec(i.path);
-			const name = m ? names[Number(m[1] ?? m[2])] : undefined;
-			return name === undefined ? i : { ...i, path: requirementPath(name) };
-		}),
-	};
+	const issues: Issue[] = [];
+	for (const i of report.issues) {
+		const m = INDEX.exec(i.path);
+		const name = m ? names[Number(m[1] ?? m[2])] : undefined;
+		issues.push(name === undefined ? i : { ...i, path: requirementPath(name) });
+	}
+	return { ...report, issues };
 };

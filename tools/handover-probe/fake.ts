@@ -16,7 +16,7 @@ const isHuman = (m: Message): boolean =>
 		m.content.some((block) => block.type === "text"));
 
 export const humanTurns = (messages: readonly Message[]): number =>
-	messages.filter(isHuman).length;
+	messages.filter((item) => isHuman(item)).length;
 
 /** FAKE context size: it falls when a compaction or a handover shortens the messages, and grows by one step per human turn after. */
 export const fakeContextTokens = (messages: readonly Message[]): number =>

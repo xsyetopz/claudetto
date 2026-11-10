@@ -25,11 +25,40 @@ interface Stats {
 	files: string[];
 }
 
+/** The paths that the writing tools of one assistant message name. */
+const writtenIn = (message: Record<string, unknown>): string[] => {
+	const content: unknown = message["content"];
+	return (Array.isArray(content) ? content : []).flatMap((block: unknown) => {
+		const path =
+			isRecord(block) &&
+			WRITERS.has(String(block["name"])) &&
+			isRecord(block["input"])
+				? pathOf(block["input"])
+				: undefined;
+		return path === undefined ? [] : [path];
+	});
+};
+
+/** The share of input tokens that the requests read from the cache, to two places. */
+const cacheHitRateOf = (usages: readonly unknown[]): number => {
+	let read = 0;
+	let total = 0;
+	for (const usage of usages) {
+		const u = isRecord(usage) ? usage : {};
+		read += num(u["cache_read_input_tokens"]);
+		total +=
+			num(u["input_tokens"]) +
+			num(u["cache_creation_input_tokens"]) +
+			num(u["cache_read_input_tokens"]);
+	}
+	return total === 0 ? 0 : Math.round((read / total) * 100) / 100;
+};
+
 /** A request spans one transcript line per content block, all with its message id: the first line dates it, and the last holds its usage. */
 export const runStats = (jsonl: string): Stats => {
 	const requests = new Map<string, { at: number; usage: unknown }>();
 	const files = new Set<string>();
-	for (const entry of jsonl.split("\n").map(lineOf)) {
+	for (const entry of jsonl.split("\n").map((item) => lineOf(item))) {
 		const message = isRecord(entry) ? entry["message"] : undefined;
 		if (
 			!isRecord(entry) ||
@@ -43,35 +72,17 @@ export const runStats = (jsonl: string): Stats => {
 			at: requests.get(id)?.at ?? Date.parse(String(entry["timestamp"])),
 			usage: message["usage"],
 		});
-		for (const block of Array.isArray(message["content"])
-			? message["content"]
-			: []) {
-			const path =
-				isRecord(block) &&
-				WRITERS.has(String(block["name"])) &&
-				isRecord(block["input"])
-					? pathOf(block["input"])
-					: undefined;
-			if (path !== undefined) {
-				files.add(path);
-			}
+		for (const path of writtenIn(message)) {
+			files.add(path);
 		}
 	}
-	let read = 0;
-	let total = 0;
-	for (const { usage } of requests.values()) {
-		const u = isRecord(usage) ? usage : {};
-		read += num(u["cache_read_input_tokens"]);
-		total +=
-			num(u["input_tokens"]) +
-			num(u["cache_creation_input_tokens"]) +
-			num(u["cache_read_input_tokens"]);
-	}
-	const times = [...requests.values()].map((r) => r.at).sort((a, b) => a - b);
+	const times = [...requests.values()]
+		.map((r) => r.at)
+		.toSorted((a, b) => a - b);
 	const gaps = times.slice(1).map((t, i) => t - (times[i] ?? t));
 	return {
 		requests: requests.size,
-		cacheHitRate: total === 0 ? 0 : Math.round((read / total) * 100) / 100,
+		cacheHitRate: cacheHitRateOf([...requests.values()].map((r) => r.usage)),
 		maxGapSeconds: Math.round(Math.max(0, ...gaps) / 1000),
 		files: [...files],
 	};
@@ -84,6 +95,8 @@ interface Pending {
 	redone: boolean;
 }
 
+type Started = Map<string, { agent: string; model: string; at: number }>;
+
 const appendLine = async (
 	$: EngineInterface,
 	line: Record<string, unknown>,
@@ -93,15 +106,7 @@ const appendLine = async (
 	await $.fs.write(path, `${held}${JSON.stringify(line)}\n`);
 };
 
-/** Logs each delegated run once the root has had 3 turns to redo it: an edit by the root of a file the run edited marks it redone. */
-export const runs = (on: On): void => {
-	const started = new Map<
-		string,
-		{ agent: string; model: string; at: number }
-	>();
-	const pending: Pending[] = [];
-	let writing = Promise.resolve();
-
+const trackSpawns = (on: On, started: Started): void => {
 	on("agent.spawn", { fork: BOTH }, async ($, e, next) => {
 		const out = await next(e);
 		if (out.agentId !== undefined) {
@@ -113,7 +118,9 @@ export const runs = (on: On): void => {
 		}
 		return out;
 	});
+};
 
+const trackStops = (on: On, started: Started, pending: Pending[]): void => {
 	on("classic.SubagentStop", { stop_hook_active: BOTH }, async ($, e, next) => {
 		const out = await next(e);
 		const run = started.get(e.agent_id);
@@ -137,7 +144,9 @@ export const runs = (on: On): void => {
 		});
 		return out;
 	});
+};
 
+const trackEdits = (on: On, pending: readonly Pending[]): void => {
 	on("tool.call", { tool: WRITING_TOOLS }, (_$, e, next) => {
 		const path = pathOf(e);
 		if (e.agentId === undefined && path !== undefined) {
@@ -147,7 +156,10 @@ export const runs = (on: On): void => {
 		}
 		return next(e);
 	});
+};
 
+const flushRuns = (on: On, pending: Pending[]): void => {
+	let writing = Promise.resolve();
 	on("turn.complete", { isAborted: BOTH }, async ($, e, next) => {
 		const out = await next(e);
 		if (e.agentId !== undefined) {
@@ -167,11 +179,21 @@ export const runs = (on: On): void => {
 				.then(() =>
 					appendLine($, { ...p.line, rootEditedWithin3Turns: p.redone }),
 				)
-				.catch((error: unknown) =>{ 
-					$.ui.log(`The run log was not written (${error})`); },
-				);
+				.catch((error: unknown) => {
+					$.ui.log(`The run log was not written (${String(error)})`);
+				});
 		}
 		await writing;
 		return out;
 	});
+};
+
+/** Logs each delegated run once the root has had 3 turns to redo it: an edit by the root of a file the run edited marks it redone. */
+export const runs = (on: On): void => {
+	const started: Started = new Map();
+	const pending: Pending[] = [];
+	trackSpawns(on, started);
+	trackStops(on, started, pending);
+	trackEdits(on, pending);
+	flushRuns(on, pending);
 };

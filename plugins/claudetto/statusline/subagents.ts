@@ -5,8 +5,8 @@ import { num, type Rec, rec, str } from "./input.ts";
 import { DESCRIPTION_ROOM_MIN, ITEM_GAP, SUBAGENT_ROWS_MAX } from "./limits.ts";
 import { truncate, width } from "./width.ts";
 
-const PLUGIN_PREFIX = /^[^:]+:/;
-const CLAUDE_PREFIX = /^claude-/;
+const PLUGIN_PREFIX = /^[^:]+:/u;
+const CLAUDE_PREFIX = /^claude-/u;
 
 const STATES: Readonly<Record<string, string>> = {
 	completed: `${ICON.done} done`,
@@ -21,7 +21,7 @@ const contextText = (task: Rec, paint: Paint): string => {
 		return "";
 	}
 	const used = `${ICON.context} ${thousands(tokens)}`;
-	if (!size) {
+	if (size === undefined || size === 0) {
 		return paint.dim(used);
 	}
 	const percent = Math.min(100, Math.round((tokens / size) * 100));
@@ -30,7 +30,7 @@ const contextText = (task: Rec, paint: Paint): string => {
 
 const timeText = (task: Rec, now: number, paint: Paint): string => {
 	const status = str(task["status"]);
-	if (status && status !== "running") {
+	if (status !== undefined && status !== "running") {
 		return paint.dim(STATES[status] ?? status);
 	}
 	const start = num(task["startTime"]);
@@ -48,12 +48,15 @@ const rowOf = (
 	const agentType = str(task["agentType"])?.replace(PLUGIN_PREFIX, "");
 	const name = str(task["name"]) ?? agentType ?? "agent";
 	const type =
-		agentType && agentType !== name ? paint.dim(` (${agentType})`) : "";
+		agentType !== undefined && agentType !== name
+			? paint.dim(` (${agentType})`)
+			: "";
 	const model = str(task["model"])?.replace(CLAUDE_PREFIX, "");
 	const effort = str(task["effort"]) ?? String(num(task["effort"]) ?? "");
-	const shown = model
-		? ` ${paint.dim(`${model}${effort ? ` ${effort}` : ""}`)}`
-		: "";
+	const shown =
+		model === undefined
+			? ""
+			: ` ${paint.dim(`${model}${effort === "" ? "" : ` ${effort}`}`)}`;
 	const line = [
 		`${ICON.agent} ${paint.bold(name)}${type}${shown}`,
 		contextText(task, paint),
@@ -63,7 +66,7 @@ const rowOf = (
 		.join(ITEM_GAP);
 	const room = columns - width(line) - width(ITEM_GAP);
 	const description = str(task["description"]);
-	return !description || room <= DESCRIPTION_ROOM_MIN
+	return description === undefined || room <= DESCRIPTION_ROOM_MIN
 		? truncate(line, columns)
 		: `${line}${ITEM_GAP}${paint.dim(truncate(description, room))}`;
 };
@@ -77,11 +80,11 @@ export const taskRows = (
 ): { id: string; content: string }[] => {
 	const tasks = Array.isArray(input["tasks"]) ? input["tasks"] : [];
 	return tasks
-		.map(rec)
+		.map((item) => rec(item))
 		.slice(0, SUBAGENT_ROWS_MAX)
 		.flatMap((task) => {
 			const id = str(task?.["id"]);
-			return task && id
+			return task !== undefined && id !== undefined
 				? [{ id, content: rowOf(task, now, columns, paint) }]
 				: [];
 		});

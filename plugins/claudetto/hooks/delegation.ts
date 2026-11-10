@@ -69,7 +69,7 @@ const running = { ask: 0, monitor: 0 };
 const failure = (error: unknown): string =>
 	error instanceof Error ? error.message : String(error);
 
-export const delegation = (on: On): void => {
+const agentHooks = (on: On): void => {
 	on("agent.offer", (_$, e, next) =>
 		e.source === "built-in" ? { isOffered: false } : next(e),
 	);
@@ -95,7 +95,7 @@ export const delegation = (on: On): void => {
 			return { deny: agentForm(type, foreground) };
 		}
 		const out = await next(e);
-		return oneShot && !out.isError && out.result !== undefined && !out.deny
+		return oneShot && !out.isError && out.result !== undefined
 			? { ...out, result: { ...out.result, agentType: "Explore" } }
 			: out;
 	});
@@ -116,7 +116,9 @@ export const delegation = (on: On): void => {
 					};
 		},
 	);
+};
 
+const askHooks = (on: On): void => {
 	on(
 		"tool.call",
 		{ tool: "mcp__claudetto__ask-user-question" },
@@ -144,7 +146,9 @@ export const delegation = (on: On): void => {
 					deny: "AskUserQuestion is off here: call mcp__claudetto__ask-user-question with question and options.",
 				},
 	);
+};
 
+const monitorHooks = (on: On): void => {
 	on("tool.call", { tool: "mcp__claudetto__monitor" }, async ($, e) => {
 		running.monitor++;
 		try {
@@ -152,8 +156,7 @@ export const delegation = (on: On): void => {
 			const out = await $.tool.call({
 				tool: "Monitor",
 				description: text(e.description),
-				timeout_ms:
-					typeof e.timeout_ms === "number" ? e.timeout_ms : 300_000,
+				timeout_ms: typeof e.timeout_ms === "number" ? e.timeout_ms : 300_000,
 				...(ws === undefined ? { command: text(e.command) } : { ws }),
 			});
 			return { result: out.deny ?? out.text ?? "" };
@@ -169,7 +172,9 @@ export const delegation = (on: On): void => {
 			? next(e)
 			: { deny: "Monitor is off here: call mcp__claudetto__monitor." },
 	);
+};
 
+const searchHooks = (on: On): void => {
 	on("tool.describe", { tool: [OLD_ASK, "Monitor"] }, async ($, e, next) => ({
 		...(await next(e)),
 		...deferral(await $.tool.list()),
@@ -178,8 +183,16 @@ export const delegation = (on: On): void => {
 	// Only the result is rewritten: a rewritten query would void auto mode's server review of the response's other calls.
 	on("tool.call", { tool: "ToolSearch" }, async (_$, e, next) => {
 		const out = await next(e);
-		const result = out.isError || out.deny ? undefined : out.result;
+		const result =
+			out.isError || out.deny !== undefined ? undefined : out.result;
 		const matches = result && wrapMatches(result.matches);
 		return result && matches ? { result: { ...result, matches } } : out;
 	});
+};
+
+export const delegation = (on: On): void => {
+	agentHooks(on);
+	askHooks(on);
+	monitorHooks(on);
+	searchHooks(on);
 };

@@ -13,6 +13,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
+import { isObject, items } from "./fixture-shape.ts";
 import type { Fs } from "./fs.ts";
 
 export interface Entry {
@@ -25,7 +26,7 @@ export interface Rec {
 	test: string;
 	seq: number;
 	kind: string;
-	args: any;
+	args: unknown;
 	before: Record<string, Entry> | null;
 	after: Record<string, Entry> | null;
 	outcome: {
@@ -34,12 +35,26 @@ export interface Rec {
 	};
 }
 
-export const load = async (name: string): Promise<Rec[]> =>
-	JSON.parse(
-		await readFile(`${import.meta.dir}/fixtures/${name}.json`, "utf8"),
-	);
+const isRec = (v: unknown): v is Rec =>
+	isObject(v) &&
+	typeof v["kind"] === "string" &&
+	typeof v["test"] === "string" &&
+	isObject(v["outcome"]);
 
-const kindOf = (e: { isDirectory(): boolean; isFile(): boolean }) => {
+export const load = async (name: string): Promise<Rec[]> => {
+	const text = await readFile(
+		`${import.meta.dir}/fixtures/${name}.json`,
+		"utf8",
+	);
+	const parsed: unknown = JSON.parse(text);
+	const records = items(parsed).filter((v): v is Rec => isRec(v));
+	if (records.length !== items(parsed).length) {
+		throw new TypeError(`fixtures/${name}.json holds a malformed record`);
+	}
+	return records;
+};
+
+const kindOf = (e: { isDirectory: () => boolean; isFile: () => boolean }) => {
 	if (e.isDirectory()) {
 		return "dir";
 	}
@@ -47,20 +62,21 @@ const kindOf = (e: { isDirectory(): boolean; isFile(): boolean }) => {
 };
 
 export const nodeFs: Fs = {
-	read: (path: string, _options?: unknown): Promise<any> =>
-		readFile(path, "utf8"),
+	read: (path) => readFile(path, "utf8"),
 	write: async (path, text) => {
 		await mkdir(dirname(path), { recursive: true });
 		await writeFile(path, text);
 	},
-	list: async (path) =>
-		(await readdir(path ?? ".", { withFileTypes: true })).map((e) => ({
+	list: async (path) => {
+		const entries = await readdir(path ?? ".", { withFileTypes: true });
+		return entries.map((e) => ({
 			name: e.name,
 			kind: kindOf(e),
 			size: 0,
 			mtimeMs: 0,
 			isLink: e.isSymbolicLink(),
-		})),
+		}));
+	},
 	exists: async (path) => {
 		try {
 			await stat(path);
@@ -71,12 +87,13 @@ export const nodeFs: Fs = {
 	},
 	stat: async (path, options) => {
 		const info = await stat(path);
+		const own = await lstat(path);
 		return {
 			kind: kindOf(info),
 			size: info.size,
 			mtimeMs: info.mtimeMs,
-			isLink: (await lstat(path)).isSymbolicLink(),
-			...(options?.resolve && { realPath: await realpath(path) }),
+			isLink: own.isSymbolicLink(),
+			...(options?.resolve === true && { realPath: await realpath(path) }),
 		};
 	},
 };
@@ -88,7 +105,7 @@ const sub = (value: unknown, root: string): unknown => {
 	if (Array.isArray(value)) {
 		return value.map((v) => sub(v, root));
 	}
-	if (value && typeof value === "object") {
+	if (value !== null && typeof value === "object") {
 		return Object.fromEntries(
 			Object.entries(value).map(([k, v]) => [k, sub(v, root)]),
 		);
@@ -98,10 +115,10 @@ const sub = (value: unknown, root: string): unknown => {
 
 const place = async (root: string, rel: string, e: Entry) => {
 	const full = join(root, rel);
-	await mkdir(e.dir ? full : dirname(full), { recursive: true });
+	await mkdir(e.dir === true ? full : dirname(full), { recursive: true });
 	if (e.link !== undefined) {
 		await symlink(e.link.replaceAll("$ROOT", root), full);
-	} else if (!e.dir) {
+	} else if (e.dir !== true) {
 		await writeFile(full, e.text ?? "");
 	}
 };
@@ -142,5 +159,5 @@ export const snapshot = async (
 			return { [rel]: await readFile(join(root, rel), "utf8").catch(() => "") };
 		}),
 	);
-	return Object.assign({}, ...parts);
+	return Object.fromEntries(parts.flatMap((p) => Object.entries(p)));
 };

@@ -99,15 +99,17 @@ const VERDICTS: [string, string, string][] = [
 	["git status", "pass", ""],
 ];
 
+const measured = (command: string, id: string): string[] => {
+	const verdict = judge(command, NONE);
+	return [
+		command,
+		verdict?.decision ?? "pass",
+		id === "" || verdict?.reason.startsWith(`${id}:`) === true ? id : "other",
+	];
+};
+
 test("the measured commands get the verdicts of the upstream rules plus the patch", () => {
-	const got = VERDICTS.map(([command, , id]) => {
-		const verdict = judge(command, NONE);
-		return [
-			command,
-			verdict?.decision ?? "pass",
-			id === "" || verdict?.reason.startsWith(`${id}:`) === true ? id : "other",
-		];
-	});
+	const got = VERDICTS.map(([command, , id]) => measured(command, id));
 	expect(got).toEqual(
 		VERDICTS.map(([command, verdict, id]) => [command, verdict, id]),
 	);
@@ -166,7 +168,6 @@ const FLAGGED_NEGATIVES = [
 ];
 
 const skipped = new Set(Object.values(SKIPPED).flat());
-const WINDOWS = /^fs:windows_/;
 
 const idsHit = (command: string) => {
 	const parsed = parse(command);
@@ -197,7 +198,7 @@ const classify = (fixture: Fixture) => {
 	return `missed ${fixture.test} ${hit.join(",")} ${fixture.expect_ids.join(",")}`;
 };
 
-test("every vendored positive fixture is caught, skipped by name, or covered by the unreadable ask", () => {
+const positiveCounts = (): Record<string, number> => {
 	const counts: Record<string, number> = {};
 	for (const fixture of GENERATED.fixtures) {
 		if (fixture.expect_ids.length > 0) {
@@ -205,7 +206,19 @@ test("every vendored positive fixture is caught, skipped by name, or covered by 
 			counts[kind] = (counts[kind] ?? 0) + 1;
 		}
 	}
-	expect(counts).toEqual({
+	return counts;
+};
+
+const flaggedNegatives = (): string[] =>
+	GENERATED.fixtures
+		.filter(
+			(fixture) =>
+				fixture.expect_ids.length === 0 && idsHit(fixture.test).length > 0,
+		)
+		.map((fixture) => fixture.test);
+
+test("every vendored positive fixture is caught, skipped by name, or covered by the unreadable ask", () => {
+	expect(positiveCounts()).toEqual({
 		caught: 648,
 		windows: 20,
 		unreadable: 7,
@@ -215,13 +228,7 @@ test("every vendored positive fixture is caught, skipped by name, or covered by 
 });
 
 test("every vendored negative fixture is clean except the named ones", () => {
-	const flagged: string[] = [];
-	for (const fixture of GENERATED.fixtures) {
-		if (fixture.expect_ids.length === 0 && idsHit(fixture.test).length > 0) {
-			flagged.push(fixture.test);
-		}
-	}
-	expect(new Set(flagged)).toEqual(new Set(FLAGGED_NEGATIVES));
+	expect(new Set(flaggedNegatives())).toEqual(new Set(FLAGGED_NEGATIVES));
 });
 
 const textsOf = (command: string): string[] =>

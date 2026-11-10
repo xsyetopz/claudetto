@@ -56,8 +56,8 @@ export const statusWithFiles = async (
 	now: number,
 ): Promise<string> => {
 	const input = parse(raw);
-	const dir = input ? projectDirOf(input) : undefined;
-	if (!(input && dir)) {
+	const dir = input === undefined ? undefined : projectDirOf(input);
+	if (input === undefined || dir === undefined) {
 		return statusOf(raw, env, now, NO_LOCAL);
 	}
 	const [local, line, off] = await Promise.all([

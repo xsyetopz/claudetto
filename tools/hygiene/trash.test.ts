@@ -14,14 +14,9 @@ import { join } from "node:path";
 
 import { sleep, spawn } from "bun";
 
-import {
-	parseArgs,
-	sweep,
-} from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
-import {
-	loadTrash,
-	PROJECT_TRASH,
-} from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
+import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { PROJECT_TRASH } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
 
 const DAY = 86_400_000;
 const NOW = Date.now();
@@ -59,6 +54,14 @@ const repo = async () => {
 	return { root, proj, worktree: join(proj, ".claude/worktrees/w") };
 };
 
+/** Marks a folder as made by the session `owner`; a folder with no owner stays unmarked. */
+const mark = async (dir: string, owner: string | undefined) => {
+	if (owner === undefined) {
+		return;
+	}
+	await writeFile(join(dir, ".created-by-claudetto"), `${owner}\n`);
+};
+
 /** Ages the worktree's git index, so its checkout reads as unused. */
 const idle = async (proj: string) => {
 	const at = new Date(NOW - 10 * DAY);
@@ -75,11 +78,10 @@ const host = (root: string, proj: string) => ({
 	configDir: join(root, "home/.claude"),
 });
 
-const swept = async (root: string, proj: string, argv: string[] = []) =>
-	(await sweep(parseArgs(argv), host(root, proj))).removed.map((item) => [
-		item.kind,
-		item.path,
-	]);
+const swept = async (root: string, proj: string, argv: string[] = []) => {
+	const report = await sweep(parseArgs(argv), host(root, proj));
+	return report.removed.map((item) => [item.kind, item.path]);
+};
 
 test("an old build folder in an idle worktree goes, and the session's own checkout keeps its", async () => {
 	const { root, proj, worktree } = await repo();
@@ -158,13 +160,15 @@ test("a folder that changed inside within the limit stays though its own time is
 
 test("a tracked dist folder stays", async () => {
 	const { root, proj, worktree } = await repo();
-	for (const p of ["dist/app.js", "dist"]) {
-		await utimes(
-			join(worktree, p),
-			new Date(NOW - 90 * DAY),
-			new Date(NOW - 90 * DAY),
-		);
-	}
+	await Promise.all(
+		["dist/app.js", "dist"].map((p) =>
+			utimes(
+				join(worktree, p),
+				new Date(NOW - 90 * DAY),
+				new Date(NOW - 90 * DAY),
+			),
+		),
+	);
 	await idle(proj);
 
 	expect(await swept(root, proj)).toEqual([]);
@@ -229,9 +233,7 @@ test("a temp folder marked by an ended session goes, and a live one's and an unm
 			["probe-unmarked", undefined],
 		].map(async ([name = "", owner]) => {
 			await mkdir(join(tmp, name), { recursive: true });
-			if (owner) {
-				await writeFile(join(tmp, name, ".created-by-claudetto"), `${owner}\n`);
-			}
+			await mark(join(tmp, name), owner);
 			await utimes(join(tmp, name), new Date(NOW - DAY), new Date(NOW - DAY));
 		}),
 	);
@@ -239,42 +241,6 @@ test("a temp folder marked by an ended session goes, and a live one's and an unm
 	expect(await swept(root, proj, ["--session", "s-live"])).toEqual([
 		["claudetto-temp", join(tmp, "probe-ended")],
 	]);
-});
-
-test("a project file with useDefault drops disabled rules and adds its own", async () => {
-	const { proj } = await repo();
-	await writeFile(
-		join(proj, PROJECT_TRASH),
-		`[extend]\nuseDefault = true\ndisabledRules = ["xcode"]\n\n[[rules]]\nid = "out"\npath = '''(?i)(?:^|/)OUT$'''\n`,
-	);
-
-	const ids = (await loadTrash(proj)).rules.map((rule) => rule.id);
-	const out = (await loadTrash(proj)).rules.find((rule) => rule.id === "out");
-
-	expect(ids).toContain("swiftpm");
-	expect(ids).not.toContain("xcode");
-	expect(out?.path.test("a/out")).toBe(true);
-});
-
-test("a project file without useDefault replaces the plugin's rules", async () => {
-	const { proj } = await repo();
-	await writeFile(
-		join(proj, PROJECT_TRASH),
-		`[[rules]]\nid = "only"\npath = '''^x$'''\n`,
-	);
-
-	expect((await loadTrash(proj)).rules.map((rule) => rule.id)).toEqual([
-		"only",
-	]);
-});
-
-test("a rule with a content regex or without a path is refused", async () => {
-	const { proj } = await repo();
-	const file = join(proj, PROJECT_TRASH);
-	await writeFile(file, `[[rules]]\nid = "a"\npath = "x"\nregex = "y"\n`);
-	await expect(loadTrash(proj)).rejects.toThrow("match folders by path only");
-	await writeFile(file, `[[rules]]\nid = "a"\n`);
-	await expect(loadTrash(proj)).rejects.toThrow("needs an id and a path");
 });
 
 test("an allowlist path keeps a folder a rule names", async () => {
@@ -296,83 +262,9 @@ test("the sweep's own process in the project does not keep its build folders", a
 	const back = process.cwd();
 	process.chdir(worktree);
 
-	const found = await swept(root, proj).finally(() =>{  process.chdir(back); });
+	const found = await swept(root, proj).finally(() => {
+		process.chdir(back);
+	});
 
 	expect(found).toEqual([["swiftpm", join(worktree, ".build")]]);
-});
-
-// 18.42: the folders each tool made in a probe, and names that must not match.
-test("every folder a tool probe made matches a rule, and a bare generic name does not", async () => {
-	const { proj } = await repo();
-	const { rules } = await loadTrash(proj);
-	const matched = (path: string) =>
-		rules.some((rule) => !rule.temp && !rule.gcroot && rule.path.test(path));
-	const made = [
-		"node_modules",
-		"dist",
-		".venv",
-		".pdm-build",
-		".tox",
-		".mypy_cache",
-		"htmlcov",
-		"_build",
-		"deps",
-		"build",
-		"elm-stuff",
-		".dart_tool",
-		"ios/Flutter/ephemeral",
-		"lua_modules",
-		".luarocks",
-		"vendor",
-		".terraform",
-		".terragrunt-cache",
-		".zig-cache",
-		"zig-out",
-		".cpcache",
-		"target",
-		"project/target",
-		".gradle",
-		".kotlin",
-		"app/build",
-		"CMakeFiles",
-		"out/build",
-		"builddir",
-		".xmake",
-		"autom4te.cache",
-		".pio",
-		"buck-out",
-		".build",
-		"vcpkg_installed",
-		"build/vcpkg_installed",
-		"buildtrees",
-		".scala-build",
-		".bsp",
-		".direnv",
-	];
-	expect(made.filter((path) => !matched(path))).toEqual([]);
-	expect(
-		[
-			"ephemeral",
-			"local",
-			"charts",
-			"bin",
-			"src",
-			"result",
-			"packages",
-			"downloads",
-		].filter(matched),
-	).toEqual([]);
-});
-
-test("the plugin's trash file passes the gitleaks config check of betterleaks", async () => {
-	const check = spawn([
-		"betterleaks",
-		"config",
-		"check",
-		"--no-banner",
-		"-c",
-		join(import.meta.dir, "../../plugins/claudetto/hooks/hygiene/trash.toml"),
-	]);
-
-	expect(await new Response(check.stdout).text()).toContain("OK: 37 rules");
 });

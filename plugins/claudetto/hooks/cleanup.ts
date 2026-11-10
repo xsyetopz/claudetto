@@ -2,7 +2,7 @@ import type { BackgroundTaskSummary, EngineInterface } from "claude-code";
 
 import { isMarked } from "./gate.ts";
 import { createdOf, markedTopsOf } from "./gate/processes.ts";
-import { CLEANUP_LEFT, STALE_TASKS } from "./texts.ts";
+import { CLEANUP_LEFT, STALE_TASKS } from "./texts-gate.ts";
 
 type Past = Parameters<typeof createdOf>[0];
 
@@ -17,10 +17,29 @@ async function succeeds(
 	argv: string[],
 	cwd: string,
 ): Promise<boolean> {
-	return (
-		(await $.process.run(argv, { cwd }).catch(() => {}))?.exitCode === 0
-	);
+	const awaited = await $.process.run(argv, { cwd }).catch(() => void 0);
+	return awaited?.exitCode === 0;
 }
+
+/** The results of `step` on each item, one call finishing before the next starts, because git locks its metadata while it removes a worktree or a branch. */
+const inOrder = async <T, R>(
+	items: readonly T[],
+	step: (item: T) => Promise<R>,
+): Promise<R[]> => {
+	const [head, ...rest] = items;
+	return head === undefined
+		? []
+		: [await step(head), ...(await inOrder(rest, step))];
+};
+
+/** The items for which `test` holds, tested in order. */
+const keepInOrder = async <T>(
+	items: readonly T[],
+	test: (item: T) => Promise<boolean>,
+): Promise<T[]> => {
+	const flags = await inOrder(items, test);
+	return items.filter((_, index) => flags[index] === true);
+};
 
 /**
  * Removes what one agent's own calls created: its marked /tmp folders, its worktrees, and its branches. Plain `git worktree remove` refuses a
@@ -29,41 +48,30 @@ async function succeeds(
  */
 async function cleanUp($: EngineInterface, past: Past): Promise<string[]> {
 	const cwd = await $.session.cwd();
-	for (const top of markedTopsOf(past)) {
+	await inOrder(markedTopsOf(past), async (top) => {
 		if (await isMarked($, top)) {
 			await $.process.run(["rm", "-rf", top]);
 		}
-	}
+	});
 	const { paths, branches, workers } = createdOf(past);
 	const root = workers.length > 0 ? await $.session.root() : "";
-	const left: string[] = [];
-	for (const path of [
-		...paths,
-		...workers.map((id) => `${root}/.claude/worktrees/agent-${id}`),
-	]) {
-		if (
+	const leftPaths = await keepInOrder(
+		[...paths, ...workers.map((id) => `${root}/.claude/worktrees/agent-${id}`)],
+		async (path) =>
 			!(await succeeds($, ["git", "worktree", "remove", path], cwd)) &&
-			(await $.fs.exists(path))
-		) {
-			left.push(path);
-		}
-	}
-	for (const branch of [
-		...branches,
-		...workers.map((id) => `worktree-agent-${id}`),
-	]) {
-		if (
+			(await $.fs.exists(path)),
+	);
+	const leftBranches = await keepInOrder(
+		[...branches, ...workers.map((id) => `worktree-agent-${id}`)],
+		async (branch) =>
 			!(await succeeds($, ["git", "branch", "-d", branch], cwd)) &&
 			(await succeeds(
 				$,
 				["git", "show-ref", "--verify", "--quiet", `refs/heads/${branch}`],
 				cwd,
-			))
-		) {
-			left.push(branch);
-		}
-	}
-	return left;
+			)),
+	);
+	return [...leftPaths, ...leftBranches];
 }
 
 /**
@@ -79,7 +87,7 @@ export async function closed<A extends { readonly block?: string }>(
 		readonly background_tasks?: readonly BackgroundTaskSummary[] | undefined;
 	},
 	answer: A,
-	agentId: string | undefined,
+	agentId?: string,
 ): Promise<A> {
 	if (answer.block !== undefined) {
 		return answer;
@@ -91,7 +99,7 @@ export async function closed<A extends { readonly block?: string }>(
 	const past = "deny" in found ? [] : found.flatMap((m) => m.toolUses);
 	const reply = e.last_assistant_message ?? "";
 	const own = (e.background_tasks ?? []).filter((task) =>
-		past.some((t) => t.text?.includes(task.id)),
+		past.some((t) => t.text?.includes(task.id) === true),
 	);
 	const stale = own.filter(
 		(task) => task.type !== "subagent" && !reply.includes(task.id),

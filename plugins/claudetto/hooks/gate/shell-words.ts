@@ -1,16 +1,18 @@
-interface Redirect {
-	op: string;
-	target: string;
-}
+import { baseName, programAt } from "./program-at.ts";
+import {
+	add,
+	balanced,
+	type Command,
+	endWord,
+	escaped,
+	literal,
+	newState,
+	single,
+	skipHeredocs,
+	type State,
+} from "./shell-state.ts";
 
-export interface Command {
-	words: string[];
-	/** Indexes of words that hold an expansion, a glob, or a brace, so their text is not what runs. */
-	dynamic: number[];
-	redirects: Redirect[];
-	from: boolean;
-	into: boolean;
-}
+export type { Command } from "./shell-state.ts";
 
 interface Parsed {
 	commands: Command[];
@@ -18,111 +20,11 @@ interface Parsed {
 	unreadable: boolean;
 }
 
-interface State {
-	src: string;
-	i: number;
-	depth: number;
-	commands: Command[];
-	unreadable: boolean;
-	word: string | undefined;
-	dynamic: boolean;
-	words: string[];
-	dyn: number[];
-	redirects: Redirect[];
-	target: string | undefined;
-	heredocs: string[];
-	from: boolean;
-}
-
 const MAX_DEPTH = 4;
-const REDIRECT = /^(?:&>>|&>|>>|>\||>&|>|<<<|<<-|<<|<&|<>|<)/;
-const PAREN: Record<string, number> = { "(": 1, ")": -1 };
-const DIGITS = /^\d+$/;
-const COMMAND_FLAG = /^-[a-z]*c$/;
-const ASSIGNMENT = /^[A-Za-z_]\w*=/;
-const RESERVED = new Set([
-	"if",
-	"then",
-	"else",
-	"elif",
-	"do",
-	"while",
-	"until",
-	"!",
-	"{",
-	"}",
-]);
+const REDIRECT = /^(?:&>>|&>|>>|>\||>&|>|<<<|<<-|<<|<&|<>|<)/u;
+const DIGITS = /^\d+$/u;
+const COMMAND_FLAG = /^-[a-z]*c$/u;
 export const SHELLS = new Set(["sh", "bash", "zsh", "dash", "ksh"]);
-
-interface Wrapper {
-	valued: string[];
-	operand?: boolean;
-}
-
-const WRAPPERS: Record<string, Wrapper> = {
-	sudo: {
-		valued: [
-			"-u",
-			"-g",
-			"-h",
-			"-p",
-			"-C",
-			"-D",
-			"-R",
-			"-T",
-			"-U",
-			"--user",
-			"--group",
-			"--chroot",
-			"--other-user",
-			"--close-from",
-			"--command-timeout",
-			"--host",
-			"--prompt",
-		],
-	},
-	doas: { valued: ["-u", "-C"] },
-	env: { valued: ["-u", "-C", "-S"] },
-	nice: { valued: ["-n"] },
-	exec: { valued: ["-a"] },
-	timeout: { valued: ["-s", "-k"], operand: true },
-	nohup: { valued: [] },
-	time: { valued: [] },
-	command: { valued: [] },
-	builtin: { valued: [] },
-};
-
-export const baseName = (word: string): string =>
-	word.slice(word.lastIndexOf("/") + 1);
-
-const afterWrapper = (
-	words: string[],
-	from: number,
-	wrapper: Wrapper,
-): number => {
-	let j = from;
-	while ((words[j] ?? "").startsWith("-") || ASSIGNMENT.test(words[j] ?? "")) {
-		j += wrapper.valued.includes(words[j] ?? "") ? 2 : 1;
-	}
-	return j + (wrapper.operand ? 1 : 0);
-};
-
-/** Where the program of a command starts, after assignments, reserved words, and wrappers such as `sudo` and `env`. */
-const programAt = (words: string[], from = 0): number => {
-	const word = words[from] ?? "";
-	const wrapper = WRAPPERS[baseName(word)];
-	if (ASSIGNMENT.test(word) || RESERVED.has(word)) {
-		return programAt(words, from + 1);
-	}
-	if (!wrapper) {
-		return from;
-	}
-	const next = afterWrapper(words, from + 1, wrapper);
-	// `env` with no program after it prints the environment, so it stays the program.
-	return next >= words.length && baseName(word) === "env"
-		? from
-		: programAt(words, next);
-};
 
 export const programOf = (
 	c: Command,
@@ -131,53 +33,10 @@ export const programOf = (
 	return { name: baseName(c.words[at] ?? ""), args: c.words.slice(at + 1), at };
 };
 
-const add = (s: State, text: string, dynamic = false): void => {
-	s.word = (s.word ?? "") + text;
-	s.dynamic ||= dynamic;
-};
-
-const endWord = (s: State): void => {
-	const { word } = s;
-	if (word === undefined) {
-		return;
-	}
-	if (s.target === undefined) {
-		if (s.dynamic) {
-			s.dyn.push(s.words.length);
-		}
-		s.words.push(word);
-	} else {
-		const op = s.target;
-		s.redirects.push({ op, target: word });
-		if (op.startsWith("<<") && op !== "<<<") {
-			s.heredocs.push(word);
-		}
-		s.target = undefined;
-	}
-	s.word = undefined;
-	s.dynamic = false;
-};
-
 const parseShell = (src: string, depth: number): Parsed =>
 	depth > MAX_DEPTH
 		? { commands: [], unreadable: true }
 		: run(newState(src, depth));
-
-const newState = (src: string, depth: number): State => ({
-	src,
-	i: 0,
-	depth,
-	commands: [],
-	unreadable: false,
-	word: undefined,
-	dynamic: false,
-	words: [],
-	dyn: [],
-	redirects: [],
-	target: undefined,
-	heredocs: [],
-	from: false,
-});
 
 /** The script text a command hands to a shell: the word after `-c` of `sh`, `bash` and the like, or the words of `eval`. */
 export const scriptOf = (c: Command): string | undefined => {
@@ -231,36 +90,6 @@ const endCommand = (s: State, piped: boolean): void => {
 	s.from = piped;
 };
 
-/** The index after the quote that closes the one at `at`. */
-const afterQuote = (src: string, at: number): number => {
-	const close = src[at];
-	let i = at + 1;
-	while (i < src.length && src[i] !== close) {
-		i += src[i] === "\\" && close === '"' ? 2 : 1;
-	}
-	return i + 1;
-};
-
-/** The text up to the `)` that closes a substitution whose `(` is already read; quotes inside it hide a `)`. */
-const balanced = (s: State): string => {
-	const start = s.i;
-	let depth = 1;
-	while (s.i < s.src.length) {
-		const c = s.src[s.i];
-		if (c === "'" || c === '"') {
-			s.i = afterQuote(s.src, s.i);
-			continue;
-		}
-		s.i += c === "\\" ? 2 : 1;
-		depth += PAREN[c ?? ""] ?? 0;
-		if (depth === 0) {
-			return s.src.slice(start, s.i - 1);
-		}
-	}
-	s.unreadable = true;
-	return "";
-};
-
 const backtick = (s: State): void => {
 	const end = s.src.indexOf("`", s.i + 1);
 	if (end === -1) {
@@ -293,13 +122,6 @@ const dollar = (s: State, inDouble: boolean): void => {
 		add(s, "$", true);
 		s.i++;
 	}
-};
-
-const single = (s: State): void => {
-	const end = s.src.indexOf("'", s.i + 1);
-	s.unreadable ||= end === -1;
-	add(s, s.src.slice(s.i + 1, end === -1 ? s.src.length : end));
-	s.i = end === -1 ? s.src.length : end + 1;
 };
 
 const double = (s: State): void => {
@@ -348,20 +170,6 @@ const redirect = (s: State): void => {
 	s.i += op.length;
 };
 
-const skipHeredocs = (s: State): void => {
-	for (const delimiter of s.heredocs) {
-		for (;;) {
-			const end = s.src.indexOf("\n", s.i);
-			const line = s.src.slice(s.i, end === -1 ? s.src.length : end);
-			s.i = end === -1 ? s.src.length : end + 1;
-			if (line.trim() === delimiter || end === -1) {
-				break;
-			}
-		}
-	}
-	s.heredocs = [];
-};
-
 const operator = (s: State, c: string): void => {
 	const next = s.src[s.i + 1];
 	if (c === "|" && next !== "|") {
@@ -376,77 +184,42 @@ const operator = (s: State, c: string): void => {
 	}
 };
 
-const escaped = (s: State): void => {
-	if (s.src[s.i + 1] !== "\n") {
-		add(s, s.src[s.i + 1] ?? "");
-	}
-	s.i += 2;
+const blank = (s: State): void => {
+	endWord(s);
+	s.i++;
 };
 
-const literal = (s: State, c: string): void => {
-	if (c === "#" && s.word === undefined) {
-		const end = s.src.indexOf("\n", s.i);
-		s.i = end === -1 ? s.src.length : end;
-		return;
+const ampersand = (s: State, c: string): void => {
+	if (s.src[s.i + 1] === ">") {
+		redirect(s);
+	} else {
+		operator(s, c);
 	}
-	add(s, c, "*?[{".includes(c) || (c === "~" && s.word === undefined));
-	s.i++;
+};
+
+const HANDLERS: Record<string, (s: State, c: string) => void> = {
+	" ": blank,
+	"\t": blank,
+	"\\": escaped,
+	"'": single,
+	'"': double,
+	$: (s) => {
+		dollar(s, false);
+	},
+	"`": backtick,
+	"<": redirect,
+	">": redirect,
+	"&": ampersand,
+	";": operator,
+	"(": operator,
+	")": operator,
+	"|": operator,
+	"\n": operator,
 };
 
 const step = (s: State): void => {
 	const c = s.src[s.i] ?? "";
-	switch (c) {
-		case " ":
-		case "\t": {
-			endWord(s);
-			s.i++;
-			break;
-		}
-		case "\\": {
-			escaped(s);
-			break;
-		}
-		case "'": {
-			single(s);
-			break;
-		}
-		case '"': {
-			double(s);
-			break;
-		}
-		case "$": {
-			dollar(s, false);
-			break;
-		}
-		case "`": {
-			backtick(s);
-			break;
-		}
-		case "<":
-		case ">": {
-			redirect(s);
-			break;
-		}
-		case "&": {
-			if (s.src[s.i + 1] === ">") {
-				redirect(s);
-			} else {
-				operator(s, c);
-			}
-			break;
-		}
-		case ";":
-		case "(":
-		case ")":
-		case "|":
-		case "\n": {
-			operator(s, c);
-			break;
-		}
-		default: {
-			literal(s, c);
-		}
-	}
+	(HANDLERS[c] ?? literal)(s, c);
 };
 
 const run = (s: State): Parsed => {

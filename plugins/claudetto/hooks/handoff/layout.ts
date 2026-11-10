@@ -4,7 +4,7 @@ export const HANDOFF_TITLE = "# Handoff";
 
 export const BUILT_BY_CODE = "Built by claudetto";
 
-export const HANDOFF_NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/;
+export const HANDOFF_NAME = /^handoff-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d\.md$/u;
 
 export const HANDOFF_SECTIONS = [
 	"Goal",
@@ -18,7 +18,7 @@ export const HANDOFF_SECTIONS = [
 	"Open Questions",
 ];
 
-const FRACTION = /\..*$/;
+const FRACTION = /\..*$/u;
 
 /** The stamp sorts by time, so the read-back takes the last name of the folder. */
 export const handoffPath = (at: Date): string =>
@@ -36,18 +36,10 @@ export const gitLines = (status: string, at: string): string[] => {
 export const layout = (
 	source: string,
 	body: (section: string) => readonly string[],
-): string =>
-	[
-		HANDOFF_TITLE,
-		"",
-		source,
-		"",
-		...HANDOFF_SECTIONS.flatMap((section) => [
-			`## ${section}`,
-			"",
-			...body(section),
-		]),
-	]
-		.join("\n")
-		.trimEnd()
-		.concat("\n");
+): string => {
+	const lines = [HANDOFF_TITLE, "", source, ""];
+	for (const section of HANDOFF_SECTIONS) {
+		lines.push(`## ${section}`, "", ...body(section));
+	}
+	return `${lines.join("\n").trimEnd()}\n`;
+};

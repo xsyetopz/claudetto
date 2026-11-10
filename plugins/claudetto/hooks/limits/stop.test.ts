@@ -7,9 +7,11 @@ const BLOCK = "The goal is not met: keep working.";
 
 type Writes = "ok" | "denied" | "failed";
 
+const blockOf = (block: string | null) => (block === null ? {} : { block });
+
 const lab = (on: On, block: string | null = BLOCK, writes: Writes = "ok") => {
 	scanner(on);
-	on("classic.Stop", () => (block === null ? {} : { block }));
+	on("classic.Stop", () => blockOf(block));
 	on("session.messages", () => ({ value: [] }));
 	on("tool.list", () => ({ value: [] }));
 	on("clock.now", () => ({ value: 0 }));
@@ -283,7 +285,7 @@ test("a file written between the blocks starts the stretch again", async ($: Eng
 
 test("a Stop that nothing blocks starts the count again", async ($: Engine, on: On) => {
 	let block: string | null = null;
-	on("classic.Stop", () => (block === null ? {} : { block }));
+	on("classic.Stop", () => blockOf(block));
 	on("session.messages", () => ({ value: [] }));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));

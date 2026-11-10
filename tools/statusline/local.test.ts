@@ -35,7 +35,7 @@ const placeRow = (
 	fields: Record<string, unknown> = {},
 ): Promise<string> => firstRow({ workspace: { current_dir: dir }, ...fields });
 
-describe("the branch of a session without a `worktree` field", async () => {
+describe("the branch of a session without a `worktree` field", () => {
 	test("a plain checkout on `main` shows `⎇ main`", async () => {
 		const repo = join(ROOT, "plain");
 		await put(join(repo, ".git/HEAD"), "ref: refs/heads/main\n");
@@ -124,7 +124,7 @@ const change = async (
 	await utimes(path, at, at);
 };
 
-describe("the open OpenSpec changes of the project", async () => {
+describe("the open OpenSpec changes of the project", () => {
 	test("one open change shows its name and its ticked and total boxes", async () => {
 		const project = join(ROOT, "spec-one");
 		await change(project, "release-0-3-0", 4, 8);
@@ -215,7 +215,8 @@ describe("the open OpenSpec changes of the project", async () => {
 				"- [WIP] word, not a task",
 			].join("\r\n"),
 		);
-		expect((await readLocal(project)).changes).toMatchObject([
+		const awaited = await readLocal(project);
+		expect(awaited.changes).toMatchObject([
 			{ name: "forms", done: 3, total: 6 },
 		]);
 	});

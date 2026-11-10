@@ -1,6 +1,6 @@
 // Each question is keyed by its index, so two questions with the same text stay two decisions.
 
-import { JEV_GIVE_BACK, jevFailed, jevSaid, jevSilent } from "../texts.ts";
+import { JEV_GIVE_BACK, jevFailed, jevSaid, jevSilent } from "../texts-gate.ts";
 import { isRecord } from "./jev.ts";
 
 /** Fixed, not scaled by the option count, so more options never make a weaker pick pass. */
@@ -41,7 +41,7 @@ export const questionsOfInput = (input: unknown): Question[] | undefined => {
 const isChoice = (q: Question): boolean => (q.options?.length ?? 0) >= 2;
 const isYesNo = (q: Question): boolean => (q.options?.length ?? 0) === 0;
 const isAskable = (q: Question): boolean =>
-	!q.multiSelect && (isChoice(q) || isYesNo(q));
+	q.multiSelect !== true && (isChoice(q) || isYesNo(q));
 
 const APPROVAL = (i: number): string =>
 	`Does question ${i} ask the user to approve money, a push, a release, a delete, or a step with no undo?`;
@@ -69,7 +69,7 @@ export const requestOf = (
 				: { question: q.question },
 		]),
 	);
-	const wire = asked.flatMap(({ q, i }) => [
+	const wire = asked.flatMap(({ q, i }): [string, object][] => [
 		isChoice(q)
 			? [
 					`pick_${i}`,
@@ -77,7 +77,12 @@ export const requestOf = (
 						type: "choice",
 						instructions: `Which option is the best answer to question ${i}?`,
 						criteria: Object.fromEntries(
-							(q.options ?? []).map((o) => [o.label, o.description || o.label]),
+							(q.options ?? []).map((o) => [
+								o.label,
+								o.description === undefined || o.description === ""
+									? o.label
+									: o.description,
+							]),
 						),
 					},
 				]
@@ -142,7 +147,7 @@ export const verdictsOf = (
 			? pickOf(q, given[`pick_${i}`])
 			: yesNoOf(given[`yes_${i}`]);
 	};
-	return questions.map(verdict);
+	return questions.map((item, index) => verdict(item, index));
 };
 
 const line = (q: Question, v: Verdict | undefined): string => {

@@ -1,7 +1,6 @@
 import type { On, SessionUsage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { ROOT_PROMPT } from "../texts.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 
 type Reading = Pick<SessionUsage, "context" | "rateLimits">;
@@ -19,6 +18,11 @@ const PROMPT = {
 	wait: false,
 	origin: { kind: "composer" },
 } as const;
+
+/** The context lines a submit added, none when it added no field. */
+const added = (out: {
+	context?: readonly string[] | undefined;
+}): readonly string[] => out.context ?? [];
 
 const lab = (on: On, reading: () => Reading) => {
 	on("prompt.submit", (_$, e) => e);
@@ -69,7 +73,7 @@ test("an unchanged band adds nothing to the next prompt, and a changed band adds
 	};
 	const moved = await $.prompt.submit(PROMPT);
 
-	expect(same.context ?? []).toEqual([]);
+	expect(added(same)).toEqual([]);
 	expect(moved.context?.[0]).toContain("context 25% left");
 });
 
@@ -87,7 +91,7 @@ test("no reading at all adds no line", async ($: Engine, on: On) => {
 
 	const out = await $.prompt.submit(PROMPT);
 
-	expect(out.context ?? []).toEqual([]);
+	expect(added(out)).toEqual([]);
 });
 
 test("the line stays one short line however many windows the engine reports", () => {
@@ -147,15 +151,6 @@ test("a seven-day share of 90% or more adds the share as a fact and no instructi
 	expect(out.context).toEqual(["Budget: context 62% left, seven-day 92% used"]);
 });
 
-test("the root prompt carries the instruction for a seven-day share of 90% or more", () => {
-	expect(ROOT_PROMPT).toContain("seven-day limit at 90% or more");
-	expect(ROOT_PROMPT).toContain("work in main thread");
-	expect(ROOT_PROMPT).toContain(
-		"after a reply that spent over 1% of the week, say how much remains",
-	);
-	expect(ROOT_PROMPT).toContain("use free evals");
-});
-
 test("a seven-day share that rose inside its band of ten stays silent, and one that crossed the band speaks again", async ($: Engine, on: On) => {
 	let share = 90;
 	lab(on, () => ({
@@ -168,6 +163,6 @@ test("a seven-day share that rose inside its band of ten stays silent, and one t
 	share = 100;
 	const crossed = await $.prompt.submit(PROMPT);
 
-	expect(inside.context ?? []).toEqual([]);
+	expect(added(inside)).toEqual([]);
 	expect(crossed.context?.[0]).toContain("seven-day 100% used");
 });

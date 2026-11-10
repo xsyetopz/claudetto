@@ -2,11 +2,14 @@ import { expect, test } from "claude-code/testing";
 
 import { parse, programOf } from "./shell-words.ts";
 
-const programs = (command: string) =>
-	parse(command).commands.map((c) => {
+const programs = (command: string): string[][] => {
+	const rows: string[][] = [];
+	for (const c of parse(command).commands) {
 		const { name, args } = programOf(c);
-		return [name, ...args];
-	});
+		rows.push([name, ...args]);
+	}
+	return rows;
+};
 
 test("a pipeline, a list, and a subshell give one command each", () => {
 	expect(programs("a 1 | b 2 && c; (d)")).toEqual([

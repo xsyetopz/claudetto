@@ -10,14 +10,14 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import {
-	type Host,
-	parseArgs,
-	sweep,
-} from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
+import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+
+type Host = Parameters<typeof sweep>[1];
 
 const DAY = 86_400_000;
 const NOW = Date.now();
+const UID = process.getuid?.() ?? 0;
 
 const project = async () => {
 	const root = await realpath(await mkdtemp(join(tmpdir(), "hygiene-")));
@@ -32,7 +32,7 @@ const host = (root: string, over: Partial<Host> = {}): Host => ({
 	cwd: join(root, "proj"),
 	home: join(root, "home"),
 	now: NOW,
-	uid: process.getuid?.() ?? 0,
+	uid: UID,
 	days: 30,
 	tempBases: [join(root, "tmp")],
 	configDir: join(root, "home/.claude"),
@@ -45,8 +45,10 @@ const aged = async (path: string, days: number, body = "x") => {
 	await utimes(path, at, at);
 };
 
-const kinds = async (root: string, args = parseArgs([]), over = {}) =>
-	(await sweep(args, host(root, over))).removed.map((item) => item.kind);
+const kinds = async (root: string, args = parseArgs([]), over = {}) => {
+	const report = await sweep(args, host(root, over));
+	return report.removed.map((item) => item.kind);
+};
 
 test("old handoffs go and the newest by name stays", async () => {
 	const root = await project();
@@ -102,7 +104,7 @@ test("a dry run lists the files and removes none", async () => {
 
 test("a kind with 0 is off and the other kinds are still swept", async () => {
 	const root = await project();
-	const tmp = join(root, "tmp", `claude-${process.getuid?.() ?? 0}`);
+	const tmp = join(root, "tmp", `claude-${UID}`);
 	await mkdir(join(tmp, "fswatch-probe-a"), { recursive: true });
 	await utimes(
 		join(tmp, "fswatch-probe-a"),
@@ -120,7 +122,7 @@ test("a kind with 0 is off and the other kinds are still swept", async () => {
 
 test("an unset probe limit is 60 minutes", async () => {
 	const root = await project();
-	const tmp = join(root, "tmp", `claude-${process.getuid?.() ?? 0}`);
+	const tmp = join(root, "tmp", `claude-${UID}`);
 	await mkdir(join(tmp, "fswatch-probe-a"), { recursive: true });
 	await mkdir(join(tmp, "fswatch-probe-b"), { recursive: true });
 	const old = new Date(NOW - 2 * 3_600_000);
@@ -135,7 +137,7 @@ test("an unset probe limit is 60 minutes", async () => {
 
 test("a session folder named by a live session stays and an old one goes", async () => {
 	const root = await project();
-	const tmp = join(root, "tmp", `claude-${process.getuid?.() ?? 0}`, "proj");
+	const tmp = join(root, "tmp", `claude-${UID}`, "proj");
 	await mkdir(join(tmp, "live-1"), { recursive: true });
 	await mkdir(join(tmp, "dead-2"), { recursive: true });
 	const old = new Date(NOW - 90 * DAY);
@@ -151,7 +153,7 @@ test("a session folder named by a live session stays and an old one goes", async
 
 test("two candidates for one folder sweep it once", async () => {
 	const root = await project();
-	const tmp = join(root, "tmp", `claude-${process.getuid?.() ?? 0}`);
+	const tmp = join(root, "tmp", `claude-${UID}`);
 	await mkdir(join(tmp, "fswatch-probe-a"), { recursive: true });
 	const old = new Date(NOW - 2 * 3_600_000);
 	await utimes(join(tmp, "fswatch-probe-a"), old, old);
@@ -165,11 +167,11 @@ test("two candidates for one folder sweep it once", async () => {
 
 test("a temp folder of another user is not swept", async () => {
 	const root = await project();
-	const tmp = join(root, "tmp", `claude-${(process.getuid?.() ?? 0) + 1}`);
+	const tmp = join(root, "tmp", `claude-${UID + 1}`);
 	await mkdir(join(tmp, "fswatch-probe-a"), { recursive: true });
 
 	const found = await kinds(root, parseArgs([]), {
-		uid: (process.getuid?.() ?? 0) + 1,
+		uid: UID + 1,
 	});
 
 	expect(found).toEqual([]);

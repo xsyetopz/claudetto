@@ -49,17 +49,18 @@ At Stop, the system SHALL report the background tasks still running, using `back
 
 ### Requirement: End Stuck Agents
 
-The system SHALL end a subagent that `design.md`, "Run Limits", defines as stuck. This requirement states no limit, and it is not built while the time half of that definition is unmeasured and no reading shows how a mod ends a foreground subagent.
+A subagent SHALL run no longer than `agentMaxMinutes` (default 15, 0 off) from its `agent.spawn`. Past the limit, the `tool.check` hook SHALL deny each tool call the subagent makes, with a reason that tells it to end, report what is done and what is left, and names the setting. The hook API offers no call that ends a subagent (`$.agent` holds `spawn`, `list`, and `register`; `$.turn.abort` ends only the main loop's turn), so a refused call ends one.
 
-#### Scenario: Source of the Definition
+#### Scenario: Source of the Default
 
-- **WHEN** the definition is written
-- **THEN** it reads `loop-breaker` and the one self-report that calls an agent stuck after "an hour or more with no real changes", or in a loop of the same action (a comment on r/claudeai of 2026-10-27, line 90 of the saved page, kept outside this repo), which is not a measurement
+- **WHEN** the default is set
+- **THEN** it rests on 36 delegated runs in `runs.jsonl` across three projects on 2026-11-10: median 313 seconds, 75th percentile 676, 90th 1385, longest 1592, with 6 past 15 minutes, and on the person calling a 28-minute run too long to help
 
-#### Scenario: Stuck Agent
+#### Scenario: Overtime Subagent
 
-- **WHEN** a running subagent meets that definition
-- **THEN** the system ends it and tells the model why in one line
+- **WHEN** a subagent calls a tool past `agentMaxMinutes`
+- **THEN** the call is denied, and a main-loop call at the same time still goes
+- **AND** the lab tests are `limits/hold.test.ts`, "a subagent's call past agentMaxMinutes is refused, and the main loop's still goes", "with no option a subagent runs 15 minutes", and "agentMaxMinutes 0 turns the time limit off"
 
 ### Requirement: Limits Are Settings
 
@@ -98,7 +99,7 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 
 - **WHEN** a reply holds a `- [ ]` item
 - **THEN** the block says the item is a question, to ask it through the ask tool, and to delete it from the reply
-- **AND** the lab test is `limits/open-items.test.ts`, "a checkbox item is a question: the block says to ask it and delete the item"
+- **AND** the lab test is `limits/open-items.test.ts`, "a checkbox item is a question, and the block names each item"
 
 #### Scenario: An Open Ask
 
@@ -312,7 +313,7 @@ When a `Bash` command starts a test, build, lint, or check run (`bun test`, `bun
 
 - **WHEN** `bun test` prints more than `maxTestOutputChars` characters
 - **THEN** the result holds the head, a marker naming the saved file, and the tail
-- **AND** the lab tests are `limits/bound-output.test.ts`, "a long test run is cut to its head and tail, and the whole text is saved", "a command that is no test, build, or lint run is left whole", "an output that fits is left whole and saves nothing", "maxTestOutputChars 0 leaves every output whole", and "an output that cannot be saved is cut, and the cut line says so"
+- **AND** the lab tests are `limits/bound-output.test.ts`, "a long test run is cut to its head and tail, and the whole text is saved", "a command that is no test, build, or lint run is left whole", "an output that fits is left whole and saves nothing", "maxTestOutputChars 0 leaves every output whole", and "an output that cannot be saved is still cut"
 
 ### Requirement: The Whole Cut Output Is Saved
 

@@ -10,6 +10,24 @@ const textOf = (
 	path: string,
 ): string | undefined => files.find((file) => file.path === path)?.text;
 
+const agentsText = (files: readonly { path: string; text: string }[]): string =>
+	textOf(files, "AGENTS.md") ?? "";
+
+const filesOf = (family: (typeof FAMILIES)[number]): string[] =>
+	[
+		...family.markers,
+		...family.commands.flatMap((command) => command.when ?? []),
+	].map((name) => name.replace("*", "x"));
+
+const namesOf = (id: string): string[] => {
+	const family = FAMILIES.find((candidate) => candidate.id === id);
+	if (family === undefined) {
+		return [];
+	}
+	const bulky: readonly string[] = family.bulky ?? [];
+	return [...family.heavy, ...bulky, ...family.markers];
+};
+
 describe("detectFamilies", () => {
 	test("a root marker names its family", () => {
 		const files = ["Cargo.toml", "src/main.rs"];
@@ -48,7 +66,7 @@ describe("planStarter", () => {
 
 		const plan = planStarter({ files, tracked: files }, NONE);
 
-		const agents = textOf(plan, "AGENTS.md") ?? "";
+		const agents = agentsText(plan);
 		expect(agents).toContain("`bun test --bail --dots`");
 		expect(agents).toContain("eslint --quiet");
 		expect(agents).not.toContain("vitest");
@@ -84,21 +102,17 @@ describe("planStarter", () => {
 
 		const plan = planStarter({ files, tracked: files }, NONE);
 
-		expect((textOf(plan, "AGENTS.md") ?? "").length).toBeLessThanOrEqual(600);
+		expect(agentsText(plan).length).toBeLessThanOrEqual(600);
 	});
 
 	test("each family alone fits the cap with every command on", () => {
 		for (const family of FAMILIES) {
-			const files = [
-				...family.markers,
-				...family.commands.flatMap((command) => command.when ?? []),
-			].map((name) => name.replace("*", "x"));
+			const files = filesOf(family);
 
 			const plan = planStarter({ files, tracked: files }, NONE);
 
-			const agents = textOf(plan, "AGENTS.md");
-			expect(agents).toBeDefined();
-			expect((agents ?? "").length).toBeLessThanOrEqual(600);
+			expect(textOf(plan, "AGENTS.md")).toBeDefined();
+			expect(agentsText(plan).length).toBeLessThanOrEqual(600);
 		}
 	});
 });
@@ -106,7 +120,9 @@ describe("planStarter", () => {
 describe("table", () => {
 	test("covers the eleven families", () => {
 		expect(
-			FAMILIES.map((family) => family.id).sort((a, b) => a.localeCompare(b)),
+			FAMILIES.map((family) => family.id).toSorted((a, b) =>
+				a.localeCompare(b),
+			),
 		).toEqual(
 			[
 				"c",
@@ -120,7 +136,7 @@ describe("table", () => {
 				"shell",
 				"swift",
 				"web",
-			].sort((a, b) => a.localeCompare(b)),
+			].toSorted((a, b) => a.localeCompare(b)),
 		);
 	});
 });
@@ -153,13 +169,12 @@ describe("unsourced table entries", () => {
 
 	test("no family lists an entry that no source names", () => {
 		for (const entry of unsourced) {
-			const family = FAMILIES.find((candidate) => candidate.id === entry.id);
-			const held = [
-				...(family?.heavy ?? []),
-				...(family?.bulky ?? []),
-				...(family?.markers ?? []),
-			];
-			const banned = new Set([...entry.heavy, ...entry.bulky, ...entry.markers]);
+			const held = namesOf(entry.id);
+			const banned = new Set([
+				...entry.heavy,
+				...entry.bulky,
+				...entry.markers,
+			]);
 
 			expect(held.filter((name) => banned.has(name))).toEqual([]);
 		}

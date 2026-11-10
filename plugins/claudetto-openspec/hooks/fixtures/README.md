@@ -1,4 +1,4 @@
-# Fixtures: upstream OpenSpec records
+# Fixtures: Upstream OpenSpec Records
 
 Each JSON file is a list of records of upstream's behaviour: `file` and `test` (the vitest case it came from), `kind` (the function called), `args`, the `before` and `after` file trees, and the `outcome` (`returned` or `threw`). `fixtures.spec.ts` replays them through the plugin's code.
 
@@ -7,7 +7,7 @@ Each JSON file is a list of records of upstream's behaviour: `file` and `test` (
 - Counts below are the records in each file (`returned` plus `threw`); the replay's own tally per file prints at the end of `bun test` (`pass`, `diverged: ...`, `not wired`, `upstream threw: plugin ...`).
 
 | file | records | returned | threw |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | archive | 304 | 235 | 69 |
 | misplaced-delta-files | 27 | 27 | 0 |
 | specs-apply.comment-masking.security | 2 | 2 | 0 |
@@ -32,7 +32,7 @@ Each JSON file is a list of records of upstream's behaviour: `file` and `test` (
 | validation.unknown-metadata-keys | 6 | 6 | 0 |
 | total | 763 | 645 | 118 |
 
-## Replay tally
+## Replay Tally
 
 `env -u CLAUDE_CODE_SESSION_ID bun test ./plugins/claudetto-openspec/hooks/fixtures.spec.ts ./plugins/claudetto-openspec/hooks/upstream.spec.ts` gave 743 pass, 0 fail. Every record is counted `pass`, `diverged: <named reason>`, `upstream threw: plugin threw`, or `excluded: <reason>`; no `not wired` line prints. The reasons are in `fixtures.spec.ts` (`notReplayable`, `archiveExcluded`, `divergence`, `flagDivergence`).
 

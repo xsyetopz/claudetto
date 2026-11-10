@@ -3,6 +3,11 @@ import { expect, test } from "bun:test";
 import { lostAgainst, QUESTIONS, scoreRecall } from "./recall.ts";
 import { TURNS } from "./task.ts";
 
+const LOST_AT = new Set([2, 5]);
+const FIRST_KEYWORD = QUESTIONS[0]?.expect[0] ?? "";
+const dropLost = (answer: string, i: number): string =>
+	LOST_AT.has(i) ? "" : answer;
+
 const perfect = QUESTIONS.map((q) => q.expect.join(" "));
 
 test("there are 10 questions, each on a decision stated in an early turn", () => {
@@ -31,7 +36,7 @@ test("a full answer to every question scores 10", () => {
 
 test("an answer needs every keyword, in any case", () => {
 	const answers = [...perfect];
-	answers[0] = (QUESTIONS[0]?.expect[0] ?? "").toUpperCase();
+	answers[0] = FIRST_KEYWORD.toUpperCase();
 	const score = scoreRecall(answers);
 	expect(score.correct).not.toContain(QUESTIONS[0]?.id);
 	expect(score.correct).toHaveLength(9);
@@ -53,9 +58,9 @@ test("a missing answer scores as lost", () => {
 
 test("lostAgainst lists the questions the baseline keeps and the arm loses", () => {
 	const baseline = scoreRecall(perfect);
-	const arm = scoreRecall(perfect.map((a, i) => (i === 2 || i === 5 ? "" : a)));
+	const arm = scoreRecall(perfect.map((a, i) => dropLost(a, i)));
 	expect(lostAgainst(arm, baseline)).toEqual(
-		QUESTIONS.filter((_, i) => i === 2 || i === 5).map((q) => q.id),
+		QUESTIONS.filter((_, i) => LOST_AT.has(i)).map((q) => q.id),
 	);
 	expect(lostAgainst(baseline, arm)).toEqual([]);
 });

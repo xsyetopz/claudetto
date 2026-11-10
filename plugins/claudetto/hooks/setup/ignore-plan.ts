@@ -22,8 +22,8 @@ interface IgnoreLines {
 /** A pattern names a `dir/` anywhere, or a file name, with `*` for any run of characters. */
 const regexOf = (pattern: string): RegExp =>
 	pattern.endsWith("/")
-		? new RegExp(`(^|/)${globOf(pattern.slice(0, -1))}/`)
-		: new RegExp(`(^|/)${globOf(pattern)}$`);
+		? new RegExp(`(^|/)${globOf(pattern.slice(0, -1))}/`, "u")
+		: new RegExp(`(^|/)${globOf(pattern)}$`, "u");
 
 const seen = (pattern: string, paths: readonly string[]): boolean => {
 	const found = regexOf(pattern);

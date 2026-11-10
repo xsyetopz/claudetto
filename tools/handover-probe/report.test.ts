@@ -43,18 +43,23 @@ test("an event shows its summarizer request and the 3 requests after it, once ea
 	expect(rows[3]).toContain("req_5");
 });
 
+const rowFor = (id: string): string =>
+	table.split("\n").find((l) => l.includes(id)) ?? "";
+
+const lastQuestionBlank = (q: (typeof QUESTIONS)[number], i: number): string =>
+	i === 3 ? "" : q.expect.join(" ");
+
 test("the table names the expected events and the verdict", () => {
 	expect(table).toContain("a compaction near 53,000 tokens");
 	expect(table).toContain("1 compaction");
 });
 
 test("usage columns come from the requestId's row", () => {
-	const first = table.split("\n").find((l) => l.includes("req_2")) ?? "";
-	expect(first).toContain("| 200 | 20 | 0 | 2 |");
+	expect(rowFor("req_2")).toContain("| 200 | 20 | 0 | 2 |");
 });
 
 test("a paid table drops the FAKE label and scores recall per run", () => {
-	const answers = QUESTIONS.map((q, i) => (i === 3 ? "" : q.expect.join(" ")));
+	const answers = QUESTIONS.map((q, i) => lastQuestionBlank(q, i));
 	const paid = renderArm(arm, [{ records, turnOf: new Map(), answers }], true);
 	expect(paid).not.toContain("FAKE");
 	expect(paid).toContain(

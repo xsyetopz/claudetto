@@ -131,7 +131,7 @@ The reply MUST hold one line per question (`texts.ts:322-326`), and when any que
 #### Scenario: Mixed Answers
 
 - **WHEN** one question has a verdict and another has none
-- **THEN** the reply lists both lines and ends with the give-back text (`judge.test.ts`, "the reply asks for the unanswered ones and lists one line per question")
+- **THEN** the reply lists one line per question and ends with the give-back text
 
 #### Scenario: All Answered
 

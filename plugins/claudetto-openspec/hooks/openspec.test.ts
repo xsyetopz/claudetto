@@ -16,6 +16,11 @@ const change = (extra: Record<string, string> = {}) => ({
 	...extra,
 });
 
+const scenario = (n: string) =>
+	`#### Scenario: ${n}\n- **WHEN** a\n- **THEN** b\n`;
+const req = (n: string) =>
+	`### Requirement: ${n}\nThe system SHALL ${n}.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n`;
+
 const call = async (
 	$: Engine,
 	input: { action?: string; change?: string; yes?: boolean; force?: boolean },
@@ -159,8 +164,6 @@ test("MODIFIED that drops a scenario fails (kept from upstream)", async ($: Engi
 });
 
 test("MODIFIED that replaces a scenario by two keeps upstream's verdict: invalid, naming the omitted one (#1697)", async ($: Engine, on: On) => {
-	const scenario = (n: string) =>
-		`#### Scenario: ${n}\n- **WHEN** a\n- **THEN** b\n`;
 	memory(
 		on,
 		change({
@@ -181,7 +184,7 @@ test("File Compatibility: x- keys in .openspec.yaml are read and kept", async ($
 });
 
 const S = "/repo/openspec/specs";
-const bare = base.replace(/\n#### Scenario[\s\S]*$/, "\n");
+const bare = base.replace(/\n#### Scenario[\s\S]*$/u, "\n");
 
 test("No Active Change: validate checks each main spec", async ($: Engine, on: On) => {
 	memory(on, {
@@ -204,7 +207,7 @@ test("A Main Spec Without a Scenario: validate names the spec and the requiremen
 test("Empty Project: init writes the layout, and validate then passes", async ($: Engine, on: On) => {
 	const { tree, runs } = memory(on, {});
 	expect(await call($, { action: "init" })).toContain("openspec/config.yaml");
-	expect([...tree.keys()].sort()).toEqual([
+	expect([...tree.keys()].toSorted()).toEqual([
 		"/repo/openspec/changes/archive/.gitkeep",
 		"/repo/openspec/config.yaml",
 		"/repo/openspec/specs/.gitkeep",
@@ -270,8 +273,6 @@ test("Archived Changes: status lists them after the active changes", async ($: E
 });
 
 test("Two Specs: list names each spec with its requirement count", async ($: Engine, on: On) => {
-	const req = (n: string) =>
-		`### Requirement: ${n}\nThe system SHALL ${n}.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n`;
 	memory(on, {
 		[`${C}/archive/.gitkeep`]: "",
 		[`${S}/a/spec.md`]: `## Purpose\nP.\n\n## Requirements\n\n${req("x")}${req("y")}${req("z")}`,

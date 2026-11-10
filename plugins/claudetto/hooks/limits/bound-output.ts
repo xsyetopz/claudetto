@@ -89,7 +89,7 @@ const fullTextOf = (result: unknown): string | undefined => {
 const boundResult = (
 	result: unknown,
 	limit: number,
-	saved: string | undefined,
+	saved?: string,
 ): unknown => {
 	// A failed run reaches here as a string; the engine accepts a changed Bash result only in the object shape.
 	if (typeof result === "string") {
@@ -151,7 +151,7 @@ export const boundOutputHooks = (on: On, options: PluginOptions): void => {
 		}
 		// A call that a plugin raises has no `tool_use_id`, so the clock names its file.
 		const id = e.tool_use_id || String(await $.clock.now());
-		const path = `${BOUND_OUTPUT_DIR}/output-${id.replaceAll(/[^\w-]/g, "_")}.txt`;
+		const path = `${BOUND_OUTPUT_DIR}/output-${id.replaceAll(/[^\w-]/gu, "_")}.txt`;
 		const saved = await save($, path, full);
 		return {
 			...answer,

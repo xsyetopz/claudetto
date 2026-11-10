@@ -4,8 +4,8 @@ import { isBelowFloor, isOnPath, noticeLine, TOOLS } from "./tools.ts";
 
 const holds =
 	(...files: string[]) =>
-	async (file: string) =>
-		files.includes(file);
+	(file: string) =>
+		Promise.resolve(files.includes(file));
 
 test("a name in any PATH folder is found, and a name in none is not", async () => {
 	expect(await isOnPath("ast-grep", "/a:/b", holds("/b/ast-grep"))).toBe(true);

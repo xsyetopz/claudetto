@@ -5,7 +5,9 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PluginOptions } from "claude-code";
 import { numberOption } from "../hooks/options.ts";
-import { parseArgs, reportText, sweep } from "../hooks/hygiene/sweep.ts";
+import { parseArgs } from "../hooks/hygiene/args.ts";
+import { cleanCaches } from "../hooks/hygiene/mole.ts";
+import { reportText, sweep } from "../hooks/hygiene/sweep.ts";
 
 const home = process.env["HOME"] || homedir();
 const configDir =
@@ -32,6 +34,7 @@ try {
 		configDir,
 	});
 	console.log(reportText(report, args.dryRun));
+	console.log(await cleanCaches(args.dryRun));
 } catch (error) {
 	console.error(String(error));
 	process.exitCode = 1;

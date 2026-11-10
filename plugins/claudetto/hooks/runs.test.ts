@@ -130,7 +130,7 @@ const logged = (state: Lab): unknown[] =>
 	(state.files.get(LOG) ?? "")
 		.split("\n")
 		.filter((l) => l !== "")
-		.map((l) => JSON.parse(l));
+		.map((l): unknown => JSON.parse(l));
 
 test("Redone: the root edits a file the run edited, and the run is logged after 3 root turns", async ($: Engine, on: On) => {
 	const state = lab(on);

@@ -8,7 +8,7 @@ import {
 	verdictsOf,
 } from "./decide/judge.ts";
 import { stringOption } from "./options.ts";
-import { DECIDE_CALL } from "./texts.ts";
+import { DECIDE_CALL } from "./texts-gate.ts";
 
 /** The matcher keeps every other tool, and `AskUserQuestion`, away from Jev. */
 export const decide = (on: On, options: PluginOptions): void => {

@@ -41,7 +41,8 @@ const moveOf = (args: string[]): Move | undefined => {
 	const plain = rest.filter((w) => !w.startsWith("-"));
 	const creates = rest.some((w) => CREATES.has(w));
 	// A created branch starts at its second word, or at HEAD, where nothing moves.
-	const named = creates ? plain[1] : rest.includes("-") ? "@{-1}" : plain[0];
+	const fromPrevious = rest.includes("-") ? "@{-1}" : plain[0];
+	const named = creates ? plain[1] : fromPrevious;
 	switch (verb) {
 		case "switch": {
 			return named === undefined ? undefined : { from: "HEAD", target: named };
@@ -111,7 +112,7 @@ export async function protectedChanges(
 					"--",
 					...paths,
 				])
-				.catch(() => {});
+				.catch(() => void 0);
 			return r?.exitCode === 0
 				? r.stdout.split("\n").filter((f) => f !== "")
 				: [];

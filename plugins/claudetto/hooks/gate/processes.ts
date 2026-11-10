@@ -1,107 +1,23 @@
-import {
-	GATE_KILL_BROAD,
-	GATE_RELEASE_RUN,
-	gateKillPid,
-	gateRmTmp,
-	gateTmpMarker,
-	gateWorktreeRemove,
-} from "../texts.ts";
+import { gateRmTmp, gateTmpMarker, gateWorktreeRemove } from "../texts-gate.ts";
+import { askedToDelete } from "./asked.ts";
+import { type Past, startedBy } from "./kill.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
 import { withoutGitOptions } from "./upstream.ts";
 import { deny, fieldOf, type Verdict } from "./verdict.ts";
 
-// Flags of `kill` that take the next word as their value.
-const VALUED = new Set(["-s", "-n", "-q"]);
-// A `&` that backgrounds a command (not `&&`, `2>&1`, or `&>`), or `$!`, the pid of the last background command.
-const BACKGROUNDS = /\$!|(?<![>&])&(?![&>0-9])/;
-// A released program lives at `<data>/claude/versions/<version>`; the `cc-inspect` `code` action `installs` lists them.
-const FLAG = /^-[A-Za-z0-9]/;
-const PROBE = /^-[0lL]$/;
-const PID = /^\d+$/;
 // The sandbox's TMPDIR, `/tmp/claude-<uid>`, is a base like `/tmp` itself, as the sweep reads it: a top is a folder in either.
-const TMP_TOP = /^(?:\/private)?\/tmp(?:\/claude-\d+)?(?:\/[^/]+)?/;
-const TMP_TOPS = /(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/\s'"`;|&()<>]+/g;
+const TMP_TOP = /^(?:\/private)?\/tmp(?:\/claude-\d+)?(?:\/[^/]+)?/u;
+const TMP_TOPS = /(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/\s'"`;|&()<>]+/gu;
 // A sentence can end right after a path it prints.
-const TRAILING = /[.,:]+$/;
-const TMP_NAMED = /^(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/]+/;
-const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/;
+const TRAILING = /[.,:]+$/u;
+const TMP_NAMED = /^(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/]+/u;
+const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/u;
 const MAKERS = new Set(["mkdir", "mktemp"]);
-const MKTEMP = /\bmktemp\b/;
+const MKTEMP = /\bmktemp\b/u;
 /** The file whose content, a session id, says which session made the /tmp folder holding it. */
 export const MARKER = ".created-by-claudetto";
-const WAIT_LOOP = /\b(?:while|until)\b[\s\S]*\bsleep\b/;
-const TIME_LIMIT = /\bg?timeout\s+(?:-\S+\s+)*\d|\bSECONDS\b/;
-const AGENT_ID = /\bagentId: (\w+)/;
-const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/;
-const RELEASE = /(?:^|\/)claude\/versions\/[^/\s]+/;
-
-interface Past {
-	tool: string;
-	input: unknown;
-	text?: string;
-	isError?: true;
-}
-
-const targetsOf = (args: string[]): string[] => {
-	const targets: string[] = [];
-	for (let i = 0; i < args.length; i++) {
-		const a = args[i] ?? "";
-		if (a === "--") {
-			return [...targets, ...args.slice(i + 1)];
-		}
-		if (VALUED.has(a)) {
-			i++;
-		} else if (!FLAG.test(a)) {
-			targets.push(a);
-		}
-	}
-	return targets;
-};
-
-/** Tells whether a command is a loop that sleeps until something happens with no time limit, so it never ends if that never comes. */
-export const endlessWait = (command: string): boolean =>
-	WAIT_LOOP.test(command) && !TIME_LIMIT.test(command);
-
-/** Tells whether an earlier call of this session started the process: a Bash call that ran something in the background and whose result printed the pid. */
-export const startedBy =
-	(past: Past[]) =>
-	(pid: string): boolean => {
-		const shown = new RegExp(`(?<![\\w.])${pid}(?![\\w.])`);
-		return past.some(
-			(t) =>
-				t.tool === "Bash" &&
-				!t.isError &&
-				BACKGROUNDS.test(fieldOf(t.input, "command") ?? "") &&
-				shown.test(t.text ?? ""),
-		);
-	};
-
-/** Denies `pkill`, `killall`, and a `kill` of a pid that no result of this session shows it started. A job (`%1`), `$!`, a signal check (`-0`), and `kill -l` pass. */
-export const killVerdict = (
-	name: string,
-	args: string[],
-	started: (pid: string) => boolean,
-): Verdict | undefined => {
-	if (name === "pkill" || name === "killall") {
-		return deny(GATE_KILL_BROAD);
-	}
-	if (name === "xargs" && args.includes("kill")) {
-		return deny(gateKillPid("each pid from the list"));
-	}
-	if (name !== "kill" || args.some((a) => PROBE.test(a))) {
-		return undefined;
-	}
-	const stranger = targetsOf(args).find(
-		(t) => !(t.startsWith("%") || t === "$!" || (PID.test(t) && started(t))),
-	);
-	return stranger === undefined ? undefined : deny(gateKillPid(stranger));
-};
-
-/** Denies running a released Claude Code program, which `cc-inspect` reads. The installed `claude` command is no path under the versions folder, so `claude --help` passes. */
-export const releaseVerdict = (c: Command): Verdict | undefined =>
-	RELEASE.test(c.words[programOf(c).at] ?? "")
-		? deny(GATE_RELEASE_RUN)
-		: undefined;
+const AGENT_ID = /\bagentId: (\w+)/u;
+const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/u;
 
 /** What this session owns: a started process, a /tmp folder with its marker, a created worktree path, a created branch. */
 export interface Owns {
@@ -132,8 +48,8 @@ export const tmpTops = (command: string): string[] => [
 	]),
 ];
 
-const ASSIGNED = /^([A-Za-z_]\w*)=(.*)$/s;
-const VARIABLE = /\$(?:\{(\w+)\}|(\w+))/g;
+const ASSIGNED = /^([A-Za-z_]\w*)=(.*)$/su;
+const VARIABLE = /\$(?:\{(\w+)\}|(\w+))/gu;
 
 /** The words of each command with the variables that earlier assignment-only commands of the same call set put in; any other variable stays as written. */
 const expanded = (commands: Command[]): Command[] => {
@@ -156,6 +72,17 @@ const expanded = (commands: Command[]): Command[] => {
 	});
 };
 
+/** The folder a `cd` or `pushd` to `to` leaves, a relative one joined to the folder before it. */
+const movedTo = (
+	dir: string | undefined,
+	to: string | undefined,
+): string | undefined => {
+	if (to === undefined || to === "" || to.startsWith("/")) {
+		return to;
+	}
+	return dir === undefined || dir === "" ? dir : `${dir}/${to}`;
+};
+
 /** The folders `mkdir` and `mktemp` name, a relative one joined to the folder an earlier `cd` or `pushd` of the same command moved to. */
 const madePaths = (commands: Command[]): string[] => {
 	let dir: string | undefined;
@@ -163,12 +90,15 @@ const madePaths = (commands: Command[]): string[] => {
 		const { name, args } = programOf(c);
 		const named = plain(args);
 		if (name === "cd" || name === "pushd") {
-			const to = named[0];
-			dir = to?.startsWith("/") ? to : to && dir && `${dir}/${to}`;
+			dir = movedTo(dir, named[0]);
 			return [];
 		}
 		return MAKERS.has(name)
-			? named.map((a) => (a.startsWith("/") || !dir ? a : `${dir}/${a}`))
+			? named.map((a) =>
+					a.startsWith("/") || dir === undefined || dir === ""
+						? a
+						: `${dir}/${a}`,
+				)
 			: [];
 	});
 };
@@ -182,7 +112,8 @@ const creates = (
 	const [verb = "", ...rest] = withoutGitOptions(args);
 	const at = rest.findIndex((a) => BRANCH_FLAGS.has(a));
 	const named = at === -1 ? undefined : rest[at + 1];
-	if (verb === "worktree" && rest[0] === "add") {
+	const first = rest[0];
+	if (verb === "worktree" && first === "add") {
 		const words = rest.slice(1);
 		return {
 			branch: named,
@@ -191,8 +122,8 @@ const creates = (
 			),
 		};
 	}
-	if (verb === "branch" && rest.length > 0 && !rest[0]?.startsWith("-")) {
-		return { branch: rest[0] };
+	if (verb === "branch" && first !== undefined && !first.startsWith("-")) {
+		return { branch: first };
 	}
 	return verb === "checkout" || verb === "switch" ? { branch: named } : {};
 };
@@ -217,23 +148,6 @@ export const createdOf = (past: Past[]) => {
 	};
 };
 
-const DELETES = /\b(?:delete|remove|drop|prune)\b/i;
-const NEGATED = /\b(?:not|never|no)\b|n't\b/i;
-const OTHER_BRANCHES = /\b(?:other|all)\b.*\bbranches\b/i;
-const escaped = (s: string): string => s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-
-const sentencesOf = (texts: readonly string[]): string[] =>
-	texts.flatMap((t) => t.split(/[.!?]\s+|\n/));
-
-// "Do not delete old-feature" names the branch too, so a sentence counts only when it asks for the delete and does not forbid it.
-const asksDelete = (sentence: string, branch: string): boolean =>
-	DELETES.test(sentence) &&
-	!NEGATED.test(sentence) &&
-	(OTHER_BRANCHES.test(sentence) ||
-		new RegExp(`(?:^|[\\s\`'"])${escaped(branch)}(?:$|[\\s\`'".,;:!?])`).test(
-			sentence,
-		));
-
 /** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
 export const ownsOf = (
 	past: Past[],
@@ -249,12 +163,12 @@ export const ownsOf = (
 		standing: (top) => standing.has(top),
 		path: (path) =>
 			paths.includes(path) ||
-			entered.some((t) => t.text?.includes(path)) ||
+			entered.some((t) => t.text?.includes(path) === true) ||
 			workers.some((id) => WORKER_PATH.exec(path)?.[1] === id),
 		branch: (name) =>
 			branches.includes(name) ||
 			workers.some((id) => name === `worktree-agent-${id}`),
-		asked: (name) => sentencesOf(said).some((s) => asksDelete(s, name)),
+		asked: (name) => askedToDelete(said, name),
 	};
 };
 

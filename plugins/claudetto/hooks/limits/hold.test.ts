@@ -1,20 +1,11 @@
-import type {
-	AgentInfo,
-	AgentSpawnInput,
-	On,
-	PluginOptions,
-} from "claude-code";
+import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
+import { set, usage } from "./hold.mock.ts";
 
 const ERROR = "connect ECONNREFUSED 127.0.0.1:9";
 
 const SAME = { url: "https://example.com/a", prompt: "go" };
-
-const usage = (tokens: number) => ({
-	startedAt: 0,
-	context: { tokens, window: 1_000_000, percent: 0 },
-	rateLimits: [],
-});
 
 const lab = (on: On, tokens = 100_000) => {
 	const clock = mock.clock(on, { now: 0 });
@@ -38,10 +29,6 @@ const failed = (
 
 const check = ($: Engine, input: Record<string, unknown> = SAME) =>
 	$.tool.check({ tool: "WebFetch", input, tool_use_id: crypto.randomUUID() });
-
-const set = (options: PluginOptions): { options: PluginOptions } => ({
-	options,
-});
 
 test(
 	"an identical call is refused after the failure limit, with the earlier error",
@@ -243,109 +230,6 @@ test(
 		expect(out.decision).toBe("deny");
 	},
 );
-
-const agent = (id: string, status: AgentInfo["status"]): AgentInfo => ({
-	id,
-	description: "work",
-	type: "claudetto:Heracles",
-	status,
-});
-
-const SPAWN: AgentSpawnInput = {
-	tool_use_id: "toolu_1",
-	prompt: "Read README.md.",
-	description: "read",
-	subagentType: "claudetto:Heracles",
-	provider: { plugin: "claudetto", tier: "core" },
-	parentModel: "opus",
-	background: false,
-	fork: false,
-};
-
-const spawnLab = (on: On, running: number | AgentInfo[], cap?: string) => {
-	const clock = mock.clock(on, { now: 0 });
-	on("agent.list", () => ({
-		value:
-			typeof running === "number"
-				? Array.from({ length: running }, (_, i) => agent(`a${i}`, "running"))
-				: running,
-	}));
-	mock.env(
-		on,
-		cap === undefined ? {} : { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: cap },
-	);
-	on("agent.spawn", () => ({ model: "sonnet", agentId: "started" }));
-	return clock;
-};
-
-test("a start past the environment's cap of running subagents is refused", async ($: Engine, on: On) => {
-	spawnLab(on, 2, "2");
-
-	const out = await $.agent.spawn(SPAWN);
-
-	expect(out.deny).toContain("CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS");
-});
-
-test("a start under the cap goes through", async ($: Engine, on: On) => {
-	spawnLab(on, 1, "2");
-
-	const out = await $.agent.spawn(SPAWN);
-
-	expect(out.deny).toBeUndefined();
-});
-
-test(
-	"starts past maxSubagentStarts in the period are refused",
-	set({ maxSubagentStarts: 2 }),
-	async ($: Engine, on: On) => {
-		spawnLab(on, 0);
-		await $.agent.spawn(SPAWN);
-		await $.agent.spawn(SPAWN);
-
-		const out = await $.agent.spawn(SPAWN);
-
-		expect(out.deny).toContain("maxSubagentStarts");
-	},
-);
-
-test("an agent that has ended does not count against the cap", async ($: Engine, on: On) => {
-	spawnLab(on, [agent("a", "completed"), agent("b", "killed")], "1");
-
-	const out = await $.agent.spawn(SPAWN);
-
-	expect(out.deny).toBeUndefined();
-});
-
-test(
-	"a start after the period has passed counts from zero",
-	set({ maxSubagentStarts: 1, limitPeriodSeconds: 60 }),
-	async ($: Engine, on: On) => {
-		const clock = spawnLab(on, 0);
-		await $.agent.spawn(SPAWN);
-		await clock.advance(61_000);
-
-		const out = await $.agent.spawn(SPAWN);
-
-		expect(out.deny).toBeUndefined();
-	},
-);
-
-test("with no option the start cap is 12", async ($: Engine, on: On) => {
-	spawnLab(on, 0);
-	await Promise.all(Array.from({ length: 12 }, () => $.agent.spawn(SPAWN)));
-
-	const out = await $.agent.spawn(SPAWN);
-
-	expect(out.deny).toContain("12");
-});
-
-test("a start with no cap in the environment is not refused for the count of running subagents", async ($: Engine, on: On) => {
-	spawnLab(on, 30);
-
-	const out = await $.agent.spawn(SPAWN);
-
-	expect(out.deny).toBeUndefined();
-});
 
 test(
 	"a context reading that fails holds nothing",

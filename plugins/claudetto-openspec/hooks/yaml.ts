@@ -2,12 +2,12 @@
 // keys with scalar, flow, or block values. Nested content is skipped, not read.
 // Why not a library: a hooks module has no Bun or Node API and the engine loads only its own files.
 const KEY =
-	/^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*'|[^\s"'#\-[\]{}][^:]*?|-[^\s:][^:]*?)[ \t]*:(?:[ \t]+(.*))?$/;
-const COMMENT = /(?:^|[ \t])#.*$/;
-const TRUE = /^(?:true|True|TRUE)$/;
-const FALSE = /^(?:false|False|FALSE)$/;
-const NUMBER = /^[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?$/;
-const MAPPING_IN_SCALAR = /:(?:\s|$)/;
+	/^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*'|[^\s"'#\-[\]{}][^:]*?|-[^\s:][^:]*?)[ \t]*:(?:[ \t]+(.*))?$/u;
+const COMMENT = /(?:^|[ \t])#.*$/u;
+const TRUE = /^(?:true|True|TRUE)$/u;
+const FALSE = /^(?:false|False|FALSE)$/u;
+const NUMBER = /^[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?$/u;
+const MAPPING_IN_SCALAR = /:(?:\s|$)/u;
 const INVALID = Symbol("invalid");
 
 const BRACKET_DELTA: Record<string, number> = {
@@ -71,8 +71,8 @@ const scalar = (raw: string): unknown => {
 	return plain(text);
 };
 
-const INDENTED = /^\s/;
-const LINE_BREAKS = /\r\n?/g;
+const INDENTED = /^\s/u;
+const LINE_BREAKS = /\r\n?/gu;
 
 const keyOf = (raw: string) => {
 	const value = scalar(raw);

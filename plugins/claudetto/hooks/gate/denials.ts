@@ -1,4 +1,4 @@
-import { gateRepeated, gateRepeatedUnexplained } from "../texts.ts";
+import { gateRepeated, gateRepeatedUnexplained } from "../texts-gate.ts";
 
 interface Denial {
 	count: number;
@@ -9,7 +9,7 @@ export type Denials = Readonly<Record<string, Denial>>;
 
 export const DENIALS_PER_CALL_MAX = 2;
 
-export const signature = (tool: string, input: unknown): string =>
+export const signature = (tool: string, input?: unknown): string =>
 	`${tool}\0${JSON.stringify(input) ?? ""}`;
 
 export const withDenial = (
@@ -21,7 +21,7 @@ export const withDenial = (
 	[key]: { count: (held[key]?.count ?? 0) + 1, reason },
 });
 
-export const NO_REASON = /\(it gave no explanation\)|^\s*$/i;
+export const NO_REASON = /\(it gave no explanation\)|^\s*$/iu;
 
 export const repeatedText = (
 	held: Denials,

@@ -1,200 +1,26 @@
-import type {
-	EngineInterface,
-	On,
-	PluginOptions,
-	SessionMessage,
-} from "claude-code";
+import type { On, PluginOptions } from "claude-code";
 
-import { type CallState, handOff, type Session } from "./handoff/call.ts";
+import { type CallState, handOff } from "./handoff/call.ts";
 import {
 	afterTurn,
 	type HandoverState,
 	handOverTo,
 	newHandoverState,
-	type Session as HandoverSession,
 } from "./handoff/handover.ts";
-import { atRoot, HANDOFF_DIR, handoffPath } from "./handoff/layout.ts";
 import {
-	DAY_MS,
-	isStale,
-	newestHandoff,
-	readBackKey,
-} from "./handoff/read-back.ts";
+	callSession,
+	handoverSession,
+	readBack,
+	writeHandoff,
+} from "./handoff/session.ts";
 import { HANDOFF_INPUT_SCHEMA } from "./handoff/tool.ts";
-import {
-	handoffText,
-	humanPrompts,
-	ownHandoffs,
-	readMessages,
-} from "./handoff/transcript.ts";
-import { redact } from "./secrets.ts";
 import {
 	contextManagementText,
 	HANDOFF_TOOL,
-	readBackText,
-	STALE_HANDOFF,
 	TOOL_HANDOFF,
-} from "./texts.ts";
+} from "./texts-handoff.ts";
 
-const redactOf =
-	($: EngineInterface) =>
-	(text: string): Promise<string> =>
-		redact((argv, init) => $.process.run(argv, init), text);
-
-/** A dropped write is the one failure the user can act on, so it takes the visible sink. */
-const notWritten = ($: EngineInterface, why: string, cause: string): void => {
-	$.ui.log(`No handoff was written (${why}): ${cause}`);
-};
-
-const copyMisnamed = async (
-	$: EngineInterface,
-	misnamed: string,
-	path: string,
-): Promise<void> => {
-	try {
-		const text = await $.fs.read(misnamed);
-		await $.fs.write(atRoot(await $.session.root(), path), text);
-		$.ui.log(
-			`The handoff Claude wrote, \`${misnamed}\`, has a name the next session does not read, so it was copied to \`${path}\`.`,
-		);
-	} catch (error) {
-		$.ui.log(
-			`The handoff Claude wrote, \`${misnamed}\`, has a name the next session does not read, and the copy failed (${error}).`,
-		);
-	}
-};
-
-const promptsOf = async (
-	$: EngineInterface,
-	transcript: string | undefined,
-): Promise<string[]> => {
-	try {
-		return transcript === undefined
-			? []
-			: humanPrompts(await $.fs.read(transcript));
-	} catch {
-		return [];
-	}
-};
-
-const gitStatusOf = async ($: EngineInterface): Promise<string> => {
-	const r = await $.process
-		.run(["git", "status", "-sb"])
-		.catch(() => {});
-	return r?.exitCode === 0 ? r.stdout : "";
-};
-
-/** Never throws: each failure is one `notWritten` line, because a hook that throws is skipped. */
-const writeHandoff = async (
-	$: EngineInterface,
-	messages: readonly SessionMessage[],
-	transcript: string | undefined,
-	why: string,
-): Promise<void> => {
-	try {
-		const tail = readMessages(messages);
-		const own = ownHandoffs(tail);
-		if (own.valid) {
-			return;
-		}
-		const at = new Date();
-		const path = handoffPath(at);
-		if (own.misnamed !== undefined) {
-			await copyMisnamed($, own.misnamed, path);
-			return;
-		}
-		const text = await redactOf($)(
-			handoffText(
-				tail,
-				await promptsOf($, transcript),
-				at.toISOString(),
-				await gitStatusOf($),
-			),
-		);
-		if (text !== "") {
-			await $.fs.write(atRoot(await $.session.root(), path), text);
-		}
-	} catch (error) {
-		notWritten($, why, String(error));
-	}
-};
-
-const mtimeOf = async ($: EngineInterface, path: string): Promise<number> => {
-	const slash = path.lastIndexOf("/");
-	const entries = await $.fs.list(path.slice(0, slash));
-	return (
-		entries.find((entry) => entry.name === path.slice(slash + 1))?.mtimeMs ?? 0
-	);
-};
-
-/** The name goes to the store before the submit, so a second start of the same session finds it taken. A handoff older than the resumed transcript was written before that session's last turn, so the session holds its work already. */
-const readBack = async ($: EngineInterface, resumed: string): Promise<void> => {
-	try {
-		const root = await $.session.root();
-		const dir = atRoot(root, HANDOFF_DIR);
-		if (!(await $.fs.exists(dir))) {
-			return;
-		}
-		const entries = await $.fs.list(dir);
-		const name = newestHandoff(entries.map((entry) => entry.name));
-		const key = readBackKey(root);
-		if (name === undefined || name === (await $.store.get(key))) {
-			return;
-		}
-		const written = entries.find((entry) => entry.name === name)?.mtimeMs ?? 0;
-		if (written < (await mtimeOf($, resumed))) {
-			return;
-		}
-		const ageMs = (await $.clock.now()) - written;
-		await $.store.set(key, name);
-		if (isStale(ageMs)) {
-			$.ui.log(STALE_HANDOFF(name, Math.floor(ageMs / DAY_MS)));
-			return;
-		}
-		const text = readBackText(
-			name,
-			await redactOf($)(await $.fs.read(`${dir}/${name}`)),
-		);
-		$.clock.after(0, () => {
-			$.prompt.submit({ text }).catch((error: unknown) => {
-				$.ui.log(`Failed to inject handoff ${name} (${error})`);
-			});
-		});
-	} catch (error) {
-		$.ui.log(`Failed to read a handoff back (${error})`);
-	}
-};
-
-const callSession = ($: EngineInterface): Session => ({
-	redact: redactOf($),
-	write: async (path, text) =>
-		$.fs.write(atRoot(await $.session.root(), path), text),
-	clear: () => $.command.run({ command: "clear" }),
-	setGoal: (condition) => $.command.run({ command: "goal", args: condition }),
-	submit: (text) => $.prompt.submit({ text }),
-	taken: async (name) => $.store.set(readBackKey(await $.session.root()), name),
-	abort: (turnId) => $.turn.abort({ turnId }),
-	log: (line) =>{  $.ui.log(line); },
-	gitStatus: () => gitStatusOf($),
-	later: (work) => {
-		$.clock.after(0, () => {
-			work().catch(() => {});
-		});
-	},
-});
-
-const handoverSession = ($: EngineInterface): HandoverSession => ({
-	redact: redactOf($),
-	write: async (path, text) =>
-		$.fs.write(atRoot(await $.session.root(), path), text),
-	compact: () => $.command.run({ command: "compact" }),
-	submit: (text) => $.prompt.submit({ text }),
-	log: (line) =>{  $.ui.log(line); },
-	context: async () => (await $.session.usage()).context,
-	fork: (prompt) => $.model.fork({ prompt }),
-});
-
-const ANY_ID = /./;
+const ANY_ID = /./u;
 
 /** The handoff block rides the first user message's context: a hook cannot write Claude's handoff itself. */
 const handoffBlock = {
@@ -202,16 +28,14 @@ const handoffBlock = {
 	text: contextManagementText(),
 };
 
-const HANDOFF_CALLED = /^mcp__claudetto__handoff$/;
+const HANDOFF_CALLED = /^mcp__claudetto__handoff$/u;
 
-export const handoff = (on: On, options: PluginOptions): void => {
-	const call: CallState = {
-		handingOff: false,
-		turn: undefined,
-		goal: undefined,
-	};
-	const handover: HandoverState = newHandoverState();
-	let transcript: string | undefined;
+/** Writes a handoff from the transcript before each compaction, and hands the work over when one was installed. */
+const onCompact = (
+	on: On,
+	handover: HandoverState,
+	watched: { transcript: string | undefined },
+): void => {
 	on(
 		"session.compact",
 		{ trigger: ["manual", "auto", "plugin"] },
@@ -224,13 +48,16 @@ export const handoff = (on: On, options: PluginOptions): void => {
 				await writeHandoff(
 					$,
 					e.messages,
-					transcript,
+					watched.transcript,
 					`compaction ${e.trigger}`,
 				);
 			}
 			return next(e);
 		},
 	);
+};
+
+const onSessionStart = (on: On): void => {
 	on("session.start", { isInteractive: [true, false] }, async ($, e, next) => {
 		const spec = {
 			name: HANDOFF_TOOL,
@@ -254,6 +81,10 @@ export const handoff = (on: On, options: PluginOptions): void => {
 		}
 		return started;
 	});
+};
+
+/** Follows the turn id and the goal that the handoff call needs. */
+const onCallState = (on: On, call: CallState): void => {
 	on("turn.start", { turnId: [ANY_ID] }, (_$, e, next) => {
 		if (e.agentId === undefined) {
 			call.turn = e.turnId;
@@ -271,13 +102,9 @@ export const handoff = (on: On, options: PluginOptions): void => {
 	on("tool.call", { tool: [HANDOFF_CALLED] }, async ($, e) => ({
 		result: await handOff(callSession($), call, e),
 	}));
-	on("classic.SessionStart", async ($, e, next) => {
-		transcript = e.transcript_path;
-		if (e.source === "resume") {
-			await readBack($, e.transcript_path);
-		}
-		return next(e);
-	});
+};
+
+const onPromptContext = (on: On): void => {
 	on("prompt.context", async (_$, e, next) => {
 		const answer = await next(e);
 		return { ...answer, blocks: [...answer.blocks, handoffBlock] };
@@ -285,17 +112,48 @@ export const handoff = (on: On, options: PluginOptions): void => {
 	on("prompt.section", { name: ["context_management"] }, () => ({
 		text: null,
 	}));
-	// Runs from a timer: `$.command.run` is queued until the session is idle, and it is not while this hook runs.
+};
+
+/** Runs from a timer: `$.command.run` is queued until the session is idle, and it is not while this hook runs. */
+const onTurnComplete = (
+	on: On,
+	handover: HandoverState,
+	options: PluginOptions,
+): void => {
 	on("turn.complete", { isAborted: [false] }, async ($, e, next) => {
 		const answer = await next(e);
 		if (e.agentId === undefined && e.reason === "answer") {
 			const session = handoverSession($);
 			$.clock.after(0, () => {
 				afterTurn(session, handover, e.answer, options).catch(
-					(error: unknown) =>{  $.ui.log(`The handover failed (${error})`); },
+					(error: unknown) => {
+						$.ui.log(`The handover failed (${String(error)})`);
+					},
 				);
 			});
 		}
 		return answer;
 	});
+};
+
+export const handoff = (on: On, options: PluginOptions): void => {
+	const call: CallState = {
+		handingOff: false,
+		turn: undefined,
+		goal: undefined,
+	};
+	const handover: HandoverState = newHandoverState();
+	const watched: { transcript: string | undefined } = { transcript: undefined };
+	onCompact(on, handover, watched);
+	onSessionStart(on);
+	onCallState(on, call);
+	on("classic.SessionStart", async ($, e, next) => {
+		watched.transcript = e.transcript_path;
+		if (e.source === "resume") {
+			await readBack($, e.transcript_path);
+		}
+		return next(e);
+	});
+	onPromptContext(on);
+	onTurnComplete(on, handover, options);
 };

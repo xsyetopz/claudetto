@@ -107,8 +107,8 @@ const TRUST_ENTRIES: readonly string[] = [
 
 /** Replaces every built-in list; no `$defaults`, so the classifier reads only these. */
 export const AUTO_MODE = {
-	allow: ALLOW_RULES.map(ruleEntry),
-	soft_deny: SOFT_RULES.map(ruleEntry),
-	hard_deny: HARD_RULES.map(ruleEntry),
+	allow: ALLOW_RULES.map((item) => ruleEntry(item)),
+	soft_deny: SOFT_RULES.map((item) => ruleEntry(item)),
+	hard_deny: HARD_RULES.map((item) => ruleEntry(item)),
 	environment: TRUST_ENTRIES,
 };

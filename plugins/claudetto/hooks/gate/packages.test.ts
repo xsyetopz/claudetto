@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { gatePackage } from "../texts.ts";
+import { gatePackage } from "../texts-gate.ts";
 import { packageVerdict, POLICY_FILES } from "./packages.ts";
 
 const hasOnly =

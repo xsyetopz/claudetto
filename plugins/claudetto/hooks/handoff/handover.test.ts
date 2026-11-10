@@ -66,7 +66,9 @@ const fake = (
 			calls.push(`submit:${text}`);
 			return Promise.resolve();
 		},
-		log: (line) => calls.push(`log:${line}`),
+		log: (line) => {
+			calls.push(`log:${line}`);
+		},
 		context: () => Promise.resolve(context),
 		fork: () => {
 			calls.push("fork");

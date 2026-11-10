@@ -5,14 +5,19 @@ import { didWrite, WRITERS } from "./limits/stop.ts";
 import { PERSON, rootOf } from "./pin.ts";
 import { SLICE_COMMIT } from "./texts.ts";
 
-const RENAMED = /^[RC]/;
+const RENAMED = /^[RC]/u;
 
 const git = async (
 	$: EngineInterface,
 	argv: string[],
 ): Promise<string | undefined> => {
-	const r = await $.process.run(["git", ...argv]).catch(() => {});
+	const r = await $.process.run(["git", ...argv]).catch(() => void 0);
 	return r?.exitCode === 0 ? r.stdout : undefined;
+};
+
+const hashOne = async ($: EngineInterface, file: string): Promise<string> => {
+	const out = await git($, ["hash-object", "--", file]);
+	return out?.trim() ?? "";
 };
 
 /** The blob hash of each file, "" for one git cannot read; one call, or one per file when the batch fails on a vanished file. */
@@ -23,27 +28,19 @@ const hashes = async (
 	if (files.length === 0) {
 		return [];
 	}
-	const all = (await git($, ["hash-object", "--", ...files]))
-		?.trimEnd()
-		.split("\n");
+	const awaited = await git($, ["hash-object", "--", ...files]);
+	const all = awaited?.trimEnd().split("\n");
 	return all?.length === files.length
 		? all
-		: Promise.all(
-				files.map(
-					async (f) => (await git($, ["hash-object", "--", f]))?.trim() ?? "",
-				),
-			);
+		: Promise.all(files.map((f) => hashOne($, f)));
 };
 
-/** Absolute path -> hash of each path the cwd's repo reports as changed; a deleted path has hash "". */
-const dirty = async ($: EngineInterface): Promise<Map<string, string>> => {
-	const [status, up, cwd] = await Promise.all([
-		git($, ["status", "--porcelain", "-z", "-uall"]),
-		git($, ["rev-parse", "--show-cdup"]),
-		$.session.cwd(),
-	]);
-	const root = rootOf(cwd, (up ?? "").trim());
-	const fields = (status ?? "").split("\0");
+/** The changed paths of a `git status --porcelain -z` output, each with whether it is deleted. */
+const entriesOf = (
+	status: string,
+	root: string,
+): { path: string; gone: boolean }[] => {
+	const fields = status.split("\0");
 	const entries: { path: string; gone: boolean }[] = [];
 	for (let i = 0; i < fields.length; i++) {
 		const field = fields[i] ?? "";
@@ -57,6 +54,18 @@ const dirty = async ($: EngineInterface): Promise<Map<string, string>> => {
 		// A rename or copy is followed by its source path.
 		i += RENAMED.test(field) ? 1 : 0;
 	}
+	return entries;
+};
+
+/** Absolute path -> hash of each path the cwd's repo reports as changed; a deleted path has hash "". */
+const dirty = async ($: EngineInterface): Promise<Map<string, string>> => {
+	const [status, up, cwd] = await Promise.all([
+		git($, ["status", "--porcelain", "-z", "-uall"]),
+		git($, ["rev-parse", "--show-cdup"]),
+		$.session.cwd(),
+	]);
+	const root = rootOf(cwd, (up ?? "").trim());
+	const entries = entriesOf(status ?? "", root);
 	const live = entries.filter((e) => !e.gone);
 	const hashed = await hashes(
 		$,
@@ -75,6 +84,58 @@ const shown = async ($: EngineInterface, paths: readonly string[]) => {
 		p.startsWith(`${cwd}/`) ? p.slice(cwd.length + 1) : p,
 	);
 };
+
+/** The files of `mine` that still hold the hash the agent left and that git reports as changed. */
+const changedOf = async (
+	$: EngineInterface,
+	mine: ReadonlyMap<string, string>,
+): Promise<string[]> => {
+	const files = [...mine.keys()];
+	const now = await hashes($, files);
+	const own = files.filter((path, i) => now[i] === mine.get(path));
+	const status = await Promise.all(
+		own.map((path) =>
+			git($, [
+				"-C",
+				path.slice(0, path.lastIndexOf("/")),
+				"status",
+				"--porcelain",
+				"--",
+				path,
+			]),
+		),
+	);
+	return own.filter((_, i) => (status[i] ?? "") !== "");
+};
+
+/** Whether the commit that the block asks for could be made: a headless session has no one to answer an ask. */
+const commitPossible = async (
+	$: EngineInterface,
+	interactive: boolean,
+): Promise<boolean> => {
+	const commit = await $.tool.check({
+		tool: "Bash",
+		input: { command: "git commit" },
+	});
+	return !(
+		commit.decision === "deny" ||
+		(commit.decision === "ask" && !interactive)
+	);
+};
+
+/** The paths of the cwd repo that differ from `known` and are not in `changed`; none without a first-prompt record. */
+const movedSince = async (
+	$: EngineInterface,
+	known: ReadonlyMap<string, string> | undefined,
+	changed: readonly string[],
+): Promise<string[]> =>
+	known === undefined
+		? []
+		: [...(await dirty($))]
+				.filter(
+					([path, hash]) => known.get(path) !== hash && !changed.includes(path),
+				)
+				.map(([path]) => path);
 
 /**
  * Files the agent wrote, by the hash it left them with: only an `Edit`, `Write`, or `NotebookEdit` that ran counts, since a Bash call cannot
@@ -98,7 +159,8 @@ export const slices = (on: On): void => {
 		const answer = await next(e);
 		const path = "file_path" in e ? e.file_path : e.notebook_path;
 		if (didWrite(answer)) {
-			mine.set(path, (await hashes($, [path]))[0] ?? "");
+			const awaited2 = await hashes($, [path]);
+			mine.set(path, awaited2[0] ?? "");
 		}
 		return answer;
 	});
@@ -110,42 +172,11 @@ export const slices = (on: On): void => {
 		) {
 			return answer;
 		}
-		const commit = await $.tool.check({
-			tool: "Bash",
-			input: { command: "git commit" },
-		});
-		// A headless session has no one to answer an ask, so the commit it asks for could not be made.
-		if (
-			commit.decision === "deny" ||
-			(commit.decision === "ask" && !interactive)
-		) {
+		if (!(await commitPossible($, interactive))) {
 			return answer;
 		}
-		const files = [...mine.keys()];
-		const now = await hashes($, files);
-		const own = files.filter((path, i) => now[i] === mine.get(path));
-		const status = await Promise.all(
-			own.map((path) =>
-				git($, [
-					"-C",
-					path.slice(0, path.lastIndexOf("/")),
-					"status",
-					"--porcelain",
-					"--",
-					path,
-				]),
-			),
-		);
-		const changed = own.filter((_, i) => (status[i] ?? "") !== "");
-		const others =
-			known === undefined
-				? []
-				: [...(await dirty($))]
-						.filter(
-							([path, hash]) =>
-								known?.get(path) !== hash && !changed.includes(path),
-						)
-						.map(([path]) => path);
+		const changed = await changedOf($, mine);
+		const others = await movedSince($, known, changed);
 		return changed.length === 0 && others.length === 0
 			? answer
 			: {

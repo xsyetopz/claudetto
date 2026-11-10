@@ -78,7 +78,7 @@ When the engine's classifier denies a call with no explanation, claudetto's repe
 
 ### Requirement: A Bash Write into a Plugin's Hooks Folder Asks
 
-The gate SHALL ask when a Bash command writes into `plugins/<name>/hooks/` through a redirect, `sed -i`, `cp`, `mv`, or `rm`, or through `tee` that appends, because Claude Code's built-in check asks on `.claude/`, `.git/hooks/`, and a Write or Edit of `plugins/`, but not on a Bash write there. A read of that folder, or a write beside it, SHALL pass.
+The gate SHALL ask when a Bash command writes into `plugins/<name>/hooks/` through a redirect, `cp`, `mv`, or `rm`, or through `tee` that appends, because Claude Code's built-in check asks on `.claude/`, `.git/hooks/`, and a Write or Edit of `plugins/`, but not on a Bash write there. A read of that folder, or a write beside it, SHALL pass.
 
 #### Scenario: A Copy into a Plugin's Hooks
 
@@ -321,12 +321,30 @@ The gate SHALL ask when a call creates a file that this session saw (by `Read`, 
 
 ### Requirement: What Counts as Creating a Vanished File
 
-A `Write`, a `cp` or `mv` target, `touch`, and `ln -s` SHALL count as creating. `sed -i` SHALL NOT.
+A `Write`, a `cp` or `mv` target, `touch`, and `ln -s` SHALL count as creating.
+
+#### Scenario: A Touch of a Vanished File
+
+- **WHEN** the agent runs `touch` on a file that is gone
+- **THEN** the gate treats it as recreating that file
+
+### Requirement: A Shell In-Place Edit Is Denied
+
+The gate SHALL deny a Bash command that edits a file in place with `sed -i`, `perl -i`, or `ruby -i`, alone or in a chain, and name `Edit` with the file, because an in-place shell edit skips the edit tool's diff, its read-before-edit check, and the user's review.
 
 #### Scenario: An In-Place Edit
 
-- **WHEN** the agent runs `sed -i` on a file that is gone
-- **THEN** the gate does not ask for recreating it
+- **WHEN** the agent runs `git status && sed -i 's/a/b/' src/a.ts`
+- **THEN** the gate denies it and names `Edit` on `src/a.ts`
+
+### Requirement: A Test of Shipped Wording Is Denied
+
+The gate SHALL deny an `Edit` or `Write` of a `*.test.*` or `*.spec.*` file whose assertion compares against a literal phrase of four words or more that a non-test file in the repository holds, because such a test breaks on each rewording and catches no defect.
+
+#### Scenario: A Wording Assertion
+
+- **WHEN** a test edit adds `expect(r.reason).toContain("the gate holds this call")` and `hooks/texts.ts` holds that phrase
+- **THEN** the gate denies the edit and names `hooks/texts.ts`
 
 ### Requirement: What Counts as a File the Session Saw
 

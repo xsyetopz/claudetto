@@ -118,12 +118,36 @@ A project file `.claude/claudetto/trash.toml` SHALL replace the plugin's file, a
 
 ### Requirement: The Trash Walk and Age Limit
 
-The walk SHALL stop at a match, SHALL skip `.git`, and SHALL NOT follow a link. The age limit SHALL be 7 days, or `--trash-days`, where 0 turns the kind off.
+The walk SHALL start at the project and at each folder that Mole's `~/.config/mole/purge_paths` lists, with a leading `~` read as the home folder, and SHALL skip a listed folder that hygiene refuses as a root. The walk SHALL stop at a match, SHALL skip `.git`, SHALL NOT follow a link, and SHALL NOT enter `~/.claude/projects` or `~/.claude/plugins`. The age limit SHALL be 7 days, or `--trash-days`, where 0 turns the kind off.
 
 #### Scenario: Kind Off
 
 - **WHEN** `--trash-days` is 0
 - **THEN** no build folder is removed
+
+#### Scenario: Another Checkout Under a Purge Path
+
+- **WHEN** `purge_paths` lists a folder holding an idle checkout with an old ignored `node_modules`
+- **THEN** the `node_modules` is removed ("an old build folder in an idle checkout under a Mole purge path is swept", "a purge path written with ~ is read from the home folder")
+
+#### Scenario: Claude Code's Own Folders
+
+- **WHEN** `purge_paths` lists `~/.claude`, and checkouts under `~/.claude/plugins` and `~/.claude/projects` hold old ignored build folders
+- **THEN** none is removed ("the walk skips ~/.claude/plugins and ~/.claude/projects inside a purge path")
+
+### Requirement: Mole Clears Caches
+
+After the sweep, hygiene SHALL run `mo clean` with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`; with `--dry-run` it SHALL run `mo clean --dry-run`. The report SHALL end with Mole's exit code, or, when `mo` is not on `PATH`, with its install command.
+
+#### Scenario: Unattended Clean
+
+- **WHEN** hygiene runs and `mo` is on `PATH`
+- **THEN** `mo clean` runs with stdin that is no terminal, and the report names its exit code ("the sweep runs mo clean with no terminal on stdin and reports its exit")
+
+#### Scenario: Mole Missing
+
+- **WHEN** `mo` is not on `PATH`
+- **THEN** the report names `brew install mole` ("a missing mo names its install command")
 
 ### Requirement: A Build Folder Match Stays Unless Safe
 

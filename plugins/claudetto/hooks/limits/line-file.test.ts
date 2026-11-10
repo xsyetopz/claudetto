@@ -1,11 +1,41 @@
-import type { On } from "claude-code";
+import type { ConfigRow, On, SessionContextBreakdown } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
+const BREAKDOWN: SessionContextBreakdown = {
+	categories: [],
+	totalTokens: 0,
+	maxTokens: 300_000,
+	rawMaxTokens: 300_000,
+	autocompactSource: "model-default",
+	percentage: 0,
+	gridRows: [],
+	model: "m",
+	memoryFiles: [],
+	mcpTools: [],
+	agents: [],
+	isAutoCompactEnabled: true,
+	apiUsage: null,
+};
+
+const themeRows = (theme?: string): ConfigRow[] =>
+	theme === undefined
+		? []
+		: [
+				{
+					key: "theme",
+					label: "Theme",
+					kind: "choice",
+					value: theme,
+					provider: { plugin: "engine", tier: "core" },
+					isLocked: false,
+				},
+			];
 
 const lab = (
 	on: On,
 	files: [string, string][],
 	asked: unknown[],
-	theme: string | undefined,
+	theme?: string,
 ) => {
 	on("session.measure", (_$, e) => ({ changed: e.changed }));
 	on("session.id", () => ({ value: "s-1" }));
@@ -15,18 +45,12 @@ const lab = (
 		return {
 			value: {
 				startedAt: 0,
-				context: {
-					window: 1_000_000,
-					breakdown: { rawMaxTokens: 300_000 },
-				},
+				context: { window: 1_000_000, breakdown: BREAKDOWN },
 				rateLimits: [],
 			},
-		} as never;
+		};
 	});
-	on("config.list", () => ({
-		value:
-			theme === undefined ? [] : ([{ key: "theme", value: theme }] as never),
-	}));
+	on("config.list", () => ({ value: themeRows(theme) }));
 	on("fs.write", (_$, e) => {
 		files.push([e.path, e.text]);
 		return { value: undefined };

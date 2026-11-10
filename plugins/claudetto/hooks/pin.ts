@@ -1,8 +1,8 @@
 import type { EngineInterface, On, SessionMessage } from "claude-code";
 
 import { isRecord } from "./decide/jev.ts";
-import { type Command, parse, programOf } from "./gate/shell-words.ts";
-import { deny, fieldOf } from "./gate/verdict.ts";
+import { deny } from "./gate/verdict.ts";
+import { breaks } from "./pin-rules.ts";
 import {
 	PIN_ANSWER_FIRST,
 	PIN_BLOCKED,
@@ -12,41 +12,11 @@ import {
 	PIN_NOTE,
 	type PinConstraint,
 	type PinKind,
-} from "./texts.ts";
+} from "./texts-handoff.ts";
 import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
-export const PERSON = /^(?:composer|bridge|sdk)$/;
-const ANY_TOOL = /^/;
-const IN_PLACE = /^-[a-z]*i/;
-const WRITERS = new Set(["Write", "Edit", "NotebookEdit"]);
-const WRITE_PROGRAMS = new Set([
-	"tee",
-	"mv",
-	"cp",
-	"rm",
-	"mkdir",
-	"touch",
-	"patch",
-	"ln",
-	"chmod",
-	"truncate",
-]);
-const GIT_WRITES = new Set([
-	"commit",
-	"add",
-	"checkout",
-	"restore",
-	"reset",
-	"stash",
-	"apply",
-	"merge",
-	"rebase",
-	"mv",
-	"rm",
-	"clean",
-	"cherry-pick",
-	"revert",
-]);
+export const PERSON = /^(?:composer|bridge|sdk)$/u;
+const ANY_TOOL = /^/u;
 const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
 	"read-only",
 	"no-commit",
@@ -57,7 +27,7 @@ const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
 ]);
 const isRule = (x: unknown): x is PinConstraint["rule"] => RULES.has(x);
 
-const flat = (s: string) => s.toLowerCase().replaceAll(/\s+/g, " ").trim();
+const flat = (s: string) => s.toLowerCase().replaceAll(/\s+/gu, " ").trim();
 
 // An entry stands only on words a message of the person holds, so a remark or the agent's own text sets none.
 const toConstraint = (c: unknown, said: string[]): PinConstraint[] => {
@@ -116,67 +86,10 @@ const parseLedger = (text: string, said: string[]): Extraction | undefined => {
 	}
 };
 
-const writesFile = (c: Command): boolean =>
-	c.redirects.some(
-		(r) => !r.op.startsWith("<") && r.op !== ">&" && r.target !== "/dev/null",
-	);
-
-const writesFiles = (c: Command): boolean => {
-	const { name, args } = programOf(c);
-	const sub = args.find((a) => !a.startsWith("-")) ?? "";
-	return (
-		writesFile(c) ||
-		WRITE_PROGRAMS.has(name) ||
-		(name === "sed" && args.some((a) => IN_PLACE.test(a))) ||
-		(name === "bun" && ["add", "install", "remove"].includes(sub))
-	);
+const personTexts = async ($: EngineInterface): Promise<string[]> => {
+	const messages = await $.session.messages();
+	return messages.filter((item) => isPersonMessage(item)).map((m) => m.text);
 };
-
-const bashWrites = (
-	command: string,
-	git: Set<string> = GIT_WRITES,
-	anyWrite = true,
-): boolean =>
-	parse(command).commands.some((c) => {
-		const { name, args } = programOf(c);
-		const sub = args.find((a) => !a.startsWith("-")) ?? "";
-		return (anyWrite && writesFiles(c)) || (name === "git" && git.has(sub));
-	});
-
-const breaks = (c: PinConstraint, tool: string, input: unknown): boolean => {
-	const command = tool === "Bash" ? fieldOf(input, "command") : undefined;
-	switch (c.rule) {
-		case "read-only": {
-			return (
-				WRITERS.has(tool) || (command !== undefined && bashWrites(command))
-			);
-		}
-		case "no-commit": {
-			return (
-				command !== undefined && bashWrites(command, new Set(["commit"]), false)
-			);
-		}
-		case "no-push": {
-			return (
-				command !== undefined && bashWrites(command, new Set(["push"]), false)
-			);
-		}
-		case "only-files": {
-			const path =
-				fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path") ?? "";
-			return (
-				WRITERS.has(tool) && !(c.files ?? []).some((f) => path.endsWith(f))
-			);
-		}
-		case "no-questions":
-		case "none": {
-			return false;
-		}
-	}
-};
-
-const personTexts = async ($: EngineInterface): Promise<string[]> =>
-	(await $.session.messages()).filter(isPersonMessage).map((m) => m.text);
 
 const extractLedger = async (
 	$: EngineInterface,
@@ -200,7 +113,7 @@ export const rootOf = (cwd: string, cdup: string): string =>
 		.slice(0, cwd.split("/").length - (cdup.split("../").length - 1))
 		.join("/");
 
-// Built-ins that change nothing: a question that needs one of them gets the lookup, not the answer-first gate (task 18.21).
+// Built-ins that change nothing: a question that needs one of them gets the lookup, not the answer-first gate.
 const LOOKUPS: ReadonlySet<string> = new Set([
 	"ListAgents",
 	"Read",
@@ -210,76 +123,104 @@ const LOOKUPS: ReadonlySet<string> = new Set([
 
 const hasSpoken = (messages: SessionMessage[]): boolean =>
 	messages
-		.slice(messages.findLastIndex(isPersonMessage) + 1)
+		.slice(messages.findLastIndex((item) => isPersonMessage(item)) + 1)
 		.some((m) => m.role === "assistant" && m.text !== "");
 
-export const pin = (on: On): void => {
-	let ledger: PinConstraint[] = [];
-	// What the latest person message is; a failed extraction leaves it a task, which no check touches.
-	let kind: PinKind = "task";
-	// The message count at which the answer-first deny fired this turn: calls of that one batch are denied, the retry is not.
-	let nudgedAt = -1;
-	const isFirstBatch = (messages: SessionMessage[]): boolean =>
-		nudgedAt < 0 || nudgedAt === messages.length;
-	// The extraction runs beside the reply so the prompt is not held for it; tool.check waits on it.
-	let pending: Promise<void> = Promise.resolve();
-	const adopt = async (job: Promise<Extraction | undefined>): Promise<void> => {
-		const found = await job.catch(() => {});
-		// A failed or unreadable answer keeps the last ledger rather than dropping constraints.
-		ledger = found?.constraints ?? ledger;
-		kind = found?.kind ?? kind;
-	};
+/** Whether a call waits for the answer to the latest message. A dispute is settled by running the disputed code, so its command passes. The person's message reaches the main loop only, so a running subagent has nothing to answer first. */
+const awaitsAnswer = (
+	kind: PinKind,
+	e: { readonly tool: string; readonly agentId?: string | undefined },
+): boolean =>
+	e.agentId === undefined &&
+	kind !== "task" &&
+	!(kind !== "remark" && LOOKUPS.has(e.tool)) &&
+	!(kind === "dispute" && e.tool === "Bash");
+
+interface PinState {
+	ledger: PinConstraint[];
+	/** What the latest person message is; a failed extraction leaves it a task, which no check touches. */
+	kind: PinKind;
+	/** The message count at which the answer-first deny fired this turn: calls of that one batch are denied, the retry is not. */
+	nudgedAt: number;
+	/** The extraction runs beside the reply so the prompt is not held for it; tool.check waits on it. */
+	pending: Promise<void>;
+}
+
+const isFirstBatch = (s: PinState, messages: SessionMessage[]): boolean =>
+	s.nudgedAt < 0 || s.nudgedAt === messages.length;
+
+const adopt = async (
+	s: PinState,
+	job: Promise<Extraction | undefined>,
+): Promise<void> => {
+	const found = await job.catch(() => void 0);
+	// A failed or unreadable answer keeps the last ledger rather than dropping constraints.
+	s.ledger = found?.constraints ?? s.ledger;
+	s.kind = found?.kind ?? s.kind;
+};
+
+const ledgerHooks = (on: On, s: PinState): void => {
 	// A resumed session holds person messages this process never saw: its first prompt waits for the extraction, so the note rides it.
 	let seen = false;
 	on("prompt.submit", { origin: { kind: PERSON } }, async ($, e, next) => {
-		kind = "task";
-		nudgedAt = -1;
+		s.kind = "task";
+		s.nudgedAt = -1;
 		if (!(e.command || e.isMeta)) {
-			pending = adopt(extractLedger($, e.text, ledger));
-			const earlier = (await personTexts($)).some((t) => t !== e.text);
+			s.pending = adopt(s, extractLedger($, e.text, s.ledger));
+			const awaited = await personTexts($);
+			const earlier = awaited.some((t) => t !== e.text);
 			if (!seen && earlier) {
-				await pending;
+				await s.pending;
 			}
 			seen = true;
 		}
-		const shown = ledger;
+		const shown = s.ledger;
 		return shown.length === 0
 			? next(e)
 			: next({ ...e, context: [...(e.context ?? []), PIN_NOTE(shown)] });
 	});
 	on("session.compact", async (_$, e, next) => {
-		await pending;
+		await s.pending;
 		// The summary that follows is a user message no person wrote: the answer-first gate would read it as an unanswered remark.
-		kind = "task";
-		return ledger.length === 0
+		s.kind = "task";
+		return s.ledger.length === 0
 			? next(e)
-			: next({ ...e, instructions: PIN_COMPACT(e.instructions, ledger) });
+			: next({ ...e, instructions: PIN_COMPACT(e.instructions, s.ledger) });
 	});
+};
+
+const gateHooks = (on: On, s: PinState): void => {
 	// `delegation` answers the ask tool in its own `tool.call`, so `tool.check` never runs for it: the ask's checks sit here, and `register` puts `pin` first.
 	on("tool.call", { tool: ASK_TOOL }, async (_$, e, next) => {
-		await pending;
-		const hit = ledger.find((c) => c.rule === "no-questions");
+		await s.pending;
+		const hit = s.ledger.find((c) => c.rule === "no-questions");
 		return hit === undefined ? next(e) : { deny: PIN_NO_QUESTIONS(hit.text) };
 	});
 	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
-		await pending;
-		const hit = ledger.find((c) => breaks(c, e.tool, e.input));
+		await s.pending;
+		const hit = s.ledger.find((c) => breaks(c, e.tool, e.input));
 		if (hit !== undefined) {
 			return deny(PIN_BLOCKED(hit.text));
 		}
-		// A dispute is settled by running the disputed code, so its command passes; an edit still waits for the answer.
-		if (
-			kind === "task" ||
-			(kind !== "remark" && LOOKUPS.has(e.tool)) ||
-			(kind === "dispute" && e.tool === "Bash")
-		) {
+		if (!awaitsAnswer(s.kind, e)) {
 			return next(e);
 		}
 		const messages = await $.session.messages();
-		if (!hasSpoken(messages) && isFirstBatch(messages)) {
-			nudgedAt = messages.length;
+		if (!hasSpoken(messages) && isFirstBatch(s, messages)) {
+			s.nudgedAt = messages.length;
 			return deny(PIN_ANSWER_FIRST);
 		}
 		return next(e);
 	});
+};
+
+export const pin = (on: On): void => {
+	const state: PinState = {
+		ledger: [],
+		kind: "task",
+		nudgedAt: -1,
+		pending: Promise.resolve(),
+	};
+	ledgerHooks(on, state);
+	gateHooks(on, state);
 };

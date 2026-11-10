@@ -7,7 +7,7 @@ import type {
 } from "claude-code";
 
 import { numberOption } from "../options.ts";
-import { FORK_PROMPT, HANDOVER_PROMPT } from "../texts.ts";
+import { FORK_PROMPT, HANDOVER_PROMPT } from "../texts-handoff.ts";
 import { HANDOFF_TITLE, handoffPath } from "./layout.ts";
 
 /** One registration's state. */
@@ -92,7 +92,9 @@ const handOver = async (
 	try {
 		await session.write(path, text);
 	} catch (error) {
-		session.log(`The handoff could not be saved to \`${path}\` (${error})`);
+		session.log(
+			`The handoff could not be saved to \`${path}\` (${String(error)})`,
+		);
 	}
 	try {
 		state.pending = text;
@@ -104,7 +106,7 @@ const handOver = async (
 			return;
 		}
 	} catch (error) {
-		session.log(`The handoff compaction failed (${error})`);
+		session.log(`The handoff compaction failed (${String(error)})`);
 		return;
 	} finally {
 		state.pending = undefined;
@@ -113,7 +115,7 @@ const handOver = async (
 	if (isContinued) {
 		await session.submit(HANDOVER_PROMPT).catch((error: unknown) => {
 			session.log(
-				`The conversation was compacted, and the next prompt failed (${error})`,
+				`The conversation was compacted, and the next prompt failed (${String(error)})`,
 			);
 		});
 	}

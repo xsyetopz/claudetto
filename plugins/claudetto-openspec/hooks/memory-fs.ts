@@ -3,16 +3,17 @@ import type { On } from "claude-code";
 
 const ROOT = "/repo";
 
-export const memory = (on: On, files: Record<string, string>) => {
-	const tree = new Map(Object.entries(files));
-	const runs: string[][] = [];
-	const under = (dir: string) =>
-		[...tree.keys()].filter((p) => p.startsWith(`${dir}/`));
-	const isDir = (p: string) => under(p).length > 0;
-	on("session.root", () => ({ value: ROOT }));
-	on("session.cwd", () => ({ value: ROOT }));
-	on("clock.now", () => ({ value: Date.UTC(2026, 10, 6) }));
-	on("fs.exists", (_$, e) => ({ value: tree.has(e.path) || isDir(e.path) }));
+type Tree = Map<string, string>;
+
+const under = (tree: Tree, dir: string) =>
+	[...tree.keys()].filter((p) => p.startsWith(`${dir}/`));
+
+const isDir = (tree: Tree, p: string) => under(tree, p).length > 0;
+
+const onFs = (on: On, tree: Tree) => {
+	on("fs.exists", (_$, e) => ({
+		value: tree.has(e.path) || isDir(tree, e.path),
+	}));
 	on("fs.read", (_$, e) => {
 		const text = tree.get(e.path);
 		if (text === undefined) {
@@ -25,7 +26,7 @@ export const memory = (on: On, files: Record<string, string>) => {
 		return { value: undefined };
 	});
 	on("fs.stat", (_$, e) => {
-		if (!(tree.has(e.path) || isDir(e.path))) {
+		if (!(tree.has(e.path) || isDir(tree, e.path))) {
 			throw new Error(`ENOENT ${e.path}`);
 		}
 		return {
@@ -40,9 +41,9 @@ export const memory = (on: On, files: Record<string, string>) => {
 	});
 	on("fs.list", (_$, e) => {
 		const names = new Map<string, "file" | "dir">();
-		for (const p of under(e.path)) {
+		for (const p of under(tree, e.path)) {
 			const [head, ...rest] = p.slice(e.path.length + 1).split("/");
-			if (head) {
+			if (head !== undefined && head !== "") {
 				names.set(head, rest.length > 0 ? "dir" : "file");
 			}
 		}
@@ -56,10 +57,16 @@ export const memory = (on: On, files: Record<string, string>) => {
 			})),
 		};
 	});
+};
+
+const isSet = (value: string | undefined): value is string =>
+	value !== undefined && value !== "";
+
+const onRun = (on: On, tree: Tree, runs: string[][]) => {
 	on("process.run", (_$, e) => {
 		runs.push([...e.argv]);
 		const [cmd, src, dst] = e.argv;
-		if (cmd === "mv" && src && dst) {
+		if (cmd === "mv" && isSet(src) && isSet(dst)) {
 			for (const p of [...tree.keys()].filter((k) => k.startsWith(`${src}/`))) {
 				tree.set(dst + p.slice(src.length), tree.get(p) ?? "");
 				tree.delete(p);
@@ -75,5 +82,15 @@ export const memory = (on: On, files: Record<string, string>) => {
 			},
 		};
 	});
+};
+
+export const memory = (on: On, files: Record<string, string>) => {
+	const tree: Tree = new Map(Object.entries(files));
+	const runs: string[][] = [];
+	on("session.root", () => ({ value: ROOT }));
+	on("session.cwd", () => ({ value: ROOT }));
+	on("clock.now", () => ({ value: Date.UTC(2026, 10, 6) }));
+	onFs(on, tree);
+	onRun(on, tree, runs);
 	return { tree, runs };
 };

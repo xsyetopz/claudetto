@@ -45,7 +45,7 @@ export const linesOf = (text: string): string[] =>
 export const globOf = (glob: string): string =>
 	glob
 		.split("*")
-		.map((part) => part.replaceAll(/[.+?^${}()|[\]\\]/g, String.raw`\$&`))
+		.map((part) => part.replaceAll(/[.+?^${}()|[\]\\]/gu, String.raw`\$&`))
 		.join("[^/]*");
 
 /** A root name or `*` glob, an exact path, or a `dir/` prefix. */
@@ -56,7 +56,7 @@ const present = (pattern: string, paths: readonly string[]): boolean => {
 	if (pattern.includes("/")) {
 		return paths.includes(pattern);
 	}
-	const name = new RegExp(`^${globOf(pattern)}$`);
+	const name = new RegExp(`^${globOf(pattern)}$`, "u");
 	return paths.some((path) => !path.includes("/") && name.test(path));
 };
 
@@ -129,7 +129,7 @@ export const planStarter = (
 	];
 };
 
-const TRAILING_NEWLINE = /\n$/;
+const TRAILING_NEWLINE = /\n$/u;
 
 /** Each new file as added lines, so a person sees exactly what a yes writes. */
 export const previewOf = (files: readonly StarterFile[]): string =>

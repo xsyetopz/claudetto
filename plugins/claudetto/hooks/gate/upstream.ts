@@ -16,9 +16,14 @@ interface Rule {
 	filters: readonly Filter[];
 }
 
-const BARE = /^[^\s'"\\]+$/;
+const BARE = /^[^\s'"\\]+$/u;
 const quote = (word: string): string =>
 	BARE.test(word) ? word : `'${word.replaceAll("'", String.raw`'\''`)}'`;
+
+// The filters are Rust regexes with `\x{1}` and `(?i:...)`, which unicode mode rejects.
+const FILTER_FLAGS = "";
+const compile = (source: string, flags: string): RegExp =>
+	new RegExp(source, flags);
 
 const rules: {
 	rule: Rule;
@@ -28,7 +33,12 @@ const rules: {
 	const filters = rule.filters.flatMap((f) =>
 		f.type === "PathExists"
 			? []
-			: [{ wanted: f.type === "Matches", test: new RegExp(String(f.value)) }],
+			: [
+					{
+						wanted: f.type === "Matches",
+						test: compile(f.value, FILTER_FLAGS),
+					},
+				],
 	);
 	return {
 		rule,
@@ -59,7 +69,7 @@ export const withoutGitOptions = (args: string[]): string[] => {
 
 const asText = (words: string[], redirects: Command["redirects"]): string =>
 	[
-		...words.map(quote),
+		...words.map((item) => quote(item)),
 		...redirects.map((r) => `${r.op} ${quote(r.target)}`),
 	].join(" ");
 

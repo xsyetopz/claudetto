@@ -8,7 +8,7 @@ const HAIKU_MODEL = "claude-haiku-5-5";
 /** A stand-in MCP tool, declared so a generated `McpToolInputs` does not reject its name. */
 declare module "claude-code" {
 	interface McpToolInputs {
-		mcp__s__read: Record<never, never>;
+		mcp__s__read: Record<string, unknown>;
 	}
 }
 
@@ -32,13 +32,13 @@ const lab = (
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("fs.exists", () => ({ value: false }));
 	const clock = mock.clock(on, { now });
-	const asked = Promise.withResolvers<void>();
-	const held = Promise.withResolvers<void>();
+	const asked = Promise.withResolvers<boolean>();
+	const held = Promise.withResolvers<boolean>();
 	on("turn.step", async function* (_$, e) {
 		for (const [index, id] of step.calls.entries()) {
 			yield { kind: "tool", index, id, name: "mcp__s__read" };
 		}
-		asked.resolve();
+		asked.resolve(true);
 		await held.promise;
 		if (step.usage !== undefined) {
 			yield { kind: "stop", stopReason: "tool_use", usage: step.usage };
@@ -59,15 +59,18 @@ const lab = (
 		}
 		return { result: "x".repeat(chars[id] ?? 0) };
 	});
-	return { asked: asked.promise, release: held.resolve, clock };
+	const release = (): void => {
+		held.resolve(true);
+	};
+	return { asked: asked.promise, release, clock };
 };
 
 /** Starts the calls before the stop chunk, as the engine runs a tool while its step streams, runs `beforeStop`, and reads each answer once the step ended. */
 const run = async (
 	$: Engine,
-	step: { asked: Promise<void>; release: () => void },
+	step: { asked: Promise<boolean>; release: () => void },
 	calls: readonly string[],
-	beforeStop: () => void = () => {},
+	beforeStop?: () => void,
 ) => {
 	const drained = Array.fromAsync(
 		$.turn.step({ turnId: "t1", index: 0, model: "haiku", messageCount: 1 }),
@@ -76,7 +79,7 @@ const run = async (
 	const answers = calls.map((id) =>
 		$.tool.call({ tool: "mcp__s__read", tool_use_id: id }),
 	);
-	beforeStop();
+	beforeStop?.();
 	step.release();
 	await drained;
 	const settled = await Promise.allSettled(answers);
@@ -164,7 +167,7 @@ test("a call that throws leaves no wait behind for a later call of the same id",
 /** Starts a step on `model` and one call of it while the step still streams. */
 const callMidStep = async (
 	$: Engine,
-	step: { asked: Promise<void> },
+	step: { asked: Promise<boolean> },
 	model: string,
 ) => {
 	const drained = Array.fromAsync(
@@ -186,7 +189,8 @@ test("another model's call answers while its step still streams", async ($: Engi
 
 	const { drained, answer } = await callMidStep($, step, "claude-sonnet-5-5");
 
-	expect((await answer).result).toBe("xxxxx");
+	const awaited = await answer;
+	expect(awaited.result).toBe("xxxxx");
 	step.release();
 	await drained;
 });
@@ -201,7 +205,8 @@ test("a Haiku call whose step streams past the call's budget passes its result b
 
 	await step.clock.advance(9000);
 
-	expect((await answer).result).toBe("x".repeat(400));
+	const awaited2 = await answer;
+	expect(awaited2.result).toBe("x".repeat(400));
 	step.release();
 	await drained;
 });
@@ -225,7 +230,9 @@ test("a step writes the session's heartbeat when it starts and again on its stop
 		new Set(),
 		1000,
 	);
-	heartbeatLab(on, (path, text) => files.push([path, text]));
+	heartbeatLab(on, (path, text) => {
+		files.push([path, text]);
+	});
 	let beforeStop = -1;
 
 	await run($, step, ["c1"], () => {

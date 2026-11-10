@@ -8,8 +8,8 @@ import {
 	width,
 } from "../../plugins/claudetto/statusline/width.ts";
 
-const ESC = String.fromCharCode(27);
-const BEL = String.fromCharCode(7);
+const ESC = String.fromCodePoint(27);
+const BEL = String.fromCodePoint(7);
 const green = (text: string) => `${ESC}[38;2;78;186;101m${text}${ESC}[0m`;
 
 describe("spacing: what a cell count must be", () => {
@@ -84,7 +84,7 @@ describe("boundary: a cut never lands inside a sequence or a glyph", () => {
 		expect(width(out)).toBe(8);
 		expect(out).toContain(`${ESC}[0m...`);
 		expect(
-			out.replaceAll(new RegExp(`${ESC}\\[[0-9;]*m`, "g"), ""),
+			out.replaceAll(new RegExp(`${ESC}\\[[0-9;]*m`, "gu"), ""),
 		).not.toContain(ESC);
 	});
 

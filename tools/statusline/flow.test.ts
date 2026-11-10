@@ -3,6 +3,8 @@ import { describe, expect, test } from "bun:test";
 import { width } from "../../plugins/claudetto/statusline/width.ts";
 import { linesOf, NOW_S } from "./support.ts";
 
+const widthOf = (line: string | undefined): number => width(line ?? "");
+
 const narrow = (columns: number) => ({
 	COLUMNS: String(columns),
 	NO_COLOR: "1",
@@ -46,7 +48,7 @@ describe("items flow into rows", () => {
 			narrow(40),
 		);
 		expect(lines[0]).toStartWith("⌂ xxx");
-		expect(width(lines[0] ?? "")).toBe(36);
+		expect(widthOf(lines[0])).toBe(36);
 		expect(lines[1]).toStartWith("❖ Opus 5.5 high");
 	});
 });

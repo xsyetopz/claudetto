@@ -5,6 +5,7 @@
 		"**/coverage/**",
 		"**/dist/**",
 		"**/node_modules/**",
-		"**/*.gen.*"
+		"**/*.gen.*",
+		"openspec/**"
 	]
 }

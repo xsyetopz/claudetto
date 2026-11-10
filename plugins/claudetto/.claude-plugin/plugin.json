@@ -58,6 +58,12 @@
 			"description": "The input tokens of the last response from which the context counts as heavy. Left unset, it is 400000.",
 			"min": 1
 		},
+		"agentMaxMinutes": {
+			"type": "number",
+			"title": "Minutes a subagent may run",
+			"description": "How long a subagent may run before each further tool call it makes is refused and it is told to report and end. 0 turns the limit off. Left unset, it is 15.",
+			"min": 0
+		},
 		"maxIdenticalFailures": {
 			"type": "number",
 			"title": "Identical failures before a refusal",
@@ -74,7 +80,7 @@
 		"hygieneEnabled": {
 			"type": "boolean",
 			"title": "Session hygiene",
-			"description": "Use `false` to run no hygiene sweep at session start. On by default: it removes old temp folders and handoffs Claude Code never removes, and unused build folders `trash.toml` names.",
+			"description": "Use `false` to run no hygiene sweep at session start. On by default: it removes old temp folders and handoffs Claude Code never removes, and unused build folders `trash.toml` names in the project and in the folders Mole's `purge_paths` lists, then runs `mo clean`, which clears user caches without a prompt.",
 			"default": true
 		},
 		"handoffCleanupPeriodDays": {
