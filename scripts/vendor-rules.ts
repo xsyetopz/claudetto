@@ -143,26 +143,8 @@ const fixtureList = (entries: unknown[]): Fixture[] =>
 		};
 	});
 
-const applyPatch = (
-	upstream: Rule[],
-	patch: Record<string, unknown>,
-): Rule[] => {
-	const disable = list(patch.disable, "disable").map((id) =>
-		text(id, "disable id"),
-	);
-	const override = list(patch.override, "override").map((o) => {
-		const { id, decision: d } = record(o, "an override");
-		text(record(o, "an override").evidence, "an override's evidence");
-		return { id: text(id, "override id"), decision: decision(d, "override") };
-	});
-	const known = new Set(upstream.map((r) => r.id));
-	for (const id of [...disable, ...override.map((o) => o.id)]) {
-		if (!known.has(id)) {
-			fail(`patch names ${id}, which matches no upstream rule`);
-		}
-	}
-	const decided = new Map(override.map((o) => [o.id, o.decision]));
-	const added: Rule[] = list(patch.add, "add").map((entry) => {
+const addedRules = (patch: Record<string, unknown>): Rule[] =>
+	list(patch.add, "add").map((entry) => {
 		const a = record(entry, "an added rule");
 		const id = text(a.id, "an added id");
 		const js = toJs(text(a.regex, `${id} regex`));
@@ -176,21 +158,6 @@ const applyPatch = (
 			filters: [],
 		};
 	});
-	return [
-		...upstream
-			.filter((r) => !disable.includes(r.id))
-			.map((r) => ({
-				id: r.id,
-				decision: decided.get(r.id) ?? r.decision,
-				description: r.description,
-				feed: r.feed,
-				regex: r.regex,
-				flags: r.flags,
-				filters: r.filters,
-			})),
-		...added,
-	];
-};
 
 const scratch = await mkdtemp(join(tmpdir(), "vendor-rules-"));
 try {
@@ -206,7 +173,7 @@ try {
 		await bunFile(new URL("rules.patch.json", GATE)).json(),
 		"the patch",
 	);
-	const rules = applyPatch(upstream, patch);
+	const rules = [...upstream, ...addedRules(patch)];
 	const live = new Set(rules.map((r) => r.id));
 	// A fixture stays when every id it expects is a rule that still runs, or when it expects nothing.
 	const all = groups.flatMap((g) => g.fixtures);

@@ -1,6 +1,4 @@
 {
-	"disable": [],
-	"override": [],
 	"add": [
 		{
 			"id": "claudetto:git-push-force-with-lease",
