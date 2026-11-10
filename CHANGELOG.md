@@ -28,6 +28,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate sends a file read piped into a program that only shows it, such as `cat a.ts | head` or `cat a.ts | sed -n '1,5p'`, to `Read`. A read piped into a program that works on it, such as `wc`, still runs.
 - The Stop check blocks a final reply that opens by agreeing with the user, such as "You're right" or "Good catch", and asks for the fact the check decided.
 - The Stop grader flags a reply that leaves a step undone because a call was refused when the refusal named a change to the call, such as a command form or a flag. The agent changes the call as the reason says and sends it again. An action a denial declined stays declined.
+- The Stop grader flags a reply that ends on a list of open items the agent could still do, or on an action it says waits for your approval without asking for it in the popup. The agent does the item, or asks in the popup and then does it.
 - Hygiene runs `mo clean` at each session start, with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`.
 
 ### Changed
