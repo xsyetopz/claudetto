@@ -47,6 +47,19 @@ test(
 );
 
 test(
+	"two failures that arrive together are both counted",
+	set({ maxIdenticalFailures: 2 }),
+	async ($: Engine, on: On) => {
+		lab(on);
+		await Promise.all([failed($), failed($)]);
+
+		const out = await check($);
+
+		expect(out.decision).toBe("deny");
+	},
+);
+
+test(
 	"a call under the failure limit, or with other input, goes through",
 	set({ maxIdenticalFailures: 2 }),
 	async ($: Engine, on: On) => {

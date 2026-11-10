@@ -61,10 +61,11 @@ const failureHook = (
 	// A user's interrupt did not fail by itself, so it is not counted.
 	on("classic.PostToolUseFailure", async ($, e, next) => {
 		if (e.is_interrupt !== true) {
+			const now = await $.clock.now();
 			ledger.failures = withFailure(
 				ledger.failures,
 				{ tool: e.tool_name, input: e.tool_input, error: e.error },
-				await $.clock.now(),
+				now,
 				limits.windowMs,
 			);
 		}
