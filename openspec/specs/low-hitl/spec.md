@@ -152,7 +152,7 @@ Auto mode pauses prompting after 3 denials in a row or 20 in total. Claudetto SH
 
 ### Requirement: Choose the Classifier Model by Measurement
 
-The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode: the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register no `tool.check` hook that judges a permission.
+The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode: the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register one `tool.check` hook (`gate.ts:234`) and it SHALL only tighten a verdict, or turn a bare `ask` on a read-only command into `allow`; it SHALL NOT ask a model, Jev or another, to judge a permission.
 
 #### Scenario: Measured Route
 
@@ -164,6 +164,11 @@ The classifier route SHALL be chosen by measurement on the gate fixtures in auto
 
 - **WHEN** no measurement exists
 - **THEN** setup does not set `CLAUDE_CODE_AUTO_MODE_MODEL` and no Jev hook decides a permission
+
+#### Scenario: The Gate Hook
+
+- **WHEN** the Mod registers its hooks
+- **THEN** the one `tool.check` hook is the gate, and no request from it reaches a model (`decide.test.ts`, "A Gated Tool Call: Bash and Edit send nothing")
 
 ### Requirement: Fail Closed When the Classifier Is Down
 
@@ -185,12 +190,12 @@ Claudetto's `deny` rules and its `hard_deny` entries SHALL stay in every tier, b
 
 ### Requirement: A Decision of the Model Goes to a Registered Tool
 
-With the option `decide` set to `jev` and a key set, claudetto SHALL register the tool `mcp__claudetto__decide` at `session.start`, and the model SHALL call it for a decision that is the model's own. The reply SHALL name the pick and its confidence for each question Jev is sure about, and SHALL say so for each question it is not, because silence would read as a pick.
+When a `typesafeApiKey` is set, claudetto SHALL register the tool `mcp__claudetto__decide` at `session.start` (`register.ts:35-37`), and the model SHALL call it for a decision that is the model's own. No option named `decide` is read. The reply SHALL name the pick and its probability for each question Jev is sure about (`texts.ts:325-326`, "probability 0.NN"), and SHALL say so for each question it is not, because silence would read as a pick.
 
 #### Scenario: Decision of the Model
 
 - **WHEN** the model calls `mcp__claudetto__decide` with a question that has two or more options
-- **THEN** one request goes to the TypeSafe API, and the reply names the pick and its confidence, with no dialog
+- **THEN** one request goes to the TypeSafe API, and the reply names the pick and its probability, with no dialog
 
 #### Scenario: Jev Not Sure
 
@@ -199,7 +204,7 @@ With the option `decide` set to `jev` and a key set, claudetto SHALL register th
 
 #### Scenario: No Key
 
-- **WHEN** the option is `jev` and no key is set
+- **WHEN** no key is set
 - **THEN** no tool is registered, so the model never sees a tool it cannot call
 
 ### Requirement: The Dialog Reaches the User
@@ -228,3 +233,27 @@ Each `autoMode` list that setup writes SHALL replace the built-in list and name 
 
 - **WHEN** setup writes `autoMode`
 - **THEN** no list names `$defaults`, and `claude auto-mode config` says it replaces the defaults
+
+### Requirement: No Hook Changes a Call's Input in Auto Mode
+
+No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for Artemis and Metis) and name the form to send; the `ToolSearch` hook SHALL rewrite only the result.
+
+#### Scenario: An Agent Call Off Its Form
+
+- **WHEN** the model calls `Agent` with `subagent_type` `Explore`, or with none
+- **THEN** the call is denied with the exact form to send and nothing runs, and the other calls of the response keep their review
+- **AND** the lab tests are `delegation.test.ts`, "a call typed ... is refused with its exact form, never rewritten"
+
+#### Scenario: A ToolSearch Query Naming AskUserQuestion
+
+- **WHEN** a `ToolSearch` query names `AskUserQuestion`
+- **THEN** the query reaches `ToolSearch` as written and the result lists `mcp__claudetto__ask-user-question` in its place
+
+### Requirement: An Unexplained Server Denial Is Out of Reach
+
+The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. claudetto SHALL keep reporting a call denied twice that way with the `!` form.
+
+#### Scenario: Denied Twice with No Reason
+
+- **WHEN** auto mode denies the same `make deploy` call twice with "(it gave no explanation)"
+- **THEN** the gate denies a third send and names the command as `` `! make deploy` `` for the user (`hooks/gate.test.ts`)
