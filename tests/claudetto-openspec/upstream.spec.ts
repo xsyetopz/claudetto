@@ -6,10 +6,10 @@ import { join } from "node:path";
 
 import { spawn } from "bun";
 
+import { openspec } from "../../plugins/claudetto-openspec/hooks/openspec.ts";
 import { nodeFs } from "./fixture-kit.ts";
-import { openspec } from "./openspec.ts";
 
-const BIN = `${import.meta.dir}/../../../node_modules/.bin/openspec`;
+const BIN = `${import.meta.dir}/../../node_modules/.bin/openspec`;
 const upstream = async (cwd: string, ...args: string[]) => {
 	const p = spawn(["bun", "--bun", BIN, "validate", ...args, "--strict"], {
 		cwd,

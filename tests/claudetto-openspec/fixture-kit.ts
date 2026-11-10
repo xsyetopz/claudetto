@@ -1,12 +1,9 @@
-// Bun-only helpers for fixtures.spec.ts: the ported upstream records and a `$.fs` made of node:fs.
+// Bun-only helpers for fixtures.spec.ts: the ported upstream records and their trees on disk.
 import {
-	lstat,
 	mkdir,
 	mkdtemp,
 	readdir,
 	readFile,
-	realpath,
-	stat,
 	symlink,
 	writeFile,
 } from "node:fs/promises";
@@ -14,7 +11,33 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 import { isObject, items } from "./fixture-shape.ts";
-import type { Fs } from "./fs.ts";
+
+export { nodeFs } from "../../tools/node-fs.ts";
+
+export const FILES = [
+	"task-checkboxes",
+	"task-numbering",
+	"archive",
+	"misplaced-delta-files",
+	"validation",
+	"validation.archive-preflight",
+	"validation.enriched-messages",
+	"validation.purpose-placeholder",
+	"validation.scenario-body-parity",
+	"validation.scenario-loss",
+	"validation.scenario-steps",
+	"validation.skip-specs",
+	"validation.unknown-metadata-keys",
+	"specs-apply.comment-masking.security",
+	"specs-apply.fence-preservation",
+	"specs-apply.line-endings",
+	"specs-apply.project-linked-spec",
+	"specs-apply.requirement-name-near-miss",
+	"specs-apply.salvage",
+	"specs-apply.security",
+	"specs-apply.serialization",
+	"specs-apply.symlink-escape.security",
+];
 
 export interface Entry {
 	text?: string;
@@ -52,50 +75,6 @@ export const load = async (name: string): Promise<Rec[]> => {
 		throw new TypeError(`fixtures/${name}.json holds a malformed record`);
 	}
 	return records;
-};
-
-const kindOf = (e: { isDirectory: () => boolean; isFile: () => boolean }) => {
-	if (e.isDirectory()) {
-		return "dir";
-	}
-	return e.isFile() ? "file" : "other";
-};
-
-export const nodeFs: Fs = {
-	read: (path) => readFile(path, "utf8"),
-	write: async (path, text) => {
-		await mkdir(dirname(path), { recursive: true });
-		await writeFile(path, text);
-	},
-	list: async (path) => {
-		const entries = await readdir(path ?? ".", { withFileTypes: true });
-		return entries.map((e) => ({
-			name: e.name,
-			kind: kindOf(e),
-			size: 0,
-			mtimeMs: 0,
-			isLink: e.isSymbolicLink(),
-		}));
-	},
-	exists: async (path) => {
-		try {
-			await stat(path);
-			return true;
-		} catch {
-			return false;
-		}
-	},
-	stat: async (path, options) => {
-		const info = await stat(path);
-		const own = await lstat(path);
-		return {
-			kind: kindOf(info),
-			size: info.size,
-			mtimeMs: info.mtimeMs,
-			isLink: own.isSymbolicLink(),
-			...(options?.resolve === true && { realPath: await realpath(path) }),
-		};
-	},
 };
 
 const sub = (value: unknown, root: string): unknown => {

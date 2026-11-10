@@ -2,22 +2,17 @@
 // the lab has no node APIs). A case either equals upstream, or is a named divergence; nothing else passes.
 import { afterAll, describe, expect, test } from "bun:test";
 
+import { nonEmpty } from "../../plugins/claudetto-openspec/hooks/fs.ts";
 import {
 	ARCHIVE_FILES,
 	carriedFlags,
 	replayArchive,
 	replayNoChange,
 } from "./fixture-archive.ts";
-import { load, type Rec } from "./fixture-kit.ts";
-import {
-	FILES,
-	notReplayable,
-	replayRecord,
-	runnerFor,
-} from "./fixture-replay.ts";
+import { FILES, load, type Rec } from "./fixture-kit.ts";
+import { notReplayable, replayRecord, runnerFor } from "./fixture-replay.ts";
 import { isObject, items } from "./fixture-shape.ts";
 import { count, reportTally } from "./fixture-tally.ts";
-import { nonEmpty } from "./fs.ts";
 
 afterAll(reportTally);
 

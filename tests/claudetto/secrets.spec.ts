@@ -3,7 +3,7 @@ import { expect, test } from "bun:test";
 
 import { spawn } from "bun";
 
-import { redact, secretsIn } from "./secrets.ts";
+import { redact, secretsIn } from "../../plugins/claudetto/hooks/secrets.ts";
 
 type Run = Parameters<typeof secretsIn>[0];
 

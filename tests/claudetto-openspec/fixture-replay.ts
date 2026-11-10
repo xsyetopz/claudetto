@@ -1,7 +1,22 @@
 // Replays one recorded upstream call (validation, discovery, task rules, spec merge) through the plugin's code.
 import { posix } from "node:path";
 
-import { mergeSpec } from "./archive-merge.ts";
+import { mergeSpec } from "../../plugins/claudetto-openspec/hooks/archive-merge.ts";
+import { dirname, join } from "../../plugins/claudetto-openspec/hooks/fs.ts";
+import {
+	type Issue,
+	type Report,
+	validateSpec,
+} from "../../plugins/claudetto-openspec/hooks/spec-rules.ts";
+import {
+	missingCheckboxes,
+	numberingIssues,
+} from "../../plugins/claudetto-openspec/hooks/tasks.ts";
+import { discoverDeltas } from "../../plugins/claudetto-openspec/hooks/validate-discover.ts";
+import {
+	issueKey,
+	validateDir,
+} from "../../plugins/claudetto-openspec/hooks/validate.ts";
 import { materialize, nodeFs, type Rec } from "./fixture-kit.ts";
 import {
 	docs,
@@ -15,11 +30,6 @@ import {
 	wrapped,
 } from "./fixture-shape.ts";
 import { count, type Pair, same, settle, skipped } from "./fixture-tally.ts";
-import { dirname, join } from "./fs.ts";
-import { type Issue, type Report, validateSpec } from "./spec-rules.ts";
-import { missingCheckboxes, numberingIssues } from "./tasks.ts";
-import { discoverDeltas } from "./validate-discover.ts";
-import { issueKey, validateDir } from "./validate.ts";
 
 const CRLF = /\r\n?/gu;
 const BLANKS = /\n\s*\n+/gu;
@@ -194,31 +204,6 @@ const runners: Record<string, Runner> = {
 };
 
 export const runnerFor = (kind: string): Runner | undefined => runners[kind];
-
-export const FILES = [
-	"task-checkboxes",
-	"task-numbering",
-	"archive",
-	"misplaced-delta-files",
-	"validation",
-	"validation.archive-preflight",
-	"validation.enriched-messages",
-	"validation.purpose-placeholder",
-	"validation.scenario-body-parity",
-	"validation.scenario-loss",
-	"validation.scenario-steps",
-	"validation.skip-specs",
-	"validation.unknown-metadata-keys",
-	"specs-apply.comment-masking.security",
-	"specs-apply.fence-preservation",
-	"specs-apply.line-endings",
-	"specs-apply.project-linked-spec",
-	"specs-apply.requirement-name-near-miss",
-	"specs-apply.salvage",
-	"specs-apply.security",
-	"specs-apply.serialization",
-	"specs-apply.symlink-escape.security",
-];
 
 // Upstream injects an fs failure through vi.mock; a recorded before-tree cannot reproduce it.
 const MOCKED_FS = [

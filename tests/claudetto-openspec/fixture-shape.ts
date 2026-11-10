@@ -1,6 +1,9 @@
 // Checks at the one boundary where recorded JSON enters the replay: each reader names the shape it needs and throws on another.
-import type { Issue, Report } from "./spec-rules.ts";
-import type { Doc } from "./tasks.ts";
+import type {
+	Issue,
+	Report,
+} from "../../plugins/claudetto-openspec/hooks/spec-rules.ts";
+import type { Doc } from "../../plugins/claudetto-openspec/hooks/tasks.ts";
 
 export interface Update {
 	id: string;

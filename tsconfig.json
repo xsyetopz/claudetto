@@ -5,7 +5,7 @@
 		"typescript-bedrock/tsconfig.base.json"
 	],
 	"compilerOptions": {},
-	"include": ["plugins/**/*.ts"],
+	"include": ["plugins/**/*.ts", "tests/**/*.ts", "tools/node-fs.ts"],
 	"exclude": [
 		"node_modules",
 		"plugins/*/.claude-plugin/types/**",

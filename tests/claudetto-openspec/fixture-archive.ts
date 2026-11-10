@@ -1,8 +1,12 @@
 // Replays recorded `archive.execute` calls and names where the plugin differs from upstream on purpose.
 import { spawn } from "bun";
 
-import { ArchiveBlocked } from "./archive-merge.ts";
-import { archive } from "./archive.ts";
+import { ArchiveBlocked } from "../../plugins/claudetto-openspec/hooks/archive-merge.ts";
+import { archive } from "../../plugins/claudetto-openspec/hooks/archive.ts";
+import { nonEmpty } from "../../plugins/claudetto-openspec/hooks/fs.ts";
+import { openspec } from "../../plugins/claudetto-openspec/hooks/openspec.ts";
+import { scanTasks } from "../../plugins/claudetto-openspec/hooks/tasks.ts";
+import { needsChange } from "../../plugins/claudetto-openspec/hooks/texts.ts";
 import {
 	type Entry,
 	materialize,
@@ -12,10 +16,6 @@ import {
 } from "./fixture-kit.ts";
 import { count, type Pair, same, settle, skipped } from "./fixture-tally.ts";
 import injected from "./fixtures/archive-injected.json";
-import { nonEmpty } from "./fs.ts";
-import { openspec } from "./openspec.ts";
-import { scanTasks } from "./tasks.ts";
-import { needsChange } from "./texts.ts";
 
 type Tree = Record<string, string>;
 interface Outcome {
