@@ -9,6 +9,7 @@ import type {
 import { closed, taskLines } from "../cleanup.ts";
 import { switchOption } from "../options.ts";
 import {
+	AGREE_OPENER,
 	ASK_FORM,
 	COMMAND_FORM,
 	MISSING_FILES,
@@ -26,6 +27,9 @@ const ANY_TOOL = /^/u;
 /** How the CLI words a refused ask; a headless refusal repeats the ask's reason instead. */
 const REFUSED =
 	/^(?:Permission (?:to use|for this)|The user doesn't want to proceed with this tool use)/u;
+
+const AGREES =
+	/^(?:you(?:['’]| a)re (?:right|correct)|(?:good|great|fair) (?:catch|point|call)|fair enough|agreed\b)/iu;
 
 /** The tools whose result is a file the session changed. */
 export const WRITERS = [
@@ -172,6 +176,9 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 			return closed($, e, answer);
 		}
 		const block =
+			(AGREES.test(e.last_assistant_message?.trim() ?? "")
+				? AGREE_OPENER
+				: undefined) ??
 			(await filesBlock($, e)) ??
 			(isOpenItemsOn ? await openBlock($, e, interactive) : undefined) ??
 			(await gradeBlock($, e, denied, interactive));

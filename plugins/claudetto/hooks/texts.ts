@@ -39,7 +39,7 @@ Finish the request in the scope the user set and keep going until it is done, be
 `.trim();
 
 const BASH = `Runs a bash command and returns its output to you, not reliably to the user.
-- Files go through \`Read\`, \`Edit\`, \`Write\`, and the search tools unless the user asks for a shell command: never \`cat\`, \`head\`, \`tail\`, or \`sed -n\` to read a file, and never \`sed\`, \`awk\`, or \`echo\` to change one, alone or in a chain.
+- Read a file with \`Read\`, a part of it with \`offset\` and \`limit\`, and several files with parallel \`Read\` calls in one turn. Change a file with \`Edit\` or \`Write\`, and search with the search tools. A command reads or changes a file only when the user asks for a shell command.
 - \`cd\` carries over only in the main session, when it succeeds inside the working directories; use absolute paths. Env vars and functions do not carry.
 - \`timeout\` is in ms: default 120000, max 600000. \`run_in_background\` detaches the command and calls you back when it exits; its \`timeout\` defaults to 600000, max 7200000. A foreground \`sleep\` is blocked.
 - Interactive flags such as \`git rebase -i\` fail. Use \`gh\` for GitHub.
@@ -266,6 +266,9 @@ export const COMMAND_FORM = (v: {
 				]
 			: []),
 	].join("\n");
+
+export const AGREE_OPENER =
+	"The reply opens by agreeing with the user, which carries no fact. Delete the agreement and open with the fact your check decided.";
 
 export const MISSING_FILES = (
 	missing: readonly { path: string; command: string }[],
