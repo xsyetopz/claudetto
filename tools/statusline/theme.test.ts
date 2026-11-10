@@ -1,7 +1,8 @@
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { lineFilePath } from "../../plugins/claudetto/hooks/limits/heartbeat.ts";
 import {
 	statusOf,
@@ -16,7 +17,10 @@ const ROOT = await mkdtemp(join(tmpdir(), "claudetto-theme-"));
 afterAll(() => rm(ROOT, { recursive: true, force: true }));
 
 const ON_1M = {
-	context_window: { total_input_tokens: 100_000, context_window_size: 1_000_000 },
+	context_window: {
+		total_input_tokens: 100_000,
+		context_window_size: 1_000_000,
+	},
 };
 const ADDED = { cost: { total_lines_added: 12, total_lines_removed: 3 } };
 const env = { COLUMNS: "120" };
@@ -80,12 +84,19 @@ describe("the line file the mod writes", () => {
 	const project = join(ROOT, "project");
 	const session = "s/1";
 	const input = (fields: object) =>
-		JSON.stringify({ session_id: session, workspace: { project_dir: project }, ...fields });
+		JSON.stringify({
+			session_id: session,
+			workspace: { project_dir: project },
+			...fields,
+		});
 
-	test("the line reads the window and the theme from the session's file", async () => {
+	beforeAll(async () => {
 		const path = join(project, lineFilePath(session));
 		await mkdir(join(path, ".."), { recursive: true });
 		await writeFile(path, JSON.stringify({ window: 300_000, theme: "light" }));
+	});
+
+	test("the line reads the window and the theme from the session's file", async () => {
 		expect(await statusWithFiles(input(ON_1M), env, NOW)).toBe(
 			`${ESC}[2m◫ ctx${ESC}[0m ${ESC}[38;2;78;117;48m33%${ESC}[0m ${ESC}[2mof 300k${ESC}[0m`,
 		);
@@ -97,7 +108,9 @@ describe("the line file the mod writes", () => {
 				JSON.stringify({
 					session_id: id,
 					cwd: project,
-					tasks: [{ id: "t", name: "x", status: "running", startTime: NOW - 5000 }],
+					tasks: [
+						{ id: "t", name: "x", status: "running", startTime: NOW - 5000 },
+					],
 				}),
 				env,
 				NOW,
@@ -109,7 +122,12 @@ describe("the line file the mod writes", () => {
 	test("a session with no file prints no context part and no colour", async () => {
 		expect(
 			await statusWithFiles(
-				JSON.stringify({ session_id: "none", workspace: { project_dir: project }, ...ON_1M, ...ADDED }),
+				JSON.stringify({
+					session_id: "none",
+					workspace: { project_dir: project },
+					...ON_1M,
+					...ADDED,
+				}),
 				env,
 				NOW,
 			),
@@ -121,7 +139,12 @@ describe("the line file the mod writes", () => {
 		await writeFile(path, JSON.stringify({ window: "300k", theme: 7 }));
 		expect(
 			await statusWithFiles(
-				JSON.stringify({ session_id: "bad", workspace: { project_dir: project }, ...ON_1M, ...ADDED }),
+				JSON.stringify({
+					session_id: "bad",
+					workspace: { project_dir: project },
+					...ON_1M,
+					...ADDED,
+				}),
 				env,
 				NOW,
 			),
