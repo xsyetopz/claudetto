@@ -1,9 +1,10 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
+import { said } from "../handoff.mock.ts";
 import { scanner } from "../secrets.mock.ts";
 import { ASK_FORM } from "../texts.ts";
-import { lab, off, said, stop, withUse } from "./open-items.mock.ts";
+import { lab, off, stop, withUse } from "./open-items.mock.ts";
 
 test("prose that mentions a remaining budget passes", async ($: Engine, on: On) => {
 	lab(on);

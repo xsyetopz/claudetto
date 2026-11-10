@@ -99,12 +99,16 @@ test("a reply the grader finds no fault in passes", async ($: Engine, on: On) =>
 
 const FIXES = ["credited", "rules", "fallback", "options", "deferred"] as const;
 
-test("a headless turn is still offered the deferred fault", async ($: Engine, on: On) => {
+const headlessPrompt = async ($: Engine, on: On): Promise<string> => {
 	const seen: string[] = [];
 	lab(on, [user("I fixed it."), used("Read")], '{"faults":[]}', seen);
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
 	await stop($);
-	expect(seen[0]).toContain("- deferred:");
+	return seen[0] ?? "";
+};
+
+test("a headless turn is still offered the deferred fault", async ($: Engine, on: On) => {
+	expect(await headlessPrompt($, on)).toContain("- deferred:");
 });
 
 test("every interactive turn is offered the options fault", async ($: Engine, on: On) => {
@@ -115,12 +119,9 @@ test("every interactive turn is offered the options fault", async ($: Engine, on
 });
 
 test("a headless turn, which no ask reaches, is not offered the options fault", async ($: Engine, on: On) => {
-	const seen: string[] = [];
-	lab(on, [user("I fixed it."), used("Read")], '{"faults":[]}', seen);
-	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
-	await stop($);
-	expect(seen[0]).toContain("- credited:");
-	expect(seen[0]).not.toContain("- options:");
+	const prompt = await headlessPrompt($, on);
+	expect(prompt).toContain("- credited:");
+	expect(prompt).not.toContain("- options:");
 });
 
 for (const code of FIXES) {
