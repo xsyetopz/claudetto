@@ -1,4 +1,6 @@
 // What each replayed record did, counted per fixture file and printed once the run ends.
+import { deepEquals } from "bun";
+
 export interface Pair {
 	actual: unknown;
 	expected: unknown;
@@ -18,8 +20,8 @@ export const reportTally = () => {
 	}
 };
 
-export const same = (x: unknown, y: unknown) =>
-	JSON.stringify(x) === JSON.stringify(y);
+// Equal the way the specs' `toEqual` is: a recorded tree and a tree read from disk list their paths in different orders.
+export const same = (x: unknown, y: unknown) => deepEquals(x, y);
 
 // A case set aside with a reason compares equal to itself, so it passes and is counted.
 export const skipped = (label: string): Pair => ({
