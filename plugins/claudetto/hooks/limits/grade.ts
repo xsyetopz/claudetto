@@ -8,7 +8,7 @@ import { claimTurn, parseFaults } from "../verify.ts";
 const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback"];
 
 /** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`; a failed last Bash call offers `unfixed`; a headless session, which no ask reaches, is not offered `options`. */
-export const offeredCodes = (
+const offeredCodes = (
 	looked: boolean,
 	failed: boolean,
 	interactive: boolean,

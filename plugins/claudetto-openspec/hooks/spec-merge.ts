@@ -136,6 +136,3 @@ export const merge = (
 	}
 	return { blocks: c.list, failures: c.failures };
 };
-
-export const render = (title: string, purpose: string, list: Block[]) =>
-	`# ${title}\n\n## Purpose\n${purpose}\n\n## Requirements\n\n${list.map((b) => b.raw).join("\n\n")}\n`;

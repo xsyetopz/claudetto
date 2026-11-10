@@ -135,9 +135,8 @@ export const priceStepHooks = (on: On): void => {
 		}
 	});
 	on("tool.call", async ($, e, next) => {
-		const step =
-			e.tool_use_id === undefined ? undefined : byCall.get(e.tool_use_id);
-		byCall.delete(e.tool_use_id ?? "");
+		const step = byCall.get(e.tool_use_id);
+		byCall.delete(e.tool_use_id);
 		const answer = await next(e);
 		if (step === undefined || answer.deny !== undefined) {
 			return answer;

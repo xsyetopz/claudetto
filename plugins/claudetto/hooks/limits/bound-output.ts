@@ -147,9 +147,7 @@ export const boundOutputHooks = (on: On, options: PluginOptions): void => {
 		) {
 			return answer;
 		}
-		// A call that a plugin raises has no `tool_use_id`, so the clock names its file.
-		const id = e.tool_use_id || String(await $.clock.now());
-		const path = `${BOUND_OUTPUT_DIR}/output-${id.replaceAll(/[^\w-]/gu, "_")}.txt`;
+		const path = `${BOUND_OUTPUT_DIR}/output-${e.tool_use_id.replaceAll(/[^\w-]/gu, "_")}.txt`;
 		const saved = await save($, path, full);
 		return {
 			...answer,

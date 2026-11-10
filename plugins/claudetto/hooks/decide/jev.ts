@@ -11,15 +11,6 @@ const BACKOFF_MS = 1000;
 const TRY_DEADLINE_MS = 5000;
 const ERROR_BODY_MAX = 200;
 
-class JevError extends Error {
-	readonly status: number | undefined;
-
-	constructor(message: string, status?: number) {
-		super(message);
-		this.status = status;
-	}
-}
-
 interface JevReply {
 	readonly status: number;
 	readonly ok: boolean;
@@ -46,7 +37,7 @@ const expires = async (
 	signal: AbortSignal,
 ): Promise<never> => {
 	await sleep(TRY_DEADLINE_MS, { signal });
-	throw new JevError("The TypeSafe API did not answer in time.");
+	throw new Error("The TypeSafe API did not answer in time.");
 };
 
 const withDeadline = async (
@@ -88,9 +79,8 @@ export const postJev = (
 			await transport.sleep(BACKOFF_MS * 2 ** i);
 			return attempt(i + 1);
 		}
-		throw new JevError(
+		throw new Error(
 			`TypeSafe API ${res.status}: ${res.text.slice(0, ERROR_BODY_MAX)}`,
-			res.status,
 		);
 	};
 	return attempt(0);

@@ -23,7 +23,7 @@ interface Question {
 	readonly options?: readonly Option[];
 }
 
-export type Verdict =
+type Verdict =
 	| { readonly kind: "pick"; readonly choice: string; readonly p: number }
 	| { readonly kind: "yes" | "no"; readonly p: number };
 

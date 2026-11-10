@@ -198,11 +198,7 @@ const textHooks = (on: On): void => {
 
 	on("prompt.attachment", { type: "plan_mode" }, async (_$, e, next) => {
 		const answer = await next(e);
-		if (
-			answer.text === null ||
-			e.type !== "plan_mode" ||
-			e.detail?.reminder !== "full"
-		) {
+		if (answer.text === null || e.detail?.reminder !== "full") {
 			return answer;
 		}
 		const ours = planModeText(e.detail.planFilePath, e.detail.hasPlan);

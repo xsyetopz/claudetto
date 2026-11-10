@@ -10,7 +10,7 @@ const ASSERTED =
 const PHRASE = /^\S+(?:\s+\S+){3,}$/u;
 
 /** The prose phrases a test edit asserts on; the part before a backslash or `${`, since the shipped file may quote or escape it otherwise. */
-export const assertedPhrases = (code: string): string[] =>
+const assertedPhrases = (code: string): string[] =>
 	[...code.matchAll(ASSERTED)]
 		.map((m) => (m[2] ?? "").split(/\\|\$\{/u)[0]?.trim() ?? "")
 		.filter((phrase) => PHRASE.test(phrase));
