@@ -65,6 +65,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies an in-place edit written as `sed --in-place`, run by `find -exec` or `-execdir`, or run behind `xargs`.
 - A remark that an earlier request covers counts as a task.
 - No claudetto hook changes a tool call input any more, so auto mode keeps its review of the other calls in the response: `Agent` denies an off-form call with the form to send, and `ToolSearch` rewrites only its result.
+- The `autoMode` lists that `/claudetto:setup` writes define the trusted repo and its source control again, which the replaced list had dropped. They add two soft rules, `Write Outside the Trusted Repo` and a closing `Any Other Danger`, so a block has a rule to cite. Claude Code shows the cited rule in the denial, as in `Auto mode: [Write Outside the Trusted Repo]`. Before, a push to another of your repos fit no rule and came back with "it gave no explanation". Naming the repository in your message clears that rule. Run `/claudetto:setup` again to write the new lists.
 
 ### Removed
 

@@ -226,12 +226,17 @@ The "Smaller prompt" group SHALL write `permissions.allow` of `Bash(git status *
 
 ### Requirement: The Auto Mode Group Carries Fixed Values
 
-The "Auto mode" group SHALL write `autoMode` with `allow`, `soft_deny`, `hard_deny`, and `environment` lists replaced, with no `$defaults`, by `AUTO_MODE` (`setup/auto-mode.ts`): one hard rule (Data Exfiltration), nine soft rules, each with its consent-bar `must name` slot, seven allow rules, and two trust entries.
+The "Auto mode" group SHALL write `autoMode` with `allow`, `soft_deny`, `hard_deny`, and `environment` lists replaced, with no `$defaults`, by `AUTO_MODE` (`setup/auto-mode.ts`): one hard rule (Data Exfiltration), eleven soft rules, each with its consent-bar `must name` slot, seven allow rules, and four trust entries. The trust entries SHALL define the `Trusted repo` and `Source control` that the rules lean on. The soft rules SHALL include `Write Outside the Trusted Repo` and end with `Any Other Danger`, because the client names a block's rule only when the server cites a `soft_deny` entry, and a block that cites none reaches the user with no reason.
 
 #### Scenario: The Group Written
 
 - **WHEN** setup writes "Auto mode"
 - **THEN** the four lists equal `AUTO_MODE` and hold no `$defaults`
+
+#### Scenario: A Push to Another Repo
+
+- **WHEN** the classifier blocks a push to a repository other than the session's
+- **THEN** it has the soft rule `Write Outside the Trusted Repo` to cite, and the user clears it by naming that repository
 
 ### Requirement: The Models and Windows Group Carries Fixed Values
 

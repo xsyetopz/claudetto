@@ -97,6 +97,21 @@ test("the auto-mode lists replace the built-ins, so none names $defaults", () =>
 	}
 });
 
+test("the environment list defines the trusted repo that the rules lean on", () => {
+	expect(
+		AUTO_MODE.environment.filter((entry) =>
+			/^\*\*(?:Trusted repo|Source control)\*\*: /u.test(entry),
+		),
+	).toHaveLength(2);
+});
+
+// The client names a block's rule only when the server cites a `soft_deny` entry, so every block needs one to cite.
+test("a write to another repo and every other danger each have a soft rule to cite", () => {
+	const names = AUTO_MODE.soft_deny.map((entry) => entry.split(" [")[0]);
+	expect(names).toContain("Write Outside the Trusted Repo");
+	expect(names.at(-1)).toBe("Any Other Danger");
+});
+
 test("eleven built-in plugins are off as cc-plugin-<name>@builtin", () => {
 	const entries = Object.entries(
 		new Object(valueAt(everything({}), ["enabledPlugins"])),

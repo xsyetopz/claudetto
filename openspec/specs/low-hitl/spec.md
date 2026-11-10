@@ -251,7 +251,7 @@ No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.3
 
 ### Requirement: An Unexplained Server Denial Is Out of Reach
 
-The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. claudetto SHALL keep reporting a call denied twice that way with the `!` form.
+The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. The client still names the rule when the verdict cites an `autoMode.soft_deny` entry, so setup's soft list SHALL leave no block without a rule to cite (setup requirement "The Auto Mode Group Carries Fixed Values"). claudetto SHALL keep reporting a call denied twice with neither a reason nor a rule with the `!` form.
 
 #### Scenario: Denied Twice with No Reason
 

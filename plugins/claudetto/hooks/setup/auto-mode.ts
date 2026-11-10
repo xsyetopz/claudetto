@@ -66,6 +66,17 @@ const SOFT_RULES: readonly Rule[] = [
 		mustName: "the external system and the write",
 		text: "Writes others see or pay for: messages, comments, issues, emails, connected-app commits, published artifacts, purchases, actions against third-party systems.",
 	},
+	{
+		name: "Write Outside the Trusted Repo",
+		mustName: "the destination repository",
+		text: "Committing, pushing, or opening a pull request in a repository other than the trusted repo and its remotes, such as through `git -C <dir>` or a `cd` into another clone.",
+	},
+	// The client names a block's rule only when the server cites a `soft_deny` entry, so this one leaves no block without a name.
+	{
+		name: "Any Other Danger",
+		mustName: "the action",
+		text: "Any action the Definitions mark dangerous that no rule above names. Cite this rule for such a block instead of citing none.",
+	},
 ];
 
 const ALLOW_RULES: readonly Rule[] = [
@@ -99,8 +110,10 @@ const ALLOW_RULES: readonly Rule[] = [
 	},
 ];
 
-/** Replacing `environment` drops each built-in entry left out here; most of them read "None configured", which a field left out already means. */
+/** Replacing `environment` drops each built-in entry left out here, so this list keeps the entries the rules lean on: the trusted repo, its source control, its hosts, and the sensitive targets. */
 const TRUST_ENTRIES: readonly string[] = [
+	"**Trusted repo**: The git repository the agent started in (its working directory) and its configured remote(s). Secrets and sensitive data are cleared into no repo.",
+	"**Source control**: The trusted repo and its remote(s) only.",
 	"**Trusted internal domains**: The host of each remote of the trusted repo, and the public registry of each declared dependency.",
 	"**Sensitive remote targets**: Any host, namespace, or environment whose name carries `prod` or `production`.",
 ];
