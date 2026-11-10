@@ -2,6 +2,7 @@ import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
 import {
+	goal,
 	handoffEntry,
 	KEY,
 	readBackLab,
@@ -165,14 +166,6 @@ const HANDOFF_INPUT = {
 	decisions: "table over regex",
 	next_prompt: "run the suite",
 };
-
-const goal = ($: Engine, args: string) =>
-	$.command.run({
-		command: "goal",
-		args,
-		origin: { kind: "composer" },
-		presentation: { isFullscreen: false, columns: 80 },
-	});
 
 /** The commands `$.command.run` reached the engine with, after a handoff that ran its timer. */
 const handedOff = async ($: Engine, on: On, goals: () => Promise<unknown>) => {

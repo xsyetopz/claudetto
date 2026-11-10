@@ -7,12 +7,7 @@ import {
 	handOverTo,
 	newHandoverState,
 } from "./handoff/handover.ts";
-import {
-	callSession,
-	handoverSession,
-	readBack,
-	writeHandoff,
-} from "./handoff/session.ts";
+import { readBack, writeHandoff } from "./handoff/session.ts";
 import { HANDOFF_INPUT_SCHEMA } from "./handoff/tool.ts";
 import {
 	contextManagementText,
@@ -100,7 +95,7 @@ const onCallState = (on: On, call: CallState): void => {
 		return next(e);
 	});
 	on("tool.call", { tool: [HANDOFF_CALLED] }, async ($, e) => ({
-		result: await handOff(callSession($), call, e),
+		result: await handOff($, call, e),
 	}));
 };
 
@@ -123,13 +118,10 @@ const onTurnComplete = (
 	on("turn.complete", { isAborted: [false] }, async ($, e, next) => {
 		const answer = await next(e);
 		if (e.agentId === undefined && e.reason === "answer") {
-			const session = handoverSession($);
 			$.clock.after(0, () => {
-				afterTurn(session, handover, e.answer, options).catch(
-					(error: unknown) => {
-						$.ui.log(`The handover failed (${String(error)})`);
-					},
-				);
+				afterTurn($, handover, e.answer, options).catch((error: unknown) => {
+					$.ui.log(`The handover failed (${String(error)})`);
+				});
 			});
 		}
 		return answer;

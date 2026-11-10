@@ -91,12 +91,16 @@ test("a compaction typed after the handover goes to the engine", async ($: Engin
 	expect(later.skip).toBe("core ran");
 });
 
-const MISSED: readonly { readonly run: Run; readonly how: string }[] = [
-	{ run: "throw", how: "whose hook fails" },
-	{ run: "none", how: "that runs no compaction" },
+const MISSED: readonly {
+	readonly run: Run;
+	readonly how: string;
+	readonly says: string;
+}[] = [
+	{ run: "throw", how: "whose hook fails", says: "compaction failed" },
+	{ run: "none", how: "that runs no compaction", says: "answered elsewhere" },
 ];
 
-for (const { run, how } of MISSED) {
+for (const { run, how, says } of MISSED) {
 	test(`a \`/compact\` ${how} submits no prompt, logs one line, and leaves the next compaction to the engine`, async ($: Engine, on: On) => {
 		const { seen, finish } = lab($, on, run);
 
@@ -108,6 +112,7 @@ for (const { run, how } of MISSED) {
 
 		expect(seen.sent).toEqual([]);
 		expect(seen.lines).toHaveLength(1);
+		expect(seen.lines[0]).toContain(says);
 		expect(later.skip).toBe("core ran");
 	});
 }
@@ -119,4 +124,5 @@ test("a refused next prompt keeps the compaction and logs one line", async ($: E
 
 	expect(seen.compacted).toHaveLength(1);
 	expect(seen.lines).toHaveLength(1);
+	expect(seen.lines[0]).toContain("The conversation was compacted");
 });

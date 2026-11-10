@@ -125,6 +125,15 @@ export const compactWith = async ($: Engine, messages: SessionMessage[]) => {
 export const resume = ($: Engine) =>
 	$.classic.SessionStart({ source: "resume", transcript_path: TRANSCRIPT });
 
+/** The user's `/goal`, typed in the composer. */
+export const goal = ($: Engine, args: string) =>
+	$.command.run({
+		command: "goal",
+		args,
+		origin: { kind: "composer" },
+		presentation: { isFullscreen: false, columns: 80 },
+	});
+
 export const handoffEntry = (day: string, mtimeMs: number) => ({
 	name: `handoff-2026-01-${day}T00-00-00.md`,
 	kind: "file" as const,

@@ -1,14 +1,15 @@
 import type {
+	EngineInterface,
 	ModelForkResult,
 	PluginOptions,
 	SessionCompactInput,
 	SessionCompactResult,
-	SessionContextUsage,
 } from "claude-code";
 
 import { numberOption } from "../options.ts";
 import { FORK_PROMPT, HANDOVER_PROMPT } from "../texts-handoff.ts";
-import { HANDOFF_TITLE, handoffPath } from "./layout.ts";
+import { atRoot, HANDOFF_TITLE, handoffPath } from "./layout.ts";
+import { redactOf } from "./session.ts";
 
 /** One registration's state. */
 export interface HandoverState {
@@ -69,109 +70,97 @@ export const handOverTo = (
 			};
 };
 
-/** What the handover does to the session, built from `$` in the module that registers the hook. */
-export interface Session {
-	readonly write: (path: string, text: string) => Promise<unknown>;
-	/** Rejects when the secret scanner cannot run. */
-	readonly redact: (text: string) => Promise<string>;
-	readonly compact: () => Promise<unknown>;
-	readonly submit: (text: string) => Promise<unknown>;
-	readonly log: (line: string) => void;
-	readonly context: () => Promise<SessionContextUsage>;
-	readonly fork: (prompt: string) => Promise<ModelForkResult>;
-}
-
-const handOver = async (
-	session: Session,
+async function handOver(
+	$: EngineInterface,
 	state: HandoverState,
 	reply: string,
 	isContinued: boolean,
-): Promise<void> => {
-	const text = await session.redact(reply);
+): Promise<void> {
+	const text = await redactOf($)(reply);
 	const path = handoffPath(new Date());
 	try {
-		await session.write(path, text);
+		await $.fs.write(atRoot(await $.session.root(), path), text);
 	} catch (error) {
-		session.log(
+		$.ui.log(
 			`The handoff could not be saved to \`${path}\` (${String(error)})`,
 		);
 	}
 	try {
 		state.pending = text;
-		await session.compact();
+		await $.command.run({ command: "compact" });
 		if (state.pending !== undefined) {
-			session.log(
+			$.ui.log(
 				"The handoff compaction was answered elsewhere, so no next prompt was sent.",
 			);
 			return;
 		}
 	} catch (error) {
-		session.log(`The handoff compaction failed (${String(error)})`);
+		$.ui.log(`The handoff compaction failed (${String(error)})`);
 		return;
 	} finally {
 		state.pending = undefined;
 	}
 	state.handedOver = true;
 	if (isContinued) {
-		await session.submit(HANDOVER_PROMPT).catch((error: unknown) => {
-			session.log(
+		await $.prompt.submit({ text: HANDOVER_PROMPT }).catch((error: unknown) => {
+			$.ui.log(
 				`The conversation was compacted, and the next prompt failed (${String(error)})`,
 			);
 		});
 	}
-};
+}
 
 const why = (reply: ModelForkResult): string =>
 	reply.isAnswered ? "a reply without the title" : reply.reason;
 
 /** At idle the fork repeats the last request and adds the final reply, so the cache serves the whole context. */
-const forkHandover = async (
-	session: Session,
+async function forkHandover(
+	$: EngineInterface,
 	state: HandoverState,
 	options: PluginOptions,
 	afterHandover: boolean,
-): Promise<void> => {
+): Promise<void> {
 	if (state.forking || state.declined) {
 		return;
 	}
-	const context = await session.context();
+	const { context } = await $.session.usage();
 	const limit = handoverTokens(options, context.window);
 	if (context.tokens === undefined || context.tokens < limit) {
 		return;
 	}
 	if (afterHandover) {
 		state.declined = true;
-		session.log(
+		$.ui.log(
 			`The context is still over ${limit} tokens after the handover, so no fork is asked before the compaction runs.`,
 		);
 		return;
 	}
 	state.forking = true;
 	try {
-		const reply = await session.fork(FORK_PROMPT);
+		const reply = await $.model.fork({ prompt: FORK_PROMPT });
 		if (!reply.isAnswered || !isHandoff(reply.text)) {
 			state.declined = true;
-			session.log(
+			$.ui.log(
 				`The context passed ${limit} tokens, and the fork came back with ${why(reply)}, so the compaction stays.`,
 			);
 			return;
 		}
-		await handOver(session, state, reply.text, false);
+		await handOver($, state, reply.text, false);
 	} finally {
 		state.forking = false;
 	}
-};
+}
 
 /** A handoff reply hands over as it is; any other reply hands over through a fork once the context is large. */
-export const afterTurn = (
-	session: Session,
+export function afterTurn(
+	$: EngineInterface,
 	state: HandoverState,
 	reply: string,
 	options: PluginOptions,
-): Promise<void> => {
+): Promise<void> {
 	const afterHandover = state.handedOver;
 	state.handedOver = false;
 	return isHandoff(reply)
-		? handOver(session, state, reply, true)
-		: forkHandover(session, state, options, afterHandover);
-};
+		? handOver($, state, reply, true)
+		: forkHandover($, state, options, afterHandover);
+}

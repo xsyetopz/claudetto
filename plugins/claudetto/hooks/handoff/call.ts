@@ -1,30 +1,15 @@
+import type { EngineInterface } from "claude-code";
+
 import {
 	HANDOFF_BUSY,
 	HANDOFF_MISSING,
 	HANDOFF_UNSAVED,
 	readBackText,
 } from "../texts-handoff.ts";
-import { handoffPath } from "./layout.ts";
+import { atRoot, handoffPath } from "./layout.ts";
+import { readBackKey } from "./read-back.ts";
+import { gitStatusOf, redactOf } from "./session.ts";
 import { fieldsOf, toolHandoffText } from "./tool.ts";
-
-/** What the handoff does to the session, built from `$` in the module that registers the hook. */
-export interface Session {
-	readonly write: (path: string, text: string) => Promise<unknown>;
-	/** Rejects when the secret scanner cannot run. */
-	readonly redact: (text: string) => Promise<string>;
-	readonly clear: () => Promise<unknown>;
-	/** Sets the goal again: a clear ends the user's `/goal`. */
-	readonly setGoal: (condition: string) => Promise<unknown>;
-	readonly submit: (text: string) => Promise<unknown>;
-	/** Records the file as taken in, so a later resume does not inject it again. */
-	readonly taken: (name: string) => Promise<unknown>;
-	readonly abort: (turnId: string) => Promise<unknown>;
-	readonly log: (line: string) => void;
-	/** Runs `work` from a timer: `$.command.run` is queued until the session is idle, and it is not idle while the call waits. */
-	readonly later: (work: () => Promise<void>) => void;
-	/** What `git status -sb` prints, or nothing when git fails. */
-	readonly gitStatus: () => Promise<string>;
-}
 
 /** One registration's state: whether a handoff runs, and the main loop's turn, which the tool ends. */
 export interface CallState {
@@ -34,52 +19,54 @@ export interface CallState {
 	goal: string | undefined;
 }
 
-const restoreGoal = async (
-	session: Session,
+/** Sets the goal again: a clear ends the user's `/goal`. */
+async function restoreGoal(
+	$: EngineInterface,
 	goal: string | undefined,
-): Promise<void> => {
+): Promise<void> {
 	if (goal === undefined) {
 		return;
 	}
 	try {
-		await session.setGoal(goal);
+		await $.command.run({ command: "goal", args: goal });
 	} catch (error) {
-		session.log(
+		$.ui.log(
 			`The session was cleared and its goal \`${goal}\` was not set again (${String(error)})`,
 		);
 	}
-};
+}
 
-const clearAndSubmit = async (
-	session: Session,
+async function clearAndSubmit(
+	$: EngineInterface,
 	goal: string | undefined,
 	name: string,
 	text: string,
-): Promise<void> => {
+): Promise<void> {
 	try {
-		await session.clear();
+		await $.command.run({ command: "clear" });
 	} catch (error) {
-		session.log(
+		$.ui.log(
 			`The handoff is in \`${name}\`, and the clear failed (${String(error)})`,
 		);
 		return;
 	}
 	try {
-		await session.taken(name);
-		await restoreGoal(session, goal);
-		await session.submit(text);
+		// The file is recorded as taken in, so a later resume does not inject it again.
+		await $.store.set(readBackKey(await $.session.root()), name);
+		await restoreGoal($, goal);
+		await $.prompt.submit({ text });
 	} catch (error) {
-		session.log(
+		$.ui.log(
 			`The session was cleared, and the handoff \`${name}\` was not sent (${String(error)})`,
 		);
 	}
-};
+}
 
-export const handOff = async (
-	session: Session,
+export async function handOff(
+	$: EngineInterface,
 	state: CallState,
 	input: Readonly<Record<string, unknown>>,
-): Promise<string> => {
+): Promise<string> {
 	if (state.handingOff) {
 		return HANDOFF_BUSY;
 	}
@@ -90,32 +77,34 @@ export const handOff = async (
 	const at = new Date();
 	const path = handoffPath(at);
 	const name = path.split("/").at(-1) ?? path;
+	const scrub = redactOf($);
 	let first: string;
 	try {
-		const text = await session.redact(
-			toolHandoffText(read.fields, at.toISOString(), await session.gitStatus()),
+		const text = await scrub(
+			toolHandoffText(read.fields, at.toISOString(), await gitStatusOf($)),
 		);
-		await session.write(path, text);
-		first = `${readBackText(name, text)}\n\n${await session.redact(read.fields.nextPrompt)}`;
+		await $.fs.write(atRoot(await $.session.root(), path), text);
+		first = `${readBackText(name, text)}\n\n${await scrub(read.fields.nextPrompt)}`;
 	} catch (error) {
 		return HANDOFF_UNSAVED(path, error);
 	}
 	state.handingOff = true;
 	const { goal } = state;
-	session.later(async () => {
-		try {
-			await clearAndSubmit(session, goal, name, first);
-		} finally {
-			state.handingOff = false;
-		}
+	// The clear runs from a timer: `$.command.run` is queued until the session is idle, and it is not idle while the call waits.
+	$.clock.after(0, () => {
+		clearAndSubmit($, goal, name, first)
+			.finally(() => {
+				state.handingOff = false;
+			})
+			.catch(() => void 0);
 	});
 	// Ending the turn spares the request that would read the whole context only to answer this result.
 	if (state.turn !== undefined) {
-		await session.abort(state.turn).catch((error: unknown) => {
-			session.log(
+		await $.turn.abort({ turnId: state.turn }).catch((error: unknown) => {
+			$.ui.log(
 				`The turn could not be ended after the handoff (${String(error)})`,
 			);
 		});
 	}
 	return `The handoff is saved to \`${path}\`. The session clears when this turn ends. End your turn.`;
-};
+}

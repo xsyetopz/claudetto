@@ -2,8 +2,6 @@ import type { EngineInterface, SessionMessage } from "claude-code";
 
 import { redact } from "../secrets.ts";
 import { readBackText, STALE_HANDOFF } from "../texts-handoff.ts";
-import type { Session } from "./call.ts";
-import type { Session as HandoverSession } from "./handover.ts";
 import { atRoot, HANDOFF_DIR, handoffPath } from "./layout.ts";
 import { DAY_MS, isStale, newestHandoff, readBackKey } from "./read-back.ts";
 import {
@@ -13,7 +11,10 @@ import {
 	readMessages,
 } from "./transcript.ts";
 
-function redactOf($: EngineInterface): (text: string) => Promise<string> {
+/** The returned call rejects when the secret scanner cannot run. */
+export function redactOf(
+	$: EngineInterface,
+): (text: string) => Promise<string> {
 	return (text) => redact((argv, init) => $.process.run(argv, init), text);
 }
 
@@ -53,7 +54,8 @@ async function promptsOf(
 	}
 }
 
-async function gitStatusOf($: EngineInterface): Promise<string> {
+/** What `git status -sb` prints, or nothing when git fails. */
+export async function gitStatusOf($: EngineInterface): Promise<string> {
 	const r = await $.process.run(["git", "status", "-sb"]).catch(() => void 0);
 	return r?.exitCode === 0 ? r.stdout : "";
 }
@@ -140,45 +142,4 @@ export async function readBack(
 	} catch (error) {
 		$.ui.log(`Failed to read a handoff back (${String(error)})`);
 	}
-}
-
-export function callSession($: EngineInterface): Session {
-	return {
-		redact: redactOf($),
-		write: async (path, text) =>
-			$.fs.write(atRoot(await $.session.root(), path), text),
-		clear: () => $.command.run({ command: "clear" }),
-		setGoal: (condition) => $.command.run({ command: "goal", args: condition }),
-		submit: (text) => $.prompt.submit({ text }),
-		taken: async (name) =>
-			$.store.set(readBackKey(await $.session.root()), name),
-		abort: (turnId) => $.turn.abort({ turnId }),
-		log: (line) => {
-			$.ui.log(line);
-		},
-		gitStatus: () => gitStatusOf($),
-		later: (work) => {
-			$.clock.after(0, () => {
-				work().catch(() => void 0);
-			});
-		},
-	};
-}
-
-export function handoverSession($: EngineInterface): HandoverSession {
-	return {
-		redact: redactOf($),
-		write: async (path, text) =>
-			$.fs.write(atRoot(await $.session.root(), path), text),
-		compact: () => $.command.run({ command: "compact" }),
-		submit: (text) => $.prompt.submit({ text }),
-		log: (line) => {
-			$.ui.log(line);
-		},
-		context: async () => {
-			const usage = await $.session.usage();
-			return usage.context;
-		},
-		fork: (prompt) => $.model.fork({ prompt }),
-	};
 }

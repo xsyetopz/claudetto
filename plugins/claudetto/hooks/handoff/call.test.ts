@@ -1,7 +1,15 @@
-import { expect, test } from "claude-code/testing";
+import type { On } from "claude-code";
+import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { firstText, HANDOFF_PATH } from "../handoff.mock.ts";
-import { type CallState, handOff, type Session } from "./call.ts";
+import {
+	firstPath,
+	firstText,
+	goal,
+	HANDOFF_PATH,
+	KEY,
+	startup,
+} from "../handoff.mock.ts";
+import { readBackKey } from "./read-back.ts";
 
 const FIELDS = {
 	goal: "ship the cut",
@@ -11,61 +19,90 @@ const FIELDS = {
 	next_prompt: "run the suite",
 };
 
-const KEY = `sk-ant-api03-${"A".repeat(90)}`;
+const STATUS = "## main...origin/main [ahead 3]";
 
-/** `later` queues the work so a test runs it where the timer would. */
-const fake = (over: Partial<Session> = {}) => {
-	const calls: string[] = [];
-	const files: { path: string; text: string }[] = [];
-	const queued: (() => Promise<void>)[] = [];
-	const session: Session = {
-		redact: (text) => Promise.resolve(text.replaceAll(KEY, "[REDACTED]")),
-		write: (path, text) => {
-			files.push({ path, text });
-			return Promise.resolve();
-		},
-		clear: () => {
-			calls.push("clear");
-			return Promise.resolve();
-		},
-		setGoal: (condition) => {
-			calls.push(`goal:${condition}`);
-			return Promise.resolve();
-		},
-		submit: (text) => {
-			calls.push(`submit:${text}`);
-			return Promise.resolve();
-		},
-		taken: (name) => {
-			calls.push(`taken:${name}`);
-			return Promise.resolve();
-		},
-		abort: (turnId) => {
-			calls.push(`abort:${turnId}`);
-			return Promise.resolve();
-		},
-		log: (line) => {
-			calls.push(`log:${line}`);
-		},
-		later: (work) => {
-			queued.push(work);
-		},
-		gitStatus: () => Promise.resolve("## main...origin/main [ahead 3]"),
-		...over,
-	};
-	return { session, calls, files, queued };
+type Step = "clear" | "goal" | "submit" | "write";
+
+interface Seen {
+	readonly calls: string[];
+	readonly files: { path: string; text: string }[];
+	fails: Step | undefined;
+}
+
+const reach = (seen: Seen, step: Step): void => {
+	if (step === seen.fails) {
+		throw new Error(`${step} refused`);
+	}
 };
 
-const idle = (goal?: string): CallState => ({
-	handingOff: false,
-	turn: "t1",
-	goal,
-});
+const wire = (on: On, seen: Seen): void => {
+	on("session.root", () => ({ value: "/repo" }));
+	on("store.set", { key: [readBackKey("/repo")] }, (_$, e, next) => {
+		seen.calls.push(`taken:${String(e.value)}`);
+		return next(e);
+	});
+	on("fs.write", (_$, e) => {
+		if (seen.fails === "write") {
+			return { deny: "disk full" };
+		}
+		seen.files.push({ path: e.path, text: e.text });
+		return { value: undefined };
+	});
+	on("ui.log", (_$, e) => {
+		seen.calls.push(`log:${e.text}`);
+		return { value: undefined };
+	});
+	on("turn.start", (_$, e) => ({ turnId: e.turnId }));
+	on("turn.abort", (_$, e) => {
+		seen.calls.push(`abort:${e.turnId}`);
+		return { value: undefined };
+	});
+	on("prompt.submit", (_$, e) => {
+		reach(seen, "submit");
+		seen.calls.push(`submit:${e.text}`);
+		return e;
+	});
+	on("command.run", (_$, e) => {
+		reach(seen, e.command === "goal" ? "goal" : "clear");
+		seen.calls.push(e.command === "goal" ? `goal:${e.args}` : e.command);
+		return {};
+	});
+};
 
-test("the tool writes the file with its fields under the nine headings and no other", async () => {
-	const { session, files } = fake();
+/** The engine beneath a handoff call in turn `t1`, after the user's `/goal` when one is given; `fails` names the step the engine refuses from then on. The timer that clears runs on `clock.advance`. */
+const lab = async (
+	$: Engine,
+	on: On,
+	given: { fails?: Step; goal?: string } = {},
+) => {
+	const seen: Seen = { calls: [], files: [], fails: undefined };
+	const clock = mock.clock(on, { now: 0 });
+	wire(on, seen);
+	startup(on, STATUS);
+	await $.turn.start({ text: "", turnId: "t1" });
+	if (given.goal !== undefined) {
+		await goal($, given.goal);
+	}
+	seen.calls.length = 0;
+	seen.fails = given.fails;
+	return { calls: seen.calls, files: seen.files, clock };
+};
 
-	await handOff(session, idle(), FIELDS);
+const handOff = async (
+	$: Engine,
+	input: Readonly<Record<string, string>> = FIELDS,
+): Promise<string> => {
+	const out = await $.tool.call({ tool: "mcp__claudetto__handoff", ...input });
+	return String(out.result);
+};
+
+const kinds = (calls: readonly string[]): (string | undefined)[] =>
+	calls.map((call) => call.split(":")[0]);
+
+test("the tool writes the file with its fields under the nine headings and no other", async ($: Engine, on: On) => {
+	const { files } = await lab($, on);
+
+	await handOff($);
 
 	const text = firstText(files);
 	const headings = text.split("\n").filter((line) => line.startsWith("## "));
@@ -82,144 +119,130 @@ test("the tool writes the file with its fields under the nine headings and no ot
 	]);
 	expect(text).toContain("ship the cut");
 	expect(text).toContain("table over regex");
-	expect(files[0]?.path).toMatch(HANDOFF_PATH);
+	expect(firstPath(files).slice("/repo/".length)).toMatch(HANDOFF_PATH);
 });
 
-test("Git State Is Dated: the tool's handoff states the git status line as of its write time", async () => {
-	const { session, files } = fake();
+test("Git State Is Dated: the tool's handoff states the git status line as of its write time", async ($: Engine, on: On) => {
+	const { files } = await lab($, on);
 
-	await handOff(session, idle(), FIELDS);
+	await handOff($);
 
 	const text = firstText(files);
 	const at = /Written by Claude at (\S+)\./u.exec(text)?.[1];
 	expect(at).toBeDefined();
 	expect(
 		text.split("## Current State")[1]?.split("## In Progress")[0],
-	).toContain(`Git as of ${at}: \`## main...origin/main [ahead 3]\``);
+	).toContain(`Git as of ${at}: \`${STATUS}\``);
 });
 
-test("a call without a required field writes nothing and names the field", async () => {
-	const { session, files, queued } = fake();
+test("a call without a required field writes nothing and names the field", async ($: Engine, on: On) => {
+	const { files, calls, clock } = await lab($, on);
 
-	const result = await handOff(session, idle(), { ...FIELDS, state: " " });
+	const result = await handOff($, { ...FIELDS, state: " " });
+	await clock.advance(1);
 
 	expect(files).toEqual([]);
-	expect(queued).toEqual([]);
+	expect(calls).toEqual([]);
 	expect(result).toContain("state");
 });
 
-test("a key in a field is redacted in the file and in the next prompt", async () => {
-	const { session, files, queued, calls } = fake();
+test("a key in a field is redacted in the file and in the next prompt", async ($: Engine, on: On) => {
+	const { files, calls, clock } = await lab($, on);
 
-	await handOff(session, idle(), { ...FIELDS, next_prompt: `use ${KEY}` });
-	await queued[0]?.();
+	await handOff($, { ...FIELDS, next_prompt: `use ${KEY}` });
+	await clock.advance(1);
 
-	expect(files[0]?.text).not.toContain(KEY);
+	expect(firstText(files)).not.toContain(KEY);
+	expect(kinds(calls)).toContain("submit");
 	expect(calls.join("\n")).not.toContain(KEY);
 });
 
-test("the turn ends with no further request, and the clear and the submit wait for the idle", async () => {
-	const { session, calls, queued } = fake();
+test("the turn ends with no further request, and the clear and the submit wait for the idle", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on);
 
-	await handOff(session, idle(), FIELDS);
+	await handOff($);
 
 	expect(calls).toEqual(["abort:t1"]);
-	expect(queued).toHaveLength(1);
-	await queued[0]?.();
-	expect(calls.slice(1, 4).map((call) => call.split(":")[0])).toEqual([
-		"clear",
-		"taken",
-		"submit",
-	]);
+	await clock.advance(1);
+	expect(kinds(calls.slice(1, 4))).toEqual(["clear", "taken", "submit"]);
 });
 
-test("a second call while one runs runs no second clear and no second submit", async () => {
-	const { session, queued } = fake();
-	const state = idle();
+test("a second call while one runs runs no second clear and no second submit", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on);
 
-	await handOff(session, state, FIELDS);
-	const second = await handOff(session, state, FIELDS);
+	await handOff($);
+	const second = await handOff($);
+	await clock.advance(1);
 
 	expect(second).toContain("already in progress");
-	expect(queued).toHaveLength(1);
+	expect(kinds(calls).filter((kind) => kind === "clear")).toHaveLength(1);
+	expect(kinds(calls).filter((kind) => kind === "submit")).toHaveLength(1);
 });
 
-test("the tool can hand off again after the first clear", async () => {
-	const { session, queued } = fake();
-	const state = idle();
+test("the tool can hand off again after the first clear", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on);
 
-	await handOff(session, state, FIELDS);
-	await queued[0]?.();
-	await handOff(session, state, FIELDS);
+	await handOff($);
+	await clock.advance(1);
+	await handOff($);
+	await clock.advance(1);
 
-	expect(queued).toHaveLength(2);
+	expect(kinds(calls).filter((kind) => kind === "clear")).toHaveLength(2);
 });
 
-test("a failed clear submits nothing and says so", async () => {
-	const { session, calls, queued } = fake({
-		clear: () => Promise.reject(new Error("busy")),
-	});
+test("a failed clear submits nothing and says so", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on, { fails: "clear" });
 
-	await handOff(session, idle(), FIELDS);
-	await queued[0]?.();
+	await handOff($);
+	await clock.advance(1);
 
 	expect(calls.some((call) => call.startsWith("submit:"))).toBe(false);
 	expect(calls.some((call) => call.includes("the clear failed"))).toBe(true);
 });
 
-test("a submit the session refuses tells the user in one line", async () => {
-	const { session, calls, queued } = fake({
-		submit: () => Promise.reject(new Error("refused")),
-	});
+test("a submit the session refuses tells the user in one line", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on, { fails: "submit" });
 
-	await handOff(session, idle(), FIELDS);
-	await queued[0]?.();
+	await handOff($);
+	await clock.advance(1);
 
 	expect(calls.filter((call) => call.includes("was not sent"))).toHaveLength(1);
 });
 
-test("a write that fails comes back as the result and clears nothing", async () => {
-	const { session, queued } = fake({
-		write: () => Promise.reject(new Error("disk full")),
-	});
+test("a write that fails comes back as the result and clears nothing", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on, { fails: "write" });
 
-	const result = await handOff(session, idle(), FIELDS);
+	const result = await handOff($);
+	await clock.advance(1);
 
 	expect(result).toContain("disk full");
-	expect(queued).toEqual([]);
+	expect(calls).toEqual([]);
 });
 
-test("an active goal is set again after the clear and before the submit", async () => {
-	const { session, calls, queued } = fake();
+test("an active goal is set again after the clear and before the submit", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on, { goal: "all tests pass" });
 
-	await handOff(session, idle("all tests pass"), FIELDS);
-	await queued[0]?.();
+	await handOff($);
+	await clock.advance(1);
 
-	expect(calls.slice(1).map((call) => call.split(":")[0])).toEqual([
-		"clear",
-		"taken",
-		"goal",
-		"submit",
-	]);
+	expect(kinds(calls.slice(1))).toEqual(["clear", "taken", "goal", "submit"]);
 	expect(calls).toContain("goal:all tests pass");
 });
 
-test("no goal is set after a clear when none was active", async () => {
-	const { session, calls, queued } = fake();
+test("no goal is set after a clear when none was active", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on);
 
-	await handOff(session, idle(), FIELDS);
-	await queued[0]?.();
+	await handOff($);
+	await clock.advance(1);
 
 	expect(calls.filter((call) => call.startsWith("goal"))).toEqual([]);
 });
 
-test("a goal the engine refuses is named, and the handoff is still sent", async () => {
-	const { session, calls, queued } = fake({
-		setGoal: () => Promise.reject(new Error("hooks restricted")),
-	});
+test("a goal the engine refuses is named, and the handoff is still sent", async ($: Engine, on: On) => {
+	const { calls, clock } = await lab($, on, { fails: "goal", goal: "done" });
 
-	await handOff(session, idle("done"), FIELDS);
-	await queued[0]?.();
+	await handOff($);
+	await clock.advance(1);
 
 	expect(calls.some((call) => call.startsWith("log:"))).toBe(true);
 	expect(calls.some((call) => call.startsWith("submit:"))).toBe(true);
