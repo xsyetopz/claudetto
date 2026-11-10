@@ -24,6 +24,7 @@ const mount = ($: Engine, surface: RenderSurface) =>
 		component: "AbovePrompt",
 		props: {
 			hasSurvey: false,
+			isCollapsed: false,
 			isWorking: false,
 			maxRows: 12,
 			bodyColumns: 80,

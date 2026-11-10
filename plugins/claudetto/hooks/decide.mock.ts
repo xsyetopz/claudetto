@@ -1,4 +1,4 @@
-import type { On, PluginOptions } from "claude-code";
+import type { HttpInit, On, PluginOptions } from "claude-code";
 import { type Engine, mock } from "claude-code/testing";
 
 import { scanner } from "./secrets.mock.ts";
@@ -48,7 +48,7 @@ type Send = (
 
 interface Fetched {
 	url: string;
-	init?: { headers?: Record<string, string>; body?: string };
+	init?: HttpInit;
 }
 
 export const stub = (on: On, send: Send) => {
@@ -83,7 +83,12 @@ export const registered = async ($: Engine, on: On) => {
 };
 
 const bodyOf = (fetched: Fetched | undefined): Record<string, unknown> => {
-	const parsed: unknown = JSON.parse(fetched?.init?.body ?? "{}");
+	const body = fetched?.init?.body ?? "{}";
+	const parsed: unknown = JSON.parse(
+		typeof body === "string"
+			? body
+			: Buffer.from(body.base64, "base64").toString(),
+	);
 	return typeof parsed === "object" && parsed !== null
 		? Object.fromEntries(Object.entries(parsed))
 		: {};

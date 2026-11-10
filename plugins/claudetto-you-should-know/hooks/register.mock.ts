@@ -193,6 +193,7 @@ export const mountBand = (
 		component: "AbovePrompt",
 		props: {
 			hasSurvey,
+			isCollapsed: false,
 			isWorking: false,
 			maxRows: 12,
 			bodyColumns: 80,
