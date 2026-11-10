@@ -2,6 +2,10 @@
 	"default": true,
 	// Lines wrap where the writer breaks them; prose is not reflowed.
 	"line-length": false,
+	// A changelog repeats Added, Changed, and Fixed under each version.
+	"no-duplicate-heading": {
+		"siblings_only": true,
+	},
 	"table-column-style": {
 		"style": "compact",
 	},

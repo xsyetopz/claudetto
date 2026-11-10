@@ -1,0 +1,7 @@
+{
+	// Claude Code sends the body of an agent, skill, rule, command, or output style as a prompt: a heading would become prompt text, and its XML tags mark the prompt's sections.
+	"config": {
+		"first-line-heading": false,
+		"no-inline-html": false,
+	},
+}

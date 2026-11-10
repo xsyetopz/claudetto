@@ -1,0 +1,6 @@
+{
+	// GitHub shows this file as a pull request body, not a document.
+	"config": {
+		"first-line-heading": false,
+	},
+}

@@ -13,7 +13,8 @@
 			"markdownlint-rule-title-case-style": "0.4.3",
 			"oxlint": "1.93.0",
 			"oxlint-tsgolint": "7.0.2006",
-			"typescript": "7.0.2"
+			"typescript": "7.0.2",
+			"typescript-bedrock": "0.1.5"
 		}
 	},
 	"type": "module",
@@ -41,7 +42,7 @@
 		"oxlint": "catalog:",
 		"oxlint-tsgolint": "catalog:",
 		"typescript": "catalog:",
-		"typescript-bedrock": "file:/Users/krystian/.claude/plugins/cache/xsyetopz/bedrock/0.1.3/.bedrock/packages/typescript-bedrock"
+		"typescript-bedrock": "catalog:"
 	},
 	"peerDependencies": {
 		"claude-code": "*"
