@@ -13,7 +13,6 @@ import {
 import {
 	ask,
 	configDir,
-	ioOf,
 	lines,
 	loginFile,
 	SKIP,
@@ -181,14 +180,13 @@ async function onSetup(
 	$: EngineInterface,
 	walls: readonly string[],
 ): Promise<{ text: string }> {
-	const io = ioOf($);
 	const parts = [
 		await settingsPart($, walls),
 		await keyPart($),
-		await starterPart(io),
-		await ignoresPart(io),
-		...(await Promise.all(TOOLS.map((tool) => toolPart(io, tool)))),
-		await purgePart(io),
+		await starterPart($),
+		await ignoresPart($),
+		...(await Promise.all(TOOLS.map((tool) => toolPart($, tool)))),
+		await purgePart($),
 	].filter((part) => part !== undefined);
 	return { text: parts.join("\n") };
 }

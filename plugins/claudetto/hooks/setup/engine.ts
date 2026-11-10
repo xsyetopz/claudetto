@@ -3,13 +3,10 @@ import type { EngineInterface } from "claude-code";
 import { redact } from "../secrets.ts";
 import { parseSettings } from "./changes.ts";
 import type { Json } from "./settings.ts";
-import { linesOf } from "./starter.ts";
-import type { Io } from "./steps.ts";
 import { recommended, SETUP_ADVICE } from "./text.ts";
 
 const TRAILING_SLASHES = /\/+$/u;
 const PROCESS_MS = 5000;
-const INSTALL_MS = 600_000;
 const ANSWERED = "The user answered: ";
 const ADVICE_MS = 20_000;
 
@@ -145,30 +142,4 @@ export async function lines(
 	} catch {
 		return "";
 	}
-}
-
-export function ioOf($: EngineInterface): Io {
-	return {
-		cwd: () => $.session.cwd(),
-		git: async (args) =>
-			linesOf(await lines($, ["git", "-C", await $.session.cwd(), ...args])),
-		exists: (path) => $.fs.exists(path),
-		read: (path) => $.fs.read(path),
-		write: async (path, text) => {
-			await $.fs.write(path, text);
-		},
-		ask: (question, _header, options) => ask($, question, options),
-		path: () => $.env.get("PATH"),
-		home: async () => (await $.env.get("HOME")) ?? "",
-		decline: async (key) => {
-			await $.store.set(key, true);
-		},
-		run: async (argv) => {
-			const result = await $.process.run(argv, { timeoutMs: INSTALL_MS });
-			return {
-				exitCode: result.exitCode,
-				text: result.exitCode === 0 ? result.stdout : result.stderr,
-			};
-		},
-	};
 }
