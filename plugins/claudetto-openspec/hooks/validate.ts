@@ -1,17 +1,6 @@
 // Validation of one change: delta files against each other and against the main specs.
 import { dirname, type Fs, join, statOf, within } from "./fs.ts";
 import {
-	type Block,
-	blocks,
-	fold,
-	merge,
-	missingScenarios,
-	norm,
-	type Plan,
-	parsePlan,
-	section,
-} from "./spec.ts";
-import {
 	at,
 	blockIssues,
 	type Issue,
@@ -19,6 +8,17 @@ import {
 	report,
 	withoutFences,
 } from "./spec-rules.ts";
+import {
+	type Block,
+	blocks,
+	fold,
+	merge,
+	missingScenarios,
+	norm,
+	parsePlan,
+	type Plan,
+	section,
+} from "./spec.ts";
 import { type Doc, missingCheckboxes, numberingIssues } from "./tasks.ts";
 import { parseYaml } from "./yaml.ts";
 

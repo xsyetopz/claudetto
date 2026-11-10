@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { mkdtemp } from "node:fs/promises";
 import { availableParallelism, tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { file, spawn } from "bun";
 
 const PATH_CHOICE = /compaction|summary/i;
@@ -53,7 +54,9 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	expect(requests).toContain(
 		"Ask each question for the user once, through the popup (`mcp__claudetto__ask-user-question`), and repeat it nowhere in the reply.",
 	);
-	expect(requests).toContain("such a bullet holds that command and never a question.");
+	expect(requests).toContain(
+		"such a bullet holds that command and never a question.",
+	);
 	expect(requests).toContain(
 		"Ask through the popup only for what the user alone holds; settle the rest from the conversation and the repository, and state your reading.",
 	);
@@ -82,8 +85,11 @@ test("the output style says what an agent message and a user reply hold", async 
 
 // 18.28: with the hooks module not running, the setup command would reach Claude as bare tags, so a plain hook blocks it; the module's `command.run` serves it first when it runs.
 const hookCommand = async (event: string): Promise<string> =>
-	(await file(`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`).json())
-		.hooks[event][0].hooks[0].command;
+	(
+		await file(
+			`${import.meta.dir}/../plugins/claudetto/hooks/hooks.json`,
+		).json()
+	).hooks[event][0].hooks[0].command;
 
 const runPromptHook = async (prompt: string): Promise<string> => {
 	const proc = spawn(["sh", "-c", await hookCommand("UserPromptSubmit")], {

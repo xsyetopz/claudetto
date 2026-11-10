@@ -1,5 +1,6 @@
 import type { On, SessionUsage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { ROOT_PROMPT } from "../texts.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 

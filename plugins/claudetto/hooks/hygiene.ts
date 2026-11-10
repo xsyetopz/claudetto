@@ -1,4 +1,5 @@
 import type { On, PluginOptions } from "claude-code";
+
 import { numberOption, switchOption } from "./options.ts";
 
 /** Ten minutes is the most `$.process.run` allows. */

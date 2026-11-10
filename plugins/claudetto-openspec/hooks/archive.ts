@@ -1,4 +1,5 @@
 import { type Fs, join } from "./fs.ts";
+import { validateSpec } from "./spec-rules.ts";
 import {
 	type Block,
 	fenceMask,
@@ -8,7 +9,6 @@ import {
 	parsePlan,
 	section,
 } from "./spec.ts";
-import { validateSpec } from "./spec-rules.ts";
 import { scanTasks } from "./tasks.ts";
 import {
 	baseBlocks,
@@ -16,8 +16,8 @@ import {
 	discoverDeltas,
 	linkEscapes,
 	metadata,
-	NO_DELTA,
 	nestedChanges,
+	NO_DELTA,
 	validateChange,
 } from "./validate.ts";
 

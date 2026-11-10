@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { namedPaths, spellsWall, unguarded, walledVerdict } from "./walled.ts";
 
 const WALLS = ["~/.claudetto-holdout"];

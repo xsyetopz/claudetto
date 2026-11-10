@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { REPLY_COMMAND } from "./texts.ts";
 
 const LABEL = 60;

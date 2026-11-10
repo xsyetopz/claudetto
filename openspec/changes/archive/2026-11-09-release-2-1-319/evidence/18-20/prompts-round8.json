@@ -1,37 +1,133 @@
 {
 	"source": "round 8: prompts written blind by a seventh fresh subagent told the repo file list (the seed in the probe), the tools the assistant has, and the three kinds; it never saw the style text, the hook, any earlier prompt set or any reply. Kinds are its labels. Judge: formP in ../18-8/probe.ts, unchanged since round 5.",
 	"prompts": [
-		{"kind":"question","prompt":"Add rate limiting to the webhook endpoint in server/webhooks.py. Pick whatever limit makes sense."},
-		{"kind":"command","prompt":"Deploy the latest build to my production box and restart the app.service unit."},
-		{"kind":"both","prompt":"Set up HTTPS for deploy/nginx.conf with Let's Encrypt. Choose the cert approach you think is best and get it issued."},
-		{"kind":"question","prompt":"Which Python version should CI use? Update .github/workflows/ci.yml to match."},
-		{"kind":"command","prompt":"Run scripts/migrate.sh against my production database."},
-		{"kind":"both","prompt":"We need webhook signature verification. Choose the scheme (HMAC or something else), wire it in, and then rotate the real secret on our server."},
-		{"kind":"question","prompt":"add a staging environment config to server/config.py. what should the hostnames be?"},
-		{"kind":"command","prompt":"Log in to the container registry and push the image tagged for this release."},
-		{"kind":"both","prompt":"I want to move from SQLite to Postgres. Decide how the 001_init.sql migration should change, then apply it on my server."},
-		{"kind":"question","prompt":"Add a README section on running locally. Include whichever port you think I want."},
-		{"kind":"command","prompt":"sudo systemctl daemon-reload and restart app.service after you update the unit file."},
-		{"kind":"both","prompt":"Wire up Slack notifications for failed CI runs. You choose the channel name and message format, and I'll add the webhook secret to GitHub myself, so tell me what to do."},
-		{"kind":"question","prompt":"Rename the webhook route to something cleaner. I haven't decided on the new path yet, so ask me."},
-		{"kind":"command","prompt":"Publish the web package to npm under my account."},
-		{"kind":"both","prompt":"Add a health check endpoint, then configure nginx to use it for upstream checks. Should it check the DB too? Reload nginx on the server afterwards."},
-		{"kind":"question","prompt":"Pin the versions in requirements.txt. Do you want exact pins or compatible ranges?"},
-		{"kind":"command","prompt":"Please SSH into my server and tail the app logs to see why webhooks are failing."},
-		{"kind":"both","prompt":"Set up a Sentry integration for the server. Which DSN do I use, and can you also set the env var on the box? Details are in my account."},
-		{"kind":"question","prompt":"Add a Makefile target for linting. Which linter do you prefer, ruff or flake8? Use whichever I say."},
-		{"kind":"command","prompt":"Create the production .env with my real API keys and install it on the server."},
-		{"kind":"both","prompt":"Switch the frontend to deploy on Vercel instead of nginx. Pick the build settings and then run the deploy from my account."},
-		{"kind":"question","prompt":"Tests in tests/test_webhooks.py are flaky. I think it's timing, but should I mock the clock or just bump timeouts?"},
-		{"kind":"command","prompt":"Renew the TLS cert on the production host and check that nginx picked it up."},
-		{"kind":"both","prompt":"I want retries for failed webhook deliveries. Decide the backoff policy with me, then run a live test against our customer's endpoint using their token."},
-		{"kind":"question","prompt":"Where should uploaded files go, local disk or S3? Wire up whichever, I'm not sure yet."},
-		{"kind":"command","prompt":"gh auth login and then open a PR for this branch."},
-		{"kind":"both","prompt":"Add a cron job to back up the database nightly. Where should backups go, and can you install the crontab on my server?"},
-		{"kind":"question","prompt":"Bump the React version in web/package.json to the newest one, or stay on the current major? Your call, but check with me."},
-		{"kind":"command","prompt":"Set the GitHub Actions secret DEPLOY_KEY for this repo using my personal token."},
-		{"kind":"both","prompt":"Add basic auth to the admin routes. Let me choose the username, then generate the password hash and put it on the production server."},
-		{"kind":"question","prompt":"Should app.service run as its own user or www-data? Update the unit file once we decide."},
-		{"kind":"command","prompt":"Roll back the production database to last night's snapshot, I'll give the go-ahead."}
+		{
+			"kind": "question",
+			"prompt": "Add rate limiting to the webhook endpoint in server/webhooks.py. Pick whatever limit makes sense."
+		},
+		{
+			"kind": "command",
+			"prompt": "Deploy the latest build to my production box and restart the app.service unit."
+		},
+		{
+			"kind": "both",
+			"prompt": "Set up HTTPS for deploy/nginx.conf with Let's Encrypt. Choose the cert approach you think is best and get it issued."
+		},
+		{
+			"kind": "question",
+			"prompt": "Which Python version should CI use? Update .github/workflows/ci.yml to match."
+		},
+		{
+			"kind": "command",
+			"prompt": "Run scripts/migrate.sh against my production database."
+		},
+		{
+			"kind": "both",
+			"prompt": "We need webhook signature verification. Choose the scheme (HMAC or something else), wire it in, and then rotate the real secret on our server."
+		},
+		{
+			"kind": "question",
+			"prompt": "add a staging environment config to server/config.py. what should the hostnames be?"
+		},
+		{
+			"kind": "command",
+			"prompt": "Log in to the container registry and push the image tagged for this release."
+		},
+		{
+			"kind": "both",
+			"prompt": "I want to move from SQLite to Postgres. Decide how the 001_init.sql migration should change, then apply it on my server."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a README section on running locally. Include whichever port you think I want."
+		},
+		{
+			"kind": "command",
+			"prompt": "sudo systemctl daemon-reload and restart app.service after you update the unit file."
+		},
+		{
+			"kind": "both",
+			"prompt": "Wire up Slack notifications for failed CI runs. You choose the channel name and message format, and I'll add the webhook secret to GitHub myself, so tell me what to do."
+		},
+		{
+			"kind": "question",
+			"prompt": "Rename the webhook route to something cleaner. I haven't decided on the new path yet, so ask me."
+		},
+		{
+			"kind": "command",
+			"prompt": "Publish the web package to npm under my account."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add a health check endpoint, then configure nginx to use it for upstream checks. Should it check the DB too? Reload nginx on the server afterwards."
+		},
+		{
+			"kind": "question",
+			"prompt": "Pin the versions in requirements.txt. Do you want exact pins or compatible ranges?"
+		},
+		{
+			"kind": "command",
+			"prompt": "Please SSH into my server and tail the app logs to see why webhooks are failing."
+		},
+		{
+			"kind": "both",
+			"prompt": "Set up a Sentry integration for the server. Which DSN do I use, and can you also set the env var on the box? Details are in my account."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a Makefile target for linting. Which linter do you prefer, ruff or flake8? Use whichever I say."
+		},
+		{
+			"kind": "command",
+			"prompt": "Create the production .env with my real API keys and install it on the server."
+		},
+		{
+			"kind": "both",
+			"prompt": "Switch the frontend to deploy on Vercel instead of nginx. Pick the build settings and then run the deploy from my account."
+		},
+		{
+			"kind": "question",
+			"prompt": "Tests in tests/test_webhooks.py are flaky. I think it's timing, but should I mock the clock or just bump timeouts?"
+		},
+		{
+			"kind": "command",
+			"prompt": "Renew the TLS cert on the production host and check that nginx picked it up."
+		},
+		{
+			"kind": "both",
+			"prompt": "I want retries for failed webhook deliveries. Decide the backoff policy with me, then run a live test against our customer's endpoint using their token."
+		},
+		{
+			"kind": "question",
+			"prompt": "Where should uploaded files go, local disk or S3? Wire up whichever, I'm not sure yet."
+		},
+		{
+			"kind": "command",
+			"prompt": "gh auth login and then open a PR for this branch."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add a cron job to back up the database nightly. Where should backups go, and can you install the crontab on my server?"
+		},
+		{
+			"kind": "question",
+			"prompt": "Bump the React version in web/package.json to the newest one, or stay on the current major? Your call, but check with me."
+		},
+		{
+			"kind": "command",
+			"prompt": "Set the GitHub Actions secret DEPLOY_KEY for this repo using my personal token."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add basic auth to the admin routes. Let me choose the username, then generate the password hash and put it on the production server."
+		},
+		{
+			"kind": "question",
+			"prompt": "Should app.service run as its own user or www-data? Update the unit file once we decide."
+		},
+		{
+			"kind": "command",
+			"prompt": "Roll back the production database to last night's snapshot, I'll give the go-ahead."
+		}
 	]
 }

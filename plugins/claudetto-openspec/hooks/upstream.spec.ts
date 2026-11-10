@@ -3,7 +3,9 @@ import { expect, test } from "bun:test";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { spawn } from "bun";
+
 import { nodeFs } from "./fixture-kit.ts";
 import { openspec } from "./openspec.ts";
 

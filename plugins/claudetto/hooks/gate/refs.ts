@@ -1,5 +1,5 @@
 import { GATE_REF_MOVE } from "../texts.ts";
-import { type Owns, ownedMove } from "./processes.ts";
+import { ownedMove, type Owns } from "./processes.ts";
 import { withoutGitOptions } from "./upstream.ts";
 import { ask, type Verdict } from "./verdict.ts";
 

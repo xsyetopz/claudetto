@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { SILENT_TURN_REMINDER } from "../texts.ts";
 import { AUTO_MODE } from "./auto-mode.ts";
 import {
@@ -343,7 +344,9 @@ test("the sandbox group lists what is dangerous: home-wide writes, denies for fi
 				denyWrite: words(
 					"~/.zshrc ~/.zshenv ~/.zprofile ~/.bashrc ~/.bash_profile ~/.profile ~/.config/fish ~/.gitconfig ~/.config/git ~/.ssh ~/Library/LaunchAgents ~/.local/bin ~/.bun/bin ~/bin",
 				),
-				denyRead: words("~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials"),
+				denyRead: words(
+					"~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials",
+				),
 			},
 			network: {
 				allowedDomains: ["*"],

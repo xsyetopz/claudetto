@@ -1,7 +1,8 @@
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-const REPLY_TEXT = "First point.\nstill first.\n\nSecond point.\n\nThird point.";
+const REPLY_TEXT =
+	"First point.\nstill first.\n\nSecond point.\n\nThird point.";
 
 const lab = (on: On, selected?: string) => {
 	const filled: string[] = [];
@@ -57,7 +58,9 @@ test("a number past the last paragraph fills nothing", async ($: Engine, on: On)
 test("session.start registers /reply", async ($: Engine, on: On) => {
 	const names: string[] = [];
 	on("session.start", () => ({ cwd: "/repo" }));
-	on("tool.register", (_$, e) => ({ value: { tool: `mcp__claudetto__${e.name}` } }));
+	on("tool.register", (_$, e) => ({
+		value: { tool: `mcp__claudetto__${e.name}` },
+	}));
 	on("command.register", (_$, e) => {
 		names.push(e.name);
 		return { value: { command: e.name } };

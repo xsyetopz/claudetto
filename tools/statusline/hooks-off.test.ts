@@ -2,6 +2,7 @@ import { afterAll, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { statusWithFiles } from "../../plugins/claudetto/statusline/main.ts";
 import { plain } from "../../plugins/claudetto/statusline/width.ts";
 import { BASE, NOW } from "./support.ts";

@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+
 import { checkRelease } from "./release-version";
 
 const upstream = ["v2.1.317", "v2.1.319", "v2.1.318", "v1.0.0"];

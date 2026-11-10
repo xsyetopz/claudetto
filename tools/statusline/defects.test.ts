@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+
 import { statusOf } from "../../plugins/claudetto/statusline/main.ts";
 import { width } from "../../plugins/claudetto/statusline/width.ts";
 import { BASE, linesOf, NOW_S, raw } from "./support.ts";
@@ -28,7 +29,9 @@ describe("an empty place keeps no column, so no gap precedes the cost", () => {
 			rate_limits: undefined,
 			cost: { total_cost_usd: 0.5 },
 		});
-		expect(line).toBe("⌂ claudetto · ❖ Opus 5.5 high · ◫ ctx 40% of 200k · $0.50");
+		expect(line).toBe(
+			"⌂ claudetto · ❖ Opus 5.5 high · ◫ ctx 40% of 200k · $0.50",
+		);
 	});
 
 	test("a row with only its last item starts at the left edge", () => {

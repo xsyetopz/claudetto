@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { deferral } from "./surface.ts";
 import { AGENT_TEXT, agentForm } from "./texts.ts";
 

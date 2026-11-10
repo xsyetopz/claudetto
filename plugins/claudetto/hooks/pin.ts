@@ -1,4 +1,5 @@
 import type { EngineInterface, On, SessionMessage } from "claude-code";
+
 import { isRecord } from "./decide/jev.ts";
 import { type Command, parse, programOf } from "./gate/shell-words.ts";
 import { deny, fieldOf } from "./gate/verdict.ts";
@@ -60,15 +61,13 @@ const flat = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
 
 // An entry stands only on words a message of the person holds, so a remark or the agent's own text sets none.
 const toConstraint = (c: unknown, said: string[]): PinConstraint[] => {
-	if (
-		!(
-			isRecord(c) &&
-			typeof c["text"] === "string" &&
-			typeof c["quote"] === "string" &&
-			flat(c["quote"]) !== "" &&
-			isRule(c["rule"])
-		)
-	) {
+	if (!(
+		isRecord(c) &&
+		typeof c["text"] === "string" &&
+		typeof c["quote"] === "string" &&
+		flat(c["quote"]) !== "" &&
+		isRule(c["rule"])
+	)) {
 		return [];
 	}
 	const quote = flat(c["quote"]);
@@ -99,10 +98,7 @@ interface Extraction {
 	kind: PinKind;
 }
 
-const parseLedger = (
-	text: string,
-	said: string[],
-): Extraction | undefined => {
+const parseLedger = (text: string, said: string[]): Extraction | undefined => {
 	try {
 		const json: unknown = JSON.parse(
 			text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),

@@ -1,8 +1,9 @@
 import type { EngineInterface, On, SessionMessage } from "claude-code";
+
 import { isRecord } from "./decide/jev.ts";
+import { fieldOf } from "./gate.ts";
 import { type Command, parse, programOf } from "./gate/shell-words.ts";
 import { deny } from "./gate/verdict.ts";
-import { fieldOf } from "./gate.ts";
 import {
 	PIN_ANSWER_FIRST,
 	PIN_BLOCKED,

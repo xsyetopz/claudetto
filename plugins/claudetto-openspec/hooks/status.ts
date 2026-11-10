@@ -44,7 +44,9 @@ export const progress = async (
 	const present = await Promise.all(
 		ARTIFACTS.map((a) => fs.exists(join(dir, a.file))),
 	);
-	const done = new Set(ARTIFACTS.filter((_, i) => present[i]).map((a) => a.name));
+	const done = new Set(
+		ARTIFACTS.filter((_, i) => present[i]).map((a) => a.name),
+	);
 	const artifacts = ARTIFACTS.map((a) => {
 		if (done.has(a.name)) {
 			return `${a.name} done`;

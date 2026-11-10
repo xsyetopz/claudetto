@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanned } from "./secrets.mock.ts";
 import { valueAt } from "./setup/settings.ts";
 

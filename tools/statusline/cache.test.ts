@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+
 import { linesOf, NOW_S } from "./support.ts";
 
 const cacheLine = (cache: Record<string, unknown> | undefined): string =>

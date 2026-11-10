@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { openspec } from "./openspec.ts";
 import {
 	TOOL_CALL,

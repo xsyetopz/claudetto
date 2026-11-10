@@ -61,7 +61,8 @@ export const ARMS: readonly Arm[] = [
 	},
 	{
 		name: "D",
-		label: "two built-in compactions at 40,000 tokens, then a handover at 45,000",
+		label:
+			"two built-in compactions at 40,000 tokens, then a handover at 45,000",
 		handoverTokens: 45_000,
 		handoverAfterCompactions: 2,
 		handoffOnBoundary: false,

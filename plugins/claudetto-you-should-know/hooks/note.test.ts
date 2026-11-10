@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import {
 	blankRow,
 	draftFor,
@@ -7,8 +8,8 @@ import {
 	LIMITS,
 	parseCards,
 	parseReply,
-	type Row,
 	remember,
+	type Row,
 	skipsAfter,
 	type View,
 	withRow,

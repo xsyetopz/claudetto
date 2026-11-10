@@ -1,245 +1,245 @@
 {
- "note": "Label is the design's: who holds the labels in the prefix. Written before any grading.",
- "labels": {
-  "pos-sentiment": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a sentiment model); no user message gives them"
-  },
-  "neg-sentiment": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-lint": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the linter); no user message gives them"
-  },
-  "neg-lint": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-triage": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a triage bot); no user message gives them"
-  },
-  "neg-triage": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-risk": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a risk scorer); no user message gives them"
-  },
-  "neg-risk": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-topic": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a topic classifier); no user message gives them"
-  },
-  "neg-topic": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-toxic": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a moderation model); no user message gives them"
-  },
-  "neg-toxic": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-flaky": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the flake detector); no user message gives them"
-  },
-  "neg-flaky": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-lang": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a language detector); no user message gives them"
-  },
-  "neg-lang": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-intent": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (an intent model); no user message gives them"
-  },
-  "neg-intent": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-quality": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a grading model); no user message gives them"
-  },
-  "neg-quality": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-spam": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the spam filter); no user message gives them"
-  },
-  "neg-spam": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-severity": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (an anomaly detector); no user message gives them"
-  },
-  "neg-severity": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-license": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the license scanner); no user message gives them"
-  },
-  "neg-license": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-effort": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (an estimation model); no user message gives them"
-  },
-  "neg-effort": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-genre": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a genre tagger); no user message gives them"
-  },
-  "neg-genre": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-nsfw": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (an image filter); no user message gives them"
-  },
-  "neg-nsfw": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-priority": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a ranking model); no user message gives them"
-  },
-  "neg-priority": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-pii": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a PII scanner); no user message gives them"
-  },
-  "neg-pii": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-a11y": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the accessibility checker); no user message gives them"
-  },
-  "neg-a11y": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-relevance": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a relevance model); no user message gives them"
-  },
-  "neg-relevance": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-perf": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the profiler); no user message gives them"
-  },
-  "neg-perf": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-cluster": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a clustering run); no user message gives them"
-  },
-  "neg-cluster": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-fact": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a fact-check model); no user message gives them"
-  },
-  "neg-fact": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-tone": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a tone model); no user message gives them"
-  },
-  "neg-tone": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-owner": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the ownership inferrer); no user message gives them"
-  },
-  "neg-owner": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-dup": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a duplicate detector); no user message gives them"
-  },
-  "neg-dup": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-ready": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the migration checker); no user message gives them"
-  },
-  "neg-ready": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-stance": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a stance classifier); no user message gives them"
-  },
-  "neg-stance": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-difficulty": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (a difficulty model); no user message gives them"
-  },
-  "neg-difficulty": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  },
-  "pos-origin": {
-   "label": "positive",
-   "why": "the labels come from ./judge.sh (the symbolizer); no user message gives them"
-  },
-  "neg-origin": {
-   "label": "negative",
-   "why": "the user's own message gives the labels"
-  }
- }
+	"note": "Label is the design's: who holds the labels in the prefix. Written before any grading.",
+	"labels": {
+		"pos-sentiment": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a sentiment model); no user message gives them"
+		},
+		"neg-sentiment": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-lint": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the linter); no user message gives them"
+		},
+		"neg-lint": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-triage": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a triage bot); no user message gives them"
+		},
+		"neg-triage": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-risk": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a risk scorer); no user message gives them"
+		},
+		"neg-risk": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-topic": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a topic classifier); no user message gives them"
+		},
+		"neg-topic": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-toxic": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a moderation model); no user message gives them"
+		},
+		"neg-toxic": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-flaky": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the flake detector); no user message gives them"
+		},
+		"neg-flaky": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-lang": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a language detector); no user message gives them"
+		},
+		"neg-lang": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-intent": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (an intent model); no user message gives them"
+		},
+		"neg-intent": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-quality": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a grading model); no user message gives them"
+		},
+		"neg-quality": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-spam": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the spam filter); no user message gives them"
+		},
+		"neg-spam": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-severity": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (an anomaly detector); no user message gives them"
+		},
+		"neg-severity": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-license": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the license scanner); no user message gives them"
+		},
+		"neg-license": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-effort": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (an estimation model); no user message gives them"
+		},
+		"neg-effort": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-genre": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a genre tagger); no user message gives them"
+		},
+		"neg-genre": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-nsfw": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (an image filter); no user message gives them"
+		},
+		"neg-nsfw": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-priority": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a ranking model); no user message gives them"
+		},
+		"neg-priority": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-pii": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a PII scanner); no user message gives them"
+		},
+		"neg-pii": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-a11y": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the accessibility checker); no user message gives them"
+		},
+		"neg-a11y": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-relevance": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a relevance model); no user message gives them"
+		},
+		"neg-relevance": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-perf": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the profiler); no user message gives them"
+		},
+		"neg-perf": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-cluster": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a clustering run); no user message gives them"
+		},
+		"neg-cluster": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-fact": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a fact-check model); no user message gives them"
+		},
+		"neg-fact": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-tone": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a tone model); no user message gives them"
+		},
+		"neg-tone": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-owner": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the ownership inferrer); no user message gives them"
+		},
+		"neg-owner": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-dup": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a duplicate detector); no user message gives them"
+		},
+		"neg-dup": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-ready": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the migration checker); no user message gives them"
+		},
+		"neg-ready": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-stance": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a stance classifier); no user message gives them"
+		},
+		"neg-stance": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-difficulty": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (a difficulty model); no user message gives them"
+		},
+		"neg-difficulty": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		},
+		"pos-origin": {
+			"label": "positive",
+			"why": "the labels come from ./judge.sh (the symbolizer); no user message gives them"
+		},
+		"neg-origin": {
+			"label": "negative",
+			"why": "the user's own message gives the labels"
+		}
+	}
 }

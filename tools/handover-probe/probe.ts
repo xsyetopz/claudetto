@@ -2,15 +2,20 @@
 // Runs each arm 3 times and prints one table per arm. Without --paid the API is a fake server on 127.0.0.1 and nothing is billed. With --paid a relay on 127.0.0.1 forwards each request to the real API and logs its usage, and the recall answers are scored.
 import { ARMS } from "./arms.ts";
 import { renderArm } from "./report.ts";
-import { type RunResult, runArm } from "./run.ts";
+import { runArm, type RunResult } from "./run.ts";
 
 const RUNS = 3;
 const args = process.argv.slice(2);
 const paid = args.includes("--paid");
 const wanted = args.filter((a) => a !== "--paid");
-const arms = wanted.length === 0 ? ARMS : ARMS.filter((a) => wanted.includes(a.name));
+const arms =
+	wanted.length === 0 ? ARMS : ARMS.filter((a) => wanted.includes(a.name));
 
-if (paid && !process.env["ANTHROPIC_API_KEY"] && !process.env["CLAUDE_CODE_OAUTH_TOKEN"]) {
+if (
+	paid &&
+	!process.env["ANTHROPIC_API_KEY"] &&
+	!process.env["CLAUDE_CODE_OAUTH_TOKEN"]
+) {
 	console.error(
 		"--paid needs ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in the environment: each run gets a fresh CLAUDE_CONFIG_DIR with no login. bunfig.toml turns off Bun's .env loading, so pass the repo's .env: `bun --env-file=.env tools/handover-probe/probe.ts --paid`.",
 	);
@@ -34,7 +39,9 @@ for (const { arm, runs } of results) {
 }
 
 const all = results.flatMap((r) => r.runs);
-const foreign = all.filter((r) => r.hosts.length !== 1 || !r.hosts[0]?.startsWith("127.0.0.1:"));
+const foreign = all.filter(
+	(r) => r.hosts.length !== 1 || !r.hosts[0]?.startsWith("127.0.0.1:"),
+);
 const outside = all.flatMap((r) => r.outside);
 const requests = all.reduce((n, r) => n + r.records.length, 0);
 console.log("### Egress\n");
@@ -52,4 +59,6 @@ console.log(
 if (!paid) {
 	console.log("- recall: not scored, a fake model recalls nothing");
 }
-console.log(`- run dirs (requests.jsonl, debug-<phase>.log, stream-<phase>.jsonl): ${all.map((r) => r.dir).join(" ")}`);
+console.log(
+	`- run dirs (requests.jsonl, debug-<phase>.log, stream-<phase>.jsonl): ${all.map((r) => r.dir).join(" ")}`,
+);

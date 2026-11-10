@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { unguarded } from "./gate/walled.ts";
 import { scanned } from "./secrets.mock.ts";
 import { valueAt } from "./setup/settings.ts";
@@ -123,7 +124,11 @@ const lab = (
 		return {
 			value:
 				state.advice === undefined
-					? { isAnswered: false as const, reason: "empty-reply" as const, usage }
+					? {
+							isAnswered: false as const,
+							reason: "empty-reply" as const,
+							usage,
+						}
 					: { isAnswered: true as const, text: state.advice, usage },
 		};
 	});
@@ -364,7 +369,7 @@ test("Haiku never sees a secret that a setup question shows", async ($: Engine, 
 	);
 });
 
-test("the ignore dialog says it narrows Grep and not Glob",async ($: Engine, on: On) => {
+test("the ignore dialog says it narrows Grep and not Glob", async ($: Engine, on: On) => {
 	const state = lab(
 		on,
 		"{}",
@@ -1120,7 +1125,9 @@ test("a startup without Mole logs its install notice every time, and a No to it 
 	await startup($);
 	const out = await run($, "claudetto:setup");
 
-	expect(state.logs.filter((l) => l.includes("brew install mole"))).toHaveLength(2);
+	expect(
+		state.logs.filter((l) => l.includes("brew install mole")),
+	).toHaveLength(2);
 	expect(state.runs).not.toContainEqual(["brew", "install", "mole"]);
 	expect(out.text).toContain("Run `brew install mole` to fix it.");
 });
@@ -1132,7 +1139,9 @@ test("setup adds the project root to Mole's purge_paths once, keeping what the f
 	const first = await run($, "claudetto:setup");
 	const second = await run($, "claudetto:setup");
 
-	expect(state.files.get(MOLE_FILE)).toBe("# Mole Purge Paths\n~/Library/CloudStorage\n/p\n");
+	expect(state.files.get(MOLE_FILE)).toBe(
+		"# Mole Purge Paths\n~/Library/CloudStorage\n/p\n",
+	);
 	expect(first.text).toContain(`Added /p to ${MOLE_FILE}`);
 	expect(second.text).not.toContain("purge_paths");
 });
@@ -1147,7 +1156,10 @@ test("a purge_paths entry holding the project, written with ~, adds nothing", as
 });
 
 test("a disk over 80% full logs its free space and both Mole previews", async ($: Engine, on: On) => {
-	const full = moleLab(on, `${DF_HEAD}/dev/disk3s5 482000000 395000000 47185920 81% /System/Volumes/Data\n`);
+	const full = moleLab(
+		on,
+		`${DF_HEAD}/dev/disk3s5 482000000 395000000 47185920 81% /System/Volumes/Data\n`,
+	);
 
 	await startup($);
 
@@ -1157,7 +1169,10 @@ test("a disk over 80% full logs its free space and both Mole previews", async ($
 });
 
 test("a disk at 80% full logs no disk line", async ($: Engine, on: On) => {
-	const state = moleLab(on, `${DF_HEAD}/dev/disk3s5 482000000 385000000 97000000 80% /System/Volumes/Data\n`);
+	const state = moleLab(
+		on,
+		`${DF_HEAD}/dev/disk3s5 482000000 385000000 97000000 80% /System/Volumes/Data\n`,
+	);
 
 	await startup($);
 

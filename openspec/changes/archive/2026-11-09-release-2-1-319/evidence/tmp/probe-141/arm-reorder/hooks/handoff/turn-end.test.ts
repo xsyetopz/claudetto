@@ -5,6 +5,7 @@ import type {
 	SessionMessage,
 } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
 import { scanner } from "../secrets.mock.ts";
 import { HANDOVER_PROMPT } from "../texts.ts";
 import { HANDOFF_DIR, HANDOFF_TITLE } from "./layout.ts";

@@ -1,5 +1,6 @@
 import type { On, PluginOptions, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanner } from "../secrets.mock.ts";
 import { commandForm, openItems } from "./open-items.ts";
 
@@ -325,8 +326,12 @@ test("a headless session, where no ask reaches anyone, gets no ask block for a q
 	lab(on);
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
 
-	expect((await stop($, "- [ ] Which region should I use?")).block).toBeUndefined();
-	expect((await stop($, "You need to run `gh auth login` first.")).block).toBeDefined();
+	expect(
+		(await stop($, "- [ ] Which region should I use?")).block,
+	).toBeUndefined();
+	expect(
+		(await stop($, "You need to run `gh auth login` first.")).block,
+	).toBeDefined();
 });
 
 test("a reply already in form gets no block", async ($: Engine, on: On) => {

@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanner } from "./secrets.mock.ts";
 
 interface Seen {
@@ -45,10 +46,22 @@ const refused: [string | undefined, boolean | undefined, string][] = [
 	["Heracles", undefined, H],
 	["Explore", false, 'subagent_type "claudetto:Artemis".'],
 	["Plan", false, 'subagent_type "claudetto:Metis".'],
-	["Explore", undefined, 'subagent_type "claudetto:Artemis" with run_in_background: false'],
+	[
+		"Explore",
+		undefined,
+		'subagent_type "claudetto:Artemis" with run_in_background: false',
+	],
 	["Artemis", true, 'subagent_type "claudetto:Artemis"'],
-	["claudetto:Artemis", undefined, 'subagent_type "claudetto:Artemis" with run_in_background: false'],
-	["claudetto:Metis", undefined, 'subagent_type "claudetto:Metis" with run_in_background: false'],
+	[
+		"claudetto:Artemis",
+		undefined,
+		'subagent_type "claudetto:Artemis" with run_in_background: false',
+	],
+	[
+		"claudetto:Metis",
+		undefined,
+		'subagent_type "claudetto:Metis" with run_in_background: false',
+	],
 ];
 
 for (const [type, background, form] of refused) {

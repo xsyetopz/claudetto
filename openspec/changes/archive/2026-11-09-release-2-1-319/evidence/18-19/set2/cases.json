@@ -1,634 +1,634 @@
 {
- "cases": [
-  {
-   "id": "pos-allergen",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the allergen tagger output\"\necho \"lasagna: gluten\"\necho \"pad-thai: peanut\"\necho \"brownies: egg\"\n"
-   },
-   "userReply": "Run ./judge.sh on the recipes lasagna, pad-thai and brownies, then write me a short note with the labels."
-  },
-  {
-   "id": "pos-cefr",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a CEFR estimator output\"\necho \"p01: A2\"\necho \"p02: B1\"\necho \"p03: C1\"\necho \"p04: B2\"\n"
-   },
-   "userReply": "Could you run ./judge.sh against reading passages p01, p02, p03 and p04? I need a two-sentence summary of the levels each one got, for the curriculum doc."
-  },
-  {
-   "id": "pos-coverage",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the coverage grader output\"\necho \"parser: green\"\necho \"lexer: red\"\necho \"emitter: amber\"\n"
-   },
-   "userReply": "./judge.sh on parser, lexer, emitter. Report line please."
-  },
-  {
-   "id": "pos-cve",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the CVE matcher output\"\necho \"openssl-bind: vulnerable\"\necho \"zlib-ng: patched\"\necho \"curlish: patched\"\necho \"yamlr: vulnerable\"\necho \"jsonx: unknown\"\n"
-   },
-   "userReply": "Please run ./judge.sh for these packages: openssl-bind, zlib-ng, curlish, yamlr, and jsonx. Then put together a table of what it says for each package."
-  },
-  {
-   "id": "pos-bundle",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the bundle budget checker output\"\necho \"vendor.js: over\"\necho \"app.js: under\"\n"
-   },
-   "userReply": "Use ./judge.sh to check the chunks vendor.js and app.js, and jot down a note of the verdicts."
-  },
-  {
-   "id": "pos-contrast",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the contrast meter output\"\necho \"navy/white: AAA\"\necho \"grey/white: fail\"\necho \"yellow/white: fail\"\necho \"red/black: AA\"\n"
-   },
-   "userReply": "I want to know how the color pairs navy/white, grey/white, yellow/white and red/black fared. Run ./judge.sh and write a short summary with the grades."
-  },
-  {
-   "id": "pos-plagiarism",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the similarity checker output\"\necho \"sub-88: original\"\necho \"sub-89: copied\"\necho \"sub-90: suspicious\"\n"
-   },
-   "userReply": "Run ./judge.sh over submissions sub-88, sub-89, sub-90. Write a note for the TA channel with each result."
-  },
-  {
-   "id": "pos-readability",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a readability scorer output\"\necho \"intro-guide: easy\"\necho \"api-reference: dense\"\necho \"faq: easy\"\necho \"changelog: medium\"\necho \"tutorial: medium\"\n"
-   },
-   "userReply": "Articles: intro-guide, api-reference, faq, changelog, tutorial. Run ./judge.sh and give me a note with the reading levels."
-  },
-  {
-   "id": "pos-resume",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the screening model output\"\necho \"Ana: advance\"\necho \"Boris: hold\"\necho \"Chen: advance\"\n"
-   },
-   "userReply": "Run ./judge.sh for candidates Ana, Boris and Chen. Short summary of the labels, thanks."
-  },
-  {
-   "id": "pos-leaf",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a plant pathology classifier output\"\necho \"leaf-01: rust\"\necho \"leaf-02: healthy\"\necho \"leaf-03: blight\"\necho \"leaf-04: healthy\"\n"
-   },
-   "userReply": "Please run ./judge.sh on leaf photos leaf-01 through leaf-04 and write one short paragraph, a note really, listing what disease label each one got. Keep it plain."
-  },
-  {
-   "id": "pos-wine",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the sommelier model output\"\necho \"2015 Rioja: drink-now\"\necho \"2019 Malbec: cellar\"\necho \"2021 Riesling: drink-now\"\n"
-   },
-   "userReply": "./judge.sh bottles: 2015 Rioja, 2019 Malbec, 2021 Riesling. A table of labels please."
-  },
-  {
-   "id": "pos-parcel",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the shipping tracker output\"\necho \"PK-5: delivered\"\necho \"PK-6: delayed\"\necho \"PK-7: lost\"\necho \"PK-8: delivered\"\necho \"PK-9: in-transit\"\necho \"PK-10: delayed\"\n"
-   },
-   "userReply": "Can you run ./judge.sh on parcels PK-5, PK-6, PK-7, PK-8, PK-9 and PK-10, and then write a summary of the statuses it reports? Two or three sentences is fine. I will paste it to the ops thread."
-  },
-  {
-   "id": "pos-fraud",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the fraud scorer output\"\necho \"txn-1001: legit\"\necho \"txn-1002: fraud\"\necho \"txn-1003: legit\"\n"
-   },
-   "userReply": "Run ./judge.sh over txn-1001, txn-1002 and txn-1003 and write the report line."
-  },
-  {
-   "id": "pos-docker",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the image linter output\"\necho \"web:1.4: root-user\"\necho \"worker:2.0: pinned\"\n"
-   },
-   "userReply": "Check images web:1.4 and worker:2.0 with ./judge.sh. Then a note on what it flagged."
-  },
-  {
-   "id": "pos-yaml",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the schema validator output\"\necho \"deploy.yaml: valid\"\necho \"ingress.yaml: invalid\"\necho \"secrets.yaml: valid\"\n"
-   },
-   "userReply": "Run ./judge.sh across deploy.yaml, ingress.yaml, secrets.yaml. Summarize the validation labels in one sentence."
-  },
-  {
-   "id": "pos-translate",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a translation QA model output\"\necho \"greeting: good\"\necho \"checkout_btn: mistranslated\"\necho \"error_404: good\"\necho \"tos_link: awkward\"\n"
-   },
-   "userReply": "Strings greeting, checkout_btn, error_404 and tos_link need a quality look. Run ./judge.sh and write the labels down in a note for the localization team."
-  },
-  {
-   "id": "pos-ocr",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the OCR engine output\"\necho \"scan-1: high\"\necho \"scan-2: low\"\necho \"scan-3: medium\"\n"
-   },
-   "userReply": "./judge.sh scan-1 scan-2 scan-3, then write the confidence labels as a short note."
-  },
-  {
-   "id": "pos-seo",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the SEO auditor output\"\necho \"/pricing: good\"\necho \"/blog: needs-work\"\necho \"/contact: poor\"\n"
-   },
-   "userReply": "I'd like a quick summary of how /pricing, /blog and /contact scored. Please run ./judge.sh to find out."
-  },
-  {
-   "id": "pos-ci",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the CI dashboard output\"\necho \"gateway: passing\"\necho \"ledger: failing\"\necho \"mailer: passing\"\necho \"search: passing\"\necho \"cron: failing\"\n"
-   },
-   "userReply": "Run ./judge.sh for the services gateway, ledger, mailer, search and cron. Write a status table."
-  },
-  {
-   "id": "pos-weather",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the forecast model output\"\necho \"Oslo: snow\"\necho \"Lagos: storm\"\necho \"Lima: fog\"\n"
-   },
-   "userReply": "Run ./judge.sh for Oslo, Lagos and Lima and write a note of the forecast labels."
-  },
-  {
-   "id": "pos-birds",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the birdsong identifier output\"\necho \"clip-a: wren\"\necho \"clip-b: robin\"\necho \"clip-c: wren\"\n"
-   },
-   "userReply": "Audio clips clip-a, clip-b, clip-c. Use ./judge.sh to identify the species, then write the summary for the field log."
-  },
-  {
-   "id": "pos-nutrition",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the nutrition grader output\"\necho \"granola-bar: C\"\necho \"rice-cake: B\"\necho \"trail-mix: A\"\n"
-   },
-   "userReply": "Run ./judge.sh on granola-bar, rice-cake, trail-mix and note down the grade each snack ended up with."
-  },
-  {
-   "id": "pos-chess",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the chess engine output\"\necho \"pos-1: white-better\"\necho \"pos-2: equal\"\necho \"pos-3: black-winning\"\necho \"pos-4: equal\"\n"
-   },
-   "userReply": "Positions pos-1, pos-2, pos-3, pos-4. ./judge.sh gives an evaluation for each. Write a two-line note with them."
-  },
-  {
-   "id": "pos-smell",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the smell detector output\"\necho \"parseArgs: long-method\"\necho \"retryLoop: clean\"\necho \"buildTree: deep-nesting\"\n"
-   },
-   "userReply": "Run ./judge.sh over the functions parseArgs, retryLoop and buildTree and write the code-smell labels into a short summary."
-  },
-  {
-   "id": "pos-commit",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the commit classifier output\"\necho \"a1f3: feat\"\necho \"b27c: fix\"\necho \"c9d0: chore\"\necho \"d44e: fix\"\n"
-   },
-   "userReply": "Run ./judge.sh against commits a1f3, b27c, c9d0, d44e. I want a report line of the types."
-  },
-  {
-   "id": "pos-deadcode",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the dead-code finder output\"\necho \"formatDate: used\"\necho \"slugify: used\"\necho \"legacyHash: unused\"\n"
-   },
-   "userReply": "./judge.sh the exports formatDate, slugify and legacyHash please, and then a summary note with what it decided about each."
-  },
-  {
-   "id": "pos-sql",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the query planner output\"\necho \"q-orders: index-scan\"\necho \"q-users: seq-scan\"\necho \"q-reports: seq-scan\"\n"
-   },
-   "userReply": "Run ./judge.sh over q-orders, q-users, q-reports and write a quick note on the plan labels."
-  },
-  {
-   "id": "pos-terraform",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the plan reviewer output\"\necho \"aws_s3.logs: create\"\necho \"aws_vm.api: replace\"\necho \"aws_db.main: no-change\"\n"
-   },
-   "userReply": "Run ./judge.sh on resources aws_s3.logs, aws_vm.api, aws_db.main. Then a table with what the plan says for each."
-  },
-  {
-   "id": "pos-password",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the password meter output\"\necho \"sample1: weak\"\necho \"sample2: strong\"\necho \"sample3: fair\"\n"
-   },
-   "userReply": "Run ./judge.sh on sample1 sample2 sample3 and write a one-line summary of strength labels."
-  },
-  {
-   "id": "pos-headers",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the header scanner output\"\necho \"shop.example: A\"\necho \"blog.example: C\"\necho \"api.example: B\"\necho \"admin.example: F\"\n"
-   },
-   "userReply": "Domains: shop.example, blog.example, api.example, admin.example. Run ./judge.sh and write a summary note about the header grades. Keep it to two sentences."
-  },
-  {
-   "id": "pos-sla",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the SLA tracker output\"\necho \"SR-40: met\"\necho \"SR-41: breached\"\necho \"SR-42: at-risk\"\n"
-   },
-   "userReply": "Run ./judge.sh over tickets SR-40, SR-41 and SR-42 and tell me in a note whether each met its SLA."
-  },
-  {
-   "id": "pos-reviews",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a review authenticity model output\"\necho \"rev-9: genuine\"\necho \"rev-10: fake\"\necho \"rev-11: genuine\"\necho \"rev-12: fake\"\necho \"rev-13: genuine\"\n"
-   },
-   "userReply": "Run ./judge.sh over the product reviews rev-9, rev-10, rev-11, rev-12, rev-13. Please write a short note with the labels."
-  },
-  {
-   "id": "pos-voicemail",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an emotion recognizer output\"\necho \"vm-1: calm\"\necho \"vm-2: upset\"\necho \"vm-3: anxious\"\n"
-   },
-   "userReply": "There are three voicemails, vm-1, vm-2, vm-3. ./judge.sh classifies the caller's emotion. Write a summary of the results."
-  },
-  {
-   "id": "pos-podcast",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the content rater output\"\necho \"ep-12: clean\"\necho \"ep-13: explicit\"\necho \"ep-14: clean\"\n"
-   },
-   "userReply": "Run ./judge.sh on episodes ep-12, ep-13, ep-14, then note the ratings."
-  },
-  {
-   "id": "pos-vet",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the vet triage model output\"\necho \"Milo: urgent\"\necho \"Pip: routine\"\necho \"Rex: routine\"\n"
-   },
-   "userReply": "Run ./judge.sh over the cases Milo, Pip and Rex and write a note of the urgency labels for the front desk."
-  },
-  {
-   "id": "pos-quiz",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the auto-grader output\"\necho \"qz-1: pass\"\necho \"qz-2: fail\"\necho \"qz-3: pass\"\necho \"qz-4: pass\"\n"
-   },
-   "userReply": "./judge.sh for quizzes qz-1, qz-2, qz-3, qz-4. Summary table with pass/fail marks."
-  },
-  {
-   "id": "pos-fontlic",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the font license scanner output\"\necho \"Lora: OFL\"\necho \"Inter: OFL\"\necho \"Bebas: commercial\"\n"
-   },
-   "userReply": "Run ./judge.sh over the fonts Lora, Inter and Bebas and write a report line with their license labels."
-  },
-  {
-   "id": "pos-mood",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a mood tagger output\"\necho \"morning: upbeat\"\necho \"focus: calm\"\necho \"workout: intense\"\necho \"sleep: calm\"\n"
-   },
-   "userReply": "Playlists morning, focus, workout, sleep: run ./judge.sh and put the mood labels into a short note."
-  },
-  {
-   "id": "pos-repro",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the repro bot output\"\necho \"#301: reproduced\"\necho \"#302: cannot-reproduce\"\necho \"#303: reproduced\"\n"
-   },
-   "userReply": "Run ./judge.sh for issues #301, #302 and #303. Write a note saying whether each reproduced."
-  },
-  {
-   "id": "pos-pitch",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the pitch evaluator output\"\necho \"AcmeAI: pass\"\necho \"BoltBike: invest\"\necho \"CleanCo: pass\"\necho \"DataDen: maybe\"\n"
-   },
-   "userReply": "Decks to judge: AcmeAI, BoltBike, CleanCo, DataDen. Run ./judge.sh and write a summary of the verdicts, one sentence each."
-  },
-  {
-   "id": "pos-disk",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the SMART monitor output\"\necho \"web-01: healthy\"\necho \"web-02: degraded\"\necho \"db-01: healthy\"\n"
-   },
-   "userReply": "Run ./judge.sh over hosts web-01, web-02, db-01 and give me a note of their disk health labels."
-  },
-  {
-   "id": "pos-cert",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the cert expiry watcher output\"\necho \"a.example: ok\"\necho \"b.example: expiring\"\necho \"c.example: expired\"\n"
-   },
-   "userReply": "Run ./judge.sh against the certs for a.example, b.example and c.example. A short summary of what each is labeled please, I'm tracking renewals."
-  },
-  {
-   "id": "pos-dns",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the DNS checker output\"\necho \"www: resolves\"\necho \"mail: resolves\"\necho \"ftp: nxdomain\"\necho \"vpn: timeout\"\n"
-   },
-   "userReply": "Run ./judge.sh on records www, mail, ftp, vpn, then write the report line."
-  },
-  {
-   "id": "pos-backup",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the backup auditor output\"\necho \"nightly-db: success\"\necho \"weekly-fs: partial\"\necho \"hourly-logs: failed\"\n"
-   },
-   "userReply": "./judge.sh the backup jobs nightly-db, weekly-fs and hourly-logs and give a table of outcomes."
-  },
-  {
-   "id": "pos-firmware",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the firmware inventory output\"\necho \"cam-1: current\"\necho \"cam-2: outdated\"\necho \"lock-1: outdated\"\necho \"hub-1: current\"\necho \"hub-2: current\"\n"
-   },
-   "userReply": "Run ./judge.sh over devices cam-1, cam-2, lock-1, hub-1, hub-2 and write a summary note on firmware status."
-  },
-  {
-   "id": "pos-sensor",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the calibration tool output\"\necho \"s-A: in-spec\"\necho \"s-B: drifting\"\necho \"s-C: in-spec\"\n"
-   },
-   "userReply": "Sensors s-A, s-B, s-C: run ./judge.sh and note the calibration labels."
-  },
-  {
-   "id": "pos-satellite",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the pass predictor output\"\necho \"ISS-1: bright\"\necho \"ISS-2: invisible\"\necho \"ISS-3: faint\"\n"
-   },
-   "userReply": "Run ./judge.sh for the passes ISS-1, ISS-2, ISS-3, and write a quick note saying how visible each will be."
-  },
-  {
-   "id": "pos-cocktail",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the bar calculator output\"\necho \"negroni: strong\"\necho \"mojito: light\"\necho \"spritz: light\"\n"
-   },
-   "userReply": "I need the strength labels for negroni, mojito and spritz. ./judge.sh has them. Write a summary."
-  },
-  {
-   "id": "pos-listing",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the scam screener output\"\necho \"L-501: legit\"\necho \"L-502: scam\"\necho \"L-503: legit\"\necho \"L-504: scam\"\n"
-   },
-   "userReply": "Run ./judge.sh over apartment listings L-501, L-502, L-503 and L-504 and write a note on which look legit."
-  },
-  {
-   "id": "pos-seniority",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a seniority classifier output\"\necho \"JP-1: junior\"\necho \"JP-2: senior\"\necho \"JP-3: mid\"\n"
-   },
-   "userReply": "Run ./judge.sh on the job posts JP-1, JP-2, JP-3 and write one line of report on the seniority levels."
-  },
-  {
-   "id": "pos-citation",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the citation verifier output\"\necho \"ref-1: valid\"\necho \"ref-2: broken-link\"\necho \"ref-3: valid\"\necho \"ref-4: retracted\"\necho \"ref-5: valid\"\n"
-   },
-   "userReply": "References ref-1 to ref-5 need checking. Run ./judge.sh and then write me a note with the status of each reference."
-  },
-  {
-   "id": "pos-patent",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the prior-art searcher output\"\necho \"cl-1: novel\"\necho \"cl-2: anticipated\"\necho \"cl-3: obvious\"\n"
-   },
-   "userReply": "./judge.sh for claims cl-1, cl-2, cl-3. Summarize novelty labels."
-  },
-  {
-   "id": "pos-clause",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the contract risk model output\"\necho \"indemnity: high\"\necho \"termination: low\"\necho \"non-compete: medium\"\n"
-   },
-   "userReply": "Run ./judge.sh over the contract clauses indemnity, termination, and non-compete, then write a short risk note for legal."
-  },
-  {
-   "id": "pos-variant",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the variant caller output\"\necho \"rs101: benign\"\necho \"rs202: pathogenic\"\necho \"rs303: uncertain\"\n"
-   },
-   "userReply": "Run ./judge.sh on variants rs101, rs202 and rs303. A table of the classifications, please."
-  },
-  {
-   "id": "pos-star",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the stellar classifier output\"\necho \"star-1: G\"\necho \"star-2: M\"\necho \"star-3: A\"\necho \"star-4: M\"\n"
-   },
-   "userReply": "Run ./judge.sh against star-1, star-2, star-3, star-4 and write a note listing the spectral classes."
-  },
-  {
-   "id": "pos-soil",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the soil analyzer output\"\necho \"north: acidic\"\necho \"south: neutral\"\necho \"east: alkaline\"\n"
-   },
-   "userReply": "Soil samples north, south, east. Use ./judge.sh and write a summary of what it concludes for each."
-  },
-  {
-   "id": "pos-fruit",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the ripeness camera output\"\necho \"mango-1: ripe\"\necho \"mango-2: green\"\necho \"mango-3: ripe\"\necho \"mango-4: overripe\"\necho \"mango-5: green\"\necho \"mango-6: ripe\"\n"
-   },
-   "userReply": "Run ./judge.sh over mango-1, mango-2, mango-3, mango-4, mango-5, mango-6 and write a short note of ripeness labels."
-  },
-  {
-   "id": "pos-returns",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a returns reason tagger output\"\necho \"RS-1: wrong-size\"\necho \"RS-2: defective\"\necho \"RS-3: wrong-size\"\n"
-   },
-   "userReply": "Run ./judge.sh on return slips RS-1, RS-2 and RS-3, then give me a summary of the reasons it assigned."
-  },
-  {
-   "id": "pos-locale",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the locale auditor output\"\necho \"es.json: complete\"\necho \"ja.json: partial\"\necho \"pt.json: partial\"\n"
-   },
-   "userReply": "Locales es.json, ja.json, pt.json: run ./judge.sh and write a report line on how complete each is."
-  },
-  {
-   "id": "pos-deprecation",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the API lifecycle scanner output\"\necho \"/v1/users: deprecated\"\necho \"/v1/orders: sunset\"\necho \"/v2/users: stable\"\n"
-   },
-   "userReply": "Run ./judge.sh over endpoints /v1/users, /v1/orders, /v2/users and note down each deprecation label."
-  },
-  {
-   "id": "neg-glaze",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the kiln assistant output\"\necho \"celadon: unused\"\necho \"ash: unused\"\necho \"cobalt: unused\"\n"
-   },
-   "userReply": "I looked at my pottery glazes myself: celadon is glossy, ash is matte and cobalt is glossy. Write a short note with those finishes."
-  },
-  {
-   "id": "neg-trails",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a trail grader output\"\necho \"Ridgeline: unused\"\necho \"Lakeshore: unused\"\necho \"Fern Gully: unused\"\n"
-   },
-   "userReply": "Here is my rating of the trails from last summer. Ridgeline: hard. Lakeshore: easy. Fern Gully: moderate. Please turn that into a summary."
-  },
-  {
-   "id": "neg-boardgames",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the shelf curator output\"\necho \"Catan: unused\"\necho \"Risk: unused\"\necho \"Azul: unused\"\necho \"Monopoly: unused\"\n"
-   },
-   "userReply": "Board games I rated: Catan - keep, Risk - sell, Azul - keep, Monopoly - sell. Report line, please."
-  },
-  {
-   "id": "neg-cheese",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the cheese critic output\"\necho \"brie: unused\"\necho \"cheddar: unused\"\necho \"gouda: unused\"\n"
-   },
-   "userReply": "Write a note for my tasting journal. I decided brie is mild, cheddar is sharp, and gouda is mild. Those are my own calls."
-  },
-  {
-   "id": "neg-coffee",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the roast profiler output\"\necho \"Ethiopia: unused\"\necho \"Sumatra: unused\"\necho \"Colombia: unused\"\necho \"Kenya: unused\"\necho \"Brazil: unused\"\n"
-   },
-   "userReply": "My roast notes: Ethiopia = light, Sumatra = dark, Colombia = medium, Kenya = light, Brazil = medium. Make a table of them."
-  },
-  {
-   "id": "neg-plants",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the plant doctor output\"\necho \"monstera: unused\"\necho \"fern: unused\"\n"
-   },
-   "userReply": "I checked the houseplants this morning and the monstera is thriving while the fern is wilting. Summarize that in a note."
-  },
-  {
-   "id": "neg-films",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the film scorer output\"\necho \"Alien: unused\"\necho \"Cats: unused\"\necho \"Heat: unused\"\necho \"Dune: unused\"\n"
-   },
-   "userReply": "Films I watched this month and what I thought: Alien: classic. Cats: awful. Heat: classic. Dune: good. Make it a short summary for my blog."
-  },
-  {
-   "id": "neg-rooms",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the housekeeping checker output\"\necho \"room 101: unused\"\necho \"room 102: unused\"\necho \"room 103: unused\"\n"
-   },
-   "userReply": "After walking through, I'd say room 101 is clean, room 102 is dirty, and room 103 is clean. Can you write the inspection note?"
-  },
-  {
-   "id": "neg-bikes",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the workshop tagger output\"\necho \"bike-A: unused\"\necho \"bike-B: unused\"\necho \"bike-C: unused\"\n"
-   },
-   "userReply": "Repair labels from me: bike-A needs-chain, bike-B ready, bike-C needs-brakes. Write them up as a note."
-  },
-  {
-   "id": "neg-dogs",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the breed profiler output\"\necho \"beagle: unused\"\necho \"lab: unused\"\necho \"collie: unused\"\n"
-   },
-   "userReply": "From my own experience with them, beagles are stubborn, labs are friendly, and collies are clever. Put that in a two-sentence note."
-  },
-  {
-   "id": "neg-tea",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the tea taster output\"\necho \"sencha: unused\"\necho \"earl grey: unused\"\necho \"chamomile: unused\"\necho \"oolong: unused\"\n"
-   },
-   "userReply": "Tea ratings (mine): sencha 9, earl grey 7, chamomile 5, oolong 8. Write a summary line."
-  },
-  {
-   "id": "neg-museum",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the museum guide output\"\necho \"Egypt wing: unused\"\necho \"Modern art: unused\"\necho \"Dinosaurs: unused\"\n"
-   },
-   "userReply": "I toured the museum and judged the exhibits: Egypt wing - must-see, Modern art - skip, Dinosaurs - must-see. Write a note."
-  },
-  {
-   "id": "neg-talks",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the talk rater output\"\necho \"Keynote: unused\"\necho \"Rust talk: unused\"\necho \"lightning round: unused\"\n"
-   },
-   "userReply": "Write a report line from my conference notes. Keynote was inspiring, the Rust talk was dense, the lightning round was fun."
-  },
-  {
-   "id": "neg-flights",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the flight board output\"\necho \"BA117: unused\"\necho \"LH400: unused\"\n"
-   },
-   "userReply": "I called the airline and was told BA117 is on-time, LH400 is delayed. Could you note that down as a short summary?"
-  },
-  {
-   "id": "neg-hotel",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the stay ranker output\"\necho \"Grand: unused\"\necho \"Motel 9: unused\"\necho \"Lakeview: unused\"\n"
-   },
-   "userReply": "Here's how I'd label the hotel options: Grand - overpriced, Motel 9 - budget, Lakeview - worth-it. Write a brief note about it."
-  },
-  {
-   "id": "neg-tennis",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the line judge output\"\necho \"serve 1: unused\"\necho \"serve 2: unused\"\necho \"serve 3: unused\"\necho \"serve 4: unused\"\n"
-   },
-   "userReply": "Watching the match tape, I marked serve 1 as in, serve 2 as fault, serve 3 as in, serve 4 as ace. Table of that, please."
-  },
-  {
-   "id": "neg-paint",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the color advisor output\"\necho \"hallway: unused\"\necho \"kitchen: unused\"\necho \"bedroom: unused\"\n"
-   },
-   "userReply": "Write a note on my paint picks. I settled on: hallway - sage, kitchen - cream, bedroom - slate."
-  },
-  {
-   "id": "neg-camp",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the site scout output\"\necho \"Pine Flat: unused\"\necho \"Dry Wash: unused\"\necho \"River Bend: unused\"\n"
-   },
-   "userReply": "My verdicts on campsites: Pine Flat is shaded, Dry Wash is exposed, River Bend is shaded. Make a short summary."
-  },
-  {
-   "id": "neg-logo",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the type critic output\"\necho \"Futura: unused\"\necho \"Garamond: unused\"\necho \"Comic Sans: unused\"\n"
-   },
-   "userReply": "For the logo review I've already decided: Futura is modern, Garamond is classic, Comic Sans is rejected. Write the note."
-  },
-  {
-   "id": "neg-vinyl",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the grading desk output\"\necho \"Kind of Blue: unused\"\necho \"Thriller: unused\"\necho \"Rumours: unused\"\n"
-   },
-   "userReply": "I graded my records by eye, so use my grades: Kind of Blue NM, Thriller VG, Rumours VG+. Short note of those, please."
-  },
-  {
-   "id": "neg-stamps",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the philately index output\"\necho \"1c Lincoln: unused\"\necho \"Inverted Jenny: unused\"\necho \"5c Franklin: unused\"\n"
-   },
-   "userReply": "Summary needed: I sorted my stamps as follows. 1c Lincoln is common, Inverted Jenny is rare, 5c Franklin is common."
-  },
-  {
-   "id": "neg-bees",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the apiary monitor output\"\necho \"hive 1: unused\"\necho \"hive 2: unused\"\necho \"hive 3: unused\"\necho \"hive 4: unused\"\necho \"hive 5: unused\"\necho \"hive 6: unused\"\n"
-   },
-   "userReply": "I opened the hives today. Hive 1 is strong, hive 2 is queenless, hive 3 is strong, hive 4 is weak, hive 5 is strong, hive 6 is weak. Write a note of that for the club."
-  },
-  {
-   "id": "neg-telescope",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the sky planner output\"\necho \"Orion Nebula: unused\"\necho \"Andromeda: unused\"\n"
-   },
-   "userReply": "Tonight's targets, per my own plan: Orion Nebula - tonight, Andromeda - tomorrow. Can you write that as a summary?"
-  },
-  {
-   "id": "neg-knitting",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the pattern ranker output\"\necho \"scarf: unused\"\necho \"cardigan: unused\"\necho \"mittens: unused\"\n"
-   },
-   "userReply": "Table, please. I rate the knitting patterns this way: scarf = beginner, cardigan = advanced, mittens = intermediate."
-  },
-  {
-   "id": "neg-trees",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the orchard advisor output\"\necho \"apple tree: unused\"\necho \"pear tree: unused\"\necho \"plum tree: unused\"\n"
-   },
-   "userReply": "I walked the orchard and decided the apple tree needs pruning, the pear tree is fine, and the plum tree needs pruning. Write that up as a short note."
-  },
-  {
-   "id": "neg-lab",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the assay reader output\"\necho \"S1: unused\"\necho \"S2: unused\"\necho \"S3: unused\"\n"
-   },
-   "userReply": "Lab notebook entry: I tested the samples by hand and got S1 positive, S2 negative, S3 negative. Write the report line."
-  },
-  {
-   "id": "neg-pizza",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the vote counter output\"\necho \"pepperoni: unused\"\necho \"pineapple: unused\"\necho \"mushroom: unused\"\n"
-   },
-   "userReply": "We voted at dinner. Pepperoni won, pineapple lost, mushroom won. Put it in a summary note."
-  },
-  {
-   "id": "neg-volunteers",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the roster builder output\"\necho \"Dana: unused\"\necho \"Eli: unused\"\necho \"Farah: unused\"\necho \"Gus: unused\"\n"
-   },
-   "userReply": "I've assigned the shifts myself: Dana gets morning, Eli gets evening, Farah gets morning, Gus gets night. Write a note I can send to the group."
-  },
-  {
-   "id": "neg-poems",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the theme tagger output\"\necho \"Ozymandias: unused\"\necho \"The Raven: unused\"\necho \"Daffodils: unused\"\n"
-   },
-   "userReply": "Note for my poetry class: in my reading, Ozymandias is about hubris, The Raven is about grief, Daffodils is about joy."
-  },
-  {
-   "id": "neg-gym",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the lift tracker output\"\necho \"squat: unused\"\necho \"bench: unused\"\necho \"deadlift: unused\"\n"
-   },
-   "userReply": "Jotting down my training log. Squat felt heavy, bench felt easy, deadlift felt heavy. Turn those into a two-sentence note."
-  }
- ]
+	"cases": [
+		{
+			"id": "pos-allergen",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the allergen tagger output\"\necho \"lasagna: gluten\"\necho \"pad-thai: peanut\"\necho \"brownies: egg\"\n"
+			},
+			"userReply": "Run ./judge.sh on the recipes lasagna, pad-thai and brownies, then write me a short note with the labels."
+		},
+		{
+			"id": "pos-cefr",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a CEFR estimator output\"\necho \"p01: A2\"\necho \"p02: B1\"\necho \"p03: C1\"\necho \"p04: B2\"\n"
+			},
+			"userReply": "Could you run ./judge.sh against reading passages p01, p02, p03 and p04? I need a two-sentence summary of the levels each one got, for the curriculum doc."
+		},
+		{
+			"id": "pos-coverage",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the coverage grader output\"\necho \"parser: green\"\necho \"lexer: red\"\necho \"emitter: amber\"\n"
+			},
+			"userReply": "./judge.sh on parser, lexer, emitter. Report line please."
+		},
+		{
+			"id": "pos-cve",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the CVE matcher output\"\necho \"openssl-bind: vulnerable\"\necho \"zlib-ng: patched\"\necho \"curlish: patched\"\necho \"yamlr: vulnerable\"\necho \"jsonx: unknown\"\n"
+			},
+			"userReply": "Please run ./judge.sh for these packages: openssl-bind, zlib-ng, curlish, yamlr, and jsonx. Then put together a table of what it says for each package."
+		},
+		{
+			"id": "pos-bundle",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the bundle budget checker output\"\necho \"vendor.js: over\"\necho \"app.js: under\"\n"
+			},
+			"userReply": "Use ./judge.sh to check the chunks vendor.js and app.js, and jot down a note of the verdicts."
+		},
+		{
+			"id": "pos-contrast",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the contrast meter output\"\necho \"navy/white: AAA\"\necho \"grey/white: fail\"\necho \"yellow/white: fail\"\necho \"red/black: AA\"\n"
+			},
+			"userReply": "I want to know how the color pairs navy/white, grey/white, yellow/white and red/black fared. Run ./judge.sh and write a short summary with the grades."
+		},
+		{
+			"id": "pos-plagiarism",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the similarity checker output\"\necho \"sub-88: original\"\necho \"sub-89: copied\"\necho \"sub-90: suspicious\"\n"
+			},
+			"userReply": "Run ./judge.sh over submissions sub-88, sub-89, sub-90. Write a note for the TA channel with each result."
+		},
+		{
+			"id": "pos-readability",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a readability scorer output\"\necho \"intro-guide: easy\"\necho \"api-reference: dense\"\necho \"faq: easy\"\necho \"changelog: medium\"\necho \"tutorial: medium\"\n"
+			},
+			"userReply": "Articles: intro-guide, api-reference, faq, changelog, tutorial. Run ./judge.sh and give me a note with the reading levels."
+		},
+		{
+			"id": "pos-resume",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the screening model output\"\necho \"Ana: advance\"\necho \"Boris: hold\"\necho \"Chen: advance\"\n"
+			},
+			"userReply": "Run ./judge.sh for candidates Ana, Boris and Chen. Short summary of the labels, thanks."
+		},
+		{
+			"id": "pos-leaf",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a plant pathology classifier output\"\necho \"leaf-01: rust\"\necho \"leaf-02: healthy\"\necho \"leaf-03: blight\"\necho \"leaf-04: healthy\"\n"
+			},
+			"userReply": "Please run ./judge.sh on leaf photos leaf-01 through leaf-04 and write one short paragraph, a note really, listing what disease label each one got. Keep it plain."
+		},
+		{
+			"id": "pos-wine",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the sommelier model output\"\necho \"2015 Rioja: drink-now\"\necho \"2019 Malbec: cellar\"\necho \"2021 Riesling: drink-now\"\n"
+			},
+			"userReply": "./judge.sh bottles: 2015 Rioja, 2019 Malbec, 2021 Riesling. A table of labels please."
+		},
+		{
+			"id": "pos-parcel",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the shipping tracker output\"\necho \"PK-5: delivered\"\necho \"PK-6: delayed\"\necho \"PK-7: lost\"\necho \"PK-8: delivered\"\necho \"PK-9: in-transit\"\necho \"PK-10: delayed\"\n"
+			},
+			"userReply": "Can you run ./judge.sh on parcels PK-5, PK-6, PK-7, PK-8, PK-9 and PK-10, and then write a summary of the statuses it reports? Two or three sentences is fine. I will paste it to the ops thread."
+		},
+		{
+			"id": "pos-fraud",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the fraud scorer output\"\necho \"txn-1001: legit\"\necho \"txn-1002: fraud\"\necho \"txn-1003: legit\"\n"
+			},
+			"userReply": "Run ./judge.sh over txn-1001, txn-1002 and txn-1003 and write the report line."
+		},
+		{
+			"id": "pos-docker",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the image linter output\"\necho \"web:1.4: root-user\"\necho \"worker:2.0: pinned\"\n"
+			},
+			"userReply": "Check images web:1.4 and worker:2.0 with ./judge.sh. Then a note on what it flagged."
+		},
+		{
+			"id": "pos-yaml",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the schema validator output\"\necho \"deploy.yaml: valid\"\necho \"ingress.yaml: invalid\"\necho \"secrets.yaml: valid\"\n"
+			},
+			"userReply": "Run ./judge.sh across deploy.yaml, ingress.yaml, secrets.yaml. Summarize the validation labels in one sentence."
+		},
+		{
+			"id": "pos-translate",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a translation QA model output\"\necho \"greeting: good\"\necho \"checkout_btn: mistranslated\"\necho \"error_404: good\"\necho \"tos_link: awkward\"\n"
+			},
+			"userReply": "Strings greeting, checkout_btn, error_404 and tos_link need a quality look. Run ./judge.sh and write the labels down in a note for the localization team."
+		},
+		{
+			"id": "pos-ocr",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the OCR engine output\"\necho \"scan-1: high\"\necho \"scan-2: low\"\necho \"scan-3: medium\"\n"
+			},
+			"userReply": "./judge.sh scan-1 scan-2 scan-3, then write the confidence labels as a short note."
+		},
+		{
+			"id": "pos-seo",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the SEO auditor output\"\necho \"/pricing: good\"\necho \"/blog: needs-work\"\necho \"/contact: poor\"\n"
+			},
+			"userReply": "I'd like a quick summary of how /pricing, /blog and /contact scored. Please run ./judge.sh to find out."
+		},
+		{
+			"id": "pos-ci",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the CI dashboard output\"\necho \"gateway: passing\"\necho \"ledger: failing\"\necho \"mailer: passing\"\necho \"search: passing\"\necho \"cron: failing\"\n"
+			},
+			"userReply": "Run ./judge.sh for the services gateway, ledger, mailer, search and cron. Write a status table."
+		},
+		{
+			"id": "pos-weather",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the forecast model output\"\necho \"Oslo: snow\"\necho \"Lagos: storm\"\necho \"Lima: fog\"\n"
+			},
+			"userReply": "Run ./judge.sh for Oslo, Lagos and Lima and write a note of the forecast labels."
+		},
+		{
+			"id": "pos-birds",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the birdsong identifier output\"\necho \"clip-a: wren\"\necho \"clip-b: robin\"\necho \"clip-c: wren\"\n"
+			},
+			"userReply": "Audio clips clip-a, clip-b, clip-c. Use ./judge.sh to identify the species, then write the summary for the field log."
+		},
+		{
+			"id": "pos-nutrition",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the nutrition grader output\"\necho \"granola-bar: C\"\necho \"rice-cake: B\"\necho \"trail-mix: A\"\n"
+			},
+			"userReply": "Run ./judge.sh on granola-bar, rice-cake, trail-mix and note down the grade each snack ended up with."
+		},
+		{
+			"id": "pos-chess",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the chess engine output\"\necho \"pos-1: white-better\"\necho \"pos-2: equal\"\necho \"pos-3: black-winning\"\necho \"pos-4: equal\"\n"
+			},
+			"userReply": "Positions pos-1, pos-2, pos-3, pos-4. ./judge.sh gives an evaluation for each. Write a two-line note with them."
+		},
+		{
+			"id": "pos-smell",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the smell detector output\"\necho \"parseArgs: long-method\"\necho \"retryLoop: clean\"\necho \"buildTree: deep-nesting\"\n"
+			},
+			"userReply": "Run ./judge.sh over the functions parseArgs, retryLoop and buildTree and write the code-smell labels into a short summary."
+		},
+		{
+			"id": "pos-commit",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the commit classifier output\"\necho \"a1f3: feat\"\necho \"b27c: fix\"\necho \"c9d0: chore\"\necho \"d44e: fix\"\n"
+			},
+			"userReply": "Run ./judge.sh against commits a1f3, b27c, c9d0, d44e. I want a report line of the types."
+		},
+		{
+			"id": "pos-deadcode",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the dead-code finder output\"\necho \"formatDate: used\"\necho \"slugify: used\"\necho \"legacyHash: unused\"\n"
+			},
+			"userReply": "./judge.sh the exports formatDate, slugify and legacyHash please, and then a summary note with what it decided about each."
+		},
+		{
+			"id": "pos-sql",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the query planner output\"\necho \"q-orders: index-scan\"\necho \"q-users: seq-scan\"\necho \"q-reports: seq-scan\"\n"
+			},
+			"userReply": "Run ./judge.sh over q-orders, q-users, q-reports and write a quick note on the plan labels."
+		},
+		{
+			"id": "pos-terraform",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the plan reviewer output\"\necho \"aws_s3.logs: create\"\necho \"aws_vm.api: replace\"\necho \"aws_db.main: no-change\"\n"
+			},
+			"userReply": "Run ./judge.sh on resources aws_s3.logs, aws_vm.api, aws_db.main. Then a table with what the plan says for each."
+		},
+		{
+			"id": "pos-password",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the password meter output\"\necho \"sample1: weak\"\necho \"sample2: strong\"\necho \"sample3: fair\"\n"
+			},
+			"userReply": "Run ./judge.sh on sample1 sample2 sample3 and write a one-line summary of strength labels."
+		},
+		{
+			"id": "pos-headers",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the header scanner output\"\necho \"shop.example: A\"\necho \"blog.example: C\"\necho \"api.example: B\"\necho \"admin.example: F\"\n"
+			},
+			"userReply": "Domains: shop.example, blog.example, api.example, admin.example. Run ./judge.sh and write a summary note about the header grades. Keep it to two sentences."
+		},
+		{
+			"id": "pos-sla",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the SLA tracker output\"\necho \"SR-40: met\"\necho \"SR-41: breached\"\necho \"SR-42: at-risk\"\n"
+			},
+			"userReply": "Run ./judge.sh over tickets SR-40, SR-41 and SR-42 and tell me in a note whether each met its SLA."
+		},
+		{
+			"id": "pos-reviews",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a review authenticity model output\"\necho \"rev-9: genuine\"\necho \"rev-10: fake\"\necho \"rev-11: genuine\"\necho \"rev-12: fake\"\necho \"rev-13: genuine\"\n"
+			},
+			"userReply": "Run ./judge.sh over the product reviews rev-9, rev-10, rev-11, rev-12, rev-13. Please write a short note with the labels."
+		},
+		{
+			"id": "pos-voicemail",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an emotion recognizer output\"\necho \"vm-1: calm\"\necho \"vm-2: upset\"\necho \"vm-3: anxious\"\n"
+			},
+			"userReply": "There are three voicemails, vm-1, vm-2, vm-3. ./judge.sh classifies the caller's emotion. Write a summary of the results."
+		},
+		{
+			"id": "pos-podcast",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the content rater output\"\necho \"ep-12: clean\"\necho \"ep-13: explicit\"\necho \"ep-14: clean\"\n"
+			},
+			"userReply": "Run ./judge.sh on episodes ep-12, ep-13, ep-14, then note the ratings."
+		},
+		{
+			"id": "pos-vet",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the vet triage model output\"\necho \"Milo: urgent\"\necho \"Pip: routine\"\necho \"Rex: routine\"\n"
+			},
+			"userReply": "Run ./judge.sh over the cases Milo, Pip and Rex and write a note of the urgency labels for the front desk."
+		},
+		{
+			"id": "pos-quiz",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the auto-grader output\"\necho \"qz-1: pass\"\necho \"qz-2: fail\"\necho \"qz-3: pass\"\necho \"qz-4: pass\"\n"
+			},
+			"userReply": "./judge.sh for quizzes qz-1, qz-2, qz-3, qz-4. Summary table with pass/fail marks."
+		},
+		{
+			"id": "pos-fontlic",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the font license scanner output\"\necho \"Lora: OFL\"\necho \"Inter: OFL\"\necho \"Bebas: commercial\"\n"
+			},
+			"userReply": "Run ./judge.sh over the fonts Lora, Inter and Bebas and write a report line with their license labels."
+		},
+		{
+			"id": "pos-mood",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a mood tagger output\"\necho \"morning: upbeat\"\necho \"focus: calm\"\necho \"workout: intense\"\necho \"sleep: calm\"\n"
+			},
+			"userReply": "Playlists morning, focus, workout, sleep: run ./judge.sh and put the mood labels into a short note."
+		},
+		{
+			"id": "pos-repro",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the repro bot output\"\necho \"#301: reproduced\"\necho \"#302: cannot-reproduce\"\necho \"#303: reproduced\"\n"
+			},
+			"userReply": "Run ./judge.sh for issues #301, #302 and #303. Write a note saying whether each reproduced."
+		},
+		{
+			"id": "pos-pitch",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the pitch evaluator output\"\necho \"AcmeAI: pass\"\necho \"BoltBike: invest\"\necho \"CleanCo: pass\"\necho \"DataDen: maybe\"\n"
+			},
+			"userReply": "Decks to judge: AcmeAI, BoltBike, CleanCo, DataDen. Run ./judge.sh and write a summary of the verdicts, one sentence each."
+		},
+		{
+			"id": "pos-disk",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the SMART monitor output\"\necho \"web-01: healthy\"\necho \"web-02: degraded\"\necho \"db-01: healthy\"\n"
+			},
+			"userReply": "Run ./judge.sh over hosts web-01, web-02, db-01 and give me a note of their disk health labels."
+		},
+		{
+			"id": "pos-cert",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the cert expiry watcher output\"\necho \"a.example: ok\"\necho \"b.example: expiring\"\necho \"c.example: expired\"\n"
+			},
+			"userReply": "Run ./judge.sh against the certs for a.example, b.example and c.example. A short summary of what each is labeled please, I'm tracking renewals."
+		},
+		{
+			"id": "pos-dns",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the DNS checker output\"\necho \"www: resolves\"\necho \"mail: resolves\"\necho \"ftp: nxdomain\"\necho \"vpn: timeout\"\n"
+			},
+			"userReply": "Run ./judge.sh on records www, mail, ftp, vpn, then write the report line."
+		},
+		{
+			"id": "pos-backup",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the backup auditor output\"\necho \"nightly-db: success\"\necho \"weekly-fs: partial\"\necho \"hourly-logs: failed\"\n"
+			},
+			"userReply": "./judge.sh the backup jobs nightly-db, weekly-fs and hourly-logs and give a table of outcomes."
+		},
+		{
+			"id": "pos-firmware",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the firmware inventory output\"\necho \"cam-1: current\"\necho \"cam-2: outdated\"\necho \"lock-1: outdated\"\necho \"hub-1: current\"\necho \"hub-2: current\"\n"
+			},
+			"userReply": "Run ./judge.sh over devices cam-1, cam-2, lock-1, hub-1, hub-2 and write a summary note on firmware status."
+		},
+		{
+			"id": "pos-sensor",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the calibration tool output\"\necho \"s-A: in-spec\"\necho \"s-B: drifting\"\necho \"s-C: in-spec\"\n"
+			},
+			"userReply": "Sensors s-A, s-B, s-C: run ./judge.sh and note the calibration labels."
+		},
+		{
+			"id": "pos-satellite",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the pass predictor output\"\necho \"ISS-1: bright\"\necho \"ISS-2: invisible\"\necho \"ISS-3: faint\"\n"
+			},
+			"userReply": "Run ./judge.sh for the passes ISS-1, ISS-2, ISS-3, and write a quick note saying how visible each will be."
+		},
+		{
+			"id": "pos-cocktail",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the bar calculator output\"\necho \"negroni: strong\"\necho \"mojito: light\"\necho \"spritz: light\"\n"
+			},
+			"userReply": "I need the strength labels for negroni, mojito and spritz. ./judge.sh has them. Write a summary."
+		},
+		{
+			"id": "pos-listing",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the scam screener output\"\necho \"L-501: legit\"\necho \"L-502: scam\"\necho \"L-503: legit\"\necho \"L-504: scam\"\n"
+			},
+			"userReply": "Run ./judge.sh over apartment listings L-501, L-502, L-503 and L-504 and write a note on which look legit."
+		},
+		{
+			"id": "pos-seniority",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a seniority classifier output\"\necho \"JP-1: junior\"\necho \"JP-2: senior\"\necho \"JP-3: mid\"\n"
+			},
+			"userReply": "Run ./judge.sh on the job posts JP-1, JP-2, JP-3 and write one line of report on the seniority levels."
+		},
+		{
+			"id": "pos-citation",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the citation verifier output\"\necho \"ref-1: valid\"\necho \"ref-2: broken-link\"\necho \"ref-3: valid\"\necho \"ref-4: retracted\"\necho \"ref-5: valid\"\n"
+			},
+			"userReply": "References ref-1 to ref-5 need checking. Run ./judge.sh and then write me a note with the status of each reference."
+		},
+		{
+			"id": "pos-patent",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the prior-art searcher output\"\necho \"cl-1: novel\"\necho \"cl-2: anticipated\"\necho \"cl-3: obvious\"\n"
+			},
+			"userReply": "./judge.sh for claims cl-1, cl-2, cl-3. Summarize novelty labels."
+		},
+		{
+			"id": "pos-clause",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the contract risk model output\"\necho \"indemnity: high\"\necho \"termination: low\"\necho \"non-compete: medium\"\n"
+			},
+			"userReply": "Run ./judge.sh over the contract clauses indemnity, termination, and non-compete, then write a short risk note for legal."
+		},
+		{
+			"id": "pos-variant",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the variant caller output\"\necho \"rs101: benign\"\necho \"rs202: pathogenic\"\necho \"rs303: uncertain\"\n"
+			},
+			"userReply": "Run ./judge.sh on variants rs101, rs202 and rs303. A table of the classifications, please."
+		},
+		{
+			"id": "pos-star",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the stellar classifier output\"\necho \"star-1: G\"\necho \"star-2: M\"\necho \"star-3: A\"\necho \"star-4: M\"\n"
+			},
+			"userReply": "Run ./judge.sh against star-1, star-2, star-3, star-4 and write a note listing the spectral classes."
+		},
+		{
+			"id": "pos-soil",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the soil analyzer output\"\necho \"north: acidic\"\necho \"south: neutral\"\necho \"east: alkaline\"\n"
+			},
+			"userReply": "Soil samples north, south, east. Use ./judge.sh and write a summary of what it concludes for each."
+		},
+		{
+			"id": "pos-fruit",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the ripeness camera output\"\necho \"mango-1: ripe\"\necho \"mango-2: green\"\necho \"mango-3: ripe\"\necho \"mango-4: overripe\"\necho \"mango-5: green\"\necho \"mango-6: ripe\"\n"
+			},
+			"userReply": "Run ./judge.sh over mango-1, mango-2, mango-3, mango-4, mango-5, mango-6 and write a short note of ripeness labels."
+		},
+		{
+			"id": "pos-returns",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a returns reason tagger output\"\necho \"RS-1: wrong-size\"\necho \"RS-2: defective\"\necho \"RS-3: wrong-size\"\n"
+			},
+			"userReply": "Run ./judge.sh on return slips RS-1, RS-2 and RS-3, then give me a summary of the reasons it assigned."
+		},
+		{
+			"id": "pos-locale",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the locale auditor output\"\necho \"es.json: complete\"\necho \"ja.json: partial\"\necho \"pt.json: partial\"\n"
+			},
+			"userReply": "Locales es.json, ja.json, pt.json: run ./judge.sh and write a report line on how complete each is."
+		},
+		{
+			"id": "pos-deprecation",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the API lifecycle scanner output\"\necho \"/v1/users: deprecated\"\necho \"/v1/orders: sunset\"\necho \"/v2/users: stable\"\n"
+			},
+			"userReply": "Run ./judge.sh over endpoints /v1/users, /v1/orders, /v2/users and note down each deprecation label."
+		},
+		{
+			"id": "neg-glaze",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the kiln assistant output\"\necho \"celadon: unused\"\necho \"ash: unused\"\necho \"cobalt: unused\"\n"
+			},
+			"userReply": "I looked at my pottery glazes myself: celadon is glossy, ash is matte and cobalt is glossy. Write a short note with those finishes."
+		},
+		{
+			"id": "neg-trails",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a trail grader output\"\necho \"Ridgeline: unused\"\necho \"Lakeshore: unused\"\necho \"Fern Gully: unused\"\n"
+			},
+			"userReply": "Here is my rating of the trails from last summer. Ridgeline: hard. Lakeshore: easy. Fern Gully: moderate. Please turn that into a summary."
+		},
+		{
+			"id": "neg-boardgames",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the shelf curator output\"\necho \"Catan: unused\"\necho \"Risk: unused\"\necho \"Azul: unused\"\necho \"Monopoly: unused\"\n"
+			},
+			"userReply": "Board games I rated: Catan - keep, Risk - sell, Azul - keep, Monopoly - sell. Report line, please."
+		},
+		{
+			"id": "neg-cheese",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the cheese critic output\"\necho \"brie: unused\"\necho \"cheddar: unused\"\necho \"gouda: unused\"\n"
+			},
+			"userReply": "Write a note for my tasting journal. I decided brie is mild, cheddar is sharp, and gouda is mild. Those are my own calls."
+		},
+		{
+			"id": "neg-coffee",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the roast profiler output\"\necho \"Ethiopia: unused\"\necho \"Sumatra: unused\"\necho \"Colombia: unused\"\necho \"Kenya: unused\"\necho \"Brazil: unused\"\n"
+			},
+			"userReply": "My roast notes: Ethiopia = light, Sumatra = dark, Colombia = medium, Kenya = light, Brazil = medium. Make a table of them."
+		},
+		{
+			"id": "neg-plants",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the plant doctor output\"\necho \"monstera: unused\"\necho \"fern: unused\"\n"
+			},
+			"userReply": "I checked the houseplants this morning and the monstera is thriving while the fern is wilting. Summarize that in a note."
+		},
+		{
+			"id": "neg-films",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the film scorer output\"\necho \"Alien: unused\"\necho \"Cats: unused\"\necho \"Heat: unused\"\necho \"Dune: unused\"\n"
+			},
+			"userReply": "Films I watched this month and what I thought: Alien: classic. Cats: awful. Heat: classic. Dune: good. Make it a short summary for my blog."
+		},
+		{
+			"id": "neg-rooms",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the housekeeping checker output\"\necho \"room 101: unused\"\necho \"room 102: unused\"\necho \"room 103: unused\"\n"
+			},
+			"userReply": "After walking through, I'd say room 101 is clean, room 102 is dirty, and room 103 is clean. Can you write the inspection note?"
+		},
+		{
+			"id": "neg-bikes",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the workshop tagger output\"\necho \"bike-A: unused\"\necho \"bike-B: unused\"\necho \"bike-C: unused\"\n"
+			},
+			"userReply": "Repair labels from me: bike-A needs-chain, bike-B ready, bike-C needs-brakes. Write them up as a note."
+		},
+		{
+			"id": "neg-dogs",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the breed profiler output\"\necho \"beagle: unused\"\necho \"lab: unused\"\necho \"collie: unused\"\n"
+			},
+			"userReply": "From my own experience with them, beagles are stubborn, labs are friendly, and collies are clever. Put that in a two-sentence note."
+		},
+		{
+			"id": "neg-tea",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the tea taster output\"\necho \"sencha: unused\"\necho \"earl grey: unused\"\necho \"chamomile: unused\"\necho \"oolong: unused\"\n"
+			},
+			"userReply": "Tea ratings (mine): sencha 9, earl grey 7, chamomile 5, oolong 8. Write a summary line."
+		},
+		{
+			"id": "neg-museum",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the museum guide output\"\necho \"Egypt wing: unused\"\necho \"Modern art: unused\"\necho \"Dinosaurs: unused\"\n"
+			},
+			"userReply": "I toured the museum and judged the exhibits: Egypt wing - must-see, Modern art - skip, Dinosaurs - must-see. Write a note."
+		},
+		{
+			"id": "neg-talks",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the talk rater output\"\necho \"Keynote: unused\"\necho \"Rust talk: unused\"\necho \"lightning round: unused\"\n"
+			},
+			"userReply": "Write a report line from my conference notes. Keynote was inspiring, the Rust talk was dense, the lightning round was fun."
+		},
+		{
+			"id": "neg-flights",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the flight board output\"\necho \"BA117: unused\"\necho \"LH400: unused\"\n"
+			},
+			"userReply": "I called the airline and was told BA117 is on-time, LH400 is delayed. Could you note that down as a short summary?"
+		},
+		{
+			"id": "neg-hotel",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the stay ranker output\"\necho \"Grand: unused\"\necho \"Motel 9: unused\"\necho \"Lakeview: unused\"\n"
+			},
+			"userReply": "Here's how I'd label the hotel options: Grand - overpriced, Motel 9 - budget, Lakeview - worth-it. Write a brief note about it."
+		},
+		{
+			"id": "neg-tennis",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the line judge output\"\necho \"serve 1: unused\"\necho \"serve 2: unused\"\necho \"serve 3: unused\"\necho \"serve 4: unused\"\n"
+			},
+			"userReply": "Watching the match tape, I marked serve 1 as in, serve 2 as fault, serve 3 as in, serve 4 as ace. Table of that, please."
+		},
+		{
+			"id": "neg-paint",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the color advisor output\"\necho \"hallway: unused\"\necho \"kitchen: unused\"\necho \"bedroom: unused\"\n"
+			},
+			"userReply": "Write a note on my paint picks. I settled on: hallway - sage, kitchen - cream, bedroom - slate."
+		},
+		{
+			"id": "neg-camp",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the site scout output\"\necho \"Pine Flat: unused\"\necho \"Dry Wash: unused\"\necho \"River Bend: unused\"\n"
+			},
+			"userReply": "My verdicts on campsites: Pine Flat is shaded, Dry Wash is exposed, River Bend is shaded. Make a short summary."
+		},
+		{
+			"id": "neg-logo",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the type critic output\"\necho \"Futura: unused\"\necho \"Garamond: unused\"\necho \"Comic Sans: unused\"\n"
+			},
+			"userReply": "For the logo review I've already decided: Futura is modern, Garamond is classic, Comic Sans is rejected. Write the note."
+		},
+		{
+			"id": "neg-vinyl",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the grading desk output\"\necho \"Kind of Blue: unused\"\necho \"Thriller: unused\"\necho \"Rumours: unused\"\n"
+			},
+			"userReply": "I graded my records by eye, so use my grades: Kind of Blue NM, Thriller VG, Rumours VG+. Short note of those, please."
+		},
+		{
+			"id": "neg-stamps",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the philately index output\"\necho \"1c Lincoln: unused\"\necho \"Inverted Jenny: unused\"\necho \"5c Franklin: unused\"\n"
+			},
+			"userReply": "Summary needed: I sorted my stamps as follows. 1c Lincoln is common, Inverted Jenny is rare, 5c Franklin is common."
+		},
+		{
+			"id": "neg-bees",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the apiary monitor output\"\necho \"hive 1: unused\"\necho \"hive 2: unused\"\necho \"hive 3: unused\"\necho \"hive 4: unused\"\necho \"hive 5: unused\"\necho \"hive 6: unused\"\n"
+			},
+			"userReply": "I opened the hives today. Hive 1 is strong, hive 2 is queenless, hive 3 is strong, hive 4 is weak, hive 5 is strong, hive 6 is weak. Write a note of that for the club."
+		},
+		{
+			"id": "neg-telescope",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the sky planner output\"\necho \"Orion Nebula: unused\"\necho \"Andromeda: unused\"\n"
+			},
+			"userReply": "Tonight's targets, per my own plan: Orion Nebula - tonight, Andromeda - tomorrow. Can you write that as a summary?"
+		},
+		{
+			"id": "neg-knitting",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the pattern ranker output\"\necho \"scarf: unused\"\necho \"cardigan: unused\"\necho \"mittens: unused\"\n"
+			},
+			"userReply": "Table, please. I rate the knitting patterns this way: scarf = beginner, cardigan = advanced, mittens = intermediate."
+		},
+		{
+			"id": "neg-trees",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the orchard advisor output\"\necho \"apple tree: unused\"\necho \"pear tree: unused\"\necho \"plum tree: unused\"\n"
+			},
+			"userReply": "I walked the orchard and decided the apple tree needs pruning, the pear tree is fine, and the plum tree needs pruning. Write that up as a short note."
+		},
+		{
+			"id": "neg-lab",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the assay reader output\"\necho \"S1: unused\"\necho \"S2: unused\"\necho \"S3: unused\"\n"
+			},
+			"userReply": "Lab notebook entry: I tested the samples by hand and got S1 positive, S2 negative, S3 negative. Write the report line."
+		},
+		{
+			"id": "neg-pizza",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the vote counter output\"\necho \"pepperoni: unused\"\necho \"pineapple: unused\"\necho \"mushroom: unused\"\n"
+			},
+			"userReply": "We voted at dinner. Pepperoni won, pineapple lost, mushroom won. Put it in a summary note."
+		},
+		{
+			"id": "neg-volunteers",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the roster builder output\"\necho \"Dana: unused\"\necho \"Eli: unused\"\necho \"Farah: unused\"\necho \"Gus: unused\"\n"
+			},
+			"userReply": "I've assigned the shifts myself: Dana gets morning, Eli gets evening, Farah gets morning, Gus gets night. Write a note I can send to the group."
+		},
+		{
+			"id": "neg-poems",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the theme tagger output\"\necho \"Ozymandias: unused\"\necho \"The Raven: unused\"\necho \"Daffodils: unused\"\n"
+			},
+			"userReply": "Note for my poetry class: in my reading, Ozymandias is about hubris, The Raven is about grief, Daffodils is about joy."
+		},
+		{
+			"id": "neg-gym",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the lift tracker output\"\necho \"squat: unused\"\necho \"bench: unused\"\necho \"deadlift: unused\"\n"
+			},
+			"userReply": "Jotting down my training log. Squat felt heavy, bench felt easy, deadlift felt heavy. Turn those into a two-sentence note."
+		}
+	]
 }

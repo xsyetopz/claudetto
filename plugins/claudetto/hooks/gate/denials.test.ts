@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { gateRepeated, gateRepeatedUnexplained } from "../texts.ts";
 import { repeatedText, signature, withDenial } from "./denials.ts";
 

@@ -1,172 +1,162 @@
 [
- {
-  "id": "tn1",
-  "label": "near",
-  "cands": 8,
-  "offered": true,
-  "found": [],
-  "ms": 2629,
-  "usd": 0.00022792,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tp4",
-  "label": "pos",
-  "cands": 0,
-  "offered": true,
-  "found": [
-   "unseen"
-  ],
-  "ms": 2646,
-  "usd": 0.00023965,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the warning that the plugin printed about the old entry\"}]}"
- },
- {
-  "id": "tp1",
-  "label": "pos",
-  "cands": 5,
-  "offered": true,
-  "found": [
-   "unseen"
-  ],
-  "ms": 3088,
-  "usd": 0.0003048,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"`.gitignore` also has the block that `/claudetto:setup` wrote earlier: `Thumbs.db`, `*.swp`, `dist/`, `.next/` and `coverage/`.\"}]}"
- },
- {
-  "id": "tp3",
-  "label": "pos",
-  "cands": 0,
-  "offered": true,
-  "found": [
-   "unseen"
-  ],
-  "ms": 3535,
-  "usd": 0.00033368,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the setup block in this commit\"}]}"
- },
- {
-  "id": "tp5",
-  "label": "pos",
-  "cands": 0,
-  "offered": true,
-  "found": [
-   "unseen"
-  ],
-  "ms": 3711,
-  "usd": 0.00035295000000000004,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the guard in `auth.ts` that rejects empty cookies; the session middleware sets one before it runs\"}]}"
- },
- {
-  "id": "tn3",
-  "label": "near",
-  "cands": 2,
-  "offered": true,
-  "found": [],
-  "ms": 3720,
-  "usd": 0.00032841,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc2",
-  "label": "neg",
-  "cands": 2,
-  "offered": true,
-  "found": [],
-  "ms": 1098,
-  "usd": 0.00004236,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tp2",
-  "label": "pos",
-  "cands": 2,
-  "offered": true,
-  "found": [
-   "unseen"
-  ],
-  "ms": 4197,
-  "usd": 0.00040851,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"It leaves out `.gitignore` and `.ignore`, which I didn't change.\"}]}"
- },
- {
-  "id": "tc3",
-  "label": "neg",
-  "cands": 0,
-  "offered": false,
-  "found": [],
-  "ms": 1112,
-  "usd": 0.00004066,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc6",
-  "label": "neg",
-  "cands": 1,
-  "offered": true,
-  "found": [],
-  "ms": 930,
-  "usd": 0.00004225,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc5",
-  "label": "neg",
-  "cands": 2,
-  "offered": true,
-  "found": [],
-  "ms": 1046,
-  "usd": 0.000042289999999999997,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc4",
-  "label": "neg",
-  "cands": 0,
-  "offered": true,
-  "found": [],
-  "ms": 1275,
-  "usd": 0.000042109999999999995,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc8",
-  "label": "neg",
-  "cands": 0,
-  "offered": false,
-  "found": [],
-  "ms": 1035,
-  "usd": 0.000040839999999999995,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc1",
-  "label": "neg",
-  "cands": 0,
-  "offered": true,
-  "found": [],
-  "ms": 2668,
-  "usd": 0.00022095,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tn2",
-  "label": "near",
-  "cands": 1,
-  "offered": true,
-  "found": [],
-  "ms": 5312,
-  "usd": 0.00050983,
-  "raw": "{\"faults\":[]}"
- },
- {
-  "id": "tc7",
-  "label": "neg",
-  "cands": 0,
-  "offered": true,
-  "found": [],
-  "ms": 2658,
-  "usd": 0.0002343,
-  "raw": "{\"faults\":[]}"
- }
+	{
+		"id": "tn1",
+		"label": "near",
+		"cands": 8,
+		"offered": true,
+		"found": [],
+		"ms": 2629,
+		"usd": 0.00022792,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tp4",
+		"label": "pos",
+		"cands": 0,
+		"offered": true,
+		"found": ["unseen"],
+		"ms": 2646,
+		"usd": 0.00023965,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the warning that the plugin printed about the old entry\"}]}"
+	},
+	{
+		"id": "tp1",
+		"label": "pos",
+		"cands": 5,
+		"offered": true,
+		"found": ["unseen"],
+		"ms": 3088,
+		"usd": 0.0003048,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"`.gitignore` also has the block that `/claudetto:setup` wrote earlier: `Thumbs.db`, `*.swp`, `dist/`, `.next/` and `coverage/`.\"}]}"
+	},
+	{
+		"id": "tp3",
+		"label": "pos",
+		"cands": 0,
+		"offered": true,
+		"found": ["unseen"],
+		"ms": 3535,
+		"usd": 0.00033368,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the setup block in this commit\"}]}"
+	},
+	{
+		"id": "tp5",
+		"label": "pos",
+		"cands": 0,
+		"offered": true,
+		"found": ["unseen"],
+		"ms": 3711,
+		"usd": 0.00035295000000000004,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"the guard in `auth.ts` that rejects empty cookies; the session middleware sets one before it runs\"}]}"
+	},
+	{
+		"id": "tn3",
+		"label": "near",
+		"cands": 2,
+		"offered": true,
+		"found": [],
+		"ms": 3720,
+		"usd": 0.00032841,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc2",
+		"label": "neg",
+		"cands": 2,
+		"offered": true,
+		"found": [],
+		"ms": 1098,
+		"usd": 0.00004236,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tp2",
+		"label": "pos",
+		"cands": 2,
+		"offered": true,
+		"found": ["unseen"],
+		"ms": 4197,
+		"usd": 0.00040851,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"It leaves out `.gitignore` and `.ignore`, which I didn't change.\"}]}"
+	},
+	{
+		"id": "tc3",
+		"label": "neg",
+		"cands": 0,
+		"offered": false,
+		"found": [],
+		"ms": 1112,
+		"usd": 0.00004066,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc6",
+		"label": "neg",
+		"cands": 1,
+		"offered": true,
+		"found": [],
+		"ms": 930,
+		"usd": 0.00004225,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc5",
+		"label": "neg",
+		"cands": 2,
+		"offered": true,
+		"found": [],
+		"ms": 1046,
+		"usd": 0.000042289999999999997,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc4",
+		"label": "neg",
+		"cands": 0,
+		"offered": true,
+		"found": [],
+		"ms": 1275,
+		"usd": 0.000042109999999999995,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc8",
+		"label": "neg",
+		"cands": 0,
+		"offered": false,
+		"found": [],
+		"ms": 1035,
+		"usd": 0.000040839999999999995,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc1",
+		"label": "neg",
+		"cands": 0,
+		"offered": true,
+		"found": [],
+		"ms": 2668,
+		"usd": 0.00022095,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tn2",
+		"label": "near",
+		"cands": 1,
+		"offered": true,
+		"found": [],
+		"ms": 5312,
+		"usd": 0.00050983,
+		"raw": "{\"faults\":[]}"
+	},
+	{
+		"id": "tc7",
+		"label": "neg",
+		"cands": 0,
+		"offered": true,
+		"found": [],
+		"ms": 2658,
+		"usd": 0.0002343,
+		"raw": "{\"faults\":[]}"
+	}
 ]

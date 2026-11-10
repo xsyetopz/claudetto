@@ -1,5 +1,6 @@
 import { readFile, readlink } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
+
 import { spawn, TOML } from "bun";
 
 export interface Rule {
@@ -176,10 +177,7 @@ export interface Held {
 
 /** What the processes of `uid` hold open, except this one and Claude Code, which sits idle in the project; nothing when `lsof` fails. */
 export const heldPaths = async (uid: number): Promise<Held | undefined> => {
-	const text = await output(
-		["lsof", "-nP", "-u", String(uid), "-Fpcfn"],
-		"/",
-	);
+	const text = await output(["lsof", "-nP", "-u", String(uid), "-Fpcfn"], "/");
 	if (text === undefined) {
 		return undefined;
 	}
@@ -231,7 +229,9 @@ export const keepReason = async (
 	}
 	// Installs leave a dependency folder untouched for weeks while its checkout is in daily use, so the checkout's own activity decides too.
 	const minutes = String(-Math.ceil(limitMs / 60_000));
-	const index = (await output(["git", "rev-parse", "--git-path", "index"], top))?.trim();
+	const index = (
+		await output(["git", "rev-parse", "--git-path", "index"], top)
+	)?.trim();
 	const used = await output(
 		["find", index ?? "", "-mmin", minutes, "-print", "-quit"],
 		top,

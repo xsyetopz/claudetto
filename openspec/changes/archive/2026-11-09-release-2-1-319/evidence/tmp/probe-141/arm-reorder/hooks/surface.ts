@@ -1,4 +1,5 @@
 import type { HookFor, On, PluginOptions } from "claude-code";
+
 import { switchOption } from "./options.ts";
 import {
 	BUN_FACT,

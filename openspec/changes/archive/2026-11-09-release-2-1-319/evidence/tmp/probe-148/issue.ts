@@ -1,6 +1,7 @@
 const f = "/Users/krystian/CodeProjects/xsyetopz/claudetto/ISSUES.md";
 let s = await Bun.file(f).text();
-const h = "### Core's `context_management` section contradicts the handoff block";
+const h =
+	"### Core's `context_management` section contradicts the handoff block";
 if (!s.includes(h)) throw new Error("anchor missing");
 const entry = `### A handover costs half of a core compaction at 166k tokens
 

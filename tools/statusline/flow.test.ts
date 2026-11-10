@@ -1,8 +1,12 @@
 import { describe, expect, test } from "bun:test";
+
 import { width } from "../../plugins/claudetto/statusline/width.ts";
 import { linesOf, NOW_S } from "./support.ts";
 
-const narrow = (columns: number) => ({ COLUMNS: String(columns), NO_COLOR: "1" });
+const narrow = (columns: number) => ({
+	COLUMNS: String(columns),
+	NO_COLOR: "1",
+});
 
 const LIMITS = {
 	rate_limits: {

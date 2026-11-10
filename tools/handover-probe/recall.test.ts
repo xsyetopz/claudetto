@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { QUESTIONS, lostAgainst, scoreRecall } from "./recall.ts";
+
+import { lostAgainst, QUESTIONS, scoreRecall } from "./recall.ts";
 import { TURNS } from "./task.ts";
 
 const perfect = QUESTIONS.map((q) => q.expect.join(" "));
@@ -39,7 +40,8 @@ test("an answer needs every keyword, in any case", () => {
 test("a paraphrase from paid run 2 scores, and a wrong fact does not", () => {
 	const answers = [...perfect];
 	answers[2] = "Money is stored as whole numbers of cents, never as floats.";
-	answers[8] = "Migrations are SQL files that only move forward. The first one is named `0001_init.sql`.";
+	answers[8] =
+		"Migrations are SQL files that only move forward. The first one is named `0001_init.sql`.";
 	expect(scoreRecall(answers).correct).toHaveLength(10);
 	answers[2] = "Money is a float in dollars.";
 	expect(scoreRecall(answers).lost).toEqual(["q3-money"]);

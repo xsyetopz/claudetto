@@ -20,8 +20,7 @@ const PROBE = /^-[0lL]$/;
 const PID = /^\d+$/;
 // The sandbox's TMPDIR, `/tmp/claude-<uid>`, is a base like `/tmp` itself, as the sweep reads it: a top is a folder in either.
 const TMP_TOP = /^(?:\/private)?\/tmp(?:\/claude-\d+)?(?:\/[^/]+)?/;
-const TMP_TOPS =
-	/(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/\s'"`;|&()<>]+/g;
+const TMP_TOPS = /(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/\s'"`;|&()<>]+/g;
 // A sentence can end right after a path it prints.
 const TRAILING = /[.,:]+$/;
 const TMP_NAMED = /^(?:\/private)?\/tmp\/(?:claude-\d+\/)?[^/]+/;
@@ -141,7 +140,11 @@ const expanded = (commands: Command[]): Command[] => {
 	const set = new Map<string, string>();
 	return commands.map((c) => {
 		const words = c.words.map((w) =>
-			w.replace(VARIABLE, (whole, braced?: string, bare?: string) => set.get(braced ?? bare ?? "") ?? whole),
+			w.replace(
+				VARIABLE,
+				(whole, braced?: string, bare?: string) =>
+					set.get(braced ?? bare ?? "") ?? whole,
+			),
 		);
 		const assigned = words.map((w) => ASSIGNED.exec(w));
 		if (assigned.every((m) => m !== null)) {

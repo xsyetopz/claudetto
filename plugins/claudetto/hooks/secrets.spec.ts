@@ -1,6 +1,8 @@
 // The real betterleaks over made-up keys (bun test only: the lab cannot run a process).
 import { expect, test } from "bun:test";
+
 import { spawn } from "bun";
+
 import { redact, secretsIn } from "./secrets.ts";
 
 type Run = Parameters<typeof secretsIn>[0];

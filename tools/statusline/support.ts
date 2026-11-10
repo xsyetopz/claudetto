@@ -24,7 +24,9 @@ export const linesOf = (
 	env: Record<string, string | undefined> = { COLUMNS: "120", NO_COLOR: "1" },
 	base: Fields = BASE,
 ): string[] =>
-	plain(statusOf(JSON.stringify({ ...base, ...fields }), env, NOW, LINE)).split("\n");
+	plain(statusOf(JSON.stringify({ ...base, ...fields }), env, NOW, LINE)).split(
+		"\n",
+	);
 
 export const raw = (
 	fields: Fields,

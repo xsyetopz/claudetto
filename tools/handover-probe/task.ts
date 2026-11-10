@@ -38,5 +38,10 @@ export const TURNS: readonly Turn[] = [
 export const HANDOFF_ASK = "This ends the task: hand off.";
 
 /** A real model obeys the ask, so only an arm that hands off on a boundary gets it: in any other arm a clear would reset the context its threshold waits for. */
-export const promptOf = (turn: Turn, arm: { readonly handoffOnBoundary: boolean }): string =>
-	turn.boundary && arm.handoffOnBoundary ? `${turn.prompt} ${HANDOFF_ASK}` : turn.prompt;
+export const promptOf = (
+	turn: Turn,
+	arm: { readonly handoffOnBoundary: boolean },
+): string =>
+	turn.boundary && arm.handoffOnBoundary
+		? `${turn.prompt} ${HANDOFF_ASK}`
+		: turn.prompt;

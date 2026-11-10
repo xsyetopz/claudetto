@@ -41,7 +41,9 @@ const FULL_PERCENT = 80;
 
 /** The line for `df -Pk` output once the volume is over 80% full, or nothing. */
 export const diskLine = (df: string): string | undefined => {
-	const [, , , available, capacity] = (df.trim().split("\n")[1] ?? "").split(/\s+/);
+	const [, , , available, capacity] = (df.trim().split("\n")[1] ?? "").split(
+		/\s+/,
+	);
 	const percent = Number.parseInt(capacity ?? "", 10);
 	if (!(percent > FULL_PERCENT)) {
 		return undefined;

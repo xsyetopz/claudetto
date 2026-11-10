@@ -1,10 +1,11 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { bash, scanner } from "../secrets.mock.ts";
 import {
+	GATE_ENDLESS_WAIT,
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
-	GATE_ENDLESS_WAIT,
 	gateKillPid,
 	gateRmTmp,
 	gateTmpMarker,
@@ -31,7 +32,9 @@ const lab = (
 	on("session.cwd", () => ({ value: "/p" }));
 	on("session.id", () => ({ value: "S1" }));
 	on("fs.exists", (_$, e) => ({
-		value: Object.keys(marked).some((k) => k === e.path || k.startsWith(`${e.path}/`)),
+		value: Object.keys(marked).some(
+			(k) => k === e.path || k.startsWith(`${e.path}/`),
+		),
 	}));
 	on("fs.read", (_$, e) => ({ value: marked[e.path] ?? "" }));
 	on("session.messages", () => ({
@@ -199,7 +202,10 @@ for (const said of [
 	});
 }
 
-for (const said of ["Do not delete branch old-feature.", "old-feature is out."]) {
+for (const said of [
+	"Do not delete branch old-feature.",
+	"old-feature is out.",
+]) {
 	test(`No Request: after "${said}", git branch -D old-feature asks`, async ($: Engine, on: On) => {
 		lab(on, [], {}, [said]);
 		expect((await bash($, "git branch -D old-feature")).decision).toBe("ask");
@@ -262,7 +268,7 @@ denied(
 	gateTmpMarker("/tmp/claude-501/gate20"),
 );
 allowed(
-	'mkdir -p /tmp/probe-x && printenv CLAUDE_CODE_SESSION_ID > /tmp/probe-x/.created-by-claudetto',
+	"mkdir -p /tmp/probe-x && printenv CLAUDE_CODE_SESSION_ID > /tmp/probe-x/.created-by-claudetto",
 );
 allowed(
 	'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto"',
@@ -302,7 +308,8 @@ test("a Write under a /tmp folder that is there already, or outside /tmp, passes
 });
 
 // Seen in another session: a background wait for four successes polled for 32 minutes after one job failed.
-const WAIT = "until [ $(gh run list --json conclusion | grep -c success) -ge 4 ]; do sleep 30; done";
+const WAIT =
+	"until [ $(gh run list --json conclusion | grep -c success) -ge 4 ]; do sleep 30; done";
 const background = ($: Engine, command: string) =>
 	$.tool.check({ tool: "Bash", input: { command, run_in_background: true } });
 test("a background wait loop with no time limit is denied", async ($: Engine, on: On) => {

@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { SILENT_TURN_REMINDER } from "../texts.ts";
 import { AUTO_MODE } from "./auto-mode.ts";
 import {

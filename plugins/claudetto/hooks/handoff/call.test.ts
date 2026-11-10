@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { type CallState, handOff, type Session } from "./call.ts";
 
 const HANDOFF_PATH =
@@ -90,9 +91,9 @@ test("Git State Is Dated: the tool's handoff states the git status line as of it
 	const text = files[0]?.text ?? "";
 	const at = /Written by Claude at (\S+)\./.exec(text)?.[1];
 	expect(at).toBeDefined();
-	expect(text.split("## Current State")[1]?.split("## In Progress")[0]).toContain(
-		`Git as of ${at}: \`## main...origin/main [ahead 3]\``,
-	);
+	expect(
+		text.split("## Current State")[1]?.split("## In Progress")[0],
+	).toContain(`Git as of ${at}: \`## main...origin/main [ahead 3]\``);
 });
 
 test("a call without a required field writes nothing and names the field", async () => {

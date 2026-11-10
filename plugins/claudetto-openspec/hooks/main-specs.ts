@@ -1,6 +1,6 @@
 import { type Fs, join } from "./fs.ts";
-import { blocks, section } from "./spec.ts";
 import { type Report, validateSpec } from "./spec-rules.ts";
+import { blocks, section } from "./spec.ts";
 import { requirementPath } from "./texts.ts";
 import { discoverDeltas } from "./validate.ts";
 

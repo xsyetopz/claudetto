@@ -1,622 +1,508 @@
 [
- {
-  "id": "cred-t1",
-  "kind": "positive",
-  "fault": "credited",
-  "split": "tune",
-  "found": [
-   "credited"
-  ],
-  "ms": 1544,
-  "usd": 0.00010536000000000001,
-  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"the 12 examples you marked as borderline\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unseen-incident",
-  "kind": "positive",
-  "fault": "unseen",
-  "split": "tune",
-  "found": [],
-  "ms": 2004,
-  "usd": 0.0001158,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "cred-t2",
-  "kind": "positive",
-  "fault": "credited",
-  "split": "tune",
-  "found": [
-   "credited"
-  ],
-  "ms": 2015,
-  "usd": 0.00018192000000000002,
-  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"The categories you chose for the report (safe, risky, unsure)\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "fall-incident",
-  "kind": "positive",
-  "fault": "fallback",
-  "split": "tune",
-  "found": [
-   "fallback"
-  ],
-  "ms": 2142,
-  "usd": 0.00021346,
-  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"if it is not installed, fall back to our own regex scanner or skip the scan, whichever is less disruptive.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unfiled-incident",
-  "kind": "positive",
-  "fault": "unfiled",
-  "split": "tune",
-  "found": [
-   "unfiled"
-  ],
-  "ms": 2249,
-  "usd": 0.00022630000000000003,
-  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I haven't changed that code or added the defect to `ISSUES-2026-11-03-2333.md`, because neither was asked for.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "rules-t1",
-  "kind": "positive",
-  "fault": "rules",
-  "split": "tune",
-  "found": [
-   "rules"
-  ],
-  "ms": 2918,
-  "usd": 0.00027093,
-  "raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"I follow the rule that tests are read-only unless asked, and the instruction in CLAUDE.md that says to check with the narrowest script first.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unseen-t1",
-  "kind": "positive",
-  "fault": "unseen",
-  "split": "tune",
-  "found": [],
-  "ms": 1058,
-  "usd": 0.000040669999999999995,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "rules-t2",
-  "kind": "positive",
-  "fault": "rules",
-  "split": "tune",
-  "found": [
-   "rules"
-  ],
-  "ms": 1763,
-  "usd": 0.00016811,
-  "raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"My instructions say to ask before changing configuration, and I am set to read before I write. The rules I run under also say to keep replies short.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unseen-t2",
-  "kind": "positive",
-  "fault": "unseen",
-  "split": "tune",
-  "found": [],
-  "ms": 1583,
-  "usd": 0.00009927,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "cred-incident",
-  "kind": "positive",
-  "fault": "credited",
-  "split": "tune",
-  "found": [],
-  "ms": 3717,
-  "usd": 0.00035762,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unfiled-t1",
-  "kind": "positive",
-  "fault": "unfiled",
-  "split": "tune",
-  "found": [
-   "unfiled"
-  ],
-  "ms": 1576,
-  "usd": 0.00015648000000000002,
-  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I left it alone and did not log it anywhere, since you asked only for the typo.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unfiled-t2",
-  "kind": "positive",
-  "fault": "unfiled",
-  "split": "tune",
-  "found": [
-   "unfiled"
-  ],
-  "ms": 2247,
-  "usd": 0.00019855,
-  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I did not touch it or write it down, because it was outside the task.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "fall-t1",
-  "kind": "positive",
-  "fault": "fallback",
-  "split": "tune",
-  "found": [
-   "fallback"
-  ],
-  "ms": 1600,
-  "usd": 0.0001447,
-  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If the new parser fails on an input, fall back to the old one.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "rules-incident",
-  "kind": "positive",
-  "fault": "rules",
-  "split": "tune",
-  "found": [],
-  "ms": 4627,
-  "usd": 0.00043400000000000003,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "fall-t2",
-  "kind": "positive",
-  "fault": "fallback",
-  "split": "tune",
-  "found": [
-   "fallback"
-  ],
-  "ms": 1587,
-  "usd": 0.00014814,
-  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If SQLite is unavailable, use the file cache.\"},{\"code\":\"fallback\",\"quote\":\"Keep the old file cache readable so existing users are not broken.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-2",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2390,
-  "usd": 0.0002132,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-160",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1709,
-  "usd": 0.00015521,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-7",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2872,
-  "usd": 0.00028844,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-17",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2779,
-  "usd": 0.00021492,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-174",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2076,
-  "usd": 0.00020393,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-169",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2670,
-  "usd": 0.00019918000000000003,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-221",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1936,
-  "usd": 0.00013713,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-164",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 3371,
-  "usd": 0.00037891000000000004,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-254",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1565,
-  "usd": 0.0001307,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-261",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2371,
-  "usd": 0.00024346000000000003,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-272",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2795,
-  "usd": 0.00029267,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-152",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 5958,
-  "usd": 0.00057448,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-291",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2233,
-  "usd": 0.00023383000000000003,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-283",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2699,
-  "usd": 0.00025556000000000005,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-310",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2179,
-  "usd": 0.00025973,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-305",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2759,
-  "usd": 0.0003079,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-238",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 4614,
-  "usd": 0.00046812,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-316",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2128,
-  "usd": 0.00026138,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-338",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1953,
-  "usd": 0.00020605,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-324",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2329,
-  "usd": 0.00026928,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-456",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1313,
-  "usd": 0.00008963999999999999,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-330",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2512,
-  "usd": 0.0002547,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-366",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2721,
-  "usd": 0.00026817,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-466",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [
-   "unchecked"
-  ],
-  "ms": 2397,
-  "usd": 0.00025914,
-  "raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"The three background shells are still running\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-quote",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1465,
-  "usd": 0.00011496,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-fixcite",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1405,
-  "usd": 0.00012826,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-471",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 2544,
-  "usd": 0.00021998,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-490",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1950,
-  "usd": 0.00020319,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-showblock",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1625,
-  "usd": 0.00004132,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-441",
-  "kind": "negative",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 3844,
-  "usd": 0.00046929,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-filed",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "tune",
-  "found": [],
-  "ms": 1344,
-  "usd": 0.00008923,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- }
+	{
+		"id": "cred-t1",
+		"kind": "positive",
+		"fault": "credited",
+		"split": "tune",
+		"found": ["credited"],
+		"ms": 1544,
+		"usd": 0.00010536000000000001,
+		"raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"the 12 examples you marked as borderline\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unseen-incident",
+		"kind": "positive",
+		"fault": "unseen",
+		"split": "tune",
+		"found": [],
+		"ms": 2004,
+		"usd": 0.0001158,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "cred-t2",
+		"kind": "positive",
+		"fault": "credited",
+		"split": "tune",
+		"found": ["credited"],
+		"ms": 2015,
+		"usd": 0.00018192000000000002,
+		"raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"The categories you chose for the report (safe, risky, unsure)\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "fall-incident",
+		"kind": "positive",
+		"fault": "fallback",
+		"split": "tune",
+		"found": ["fallback"],
+		"ms": 2142,
+		"usd": 0.00021346,
+		"raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"if it is not installed, fall back to our own regex scanner or skip the scan, whichever is less disruptive.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unfiled-incident",
+		"kind": "positive",
+		"fault": "unfiled",
+		"split": "tune",
+		"found": ["unfiled"],
+		"ms": 2249,
+		"usd": 0.00022630000000000003,
+		"raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I haven't changed that code or added the defect to `ISSUES-2026-11-03-2333.md`, because neither was asked for.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "rules-t1",
+		"kind": "positive",
+		"fault": "rules",
+		"split": "tune",
+		"found": ["rules"],
+		"ms": 2918,
+		"usd": 0.00027093,
+		"raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"I follow the rule that tests are read-only unless asked, and the instruction in CLAUDE.md that says to check with the narrowest script first.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unseen-t1",
+		"kind": "positive",
+		"fault": "unseen",
+		"split": "tune",
+		"found": [],
+		"ms": 1058,
+		"usd": 0.000040669999999999995,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "rules-t2",
+		"kind": "positive",
+		"fault": "rules",
+		"split": "tune",
+		"found": ["rules"],
+		"ms": 1763,
+		"usd": 0.00016811,
+		"raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"My instructions say to ask before changing configuration, and I am set to read before I write. The rules I run under also say to keep replies short.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unseen-t2",
+		"kind": "positive",
+		"fault": "unseen",
+		"split": "tune",
+		"found": [],
+		"ms": 1583,
+		"usd": 0.00009927,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "cred-incident",
+		"kind": "positive",
+		"fault": "credited",
+		"split": "tune",
+		"found": [],
+		"ms": 3717,
+		"usd": 0.00035762,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unfiled-t1",
+		"kind": "positive",
+		"fault": "unfiled",
+		"split": "tune",
+		"found": ["unfiled"],
+		"ms": 1576,
+		"usd": 0.00015648000000000002,
+		"raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I left it alone and did not log it anywhere, since you asked only for the typo.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unfiled-t2",
+		"kind": "positive",
+		"fault": "unfiled",
+		"split": "tune",
+		"found": ["unfiled"],
+		"ms": 2247,
+		"usd": 0.00019855,
+		"raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I did not touch it or write it down, because it was outside the task.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "fall-t1",
+		"kind": "positive",
+		"fault": "fallback",
+		"split": "tune",
+		"found": ["fallback"],
+		"ms": 1600,
+		"usd": 0.0001447,
+		"raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If the new parser fails on an input, fall back to the old one.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "rules-incident",
+		"kind": "positive",
+		"fault": "rules",
+		"split": "tune",
+		"found": [],
+		"ms": 4627,
+		"usd": 0.00043400000000000003,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "fall-t2",
+		"kind": "positive",
+		"fault": "fallback",
+		"split": "tune",
+		"found": ["fallback"],
+		"ms": 1587,
+		"usd": 0.00014814,
+		"raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If SQLite is unavailable, use the file cache.\"},{\"code\":\"fallback\",\"quote\":\"Keep the old file cache readable so existing users are not broken.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-2",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2390,
+		"usd": 0.0002132,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-160",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1709,
+		"usd": 0.00015521,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-7",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2872,
+		"usd": 0.00028844,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-17",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2779,
+		"usd": 0.00021492,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-174",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2076,
+		"usd": 0.00020393,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-169",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2670,
+		"usd": 0.00019918000000000003,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-221",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1936,
+		"usd": 0.00013713,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-164",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 3371,
+		"usd": 0.00037891000000000004,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-254",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1565,
+		"usd": 0.0001307,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-261",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2371,
+		"usd": 0.00024346000000000003,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-272",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2795,
+		"usd": 0.00029267,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-152",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 5958,
+		"usd": 0.00057448,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-291",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2233,
+		"usd": 0.00023383000000000003,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-283",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2699,
+		"usd": 0.00025556000000000005,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-310",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2179,
+		"usd": 0.00025973,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-305",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2759,
+		"usd": 0.0003079,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-238",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 4614,
+		"usd": 0.00046812,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-316",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2128,
+		"usd": 0.00026138,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-338",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1953,
+		"usd": 0.00020605,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-324",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2329,
+		"usd": 0.00026928,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-456",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1313,
+		"usd": 0.00008963999999999999,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-330",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2512,
+		"usd": 0.0002547,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-366",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2721,
+		"usd": 0.00026817,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-466",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": ["unchecked"],
+		"ms": 2397,
+		"usd": 0.00025914,
+		"raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"The three background shells are still running\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-quote",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1465,
+		"usd": 0.00011496,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-fixcite",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1405,
+		"usd": 0.00012826,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-471",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 2544,
+		"usd": 0.00021998,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-490",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1950,
+		"usd": 0.00020319,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-showblock",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1625,
+		"usd": 0.00004132,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-441",
+		"kind": "negative",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 3844,
+		"usd": 0.00046929,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-filed",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "tune",
+		"found": [],
+		"ms": 1344,
+		"usd": 0.00008923,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	}
 ]

@@ -322,7 +322,7 @@ const double = (s: State): void => {
 
 const redirect = (s: State): void => {
 	const op = REDIRECT.exec(s.src.slice(s.i))?.[0] ?? "";
-	if (s.src[s.i + 1] === "(" && (true)) {
+	if (s.src[s.i + 1] === "(" && true) {
 		s.i += 2;
 		merge(s, balanced(s));
 		add(s, "/dev/fd/63", true);

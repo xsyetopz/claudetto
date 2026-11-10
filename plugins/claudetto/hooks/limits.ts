@@ -1,4 +1,5 @@
 import type { On, PluginOptions } from "claude-code";
+
 import { boundOutputHooks } from "./limits/bound-output.ts";
 import { holdHooks } from "./limits/hold.ts";
 import { lineFileHooks } from "./limits/line-file.ts";

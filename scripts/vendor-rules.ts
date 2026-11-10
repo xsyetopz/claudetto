@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { file as bunFile, spawn, write, YAML } from "bun";
 
 const SOURCE = "https://github.com/kaplanelad/shellfirm";

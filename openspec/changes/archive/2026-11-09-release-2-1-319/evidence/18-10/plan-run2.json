@@ -1,1 +1,20 @@
-{"steps": [{"match": {"hasTools": true}, "reply": {"blocks": [{"type": "tool_use", "name": "Bash", "input": {"command": "env | grep -c SRT_SSH_PROXY; git ls-remote git@github.com:xsyetopz/claudetto.git HEAD; echo \"rc=$?\"; echo \"$GIT_SSH_COMMAND\" | sed \"s/-o ProxyCommand.*/-o ProxyCommand=<elided>/\""}}], "stop": "tool_use"}}], "fallback": {"blocks": [{"type": "text", "text": "Done."}]}}
+{
+	"steps": [
+		{
+			"match": { "hasTools": true },
+			"reply": {
+				"blocks": [
+					{
+						"type": "tool_use",
+						"name": "Bash",
+						"input": {
+							"command": "env | grep -c SRT_SSH_PROXY; git ls-remote git@github.com:xsyetopz/claudetto.git HEAD; echo \"rc=$?\"; echo \"$GIT_SSH_COMMAND\" | sed \"s/-o ProxyCommand.*/-o ProxyCommand=<elided>/\""
+						}
+					}
+				],
+				"stop": "tool_use"
+			}
+		}
+	],
+	"fallback": { "blocks": [{ "type": "text", "text": "Done." }] }
+}

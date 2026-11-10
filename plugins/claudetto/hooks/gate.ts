@@ -1,7 +1,8 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
+
 import {
-	DENIALS_PER_CALL_MAX,
 	type Denials,
+	DENIALS_PER_CALL_MAX,
 	NO_REASON,
 	repeatedText,
 	signature,
@@ -19,8 +20,8 @@ import { readOnly } from "./gate/readonly.ts";
 import {
 	type Host,
 	newRecreation,
-	type Recreation,
 	recreates,
+	type Recreation,
 	saw,
 } from "./gate/recreate.ts";
 import { judge, systemPath } from "./gate/rules.ts";
@@ -34,17 +35,17 @@ import {
 } from "./gate/walled.ts";
 import { listOption } from "./options.ts";
 import { redactAll, redactWith, secretsIn } from "./secrets.ts";
-import { isPersonMessage } from "./verify.ts";
 import {
 	GATE_CHECK_FAILED,
 	GATE_ENDLESS_WAIT,
 	GATE_READ_ONLY,
-	gateProtectedMove,
 	GATE_SYSTEM_WRITE,
+	gateProtectedMove,
 	gateRule,
 	gateTmpMarker,
 	walledUnguarded,
 } from "./texts.ts";
+import { isPersonMessage } from "./verify.ts";
 
 // Under HOME, not the project: a file in the project shows in its `git status`, and agents stop to explain or commit it.
 // One file per session, since `$.fs` has no append and sessions that run at once would overwrite each other's lines.
@@ -103,7 +104,13 @@ export async function isMarked(
 const ownershipOf = async ($: EngineInterface, command: string) => {
 	const tops = TMP_TOUCH.test(command) ? tmpTops(command) : [];
 	const kept = async (has: (top: string) => Promise<boolean>) =>
-		new Set((await Promise.all(tops.map(async (t) => ((await has(t)) ? t : undefined)))).filter((t) => t !== undefined));
+		new Set(
+			(
+				await Promise.all(
+					tops.map(async (t) => ((await has(t)) ? t : undefined)),
+				)
+			).filter((t) => t !== undefined),
+		);
 	const messages = OWNED.test(command) ? await $.session.messages() : [];
 	return ownsOf(
 		messages.flatMap((m) => m.toolUses),
@@ -155,7 +162,8 @@ const ownVerdict = async (
 		return deny(GATE_ENDLESS_WAIT);
 	}
 	// Seen live: a `git switch` stopped on the sandbox-denied `.claude/skills` files and left the tree half moved.
-	const moves = tool === "Bash" && command !== undefined ? movesOf(command) : [];
+	const moves =
+		tool === "Bash" && command !== undefined ? movesOf(command) : [];
 	const touched = moves.length === 0 ? [] : await protectedChanges($, moves);
 	if (touched.length > 0) {
 		return deny(gateProtectedMove(touched));
@@ -309,7 +317,6 @@ export const gate = (on: On, options: PluginOptions): void => {
 		denials = {};
 		return next(e);
 	});
-
 
 	// Every result is scanned, so a secret any tool prints reaches the model as `[REDACTED]`.
 	on("tool.call", { tool: ANY_TOOL }, async ($, e, next) => {

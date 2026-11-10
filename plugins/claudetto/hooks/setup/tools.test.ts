@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { isBelowFloor, isOnPath, noticeLine, TOOLS } from "./tools.ts";
 
 const holds =

@@ -2,7 +2,7 @@ import { type Arm, verdict } from "./arms.ts";
 import { type Event, eventsOf } from "./events.ts";
 import { scoreRecall } from "./recall.ts";
 import type { LogRecord } from "./server.ts";
-import { type UsageEntry, usageByRequest } from "./usage.ts";
+import { usageByRequest, type UsageEntry } from "./usage.ts";
 
 export interface RunRecords {
 	readonly records: readonly LogRecord[];
@@ -32,7 +32,11 @@ const row = (cells: readonly (string | number)[]): string =>
 	`| ${cells.join(" | ")} |`;
 
 /** One table of events per run, then the verdict per run: the event's request and the 3 after it, with the usage the fake server answered, once per `requestId`. */
-export const renderArm = (arm: Arm, runs: readonly RunRecords[], paid: boolean): string => {
+export const renderArm = (
+	arm: Arm,
+	runs: readonly RunRecords[],
+	paid: boolean,
+): string => {
 	const out = [
 		`### Arm ${arm.name}: ${arm.label}`,
 		"",
@@ -61,7 +65,14 @@ export const renderArm = (arm: Arm, runs: readonly RunRecords[], paid: boolean):
 	];
 	for (const [i, run] of runs.entries()) {
 		const events = eventsOf(run.records);
-		out.push(row([i + 1, verdict(arm, events), summary(events), ...(paid ? [recall(run.answers)] : [])]));
+		out.push(
+			row([
+				i + 1,
+				verdict(arm, events),
+				summary(events),
+				...(paid ? [recall(run.answers)] : []),
+			]),
+		);
 		const usage = new Map(
 			usageByRequest(
 				run.records.map<UsageEntry>((r) => ({

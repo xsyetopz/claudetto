@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanned } from "./secrets.mock.ts";
 
 interface Call {
@@ -36,10 +37,18 @@ const lab = (
 			return exit(state.dirty?.includes(target) ? 1 : 0);
 		}
 		if (verb === "branch") {
-			return exit([...(state.unmerged ?? []), ...(state.gone ?? [])].includes(target) ? 1 : 0);
+			return exit(
+				[...(state.unmerged ?? []), ...(state.gone ?? [])].includes(target)
+					? 1
+					: 0,
+			);
 		}
 		if (verb === "show-ref") {
-			return exit(state.unmerged?.some((b) => e.argv.at(-1) === `refs/heads/${b}`) ? 0 : 1);
+			return exit(
+				state.unmerged?.some((b) => e.argv.at(-1) === `refs/heads/${b}`)
+					? 0
+					: 1,
+			);
 		}
 		return exit(0);
 	});
@@ -89,15 +98,23 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 			"": [
 				{ command: MAKE("/tmp/probe-a") },
 				{
-					command: 'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "$d"',
+					command:
+						'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "$d"',
 					text: "/tmp/probe-Q1w2\n",
 				},
 				{ command: `ls /tmp/probe-sibling && ${MAKE("/tmp/probe-b")}` },
-				{ command: "mktemp -d /tmp/probe-XXXX; find /tmp -name 'probe-sib*'", text: "/tmp/probe-sib2\n" },
-				{ command: MAKE("/tmp/probe-other") },
-				{ command: "cd /tmp && mkdir probe-rel && printenv CLAUDE_CODE_SESSION_ID > probe-rel/.created-by-claudetto" },
 				{
-					command: 'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "made $d."',
+					command: "mktemp -d /tmp/probe-XXXX; find /tmp -name 'probe-sib*'",
+					text: "/tmp/probe-sib2\n",
+				},
+				{ command: MAKE("/tmp/probe-other") },
+				{
+					command:
+						"cd /tmp && mkdir probe-rel && printenv CLAUDE_CODE_SESSION_ID > probe-rel/.created-by-claudetto",
+				},
+				{
+					command:
+						'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "made $d."',
 					text: "made /tmp/probe-dot.\n(/tmp/probe-par)\n",
 				},
 			],
@@ -118,15 +135,39 @@ test("at the closing stop the session's marked /tmp folders go, and a sibling's 
 	);
 
 	expect((await stop($)).block).toBeUndefined();
-	expect(removed(runs)).toEqual(["/tmp/probe-a", "/tmp/probe-Q1w2", "/tmp/probe-b", "/tmp/probe-rel", "/tmp/probe-dot", "/tmp/probe-par"]);
+	expect(removed(runs)).toEqual([
+		"/tmp/probe-a",
+		"/tmp/probe-Q1w2",
+		"/tmp/probe-b",
+		"/tmp/probe-rel",
+		"/tmp/probe-dot",
+		"/tmp/probe-par",
+	]);
 });
 
-const MONITOR = { id: "m7", type: "monitor", status: "running", description: "build end" };
-const SHELL = { id: "b1", type: "shell", status: "running", description: "dev server" };
+const MONITOR = {
+	id: "m7",
+	type: "monitor",
+	status: "running",
+	description: "build end",
+};
+const SHELL = {
+	id: "b1",
+	type: "shell",
+	status: "running",
+	description: "dev server",
+};
 const ARMED = [
 	{ command: MAKE("/tmp/probe-a") },
-	{ tool: "mcp__claudetto__monitor", command: "", text: "Monitor started (task m7, timeout 300000ms)." },
-	{ command: "bun run dev", text: "Command running in background with ID: b1. Output is being written to: /t/b1" },
+	{
+		tool: "mcp__claudetto__monitor",
+		command: "",
+		text: "Monitor started (task m7, timeout 300000ms).",
+	},
+	{
+		command: "bun run dev",
+		text: "Command running in background with ID: b1. Output is being written to: /t/b1",
+	},
 ];
 
 // Seen in another session: a monitor armed for a build outlived the report and woke the session 30 minutes later.
@@ -143,8 +184,18 @@ test("the agent's own shell and monitor that the reply does not name block the s
 
 test("a task the reply names, or a background subagent, is waited on: no block and nothing removed", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
-	const agent = { tool: "Agent", command: "", text: "Async agent launched successfully.\nagentId: s9" };
-	lab(on, { "": [...ARMED, agent] }, { [MARK("/tmp/probe-a")]: "S1" }, {}, runs);
+	const agent = {
+		tool: "Agent",
+		command: "",
+		text: "Async agent launched successfully.\nagentId: s9",
+	};
+	lab(
+		on,
+		{ "": [...ARMED, agent] },
+		{ [MARK("/tmp/probe-a")]: "S1" },
+		{},
+		runs,
+	);
 
 	const out = await stop($, "Waiting on m7 and b1 for the build.", [
 		MONITOR,
@@ -168,7 +219,13 @@ test("a stop the hook already blocked passes with the task still running", async
 
 test("a worker's stop ignores a task only the lead started and removes the worker's folders", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
-	lab(on, { "": ARMED, w1: [{ command: MAKE("/tmp/probe-w1") }] }, { [MARK("/tmp/probe-w1")]: "S1" }, {}, runs);
+	lab(
+		on,
+		{ "": ARMED, w1: [{ command: MAKE("/tmp/probe-w1") }] },
+		{ [MARK("/tmp/probe-w1")]: "S1" },
+		{},
+		runs,
+	);
 
 	const out = await $.classic.SubagentStop({
 		stop_hook_active: false,
@@ -208,7 +265,9 @@ test("a clean worker worktree and its merged branch go; a dirty worktree and an 
 	);
 
 	const out = await stop($);
-	expect(runs.filter((argv) => argv[0] === "git" && argv[1] !== "show-ref")).toEqual([
+	expect(
+		runs.filter((argv) => argv[0] === "git" && argv[1] !== "show-ref"),
+	).toEqual([
 		["git", "worktree", "remove", dirty],
 		["git", "worktree", "remove", "/w/moved"],
 		["git", "worktree", "remove", "/repo/.claude/worktrees/agent-a1b2c3"],
@@ -217,13 +276,22 @@ test("a clean worker worktree and its merged branch go; a dirty worktree and an 
 		["git", "branch", "-d", "old"],
 		["git", "branch", "-d", "worktree-agent-a1b2c3"],
 	]);
-	expect(out.block).toContain(`hold work: \`${dirty}\`, \`feat\`, \`spike\`. A worktree`);
+	expect(out.block).toContain(
+		`hold work: \`${dirty}\`, \`feat\`, \`spike\`. A worktree`,
+	);
 });
 
 test("a stop whose reply names every leftover passes", async ($: Engine, on: On) => {
-	lab(on, { "": [{ command: "git branch spike" }] }, {}, { unmerged: ["spike"] });
+	lab(
+		on,
+		{ "": [{ command: "git branch spike" }] },
+		{},
+		{ unmerged: ["spike"] },
+	);
 
-	expect((await stop($, "Branch spike holds two unmerged commits.")).block).toBeUndefined();
+	expect(
+		(await stop($, "Branch spike holds two unmerged commits.")).block,
+	).toBeUndefined();
 });
 
 test("a worker's last turn removes only its own folders, not the lead's or a sibling's", async ($: Engine, on: On) => {
@@ -235,7 +303,9 @@ test("a worker's last turn removes only its own folders, not the lead's or a sib
 			w1: [{ command: MAKE("/tmp/probe-w1") }],
 			w2: [{ command: MAKE("/tmp/probe-w2") }],
 		},
-		Object.fromEntries(["lead", "w1", "w2"].map((n) => [MARK(`/tmp/probe-${n}`), "S1"])),
+		Object.fromEntries(
+			["lead", "w1", "w2"].map((n) => [MARK(`/tmp/probe-${n}`), "S1"]),
+		),
 		{},
 		runs,
 	);

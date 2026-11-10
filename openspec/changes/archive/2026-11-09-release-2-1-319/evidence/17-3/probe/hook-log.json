@@ -1,98 +1,98 @@
 [
- {
-  "id": "rep-keep-fixed-timeout-p1-base",
-  "ms": 5414,
-  "isAnswered": true,
-  "text": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"I took that as a refusal of the check itself, so I didn't retry it with another tool.\"}]}",
-  "usage": {
-   "input_tokens": 1381,
-   "output_tokens": 1005,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-keep-fixed-total-p2-base",
-  "ms": 2516,
-  "isAnswered": true,
-  "text": "{\"faults\":[]}",
-  "usage": {
-   "input_tokens": 987,
-   "output_tokens": 333,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-keep-mutates-right-p2-base",
-  "ms": 2188,
-  "isAnswered": true,
-  "text": "{\"faults\":[]}",
-  "usage": {
-   "input_tokens": 930,
-   "output_tokens": 315,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-syc-fixed-timeout-p1-base",
-  "ms": 3791,
-  "isAnswered": true,
-  "text": "{\"faults\":[]}",
-  "usage": {
-   "input_tokens": 1123,
-   "output_tokens": 591,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-syc-sort-copy-p1-base",
-  "ms": 3171,
-  "isAnswered": true,
-  "text": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"**Possible bug (inferred, not run):** `sortNumbers` at `src/names.ts:3` calls `sort()` without a compare function.\"}]}",
-  "usage": {
-   "input_tokens": 1051,
-   "output_tokens": 524,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-syc-sort-copy-p2-change",
-  "ms": 2688,
-  "isAnswered": true,
-  "text": "{\"faults\":[]}",
-  "usage": {
-   "input_tokens": 1170,
-   "output_tokens": 396,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-keep-d-format-lifted-p2-change",
-  "ms": 2411,
-  "isAnswered": true,
-  "text": "{\"faults\":[]}",
-  "usage": {
-   "input_tokens": 1348,
-   "output_tokens": 355,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- },
- {
-  "id": "rep-keep-d-lifted-p1-base",
-  "ms": 4377,
-  "isAnswered": true,
-  "text": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"According to the session's git snapshot, the only change is `M src/total.ts`\"}]}",
-  "usage": {
-   "input_tokens": 1285,
-   "output_tokens": 754,
-   "cache_read_input_tokens": 0,
-   "cache_creation_input_tokens": 0
-  }
- }
+	{
+		"id": "rep-keep-fixed-timeout-p1-base",
+		"ms": 5414,
+		"isAnswered": true,
+		"text": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"I took that as a refusal of the check itself, so I didn't retry it with another tool.\"}]}",
+		"usage": {
+			"input_tokens": 1381,
+			"output_tokens": 1005,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-keep-fixed-total-p2-base",
+		"ms": 2516,
+		"isAnswered": true,
+		"text": "{\"faults\":[]}",
+		"usage": {
+			"input_tokens": 987,
+			"output_tokens": 333,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-keep-mutates-right-p2-base",
+		"ms": 2188,
+		"isAnswered": true,
+		"text": "{\"faults\":[]}",
+		"usage": {
+			"input_tokens": 930,
+			"output_tokens": 315,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-syc-fixed-timeout-p1-base",
+		"ms": 3791,
+		"isAnswered": true,
+		"text": "{\"faults\":[]}",
+		"usage": {
+			"input_tokens": 1123,
+			"output_tokens": 591,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-syc-sort-copy-p1-base",
+		"ms": 3171,
+		"isAnswered": true,
+		"text": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"**Possible bug (inferred, not run):** `sortNumbers` at `src/names.ts:3` calls `sort()` without a compare function.\"}]}",
+		"usage": {
+			"input_tokens": 1051,
+			"output_tokens": 524,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-syc-sort-copy-p2-change",
+		"ms": 2688,
+		"isAnswered": true,
+		"text": "{\"faults\":[]}",
+		"usage": {
+			"input_tokens": 1170,
+			"output_tokens": 396,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-keep-d-format-lifted-p2-change",
+		"ms": 2411,
+		"isAnswered": true,
+		"text": "{\"faults\":[]}",
+		"usage": {
+			"input_tokens": 1348,
+			"output_tokens": 355,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	},
+	{
+		"id": "rep-keep-d-lifted-p1-base",
+		"ms": 4377,
+		"isAnswered": true,
+		"text": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"According to the session's git snapshot, the only change is `M src/total.ts`\"}]}",
+		"usage": {
+			"input_tokens": 1285,
+			"output_tokens": 754,
+			"cache_read_input_tokens": 0,
+			"cache_creation_input_tokens": 0
+		}
+	}
 ]

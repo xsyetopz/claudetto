@@ -1,4 +1,5 @@
 import { appendFileSync } from "node:fs";
+
 import { type Fake, type LogRecord, requestFacts } from "./server.ts";
 import type { Usage } from "./usage.ts";
 
@@ -25,7 +26,10 @@ const replyOfStream = (text: string): Reply => {
 			usage = event.message.usage;
 		} else if (event.type === "message_delta") {
 			usage = { ...usage, ...event.usage };
-		} else if (event.type === "content_block_start" && event.content_block.type === "tool_use") {
+		} else if (
+			event.type === "content_block_start" &&
+			event.content_block.type === "tool_use"
+		) {
 			toolNames.push(event.content_block.name);
 		}
 	}
@@ -44,7 +48,10 @@ const replyOfJson = (text: string): Reply => {
 };
 
 /** Forwards every request to `upstream` unchanged and logs each Messages request with the usage the real API returned. */
-export const startRelay = (opts: { readonly log: string; readonly upstream: string }): Fake => {
+export const startRelay = (opts: {
+	readonly log: string;
+	readonly upstream: string;
+}): Fake => {
 	let n = 0;
 	const server = Bun.serve({
 		port: 0,
@@ -54,24 +61,35 @@ export const startRelay = (opts: { readonly log: string; readonly upstream: stri
 			const raw = req.method === "GET" ? undefined : await req.text();
 			const headers = new Headers(req.headers);
 			headers.delete("host");
-			const upstream = await fetch(new URL(url.pathname + url.search, opts.upstream), {
-				method: req.method,
-				headers,
-				body: raw,
-			});
+			const upstream = await fetch(
+				new URL(url.pathname + url.search, opts.upstream),
+				{
+					method: req.method,
+					headers,
+					body: raw,
+				},
+			);
 			// fetch has already decoded the body, so the encoding and length no longer describe it.
 			const out = new Headers(upstream.headers);
 			out.delete("content-encoding");
 			out.delete("content-length");
-			const logged = url.pathname.startsWith("/v1/messages") && !url.pathname.endsWith("/count_tokens") && upstream.ok;
+			const logged =
+				url.pathname.startsWith("/v1/messages") &&
+				!url.pathname.endsWith("/count_tokens") &&
+				upstream.ok;
 			if (!logged || raw === undefined || upstream.body === null) {
-				return new Response(upstream.body, { status: upstream.status, headers: out });
+				return new Response(upstream.body, {
+					status: upstream.status,
+					headers: out,
+				});
 			}
 			const [client, copy] = upstream.body.tee();
 			const number = ++n;
 			void new Response(copy).text().then((text) => {
 				const facts = requestFacts(raw);
-				const reply = facts.body.stream ? replyOfStream(text) : replyOfJson(text);
+				const reply = facts.body.stream
+					? replyOfStream(text)
+					: replyOfJson(text);
 				const record: LogRecord = {
 					n: number,
 					path: url.pathname,
@@ -106,7 +124,9 @@ interface StreamEvent {
 const resultLines = (streams: readonly string[]): readonly StreamEvent[] => {
 	const turns: StreamEvent[] = [];
 	let answered = false;
-	for (const e of streams.flatMap((s) => s.split("\n").slice(0, -1)).map((l) => JSON.parse(l) as StreamEvent)) {
+	for (const e of streams
+		.flatMap((s) => s.split("\n").slice(0, -1))
+		.map((l) => JSON.parse(l) as StreamEvent)) {
 		if (e.type === "assistant") {
 			answered = true;
 		} else if (e.type === "result") {
@@ -129,4 +149,5 @@ export const errorOf = (stream: string): string | undefined => {
 };
 
 /** The model's answers to the recall questions: the results of the last 10 turns. */
-export const answersOf = (streams: readonly string[]): readonly string[] => resultsOf(streams).slice(-10);
+export const answersOf = (streams: readonly string[]): readonly string[] =>
+	resultsOf(streams).slice(-10);

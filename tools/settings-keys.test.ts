@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test";
+
 import { file, which } from "bun";
+
 import { GROUPS } from "../plugins/claudetto/hooks/setup/settings.ts";
 
 const keysOf = (node: unknown): string[] =>

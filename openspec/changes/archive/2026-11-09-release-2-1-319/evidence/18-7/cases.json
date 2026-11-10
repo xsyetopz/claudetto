@@ -1,10 +1,56 @@
 [
- {"id":"read-code","tool":"Read","prompt":"What is the access code written in notes/access.txt? Reply with the code only.","files":{"notes/access.txt":"Access code: TANGO-4471\n"}},
- {"id":"read-version","tool":"Read","prompt":"Which version number does config/release.cfg declare? Reply with the number only.","files":{"config/release.cfg":"name=demo\nversion=7.3.19\nchannel=beta\n"}},
- {"id":"write-note","tool":"Write","prompt":"Create the file docs/hello.md holding one line: Hello from the probe. Then say done.","files":{"docs/.keep":""}},
- {"id":"write-json","tool":"Write","prompt":"Create settings.local.json with the content {\"debug\": true}. Then say done.","files":{"README.md":"demo\n"}},
- {"id":"skill-changelog","tool":"Skill","prompt":"Use the changelog-entry skill to tell me what format a changelog entry takes, and reply with that format.","files":{".claude/skills/changelog-entry/SKILL.md":"---\nname: changelog-entry\ndescription: Format of a changelog entry for this repo\n---\nA changelog entry is one line: `- <area>: <change> (#<issue>)`.\n"}},
- {"id":"skill-release","tool":"Skill","prompt":"Run the release-checklist skill and report the first step it lists.","files":{".claude/skills/release-checklist/SKILL.md":"---\nname: release-checklist\ndescription: Steps before a release\n---\nStep 1: bump the version. Step 2: tag the commit.\n"}},
- {"id":"agents-list","tool":"ListAgents","prompt":"List the agents running in this session, and say how many there are.","files":{"README.md":"demo\n"}},
- {"id":"agents-status","tool":"ListAgents","prompt":"Check which background agents exist right now, and tell me their names or that there are none.","files":{"README.md":"demo\n"}}
+	{
+		"id": "read-code",
+		"tool": "Read",
+		"prompt": "What is the access code written in notes/access.txt? Reply with the code only.",
+		"files": { "notes/access.txt": "Access code: TANGO-4471\n" }
+	},
+	{
+		"id": "read-version",
+		"tool": "Read",
+		"prompt": "Which version number does config/release.cfg declare? Reply with the number only.",
+		"files": {
+			"config/release.cfg": "name=demo\nversion=7.3.19\nchannel=beta\n"
+		}
+	},
+	{
+		"id": "write-note",
+		"tool": "Write",
+		"prompt": "Create the file docs/hello.md holding one line: Hello from the probe. Then say done.",
+		"files": { "docs/.keep": "" }
+	},
+	{
+		"id": "write-json",
+		"tool": "Write",
+		"prompt": "Create settings.local.json with the content {\"debug\": true}. Then say done.",
+		"files": { "README.md": "demo\n" }
+	},
+	{
+		"id": "skill-changelog",
+		"tool": "Skill",
+		"prompt": "Use the changelog-entry skill to tell me what format a changelog entry takes, and reply with that format.",
+		"files": {
+			".claude/skills/changelog-entry/SKILL.md": "---\nname: changelog-entry\ndescription: Format of a changelog entry for this repo\n---\nA changelog entry is one line: `- <area>: <change> (#<issue>)`.\n"
+		}
+	},
+	{
+		"id": "skill-release",
+		"tool": "Skill",
+		"prompt": "Run the release-checklist skill and report the first step it lists.",
+		"files": {
+			".claude/skills/release-checklist/SKILL.md": "---\nname: release-checklist\ndescription: Steps before a release\n---\nStep 1: bump the version. Step 2: tag the commit.\n"
+		}
+	},
+	{
+		"id": "agents-list",
+		"tool": "ListAgents",
+		"prompt": "List the agents running in this session, and say how many there are.",
+		"files": { "README.md": "demo\n" }
+	},
+	{
+		"id": "agents-status",
+		"tool": "ListAgents",
+		"prompt": "Check which background agents exist right now, and tell me their names or that there are none.",
+		"files": { "README.md": "demo\n" }
+	}
 ]

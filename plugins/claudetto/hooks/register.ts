@@ -1,4 +1,5 @@
 import type { On, PluginOptions } from "claude-code";
+
 import { decide } from "./decide.ts";
 import { delegation } from "./delegation.ts";
 import { gate } from "./gate.ts";

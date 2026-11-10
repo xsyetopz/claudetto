@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanned } from "./secrets.mock.ts";
 
 /** A fake repo at /repo: `dirty` maps an absolute path to its two-letter status, `hash` to its content hash. */
@@ -216,7 +217,11 @@ test("a stop another check blocked keeps that block", async ($: Engine, on: On) 
 
 const OTHERS = "changed this session by a command, the user, or a tool";
 
-const started = async ($: Engine, on: On, dirty: Record<string, string> = {}) => {
+const started = async (
+	$: Engine,
+	on: On,
+	dirty: Record<string, string> = {},
+) => {
 	const repo = fakeRepo(dirty);
 	lab(on, repo);
 	await submit($);
@@ -269,18 +274,33 @@ test("a file dirty before the session that Bash then changes is asked for under 
 	const repo = await started($, on, { [A]: " M" });
 	repo.hash[A] = "h1";
 	await bash($, "sed -i s/a/b/ src/a.ts");
-	expect((await stop($)).block).toContain(`${OTHERS}, and are not committed:\n- \`src/a.ts\``);
+	expect((await stop($)).block).toContain(
+		`${OTHERS}, and are not committed:\n- \`src/a.ts\``,
+	);
 });
 
 test("Denied Write: a write the sandbox refused marks no file, so the stop passes", async ($: Engine, on: On) => {
 	const skill = "/repo/.claude/skills/openspec-propose/SKILL.md";
-	lab(on, fakeRepo({ [skill]: " D" }), "allow", [], undefined, {}, {
-		isError: true,
-		result: "denied",
-		text: "denied",
-	});
+	lab(
+		on,
+		fakeRepo({ [skill]: " D" }),
+		"allow",
+		[],
+		undefined,
+		{},
+		{
+			isError: true,
+			result: "denied",
+			text: "denied",
+		},
+	);
 	await submit($);
-	await $.tool.call({ tool: "Write", tool_use_id: "t4", file_path: skill, content: "x" });
+	await $.tool.call({
+		tool: "Write",
+		tool_use_id: "t4",
+		file_path: skill,
+		content: "x",
+	});
 	expect((await stop($)).block).toBeUndefined();
 });
 
@@ -316,7 +336,8 @@ test("a stop with both lists names the agent's files under its own heading and t
 	repo.dirty["/repo/README.md"] = " M";
 	repo.hash["/repo/README.md"] = "u";
 	const out = (await stop($)).block ?? "";
-	expect(out).toContain("These files you changed are not committed:\n- `src/a.ts`\n");
+	expect(out).toContain(
+		"These files you changed are not committed:\n- `src/a.ts`\n",
+	);
 	expect(out).toContain(`${OTHERS}, and are not committed:\n- \`README.md\`\n`);
 });
-

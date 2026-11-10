@@ -5,6 +5,7 @@ import type {
 	On,
 	PluginOptions,
 } from "claude-code";
+
 import { switchOption } from "../options.ts";
 import { OPEN_ITEMS_ASK, STALL_STOP, STOP_TASKS } from "../texts.ts";
 import { budgetBand, budgetLine } from "./budget.ts";

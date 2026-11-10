@@ -1,4 +1,5 @@
 import { appendFileSync } from "node:fs";
+
 import { FORK_PROMPT } from "../../plugins/claudetto/hooks/texts.ts";
 import { fakeContextTokens, fakeUsage } from "./fake.ts";
 import { HANDOFF_ASK } from "./task.ts";
@@ -176,7 +177,10 @@ export const startFake = (opts: {
 			}
 			const raw = await req.text();
 			if (process.env["PROBE_BODIES"] !== undefined) {
-				appendFileSync(process.env["PROBE_BODIES"], `${JSON.stringify({ raw })}\n`);
+				appendFileSync(
+					process.env["PROBE_BODIES"],
+					`${JSON.stringify({ raw })}\n`,
+				);
 			}
 			const { body, lastUserText, kind, ttls, toolNames } = requestFacts(raw);
 			const requestId = `req_fake_${++n}`;
@@ -198,8 +202,8 @@ export const startFake = (opts: {
 					: kind === "summarizer"
 						? { text: "<summary>FAKE summary of the conversation.</summary>" }
 						: opts.handoffOnBoundary &&
-								lastUserText.includes(HANDOFF_ASK) &&
-								body.tools?.some((t) => t.name === "mcp__claudetto__handoff")
+							  lastUserText.includes(HANDOFF_ASK) &&
+							  body.tools?.some((t) => t.name === "mcp__claudetto__handoff")
 							? { tool: "mcp__claudetto__handoff", input: HANDOFF_INPUT }
 							: { text: "FAKE reply." };
 			const record: LogRecord = {
@@ -230,7 +234,14 @@ export const startFake = (opts: {
 							content:
 								"text" in reply
 									? [{ type: "text", text: reply.text }]
-									: [{ type: "tool_use", id: "t", name: reply.tool, input: reply.input }],
+									: [
+											{
+												type: "tool_use",
+												id: "t",
+												name: reply.tool,
+												input: reply.input,
+											},
+										],
 							stop_reason: "text" in reply ? "end_turn" : "tool_use",
 							usage,
 						},

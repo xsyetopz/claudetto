@@ -10,19 +10,51 @@ const T = "mcp__claudetto-openspec__openspec";
 const fake = await startFake({
 	plan: {
 		steps: [
-			{ reply: { stop: "tool_use", blocks: [{ type: "tool_use", name: "ToolSearch", input: { query: "select:" + T, max_results: 1 } }] } },
-			{ reply: { stop: "tool_use", blocks: [{ type: "tool_use", name: T, input: { action: "validate", change: "c" } }] } },
+			{
+				reply: {
+					stop: "tool_use",
+					blocks: [
+						{
+							type: "tool_use",
+							name: "ToolSearch",
+							input: { query: "select:" + T, max_results: 1 },
+						},
+					],
+				},
+			},
+			{
+				reply: {
+					stop: "tool_use",
+					blocks: [
+						{
+							type: "tool_use",
+							name: T,
+							input: { action: "validate", change: "c" },
+						},
+					],
+				},
+			},
 		],
 		fallback: { blocks: [{ type: "text", text: "Done." }] },
 	},
 	dir: `${run.dir}/requests`,
 });
 try {
-	await launch({
-		prompt: "validate change c", mode: "stream-json", settingSources: ["user"], model: MODELS.haiku,
-		baseUrl: fake.url, timeoutMs: 120_000, cwd: "/tmp/probe-os-fake/work",
-		flags: ["--permission-mode", "bypassPermissions"],
-		pluginDirs: [`${R}/plugins/claudetto-openspec`],
-	}, run);
-} finally { await fake.stop(); }
+	await launch(
+		{
+			prompt: "validate change c",
+			mode: "stream-json",
+			settingSources: ["user"],
+			model: MODELS.haiku,
+			baseUrl: fake.url,
+			timeoutMs: 120_000,
+			cwd: "/tmp/probe-os-fake/work",
+			flags: ["--permission-mode", "bypassPermissions"],
+			pluginDirs: [`${R}/plugins/claudetto-openspec`],
+		},
+		run,
+	);
+} finally {
+	await fake.stop();
+}
 console.log(run.dir);

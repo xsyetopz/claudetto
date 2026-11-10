@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { atRoot } from "../handoff/layout.ts";
 import { lineFilePath } from "./heartbeat.ts";
 

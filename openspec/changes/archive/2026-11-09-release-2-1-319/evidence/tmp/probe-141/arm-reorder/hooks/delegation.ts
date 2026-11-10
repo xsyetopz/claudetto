@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { AGENT_TEXT } from "./texts.ts";
 
 const PREFIX = "claudetto:";

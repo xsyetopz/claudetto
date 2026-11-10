@@ -5,6 +5,7 @@ import type {
 	On,
 	PluginOptions,
 } from "claude-code";
+
 import { closed, taskLines } from "../cleanup.ts";
 import { switchOption } from "../options.ts";
 import {

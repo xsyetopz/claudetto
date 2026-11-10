@@ -1,4 +1,4 @@
-import { ArchiveBlocked, archive, type Run } from "./archive.ts";
+import { archive, ArchiveBlocked, type Run } from "./archive.ts";
 import type { Fs } from "./fs.ts";
 import { create, init } from "./layout.ts";
 import { checkSpec, mainSpecs, requirementCount } from "./main-specs.ts";
@@ -9,12 +9,12 @@ import {
 	archivedLine,
 	badName,
 	issueLine,
+	needsChange,
 	NO_CHANGES,
 	NO_OPENSPEC,
 	NO_SPECS,
-	NOTHING,
-	needsChange,
 	noChange,
+	NOTHING,
 	openLine,
 	refused,
 	specLine,

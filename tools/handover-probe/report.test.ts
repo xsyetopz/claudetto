@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+
 import { ARMS } from "./arms.ts";
 import { QUESTIONS } from "./recall.ts";
 import { renderArm } from "./report.ts";
@@ -18,7 +19,11 @@ const records = [
 	rec(6, {}),
 ];
 
-const table = renderArm(arm, [{ records, turnOf: new Map([[2, 21]]), answers: [] }], false);
+const table = renderArm(
+	arm,
+	[{ records, turnOf: new Map([[2, 21]]), answers: [] }],
+	false,
+);
 
 test("the table says its numbers are fake", () => {
 	expect(table).toContain("FAKE");
@@ -29,7 +34,12 @@ test("an event shows its summarizer request and the 3 requests after it, once ea
 	expect(rows).toHaveLength(4);
 	expect(rows[0]).toContain("req_2");
 	expect(rows[0]).toContain("summarizer");
-	expect(rows.map((r) => r.includes("req_6"))).toEqual([false, false, false, false]);
+	expect(rows.map((r) => r.includes("req_6"))).toEqual([
+		false,
+		false,
+		false,
+		false,
+	]);
 	expect(rows[3]).toContain("req_5");
 });
 
@@ -47,5 +57,7 @@ test("a paid table drops the FAKE label and scores recall per run", () => {
 	const answers = QUESTIONS.map((q, i) => (i === 3 ? "" : q.expect.join(" ")));
 	const paid = renderArm(arm, [{ records, turnOf: new Map(), answers }], true);
 	expect(paid).not.toContain("FAKE");
-	expect(paid).toContain("| 1 | ok | 0 clears, 1 compaction, 0 handovers | 9/10, lost q4-ids |");
+	expect(paid).toContain(
+		"| 1 | ok | 0 clears, 1 compaction, 0 handovers | 9/10, lost q4-ids |",
+	);
 });

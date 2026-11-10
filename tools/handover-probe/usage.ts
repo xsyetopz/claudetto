@@ -36,5 +36,6 @@ const rowOf = ({ requestId, usage }: UsageEntry): UsageRow => ({
 /** One row per `requestId`, in first-seen order: a transcript repeats a response's usage once per content block, and a stream's output only grows, so the last entry wins. */
 export const usageByRequest = (
 	entries: readonly UsageEntry[],
-): readonly UsageRow[] =>
-	[...new Map(entries.map((e) => [e.requestId, rowOf(e)])).values()];
+): readonly UsageRow[] => [
+	...new Map(entries.map((e) => [e.requestId, rowOf(e)])).values(),
+];

@@ -3,8 +3,10 @@
 import { afterAll, describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { posix } from "node:path";
+
 import { spawn } from "bun";
-import { ArchiveBlocked, archive, mergeSpec } from "./archive.ts";
+
+import { archive, ArchiveBlocked, mergeSpec } from "./archive.ts";
 import {
 	type Entry,
 	load,
@@ -42,8 +44,8 @@ const summary = (r: Report) => ({
 const refuses = (i: Issue) =>
 	i.level === "INFO" && i.message.startsWith("Archive would refuse");
 const expectedSummary = (r: Report) => {
-	const issues = r.issues.map(
-		(i): Issue => (refuses(i) ? { ...i, level: "ERROR" } : i),
+	const issues = r.issues.map((i): Issue =>
+		refuses(i) ? { ...i, level: "ERROR" } : i,
 	);
 	return summary({
 		valid: r.valid && !issues.some((i) => i.level === "ERROR"),

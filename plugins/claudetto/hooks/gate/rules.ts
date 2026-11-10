@@ -9,9 +9,9 @@ import {
 	killVerdict,
 	markerVerdict,
 	NOBODY,
-	type Owns,
 	ownedRemoval,
 	ownedVerdict,
+	type Owns,
 	releaseVerdict,
 } from "./processes.ts";
 import { refVerdict } from "./refs.ts";

@@ -1,4 +1,5 @@
 import type { SessionMessage, ToolUseSummary } from "claude-code";
+
 import type { GradeFault } from "./texts.ts";
 
 export const ASK_MCP = "mcp__claudetto__ask-user-question";
@@ -25,9 +26,11 @@ const RESULTS = 8;
 const RESULT_CHARS = 400;
 
 const resultLine = (use: ToolUseSummary): string => {
-	const arg = [use.input["command"], use.input["file_path"], use.input["pattern"]].find(
-		(v) => typeof v === "string",
-	);
+	const arg = [
+		use.input["command"],
+		use.input["file_path"],
+		use.input["pattern"],
+	].find((v) => typeof v === "string");
 	return `- ${use.tool} ${String(arg ?? "").slice(0, 120)}\n${(use.text ?? "").slice(0, RESULT_CHARS)}`;
 };
 

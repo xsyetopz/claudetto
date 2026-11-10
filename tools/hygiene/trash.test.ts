@@ -1,8 +1,19 @@
 import { expect, test } from "bun:test";
-import { exists, lutimes, mkdir, mkdtemp, realpath, symlink, utimes, writeFile } from "node:fs/promises";
+import {
+	exists,
+	lutimes,
+	mkdir,
+	mkdtemp,
+	realpath,
+	symlink,
+	utimes,
+	writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { sleep, spawn } from "bun";
+
 import {
 	parseArgs,
 	sweep,
@@ -75,7 +86,11 @@ test("an old build folder in an idle worktree goes, and the session's own checko
 	await built(join(worktree, ".build"), 10);
 	await built(join(proj, ".build"), 10);
 	await idle(proj);
-	await utimes(join(proj, ".git/index"), new Date(NOW - 10 * DAY), new Date(NOW - 10 * DAY));
+	await utimes(
+		join(proj, ".git/index"),
+		new Date(NOW - 10 * DAY),
+		new Date(NOW - 10 * DAY),
+	);
 
 	expect(await swept(root, proj)).toEqual([
 		["swiftpm", join(worktree, ".build")],
@@ -87,7 +102,11 @@ test("a build folder linked into a worktree from elsewhere stays, and so does wh
 	const shared = join(root, "shared/.build");
 	await built(shared, 10);
 	await symlink(shared, join(worktree, ".build"));
-	await lutimes(join(worktree, ".build"), new Date(NOW - 10 * DAY), new Date(NOW - 10 * DAY));
+	await lutimes(
+		join(worktree, ".build"),
+		new Date(NOW - 10 * DAY),
+		new Date(NOW - 10 * DAY),
+	);
 	// SwiftPM's own .gitignore writes `/.build`, which also matches a link; `.build/` would not.
 	await writeFile(join(proj, ".git/info/exclude"), "/.build\n");
 	await idle(proj);
@@ -104,7 +123,9 @@ test("an old Nix result link into the store goes, and a result link elsewhere an
 	await symlink(join(root, "shared"), join(worktree, "result"));
 	await built(join(worktree, "app/result"), 10);
 	await Promise.all(
-		["result-dev", "result"].map((name) => lutimes(join(worktree, name), old, old)),
+		["result-dev", "result"].map((name) =>
+			lutimes(join(worktree, name), old, old),
+		),
 	);
 	await writeFile(join(proj, ".git/info/exclude"), "result*\n");
 	await idle(proj);
@@ -138,7 +159,11 @@ test("a folder that changed inside within the limit stays though its own time is
 test("a tracked dist folder stays", async () => {
 	const { root, proj, worktree } = await repo();
 	for (const p of ["dist/app.js", "dist"]) {
-		await utimes(join(worktree, p), new Date(NOW - 90 * DAY), new Date(NOW - 90 * DAY));
+		await utimes(
+			join(worktree, p),
+			new Date(NOW - 90 * DAY),
+			new Date(NOW - 90 * DAY),
+		);
 	}
 	await idle(proj);
 
@@ -280,10 +305,63 @@ test("the sweep's own process in the project does not keep its build folders", a
 test("every folder a tool probe made matches a rule, and a bare generic name does not", async () => {
 	const { proj } = await repo();
 	const { rules } = await loadTrash(proj);
-	const matched = (path: string) => rules.some((rule) => !rule.temp && !rule.gcroot && rule.path.test(path));
-	const made = ["node_modules", "dist", ".venv", ".pdm-build", ".tox", ".mypy_cache", "htmlcov", "_build", "deps", "build", "elm-stuff", ".dart_tool", "ios/Flutter/ephemeral", "lua_modules", ".luarocks", "vendor", ".terraform", ".terragrunt-cache", ".zig-cache", "zig-out", ".cpcache", "target", "project/target", ".gradle", ".kotlin", "app/build", "CMakeFiles", "out/build", "builddir", ".xmake", "autom4te.cache", ".pio", "buck-out", ".build", "vcpkg_installed", "build/vcpkg_installed", "buildtrees", ".scala-build", ".bsp", ".direnv"];
+	const matched = (path: string) =>
+		rules.some((rule) => !rule.temp && !rule.gcroot && rule.path.test(path));
+	const made = [
+		"node_modules",
+		"dist",
+		".venv",
+		".pdm-build",
+		".tox",
+		".mypy_cache",
+		"htmlcov",
+		"_build",
+		"deps",
+		"build",
+		"elm-stuff",
+		".dart_tool",
+		"ios/Flutter/ephemeral",
+		"lua_modules",
+		".luarocks",
+		"vendor",
+		".terraform",
+		".terragrunt-cache",
+		".zig-cache",
+		"zig-out",
+		".cpcache",
+		"target",
+		"project/target",
+		".gradle",
+		".kotlin",
+		"app/build",
+		"CMakeFiles",
+		"out/build",
+		"builddir",
+		".xmake",
+		"autom4te.cache",
+		".pio",
+		"buck-out",
+		".build",
+		"vcpkg_installed",
+		"build/vcpkg_installed",
+		"buildtrees",
+		".scala-build",
+		".bsp",
+		".direnv",
+	];
 	expect(made.filter((path) => !matched(path))).toEqual([]);
-	expect(["ephemeral", "local", "charts", "bin", "src", "result", "packages", "downloads"].filter(matched)).toEqual([]);
+	expect(
+		[
+			"ephemeral",
+			"local",
+			"charts",
+			"bin",
+			"src",
+			"result",
+			"packages",
+			"downloads",
+		].filter(matched),
+	).toEqual([]);
 });
 
 test("the plugin's trash file passes the gitleaks config check of betterleaks", async () => {

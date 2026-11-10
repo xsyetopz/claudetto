@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { type UsageEntry, usageByRequest } from "./usage.ts";
+
+import { usageByRequest, type UsageEntry } from "./usage.ts";
 
 const entry = (requestId: string, output: number): UsageEntry => ({
 	requestId,

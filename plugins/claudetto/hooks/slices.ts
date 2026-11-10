@@ -1,4 +1,5 @@
 import type { EngineInterface, On } from "claude-code";
+
 import { BOUND_OUTPUT_DIR } from "./limits/bound-output.ts";
 import { didWrite, WRITERS } from "./limits/stop.ts";
 import { PERSON, rootOf } from "./pin.ts";
@@ -103,7 +104,10 @@ export const slices = (on: On): void => {
 	});
 	on("classic.Stop", { stop_hook_active: false }, async ($, e, next) => {
 		const answer = await next(e);
-		if (answer.block !== undefined || (mine.size === 0 && known === undefined)) {
+		if (
+			answer.block !== undefined ||
+			(mine.size === 0 && known === undefined)
+		) {
 			return answer;
 		}
 		const commit = await $.tool.check({
@@ -146,10 +150,7 @@ export const slices = (on: On): void => {
 			? answer
 			: {
 					...answer,
-					block: SLICE_COMMIT(
-						await shown($, changed),
-						await shown($, others),
-					),
+					block: SLICE_COMMIT(await shown($, changed), await shown($, others)),
 				};
 	});
 };

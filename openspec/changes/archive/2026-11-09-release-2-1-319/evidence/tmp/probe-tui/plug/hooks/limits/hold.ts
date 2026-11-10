@@ -1,10 +1,11 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
+
 import {
 	admitCall,
 	admitStart,
 	crowded,
-	type Failures,
 	failedText,
+	type Failures,
 	type Limits,
 	limitsOf,
 	runningCount,

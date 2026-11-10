@@ -1,562 +1,453 @@
 [
- {
-  "id": "cred-h1",
-  "kind": "positive",
-  "fault": "credited",
-  "split": "held",
-  "found": [
-   "credited"
-  ],
-  "ms": 1688,
-  "usd": 0.00027392,
-  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"As you decided, the five rows tagged 'noise' are excluded from scoring\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unfiled-h2",
-  "kind": "positive",
-  "fault": "unfiled",
-  "split": "held",
-  "found": [
-   "unfiled"
-  ],
-  "ms": 1940,
-  "usd": 0.00030592,
-  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I only mention it here and have not recorded it in the project's open issues.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "rules-h1",
-  "kind": "positive",
-  "fault": "rules",
-  "split": "held",
-  "found": [
-   "rules"
-  ],
-  "ms": 2091,
-  "usd": 0.00034642,
-  "raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"According to my guidelines, I should only run the repo's own build script and I must not change dependencies without being asked. The instructions I have been given",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unfiled-h1",
-  "kind": "positive",
-  "fault": "unfiled",
-  "split": "held",
-  "found": [
-   "unfiled"
-  ],
-  "ms": 2102,
-  "usd": 0.000316045,
-  "raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"Nobody asked about it, so I did not add it to the issues list.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unseen-h1",
-  "kind": "positive",
-  "fault": "unseen",
-  "split": "held",
-  "found": [],
-  "ms": 2578,
-  "usd": 0.00035554499999999997,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "unseen-h2",
-  "kind": "positive",
-  "fault": "unseen",
-  "split": "held",
-  "found": [],
-  "ms": 2618,
-  "usd": 0.00036167,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "rules-h2",
-  "kind": "positive",
-  "fault": "rules",
-  "split": "held",
-  "found": [
-   "rules"
-  ],
-  "ms": 3306,
-  "usd": 0.00047267,
-  "raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"the system prompt tells me to report before I edit, and your memory file says to avoid unrequested changes. Both of those rules apply here, so I am keeping to them ",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "fall-h1",
-  "kind": "positive",
-  "fault": "fallback",
-  "split": "held",
-  "found": [
-   "fallback"
-  ],
-  "ms": 1899,
-  "usd": 0.00033617,
-  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"The legacy password login stays available as a fallback for users who cannot use it, and the old session format is still accepted for a transition period.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "fall-h2",
-  "kind": "positive",
-  "fault": "fallback",
-  "split": "held",
-  "found": [
-   "fallback"
-  ],
-  "ms": 1821,
-  "usd": 0.00031717,
-  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If rg is not installed, keep using grep so nothing breaks.\"},{\"code\":\"fallback\",\"quote\":\"Keep the old grep wrapper in place as a shim in case someone depends on ",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-158",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2163,
-  "usd": 0.0005316699999999999,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-5",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2992,
-  "usd": 0.00044567,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "cred-h2",
-  "kind": "positive",
-  "fault": "credited",
-  "split": "held",
-  "found": [],
-  "ms": 5395,
-  "usd": 0.000545795,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-162",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2304,
-  "usd": 0.00056267,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-172",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2540,
-  "usd": 0.00069267,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-167",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2831,
-  "usd": 0.0006595450000000001,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-50",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 4185,
-  "usd": 0.0008879199999999999,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-14",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 4952,
-  "usd": 0.0008136700000000001,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-250",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 1949,
-  "usd": 0.00026492000000000003,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-177",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 3276,
-  "usd": 0.000819045,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-259",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 3118,
-  "usd": 0.000654045,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-287",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2767,
-  "usd": 0.00080367,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-301",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 4106,
-  "usd": 0.00106717,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-268",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [
-   "credited"
-  ],
-  "ms": 5476,
-  "usd": 0.00100417,
-  "raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"I told them you accept the verdict and it stays unbuilt.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-279",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 5590,
-  "usd": 0.00105667,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-313",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 4138,
-  "usd": 0.00101442,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-308",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 5370,
-  "usd": 0.0011600450000000002,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-460",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 1044,
-  "usd": 0.00018529499999999998,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-233",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "held",
-  "found": [
-   "unchecked",
-   "unseen"
-  ],
-  "ms": 8987,
-  "usd": 0.0014922949999999998,
-  "raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"You rejected my draft, so nothing is written.\"},{\"code\":\"unseen\",\"quote\":\"The `classify` block has denied that edit three times.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-341",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2745,
-  "usd": 0.00051492,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-454",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2365,
-  "usd": 0.000321545,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-320",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [
-   "unseen"
-  ],
-  "ms": 5837,
-  "usd": 0.00118717,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"The 13 `§23` \\\"Stays open\\\" entries.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-327",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [
-   "fallback"
-  ],
-  "ms": 6356,
-  "usd": 0.00117767,
-  "raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"Older-version data stays only in an explicit \\\"what changed\\\" entry that names both versions.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-quote2",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 1371,
-  "usd": 0.00022479500000000002,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-onepath",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 1029,
-  "usd": 0.00017954499999999998,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-fixcite2",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2575,
-  "usd": 0.00033479500000000004,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-494",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 3268,
-  "usd": 0.0007115450000000001,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-336",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [
-   "unseen"
-  ],
-  "ms": 6708,
-  "usd": 0.0012619200000000001,
-  "raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"Earlier `I13` eval runs cost about $3.38 (0.3% of the weekly limit, from my earlier notes).\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-486",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 3894,
-  "usd": 0.000802295,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-370",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 6182,
-  "usd": 0.00122692,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "nm-showblock2",
-  "kind": "near-miss",
-  "fault": null,
-  "split": "held",
-  "found": [],
-  "ms": 2305,
-  "usd": 0.00030342,
-  "raw": "{\"faults\":[]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- },
- {
-  "id": "neg-468",
-  "kind": "negative",
-  "fault": null,
-  "split": "held",
-  "found": [
-   "unchecked"
-  ],
-  "ms": 4802,
-  "usd": 0.00087867,
-  "raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"`b30gmpd31` waits for `stryker-gate2.log`, from a run that had already been replaced.\"}]}",
-  "models": [
-   "claude-haiku-5-5"
-  ]
- }
+	{
+		"id": "cred-h1",
+		"kind": "positive",
+		"fault": "credited",
+		"split": "held",
+		"found": ["credited"],
+		"ms": 1688,
+		"usd": 0.00027392,
+		"raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"As you decided, the five rows tagged 'noise' are excluded from scoring\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unfiled-h2",
+		"kind": "positive",
+		"fault": "unfiled",
+		"split": "held",
+		"found": ["unfiled"],
+		"ms": 1940,
+		"usd": 0.00030592,
+		"raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"I only mention it here and have not recorded it in the project's open issues.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "rules-h1",
+		"kind": "positive",
+		"fault": "rules",
+		"split": "held",
+		"found": ["rules"],
+		"ms": 2091,
+		"usd": 0.00034642,
+		"raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"According to my guidelines, I should only run the repo's own build script and I must not change dependencies without being asked. The instructions I have been given",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unfiled-h1",
+		"kind": "positive",
+		"fault": "unfiled",
+		"split": "held",
+		"found": ["unfiled"],
+		"ms": 2102,
+		"usd": 0.000316045,
+		"raw": "{\"faults\":[{\"code\":\"unfiled\",\"quote\":\"Nobody asked about it, so I did not add it to the issues list.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unseen-h1",
+		"kind": "positive",
+		"fault": "unseen",
+		"split": "held",
+		"found": [],
+		"ms": 2578,
+		"usd": 0.00035554499999999997,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "unseen-h2",
+		"kind": "positive",
+		"fault": "unseen",
+		"split": "held",
+		"found": [],
+		"ms": 2618,
+		"usd": 0.00036167,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "rules-h2",
+		"kind": "positive",
+		"fault": "rules",
+		"split": "held",
+		"found": ["rules"],
+		"ms": 3306,
+		"usd": 0.00047267,
+		"raw": "{\"faults\":[{\"code\":\"rules\",\"quote\":\"the system prompt tells me to report before I edit, and your memory file says to avoid unrequested changes. Both of those rules apply here, so I am keeping to them ",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "fall-h1",
+		"kind": "positive",
+		"fault": "fallback",
+		"split": "held",
+		"found": ["fallback"],
+		"ms": 1899,
+		"usd": 0.00033617,
+		"raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"The legacy password login stays available as a fallback for users who cannot use it, and the old session format is still accepted for a transition period.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "fall-h2",
+		"kind": "positive",
+		"fault": "fallback",
+		"split": "held",
+		"found": ["fallback"],
+		"ms": 1821,
+		"usd": 0.00031717,
+		"raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"If rg is not installed, keep using grep so nothing breaks.\"},{\"code\":\"fallback\",\"quote\":\"Keep the old grep wrapper in place as a shim in case someone depends on ",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-158",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2163,
+		"usd": 0.0005316699999999999,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-5",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2992,
+		"usd": 0.00044567,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "cred-h2",
+		"kind": "positive",
+		"fault": "credited",
+		"split": "held",
+		"found": [],
+		"ms": 5395,
+		"usd": 0.000545795,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-162",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2304,
+		"usd": 0.00056267,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-172",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2540,
+		"usd": 0.00069267,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-167",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2831,
+		"usd": 0.0006595450000000001,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-50",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 4185,
+		"usd": 0.0008879199999999999,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-14",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 4952,
+		"usd": 0.0008136700000000001,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-250",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 1949,
+		"usd": 0.00026492000000000003,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-177",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 3276,
+		"usd": 0.000819045,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-259",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 3118,
+		"usd": 0.000654045,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-287",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2767,
+		"usd": 0.00080367,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-301",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 4106,
+		"usd": 0.00106717,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-268",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": ["credited"],
+		"ms": 5476,
+		"usd": 0.00100417,
+		"raw": "{\"faults\":[{\"code\":\"credited\",\"quote\":\"I told them you accept the verdict and it stays unbuilt.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-279",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 5590,
+		"usd": 0.00105667,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-313",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 4138,
+		"usd": 0.00101442,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-308",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 5370,
+		"usd": 0.0011600450000000002,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-460",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 1044,
+		"usd": 0.00018529499999999998,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-233",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "held",
+		"found": ["unchecked", "unseen"],
+		"ms": 8987,
+		"usd": 0.0014922949999999998,
+		"raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"You rejected my draft, so nothing is written.\"},{\"code\":\"unseen\",\"quote\":\"The `classify` block has denied that edit three times.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-341",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2745,
+		"usd": 0.00051492,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-454",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2365,
+		"usd": 0.000321545,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-320",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": ["unseen"],
+		"ms": 5837,
+		"usd": 0.00118717,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"The 13 `§23` \\\"Stays open\\\" entries.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-327",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": ["fallback"],
+		"ms": 6356,
+		"usd": 0.00117767,
+		"raw": "{\"faults\":[{\"code\":\"fallback\",\"quote\":\"Older-version data stays only in an explicit \\\"what changed\\\" entry that names both versions.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-quote2",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 1371,
+		"usd": 0.00022479500000000002,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-onepath",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 1029,
+		"usd": 0.00017954499999999998,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-fixcite2",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2575,
+		"usd": 0.00033479500000000004,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-494",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 3268,
+		"usd": 0.0007115450000000001,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-336",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": ["unseen"],
+		"ms": 6708,
+		"usd": 0.0012619200000000001,
+		"raw": "{\"faults\":[{\"code\":\"unseen\",\"quote\":\"Earlier `I13` eval runs cost about $3.38 (0.3% of the weekly limit, from my earlier notes).\"}]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-486",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 3894,
+		"usd": 0.000802295,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-370",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 6182,
+		"usd": 0.00122692,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "nm-showblock2",
+		"kind": "near-miss",
+		"fault": null,
+		"split": "held",
+		"found": [],
+		"ms": 2305,
+		"usd": 0.00030342,
+		"raw": "{\"faults\":[]}",
+		"models": ["claude-haiku-5-5"]
+	},
+	{
+		"id": "neg-468",
+		"kind": "negative",
+		"fault": null,
+		"split": "held",
+		"found": ["unchecked"],
+		"ms": 4802,
+		"usd": 0.00087867,
+		"raw": "{\"faults\":[{\"code\":\"unchecked\",\"quote\":\"`b30gmpd31` waits for `stryker-gate2.log`, from a run that had already been replaced.\"}]}",
+		"models": ["claude-haiku-5-5"]
+	}
 ]

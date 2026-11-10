@@ -6,6 +6,7 @@ import type {
 	RenderSurface,
 } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
 import { blankRow, LIMITS, linesOf, type Row, rowsOf } from "./note.ts";
 
 const PLUGIN = "claudetto-you-should-know";
@@ -858,7 +859,9 @@ test(
 	ON,
 	async ($: Engine, on: On) => {
 		explained(on);
-		const chat = await (await mountBand($)).find({
+		const chat = await (
+			await mountBand($)
+		).find({
 			type: "Button",
 			key: "respond",
 		});

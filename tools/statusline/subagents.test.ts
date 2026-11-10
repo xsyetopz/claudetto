@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+
 import { subagentsOf } from "../../plugins/claudetto/statusline/main.ts";
 import { plain, width } from "../../plugins/claudetto/statusline/width.ts";
 import { NOW } from "./support.ts";

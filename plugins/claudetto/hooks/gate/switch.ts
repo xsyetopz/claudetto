@@ -1,4 +1,5 @@
 import type { EngineInterface } from "claude-code";
+
 import { parse, programOf } from "./shell-words.ts";
 import { withoutGitOptions } from "./upstream.ts";
 
@@ -18,7 +19,15 @@ const SANDBOX_DENIED = [
 	".claude/loop.md",
 	".mcp.json",
 ];
-const CREATES = new Set(["-c", "-C", "-b", "-B", "--create", "--force-create", "--orphan"]);
+const CREATES = new Set([
+	"-c",
+	"-C",
+	"-b",
+	"-B",
+	"--create",
+	"--force-create",
+	"--orphan",
+]);
 const RESUMES = new Set(["--continue", "--abort", "--skip", "--quit"]);
 
 /** What a git command moves the tree to: `from` is undefined when it is compared with the working tree, as `reset --hard` overwrites it. */
@@ -81,7 +90,8 @@ export async function protectedChanges(
 	const paths = [
 		...SANDBOX_DENIED,
 		...denyWriteOf(await $.settings.read({ key: "sandbox" })).filter(
-			(p) => !(p.startsWith("~") || (p.startsWith("/") && !p.startsWith(`${cwd}/`))),
+			(p) =>
+				!(p.startsWith("~") || (p.startsWith("/") && !p.startsWith(`${cwd}/`))),
 		),
 	];
 	const found = await Promise.all(
@@ -97,8 +107,10 @@ export async function protectedChanges(
 					...paths,
 				])
 				.catch(() => undefined);
-			return r?.exitCode === 0 ? r.stdout.split("\n").filter((f) => f !== "") : [];
+			return r?.exitCode === 0
+				? r.stdout.split("\n").filter((f) => f !== "")
+				: [];
 		}),
 	);
 	return [...new Set(found.flat())];
-};
+}

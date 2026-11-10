@@ -37,7 +37,9 @@ const handed = main.find((b) =>
 	textOf(b.messages[2]).startsWith("The conversation was compacted"),
 );
 if (first === undefined || second === undefined || handed === undefined) {
-	throw new Error("the capture holds no first, second, and post-handover main request");
+	throw new Error(
+		"the capture holds no first, second, and post-handover main request",
+	);
 }
 const plain = (v: unknown): string =>
 	JSON.stringify(v, (k, x) => (k === "cache_control" ? undefined : x));
@@ -52,20 +54,35 @@ const marks = (b: Body): string => {
 	const out: string[] = [];
 	const system = Array.isArray(b["system"]) ? (b["system"] as Block[]) : [];
 	for (const [j, s] of system.entries()) {
-		if (s.cache_control !== undefined) out.push(`system[${j}] ${raw(s.cache_control)}`);
+		if (s.cache_control !== undefined)
+			out.push(`system[${j}] ${raw(s.cache_control)}`);
 	}
 	for (const [j, m] of b.messages.entries()) {
 		if (typeof m.content === "string") continue;
 		for (const [k, c] of m.content.entries()) {
-			if (c.cache_control !== undefined) out.push(`messages[${j}].content[${k}] ${raw(c.cache_control)}`);
+			if (c.cache_control !== undefined)
+				out.push(`messages[${j}].content[${k}] ${raw(c.cache_control)}`);
 		}
 	}
 	return out.join("; ");
 };
-for (const [name, b] of [["second turn", second], ["after handover", handed]] as const) {
+for (const [name, b] of [
+	["second turn", second],
+	["after handover", handed],
+] as const) {
 	console.log(`== first request vs ${name} (${b.messages.length} messages)`);
-	for (const key of ["system", "tools", "model", "thinking", "metadata", "output_config", "context_management"]) {
-		console.log(`${key}: ${raw(b[key]) === raw(first[key]) ? "identical" : "DIFFERENT"}`);
+	for (const key of [
+		"system",
+		"tools",
+		"model",
+		"thinking",
+		"metadata",
+		"output_config",
+		"context_management",
+	]) {
+		console.log(
+			`${key}: ${raw(b[key]) === raw(first[key]) ? "identical" : "DIFFERENT"}`,
+		);
 	}
 	for (const j of [0, 1]) {
 		const a = first.messages[j];

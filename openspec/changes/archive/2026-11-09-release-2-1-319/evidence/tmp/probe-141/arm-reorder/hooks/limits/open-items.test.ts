@@ -1,5 +1,6 @@
 import type { On, PluginOptions, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanner } from "../secrets.mock.ts";
 import { openItems } from "./open-items.ts";
 

@@ -1,67 +1,112 @@
-set positional-arguments
+# Every bedrock repo shares this file. Each language adds `.just/<language>.just`,
+# so `just <task>` runs the task for every language the repo has. Put project
+# recipes in `project.just`.
 
-# `claude plugin validate` and `claude plugin test` otherwise report to the API and to Datadog at each start, which a check needs neither of.
-export DISABLE_TELEMETRY := "1"
+set shell := ["bash", "-euo", "pipefail", "-c"]
 
-# OpenSpec reports each command unless this is 0 (`@fission-ai/openspec` `dist/telemetry/index.js`).
-export OPENSPEC_TELEMETRY := "0"
+mod? typescript ".just/typescript.just"
+mod? rust ".just/rust.just"
+mod? swift ".just/swift.just"
+mod? cpp ".just/cpp.just"
+mod? jvm ".just/jvm.just"
 
-# List recipes
+import? "project.just"
+
+languages := "typescript rust swift cpp jvm"
+
+# List the recipes.
 default:
-    @just --list
+    @just --list --list-submodules
 
-# Lint, type-check, test, validate, and run the hook lab
-check: lint typecheck test validate lab
+# Install the pinned tools and point git at .githooks.
+setup: (each "setup")
+    @if [[ -z "${CI:-}" ]]; then git config core.hooksPath .githooks; fi
 
-# Type-check every plugin's TypeScript with Bun's checker, one core short of all of them
-# The declarations come from `just types`, and Bun's own from `bun install`.
-typecheck:
-    test -s plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts || { echo "run 'just types' first" >&2; exit 1; }
-    bun install --frozen-lockfile
-    bun check --no-pretty --threads $(( $(getconf _NPROCESSORS_ONLN) - 1 ))
+# Format every file in place.
+format: (each "format")
 
-# Run the `bun test` files of the tools and the openspec fixtures, optionally one file or with `-t RE`; the plugins' lab files run in `lab`
-# Each argument is a `./` path; a bare `tools` is a name filter that also matches the lab file `hooks/setup/tools.test.ts`.
-test *args:
-    env -u CLAUDE_CODE_SESSION_ID bun test ./tools ./plugins/claudetto-openspec/hooks/fixtures.spec.ts ./plugins/claudetto-openspec/hooks/upstream.spec.ts ./plugins/claudetto/hooks/secrets.spec.ts "$@"
+# Fail if a file is not formatted.
+format-check: (each "format-check")
 
-# Lint Markdown, clones, and the branch's commit messages
-lint:
-    bunx markdownlint-cli2
-    bunx jscpd --no-tips plugins tools
-    @if git rev-parse -q --verify origin/main >/dev/null; then bunx commitlint --from "$(git merge-base origin/main HEAD)" --to HEAD; fi
+# Type-check or build without running anything.
+typecheck: (each "typecheck")
 
-# Have the installed Claude Code write its declarations into plugins/claudetto/.claude-plugin/types/, as it does for any mod it loads.
-# A print run writes them only with the plugin-dir watch on; the closed API port ends the run before any request, so it costs nothing.
-types:
-    -CLAUDE_CODE_PLUGIN_DIR_WATCH=1 CLAUDE_CODE_MAX_RETRIES=0 ANTHROPIC_BASE_URL=http://127.0.0.1:9 ENABLE_CLAUDEAI_MCP_SERVERS=false claude -p ok --max-turns 1 --no-session-persistence --setting-sources "" --tools "" --plugin-dir plugins/claudetto >/dev/null 2>&1
-    test -s plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts
+# Run every linter.
+lint: lint-markdown lint-hooks (each "lint")
 
-# Validate the three manifests, the marketplace, and the OpenSpec change
-# A plugin.json holds no `version`, so each install tracks its commit; `--strict` warns on that one
-# field, here and once per plugin in the marketplace, and every other error and warning still fails.
-validate:
-    for target in plugins/claudetto plugins/claudetto-you-should-know plugins/claudetto-openspec .claude-plugin/marketplace.json; do \
-      claude plugin validate --strict --json "$target" \
-        | jq -e '[.manifest, .contents[]?] | all((.errors | length) == 0 and all(.warnings[]; .path | split(" → ") | last == "version"))' \
-        || exit 1; \
+# Apply the fixes the linters can make.
+lint-fix: lint-markdown-fix (each "lint-fix")
+
+# Run the tests.
+test: (each "test")
+
+# Report what the linters cannot see: suppressions, foreign tools, and drift.
+guard: guard-base (each "guard")
+
+# Run every check CI runs.
+verify: guard-base lint-markdown lint-hooks (each "verify")
+
+# The checks the pre-commit hook runs.
+pre-commit: guard-base (each "pre-commit")
+
+[private]
+each recipe:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for language in {{ languages }}; do
+        if [[ -f ".just/$language.just" ]]; then
+            {{ just_executable() }} "$language::{{ recipe }}"
+        fi
     done
-    bun tools/openspec-validate.ts
 
-# Run each plugin's mod tests against stubbed events
-# Regenerate the gate rules from the pinned shellfirm release and the patch.
-vendor-rules:
-    bun scripts/vendor-rules.ts
+[private]
+lint-markdown *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ -x node_modules/.bin/markdownlint-cli2 ]]; then
+        exec bun run markdownlint-cli2 {{ args }}
+    elif command -v markdownlint-cli2 >/dev/null; then
+        exec markdownlint-cli2 {{ args }}
+    elif [[ -n "${CI:-}" ]]; then
+        echo "markdownlint-cli2 is not installed" >&2
+        exit 1
+    fi
+    echo "Skipped Markdown: markdownlint-cli2 is not installed. CI runs it."
 
-lab:
-    claude plugin test plugins/claudetto
-    claude plugin test plugins/claudetto-you-should-know
-    claude plugin test plugins/claudetto-openspec
+[private]
+lint-markdown-fix: (lint-markdown "--fix")
 
-# Refuse a release version that does not follow the latest anthropics/claude-code tag and this repo's tags (task 18.32); needs `gh` and the network, so `check` does not run it
-release-version:
-    bun tools/release-version.ts
+[private]
+lint-hooks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if command -v shellcheck >/dev/null; then
+        exec shellcheck .githooks/*
+    elif [[ -n "${CI:-}" ]]; then
+        echo "shellcheck is not installed" >&2
+        exit 1
+    fi
+    echo "Skipped hooks: shellcheck is not installed. CI runs it."
 
-# Print the prompt bytes and context lines from fixed inputs (task 1.3); PLUGIN defaults to this tree's core plugin
-prompt-bytes plugin="plugins/claudetto":
-    bun tools/prompt-bytes.ts "{{plugin}}"
+[private]
+guard-base:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    status=0
+    for agent in CLAUDE.md GEMINI.md; do
+        if [[ "$(readlink "$agent" || true)" != AGENTS.md ]]; then
+            echo "$agent: make it a symlink to AGENTS.md" >&2
+            status=1
+        fi
+    done
+    for path in .husky .lefthook.yml .pre-commit-config.yaml .simple-git-hooks.json lefthook.yaml lefthook.yml Makefile; do
+        if [[ -e "$path" ]]; then
+            echo "$path: replaced by justfile and .githooks; move what it still does into project.just" >&2
+            status=1
+        fi
+    done
+    if [[ -z "${CI:-}" && "$(git config core.hooksPath || true)" != .githooks ]]; then
+        echo "git hooks are off: run just setup" >&2
+        status=1
+    fi
+    exit "$status"

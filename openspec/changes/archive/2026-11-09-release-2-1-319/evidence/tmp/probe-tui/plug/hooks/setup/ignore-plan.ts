@@ -1,7 +1,7 @@
 // Pure code, no model call: which lines the block of `.gitignore` and of `.ignore` holds.
 
-import { detectFamilies, globOf, type Listing } from "./starter.ts";
 import type { Family } from "./starter-families.ts";
+import { detectFamilies, globOf, type Listing } from "./starter.ts";
 
 /** The paths no tool should list. `.ignore` has no fixed line: only a family adds to it. */
 export const GITIGNORE_FIXED: readonly string[] = [

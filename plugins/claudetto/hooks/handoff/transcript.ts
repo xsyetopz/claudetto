@@ -1,4 +1,5 @@
 import type { SessionMessage } from "claude-code";
+
 import {
 	BUILT_BY_CODE,
 	gitLines,

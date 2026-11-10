@@ -1,5 +1,6 @@
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanner } from "../secrets.mock.ts";
 
 const user = (text: string) => ({ role: "user", text, toolUses: [] });
@@ -43,7 +44,11 @@ const lab = (
 		return {
 			value:
 				verdict === "unanswered"
-					? { isAnswered: false as const, reason: "empty-reply" as const, usage }
+					? {
+							isAnswered: false as const,
+							reason: "empty-reply" as const,
+							usage,
+						}
 					: {
 							isAnswered: true as const,
 							text: byModel[e.model ?? ""] ?? verdict,
@@ -416,7 +421,6 @@ test("the grader sees the latest 8 tool results, 400 characters each", async ($:
 	expect(sonnet).toContain("cmd9\nout9");
 	expect(sonnet).not.toContain("x".repeat(400));
 });
-
 
 const failedRun = (text: string, command: string, id = "t") => ({
 	role: "assistant",

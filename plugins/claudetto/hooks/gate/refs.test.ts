@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { GATE_REF_MOVE } from "../texts.ts";
 import { judge } from "./rules.ts";
 

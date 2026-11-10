@@ -1,6 +1,7 @@
 import type { Stats } from "node:fs";
 import { lstat, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
+
 import { MARKER } from "../gate/processes.ts";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
 import {
@@ -10,8 +11,8 @@ import {
 	loadTrash,
 	output,
 	projectTrash,
-	type Trash,
 	tempRule,
+	type Trash,
 } from "./trash.ts";
 
 interface Args {

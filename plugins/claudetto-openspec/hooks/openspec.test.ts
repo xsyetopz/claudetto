@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { memory } from "./memory-fs.ts";
 
 const TOOL = "mcp__claudetto-openspec__openspec";
@@ -195,7 +196,9 @@ test("A Main Spec Without a Scenario: validate names the spec and the requiremen
 	const out = await call($, {});
 	expect(out).toContain("c: valid");
 	expect(out).toContain("specs/run-limits: INVALID");
-	expect(out).toContain('Requirement "Thing": Requirement must have at least one scenario');
+	expect(out).toContain(
+		'Requirement "Thing": Requirement must have at least one scenario',
+	);
 });
 
 test("Empty Project: init writes the layout, and validate then passes", async ($: Engine, on: On) => {
@@ -227,7 +230,10 @@ test("Valid Name: new writes the change's .openspec.yaml", async ($: Engine, on:
 });
 
 test("Taken Name: new names the archived folder and writes nothing", async ($: Engine, on: On) => {
-	const files = { ...change(), [`${C}/archive/2026-11-09-add-init/proposal.md`]: "# P\n" };
+	const files = {
+		...change(),
+		[`${C}/archive/2026-11-09-add-init/proposal.md`]: "# P\n",
+	};
 	const { tree } = memory(on, files);
 	const out = await call($, { action: "new", change: "add-init" });
 	expect(out).toContain("archive/2026-11-09-add-init");
@@ -237,7 +243,9 @@ test("Taken Name: new names the archived folder and writes nothing", async ($: E
 test("New refuses a name that is not kebab-case or is an active change", async ($: Engine, on: On) => {
 	const { tree } = memory(on, change());
 	const size = tree.size;
-	expect(await call($, { action: "new", change: "Add_Init" })).toContain("kebab-case");
+	expect(await call($, { action: "new", change: "Add_Init" })).toContain(
+		"kebab-case",
+	);
 	expect(await call($, { action: "new", change: "c" })).toContain("c");
 	expect(await call($, { action: "new" })).toContain("`new` needs `change`");
 	expect(tree.size).toBe(size);
@@ -272,7 +280,7 @@ test("Two Specs: list names each spec with its requirement count", async ($: Eng
 	expect(await call($, { action: "list" })).toBe("a 3\nb 1");
 });
 
-test("skip_specs with a malformed .openspec.yaml is reported",async ($: Engine, on: On) => {
+test("skip_specs with a malformed .openspec.yaml is reported", async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({

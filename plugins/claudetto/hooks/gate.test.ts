@@ -7,6 +7,7 @@ declare module "claude-code" {
 	}
 }
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { scanned, scanner } from "./secrets.mock.ts";
 
 const REASON = "[Data Exfiltration] the call sends a file out";

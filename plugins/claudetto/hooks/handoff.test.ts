@@ -1,5 +1,6 @@
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
 import { HANDOFF_SECTIONS } from "./handoff/layout.ts";
 import { newestHandoff } from "./handoff/read-back.ts";
 import { readMessages } from "./handoff/transcript.ts";
@@ -100,7 +101,11 @@ test("an instruction older than the last twelve turns stays in the handoff", asy
 });
 
 test("Fallback File: the code-built handoff's git line carries the write time", async ($: Engine, on: On) => {
-	const files = lab(on, human("go"), "## main...origin/main [ahead 3]\n M a.ts\n");
+	const files = lab(
+		on,
+		human("go"),
+		"## main...origin/main [ahead 3]\n M a.ts\n",
+	);
 
 	await compactWith($, longSession());
 

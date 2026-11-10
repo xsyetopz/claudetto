@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
 import { scanned, scanner } from "./secrets.mock.ts";
 import {
 	DEFERRED_TOOLS,

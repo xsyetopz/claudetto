@@ -8,6 +8,7 @@ import type {
 	RenderSurface,
 	TextProps,
 } from "claude-code";
+
 import { type Card, LIMITS, parseCards, type View } from "./note.ts";
 import { DISMISSED } from "./texts.ts";
 

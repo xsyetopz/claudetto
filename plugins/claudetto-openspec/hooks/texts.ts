@@ -17,11 +17,13 @@ export const TOOL_INPUT_SCHEMA = {
 };
 
 export const NO_OPENSPEC = "No openspec/changes folder in this project.";
-export const needsChange = (action: string) => `\`${action}\` needs \`change\`.`;
+export const needsChange = (action: string) =>
+	`\`${action}\` needs \`change\`.`;
 export const NO_CHANGES = "No active changes.";
 export const NOTHING = "No active changes and no main specs.";
 export const NO_SPECS = "No main specs in openspec/specs/.";
-export const SET_UP = "openspec/ is already set up: openspec/config.yaml exists.";
+export const SET_UP =
+	"openspec/ is already set up: openspec/config.yaml exists.";
 
 export const laidOut = (files: string[]) => `Wrote ${files.join(", ")}.`;
 

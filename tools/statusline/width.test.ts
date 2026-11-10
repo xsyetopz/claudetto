@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+
 import { ICON } from "../../plugins/claudetto/statusline/icons.ts";
 import {
 	clean,

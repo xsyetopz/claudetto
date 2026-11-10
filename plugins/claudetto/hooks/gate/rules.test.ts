@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { GATE_HOOK_WRITE, GATE_WRITE_FILE } from "../texts.ts";
 import { judge, systemPath } from "./rules.ts";
 

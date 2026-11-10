@@ -20,17 +20,19 @@ const lab = (
 				isAnswered: true,
 				text: JSON.stringify({ kind, constraints }),
 				usage: {
-				input_tokens: 1,
-				output_tokens: 1,
-				cache_read_input_tokens: 0,
-				cache_creation_input_tokens: 0,
-			},
+					input_tokens: 1,
+					output_tokens: 1,
+					cache_read_input_tokens: 0,
+					cache_creation_input_tokens: 0,
+				},
 			},
 		};
 	});
 };
-const submit = ($: Engine, text = "Make it pass. Nothing should change on disk.") =>
-	$.prompt.submit({ text, wait: false, origin: { kind: "composer" } });
+const submit = (
+	$: Engine,
+	text = "Make it pass. Nothing should change on disk.",
+) => $.prompt.submit({ text, wait: false, origin: { kind: "composer" } });
 const check = ($: Engine, tool: string, input: Record<string, unknown>) =>
 	$.tool.check({ tool, input });
 const RO = [
@@ -61,9 +63,7 @@ test("a resumed session's first prompt waits for the constraint its earlier mess
 	expect((await submit($)).context?.join("\n")).toContain(
 		"Nothing should change on disk.",
 	);
-	expect(seen.join("\n")).toContain(
-		'a go-ahead ("you can commit now")',
-	);
+	expect(seen.join("\n")).toContain('a go-ahead ("you can commit now")');
 });
 
 test("no constraint adds no context", async ($: Engine, on: On) => {
@@ -98,7 +98,9 @@ test("read-only denies Edit, Write and writing Bash and lets reads through", asy
 });
 
 test("no-commit denies git commit only", async ($: Engine, on: On) => {
-	lab(on, [{ text: "Do not commit.", rule: "no-commit", quote: "do not commit" }]);
+	lab(on, [
+		{ text: "Do not commit.", rule: "no-commit", quote: "do not commit" },
+	]);
 	await submit($, "Fix it, but do not commit.");
 	expect(
 		(await check($, "Bash", { command: "git commit -m x" })).decision,
@@ -171,7 +173,13 @@ for (const [name, quote] of [
 		lab(
 			on,
 			[{ text: "Leave alone package.json.", rule: "none", quote }],
-			[{ role: "assistant", text: "I will leave package.json alone.", toolUses: [] }],
+			[
+				{
+					role: "assistant",
+					text: "I will leave package.json alone.",
+					toolUses: [],
+				},
+			],
 		);
 		await submit($, "Commit the rest.");
 		await check($, "Read", { file_path: "/p/a.ts" });
@@ -185,9 +193,11 @@ test("the extractor is told to quote the user, that a fact is no limit, that a l
 	await submit($);
 	const prompt = seen.join("\n");
 	expect(prompt).toContain(
-		'"quote": the user\'s exact words that set it, copied from one of the user\'s messages',
+		"\"quote\": the user's exact words that set it, copied from one of the user's messages",
 	);
-	expect(prompt).toContain('a statement of fact ("2-1-319 is out") is not a limit');
+	expect(prompt).toContain(
+		'a statement of fact ("2-1-319 is out") is not a limit',
+	);
 	expect(prompt).toContain(
 		'Drop a limit once a later message of the user allows the act it forbids ("commit those"',
 	);
@@ -346,12 +356,18 @@ test("an unreadable kind leaves the message a task", async ($: Engine, on: On) =
 });
 
 test("after a compaction the summary is no new remark, so the resumed turn's first call passes", async ($: Engine, on: On) => {
-	const messages: unknown[] = [person, spoken("Nobody did; I misread the task.")];
+	const messages: unknown[] = [
+		person,
+		spoken("Nobody did; I misread the task."),
+	];
 	lab(on, [], messages, [], "remark");
 	on("session.compact", () => ({ skip: "core ran" }));
 	await submit($, person.text);
 	expect((await check($, "Grep", {})).decision).not.toBe("deny");
-	await $.session.compact({ trigger: "auto", messages: messages as SessionMessage[] });
+	await $.session.compact({
+		trigger: "auto",
+		messages: messages as SessionMessage[],
+	});
 	messages.splice(0, messages.length, {
 		role: "user",
 		text: "This session is being continued from a previous conversation that ran out of context.",

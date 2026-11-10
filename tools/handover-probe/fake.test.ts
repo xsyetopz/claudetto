@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+
 import {
 	BASE_TOKENS,
 	fakeContextTokens,
@@ -24,7 +25,13 @@ test("a human turn is a user message with text, not a tool result", () => {
 
 test("fake context tokens grow by a fixed step per human turn", () => {
 	const one = fakeContextTokens([human("a")]);
-	const three = fakeContextTokens([human("a"), reply, human("b"), reply, blocks("c")]);
+	const three = fakeContextTokens([
+		human("a"),
+		reply,
+		human("b"),
+		reply,
+		blocks("c"),
+	]);
 	expect(one).toBe(BASE_TOKENS + TOKENS_PER_TURN);
 	expect(three - one).toBe(2 * TOKENS_PER_TURN);
 });

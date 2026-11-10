@@ -1,5 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+
 import { scanner } from "./secrets.mock.ts";
 
 const DECIDE = "mcp__claudetto__decide";

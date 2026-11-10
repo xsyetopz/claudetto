@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { parse, programOf } from "./shell-words.ts";
 
 // Each row freezes what `parse` and `programOf` return for one command, read by hand against POSIX sh, so a change in how a quote, an operator, a redirect, a heredoc, or a wrapper is read shows as a failed row.

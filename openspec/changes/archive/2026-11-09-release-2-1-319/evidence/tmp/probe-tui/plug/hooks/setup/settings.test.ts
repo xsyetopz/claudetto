@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { AUTO_MODE } from "./auto-mode.ts";
 import {
 	applyChanges,

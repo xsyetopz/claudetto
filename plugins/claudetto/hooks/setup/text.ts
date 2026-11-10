@@ -10,7 +10,7 @@ export const SETUP_ADVICE = (
 export const recommended = (pick: string, why: string): string =>
 	`\n\nRecommended: ${pick}. ${why}`;
 
-const STOCK_TAIL ='the prompt "';
+const STOCK_TAIL = 'the prompt "';
 
 /** The request ends the stock text in quotes. */
 const requestOf = (stock: string): string => {

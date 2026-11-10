@@ -3,17 +3,42 @@
 import { appendFileSync, cpSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { planExperiment, runExperiment, wilson, type Experiment, type Session, type SessionResult } from "/tmp/claudekit-leftovers/claudekit/src/ab/ab.ts";
-import { materializeArm, type Arm } from "/tmp/claudekit-leftovers/claudekit/src/arm/arm.ts";
+
+import {
+	type Experiment,
+	planExperiment,
+	runExperiment,
+	type Session,
+	type SessionResult,
+	wilson,
+} from "/tmp/claudekit-leftovers/claudekit/src/ab/ab.ts";
+import {
+	type Arm,
+	materializeArm,
+} from "/tmp/claudekit-leftovers/claudekit/src/arm/arm.ts";
 import { startFake } from "/tmp/claudekit-leftovers/claudekit/src/fake/fake.ts";
 import type { Plan } from "/tmp/claudekit-leftovers/claudekit/src/fake/plan.ts";
-import { runPopup } from "../18-20/popup.ts";
-import { buildLaunch, launch, prepare, runFiles, type LaunchSpec } from "/tmp/claudekit-leftovers/claudekit/src/launcher/launcher.ts";
-import { cost, readLedger, tokensOf } from "/tmp/claudekit-leftovers/claudekit/src/ledger/ledger.ts";
-import { readStreamJson, replyText } from "/tmp/claudekit-leftovers/claudekit/src/reply/reply.ts";
-import { isRecord } from "/tmp/claudekit-leftovers/claudekit/src/shared/record.ts";
+import {
+	buildLaunch,
+	launch,
+	type LaunchSpec,
+	prepare,
+	runFiles,
+} from "/tmp/claudekit-leftovers/claudekit/src/launcher/launcher.ts";
+import {
+	cost,
+	readLedger,
+	tokensOf,
+} from "/tmp/claudekit-leftovers/claudekit/src/ledger/ledger.ts";
+import {
+	readStreamJson,
+	replyText,
+} from "/tmp/claudekit-leftovers/claudekit/src/reply/reply.ts";
 import { MODELS } from "/tmp/claudekit-leftovers/claudekit/src/shared/model.ts";
+import { isRecord } from "/tmp/claudekit-leftovers/claudekit/src/shared/record.ts";
 import { createRun } from "/tmp/claudekit-leftovers/claudekit/src/workspace/workspace.ts";
+
+import { runPopup } from "../18-20/popup.ts";
 
 let ROOT = "/tmp/probe-18-8";
 let MODE = "default";
@@ -24,21 +49,58 @@ const STYLE = "claudetto:Concise";
 const TOKEN = "CLAUDE_CODE_OAUTH_TOKEN";
 const MODEL = MODELS.sonnet;
 const USD_STOP = 14;
-let PLUGIN = "/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto";
+let PLUGIN =
+	"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto";
 // 18-20 round 7: the Stop hook's two block reasons (hooks/texts.ts ASK_FORM, COMMAND_FORM), found in the stream.
-const BLOCKED = /puts a question to the user as a checklist item|leaves a choice or an input to the user in prose|outside a `- \[ \] ! <command>` item/;
+const BLOCKED =
+	/puts a question to the user as a checklist item|leaves a choice or an input to the user in prose|outside a `- \[ \] ! <command>` item/;
 const OPEN_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+\[ \]\s+(.*\S)\s*$/;
 const HEADING = /what i need from you/i;
 const BANG = /(^|[\s`])!\s*\S/;
 
-interface Row { arm: string; case: string; kind: string; asked: number; denied: string[]; turns: number; blocked: boolean; formP: boolean; runId: string; checkbox: boolean; form: boolean; formQ: boolean; heading: boolean; capped: boolean; tokens: number; usd: number; armDiff: string[]; reply: string }
+interface Row {
+	arm: string;
+	case: string;
+	kind: string;
+	asked: number;
+	denied: string[];
+	turns: number;
+	blocked: boolean;
+	formP: boolean;
+	runId: string;
+	checkbox: boolean;
+	form: boolean;
+	formQ: boolean;
+	heading: boolean;
+	capped: boolean;
+	tokens: number;
+	usd: number;
+	armDiff: string[];
+	reply: string;
+}
 
 // The three labels in prompts.json, applied to the final reply text.
 // 18-20 adds formQ: like form, but an item may instead be one question (ends in "?", holds one "?").
-const ONE_QUESTION = (l: string): boolean => { const t = l.replace(/[*_`\s]+$/, ""); return t.endsWith("?") && t.split("?").length === 2; };
-export const grade = (text: string): Pick<Row, "checkbox" | "form" | "formQ" | "heading"> => {
+const ONE_QUESTION = (l: string): boolean => {
+	const t = l.replace(/[*_`\s]+$/, "");
+	return t.endsWith("?") && t.split("?").length === 2;
+};
+export const grade = (
+	text: string,
+): Pick<Row, "checkbox" | "form" | "formQ" | "heading"> => {
 	const items = text.split("\n").filter((l) => OPEN_ITEM.test(l));
-	return { checkbox: items.length > 0, heading: HEADING.test(text), form: items.length > 0 && HEADING.test(text) && items.every((l) => BANG.test(l)), formQ: items.length > 0 && HEADING.test(text) && items.every((l) => BANG.test(l) || ONE_QUESTION(l)) };
+	return {
+		checkbox: items.length > 0,
+		heading: HEADING.test(text),
+		form:
+			items.length > 0 &&
+			HEADING.test(text) &&
+			items.every((l) => BANG.test(l)),
+		formQ:
+			items.length > 0 &&
+			HEADING.test(text) &&
+			items.every((l) => BANG.test(l) || ONE_QUESTION(l)),
+	};
 };
 
 // 18-20 round 5. formP: with AskUserQuestion available, the steps go where the style puts them.
@@ -49,7 +111,11 @@ export const formP = (text: string, kind: string, asked: number): boolean => {
 	const items = text.split("\n").filter((l) => OPEN_ITEM.test(l));
 	const needsQ = kind === "question" || kind === "both";
 	const needsC = kind === "command" || kind === "both";
-	const itemsOk = needsC ? items.length > 0 && HEADING.test(text) && items.every((l) => POPUP_ITEM.test(l)) : items.length === 0;
+	const itemsOk = needsC
+		? items.length > 0 &&
+			HEADING.test(text) &&
+			items.every((l) => POPUP_ITEM.test(l))
+		: items.length === 0;
 	return itemsOk && (needsQ ? asked > 0 : true);
 };
 
@@ -58,74 +124,166 @@ const arm = (name: string, plugin: boolean): Arm => ({
 	plugins: plugin ? [{ dir: PLUGIN }] : [],
 	settings: plugin ? { outputStyle: STYLE } : {},
 	env: { DISABLE_ERROR_REPORTING: "1" },
-	flags: ["--tools", POPUP ? "Read,Write,Edit,Glob,Grep,AskUserQuestion,ToolSearch" : "Read,Write,Edit,Glob,Grep", "--permission-mode", MODE, "--max-budget-usd", "1"],
+	flags: [
+		"--tools",
+		POPUP
+			? "Read,Write,Edit,Glob,Grep,AskUserQuestion,ToolSearch"
+			: "Read,Write,Edit,Glob,Grep",
+		"--permission-mode",
+		MODE,
+		"--max-budget-usd",
+		"1",
+	],
 	model: MODEL,
 	expect: {},
 });
 
-const DRY: Plan = { steps: [], fallback: { blocks: [{ type: "text", text: "Done.\n\nWhat I Need from You\n- [ ] `! sudo ls`" }] } };
+const DRY: Plan = {
+	steps: [],
+	fallback: {
+		blocks: [
+			{
+				type: "text",
+				text: "Done.\n\nWhat I Need from You\n- [ ] `! sudo ls`",
+			},
+		],
+	},
+};
 
 type Case = { name: string; prompt: string; kind: string };
 
-const sessionOf = (mode: { fake: boolean; out: string; ledger: string }) => async (s: Session<Arm, Case>): Promise<SessionResult> => {
-	const led = await readLedger(mode.ledger);
-	if (led.totalUsd > USD_STOP) throw new Error(`stop: ledger $${led.totalUsd.toFixed(2)} passed $${USD_STOP}`);
-	const run = await createRun({ probe: "ab", root: ROOT, quiet: true });
-	const files = runFiles(run);
-	const { pluginDirs, treeHashes } = await materializeArm(s.arm, run);
-	mkdirSync(files.work, { recursive: true });
-	if (SEED) cpSync(SEED, files.work, { recursive: true });
-	writeFileSync(join(files.work, ".created-by-claudetto"), process.env.CLAUDE_CODE_SESSION_ID ?? "");
-	const spec: LaunchSpec = { prompt: s.case.prompt, mode: "stream-json", model: MODEL, auth: "fake", pluginDirs, pluginTreeHashes: treeHashes, settings: s.arm.settings ?? {}, settingSources: [], env: s.arm.env ?? {}, flags: s.arm.flags ?? [], cwd: files.work, arm: s.arm.name, case: s.case.name };
-	if (!mode.fake && !process.env[TOKEN]) throw new Error(`${TOKEN} unset: run with bun --env-file=.env from the repo root`);
-	const fake = mode.fake ? await startFake({ plan: DRY, dir: join(run.dir, "requests") }) : undefined;
-	try {
-		const full = fake ? { ...spec, baseUrl: fake.url } : { ...spec, passEnv: [TOKEN] };
-		let popup: { asked: number; denied: string[] } = { asked: 0, denied: [] };
-		let done: { files: { stdout: string }; capped: boolean };
-		if (POPUP) {
-			const l = buildLaunch(full, run);
-			await prepare(full, l);
-			const p = await runPopup(l, s.case.prompt, 300_000);
-			await Bun.write(l.files.stdout, p.stdout);
-			popup = p;
-			done = { files: l.files, capped: p.capped };
-		} else {
-			done = await launch(full, run);
+const sessionOf =
+	(mode: { fake: boolean; out: string; ledger: string }) =>
+	async (s: Session<Arm, Case>): Promise<SessionResult> => {
+		const led = await readLedger(mode.ledger);
+		if (led.totalUsd > USD_STOP)
+			throw new Error(
+				`stop: ledger $${led.totalUsd.toFixed(2)} passed $${USD_STOP}`,
+			);
+		const run = await createRun({ probe: "ab", root: ROOT, quiet: true });
+		const files = runFiles(run);
+		const { pluginDirs, treeHashes } = await materializeArm(s.arm, run);
+		mkdirSync(files.work, { recursive: true });
+		if (SEED) cpSync(SEED, files.work, { recursive: true });
+		writeFileSync(
+			join(files.work, ".created-by-claudetto"),
+			process.env.CLAUDE_CODE_SESSION_ID ?? "",
+		);
+		const spec: LaunchSpec = {
+			prompt: s.case.prompt,
+			mode: "stream-json",
+			model: MODEL,
+			auth: "fake",
+			pluginDirs,
+			pluginTreeHashes: treeHashes,
+			settings: s.arm.settings ?? {},
+			settingSources: [],
+			env: s.arm.env ?? {},
+			flags: s.arm.flags ?? [],
+			cwd: files.work,
+			arm: s.arm.name,
+			case: s.case.name,
+		};
+		if (!mode.fake && !process.env[TOKEN])
+			throw new Error(
+				`${TOKEN} unset: run with bun --env-file=.env from the repo root`,
+			);
+		const fake = mode.fake
+			? await startFake({ plan: DRY, dir: join(run.dir, "requests") })
+			: undefined;
+		try {
+			const full = fake
+				? { ...spec, baseUrl: fake.url }
+				: { ...spec, passEnv: [TOKEN] };
+			let popup: { asked: number; denied: string[] } = { asked: 0, denied: [] };
+			let done: { files: { stdout: string }; capped: boolean };
+			if (POPUP) {
+				const l = buildLaunch(full, run);
+				await prepare(full, l);
+				const p = await runPopup(l, s.case.prompt, 300_000);
+				await Bun.write(l.files.stdout, p.stdout);
+				popup = p;
+				done = { files: l.files, capped: p.capped };
+			} else {
+				done = await launch(full, run);
+			}
+			const stdout = await Bun.file(done.files.stdout).text();
+			const frames = stdout
+				.split("\n")
+				.filter((l) => l.startsWith("{"))
+				.map((l) => JSON.parse(l) as unknown);
+			const init = frames.find((f) => isRecord(f) && f.subtype === "init");
+			const result = frames.findLast((f) => isRecord(f) && f.type === "result");
+			const usage =
+				isRecord(result) && isRecord(result.usage)
+					? (result.usage as never)
+					: (done.record?.usage ?? { input_tokens: 0, output_tokens: 0 });
+			const diff: string[] = [];
+			if (!isRecord(init)) diff.push("no init frame");
+			else {
+				const style = String(init.output_style);
+				const names = (
+					Array.isArray(init.plugins) ? init.plugins.filter(isRecord) : []
+				).map((p) => p.name);
+				const isPlugin = s.arm.name === "plugin";
+				if (isPlugin !== (style === STYLE)) diff.push(`style ${style}`);
+				if (isPlugin !== names.includes("claudetto"))
+					diff.push(`plugins ${names.join(",")}`);
+				if (init.model !== MODEL) diff.push(`model ${String(init.model)}`);
+			}
+			const reply = readStreamJson(stdout);
+			const text = reply.segments.at(-1)?.text ?? "";
+			const tokens = Object.values(tokensOf(usage)).reduce((a, b) => a + b, 0);
+			const row: Row = {
+				arm: s.arm.name,
+				case: s.case.name,
+				kind: s.case.kind,
+				asked: popup.asked,
+				denied: popup.denied,
+				turns: isRecord(result) ? Number(result.num_turns) : 0,
+				blocked: BLOCKED.test(stdout),
+				formP: formP(text, s.case.kind, popup.asked),
+				runId: run.id,
+				...grade(text),
+				capped: done.capped,
+				tokens,
+				usd: cost(MODEL, usage),
+				armDiff: diff,
+				reply: replyText(reply),
+			};
+			appendFileSync(
+				join(mode.out, "sessions.jsonl"),
+				`${JSON.stringify(row)}\n`,
+			);
+			const pass = !done.capped && diff.length === 0;
+			return {
+				runId: run.id,
+				model: MODEL,
+				usage,
+				...(done.capped ? { capped: true } : {}),
+				verdict: {
+					pass,
+					label: pass ? "ok" : "fail",
+					evidence: diff.join(","),
+				},
+				armCheck: { ok: diff.length === 0, diff },
+			};
+		} finally {
+			await fake?.stop();
 		}
-		const stdout = await Bun.file(done.files.stdout).text();
-		const frames = stdout.split("\n").filter((l) => l.startsWith("{")).map((l) => JSON.parse(l) as unknown);
-		const init = frames.find((f) => isRecord(f) && f.subtype === "init");
-		const result = frames.findLast((f) => isRecord(f) && f.type === "result");
-		const usage = isRecord(result) && isRecord(result.usage) ? (result.usage as never) : (done.record?.usage ?? { input_tokens: 0, output_tokens: 0 });
-		const diff: string[] = [];
-		if (!isRecord(init)) diff.push("no init frame");
-		else {
-			const style = String(init.output_style);
-			const names = (Array.isArray(init.plugins) ? init.plugins.filter(isRecord) : []).map((p) => p.name);
-			const isPlugin = s.arm.name === "plugin";
-			if (isPlugin !== (style === STYLE)) diff.push(`style ${style}`);
-			if (isPlugin !== names.includes("claudetto")) diff.push(`plugins ${names.join(",")}`);
-			if (init.model !== MODEL) diff.push(`model ${String(init.model)}`);
-		}
-		const reply = readStreamJson(stdout);
-		const text = reply.segments.at(-1)?.text ?? "";
-		const tokens = Object.values(tokensOf(usage)).reduce((a, b) => a + b, 0);
-		const row: Row = { arm: s.arm.name, case: s.case.name, kind: s.case.kind, asked: popup.asked, denied: popup.denied, turns: isRecord(result) ? Number(result.num_turns) : 0, blocked: BLOCKED.test(stdout), formP: formP(text, s.case.kind, popup.asked), runId: run.id, ...grade(text), capped: done.capped, tokens, usd: cost(MODEL, usage), armDiff: diff, reply: replyText(reply) };
-		appendFileSync(join(mode.out, "sessions.jsonl"), `${JSON.stringify(row)}\n`);
-		const pass = !done.capped && diff.length === 0;
-		return { runId: run.id, model: MODEL, usage, ...(done.capped ? { capped: true } : {}), verdict: { pass, label: pass ? "ok" : "fail", evidence: diff.join(",") }, armCheck: { ok: diff.length === 0, diff } };
-	} finally {
-		await fake?.stop();
-	}
-};
+	};
 
 const report = async (out: string): Promise<string[]> => {
-	const rows = (await Bun.file(join(out, "sessions.jsonl")).text()).split("\n").filter(Boolean).map((l) => JSON.parse(l) as Row);
+	const rows = (await Bun.file(join(out, "sessions.jsonl")).text())
+		.split("\n")
+		.filter(Boolean)
+		.map((l) => JSON.parse(l) as Row);
 	return ARMS.map((a) => {
 		const all = rows.filter((x) => x.arm === a);
 		const r = all.filter((x) => x.armDiff.length === 0);
-		const f = (k: "checkbox" | "form" | "formQ" | "heading" | "formP"): string => {
+		const f = (
+			k: "checkbox" | "form" | "formQ" | "heading" | "formP",
+		): string => {
 			const c = r.filter((x) => x[k]).length;
 			const [lo, hi] = wilson(c, r.length);
 			return `${k} ${c}/${r.length} Wilson95 ${lo.toFixed(3)}-${hi.toFixed(3)}`;
@@ -135,7 +293,24 @@ const report = async (out: string): Promise<string[]> => {
 };
 
 if (import.meta.main) {
-	const { values } = parseArgs({ args: Bun.argv.slice(2), options: { out: { type: "string" }, dry: { type: "boolean" }, run: { type: "boolean" }, report: { type: "boolean" }, limit: { type: "string" }, mode: { type: "string" }, prompts: { type: "string" }, plugin: { type: "string" }, root: { type: "string" }, "plugin-only": { type: "boolean" }, popup: { type: "boolean" }, seed: { type: "string" }, only: { type: "string" } } });
+	const { values } = parseArgs({
+		args: Bun.argv.slice(2),
+		options: {
+			out: { type: "string" },
+			dry: { type: "boolean" },
+			run: { type: "boolean" },
+			report: { type: "boolean" },
+			limit: { type: "string" },
+			mode: { type: "string" },
+			prompts: { type: "string" },
+			plugin: { type: "string" },
+			root: { type: "string" },
+			"plugin-only": { type: "boolean" },
+			popup: { type: "boolean" },
+			seed: { type: "string" },
+			only: { type: "string" },
+		},
+	});
 	ROOT = values.root ?? ROOT;
 	MODE = values.mode ?? MODE;
 	PLUGIN = values.plugin ?? PLUGIN;
@@ -146,16 +321,44 @@ if (import.meta.main) {
 	if (values.report) {
 		console.log((await report(out)).join("\n"));
 	} else {
-		const set = (await Bun.file(values.prompts ?? join(import.meta.dir, "prompts.json")).json()) as { prompts: (string | { prompt: string; kind?: string })[] };
-		const cases = set.prompts.slice(0, Number(values.limit ?? set.prompts.length)).map((p, i) => ({ name: `p${String(i + 1).padStart(2, "0")}`, prompt: typeof p === "string" ? p : p.prompt, kind: typeof p === "string" ? "" : (p.kind ?? "") })).filter((c) => values.only === undefined || values.only.split(",").includes(c.name));
-		const e: Experiment<Arm, Case> = { name: "18-8", arms: ARMS.map((a) => arm(a, a === "plugin")), cases, n: 1, parallel: 6, tokenBoundPerRun: 300_000 };
+		const set = (await Bun.file(
+			values.prompts ?? join(import.meta.dir, "prompts.json"),
+		).json()) as { prompts: (string | { prompt: string; kind?: string })[] };
+		const cases = set.prompts
+			.slice(0, Number(values.limit ?? set.prompts.length))
+			.map((p, i) => ({
+				name: `p${String(i + 1).padStart(2, "0")}`,
+				prompt: typeof p === "string" ? p : p.prompt,
+				kind: typeof p === "string" ? "" : (p.kind ?? ""),
+			}))
+			.filter(
+				(c) =>
+					values.only === undefined || values.only.split(",").includes(c.name),
+			);
+		const e: Experiment<Arm, Case> = {
+			name: "18-8",
+			arms: ARMS.map((a) => arm(a, a === "plugin")),
+			cases,
+			n: 1,
+			parallel: 6,
+			tokenBoundPerRun: 300_000,
+		};
 		const plan = planExperiment(e);
 		mkdirSync(out, { recursive: true });
 		const ledger = join(out, "ledger.jsonl");
 		const led = await readLedger(ledger);
-		console.log(`plan: ${plan.sessions.length} sessions, bound ${plan.tokenBound} tokens`);
+		console.log(
+			`plan: ${plan.sessions.length} sessions, bound ${plan.tokenBound} tokens`,
+		);
 		if (values.run || values.dry) {
-			const r = await runExperiment(e, { run: true, ledger, base: ARMS[0] ?? "base", margin: 0, goalCap: led.totalTokens + plan.tokenBound, session: sessionOf({ fake: !!values.dry, out, ledger }) });
+			const r = await runExperiment(e, {
+				run: true,
+				ledger,
+				base: ARMS[0] ?? "base",
+				margin: 0,
+				goalCap: led.totalTokens + plan.tokenBound,
+				session: sessionOf({ fake: !!values.dry, out, ledger }),
+			});
 			console.log(JSON.stringify({ rejected: r.rejected, usd: r.usd }));
 			console.log((await report(out)).join("\n"));
 		}

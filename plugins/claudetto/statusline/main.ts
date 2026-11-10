@@ -37,7 +37,13 @@ export const statusOf = (
 		return FALLBACK;
 	}
 	const room = Math.max(1, columnsOf(env) - COLUMNS_MARGIN);
-	const rows = renderRows(input, paintOf(themeOf(env, local.theme)), now, room, local);
+	const rows = renderRows(
+		input,
+		paintOf(themeOf(env, local.theme)),
+		now,
+		room,
+		local,
+	);
 	return rows.length > 0 ? rows.join("\n") : FALLBACK;
 };
 
@@ -59,7 +65,11 @@ export const statusWithFiles = async (
 		readLine(dir, str(input["session_id"])),
 		hooksOff(input, dir, now),
 	]);
-	return statusOf(raw, env, now, { ...local, ...line, ...(off ? { hooksOff: true } : {}) });
+	return statusOf(raw, env, now, {
+		...local,
+		...line,
+		...(off ? { hooksOff: true } : {}),
+	});
 };
 
 /** The JSON lines of the subagent status line, or `""` for no rows. The width is `columns` of the input, which the subagent input carries. */

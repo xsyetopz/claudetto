@@ -1,5 +1,6 @@
 import type { On, RenderSurface } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { blankRow, type Row } from "./note.ts";
 
 const PLUGIN = "claudetto-you-should-know";

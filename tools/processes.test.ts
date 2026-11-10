@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+
 import { file, Glob } from "bun";
 
 const PLUGIN = `${import.meta.dir}/../plugins/claudetto`;

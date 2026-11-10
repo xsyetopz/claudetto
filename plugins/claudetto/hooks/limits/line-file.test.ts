@@ -24,7 +24,8 @@ const lab = (
 		} as never;
 	});
 	on("config.list", () => ({
-		value: theme === undefined ? [] : ([{ key: "theme", value: theme }] as never),
+		value:
+			theme === undefined ? [] : ([{ key: "theme", value: theme }] as never),
 	}));
 	on("fs.write", (_$, e) => {
 		files.push([e.path, e.text]);

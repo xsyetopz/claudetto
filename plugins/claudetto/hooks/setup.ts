@@ -1,35 +1,31 @@
 // The setup and `/statusline` commands and the session start check share these `$` helpers: the hook loader takes `$` into a helper only within the file that defines it.
 
-import type {
-	EngineInterface,
-	HookFor,
-	On,
-	PluginOptions,
-} from "claude-code";
+import type { EngineInterface, HookFor, On, PluginOptions } from "claude-code";
+
 import { listOption } from "./options.ts";
+import { redact } from "./secrets.ts";
 import {
 	applyChanges,
-	type Change,
 	capGroup,
+	type Change,
 	changesOf,
-	GROUPS,
 	type Group,
+	GROUPS,
 	type Json,
 	MINIMUM_VERSION,
 	parseSettings,
-	STATUS_LINE,
 	settingsText,
+	STATUS_LINE,
 	wallGroup,
 } from "./setup/settings.ts";
 import { linesOf } from "./setup/starter.ts";
 import {
-	type Io,
 	ignoresPart,
+	type Io,
 	purgePart,
 	starterPart,
 	toolPart,
 } from "./setup/steps.ts";
-import { redact } from "./secrets.ts";
 import {
 	recommended,
 	SETUP_ADVICE,
@@ -42,8 +38,8 @@ import {
 	isOnPath,
 	noticeKey,
 	noticeLine,
-	TOOLS,
 	type Tool,
+	TOOLS,
 } from "./setup/tools.ts";
 
 const TRAILING_SLASHES = /\/+$/;
@@ -127,7 +123,10 @@ const adviceOf = async (
 	options: readonly string[],
 ): Promise<{ pick: string; why: string } | undefined> => {
 	try {
-		const shown = await redact((argv, init) => $.process.run(argv, init), question);
+		const shown = await redact(
+			(argv, init) => $.process.run(argv, init),
+			question,
+		);
 		const r = await $.model.complete({
 			model: "haiku",
 			prompt: SETUP_ADVICE(shown, options),
@@ -272,12 +271,7 @@ const settingsPart = async (
 		capGroup(parseSettings(await textOf($, await loginFile($)))),
 		wallGroup(walls),
 	].filter((group) => group !== undefined);
-	const result = await askGroups(
-		$,
-		[...GROUPS, ...extra],
-		held,
-		[],
-	);
+	const result = await askGroups($, [...GROUPS, ...extra], held, []);
 	if (result === undefined) {
 		return `Nothing was written: a question was dismissed, or this session has no one to answer. ${file} was not changed.`;
 	}
@@ -481,8 +475,7 @@ const toolNotice = async (
 	path: string | undefined,
 ): Promise<void> => {
 	const exists = (file: string) => $.fs.exists(file);
-	const quiet =
-		!tool.required && (await $.store.get(noticeKey(tool))) === true;
+	const quiet = !tool.required && (await $.store.get(noticeKey(tool))) === true;
 	if (quiet || (await isOnPath(tool.name, path, exists))) {
 		return;
 	}

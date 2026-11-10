@@ -1,27 +1,25 @@
 {
-  "sandbox": {
-    "enabled": true,
-    "allowUnsandboxedCommands": false,
-    "filesystem": {
-      "allowWrite": [
-        "~/.cache",
-        "~/.bun",
-        "~/.npm",
-        "~/Library/Caches",
-        "/tmp"
-      ],
-      "denyRead": [
-        "~/.aws",
-        "~/.azure",
-        "~/.config/gcloud",
-        "~/.netrc",
-        "~/.git-credentials"
-      ]
-    },
-    "network": {
-      "allowedDomains": [
-        "*"
-      ]
-    }
-  }
+	"sandbox": {
+		"enabled": true,
+		"allowUnsandboxedCommands": false,
+		"filesystem": {
+			"allowWrite": [
+				"~/.cache",
+				"~/.bun",
+				"~/.npm",
+				"~/Library/Caches",
+				"/tmp"
+			],
+			"denyRead": [
+				"~/.aws",
+				"~/.azure",
+				"~/.config/gcloud",
+				"~/.netrc",
+				"~/.git-credentials"
+			]
+		},
+		"network": {
+			"allowedDomains": ["*"]
+		}
+	}
 }

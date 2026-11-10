@@ -1,11 +1,20 @@
 {
-	"extends": "./plugins/claudetto/tsconfig.json",
-	"compilerOptions": {
-		"erasableSyntaxOnly": true,
-		"verbatimModuleSyntax": true
-	},
+	"$schema": "https://json.schemastore.org/tsconfig.json",
+	"extends": [
+		"./plugins/claudetto/tsconfig.json",
+		"typescript-bedrock/tsconfig.base.json"
+	],
+	"compilerOptions": {},
 	"include": ["plugins/**/*.ts"],
-	"exclude": ["node_modules", "plugins/*/.claude-plugin/types/**"],
+	"exclude": [
+		"node_modules",
+		"plugins/*/.claude-plugin/types/**",
+		"**/.build",
+		"**/build",
+		"**/coverage",
+		"**/dist",
+		"**/target"
+	],
 	"files": [
 		"plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts",
 		"plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts",

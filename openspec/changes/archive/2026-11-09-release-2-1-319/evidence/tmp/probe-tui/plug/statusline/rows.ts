@@ -3,10 +3,10 @@ import { ITEM_GAP, MAX_ROWS } from "./limits.ts";
 import type { Local } from "./local.ts";
 import {
 	branchText,
-	type Ctx,
 	cacheText,
 	contextText,
 	costText,
+	type Ctx,
 	folderText,
 	hooksOffText,
 	limitTexts,

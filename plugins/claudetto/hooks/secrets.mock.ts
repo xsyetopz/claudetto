@@ -1,5 +1,6 @@
 import type { EventOf, On } from "claude-code";
 import type { Engine } from "claude-code/testing";
+
 import { SCANNER } from "./secrets.ts";
 
 type Run = EventOf["process.run"];

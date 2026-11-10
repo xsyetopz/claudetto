@@ -5,6 +5,17 @@ for (const line of readFileSync(process.argv[2] ?? "", "utf8").split("\n")) {
 	const o = JSON.parse(line);
 	const m = o.message ?? {};
 	const u = m.usage ?? {};
-	const body = m.content === undefined ? JSON.stringify({ ...o, message: undefined }) : JSON.stringify(m.content);
-	console.log(o.type, o.subtype ?? "", String(m.id ?? "").slice(-6), u.input_tokens, u.cache_creation_input_tokens, u.cache_read_input_tokens, body.slice(0, 260));
+	const body =
+		m.content === undefined
+			? JSON.stringify({ ...o, message: undefined })
+			: JSON.stringify(m.content);
+	console.log(
+		o.type,
+		o.subtype ?? "",
+		String(m.id ?? "").slice(-6),
+		u.input_tokens,
+		u.cache_creation_input_tokens,
+		u.cache_read_input_tokens,
+		body.slice(0, 260),
+	);
 }

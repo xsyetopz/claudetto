@@ -1,4 +1,5 @@
 import type { On, PluginOptions } from "claude-code";
+
 import { switchOption } from "./options.ts";
 
 /**

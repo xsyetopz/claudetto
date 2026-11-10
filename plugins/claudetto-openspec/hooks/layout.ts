@@ -20,7 +20,9 @@ export const init = async (fs: Fs, root: string) => {
 		LAYOUT.map(([file]) => fs.exists(join(dir, file))),
 	);
 	const missing = LAYOUT.filter((_, i) => !present[i]);
-	await Promise.all(missing.map(([file, text]) => fs.write(join(dir, file), text)));
+	await Promise.all(
+		missing.map(([file, text]) => fs.write(join(dir, file), text)),
+	);
 	return laidOut(missing.map(([file]) => `openspec/${file}`));
 };
 

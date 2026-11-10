@@ -9,9 +9,29 @@ const rows: unknown[] = [];
 for (let n = 1; n <= Number(runs); n++) {
 	const todo = set.fixtures.filter((f: any) => !only || f.id.includes(only));
 	for (let i = 0; i < todo.length; i += 6) {
-		const out = await Promise.all(todo.slice(i, i + 6).map(async (f: any) => ({ id: f.id, run: n, mode: f.labels.mode, kind: f.labels.kind, ...(await grader.grade(f)) })));
+		const out = await Promise.all(
+			todo
+				.slice(i, i + 6)
+				.map(async (f: any) => ({
+					id: f.id,
+					run: n,
+					mode: f.labels.mode,
+					kind: f.labels.kind,
+					...(await grader.grade(f)),
+				})),
+		);
 		rows.push(...out);
 	}
 }
-await Bun.write(`/tmp/probe-121/logs/results-${name}-${Date.now()}.json`, JSON.stringify(rows, null, 1));
-console.log(rows.map((r: any) => `${r.id} r${r.run} ${r.pass ? "ok" : "FAIL"} ${r.evidence.split("|")[0]}`).join("\n"));
+await Bun.write(
+	`/tmp/probe-121/logs/results-${name}-${Date.now()}.json`,
+	JSON.stringify(rows, null, 1),
+);
+console.log(
+	rows
+		.map(
+			(r: any) =>
+				`${r.id} r${r.run} ${r.pass ? "ok" : "FAIL"} ${r.evidence.split("|")[0]}`,
+		)
+		.join("\n"),
+);
