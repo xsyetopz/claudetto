@@ -132,7 +132,7 @@ test("a prompt that starts with /claudetto:setup is blocked with a plain reason"
 });
 
 // Claude's Bash commands source this file: nice 10 lets the user's apps win the CPU, and one core stays out of cargo and Go builds. `make` and CMake are left alone, since make runs one job by default.
-const startedShell = async (env: Record<string, string>): Promise<string> => {
+const startedShell = async (env: Record<string, string>) => {
 	const envFile = join(await mkdtemp(join(tmpdir(), "envfile-")), "env");
 	const run = (command: string) =>
 		new Response(
@@ -144,25 +144,68 @@ const startedShell = async (env: Record<string, string>): Promise<string> => {
 	const start = await hookCommand("SessionStart");
 	await run(start);
 	await run(start);
-	return run(
-		`. "$CLAUDE_ENV_FILE"; echo $(ps -o nice= -p $$) $CARGO_BUILD_JOBS $GOMAXPROCS $GOMEMLIMIT`,
-	);
+	return {
+		envFile,
+		start: () => run(start),
+		print: async (command: string): Promise<string> => {
+			const out = await run(`. "$CLAUDE_ENV_FILE"; ${command}`);
+			return out.trim();
+		},
+	};
 };
 
-test("a Bash command runs at nice 10 with one core kept out of cargo and Go and Go's heap held to a quarter of memory, after two session starts", async () => {
+const isRefused = async (command: string): Promise<boolean> => {
+	const probe = spawn(["sh", "-c", command], {
+		stdout: "ignore",
+		stderr: "ignore",
+	});
+	return (await probe.exited) !== 0;
+};
+
+test("a Bash command keeps one core out of cargo and Go, after two session starts", async () => {
 	const jobs = Math.max(availableParallelism() - 1, 1);
-	const quarter = Math.floor(totalmem() / 4_194_304);
-	const awaited = await startedShell({});
-	expect(awaited.trim()).toBe(`10 ${jobs} ${jobs} ${quarter}MiB`);
+	const shell = await startedShell({});
+	expect(await shell.print("echo $CARGO_BUILD_JOBS $GOMAXPROCS")).toBe(
+		`${jobs} ${jobs}`,
+	);
 });
 
+// The Claude Code sandbox refuses `sysctl`, so the hook cannot read the memory size there and sets no limit.
+test.skipIf(await isRefused("sysctl -n hw.memsize || getconf _PHYS_PAGES"))(
+	"a Bash command holds Go's heap to a quarter of memory (skipped where the memory size cannot be read)",
+	async () => {
+		const quarter = Math.floor(totalmem() / 4_194_304);
+		const shell = await startedShell({});
+		expect(await shell.print("echo $GOMEMLIMIT")).toBe(`${quarter}MiB`);
+	},
+);
+
+// The Claude Code sandbox refuses `renice` and `ps`, so a sandboxed command stays at niceness 0.
+test.skipIf(await isRefused("renice 10 -p $$"))(
+	"a Bash command runs at nice 10 (skipped where `renice` is refused)",
+	async () => {
+		const shell = await startedShell({});
+		expect(await shell.print("perl -e 'print getpriority(0,0)'")).toBe("10");
+	},
+);
+
 test("a job count and a memory limit the user set are kept", async () => {
-	const awaited2 = await startedShell({
+	const shell = await startedShell({
 		CARGO_BUILD_JOBS: "3",
 		GOMAXPROCS: "2",
 		GOMEMLIMIT: "1GiB",
 	});
-	expect(awaited2.trim()).toBe("10 3 2 1GiB");
+	expect(
+		await shell.print("echo $CARGO_BUILD_JOBS $GOMAXPROCS $GOMEMLIMIT"),
+	).toBe("3 2 1GiB");
+});
+
+test("after three session starts the env file holds the renice line once", async () => {
+	const shell = await startedShell({});
+	await shell.start();
+	const text = await file(shell.envFile).text();
+	const copies = text.split("\n").filter((line) => line.startsWith("renice "));
+	expect(copies).toHaveLength(1);
 });
 
 test("other prompts are not blocked", async () => {
