@@ -5,6 +5,14 @@ import {
 	GATE_UNREADABLE,
 	GATE_WRITE_FILE,
 } from "../texts-gate.ts";
+import {
+	formatVerdict,
+	inPlaceTarget,
+	printedFiles,
+	printsFile,
+	writesWhole,
+	writeTargets,
+} from "./files.ts";
 import { killVerdict, releaseVerdict } from "./kill.ts";
 import { packageVerdict } from "./packages.ts";
 import { maskedExitVerdict } from "./pipefail.ts";
@@ -35,97 +43,18 @@ const FILE_REDIRECTS = new Set([">", ">|", "&>"]);
 export const systemPath = (path: string): boolean =>
 	SYSTEM.some((d) => path === d || path.startsWith(`${d}/`));
 
-const flagsOf = (args: string[]): string[] => {
-	const end = args.indexOf("--");
-	return args
-		.slice(0, end === -1 ? args.length : end)
-		.filter((a) => a.startsWith("-") && a !== "-")
-		.flatMap((a) =>
-			a.startsWith("--")
-				? [a.split("=")[0] ?? a]
-				: Array.from(a.slice(1), (c) => `-${c}`),
-		);
-};
-
-export const operands = (args: string[]): string[] => {
-	const end = args.indexOf("--");
-	return [
-		...args
-			.slice(0, end === -1 ? args.length : end)
-			.filter((a) => !a.startsWith("-")),
-		...(end === -1 ? [] : args.slice(end + 1)),
-	];
-};
-
-const writesWhole = (
-	name: string,
-	args: string[],
-	redirected: boolean,
-): boolean =>
-	(name === "tee" && !flagsOf(args).includes("-a")) ||
-	(redirected &&
-		(name === "printf" ||
-			name === "echo" ||
-			(name === "cat" && operands(args).length === 0)));
-
-const IN_PLACE_EDITORS = new Set(["sed", "perl", "ruby"]);
-
-const VALUED: Record<string, string[]> = {
-	head: ["-n", "-c", "--lines", "--bytes"],
-	tail: ["-n", "-c", "--lines", "--bytes"],
-	sed: ["-e", "-f", "--expression", "--file"],
-};
-
-/** The files a `head`, `tail`, `sed`, or `cat` prints: the operands without a count or a script, which is not a file. */
-export const printedFiles = (name: string, args: string[]): string[] => {
-	const valued = VALUED[name] ?? [];
-	const rest = args.filter((_, i) => !valued.includes(args[i - 1] ?? ""));
-	const files = operands(rest);
-	const scripted = valued.some((f) => args.includes(f));
-	return name === "sed" && !scripted ? files.slice(1) : files;
-};
-
-export const printsFile = (name: string, args: string[]): boolean => {
-	const files = printedFiles(name, args);
-	if (name === "cat" || name === "head") {
-		return files.length > 0;
-	}
-	if (name === "tail") {
-		return (
-			files.length > 0 &&
-			!flagsOf(args).some((f) => f === "-f" || f === "-F" || f === "--follow")
-		);
-	}
-	return name === "sed" && flagsOf(args).includes("-n") && files.length > 0;
-};
-
-export const writeTargets = (
-	c: Command,
-	name: string,
-	args: string[],
-): string[] => {
-	const files = operands(args);
-	const written =
-		name === "tee" || name === "rm"
-			? files
-			: files.slice(name === "cp" || name === "mv" ? -1 : files.length);
-	return [
-		...written,
-		...c.redirects.filter((r) => r.op !== "<").map((r) => r.target),
-	];
-};
-
 const commandVerdicts = (
 	c: Command,
 	has: (file: string) => boolean,
 	own: Owns,
-	alone: boolean,
 ): (Verdict | undefined)[] => {
 	const { name, args } = programOf(c);
 	const redirected = c.redirects.some(
 		(r) => FILE_REDIRECTS.has(r.op) && !r.target.startsWith("/dev/"),
 	);
+	const edited = inPlaceTarget(name, args);
 	return [
+		formatVerdict(name, args),
 		packageVerdict(name, args, has),
 		refVerdict(name, args, own),
 		killVerdict(name, args, own.pid),
@@ -135,11 +64,9 @@ const commandVerdicts = (
 			? ask(GATE_HOOK_WRITE)
 			: undefined,
 		writesWhole(name, args, redirected) ? deny(GATE_WRITE_FILE) : undefined,
-		IN_PLACE_EDITORS.has(name) && flagsOf(args).includes("-i")
-			? deny(GATE_EDIT_FILE(operands(args).at(-1) ?? ""))
-			: undefined,
-		// The file is the last operand: one before it can be a `head -n` count or a `sed` script.
-		alone && !redirected && printsFile(name, args)
+		edited === undefined ? undefined : deny(GATE_EDIT_FILE(edited)),
+		// The file is the last operand: one before it can be a `head -n` count or a `sed` script. A read piped into another command feeds it, so it stays.
+		!c.into && !redirected && printsFile(name, args)
 			? deny(GATE_READ_FILE(printedFiles(name, args).at(-1) ?? ""))
 			: undefined,
 	];
@@ -165,9 +92,7 @@ const judgeText = (
 			command,
 			parsed.commands.filter((c) => !ownedRemoval(c, own)),
 		),
-		...parsed.commands.flatMap((c) =>
-			commandVerdicts(c, has, own, parsed.commands.length === 1),
-		),
+		...parsed.commands.flatMap((c) => commandVerdicts(c, has, own)),
 		markerVerdict(command, parsed.commands, own),
 		maskedExitVerdict(parsed.commands),
 	]);

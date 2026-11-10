@@ -88,12 +88,12 @@ test("A Count Flag: a count with no file reads stdin and passes", () => {
 	}
 });
 
-test("A Compound Command: a read inside a compound command is not refused", () => {
+test("A Compound Command: a read inside a compound command is sent to Read", () => {
 	for (const command of [
 		"git log -1 && head -5 CHANGELOG.md",
 		"bun test; cat src/a.ts",
 	]) {
-		expect(decision(command)).toBeUndefined();
+		expect(decision(command)).toBe("deny");
 	}
 });
 

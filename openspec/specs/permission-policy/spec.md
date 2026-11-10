@@ -115,7 +115,7 @@ The branch gate SHALL ask, not deny, before `git branch -D` of a branch this ses
 
 ### Requirement: The Read Redirect Parses Only a File Operand
 
-The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is not an option or a `sed` script, and SHALL apply only when the whole command is that one read. A compound command SHALL run as it is.
+The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is not an option or a `sed` script, and SHALL apply to a read anywhere in a chain. A read piped into another command SHALL run as it is, because its output feeds that command.
 
 #### Scenario: A sed Range
 
@@ -125,7 +125,12 @@ The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take
 #### Scenario: A Compound Command
 
 - **WHEN** the agent runs `git log -1 && head -5 CHANGELOG.md`
-- **THEN** the command is not refused for its `head` part
+- **THEN** the gate denies it and names `Read` on `CHANGELOG.md`
+
+#### Scenario: A Piped Read
+
+- **WHEN** the agent runs `cat src/a.ts | wc -l`
+- **THEN** the command runs
 
 ### Requirement: A Switch That Would Touch a Protected Path Stops First
 
@@ -330,12 +335,40 @@ A `Write`, a `cp` or `mv` target, `touch`, and `ln -s` SHALL count as creating.
 
 ### Requirement: A Shell In-Place Edit Is Denied
 
-The gate SHALL deny a Bash command that edits a file in place with `sed -i`, `perl -i`, or `ruby -i`, alone or in a chain, and name `Edit` with the file, because an in-place shell edit skips the edit tool's diff, its read-before-edit check, and the user's review.
+The gate SHALL deny a Bash command that edits a file in place with `sed`, `perl`, or `ruby` and `-i` or `--in-place`, alone, in a chain, behind `xargs`, or run by `find -exec`, `-execdir`, `-ok`, or `-okdir`, and name `Edit` with the file, because an in-place shell edit skips the edit tool's diff, its read-before-edit check, and the user's review.
 
 #### Scenario: An In-Place Edit
 
 - **WHEN** the agent runs `git status && sed -i 's/a/b/' src/a.ts`
 - **THEN** the gate denies it and names `Edit` on `src/a.ts`
+
+### Requirement: A Check's Exit Code Reaches the Chain
+
+The gate SHALL deny a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that follows any pipe, when no earlier `set -o pipefail` appears in the command, because a pipe returns its last command's exit code and a failing check then reads as a pass.
+
+#### Scenario: A Trimmed Check
+
+- **WHEN** the agent runs `bun run lint 2>&1 | tail -8`
+- **THEN** the gate denies it and names `set -o pipefail;` and a log file with `$?` as the forms that keep the exit code
+
+#### Scenario: A Kept Exit Code
+
+- **WHEN** the agent runs `set -o pipefail; bun run lint 2>&1 | tail -8`
+- **THEN** the command runs
+
+### Requirement: A Formatter Stays in the Task's Files
+
+The gate SHALL deny `bun fmt` with no path or with `.`, unless it carries `--check`, `--staged`, `--changed`, or `--stdin-filepath`, and SHALL deny `prettier` or `biome` with `--write` over no path or `.`, because a whole-repository format rewrites files outside the task.
+
+#### Scenario: A Whole-Repository Format
+
+- **WHEN** the agent runs `bun fmt`
+- **THEN** the gate denies it and names the scoped forms
+
+#### Scenario: Changed Files
+
+- **WHEN** the agent runs `bun fmt src/a.ts`
+- **THEN** the command runs
 
 ### Requirement: A Test of Shipped Wording Is Denied
 

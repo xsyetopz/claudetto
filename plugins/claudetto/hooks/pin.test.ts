@@ -59,7 +59,7 @@ test("read-only denies Edit, Write and writing Bash and lets reads through", asy
 	const awaited9 = await check($, "Bash", { command: "git commit -am x" });
 	expect(awaited9.decision).toBe("deny");
 	const awaited10 = await check($, "Bash", {
-		command: "bun test 2>&1 | tail -5",
+		command: "set -o pipefail; bun test 2>&1 | tail -5",
 	});
 	expect(awaited10.decision).not.toBe("deny");
 	const awaited11 = await check($, "Read", { file_path: "/p/a.ts" });

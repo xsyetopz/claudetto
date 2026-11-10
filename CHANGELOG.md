@@ -10,7 +10,9 @@ Before 1.0.0, a release can change or remove behavior.
 ### Added
 
 - A subagent that runs past `agentMaxMinutes` (default 15) has each further tool call refused and is told to report and end; `0` turns the limit off.
-- The gate denies a `git commit` or `git push` that runs after a pipe in the same command without an earlier `set -o pipefail`, because the pipe returns its last command's exit code and a failing check piped into `tail` would let the commit through.
+- The gate denies a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that runs after a pipe, unless an earlier `set -o pipefail` keeps the exit code, because a pipe returns its last command's exit code and a failing check would read as a pass.
+- The gate denies `bun fmt` with no path or with `.`, and `prettier` or `biome` with `--write` over the whole repository, because these rewrite files outside the task. `bun fmt` with paths, `--check`, `--staged`, `--changed`, or `--stdin-filepath` still runs.
+- Each session caps Go's heap with `GOMEMLIMIT` at a quarter of memory, unless you set it yourself, so type-aware `oxlint` (tsgolint) no longer climbs to 16 GB.
 - The Stop grader flags a reply that leaves doable work to the user: a check on part of a set, an untested guess, or a run named as the next step.
 - `/reply` quotes your mouse selection, or paragraph N of the last reply (`/reply N`), into the prompt as a `Re:` block.
 - Each finished subagent run is logged to `.claude/claudetto/runs.jsonl`, with whether the root agent edited the same files within its next 3 turns.
@@ -53,7 +55,8 @@ Before 1.0.0, a release can change or remove behavior.
 - The temp-folder gate treats the sandbox `TMPDIR`, `/tmp/claude-<uid>`, as a temp base, so a folder made there gets its marker, and it expands a variable set earlier in the command in the path it made.
 - The worktree gate lets an agent remove a worktree it added through a variable set earlier in the same command, such as `M=$TMPDIR/w && git worktree add $M`.
 - The run limits count only file-tool writes that ran.
-- The gate sends only a lone file read to `Read`, and names the file in place of a `head -n` count or a `sed` script.
+- The gate sends a file read to `Read` anywhere in a chain, such as `cd src && sed -n '1,5p' a.ts`; a read piped into another command still runs. It names the file in place of a `head -n` count or a `sed` script.
+- The gate denies an in-place edit written as `sed --in-place`, run by `find -exec` or `-execdir`, or run behind `xargs`.
 - A remark that an earlier request covers counts as a task.
 - No claudetto hook changes a tool call input any more, so auto mode keeps its review of the other calls in the response: `Agent` denies an off-form call with the form to send, and `ToolSearch` rewrites only its result.
 

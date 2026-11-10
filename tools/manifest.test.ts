@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { mkdtemp } from "node:fs/promises";
-import { availableParallelism, tmpdir } from "node:os";
+import { availableParallelism, tmpdir, totalmem } from "node:os";
 import { join } from "node:path";
 
 import { file, spawn } from "bun";
@@ -145,22 +145,24 @@ const startedShell = async (env: Record<string, string>): Promise<string> => {
 	await run(start);
 	await run(start);
 	return run(
-		`. "$CLAUDE_ENV_FILE"; echo $(ps -o nice= -p $$) $CARGO_BUILD_JOBS $GOMAXPROCS`,
+		`. "$CLAUDE_ENV_FILE"; echo $(ps -o nice= -p $$) $CARGO_BUILD_JOBS $GOMAXPROCS $GOMEMLIMIT`,
 	);
 };
 
-test("a Bash command runs at nice 10 with one core kept out of cargo and Go, after two session starts", async () => {
+test("a Bash command runs at nice 10 with one core kept out of cargo and Go and Go's heap held to a quarter of memory, after two session starts", async () => {
 	const jobs = Math.max(availableParallelism() - 1, 1);
+	const quarter = Math.floor(totalmem() / 4_194_304);
 	const awaited = await startedShell({});
-	expect(awaited.trim()).toBe(`10 ${jobs} ${jobs}`);
+	expect(awaited.trim()).toBe(`10 ${jobs} ${jobs} ${quarter}MiB`);
 });
 
-test("a job count the user set is kept", async () => {
+test("a job count and a memory limit the user set are kept", async () => {
 	const awaited2 = await startedShell({
 		CARGO_BUILD_JOBS: "3",
 		GOMAXPROCS: "2",
+		GOMEMLIMIT: "1GiB",
 	});
-	expect(awaited2.trim()).toBe("10 3 2");
+	expect(awaited2.trim()).toBe("10 3 2 1GiB");
 });
 
 test("other prompts are not blocked", async () => {

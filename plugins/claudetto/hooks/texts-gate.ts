@@ -77,7 +77,9 @@ export const GATE_EDIT_FILE = (file: string): string =>
 export const GATE_WRITE_FILE =
 	"Use `Write` to write a whole file, not the shell.";
 export const GATE_MASKED_EXIT =
-	"A pipe returns its last command's exit code, so a failing check piped into `tail` or `grep` still lets the commit or push run. Start the command with `set -o pipefail;`, or run the check alone and commit after it passes. The command did not run.";
+	"A pipe returns its last command's exit code, so a failing check piped into `tail`, `head`, or `grep` reads as a pass and lets later steps run. Start the command with `set -o pipefail;`, or send the output to a file and print `$?`. The command did not run.";
+export const GATE_WHOLE_FORMAT =
+	"A formatter run over the whole repository rewrites files outside the task. Pass the files you changed, or use `--check`, `--staged`, or `--changed`. The command did not run.";
 export const GATE_SYSTEM_WRITE = "This call writes to a system folder.";
 export const GATE_HOOK_WRITE =
 	"This command changes a plugin's hooks folder, and a hook is a gate on the agent.";

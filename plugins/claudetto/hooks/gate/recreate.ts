@@ -1,5 +1,5 @@
 import { GATE_RECREATE } from "../texts-gate.ts";
-import { operands, writeTargets } from "./rules.ts";
+import { operands, writeTargets } from "./files.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
 import { ask, fieldOf, type Verdict } from "./verdict.ts";
 

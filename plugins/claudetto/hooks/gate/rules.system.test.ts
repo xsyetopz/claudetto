@@ -38,7 +38,7 @@ test("a linter's unsafe fixes are denied, its safe fixes pass", () => {
 	}
 	for (const command of [
 		"oxlint --fix src",
-		"biome check --write .",
+		"biome check --write src",
 		"ruff check --fix",
 		"oxlint --help",
 	]) {

@@ -48,6 +48,9 @@ const WRAPPERS: Record<string, Wrapper> = {
 	time: { valued: [] },
 	command: { valued: [] },
 	builtin: { valued: [] },
+	xargs: {
+		valued: ["-I", "-J", "-L", "-P", "-R", "-S", "-a", "-d", "-E", "-n", "-s"],
+	},
 };
 
 export const baseName = (word: string): string =>
