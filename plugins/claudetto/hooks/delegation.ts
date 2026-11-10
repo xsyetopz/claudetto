@@ -123,10 +123,10 @@ export const delegation = (on: On): void => {
 		async ($, e) => {
 			running.ask++;
 			try {
-				const options = strings(e["options"]);
+				const options = strings(e.options);
 				const answer = await $.ui.ask(
-					text(e["question"]),
-					e["multiSelect"] === true ? { options, multiSelect: true } : options,
+					text(e.question),
+					e.multiSelect === true ? { options, multiSelect: true } : options,
 				);
 				return { result: `The user answered: ${answer}` };
 			} catch (error) {
@@ -148,13 +148,13 @@ export const delegation = (on: On): void => {
 	on("tool.call", { tool: "mcp__claudetto__monitor" }, async ($, e) => {
 		running.monitor++;
 		try {
-			const ws = wsOf(e["ws"]);
+			const ws = wsOf(e.ws);
 			const out = await $.tool.call({
 				tool: "Monitor",
-				description: text(e["description"]),
+				description: text(e.description),
 				timeout_ms:
-					typeof e["timeout_ms"] === "number" ? e["timeout_ms"] : 300_000,
-				...(ws === undefined ? { command: text(e["command"]) } : { ws }),
+					typeof e.timeout_ms === "number" ? e.timeout_ms : 300_000,
+				...(ws === undefined ? { command: text(e.command) } : { ws }),
 			});
 			return { result: out.deny ?? out.text ?? "" };
 		} catch (error) {

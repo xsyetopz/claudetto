@@ -204,7 +204,7 @@ const considerCheck = async (
 	await saveRow($, { ...row, askedTurn: at.turnId });
 	mem.inFlight.add(at.id);
 	$.clock.after(0, () => {
-		runCheck($, mem, settings, at).catch(() => undefined);
+		runCheck($, mem, settings, at).catch(() => {});
 	});
 };
 
@@ -255,7 +255,7 @@ const askWhy = async ($: Engine, row: Row, view: View): Promise<void> => {
 	const shownAt = Date.now();
 	await saveRow($, { ...row, view: { ...view, kind: "asked", shownAt } });
 	$.clock.after(LIMITS.askedMs, () => {
-		expire($, row.id, shownAt).catch(() => undefined);
+		expire($, row.id, shownAt).catch(() => {});
 	});
 };
 
@@ -266,26 +266,31 @@ const answer = async (
 	key: ButtonKey,
 ): Promise<void> => {
 	switch (key) {
-		case "learn":
+		case "learn": {
 			if (hasCards(view)) {
 				await saveRow($, { ...row, view: { ...view, kind: "explained" } });
 			}
 			break;
-		case "dismiss":
+		}
+		case "dismiss": {
 			await askWhy($, row, view);
 			break;
+		}
 		case "know":
 		case "helpful":
-		case "understood":
+		case "understood": {
 			await learn($, view.line);
 			await saveRow($, closed(row));
 			break;
+		}
 		case "not-relevant":
-		case "not-understood":
+		case "not-understood": {
 			await saveRow($, closed(row));
 			break;
-		default:
+		}
+		default: {
 			break;
+		}
 	}
 };
 
@@ -357,7 +362,7 @@ export const register = (on: On, options: PluginOptions): void => {
 		if (!enabled || e.agentId !== undefined) {
 			return yield* next(e);
 		}
-		await onStep($, mem, settings, e).catch(() => undefined);
+		await onStep($, mem, settings, e).catch(() => {});
 		const result = yield* next(e);
 		if (result.answer.trim() !== "") {
 			addToLog(mem, logEntry("assistant", result.answer));
@@ -371,7 +376,7 @@ export const register = (on: On, options: PluginOptions): void => {
 			(e.origin.kind === "composer" || e.origin.kind === "bridge")
 		) {
 			addToLog(mem, logEntry("person", e.text));
-			const id = await $.session.id().catch(() => undefined);
+			const id = await $.session.id().catch(() => {});
 			if (id !== undefined) {
 				mem.typedPast.set(id, (mem.typedPast.get(id) ?? 0) + 1);
 			}
@@ -393,9 +398,9 @@ export const register = (on: On, options: PluginOptions): void => {
 			mem.ended.add(e.sessionId);
 			mem.typedPast.delete(e.sessionId);
 			mem.inFlight.delete(e.sessionId);
-			const row = await loadRow($, e.sessionId).catch(() => undefined);
+			const row = await loadRow($, e.sessionId).catch(() => {});
 			if (row?.view != null) {
-				await saveRow($, closed(row)).catch(() => undefined);
+				await saveRow($, closed(row)).catch(() => {});
 			}
 		}
 		return next(e);
@@ -415,7 +420,7 @@ export const register = (on: On, options: PluginOptions): void => {
 			view: row.view,
 			tag: row.tag,
 			press: (key) => {
-				press($, id, key).catch(() => undefined);
+				press($, id, key).catch(() => {});
 			},
 		});
 	});

@@ -189,10 +189,10 @@ describe("boundary: no line reaches the terminal edge", () => {
 
 	test("a name from outside with an escape or a newline cannot add a line or a sequence", () => {
 		const out = raw(
-			{ model: { display_name: "Opus\r\u001b[2J\u001b]8;;x\u0007hack" } },
+			{ model: { display_name: "Opus\r\u001B[2J\u001B]8;;x\u0007hack" } },
 			{ NO_COLOR: "1", COLUMNS: "120" },
 		);
-		expect(out).not.toContain("\u001b");
+		expect(out).not.toContain("\u001B");
 		expect(out.split("\n").length).toBeLessThanOrEqual(4);
 		expect(out).not.toMatch(LONG_WORD);
 	});

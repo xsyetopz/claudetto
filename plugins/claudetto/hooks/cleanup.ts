@@ -18,7 +18,7 @@ async function succeeds(
 	cwd: string,
 ): Promise<boolean> {
 	return (
-		(await $.process.run(argv, { cwd }).catch(() => undefined))?.exitCode === 0
+		(await $.process.run(argv, { cwd }).catch(() => {}))?.exitCode === 0
 	);
 }
 

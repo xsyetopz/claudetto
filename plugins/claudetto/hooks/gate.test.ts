@@ -427,7 +427,7 @@ test("`.env` as text in a pattern or a quoted name is not read as an env-file re
 	on("tool.check", () => ({ decision: "allow" }));
 	const verdicts = await Promise.all(
 		[
-			"grep -rnE 'process\\.env\\.|Bun\\.env\\.' src",
+			String.raw`grep -rnE 'process\.env\.|Bun\.env\.' src`,
 			`bun -e 'console.log([".env", ".env.local"])'`,
 		].map((command) => $.tool.check({ tool: "Bash", input: { command } })),
 	);
@@ -936,7 +936,7 @@ test("by default a compound head, a grep, and a Read of the held-out folder are 
 test("a startup logs one line when the settings lack the wall's Read deny", async ($: Engine, on: On) => {
 	const logs = walledLab(on);
 	await start($);
-	expect(logs.filter((l) => WALL_LINE.test(l))).toEqual([
+	expect(logs.filter((l) => l.includes('walls off'))).toEqual([
 		"claudetto walls off `~/.claudetto-holdout`, but your settings hold no `Read(~/.claudetto-holdout/**)` in `permissions.deny`, so only claudetto's gate keeps sessions out.",
 	]);
 });
@@ -944,5 +944,5 @@ test("a startup logs one line when the settings lack the wall's Read deny", asyn
 test("a startup with the wall's Read deny in the settings logs nothing", async ($: Engine, on: On) => {
 	const logs = walledLab(on, ["Read(~/.claudetto-holdout/**)"]);
 	await start($);
-	expect(logs.filter((l) => WALL_LINE.test(l))).toEqual([]);
+	expect(logs.filter((l) => l.includes('walls off'))).toEqual([]);
 });

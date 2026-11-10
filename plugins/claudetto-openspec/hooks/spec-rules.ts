@@ -57,7 +57,7 @@ export const at = (
 
 export const hasKeyword = (text: string) => KEYWORD.test(text);
 export const lineBreaks = (md: string) =>
-	md.replace(BOM, "").replace(LINE_BREAK, "\n");
+	md.replace(BOM, "").replaceAll(LINE_BREAK, "\n");
 
 export const withoutFences = (md: string) => {
 	const lines = lineBreaks(md).split("\n");
@@ -261,7 +261,7 @@ const structureIssues = (md: string): Issue[] => {
 	const lines = raw.map((l, i) => (mask[i] ? "" : l));
 	const start = lines.findIndex((l) => REQUIREMENTS_H2.test(l));
 	const next =
-		start < 0 ? -1 : lines.findIndex((l, i) => i > start && ANY_H2.test(l));
+		start === -1 ? -1 : lines.findIndex((l, i) => i > start && ANY_H2.test(l));
 	const region: Region = {
 		start,
 		end: next < 0 ? lines.length : next,

@@ -59,7 +59,7 @@ interface Fixture {
 const toJs = (pattern: string): { regex: string; flags: string } => {
 	const lead = LEADING_FLAGS.exec(pattern);
 	const regex = lead ? pattern.slice(lead[0].length) : pattern;
-	const flags = (lead?.[1] ?? "").replace(JS_FLAGS, "");
+	const flags = (lead?.[1] ?? "").replaceAll(JS_FLAGS, "");
 	try {
 		return { regex: new RegExp(regex, flags).source, flags };
 	} catch (error) {

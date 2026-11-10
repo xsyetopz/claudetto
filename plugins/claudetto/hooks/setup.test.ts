@@ -176,7 +176,7 @@ const lab = (
 };
 
 const run = async ($: Engine, command: string, args = "") =>
-	await $.command.run({
+	$.command.run({
 		command,
 		args,
 		origin: { kind: "composer" },
@@ -189,7 +189,7 @@ const saved = (state: Lab): Record<string, unknown> => {
 };
 
 test("setup on an empty file writes the telemetry env and the eight denies and no Agent deny", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 
 	const out = await run($, "claudetto:setup");
 	const text = JSON.stringify(saved(state));
@@ -220,7 +220,7 @@ const allowWrite = (state: Lab): unknown =>
 	valueAt(saved(state), ["sandbox", "filesystem", "allowWrite"]);
 
 test("A Cache Folder Named by an Env Var: setup writes no entry for it, because allowWrite covers it", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 	state.env = { BUN_INSTALL_CACHE_DIR: "/Volumes/DevAudioStore/bun-cache" };
 
 	await run($, "claudetto:setup");
@@ -236,7 +236,7 @@ test(
 		},
 	},
 	async ($: Engine, on: On) => {
-		const state = lab(on, undefined);
+		const state = lab(on);
 
 		await run($, "claudetto:setup");
 		const permissions = valueAt(saved(state), ["permissions"]);
@@ -259,7 +259,7 @@ test(
 );
 
 test("the default protected path gets its Read deny", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 
 	await run($, "claudetto:setup");
 
@@ -272,7 +272,7 @@ test(
 	"with no protected path, setup writes no Read deny",
 	{ options: { protectedPaths: [] } },
 	async ($: Engine, on: On) => {
-		const state = lab(on, undefined);
+		const state = lab(on);
 
 		await run($, "claudetto:setup");
 
@@ -309,7 +309,7 @@ test("a Skip on every group writes no settings file", async ($: Engine, on: On) 
 });
 
 test("a second run with everything in place asks nothing and writes nothing", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 	await run($, "claudetto:setup");
 	const writes = state.written.length;
 	const asked = state.shown.filter((q) => !q.startsWith("Context7")).length;
@@ -444,7 +444,7 @@ test("/statusline with text goes on to the built-in command", async ($: Engine, 
 });
 
 test("/statusline is described as making no model call", async ($: Engine, on: On) => {
-	lab(on, undefined);
+	lab(on);
 	const described = await $.command.describe({
 		command: "statusline",
 		description: "stock",
@@ -488,7 +488,7 @@ test("a startup below the version floor logs exactly one line, naming both versi
 });
 
 test("a startup without ast-grep logs one notice, and the second logs none", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 
 	await $.classic.SessionStart({ source: "startup" });
 	const first = state.logs.filter((l) => l.includes("ast-grep")).length;
@@ -530,7 +530,7 @@ const ruleDialogs = (state: Lab) =>
 	state.shown.filter((q) => q.startsWith("Copy the "));
 
 const startup = async ($: Engine) =>
-	await $.classic.SessionStart({ source: "startup" });
+	$.classic.SessionStart({ source: "startup" });
 
 const ruleLogs = (state: Lab) =>
 	state.logs.filter((l) => l.includes(" rule is "));
@@ -628,7 +628,7 @@ test("a copy with no saved hash that differs is logged as modified", async ($: E
 
 	await startup($);
 
-	expect(ruleLogs(state).join()).toContain("useLeastCode rule is modified");
+	expect(ruleLogs(state).join(",")).toContain("useLeastCode rule is modified");
 });
 
 test("an unchanged copy logs nothing", async ($: Engine, on: On) => {
@@ -656,7 +656,7 @@ const writtenAt = (state: Lab, path: string) =>
 	state.written.find((w) => w.path === path)?.text;
 
 test("session.start registers no setup tool", async ($: Engine, on: On) => {
-	lab(on, undefined);
+	lab(on);
 	const names: string[] = [];
 	on("session.start", () => ({ cwd: "/p" }));
 	on("tool.register", (_$, e) => {
@@ -670,7 +670,7 @@ test("session.start registers no setup tool", async ($: Engine, on: On) => {
 });
 
 test("the command answers with text alone, so the model gets no turn", async ($: Engine, on: On) => {
-	lab(on, undefined);
+	lab(on);
 
 	const out = await run($, "claudetto:setup");
 
@@ -729,7 +729,7 @@ test("only the chosen group is written to the user settings file", async ($: Eng
 });
 
 test("the setup report names the groups written and gives no share of a limit", async ($: Engine, on: On) => {
-	lab(on, undefined);
+	lab(on);
 
 	const out = await run($, "claudetto:setup");
 
@@ -738,7 +738,7 @@ test("the setup report names the groups written and gives no share of a limit", 
 });
 
 test("a clean write holds each planned key, only in the settings file, and no subagentStatusLine", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 
 	await run($, "claudetto:setup");
 	const written = saved(state);
@@ -761,7 +761,7 @@ test("a clean write holds each planned key, only in the settings file, and no su
 });
 
 test("a full write holds no agent key", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 
 	await run($, "claudetto:setup");
 
@@ -893,7 +893,7 @@ test("a No runs nothing and records the decline", async ($: Engine, on: On) => {
 });
 
 test("a startup without betterleaks logs its notice every time, and records nothing", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 	state.path = "/bin";
 	state.files.set("/bin/brew", "");
 
@@ -957,7 +957,7 @@ test("ast-grep on the PATH asks and says nothing", async ($: Engine, on: On) => 
 });
 
 test("the startup notice names the install command and /claudetto:setup", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 	state.path = "/bin";
 	state.files.set("/bin/brew", "");
 
@@ -969,7 +969,7 @@ test("the startup notice names the install command and /claudetto:setup", async 
 });
 
 test("ast-grep on the PATH logs nothing at startup", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 	state.path = "/bin";
 	state.files.set("/bin/ast-grep", "");
 
@@ -1018,7 +1018,7 @@ test("setup writes the same minimumVersion that the startup floor warns on", asy
 });
 
 test("the built-in /statusline prompt is replaced, and a user's own skill keeps its text", async ($: Engine, on: On) => {
-	lab(on, undefined);
+	lab(on);
 	on("skill.prompt", (_$, e) => e);
 	const stock = 'Create a status line with the prompt "show the branch"';
 
@@ -1039,7 +1039,7 @@ test("the built-in /statusline prompt is replaced, and a user's own skill keeps 
 });
 
 test("the /statusline edit text names settings.json under CLAUDE_CONFIG_DIR, else under HOME", async ($: Engine, on: On) => {
-	const state = lab(on, undefined);
+	const state = lab(on);
 	on("skill.prompt", (_$, e) => e);
 	const ask = () =>
 		$.skill.prompt({
@@ -1087,7 +1087,7 @@ test("a skipped Context7 key writes nothing", async ($: Engine, on: On) => {
 test("the hooks runtime computes SHA-256 as the setup hash needs it", async () => {
 	const digest = await crypto.subtle.digest(
 		"SHA-256",
-		new TextEncoder().encode("abc").slice(),
+		[...new TextEncoder().encode('abc')],
 	);
 
 	expect(

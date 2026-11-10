@@ -409,7 +409,7 @@ test("a destructive script in sh -c or eval gets the verdict of the unquoted com
 		"git push --force origin main",
 		"cat src/a.ts",
 	]) {
-		const quoted = command.replaceAll("'", "'\\''");
+		const quoted = command.replaceAll("'", String.raw`'\''`);
 		expect(decision(`sh -c '${quoted}'`)).toBe(decision(command));
 		expect(decision(`eval '${quoted}'`)).toBe(decision(command));
 	}

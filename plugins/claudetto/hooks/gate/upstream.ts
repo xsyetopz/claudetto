@@ -18,7 +18,7 @@ interface Rule {
 
 const BARE = /^[^\s'"\\]+$/;
 const quote = (word: string): string =>
-	BARE.test(word) ? word : `'${word.replaceAll("'", "'\\''")}'`;
+	BARE.test(word) ? word : `'${word.replaceAll("'", String.raw`'\''`)}'`;
 
 const rules: {
 	rule: Rule;
@@ -68,7 +68,7 @@ export const parsedTexts = (c: Command): string[] => {
 	const { name, args } = programOf(c);
 	const end = args.indexOf("--");
 	const words = args.map((w, i) =>
-		end >= 0 && i > end && w.startsWith("-") ? `./${w}` : w,
+		end !== -1 && i > end && w.startsWith("-") ? `./${w}` : w,
 	);
 	return [
 		asText([name, ...words], c.redirects),

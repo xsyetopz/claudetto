@@ -26,7 +26,7 @@ test("a shell command that names a walled path in any spelling is denied", () =>
 		"rg --file=~/.claudetto-holdout/f x",
 		"ls ~/.claudetto-holdout",
 		"cat ~/.claude/../.claudetto-holdout/f",
-		"cat ~/.claudetto-hold\\out/f",
+		String.raw`cat ~/.claudetto-hold\out/f`,
 	]) {
 		expect([command, bash(command)?.decision]).toEqual([command, "deny"]);
 	}

@@ -75,15 +75,16 @@ const names = (events: readonly Event[]): string =>
 	events.map((e) => e.type).join(", ") || "none";
 
 /** Claude Code checks an estimate, so a real compaction can start under its threshold: paid run 1 saw 49,416 for 50,400. The fake moves in steps of 5,000. */
-const NEAR_C = [C_AT - 5_000, C_AT + 5_000] as const;
+const NEAR_C = [C_AT - 5000, C_AT + 5000] as const;
 
 /** "ok", or why the arm's event did not fire as the spec says. */
 export const verdict = (arm: Arm, events: readonly Event[]): string => {
 	switch (arm.name) {
-		case "A":
+		case "A": {
 			return events.length === 3 && events.every((e) => e.type === "clear")
 				? "ok"
 				: `expected 3 clears, got ${names(events)}`;
+		}
 		case "C": {
 			const c = events.find((e) => e.type === "compaction");
 			if (c === undefined) {
@@ -93,10 +94,11 @@ export const verdict = (arm: Arm, events: readonly Event[]): string => {
 				? "ok"
 				: `the first compaction at ${c.tokens} tokens is not near ${thousands(C_AT)}`;
 		}
-		case "D":
+		case "D": {
 			return /^compaction, compaction(, handover)+$/.test(names(events))
 				? "ok"
 				: `expected 2 compactions, then handovers, got ${names(events)}`;
+		}
 		default: {
 			const h = events.find((e) => e.type === "handover");
 			if (h === undefined) {

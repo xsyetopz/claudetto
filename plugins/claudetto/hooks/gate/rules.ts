@@ -37,12 +37,12 @@ export const systemPath = (path: string): boolean =>
 const flagsOf = (args: string[]): string[] => {
 	const end = args.indexOf("--");
 	return args
-		.slice(0, end < 0 ? args.length : end)
+		.slice(0, end === -1 ? args.length : end)
 		.filter((a) => a.startsWith("-") && a !== "-")
 		.flatMap((a) =>
 			a.startsWith("--")
 				? [a.split("=")[0] ?? a]
-				: [...a.slice(1)].map((c) => `-${c}`),
+				: a.slice(1).map((c) => `-${c}`),
 		);
 };
 
@@ -50,9 +50,9 @@ export const operands = (args: string[]): string[] => {
 	const end = args.indexOf("--");
 	return [
 		...args
-			.slice(0, end < 0 ? args.length : end)
+			.slice(0, end === -1 ? args.length : end)
 			.filter((a) => !a.startsWith("-")),
-		...(end < 0 ? [] : args.slice(end + 1)),
+		...(end === -1 ? [] : args.slice(end + 1)),
 	];
 };
 

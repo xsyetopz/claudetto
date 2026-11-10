@@ -15,7 +15,7 @@ import { type LogRecord, startFake } from "./server.ts";
 import { promptOf, TURNS } from "./task.ts";
 
 const PLUGIN_DIR = resolve(import.meta.dir, "../../plugins/claudetto");
-const SETTLE_MS = 1_500;
+const SETTLE_MS = 1500;
 const TURN_TIMEOUT_MS = 600_000;
 
 export interface RunResult {
@@ -85,7 +85,7 @@ export const runArm = async (
 	paid: boolean,
 ): Promise<RunResult> => {
 	const dir = mkdtempSync(
-		join(process.env["TMPDIR"] ?? tmpdir(), `probe-${arm.name}-${index}-`),
+		join(process.env.TMPDIR ?? tmpdir(), `probe-${arm.name}-${index}-`),
 	);
 	const project = join(dir, "project");
 	mkdirSync(project);
@@ -96,7 +96,7 @@ export const runArm = async (
 		? startRelay({
 				log,
 				upstream:
-					process.env["ANTHROPIC_BASE_URL"] ?? "https://api.anthropic.com",
+					process.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com",
 			})
 		: startFake({ log, handoffOnBoundary: arm.handoffOnBoundary });
 	const outside: string[] = [];

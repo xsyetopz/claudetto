@@ -54,7 +54,7 @@ export const claimTurn = (
 		)
 		.at(-1);
 	return {
-		user: start < 0 ? "" : (messages[start]?.text ?? ""),
+		user: start === -1 ? "" : (messages[start]?.text ?? ""),
 		people: [
 			...messages
 				.slice(0, Math.max(start, 0))
@@ -95,7 +95,7 @@ export const claimTurn = (
 	};
 };
 
-const squash = (text: string): string => text.replace(/\s+/g, " ");
+const squash = (text: string): string => text.replaceAll(/\s+/g, " ");
 
 /**
  * The fault codes in a grader answer, read structurally: a JSON `faults` list whose entries name a code in `allowed` and quote words that stand in
@@ -114,7 +114,7 @@ export const parseFaults = (
 			typeof json === "object" && json !== null && "faults" in json
 				? json.faults
 				: undefined;
-		const found = (Array.isArray(list) ? list : []).flatMap((entry: unknown) =>
+		const found = new Set((Array.isArray(list) ? list : []).flatMap((entry: unknown) =>
 			typeof entry === "object" &&
 			entry !== null &&
 			"code" in entry &&
@@ -124,8 +124,8 @@ export const parseFaults = (
 			squash(reply).includes(squash(entry.quote).trim())
 				? [entry.code]
 				: [],
-		);
-		return allowed.filter((code) => found.includes(code));
+		));
+		return allowed.filter((code) => found.has(code));
 	} catch {
 		return [];
 	}

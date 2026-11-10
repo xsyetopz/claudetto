@@ -176,9 +176,9 @@ export const startFake = (opts: {
 				return Response.json({ input_tokens: 100 });
 			}
 			const raw = await req.text();
-			if (process.env["PROBE_BODIES"] !== undefined) {
+			if (process.env.PROBE_BODIES !== undefined) {
 				appendFileSync(
-					process.env["PROBE_BODIES"],
+					process.env.PROBE_BODIES,
 					`${JSON.stringify({ raw })}\n`,
 				);
 			}

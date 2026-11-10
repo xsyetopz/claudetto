@@ -46,7 +46,7 @@ const pathsOf = (lists: unknown): RegExp[] =>
 const rulesOf = (file: string, raw: unknown): Rule[] =>
 	(Array.isArray(raw) ? raw : []).map((rule, i) => {
 		if (typeof rule?.id !== "string" || typeof rule?.path !== "string") {
-			throw new Error(`${file}: rule ${i + 1} needs an id and a path`);
+			throw new TypeError(`${file}: rule ${i + 1} needs an id and a path`);
 		}
 		if (rule.regex !== undefined) {
 			throw new Error(

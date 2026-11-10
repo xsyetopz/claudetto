@@ -140,7 +140,7 @@ const expanded = (commands: Command[]): Command[] => {
 	const set = new Map<string, string>();
 	return commands.map((c) => {
 		const words = c.words.map((w) =>
-			w.replace(
+			w.replaceAll(
 				VARIABLE,
 				(whole, braced?: string, bare?: string) =>
 					set.get(braced ?? bare ?? "") ?? whole,
@@ -181,7 +181,7 @@ const creates = (
 ): { path?: string | undefined; branch?: string | undefined } => {
 	const [verb = "", ...rest] = withoutGitOptions(args);
 	const at = rest.findIndex((a) => BRANCH_FLAGS.has(a));
-	const named = at < 0 ? undefined : rest[at + 1];
+	const named = at === -1 ? undefined : rest[at + 1];
 	if (verb === "worktree" && rest[0] === "add") {
 		const words = rest.slice(1);
 		return {
@@ -220,7 +220,7 @@ export const createdOf = (past: Past[]) => {
 const DELETES = /\b(?:delete|remove|drop|prune)\b/i;
 const NEGATED = /\b(?:not|never|no)\b|n't\b/i;
 const OTHER_BRANCHES = /\b(?:other|all)\b.*\bbranches\b/i;
-const escaped = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escaped = (s: string): string => s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 const sentencesOf = (texts: readonly string[]): string[] =>
 	texts.flatMap((t) => t.split(/[.!?]\s+|\n/));

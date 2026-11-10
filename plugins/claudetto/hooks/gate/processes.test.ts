@@ -120,28 +120,28 @@ const denied = (
 	reason: string,
 	past: Earlier[] = [],
 	marked: Record<string, string> = {},
-) =>
+) =>{ 
 	test(`${command} is denied as not owned`, async ($: Engine, on: On) => {
 		lab(on, past, marked);
 		const v = await bash($, command);
 		expect(v.decision).toBe("deny");
 		expect(v.reason).toContain(reason);
-	});
+	}); };
 const allowed = (
 	command: string,
 	past: Earlier[] = [],
 	marked: Record<string, string> = {},
-) =>
+) =>{ 
 	test(`${command} passes as owned`, async ($: Engine, on: On) => {
 		lab(on, past, marked);
 		expect((await bash($, command)).decision).toBe("allow");
-	});
+	}); };
 
-const asks = (command: string, past: Earlier[] = []) =>
+const asks = (command: string, past: Earlier[] = []) =>{ 
 	test(`${command} keeps asking as not owned`, async ($: Engine, on: On) => {
 		lab(on, past);
 		expect((await bash($, command)).decision).toBe("ask");
-	});
+	}); };
 
 denied("rm -rf /tmp/other/x", gateRmTmp("/tmp/other/x"));
 denied("rm -f /private/tmp/other", gateRmTmp("/private/tmp/other"));

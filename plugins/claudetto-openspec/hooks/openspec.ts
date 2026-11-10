@@ -66,11 +66,11 @@ const status = async (d: Deps, names: string[], single: boolean) => {
 const archiveChange = async (d: Deps, change: string) => {
 	try {
 		return archived(change, await archive(d.fs, d.run, d.root, change, d.date));
-	} catch (e) {
-		if (e instanceof ArchiveBlocked) {
-			return refused(change, e.message);
+	} catch (error) {
+		if (error instanceof ArchiveBlocked) {
+			return refused(change, error.message);
 		}
-		throw e;
+		throw error;
 	}
 };
 
@@ -143,7 +143,7 @@ export const openspec = async (d: Deps, call: Call): Promise<string> => {
 	if (action === "archive") {
 		return change === undefined
 			? needsChange("archive")
-			: await archiveChange(d, change);
+			: archiveChange(d, change);
 	}
 	if (action === "status") {
 		return change === undefined

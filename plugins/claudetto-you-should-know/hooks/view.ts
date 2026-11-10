@@ -134,7 +134,7 @@ export const drawView = (
 					key: choice.key,
 					label: choice.label,
 					...(choice.key === "dismiss" ? { role: "dismiss" } : {}),
-					onPress: () => input.press(choice.key),
+					onPress: () =>{  input.press(choice.key); },
 				}),
 			}),
 		),

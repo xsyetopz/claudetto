@@ -98,7 +98,7 @@ const runPromptHook = async (prompt: string): Promise<string> => {
 		),
 		stdout: "pipe",
 	});
-	return await new Response(proc.stdout).text();
+	return new Response(proc.stdout).text();
 };
 
 test("a prompt that starts with /claudetto:setup is blocked with a plain reason", async () => {
@@ -115,7 +115,7 @@ test("a prompt that starts with /claudetto:setup is blocked with a plain reason"
 const startedShell = async (env: Record<string, string>): Promise<string> => {
 	const envFile = join(await mkdtemp(join(tmpdir(), "envfile-")), "env");
 	const run = async (command: string) =>
-		await new Response(
+		new Response(
 			spawn(["sh", "-c", command], {
 				env: { ...process.env, ...env, CLAUDE_ENV_FILE: envFile },
 				stdout: "pipe",
@@ -124,7 +124,7 @@ const startedShell = async (env: Record<string, string>): Promise<string> => {
 	const start = await hookCommand("SessionStart");
 	await run(start);
 	await run(start);
-	return await run(
+	return run(
 		`. "$CLAUDE_ENV_FILE"; echo $(ps -o nice= -p $$) $CARGO_BUILD_JOBS $GOMAXPROCS`,
 	);
 };

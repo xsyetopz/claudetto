@@ -29,7 +29,7 @@ test("every key a setup group writes is known to the installed Claude Code", asy
 });
 
 // A name alone is the fault: even `false` names a key setup has no reason to touch.
-const REFUSED_KEYS = [
+const REFUSED_KEYS = new Set([
 	// Stops every hook, claudetto's own included.
 	"disableAllHooks",
 	// Stops the inline shell step that claudetto's skills use.
@@ -47,10 +47,10 @@ const REFUSED_KEYS = [
 	"DISABLE_UPDATES",
 	// Removes `/upgrade`, which changes the plan the budget is read against.
 	"DISABLE_UPGRADE_COMMAND",
-];
+]);
 
 test("no setup group names a refused key, in settings or in env", () => {
 	const keys = GROUPS.flatMap((group) => keysOf(group.settings));
 
-	expect(keys.filter((key) => REFUSED_KEYS.includes(key))).toEqual([]);
+	expect(keys.filter((key) => REFUSED_KEYS.has(key))).toEqual([]);
 });

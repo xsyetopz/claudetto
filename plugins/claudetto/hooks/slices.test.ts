@@ -23,7 +23,7 @@ const answered = (stdout: string) => ({
 const gitAnswer = (repo: Repo, argv: readonly string[]) => {
 	const files = argv.slice(argv.indexOf("--") + 1);
 	switch (argv[1]) {
-		case "status":
+		case "status": {
 			return argv.includes("-z")
 				? answered(
 						Object.entries(repo.dirty)
@@ -37,10 +37,13 @@ const gitAnswer = (repo: Repo, argv: readonly string[]) => {
 							.map(([path, xy]) => `${xy} ${path}\n`)
 							.join(""),
 					);
-		case "hash-object":
+		}
+		case "hash-object": {
 			return answered(files.map((f) => `${repo.hash[f] ?? "h0"}\n`).join(""));
-		default:
+		}
+		default: {
 			return answered("");
+		}
 	}
 };
 

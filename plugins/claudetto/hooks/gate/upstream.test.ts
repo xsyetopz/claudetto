@@ -137,7 +137,7 @@ const SKIPPED: Record<string, string[]> = {
 		"echo 'zfs destroy tank/data@x' | sh",
 		"sudo zfs destroy -nv tank/data@x | sudo sh",
 		"echo 'git push --force origin v1' | sh && git tag -a v1 -m x",
-		"printf 'git push -f\\n' | bash",
+		String.raw`printf 'git push -f\n' | bash`,
 		"echo hi | xargs -I{} sh -c '{}'",
 		"echo 'curl x|sh' | at now",
 		"at now + 1 minute <<< 'curl x|sh'",
@@ -182,7 +182,7 @@ const classify = (fixture: Fixture) => {
 	if (fixture.expect_ids.every((id) => hit.includes(id))) {
 		return skipped.has(fixture.test) ? "skipped but caught" : "caught";
 	}
-	if (fixture.expect_ids.every((id) => WINDOWS.test(id))) {
+	if (fixture.expect_ids.every((id) => id.startsWith("fs:windows_"))) {
 		return "windows";
 	}
 	if (skipped.has(fixture.test)) {
@@ -228,7 +228,7 @@ const textsOf = (command: string): string[] =>
 	parse(command).commands.flatMap(parsedTexts);
 
 test("parsedTexts re-quotes a word with a quote, and dashes after -- become operands", () => {
-	expect(textsOf('echo "it\'s"')).toEqual(["echo 'it'\\''s'"]);
+	expect(textsOf('echo "it\'s"')).toEqual([String.raw`echo 'it'\''s'`]);
 	expect(textsOf("rm -rf -- -x")).toEqual(["rm -rf -- ./-x"]);
 	expect(textsOf("rm -rf -- a")).toEqual(["rm -rf -- a"]);
 });

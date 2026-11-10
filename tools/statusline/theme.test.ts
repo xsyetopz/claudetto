@@ -115,8 +115,8 @@ describe("the line file the mod writes", () => {
 				env,
 				NOW,
 			);
-		expect(await rows(session)).toContain("\\u001b[1mx\\u001b[0m");
-		expect(await rows("none")).not.toContain("\\u001b");
+		expect(await rows(session)).toContain(String.raw`\u001b[1mx\u001b[0m`);
+		expect(await rows("none")).not.toContain(String.raw`\u001b`);
 	});
 
 	test("a session with no file prints no context part and no colour", async () => {

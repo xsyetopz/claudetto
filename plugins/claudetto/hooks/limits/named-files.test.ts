@@ -10,8 +10,8 @@ import { scanner } from "../secrets.mock.ts";
 import { namedPaths, userCommands } from "./named-files.ts";
 
 // This file tests the file check alone: the command-form check would block its bare `! <command>` replies first.
-const test = (name: string, run: TestBody) =>
-	labTest(name, { options: { openItemsCheckEnabled: false } }, run);
+const test = (name: string, run: TestBody) =>{ 
+	labTest(name, { options: { openItemsCheckEnabled: false } }, run); };
 
 const INCIDENT = "Run the dump:\n- [ ] `! bun /tmp/probe-cmds-scripts/dump.ts`";
 

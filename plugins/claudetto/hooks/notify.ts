@@ -15,7 +15,7 @@ export const notify = (on: On, options: PluginOptions): void => {
 				.notify(`Claude stopped on an error: ${e.error}`, {
 					title: "claudetto",
 				})
-				.catch(() => undefined);
+				.catch(() => {});
 		}
 		return next(e);
 	});

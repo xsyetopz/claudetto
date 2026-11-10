@@ -103,7 +103,7 @@ test("other keys of the user's file stay as they are", () => {
 test("a file that is not a JSON object is refused and a missing file is empty", () => {
 	expect(parseSettings("[1]")).toBeUndefined();
 	expect(parseSettings("{")).toBeUndefined();
-	expect(parseSettings(undefined)).toEqual({});
+	expect(parseSettings()).toEqual({});
 });
 
 test("the auto-mode lists replace the built-ins, so none names $defaults", () => {
@@ -185,7 +185,7 @@ for (const [tiers, cap] of [
 }
 
 test("no login record writes no cap", () => {
-	expect(capGroup(undefined)).toBeUndefined();
+	expect(capGroup()).toBeUndefined();
 });
 
 const groupNamed = (label: string) => {

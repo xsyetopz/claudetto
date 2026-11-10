@@ -57,7 +57,7 @@ const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
 ]);
 const isRule = (x: unknown): x is PinConstraint["rule"] => RULES.has(x);
 
-const flat = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+const flat = (s: string) => s.toLowerCase().replaceAll(/\s+/g, " ").trim();
 
 // An entry stands only on words a message of the person holds, so a remark or the agent's own text sets none.
 const toConstraint = (c: unknown, said: string[]): PinConstraint[] => {
@@ -146,18 +146,21 @@ const bashWrites = (
 const breaks = (c: PinConstraint, tool: string, input: unknown): boolean => {
 	const command = tool === "Bash" ? fieldOf(input, "command") : undefined;
 	switch (c.rule) {
-		case "read-only":
+		case "read-only": {
 			return (
 				WRITERS.has(tool) || (command !== undefined && bashWrites(command))
 			);
-		case "no-commit":
+		}
+		case "no-commit": {
 			return (
 				command !== undefined && bashWrites(command, new Set(["commit"]), false)
 			);
-		case "no-push":
+		}
+		case "no-push": {
 			return (
 				command !== undefined && bashWrites(command, new Set(["push"]), false)
 			);
+		}
 		case "only-files": {
 			const path =
 				fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path") ?? "";
@@ -166,8 +169,9 @@ const breaks = (c: PinConstraint, tool: string, input: unknown): boolean => {
 			);
 		}
 		case "no-questions":
-		case "none":
+		case "none": {
 			return false;
+		}
 	}
 };
 
@@ -220,7 +224,7 @@ export const pin = (on: On): void => {
 	// The extraction runs beside the reply so the prompt is not held for it; tool.check waits on it.
 	let pending: Promise<void> = Promise.resolve();
 	const adopt = async (job: Promise<Extraction | undefined>): Promise<void> => {
-		const found = await job.catch(() => undefined);
+		const found = await job.catch(() => {});
 		// A failed or unreadable answer keeps the last ledger rather than dropping constraints.
 		ledger = found?.constraints ?? ledger;
 		kind = found?.kind ?? kind;

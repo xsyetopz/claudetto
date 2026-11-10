@@ -85,14 +85,14 @@ const refuse = (code: ArchiveBlocked["code"], message: string) =>
 // that holds a comment shows it.
 const COMMENT = /<!--[\s\S]*?(?:--!?>|$)/g;
 const maskComments = (md: string) =>
-	md.replace(COMMENT, (c) => c.replace(/[^\n]/g, "\0"));
+	md.replaceAll(COMMENT, (c) => c.replaceAll(/[^\n]/g, "\0"));
 
 const HEADING_LINE = /^#{1,6}\s/m;
 const FENCE_OPEN = /^ {0,3}(```|~~~)/gm;
 const FENCED = /^ {0,3}(```|~~~)[\s\S]*?^ {0,3}\1.*$/gm;
 const carriedPurpose = (text?: string) => {
 	const fences = text?.match(FENCE_OPEN)?.length ?? 0;
-	const prose = text?.replace(FENCED, "");
+	const prose = text?.replaceAll(FENCED, "");
 	return !text ||
 		text.includes("\0") ||
 		fences % 2 === 1 ||

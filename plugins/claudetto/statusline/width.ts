@@ -17,11 +17,11 @@ const VS16 = "️";
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 
 /** `text` without escape sequences: colors and links take no column. */
-export const plain = (text: string): string => text.replace(ESCAPE, "");
+export const plain = (text: string): string => text.replaceAll(ESCAPE, "");
 
 /** A string from outside made safe to print: no control, format, or line-break character, so it cannot move the cursor, start an escape, or reorder the line; runs of space become one. */
 export const clean = (text: string): string =>
-	text.replace(INVISIBLE, "").replace(BREAKS, " ").replace(SPACES, " ").trim();
+	text.replaceAll(INVISIBLE, "").replaceAll(BREAKS, " ").replaceAll(SPACES, " ").trim();
 
 const columnsOf = (cluster: string): number => {
 	// The wider of the two readings of an East Asian Ambiguous glyph (UAX #11), a choice: a terminal that draws it wide never overflows, and one that draws it narrow only leaves a column free.

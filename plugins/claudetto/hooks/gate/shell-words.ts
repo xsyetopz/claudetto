@@ -186,7 +186,7 @@ export const scriptOf = (c: Command): string | undefined => {
 		return args.join(" ");
 	}
 	const flag = args.findIndex((a) => COMMAND_FLAG.test(a));
-	return SHELLS.has(name) && flag >= 0 ? args[flag + 1] : undefined;
+	return SHELLS.has(name) && flag !== -1 ? args[flag + 1] : undefined;
 };
 
 const merge = (s: State, inner: string): void => {
@@ -263,7 +263,7 @@ const balanced = (s: State): string => {
 
 const backtick = (s: State): void => {
 	const end = s.src.indexOf("`", s.i + 1);
-	if (end < 0) {
+	if (end === -1) {
 		s.unreadable = true;
 		s.i = s.src.length;
 		return;
@@ -297,9 +297,9 @@ const dollar = (s: State, inDouble: boolean): void => {
 
 const single = (s: State): void => {
 	const end = s.src.indexOf("'", s.i + 1);
-	s.unreadable ||= end < 0;
-	add(s, s.src.slice(s.i + 1, end < 0 ? s.src.length : end));
-	s.i = end < 0 ? s.src.length : end + 1;
+	s.unreadable ||= end === -1;
+	add(s, s.src.slice(s.i + 1, end === -1 ? s.src.length : end));
+	s.i = end === -1 ? s.src.length : end + 1;
 };
 
 const double = (s: State): void => {
@@ -314,15 +314,18 @@ const double = (s: State): void => {
 				s.i += 2;
 				break;
 			}
-			case "$":
+			case "$": {
 				dollar(s, true);
 				break;
-			case "`":
+			}
+			case "`": {
 				backtick(s);
 				break;
-			default:
+			}
+			default: {
 				add(s, c);
 				s.i++;
+			}
 		}
 	}
 	s.unreadable ||= s.i >= s.src.length;
@@ -349,9 +352,9 @@ const skipHeredocs = (s: State): void => {
 	for (const delimiter of s.heredocs) {
 		for (;;) {
 			const end = s.src.indexOf("\n", s.i);
-			const line = s.src.slice(s.i, end < 0 ? s.src.length : end);
-			s.i = end < 0 ? s.src.length : end + 1;
-			if (line.trim() === delimiter || end < 0) {
+			const line = s.src.slice(s.i, end === -1 ? s.src.length : end);
+			s.i = end === -1 ? s.src.length : end + 1;
+			if (line.trim() === delimiter || end === -1) {
 				break;
 			}
 		}
@@ -383,7 +386,7 @@ const escaped = (s: State): void => {
 const literal = (s: State, c: string): void => {
 	if (c === "#" && s.word === undefined) {
 		const end = s.src.indexOf("\n", s.i);
-		s.i = end < 0 ? s.src.length : end;
+		s.i = end === -1 ? s.src.length : end;
 		return;
 	}
 	add(s, c, "*?[{".includes(c) || (c === "~" && s.word === undefined));
@@ -394,45 +397,55 @@ const step = (s: State): void => {
 	const c = s.src[s.i] ?? "";
 	switch (c) {
 		case " ":
-		case "\t":
+		case "\t": {
 			endWord(s);
 			s.i++;
 			break;
-		case "\\":
+		}
+		case "\\": {
 			escaped(s);
 			break;
-		case "'":
+		}
+		case "'": {
 			single(s);
 			break;
-		case '"':
+		}
+		case '"': {
 			double(s);
 			break;
-		case "$":
+		}
+		case "$": {
 			dollar(s, false);
 			break;
-		case "`":
+		}
+		case "`": {
 			backtick(s);
 			break;
+		}
 		case "<":
-		case ">":
+		case ">": {
 			redirect(s);
 			break;
-		case "&":
+		}
+		case "&": {
 			if (s.src[s.i + 1] === ">") {
 				redirect(s);
 			} else {
 				operator(s, c);
 			}
 			break;
+		}
 		case ";":
 		case "(":
 		case ")":
 		case "|":
-		case "\n":
+		case "\n": {
 			operator(s, c);
 			break;
-		default:
+		}
+		default: {
 			literal(s, c);
+		}
 	}
 };
 

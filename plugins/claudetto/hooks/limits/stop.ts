@@ -173,7 +173,7 @@ const gradeBlock = async (
 				maxTokens: 300,
 				timeoutMs: 15_000,
 			})
-			.catch(() => undefined);
+			.catch(() => {});
 		return r?.isAnswered
 			? parseFaults(r.text, list, reply).filter((code) => keep.includes(code))
 			: [];
@@ -246,7 +246,7 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 			return stretchWrote ? answer : stallStop(answer.block);
 		}
 		if (e.stop_hook_active) {
-			return closed($, e, answer, undefined);
+			return closed($, e, answer);
 		}
 		const block =
 			(await filesBlock($, e)) ??
@@ -259,7 +259,6 @@ export const stopHooks = (on: On, options: PluginOptions): void => {
 			$,
 			e,
 			noticeTasks(answer, e.background_tasks ?? []),
-			undefined,
 		);
 	});
 };
@@ -279,7 +278,7 @@ export const budgetHooks = (on: On): void => {
 	let band = "";
 	// Rides the prompt, which costs a request already; `classic.Stop` would cost its own.
 	on("prompt.submit", async ($, e, next) => {
-		const usage = await $.session.usage().catch(() => undefined);
+		const usage = await $.session.usage().catch(() => {});
 		const line = usage === undefined ? undefined : budgetLine(usage);
 		if (
 			usage === undefined ||

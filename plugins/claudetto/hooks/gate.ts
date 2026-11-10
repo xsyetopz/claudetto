@@ -83,7 +83,7 @@ const hostOf = ($: EngineInterface): Host => ({
 	cwd: () => $.session.cwd(),
 	exists: (path) => $.fs.exists(path),
 	realPath: async (path) =>
-		(await $.fs.stat(path, { resolve: true }).catch(() => undefined))?.realPath,
+		(await $.fs.stat(path, { resolve: true }).catch(() => {}))?.realPath,
 	list: (path) => $.fs.list(path),
 	// `$.process` has no environment of its own; the shell that runs a command expands `~` from this one.
 	home: async () => (await $.process.run(["printenv", "HOME"])).stdout,
@@ -226,7 +226,7 @@ const log = async (
 		await $.fs.write(path, `${held}${line}\n`);
 	};
 	// A failed write loses its line and keeps the verdict: the outer catch would turn a deny into an ask.
-	logging = write().catch(() => undefined);
+	logging = write().catch(() => {});
 	await logging;
 };
 
@@ -284,7 +284,7 @@ export const gate = (on: On, options: PluginOptions): void => {
 				: own;
 		await log($, e, verdict);
 		return verdict;
-	}).catch((_$, _e, next) => ({
+	}).catch((error, _e, next) => ({
 		decision: "ask",
 		reason: GATE_CHECK_FAILED(next.error.message ?? next.error.kind),
 	}));
@@ -346,7 +346,7 @@ export const gate = (on: On, options: PluginOptions): void => {
 					result: redactAll(answer.result, secrets),
 					...(answer.context && { context: answer.context }),
 				};
-	}).catch(async (_$, e, next) => {
+	}).catch(async (error, e, next) => {
 		// The replay rethrows what failed beneath, so only a failed scan withholds the result.
 		await next(e);
 		return {

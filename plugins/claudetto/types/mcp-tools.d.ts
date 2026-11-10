@@ -1,5 +1,5 @@
 // The inputs of the tools claudetto registers, so `tool.call` matchers and `$.tool.call` accept their names.
-export {};
+
 
 declare module "claude-code" {
 	interface McpToolInputs {

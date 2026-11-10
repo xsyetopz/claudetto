@@ -11,7 +11,7 @@ const git = async (
 	$: EngineInterface,
 	argv: string[],
 ): Promise<string | undefined> => {
-	const r = await $.process.run(["git", ...argv]).catch(() => undefined);
+	const r = await $.process.run(["git", ...argv]).catch(() => {});
 	return r?.exitCode === 0 ? r.stdout : undefined;
 };
 

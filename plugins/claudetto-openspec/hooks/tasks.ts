@@ -38,7 +38,7 @@ const skipFrontMatter = (lines: string[]) => {
 	const end = lines.findIndex(
 		(l, i) => i > 0 && FRONT_MATTER.test(l.trimEnd()),
 	);
-	return end < 0 ? 0 : end + 1;
+	return end === -1 ? 0 : end + 1;
 };
 
 interface Scan {
@@ -88,7 +88,7 @@ const firstListItem = (content: string) => {
 			LIST_ITEM.test(line) &&
 			indent(line) < 4,
 	);
-	return at < 0 ? undefined : at + 1;
+	return at === -1 ? undefined : at + 1;
 };
 
 export const missingCheckboxes = (docs: Doc[]): TaskIssue[] => {

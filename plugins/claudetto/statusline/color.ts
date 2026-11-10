@@ -118,7 +118,7 @@ export const paintOf = (theme: string | undefined) => {
 	const style =
 		(parameters: string): Style =>
 		(text) =>
-			theme === undefined ? text : `\u001b[${parameters}m${text}\u001b[0m`;
+			theme === undefined ? text : `\u001B[${parameters}m${text}\u001B[0m`;
 	const paint = (c: Color) =>
 		style(typeof c === "number" ? String(c) : `38;2;${c.join(";")}`);
 	const [ok, warn, limit, inactive] = [

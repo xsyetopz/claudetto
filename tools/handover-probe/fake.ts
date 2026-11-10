@@ -2,7 +2,7 @@ import type { Usage } from "./usage.ts";
 
 /** Every number here is FAKE: the context size is a function of the human turns in the body, not a count of its tokens. */
 export const BASE_TOKENS = 20_000;
-export const TOKENS_PER_TURN = 5_000;
+export const TOKENS_PER_TURN = 5000;
 
 interface Message {
 	readonly role: string;

@@ -56,7 +56,7 @@ test("each measured turn writes the compaction window and the theme for the stat
 
 test("a session with no theme row writes the window alone", async ($: Engine, on: On) => {
 	const files: [string, string][] = [];
-	lab(on, files, [], undefined);
+	lab(on, files, []);
 	await measure($);
 	expect(files[0]?.[1]).toBe(JSON.stringify({ window: 300_000 }));
 });

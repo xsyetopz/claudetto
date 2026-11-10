@@ -167,8 +167,8 @@ export const runs = (on: On): void => {
 				.then(() =>
 					appendLine($, { ...p.line, rootEditedWithin3Turns: p.redone }),
 				)
-				.catch((error: unknown) =>
-					$.ui.log(`The run log was not written (${error})`),
+				.catch((error: unknown) =>{ 
+					$.ui.log(`The run log was not written (${error})`); },
 				);
 		}
 		await writing;

@@ -21,7 +21,7 @@ export const refVerdict = (
 	}
 	const [verb = "", ...rest] = withoutGitOptions(args);
 	const end = rest.indexOf("--");
-	const before = end < 0 ? rest : rest.slice(0, end);
+	const before = end === -1 ? rest : rest.slice(0, end);
 	const flags = before.filter((a) => a.startsWith("-"));
 	const target = before.find((a) => !a.startsWith("-"));
 	const moves =

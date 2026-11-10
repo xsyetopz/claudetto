@@ -29,7 +29,7 @@ const NAMELESS = /^requirement:?$/i;
 const SKIP_MENTION = /^\s*(['"]?)skip_specs\1\s*:/m;
 const EXTENSION_KEY = /^x-\S+$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const METADATA_KEYS = [
+const METADATA_KEYS = new Set([
 	"schema",
 	"created",
 	"goal",
@@ -37,7 +37,7 @@ const METADATA_KEYS = [
 	"initiative",
 	"skip_specs",
 	"retire_capabilities",
-];
+]);
 const KINDS = ["added", "modified", "removed", "renamed"] as const;
 
 // A literal backslash in a folder name displays as a slash, as upstream shows it.
@@ -146,7 +146,7 @@ export const linkEscapes = async (fs: Fs, mainSpecsDir: string, id: string) => {
 		return !(target && own && (within(root, target) || within(own, target)));
 	} catch {
 		// No specs tree: nothing to escape. Any other failure to resolve is an escape.
-		return await fs.exists(mainSpecsDir);
+		return fs.exists(mainSpecsDir);
 	}
 };
 
@@ -273,7 +273,7 @@ export const metadata = async (fs: Fs, dir: string): Promise<Meta> => {
 		return NONE;
 	}
 	const unknown = Object.keys(parsed)
-		.filter((k) => !(METADATA_KEYS.includes(k) || EXTENSION_KEY.test(k)))
+		.filter((k) => !(METADATA_KEYS.has(k) || EXTENSION_KEY.test(k)))
 		.sort((x, y) => (x < y ? -1 : 1));
 	const skip = await markerState(fs, dir, parsed, "skip_specs");
 	const retire = await markerState(fs, dir, parsed, "retire_capabilities");
@@ -635,10 +635,10 @@ const visible = async (fs: Fs, dir: string) =>
 	(await fs.list(dir).catch(() => [])).filter((e) => !e.name.startsWith("."));
 
 const looksLikeChange = async (fs: Fs, dir: string) => {
-	const names = (await fs.list(dir).catch(() => [])).map((e) => e.name);
+	const names = new Set((await fs.list(dir).catch(() => [])).map((e) => e.name));
 	const d = await discoverDeltas(fs, join(dir, "specs"));
 	return (
-		ROOT_MARKERS.some((m) => names.includes(m)) ||
+		ROOT_MARKERS.some((m) => names.has(m)) ||
 		d.found.length + d.unread.length + d.stray.length > 0
 	);
 };

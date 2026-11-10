@@ -206,7 +206,7 @@ test("a 429 waits and tries again, up to three tries", async () => {
 				options === undefined
 					? Promise.resolve(waits.push(ms))
 					: new Promise((resolve) => {
-							options.signal.addEventListener("abort", () => resolve(0));
+							options.signal.addEventListener("abort", () =>{  resolve(0); });
 						}),
 		},
 	).catch((error: unknown) => error);
@@ -227,9 +227,9 @@ test("a 401 is not tried again", async () => {
 				tries += 1;
 				return reply(401, "bad");
 			},
-			sleep: async () => undefined,
+			sleep: async () => {},
 		},
-	).catch(() => undefined);
+	).catch(() => {});
 
 	expect(tries).toBe(1);
 });

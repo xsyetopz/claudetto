@@ -179,16 +179,16 @@ const lines = async (
 };
 
 const ioOf = ($: EngineInterface): Io => ({
-	cwd: async () => await $.session.cwd(),
+	cwd: async () => $.session.cwd(),
 	git: async (args) =>
 		linesOf(await lines($, ["git", "-C", await $.session.cwd(), ...args])),
-	exists: async (path) => await $.fs.exists(path),
-	read: async (path) => await $.fs.read(path),
+	exists: async (path) => $.fs.exists(path),
+	read: async (path) => $.fs.read(path),
 	write: async (path, text) => {
 		await $.fs.write(path, text);
 	},
-	ask: async (question, _header, options) => await ask($, question, options),
-	path: async () => await $.env.get("PATH"),
+	ask: async (question, _header, options) => ask($, question, options),
+	path: async () => $.env.get("PATH"),
 	home: async () => (await $.env.get("HOME")) ?? "",
 	decline: async (key) => {
 		await $.store.set(key, true);
@@ -336,7 +336,7 @@ const sha256 = async (text: string): Promise<string> =>
 		new Uint8Array(
 			await crypto.subtle.digest(
 				"SHA-256",
-				new TextEncoder().encode(text).slice(),
+				[...new TextEncoder().encode(text)],
 			),
 		),
 		(byte) => byte.toString(16).padStart(2, "0"),

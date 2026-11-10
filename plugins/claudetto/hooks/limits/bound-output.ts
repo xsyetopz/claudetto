@@ -144,7 +144,7 @@ export const boundOutputHooks = (on: On, options: PluginOptions): void => {
 		if (
 			full === undefined ||
 			full.length <= limit ||
-			JSON.stringify(boundResult(answer.result, limit, undefined)) ===
+			JSON.stringify(boundResult(answer.result, limit)) ===
 				JSON.stringify(answer.result)
 		) {
 			return answer;

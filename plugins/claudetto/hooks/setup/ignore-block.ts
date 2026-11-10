@@ -37,7 +37,7 @@ const appended = (text: string, block: readonly string[]): string => {
 	if (text === "") {
 		return `${tail}\n`;
 	}
-	const ended = TRAILING_NEWLINE.test(text) ? text : `${text}\n`;
+	const ended = text.endsWith("\n") ? text : `${text}\n`;
 	const gap = ended === "\n" || ended.endsWith("\n\n") ? "" : "\n";
 	return `${ended}${gap}${tail}\n`;
 };
@@ -54,18 +54,18 @@ const applyLf = (
 	const text = current ?? "";
 	const parts = text.split("\n");
 	const start = parts.indexOf(BLOCK_START);
-	const end = start < 0 ? -1 : parts.indexOf(BLOCK_END, start + 1);
-	if (start >= 0 && end < 0) {
+	const end = start === -1 ? -1 : parts.indexOf(BLOCK_END, start + 1);
+	if (start !== -1 && end < 0) {
 		return current;
 	}
 	const outside =
-		start < 0 ? parts : [...parts.slice(0, start), ...parts.slice(end + 1)];
+		start === -1 ? parts : [...parts.slice(0, start), ...parts.slice(end + 1)];
 	const named = namedBy(outside);
 	const kept = [
 		...new Set(lines.filter((line) => !named.has(pathOf(line) ?? line))),
 	];
 	const block = [BLOCK_START, ...kept, BLOCK_END];
-	if (start >= 0) {
+	if (start !== -1) {
 		return [...parts.slice(0, start), ...block, ...parts.slice(end + 1)].join(
 			"\n",
 		);

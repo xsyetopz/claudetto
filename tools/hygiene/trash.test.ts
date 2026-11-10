@@ -296,7 +296,7 @@ test("the sweep's own process in the project does not keep its build folders", a
 	const back = process.cwd();
 	process.chdir(worktree);
 
-	const found = await swept(root, proj).finally(() => process.chdir(back));
+	const found = await swept(root, proj).finally(() =>{  process.chdir(back); });
 
 	expect(found).toEqual([["swiftpm", join(worktree, ".build")]]);
 });

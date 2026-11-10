@@ -38,9 +38,9 @@ const REQ = /^###\s*Requirement:\s*(.+)\s*$/i;
 const TOP = /^##\s+(.+)$/;
 const SCENARIO = /^####\s+/;
 const SCENARIO_END = /^#{1,4}\s/;
-const DELTA_TITLES = ["added", "modified", "removed", "renamed"].map(
+const DELTA_TITLES = new Set(["added", "modified", "removed", "renamed"].map(
 	(k) => `${k} requirements`,
-);
+));
 
 export const norm = (name: string) => name.replace(TRAILING_HASHES, "").trim();
 export const fold = (name: string) =>
@@ -197,7 +197,7 @@ const sectionUnapplied = (
 		);
 	}
 	if (
-		DELTA_TITLES.includes(folded) ||
+		DELTA_TITLES.has(folded) ||
 		(folded === "purpose" && visible[start - 1]?.trim())
 	) {
 		return false;
@@ -240,7 +240,7 @@ const orphanNames = (lines: string[], mask: boolean[]) => {
 		const req = REQ.exec(line);
 		if (top) {
 			heading = (top[1] ?? "").trim();
-		} else if (req && !DELTA_TITLES.includes((heading ?? "").toLowerCase())) {
+		} else if (req && !DELTA_TITLES.has((heading ?? "").toLowerCase())) {
 			names.push(norm(req[1] ?? ""));
 		}
 	}
@@ -373,7 +373,7 @@ interface Ctx {
 const fail = (c: Ctx, kind: Failure["kind"], name: string, message: string) =>
 	c.failures.push({ kind, name, message });
 const find = (c: Ctx, name: string) => c.list.findIndex((b) => b.name === name);
-const flat = (b: Block) => b.raw.replace(LINE_BREAK, "\n").trim();
+const flat = (b: Block) => b.raw.replaceAll(LINE_BREAK, "\n").trim();
 const same = (a: Block, b: Block) => flat(a) === flat(b);
 
 const rename = (c: Ctx, { from, to }: { from: string; to: string }) => {
@@ -490,7 +490,7 @@ const INTERRUPTS =
 	/^ {0,3}(?:>|\||[-*_]{3,}\s*$|<|`{3}|~{3}|#{1,6}\s|[-*+]\s|\d{1,9}[.)]\s)/;
 const TABLE_OR_HTML = /^\s*[|<]/;
 const TAB = /\t/g;
-const width = (text: string) => text.replace(TAB, "    ").length;
+const width = (text: string) => text.replaceAll(TAB, "    ").length;
 
 interface Audit {
 	area: "head" | "purpose" | "reqs" | "other";

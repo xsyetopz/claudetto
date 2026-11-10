@@ -241,11 +241,11 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["b","c)","d"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["c)","d"],"at":0},{"name":"a","args":[""],"at":0}]}',
 	],
 	[
-		'a $(b "\\"" ) c)',
-		'{"commands":[{"words":["b","\\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","","c"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["\\""],"at":0},{"name":"a","args":["","c"],"at":0}]}',
+		String.raw`a $(b "\"" ) c)`,
+		String.raw`{"commands":[{"words":["b","\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","","c"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["\""],"at":0},{"name":"a","args":["","c"],"at":0}]}`,
 	],
 	[
-		"a $(b \\)  c)",
+		String.raw`a $(b \)  c)`,
 		'{"commands":[{"words":["b",")","c"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":[")","c"],"at":0},{"name":"a","args":[""],"at":0}]}',
 	],
 	[
@@ -269,12 +269,12 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["b"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","","c"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":[],"at":0},{"name":"a","args":["","c"],"at":0}]}',
 	],
 	[
-		"a $'x\\ty'",
-		'{"commands":[{"words":["a","x\\\\ty"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\\\ty"],"at":0}]}',
+		String.raw`a $'x\ty'`,
+		String.raw`{"commands":[{"words":["a","x\\ty"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\ty"],"at":0}]}`,
 	],
 	[
-		"a $'x\\\\ty'",
-		'{"commands":[{"words":["a","x\\\\\\\\ty"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\\\\\\\ty"],"at":0}]}',
+		String.raw`a $'x\\ty'`,
+		String.raw`{"commands":[{"words":["a","x\\\\ty"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\\\ty"],"at":0}]}`,
 	],
 	[
 		"a $'x",
@@ -301,7 +301,7 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["b"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","xy"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":[],"at":0},{"name":"a","args":["xy"],"at":0}]}',
 	],
 	[
-		'a "\\$x"',
+		String.raw`a "\$x"`,
 		'{"commands":[{"words":["a","$x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["$x"],"at":0}]}',
 	],
 	[
@@ -309,16 +309,16 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","`x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["`x"],"at":0}]}',
 	],
 	[
-		'a "\\\\x"',
-		'{"commands":[{"words":["a","\\\\x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\\\x"],"at":0}]}',
+		String.raw`a "\\x"`,
+		String.raw`{"commands":[{"words":["a","\\x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\x"],"at":0}]}`,
 	],
 	[
-		'a "\\"x"',
-		'{"commands":[{"words":["a","\\"x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\"x"],"at":0}]}',
+		String.raw`a "\"x"`,
+		String.raw`{"commands":[{"words":["a","\"x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\"x"],"at":0}]}`,
 	],
 	[
-		'a "\\nx"',
-		'{"commands":[{"words":["a","\\\\nx"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\\\nx"],"at":0}]}',
+		String.raw`a "\nx"`,
+		String.raw`{"commands":[{"words":["a","\\nx"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\nx"],"at":0}]}`,
 	],
 	[
 		'a "x',
@@ -329,8 +329,8 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["x"],"at":0}]}',
 	],
 	[
-		'a "x\\"',
-		'{"commands":[{"words":["a","x\\""],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["x\\""],"at":0}]}',
+		String.raw`a "x\"`,
+		String.raw`{"commands":[{"words":["a","x\""],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["x\""],"at":0}]}`,
 	],
 	[
 		"a >(b)",
@@ -429,12 +429,12 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["b"],"at":0}]}',
 	],
 	[
-		"a \\a",
+		String.raw`a \a`,
 		'{"commands":[{"words":["a","a"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["a"],"at":0}]}',
 	],
 	[
-		"a \\\\",
-		'{"commands":[{"words":["a","\\\\"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\\\"],"at":0}]}',
+		String.raw`a \\`,
+		String.raw`{"commands":[{"words":["a","\\"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\"],"at":0}]}`,
 	],
 	[
 		"a \\",
@@ -521,8 +521,8 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["sh","-c"],"dynamic":[],"redirects":[{"op":"<<","target":"A"}],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"sh","args":["-c"],"at":0}]}',
 	],
 	[
-		'sh -c \'sh -c "sh -c \\"sh -c x\\""\'',
-		'{"commands":[{"words":["sh","-c","sh -c \\"sh -c \\\\\\"sh -c x\\\\\\"\\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c \\"sh -c x\\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c x"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","x"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"sh","args":["-c","sh -c \\"sh -c \\\\\\"sh -c x\\\\\\"\\""],"at":0},{"name":"sh","args":["-c","sh -c \\"sh -c x\\""],"at":0},{"name":"sh","args":["-c","sh -c x"],"at":0},{"name":"sh","args":["-c","x"],"at":0},{"name":"x","args":[],"at":0}]}',
+		String.raw`sh -c 'sh -c "sh -c \"sh -c x\""'`,
+		String.raw`{"commands":[{"words":["sh","-c","sh -c \"sh -c \\\"sh -c x\\\"\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c \"sh -c x\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c x"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","x"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"sh","args":["-c","sh -c \"sh -c \\\"sh -c x\\\"\""],"at":0},{"name":"sh","args":["-c","sh -c \"sh -c x\""],"at":0},{"name":"sh","args":["-c","sh -c x"],"at":0},{"name":"sh","args":["-c","x"],"at":0},{"name":"x","args":[],"at":0}]}`,
 	],
 	[
 		"a;b | c",
@@ -530,7 +530,7 @@ const CASES: [string, string][] = [
 	],
 	[
 		'echo "a\nb"',
-		'{"commands":[{"words":["echo","a\\nb"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["a\\nb"],"at":0}]}',
+		String.raw`{"commands":[{"words":["echo","a\nb"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["a\nb"],"at":0}]}`,
 	],
 	[
 		"a<b>c",
@@ -593,20 +593,20 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","xyz"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["xyz"],"at":0}]}',
 	],
 	[
-		'sh -c \'sh -c "sh -c \\"sh -c \\\\\\"sh -c x\\\\\\"\\""\'',
-		'{"commands":[{"words":["sh","-c","sh -c \\"sh -c \\\\\\"sh -c \\\\\\\\\\\\\\"sh -c x\\\\\\\\\\\\\\"\\\\\\"\\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c \\"sh -c \\\\\\"sh -c x\\\\\\"\\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c \\"sh -c x\\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c x"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"sh","args":["-c","sh -c \\"sh -c \\\\\\"sh -c \\\\\\\\\\\\\\"sh -c x\\\\\\\\\\\\\\"\\\\\\"\\""],"at":0},{"name":"sh","args":["-c","sh -c \\"sh -c \\\\\\"sh -c x\\\\\\"\\""],"at":0},{"name":"sh","args":["-c","sh -c \\"sh -c x\\""],"at":0},{"name":"sh","args":["-c","sh -c x"],"at":0},{"name":"sh","args":["-c","x"],"at":0}]}',
+		String.raw`sh -c 'sh -c "sh -c \"sh -c \\\"sh -c x\\\"\""'`,
+		String.raw`{"commands":[{"words":["sh","-c","sh -c \"sh -c \\\"sh -c \\\\\\\"sh -c x\\\\\\\"\\\"\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c \"sh -c \\\"sh -c x\\\"\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c \"sh -c x\""],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","sh -c x"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["sh","-c","x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"sh","args":["-c","sh -c \"sh -c \\\"sh -c \\\\\\\"sh -c x\\\\\\\"\\\"\""],"at":0},{"name":"sh","args":["-c","sh -c \"sh -c \\\"sh -c x\\\"\""],"at":0},{"name":"sh","args":["-c","sh -c \"sh -c x\""],"at":0},{"name":"sh","args":["-c","sh -c x"],"at":0},{"name":"sh","args":["-c","x"],"at":0}]}`,
 	],
 	[
-		"a $'x\\'y' z",
-		'{"commands":[{"words":["a","x\\\\\'y","z"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\\\\'y","z"],"at":0}]}',
+		String.raw`a $'x\'y' z`,
+		String.raw`{"commands":[{"words":["a","x\\'y","z"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\'y","z"],"at":0}]}`,
 	],
 	[
 		"a $'x\\",
-		'{"commands":[{"words":["a","x\\\\"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["x\\\\"],"at":0}]}',
+		String.raw`{"commands":[{"words":["a","x\\"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["x\\"],"at":0}]}`,
 	],
 	[
-		"a $'\\'",
-		'{"commands":[{"words":["a","\\\\\'"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["\\\\\'"],"at":0}]}',
+		String.raw`a $'\'`,
+		String.raw`{"commands":[{"words":["a","\\'"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["\\'"],"at":0}]}`,
 	],
 	[
 		'a "$(b "c")"',
@@ -625,16 +625,16 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"a","args":["x"],"at":0}]}',
 	],
 	[
-		'a "x\\\\"',
-		'{"commands":[{"words":["a","x\\\\"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\\\"],"at":0}]}',
+		String.raw`a "x\\"`,
+		String.raw`{"commands":[{"words":["a","x\\"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["x\\"],"at":0}]}`,
 	],
 	[
 		'a "$"',
 		'{"commands":[{"words":["a","$"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["$"],"at":0}]}',
 	],
 	[
-		'a "\\\\" b',
-		'{"commands":[{"words":["a","\\\\","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\\\","b"],"at":0}]}',
+		String.raw`a "\\" b`,
+		String.raw`{"commands":[{"words":["a","\\","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\","b"],"at":0}]}`,
 	],
 	[
 		'a "$ b" c',
@@ -649,8 +649,8 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["b"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["c"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","",""],"dynamic":[1,2],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":[],"at":0},{"name":"c","args":[],"at":0},{"name":"a","args":["",""],"at":0}]}',
 	],
 	[
-		"a $(b \\\\) c)",
-		'{"commands":[{"words":["b","\\\\"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","","c"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["\\\\"],"at":0},{"name":"a","args":["","c"],"at":0}]}',
+		String.raw`a $(b \\) c)`,
+		String.raw`{"commands":[{"words":["b","\\"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","","c"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["\\"],"at":0},{"name":"a","args":["","c"],"at":0}]}`,
 	],
 	[
 		'a $("b)")',
@@ -661,12 +661,12 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["b)"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b)","args":[],"at":0},{"name":"a","args":[""],"at":0}]}',
 	],
 	[
-		"a $(b 'c\\' d)",
-		'{"commands":[{"words":["b","c\\\\","d"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["c\\\\","d"],"at":0},{"name":"a","args":[""],"at":0}]}',
+		String.raw`a $(b 'c\' d)`,
+		String.raw`{"commands":[{"words":["b","c\\","d"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["c\\","d"],"at":0},{"name":"a","args":[""],"at":0}]}`,
 	],
 	[
-		'a $(b "c\\" d)" e)',
-		'{"commands":[{"words":["b","c\\" d)","e"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["c\\" d)","e"],"at":0},{"name":"a","args":[""],"at":0}]}',
+		String.raw`a $(b "c\" d)" e)`,
+		String.raw`{"commands":[{"words":["b","c\" d)","e"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a",""],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":["c\" d)","e"],"at":0},{"name":"a","args":[""],"at":0}]}`,
 	],
 	[
 		'a $("")',
@@ -685,12 +685,12 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["b"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["c"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["a","/dev/fd/63","/dev/fd/63"],"dynamic":[1,2],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"b","args":[],"at":0},{"name":"c","args":[],"at":0},{"name":"a","args":["/dev/fd/63","/dev/fd/63"],"at":0}]}',
 	],
 	[
-		"a '\\'b",
-		'{"commands":[{"words":["a","\\\\b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\\\b"],"at":0}]}',
+		String.raw`a '\'b`,
+		String.raw`{"commands":[{"words":["a","\\b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\b"],"at":0}]}`,
 	],
 	[
-		"a '\\' b",
-		'{"commands":[{"words":["a","\\\\","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\\\","b"],"at":0}]}',
+		String.raw`a '\' b`,
+		String.raw`{"commands":[{"words":["a","\\","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\","b"],"at":0}]}`,
 	],
 	[
 		'a "\'" b',
@@ -698,7 +698,7 @@ const CASES: [string, string][] = [
 	],
 	[
 		"a '\"' b",
-		'{"commands":[{"words":["a","\\"","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\"","b"],"at":0}]}',
+		String.raw`{"commands":[{"words":["a","\"","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\"","b"],"at":0}]}`,
 	],
 	[
 		'a "\'"c"\'"',
@@ -745,7 +745,7 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","*"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["*"],"at":0}]}',
 	],
 	[
-		"a \\*",
+		String.raw`a \*`,
 		'{"commands":[{"words":["a","*"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["*"],"at":0}]}',
 	],
 	[
@@ -757,7 +757,7 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","*"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["*"],"at":0}]}',
 	],
 	[
-		"a \\{",
+		String.raw`a \{`,
 		'{"commands":[{"words":["a","{"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["{"],"at":0}]}',
 	],
 	[
@@ -765,11 +765,11 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a","{"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["{"],"at":0}]}',
 	],
 	[
-		"a \\?",
+		String.raw`a \?`,
 		'{"commands":[{"words":["a","?"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["?"],"at":0}]}',
 	],
 	[
-		"a \\~",
+		String.raw`a \~`,
 		'{"commands":[{"words":["a","~"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["~"],"at":0}]}',
 	],
 	[
@@ -781,7 +781,7 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["c"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":[],"at":0},{"name":"c","args":[],"at":0}]}',
 	],
 	[
-		"a \\#b",
+		String.raw`a \#b`,
 		'{"commands":[{"words":["a","#b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["#b"],"at":0}]}',
 	],
 	[
@@ -1094,11 +1094,11 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["*.sh"],"dynamic":[0],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"*.sh","args":[],"at":0}]}',
 	],
 	[
-		'a \\"',
-		'{"commands":[{"words":["a","\\""],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\\""],"at":0}]}',
+		String.raw`a \"`,
+		String.raw`{"commands":[{"words":["a","\""],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["\""],"at":0}]}`,
 	],
 	[
-		"\\a b",
+		String.raw`\a b`,
 		'{"commands":[{"words":["a","b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":["b"],"at":0}]}',
 	],
 	[
@@ -1122,7 +1122,7 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["echo","$(rm x)"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["$(rm x)"],"at":0}]}',
 	],
 	[
-		"echo \\$(rm x)",
+		String.raw`echo \$(rm x)`,
 		'{"commands":[{"words":["echo","$"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["rm","x"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["$"],"at":0},{"name":"rm","args":["x"],"at":0}]}',
 	],
 	[
@@ -1130,7 +1130,7 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["echo","`rm","x`"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["`rm","x`"],"at":0}]}',
 	],
 	[
-		'echo "\\$(rm x)"',
+		String.raw`echo "\$(rm x)"`,
 		'{"commands":[{"words":["echo","$(rm x)"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["$(rm x)"],"at":0}]}',
 	],
 	[
@@ -1394,8 +1394,8 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["a"],"dynamic":[],"redirects":[],"from":false,"into":false},{"words":["b"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"a","args":[],"at":0},{"name":"b","args":[],"at":0}]}',
 	],
 	[
-		"{$'2\\>(-c\\-",
-		'{"commands":[{"words":["{2\\\\>(-c\\\\-"],"dynamic":[0],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"{2\\\\>(-c\\\\-","args":[],"at":0}]}',
+		String.raw`{$'2\>(-c\-`,
+		String.raw`{"commands":[{"words":["{2\\>(-c\\-"],"dynamic":[0],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"{2\\>(-c\\-","args":[],"at":0}]}`,
 	],
 	[
 		'echo $(echo "abc',
@@ -1462,8 +1462,8 @@ const CASES: [string, string][] = [
 		'{"commands":[{"words":["echo"],"dynamic":[],"redirects":[],"from":false,"into":false}],"unreadable":true,"programs":[{"name":"echo","args":[],"at":0}]}',
 	],
 	[
-		"echo $'a\\'b'",
-		'{"commands":[{"words":["echo","a\\\\\'b"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["a\\\\\'b"],"at":0}]}',
+		String.raw`echo $'a\'b'`,
+		String.raw`{"commands":[{"words":["echo","a\\'b"],"dynamic":[1],"redirects":[],"from":false,"into":false}],"unreadable":false,"programs":[{"name":"echo","args":["a\\'b"],"at":0}]}`,
 	],
 	[
 		"echo $'a",

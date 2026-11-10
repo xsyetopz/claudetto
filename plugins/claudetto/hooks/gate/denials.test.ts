@@ -4,7 +4,7 @@ import { gateRepeated, gateRepeatedUnexplained } from "../texts.ts";
 import { repeatedText, signature, withDenial } from "./denials.ts";
 
 test("a call with no JSON form still has a signature", () => {
-	expect(signature("Bash", undefined)).toBe("Bash\0");
+	expect(signature("Bash")).toBe("Bash\0");
 	expect(signature("Bash", { a: 1 })).toBe('Bash\0{"a":1}');
 });
 

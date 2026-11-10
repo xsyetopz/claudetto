@@ -32,7 +32,7 @@ describe("spacing: what a cell count must be", () => {
 	});
 
 	test("a private-use Nerd Font glyph counts as two", () => {
-		expect(width("\ue0a0")).toBe(2);
+		expect(width("\uE0A0")).toBe(2);
 	});
 
 	test("a text symbol with an emoji presentation selector counts as two", () => {

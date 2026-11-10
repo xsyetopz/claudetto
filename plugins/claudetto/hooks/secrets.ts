@@ -82,7 +82,7 @@ export const secretsIn = async (
 	}
 	const found: unknown = JSON.parse(result.stdout);
 	if (!Array.isArray(found)) {
-		throw new Error(secretScanFailed(`unexpected output: ${result.stdout}`));
+		throw new TypeError(secretScanFailed(`unexpected output: ${result.stdout}`));
 	}
 	const secrets = found.map((f: { Secret?: unknown }) =>
 		typeof f.Secret === "string" ? f.Secret : "",

@@ -45,7 +45,7 @@ export const linesOf = (text: string): string[] =>
 export const globOf = (glob: string): string =>
 	glob
 		.split("*")
-		.map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+		.map((part) => part.replaceAll(/[.+?^${}()|[\]\\]/g, String.raw`\$&`))
 		.join("[^/]*");
 
 /** A root name or `*` glob, an exact path, or a `dir/` prefix. */

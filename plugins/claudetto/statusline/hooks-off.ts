@@ -38,7 +38,7 @@ const readTail = async (
 const lastReplyAt = (tail: string): number | undefined => {
 	let last: number | undefined;
 	for (const line of tail.split("\n")) {
-		const at = ASSISTANT.test(line)
+		const at = line.includes('"type":"assistant"')
 			? Date.parse(TIMESTAMP.exec(line)?.[1] ?? "")
 			: Number.NaN;
 		if (Number.isFinite(at) && (last === undefined || at > last)) {

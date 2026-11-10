@@ -25,7 +25,7 @@ const lab = (
 	on: On,
 	step: { usage: TurnUsage | null | undefined; calls: readonly string[] },
 	chars: Readonly<Record<string, number>>,
-	failing: Set<string> = new Set(),
+	failing = new Set<string>(),
 	now = 0,
 ) => {
 	scanner(on);
@@ -67,7 +67,7 @@ const run = async (
 	$: Engine,
 	step: { asked: Promise<void>; release: () => void },
 	calls: readonly string[],
-	beforeStop: () => void = () => undefined,
+	beforeStop: () => void = () => {},
 ) => {
 	const drained = Array.fromAsync(
 		$.turn.step({ turnId: "t1", index: 0, model: "haiku", messageCount: 1 }),

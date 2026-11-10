@@ -77,17 +77,20 @@ export const parseArgs = (argv: readonly string[]): Args => {
 	for (let arg = rest.shift(); arg !== undefined; arg = rest.shift()) {
 		const key = NUMBER_FLAGS.get(arg);
 		switch (arg) {
-			case "--dry-run":
+			case "--dry-run": {
 				args = { ...args, dryRun: true };
 				break;
-			case "--session":
+			}
+			case "--session": {
 				args = { ...args, session: rest.shift() ?? "" };
 				break;
-			default:
+			}
+			default: {
 				if (key === undefined) {
 					throw new Error(`Unknown argument ${arg}`);
 				}
 				args = { ...args, [key]: numberArg(arg, rest.shift()) };
+			}
 		}
 	}
 	return args;
@@ -120,7 +123,7 @@ const tempRoots = async (bases: readonly string[], uid: number) => {
 	const found = await Promise.all(
 		bases.map(async (base) => {
 			const real = await realpath(join(base, `claude-${uid}`)).catch(
-				() => undefined,
+				() => {},
 			);
 			return real !== undefined && (await stat(real)).uid === uid
 				? real
@@ -280,7 +283,7 @@ export const sweep = async (args: Args, host: Host): Promise<Report> => {
 	const found = await Promise.all(
 		(await candidates(args, host)).map(async (item) => {
 			// A Nix result link counts by its own time, and its store path may be gone.
-			const info = await lstat(item.path).catch(() => undefined);
+			const info = await lstat(item.path).catch(() => {});
 			return info !== undefined && host.now - info.mtimeMs > item.limitMs
 				? [
 						{

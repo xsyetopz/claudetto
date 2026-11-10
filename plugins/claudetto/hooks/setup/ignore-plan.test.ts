@@ -3,7 +3,7 @@ import { describe, expect, test } from "claude-code/testing";
 import { GITIGNORE_FIXED, ignoreLines } from "./ignore-plan.ts";
 import { FAMILIES, type Family } from "./starter-families.ts";
 
-const star = (name: string): string => name.replace(/\*/g, "x");
+const star = (name: string): string => name.replaceAll('*', "x");
 
 /** A file or folder path that the pattern names, as git would list it. */
 const sampleOf = (pattern: string): string =>

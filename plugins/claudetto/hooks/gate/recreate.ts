@@ -223,7 +223,7 @@ export const saw = async (
 			text
 				.split("\n")
 				.filter((line) => line.startsWith("/"))
-				.map(async (line) => see(state, await place(host, state, "", line))),
+				.map(async (line) =>{  see(state, await place(host, state, "", line)); }),
 		);
 	}
 };

@@ -86,7 +86,7 @@ export const parseReply = (text: string): Offer | undefined => {
 	return {
 		line: said,
 		tag:
-			tagValue?.toLowerCase().replace(/[\s-]+/g, " ") === "heads up"
+			tagValue?.toLowerCase().replaceAll(/[\s-]+/g, " ") === "heads up"
 				? "Heads up"
 				: DEFAULT_TAG,
 		explanation,
@@ -180,10 +180,10 @@ const ULTRA = /(ultra)(code|plan|review|think)/gi;
 
 const neutralise = (text: string): string =>
 	text
-		.replace(INVISIBLE, "")
-		.replace(AT_MENTION, "$1＠")
-		.replace(PLACEHOLDER, (found) => `［${found.slice(1)}`)
-		.replace(ULTRA, "$1-$2");
+		.replaceAll(INVISIBLE, "")
+		.replaceAll(AT_MENTION, "$1＠")
+		.replaceAll(PLACEHOLDER, (found) => `［${found.slice(1)}`)
+		.replaceAll(ULTRA, "$1-$2");
 
 const cardText = (card: Card): string =>
 	[

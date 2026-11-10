@@ -40,7 +40,7 @@ export function checkRelease(
 			`The base ${base} is not the latest anthropics/claude-code tag (v${latest}).`,
 		);
 	}
-	const escaped = base.replaceAll(".", "\\.");
+	const escaped = base.replaceAll(".", String.raw`\.`);
 	const last = repoTags
 		.map((tag) => new RegExp(`^v${escaped}(?:\\+(\\d+))?$`).exec(tag))
 		.filter((m) => m !== null)

@@ -137,7 +137,7 @@ export const snapshot = async (
 				return {};
 			}
 			if (e.isDirectory()) {
-				return await snapshot(root, rel);
+				return snapshot(root, rel);
 			}
 			return { [rel]: await readFile(join(root, rel), "utf8").catch(() => "") };
 		}),

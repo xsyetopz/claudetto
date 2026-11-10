@@ -159,9 +159,9 @@ describe("unsourced table entries", () => {
 				...(family?.bulky ?? []),
 				...(family?.markers ?? []),
 			];
-			const banned = [...entry.heavy, ...entry.bulky, ...entry.markers];
+			const banned = new Set([...entry.heavy, ...entry.bulky, ...entry.markers]);
 
-			expect(held.filter((name) => banned.includes(name))).toEqual([]);
+			expect(held.filter((name) => banned.has(name))).toEqual([]);
 		}
 	});
 });

@@ -58,7 +58,7 @@ const readCapped = async (path: string, cap: number): Promise<string> => {
 };
 
 export const NODE_FILES: Files = {
-	read: (path, cap) => readCapped(path, cap).catch(() => undefined),
+	read: (path, cap) => readCapped(path, cap).catch(() => {}),
 	folders: async (path) => {
 		try {
 			return (await readdir(path, { withFileTypes: true }))

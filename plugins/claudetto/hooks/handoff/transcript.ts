@@ -114,7 +114,7 @@ const NONE = ["None found in the transcript.", ""];
 const listed = (items: readonly string[]): string[] =>
 	items.length === 0
 		? NONE
-		: [...items.flatMap((item) => [...quoted(item), ""])];
+		: items.flatMap((item) => [...quoted(item), ""]);
 
 /** Empty for a transcript with no user turn, so the caller writes nothing. */
 export const handoffText = (

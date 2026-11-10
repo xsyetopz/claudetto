@@ -80,7 +80,7 @@ const promptsOf = async (
 const gitStatusOf = async ($: EngineInterface): Promise<string> => {
 	const r = await $.process
 		.run(["git", "status", "-sb"])
-		.catch(() => undefined);
+		.catch(() => {});
 	return r?.exitCode === 0 ? r.stdout : "";
 };
 
@@ -174,11 +174,11 @@ const callSession = ($: EngineInterface): Session => ({
 	submit: (text) => $.prompt.submit({ text }),
 	taken: async (name) => $.store.set(readBackKey(await $.session.root()), name),
 	abort: (turnId) => $.turn.abort({ turnId }),
-	log: (line) => $.ui.log(line),
+	log: (line) =>{  $.ui.log(line); },
 	gitStatus: () => gitStatusOf($),
 	later: (work) => {
 		$.clock.after(0, () => {
-			work().catch(() => undefined);
+			work().catch(() => {});
 		});
 	},
 });
@@ -189,7 +189,7 @@ const handoverSession = ($: EngineInterface): HandoverSession => ({
 		$.fs.write(atRoot(await $.session.root(), path), text),
 	compact: () => $.command.run({ command: "compact" }),
 	submit: (text) => $.prompt.submit({ text }),
-	log: (line) => $.ui.log(line),
+	log: (line) =>{  $.ui.log(line); },
 	context: async () => (await $.session.usage()).context,
 	fork: (prompt) => $.model.fork({ prompt }),
 });
@@ -292,7 +292,7 @@ export const handoff = (on: On, options: PluginOptions): void => {
 			const session = handoverSession($);
 			$.clock.after(0, () => {
 				afterTurn(session, handover, e.answer, options).catch(
-					(error: unknown) => $.ui.log(`The handover failed (${error})`),
+					(error: unknown) =>{  $.ui.log(`The handover failed (${error})`); },
 				);
 			});
 		}

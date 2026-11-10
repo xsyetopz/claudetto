@@ -133,7 +133,7 @@ export const parseYaml = (
 ): Record<string, unknown> | null | undefined => {
 	const out: Record<string, unknown> = {};
 	let last: string | undefined;
-	for (const line of text.replace(LINE_BREAKS, "\n").split("\n")) {
+	for (const line of text.replaceAll(LINE_BREAKS, "\n").split("\n")) {
 		const body = line.replace(COMMENT, "");
 		if (body.trim() === "" || body.trim() === "---") {
 			continue;

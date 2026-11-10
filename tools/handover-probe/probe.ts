@@ -13,8 +13,8 @@ const arms =
 
 if (
 	paid &&
-	!process.env["ANTHROPIC_API_KEY"] &&
-	!process.env["CLAUDE_CODE_OAUTH_TOKEN"]
+	!process.env.ANTHROPIC_API_KEY &&
+	!process.env.CLAUDE_CODE_OAUTH_TOKEN
 ) {
 	console.error(
 		"--paid needs ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in the environment: each run gets a fresh CLAUDE_CONFIG_DIR with no login. bunfig.toml turns off Bun's .env loading, so pass the repo's .env: `bun --env-file=.env tools/handover-probe/probe.ts --paid`.",

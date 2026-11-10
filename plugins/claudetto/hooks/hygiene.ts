@@ -23,7 +23,7 @@ export const hygiene = (on: On, options: PluginOptions): void => {
 			const [session, root, days] = await Promise.all([
 				$.session.id(),
 				$.session.root(),
-				$.settings.read({ key: "cleanupPeriodDays" }).catch(() => undefined),
+				$.settings.read({ key: "cleanupPeriodDays" }).catch(() => {}),
 			]);
 			// The sweep removes files the session does not wait on, so the start goes on without it.
 			void $.process
@@ -37,7 +37,7 @@ export const hygiene = (on: On, options: PluginOptions): void => {
 					],
 					{ cwd: root, timeoutMs: SWEEP_TIMEOUT_MS },
 				)
-				.catch(() => undefined);
+				.catch(() => {});
 		}
 		return next(e);
 	});

@@ -42,7 +42,7 @@ test("a bash -c body is read as commands", () => {
 test("a body nested past the depth bound is unreadable", () => {
 	expect(
 		parse(
-			'sh -c "sh -c \'sh -c \\"sh -c \\\\\\"sh -c \\\\\\\\\\\\\\"sh -c x\\\\\\\\\\\\\\"\\\\\\"\\"\'"',
+			String.raw`sh -c "sh -c 'sh -c \"sh -c \\\"sh -c \\\\\\\"sh -c x\\\\\\\"\\\"\"'"`,
 		).unreadable,
 	).toBe(true);
 });

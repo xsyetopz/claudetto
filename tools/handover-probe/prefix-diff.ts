@@ -52,16 +52,16 @@ const shape = (m: Message | undefined): string =>
 			: `array of ${m.content.length} [${m.content.map((c) => `${c.type}${c.cache_control === undefined ? "" : "+cache_control"}`).join(", ")}]`;
 const marks = (b: Body): string => {
 	const out: string[] = [];
-	const system = Array.isArray(b["system"]) ? (b["system"] as Block[]) : [];
+	const system = Array.isArray(b.system) ? (b.system as Block[]) : [];
 	for (const [j, s] of system.entries()) {
 		if (s.cache_control !== undefined)
-			out.push(`system[${j}] ${raw(s.cache_control)}`);
+			{out.push(`system[${j}] ${raw(s.cache_control)}`);}
 	}
 	for (const [j, m] of b.messages.entries()) {
-		if (typeof m.content === "string") continue;
+		if (typeof m.content === "string") {continue;}
 		for (const [k, c] of m.content.entries()) {
 			if (c.cache_control !== undefined)
-				out.push(`messages[${j}].content[${k}] ${raw(c.cache_control)}`);
+				{out.push(`messages[${j}].content[${k}] ${raw(c.cache_control)}`);}
 		}
 	}
 	return out.join("; ");

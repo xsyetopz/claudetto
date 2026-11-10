@@ -30,7 +30,7 @@ describe("the cache countdown", () => {
 	});
 
 	test("no `prompt_cache`, or `caching_observed` false, shows no cache part and keeps the row", () => {
-		const none = cacheLine(undefined);
+		const none = cacheLine();
 		const unobserved = cacheLine({
 			...WARM,
 			caching_observed: false,

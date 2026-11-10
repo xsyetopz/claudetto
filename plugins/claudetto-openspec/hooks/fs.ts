@@ -15,4 +15,4 @@ export const within = (root: string, file: string) =>
 	file === root || file.startsWith(`${root}/`);
 
 export const statOf = (fs: Fs, path: string) =>
-	fs.stat(path).catch(() => undefined);
+	fs.stat(path).catch(() => {});

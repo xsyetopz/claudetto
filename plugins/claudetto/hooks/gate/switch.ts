@@ -43,22 +43,27 @@ const moveOf = (args: string[]): Move | undefined => {
 	// A created branch starts at its second word, or at HEAD, where nothing moves.
 	const named = creates ? plain[1] : rest.includes("-") ? "@{-1}" : plain[0];
 	switch (verb) {
-		case "switch":
+		case "switch": {
 			return named === undefined ? undefined : { from: "HEAD", target: named };
-		case "checkout":
+		}
+		case "checkout": {
 			return named === undefined || rest.includes("--")
 				? undefined
 				: { from: "HEAD", target: named };
-		case "reset":
+		}
+		case "reset": {
 			return rest.includes("--hard")
 				? { from: undefined, target: plain[0] ?? "HEAD" }
 				: undefined;
-		case "rebase":
+		}
+		case "rebase": {
 			return rest.some((w) => RESUMES.has(w))
 				? undefined
 				: { from: "HEAD", target: plain[0] ?? "@{upstream}" };
-		default:
+		}
+		default: {
 			return undefined;
+		}
 	}
 };
 
@@ -106,7 +111,7 @@ export async function protectedChanges(
 					"--",
 					...paths,
 				])
-				.catch(() => undefined);
+				.catch(() => {});
 			return r?.exitCode === 0
 				? r.stdout.split("\n").filter((f) => f !== "")
 				: [];

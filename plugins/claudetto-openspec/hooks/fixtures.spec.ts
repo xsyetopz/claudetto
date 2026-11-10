@@ -172,7 +172,7 @@ const runners: Record<
 // Line endings and blank-line runs are upstream's serialization; the plugin writes LF and one blank line.
 const built = (actual: string | null, want: string): Result => {
 	const flat = (t: string) =>
-		t.replace(CRLF, "\n").replace(BLANKS, "\n").trim();
+		t.replaceAll(CRLF, "\n").replaceAll(BLANKS, "\n").trim();
 	return {
 		actual,
 		expected: want,
@@ -373,7 +373,7 @@ const divergence = (rec: Rec, threw: boolean, blocked?: string) => {
 const archiveThrew = async (rec: Rec, root: string, change: string) => {
 	try {
 		await archive(nodeFs, spawnArgv, root, change, "2026-11-05");
-		return undefined;
+		return;
 	} catch (error) {
 		if (process.env["COS_DEBUG"]) {
 			console.log(rec.test, String(error));
@@ -405,7 +405,7 @@ const archiveOutcomes = async (rec: Rec, root: string, threw: boolean) => {
 };
 
 // The tool takes only a change name: it always validates and always merges the specs.
-const NOT_CARRIED = ["noValidate", "skipSpecs"];
+const NOT_CARRIED = new Set(["noValidate", "skipSpecs"]);
 const inSpecs = (p: string) => p.startsWith("openspec/specs/");
 const specsPart = (tree: Record<string, string> | undefined, inside: boolean) =>
 	Object.fromEntries(
@@ -526,7 +526,7 @@ describe("archive", () => {
 			continue;
 		}
 		const flags = [
-			...Object.keys(opts ?? {}).filter((k) => NOT_CARRIED.includes(k)),
+			...Object.keys(opts ?? {}).filter((k) => NOT_CARRIED.has(k)),
 			...(PROMPTED.test(rec.test) ? ["prompt"] : []),
 		];
 		test(`archive.execute ${rec.test}`, async () => {

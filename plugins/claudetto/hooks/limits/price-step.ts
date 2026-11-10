@@ -129,8 +129,8 @@ export const priceStepHooks = (on: On): void => {
 			}
 			return null;
 		};
-		const usage = await Promise.race([step.reading, late()]).finally(() =>
-			done.abort(),
+		const usage = await Promise.race([step.reading, late()]).finally(() =>{ 
+			done.abort(); },
 		);
 		// A result counts with its `context`, since both land in the next request.
 		const chars =
