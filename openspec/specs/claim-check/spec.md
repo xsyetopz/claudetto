@@ -7,12 +7,18 @@ Before a reply reaches the person, grade it for the faults the ISSUES files reco
 
 ### Requirement: Graded Faults Get One Block
 
-At `classic.Stop`, after the named-files and open-items checks, when none of them blocked, the mod SHALL ask Haiku which of the offered faults (`credited`, `fallback`, `deferred`, `unchecked`, `rules`, `unfixed`, and in an interactive session `options`) the final reply holds. On a finding it SHALL block once with each found fault's fix, and SHALL NOT block when `stop_hook_active` is set or the call fails. The grader SHALL offer no fault for padding, because naming those sentences in the grader text puts their words into context; the output style states the reply's form in positive terms instead. The `options` fault SHALL fire when the reply ends by asking the person to choose in its own text, and its fix SHALL send the agent to `mcp__claudetto__ask-user-question`. A headless session, which no ask reaches, SHALL NOT be offered `options`.
+At `classic.Stop`, after the named-files and open-items checks, when none of them blocked, the mod SHALL ask Haiku which of the offered faults the final reply holds. On a finding it SHALL block once with each found fault's fix, and SHALL NOT block when `stop_hook_active` is set or the call fails. The grader SHALL offer no fault for padding. The `options` fault SHALL fire when the reply ends by asking the person to choose in its own text, and a headless session SHALL NOT be offered it.
+
+#### Scenario: The Offered Faults
+
+- **WHEN** the grader is offered its faults
+- **THEN** they are `credited`, `fallback`, `deferred`, `unchecked`, `rules`, `unfixed`, and in an interactive session `options`
 
 #### Scenario: A Choice in Plain Text
 
 - **WHEN** an interactive reply ends with a choice between options in its own text
-- **THEN** `options` is offered, and a finding of it blocks once with the fix that names `mcp__claudetto__ask-user-question`
+- **THEN** `options` is offered, and a finding of it blocks once with the fix that SHALL send the agent to `mcp__claudetto__ask-user-question`
+- **AND** a headless session SHALL NOT be offered `options`, because no ask reaches a headless session
 - **AND** the lab tests are `limits/verify.test.ts`, "every interactive turn is offered the options fault" and "a headless turn, which no ask reaches, is not offered the options fault"
 
 #### Scenario: Work Left to the Person
@@ -24,7 +30,7 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 #### Scenario: No Padding Fault
 
 - **WHEN** the grader is offered its faults
-- **THEN** none is named `padding`
+- **THEN** none is named `padding`, because naming those sentences in the grader text puts their words into context, and the output style states the reply's form in positive terms instead
 - **AND** the lab test is `limits/verify.test.ts`, "every interactive turn is offered the options fault"
 
 #### Scenario: A Quote Not in the Reply

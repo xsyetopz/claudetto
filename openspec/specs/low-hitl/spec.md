@@ -119,7 +119,12 @@ Allow rules that setup writes SHALL be narrow, such as `Bash(npm test)`, and set
 
 ### Requirement: Let the Sandbox Settle Shell Commands
 
-Setup SHALL enable the built-in sandbox where the platform supports it, with the keys of the `sandbox` spec, so that `autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call. Setup SHALL set `allowUnsandboxedCommands` to `true`, so a command the sandbox blocks retries outside it under the permission flow instead of going to the user, add `denyRead` for cloud-credential files, and set `network.allowedDomains` to `["*"]` and `filesystem.allowWrite` to the temp folder and the tool caches.
+Setup SHALL enable the built-in sandbox where the platform supports it, with the keys of the `sandbox` spec, so that `autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call. Setup SHALL set `allowUnsandboxedCommands` to `true`, add `denyRead` for cloud-credential files, and set `network.allowedDomains` to `["*"]` and `filesystem.allowWrite` to the temp folder and the tool caches.
+
+#### Scenario: A Command the Sandbox Blocks
+
+- **WHEN** the sandbox blocks a command
+- **THEN** it retries outside the sandbox under the permission flow instead of going to the user, because `allowUnsandboxedCommands` is `true`
 
 #### Scenario: Least Friction
 
@@ -152,7 +157,12 @@ Auto mode pauses prompting after 3 denials in a row or 20 in total. Claudetto SH
 
 ### Requirement: Choose the Classifier Model by Measurement
 
-The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode: the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register one `tool.check` hook (`gate.ts:234`) and it SHALL only tighten a verdict, or turn a bare `ask` on a read-only command into `allow`; it SHALL NOT ask a model, Jev or another, to judge a permission.
+The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register one `tool.check` hook, and it SHALL only tighten a verdict, or turn a bare `ask` on a read-only command into `allow`; it SHALL NOT ask a model, Jev or another, to judge a permission.
+
+#### Scenario: The Two Routes
+
+- **WHEN** the classifier route is measured
+- **THEN** the routes are the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`
 
 #### Scenario: Measured Route
 
@@ -168,7 +178,7 @@ The classifier route SHALL be chosen by measurement on the gate fixtures in auto
 #### Scenario: The Gate Hook
 
 - **WHEN** the Mod registers its hooks
-- **THEN** the one `tool.check` hook is the gate, and no request from it reaches a model (`decide.test.ts`, "A Gated Tool Call: Bash and Edit send nothing")
+- **THEN** the one `tool.check` hook is the gate (`gate.ts:234`), and no request from it reaches a model (`decide.test.ts`, "A Gated Tool Call: Bash and Edit send nothing")
 
 ### Requirement: Fail Closed When the Classifier Is Down
 
@@ -251,7 +261,12 @@ No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.3
 
 ### Requirement: An Unexplained Server Denial Is Out of Reach
 
-The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. The client still names the rule when the verdict cites an `autoMode.soft_deny` entry, so setup's soft list SHALL leave no block without a rule to cite (setup requirement "The Auto Mode Group Carries Fixed Values"). claudetto SHALL keep reporting a call denied twice with neither a reason nor a rule with the `!` form.
+The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. The client still names the rule when the verdict cites an `autoMode.soft_deny` entry, so setup's soft list SHALL leave no block without a rule to cite. claudetto SHALL keep reporting a call denied twice with neither a reason nor a rule with the `!` form.
+
+#### Scenario: A Block Without a Rule
+
+- **WHEN** setup writes its soft list
+- **THEN** no block is left without a rule to cite, per the setup requirement "The Auto Mode Group Carries Fixed Values"
 
 #### Scenario: Denied Twice with No Reason
 

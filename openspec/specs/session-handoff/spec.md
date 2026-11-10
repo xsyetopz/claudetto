@@ -50,7 +50,17 @@ The system SHALL write a handoff file in a `session.compact` hook, from the even
 
 ### Requirement: Handoff Content
 
-Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed title line `# Handoff`, a source line, then the nine `##` sections in the order Goal, Standing Instructions, Decisions Log, Current State, In Progress, Next Steps, Key Files And Symbols, Gotchas And Dead Ends, Open Questions. The source line SHALL read `Written by Claude at <UTC time>.` for the tool's file and `Built by claudetto from the transcript at <UTC time>, with no model call.` for the code-built file. No other `#` or `##` heading SHALL appear. The code-built file SHALL fill each section it cannot fill with the line `None found in the transcript.`, and the tool's file SHALL fill each section the tool has no field for with `None given.`.
+Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed title line `# Handoff`, a source line, then the nine `##` sections in the order Goal, Standing Instructions, Decisions Log, Current State, In Progress, Next Steps, Key Files And Symbols, Gotchas And Dead Ends, Open Questions. No other `#` or `##` heading SHALL appear.
+
+#### Scenario: The Source Line
+
+- **WHEN** a handoff is written
+- **THEN** the source line SHALL read `Written by Claude at <UTC time>.` for the tool's file and `Built by claudetto from the transcript at <UTC time>, with no model call.` for the code-built file
+
+#### Scenario: A Section with Nothing to Fill It
+
+- **WHEN** a section has no content
+- **THEN** the code-built file SHALL fill each section it cannot fill with the line `None found in the transcript.`, and the tool's file SHALL fill each section the tool has no field for with `None given.`
 
 #### Scenario: Claude Wrote One
 
@@ -80,7 +90,17 @@ Every handoff SHALL have one layout, whether Claude or code wrote it: a fixed ti
 
 ### Requirement: Claudetto Names the Nine Sections
 
-Claudetto SHALL show the whole handoff template in the injected `context_management` text of the handoff state: the handoff tool name, the handoff folder, the title line, and the nine headings at their level. It SHALL NOT show the file name pattern, because the tool names the file. The template SHALL come from the same code the fallback writer uses (`layout` in `hooks/handoff/layout.ts`), so the two cannot differ. No hook can write the file for Claude, because the compaction writer makes no model call (requirement "Writer Cost"), and code reads no decision and no reason out of a transcript.
+Claudetto SHALL show the whole handoff template in the injected `context_management` text of the handoff state: the handoff tool name, the handoff folder, the title line, and the nine headings at their level. It SHALL NOT show the file name pattern, because the tool names the file. The template SHALL come from the same code the fallback writer uses, so the two cannot differ.
+
+#### Scenario: The Template Code
+
+- **WHEN** a reader looks for the code that holds the template
+- **THEN** it is `layout` in `hooks/handoff/layout.ts`
+
+#### Scenario: No Hook Writes the File for Claude
+
+- **WHEN** the compaction writer runs
+- **THEN** no hook can write the file for Claude, because the compaction writer makes no model call (requirement "Writer Cost"), and code reads no decision and no reason out of a transcript
 
 #### Scenario: Nudge in the Surface
 
@@ -149,7 +169,12 @@ The code-built writer SHALL make no model request. The Claude-written handoff is
 
 ### Requirement: One File Name
 
-Every handoff file SHALL be named `handoff-YYYY-MM-DDTHH-MM-SS.md` in UTC, the name the read-back accepts. When Claude writes a handoff in this session with another name under the handoff folder, the compaction hook SHALL copy its text to a file with a valid name and show the user one line that names both files, so the next session injects Claude's handoff and never an older file in its place. When the copy fails, the hook SHALL show one line that names the misnamed file and the cause, and SHALL write no other file.
+Every handoff file SHALL be named `handoff-YYYY-MM-DDTHH-MM-SS.md` in UTC, the name the read-back accepts. When Claude writes a handoff in this session with another name under the handoff folder, the compaction hook SHALL copy its text to a file with a valid name and show the user one line that names both files, so the next session injects Claude's handoff and never an older file in its place.
+
+#### Scenario: A Failed Copy
+
+- **WHEN** the copy fails
+- **THEN** the hook SHALL show one line that names the misnamed file and the cause, and SHALL write no other file
 
 #### Scenario: Misnamed Claude File
 

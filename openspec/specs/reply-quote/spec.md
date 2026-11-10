@@ -1,7 +1,7 @@
 # reply-quote Specification
 
 ## Purpose
-TBD - created by archiving change release-2-1-319-1. Update Purpose after archive.
+A `/reply` slash command that appends a quoted selection or paragraph of the last assistant message to the prompt draft, with no key bound to it.
 
 ## Requirements
 

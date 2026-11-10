@@ -73,7 +73,7 @@ The cap, the window, and the fail limits SHALL come from `userConfig`, and the u
 
 ### Requirement: Open Items at Stop
 
-At Stop, the system SHALL block a stop once when the final reply holds an open Markdown task item (`- [ ]`, under any bullet or number) that carries no `! <command>`, unless an `AskUserQuestion` of the turn is open, which means asked and not yet answered. A question of an earlier turn, a refused call, and a denial in a tool result SHALL excuse no item. The block SHALL list each item and SHALL tell the model to ask each through the ask tool the session lists and to delete it from the reply. A session with no one to answer SHALL get no such block. The system SHALL also block a stop once when the final reply holds more than one `! <command>` item, and the block SHALL tell the model to keep the one the work needs first and to ask for the next after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). The check SHALL read only that syntax and the turn's tool calls, and a `userConfig` switch MUST turn it off.
+At Stop, the system SHALL block a stop once when the final reply holds an open Markdown task item (`- [ ]`) that carries no `! <command>`, unless an `AskUserQuestion` of the turn is open. The block SHALL list each item and SHALL tell the model to ask each through the ask tool the session lists and to delete it from the reply. The system SHALL also block a stop once when the final reply holds more than one `! <command>` item. A `userConfig` switch MUST turn the check off.
 
 #### Scenario: Prose That Mentions a Remaining Budget
 
@@ -103,21 +103,21 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 
 #### Scenario: An Open Ask
 
-- **WHEN** an `AskUserQuestion` of the turn has no answer yet
+- **WHEN** an `AskUserQuestion` of the turn has no answer yet, which means asked and not yet answered
 - **THEN** the stop passes
-- **AND** a refused call, a denial in the turn, and a question of an earlier turn excuse nothing
+- **AND** a question of an earlier turn, a refused call, and a denial in a tool result SHALL excuse no item
 - **AND** the lab tests are `limits/open-items.test.ts`, "an open AskUserQuestion is the blocker of an open item", "a refused call in the turn, a host-denied Glob or Grep included, excuses no item", and "a question of an earlier turn excuses nothing"
 
 #### Scenario: A Headless Session
 
 - **WHEN** the session is headless and an item carries no `! <command>`
-- **THEN** no ask block is raised, because no one can answer
+- **THEN** no ask block is raised, because no one can answer, and a session with no one to answer SHALL get no such block
 - **AND** the lab test is `limits/open-items.test.ts`, "a headless session, which has no AskUserQuestion, gets no ask block for a question item and still gets the command block"
 
 #### Scenario: An Offer in Prose
 
 - **WHEN** the reply ends with "Want me to write the test next?" and holds no `- [ ]` item
-- **THEN** this check passes, because it reads only the item syntax
+- **THEN** this check passes, because the check SHALL read only that item syntax and the turn's tool calls, with the item under any bullet or number
 
 #### Scenario: An Open Item with No Denial in the Turn
 
@@ -137,7 +137,7 @@ At Stop, the system SHALL block a stop once when the final reply holds an open M
 #### Scenario: Two Commands at Once
 
 - **WHEN** the reply lists two `- ! <command>` bullets under `## What I Need From You`
-- **THEN** the stop is blocked once, the block names both commands, and tells the model to keep the one the work needs first and ask for the other in a later reply
+- **THEN** the stop is blocked once, the block names both commands, and the block SHALL tell the model to keep the one the work needs first and to ask for the next after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09)
 - **AND** a reply with one `- ! <command>` bullet passes
 
 #### Scenario: A Paid Run That Waits for the User

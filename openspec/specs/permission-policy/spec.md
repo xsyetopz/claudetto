@@ -21,7 +21,7 @@ The system MUST NOT answer `allow` to a `PermissionRequest` whose input has no g
 
 ### Requirement: Denied Calls Stop
 
-After a `PermissionDenied` with a reason, the system SHALL answer `retry` for the first denial of a call since the person's last message, and SHALL NOT answer `retry` for the second. A denial with no reason, or one that says "(it gave no explanation)", SHALL NOT be retried. After the second denial, the repeat-denial check SHALL refuse the call with the reason and SHALL NOT tell the model to look for another way. The hook SHALL answer `retry` alone and never a decision. The rule reported SHALL be the gate's own rule.
+After a `PermissionDenied` with a reason, the system SHALL answer `retry` for the first denial of a call since the person's last message, and SHALL NOT answer `retry` for the second. A denial with no reason, or one that says "(it gave no explanation)", SHALL NOT be retried. After the second denial, the repeat-denial check SHALL refuse the call with the reason and SHALL NOT tell the model to look for another way. The hook SHALL answer `retry` alone and never a decision.
 
 #### Scenario: Denied Push
 
@@ -45,7 +45,7 @@ After a `PermissionDenied` with a reason, the system SHALL answer `retry` for th
 #### Scenario: The Rule Reported Is the Gate's
 
 - **WHEN** the gate denies a call
-- **THEN** the rule reported is the gate's own and not a `permissions.allow` rule to add, because no allow rule lifts a denial of this gate
+- **THEN** the rule reported SHALL be the gate's own rule and not a `permissions.allow` rule to add, because no allow rule lifts a denial of this gate
 - **AND** the gate stops a call that loses bytes for good, tampers with the system, or reads a secret, and a person lifts such a denial by changing the request
 - **AND** "the exact rule to add", as this requirement first read, describes a denial by a settings rule and not by the gate
 

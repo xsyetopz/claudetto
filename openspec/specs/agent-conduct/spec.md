@@ -141,7 +141,12 @@ The `<security_work>` section SHALL help with security work on systems that the 
 
 ### Requirement: Code Rules Guard Only Trust Boundaries
 
-The code rules, one file each under `plugins/claudetto/rules/`, SHALL tell the model to write the least code that does the whole task, in the style of the code around it (`useLeastCode.md`). The model SHALL rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary (`noImpossibleStateGuards.md`). The report SHALL name the edge cases that the change handles (`useEdgeCaseReport.md`). A comment SHALL say why the code is the way it is, never what it does (`noNarratingComments.md`).
+The code rules, one file each under `plugins/claudetto/rules/`, SHALL tell the model to write the least code that does the whole task, in the style of the code around it. The model SHALL rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary. The report SHALL name the edge cases that the change handles. A comment SHALL say why the code is the way it is, never what it does.
+
+#### Scenario: One File per Code Rule
+
+- **WHEN** a reader looks for the file that holds each code rule
+- **THEN** the least-code rule is `useLeastCode.md`, the guard rule is `noImpossibleStateGuards.md`, the edge-case report rule is `useEdgeCaseReport.md`, and the comment rule is `noNarratingComments.md`
 
 #### Scenario: Impossible State
 
@@ -270,7 +275,12 @@ The rule file `rules/noNarratingComments.md` SHALL allow a comment only for a re
 
 ### Requirement: The Output Style Names the Sentence Form to Use
 
-The output style SHALL name the sentence form to use: the actor is the subject, with its own verb, and each clause is spelled out, so a reply can be checked against it. Each rule of `output-styles/*.md` SHALL lead with what to do. A negation word (`not`, `no`) MAY appear only inside a sentence that names the act, to bound it, as in "Change a file only for a change the user asked for ... that is not yet done" (`Concise.md:11`) and "with no greeting, thanks, or context it can read" (`Concise.md:15`). A rule SHALL NOT be a bare prohibition with `never`, `don't`, `do not`, `without`, `avoid`, `nothing`, `none`, or `nor`.
+The output style SHALL name the sentence form to use: the actor is the subject, with its own verb, and each clause is spelled out, so a reply can be checked against it. Each rule of `output-styles/*.md` SHALL lead with what to do. A negation word (`not`, `no`) MAY appear only inside a sentence that names the act, to bound it. A rule SHALL NOT be a bare prohibition with `never`, `don't`, `do not`, `without`, `avoid`, `nothing`, `none`, or `nor`.
+
+#### Scenario: Bounding Negations in the Output Style
+
+- **WHEN** a reader looks for a negation word that bounds an act
+- **THEN** the examples are "Change a file only for a change the user asked for ... that is not yet done" (`Concise.md:11`) and "with no greeting, thanks, or context it can read" (`Concise.md:15`)
 
 #### Scenario: Animate Verb
 

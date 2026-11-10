@@ -125,7 +125,12 @@ The status line SHALL show each open OpenSpec change of the project: a change fo
 
 ### Requirement: Cache Countdown
 
-The status line SHALL show the prompt cache of the main conversation from the `prompt_cache` object of its stdin: while `warm` is `true`, the time left until `expires_at` (Unix seconds), the `ttl`, and `hit_ratio` as a percent; while `warm` is `false`, `cold` and `recache_tokens_if_cold`, and `hit_ratio` as a percent when stdin has one. It SHALL show nothing when `prompt_cache` is absent, `warm` is not a boolean, or `caching_observed` is `false`, and the time left SHALL never be negative. A warm cache SHALL be painted `success` and a cold one `inactive`.
+The status line SHALL show the prompt cache of the main conversation from the `prompt_cache` object of its stdin: while `warm` is `true`, the time left until `expires_at` (Unix seconds), the `ttl`, and `hit_ratio` as a percent; while `warm` is `false`, `cold` and `recache_tokens_if_cold`, and `hit_ratio` as a percent when stdin has one. It SHALL show nothing when `prompt_cache` is absent, `warm` is not a boolean, or `caching_observed` is `false`.
+
+#### Scenario: Cache Colors
+
+- **WHEN** the cache part is shown
+- **THEN** a warm cache SHALL be painted `success` and a cold one `inactive`
 
 #### Scenario: Warm Cache
 
@@ -150,7 +155,7 @@ The status line SHALL show the prompt cache of the main conversation from the `p
 #### Scenario: Expired Between Refreshes
 
 - **WHEN** `warm` is `true` but `expires_at` is already past
-- **THEN** the time left reads `0s`, not a negative time
+- **THEN** the time left reads `0s`, not a negative time, because the time left SHALL never be negative
 
 #### Scenario: Missing Expiry
 

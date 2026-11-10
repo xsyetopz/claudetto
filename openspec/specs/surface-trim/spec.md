@@ -96,12 +96,22 @@ Prompt and config text MAY be dense and terse to lower the score. It MUST stay u
 
 ### Requirement: A Tool Text Ships Only While It Beats the Stock Text
 
-The `tool.describe` hook keeps the shorter of our text and the engine's for each tool of `TOOL_TEXTS` and each of `DEFERRED_TOOLS`, so a text that is not shorter never reaches a request (`surface.ts:189-198`). The `Agent` text is the one exception: `delegation.ts:96-99` sets `AGENT_TEXT` with no length check, because the text names the claudetto agents and the engine's text does not. A check SHALL hold the stock length of each other overridden tool, from the `clawdipedia` route `prompts/tools`, and SHALL fail for a text that does not beat it. Such a text SHALL be shortened or dropped, and the always-loaded total SHALL count no text that no request carries.
+The `tool.describe` hook keeps the shorter of our text and the engine's for each tool of `TOOL_TEXTS` and each of `DEFERRED_TOOLS`, so a text that is not shorter never reaches a request. The `Agent` text is the one exception. A check SHALL hold the stock length of each other overridden tool, from the `clawdipedia` route `prompts/tools`, and SHALL fail for a text that does not beat it. The always-loaded total SHALL count no text that no request carries.
+
+#### Scenario: Where the Shorter Text Is Chosen
+
+- **WHEN** the `tool.describe` hook keeps the shorter text (`surface.ts:189-198`)
+- **THEN** a text that is not shorter never reaches a request
+
+#### Scenario: Why the Agent Text Is the Exception
+
+- **WHEN** `delegation.ts:96-99` sets `AGENT_TEXT`
+- **THEN** it sets it with no length check, because the text names the claudetto agents and the engine's text does not
 
 #### Scenario: Text Not Shorter Than the Stock Text
 
 - **WHEN** a text of `TOOL_TEXTS` is as long as the stock description of that tool
-- **THEN** the check fails, and the text is shortened or dropped with its registration
+- **THEN** the check fails, and such a text SHALL be shortened or dropped with its registration
 
 #### Scenario: A Shorter Stock Text Is Kept
 
@@ -264,6 +274,7 @@ A session with no `ToolSearch` SHALL list the four tools of `DEFERRED_TOOLS` in 
 #### Scenario: Loaded in Full
 
 - **WHEN** the engine describes `Read`, `Write`, or `ListAgents`
+- **THEN** each of the three stays loaded in full
 
 ### Requirement: Bundled Skills Are Turned Off
 

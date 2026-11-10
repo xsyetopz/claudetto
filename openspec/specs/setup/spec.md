@@ -1,7 +1,7 @@
 # setup Specification
 
 ## Purpose
-TBD - created by archiving change release-2-1-319-1. Update Purpose after archive.
+The `/claudetto:setup` command: it plans starter files and ignore blocks, installs missing tools, and writes the fixed settings groups, and explains each question with a recommended answer.
 
 ## Requirements
 
@@ -226,7 +226,17 @@ The "Smaller prompt" group SHALL write `permissions.allow` of `Bash(git status *
 
 ### Requirement: The Auto Mode Group Carries Fixed Values
 
-The "Auto mode" group SHALL write `autoMode` with `allow`, `soft_deny`, `hard_deny`, and `environment` lists replaced, with no `$defaults`, by `AUTO_MODE` (`setup/auto-mode.ts`): one hard rule (Data Exfiltration), eleven soft rules, each with its consent-bar `must name` slot, seven allow rules, and four trust entries. The trust entries SHALL define the `Trusted repo` and `Source control` that the rules lean on. The soft rules SHALL include `Write Outside the Trusted Repo` and end with `Any Other Danger`, because the client names a block's rule only when the server cites a `soft_deny` entry, and a block that cites none reaches the user with no reason.
+The "Auto mode" group SHALL write `autoMode` with `allow`, `soft_deny`, `hard_deny`, and `environment` lists replaced, with no `$defaults`, by `AUTO_MODE` (`setup/auto-mode.ts`). The trust entries SHALL define the `Trusted repo` and `Source control` that the rules lean on. The soft rules SHALL include `Write Outside the Trusted Repo` and end with `Any Other Danger`.
+
+#### Scenario: The Size of the Lists
+
+- **WHEN** `AUTO_MODE` is read
+- **THEN** it holds one hard rule (Data Exfiltration), eleven soft rules, each with its consent-bar `must name` slot, seven allow rules, and four trust entries
+
+#### Scenario: Why the Soft List Ends with a Catch-All
+
+- **WHEN** a block cites no `soft_deny` entry
+- **THEN** it reaches the user with no reason, because the client names a block's rule only when the server cites a `soft_deny` entry, so the soft rules end with `Any Other Danger`
 
 #### Scenario: The Group Written
 

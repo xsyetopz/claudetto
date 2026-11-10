@@ -7,7 +7,15 @@ Setup turns on Claude Code's built-in sandbox with a block that blocks the destr
 
 ### Requirement: Setup Turns On the Built-in Sandbox With Least Friction
 
-The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block into the user's `settings.json`, through the fill and replace choice of the other groups. The block SHALL list what is dangerous, not what is safe: `enabled: true`, `allowUnsandboxedCommands: true` (a command the sandbox blocks, such as `claude -p` reading its login from the Keychain, retries outside it, and the permission flow decides each retry), `enableWeakerNetworkIsolation: true` (the person's choice, 2026-11-10: "allow both"), `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, and `network.allowLocalBinding` `true`, so a test server or a fake API can bind a localhost port (the person's choice, 2026-11-09). Setup SHALL NOT add a per-tool entry, such as one tool's cache folder.
+The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block into the user's `settings.json`, through the fill and replace choice of the other groups. The block SHALL list what is dangerous, not what is safe, with the keys that the scenario "The Keys of the Block" lists. Setup SHALL NOT add a per-tool entry, such as one tool's cache folder.
+
+#### Scenario: The Keys of the Block
+
+- **WHEN** setup writes the `sandbox` block
+- **THEN** it holds `enabled: true`, `allowUnsandboxedCommands: true`, `enableWeakerNetworkIsolation: true`, `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, and `network.allowLocalBinding` `true`
+- **AND** `allowUnsandboxedCommands: true` lets a command the sandbox blocks, such as `claude -p` reading its login from the Keychain, retry outside it, and the permission flow decides each retry
+- **AND** `enableWeakerNetworkIsolation: true` is the person's choice, 2026-11-10: "allow both"
+- **AND** `network.allowLocalBinding` `true` lets a test server or a fake API bind a localhost port (the person's choice, 2026-11-09)
 
 #### Scenario: A Write Outside the Allowed Paths
 

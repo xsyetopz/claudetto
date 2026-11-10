@@ -54,7 +54,17 @@ The generated file SHALL record its source, commit, and tarball SHA-256, the gen
 
 ### Requirement: The Gate Keeps Only What the Rules Do Not Cover
 
-`hooks/gate/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` (`rules.ts:110-123`) SHALL judge each command by these verdicts: the package rules of `packages.ts`, ref moves (`refVerdict`), kill of an unowned pid (`killVerdict`), owned worktree and branch removal (`ownedVerdict`), a run of a released `claude/versions/<v>` (`releaseVerdict`), the hook-write ask, `Write`-over-Bash (`writesWhole`), and `Read`-over-Bash (`printsFile`). `markerVerdict` SHALL judge the whole text against the `/tmp` markers. The strictest verdict SHALL win, a `deny` before an `ask`. `systemPath` for `Write` and `Edit` stays in `gate.ts`. A write into a system folder through a redirect or `tee` SHALL be a patch rule. Each patch rule SHALL name its measured gap in `design.md`.
+`hooks/gate/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. `markerVerdict` SHALL judge the whole text against the `/tmp` markers. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`.
+
+#### Scenario: The System Path Check
+
+- **WHEN** `Write` or `Edit` targets a system path
+- **THEN** `systemPath` judges it, and it stays in `gate.ts`
+
+#### Scenario: The Command Verdicts
+
+- **WHEN** `commandVerdicts` (`rules.ts:110-123`) judges a command
+- **THEN** it uses the package rules of `packages.ts`, ref moves (`refVerdict`), kill of an unowned pid (`killVerdict`), owned worktree and branch removal (`ownedVerdict`), a run of a released `claude/versions/<v>` (`releaseVerdict`), the hook-write ask, `Write`-over-Bash (`writesWhole`), and `Read`-over-Bash (`printsFile`)
 
 #### Scenario: A Package Tool Beside Another Tool's Files
 

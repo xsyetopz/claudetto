@@ -63,7 +63,12 @@ Under a `no-questions` constraint, the ledger's `tool.call` hook SHALL deny `Ask
 
 ### Requirement: A Remark Is Answered Before Any Tool Runs
 
-The ledger's extraction SHALL also class the latest person message as a task, a dispute, a question, or a remark. On a question or a remark, `tool.check` SHALL deny the turn's first tool batch when no assistant text follows the person message, except that a question's `Read`, `Grep`, `Glob`, and `ListAgents` calls SHALL pass, because they change nothing. A dispute is held as the dispute requirement says. A task, or a failed extraction, SHALL NOT be held. The class SHALL follow the person's own words, so pasted material followed by a request is a task.
+The ledger's extraction SHALL also class the latest person message as a task, a dispute, a question, or a remark. On a question or a remark, `tool.check` SHALL deny the turn's first tool batch when no assistant text follows the person message, except that a question's `Read`, `Grep`, `Glob`, and `ListAgents` calls SHALL pass, because they change nothing. A task, or a failed extraction, SHALL NOT be held. The class SHALL follow the person's own words.
+
+#### Scenario: A Dispute
+
+- **WHEN** the latest person message is a dispute
+- **THEN** it is held as the dispute requirement says
 
 #### Scenario: Pasted Report with a Request
 
