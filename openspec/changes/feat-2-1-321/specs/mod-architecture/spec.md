@@ -52,29 +52,58 @@ A plugin folder SHALL hold no file that only a Bun-run test loads: no `*.spec.ts
 - **WHEN** a file under `tools/` needs a helper that a moved file defined
 - **THEN** the helper lives under `tools/`, and no file under `tools/` imports from `tests/`
 
+### Requirement: One Guard Hook per Event
+
+Each plugin SHALL register at most one `tool.check` hook and one `tool.call` hook, each with one `.catch`, because a guard hook without one fails open. A guard SHALL be a named function that tests the tool's name itself and passes every other call on. The registration file SHALL list the guards of each event in the order they nest.
+
+#### Scenario: The Validator Lists Each Guard Hook
+
+- **WHEN** `claude plugin validate --strict --json` runs on a plugin
+- **THEN** it lists at most one `tool.check` and one `tool.call` gating hook, each with `hasCatch` true, and a repository test fails otherwise
+
+#### Scenario: A Call of Another Tool
+
+- **WHEN** a guard for `Read` receives a `Bash` call
+- **THEN** it passes the call to `next` unchanged
+
+#### Scenario: The Guard Order Is Kept
+
+- **WHEN** the 22 guard registrations of `claudetto` become two guard lists
+- **THEN** the guards run in the order their registrations nested, and every lab test passes with its expected values unchanged, except the fault texts
+
 ### Requirement: A Guard Refuses on a Fault, and No Fault Is Dropped
 
-Each `tool.check` and `tool.call` registration SHALL carry its own `.catch` that returns a refusal with the failure's message, or its `kind` when there is none, and calls nothing, because a guard without one fails open. Every other caught fault SHALL be logged with its cause or rethrown. A `catch` MUST NOT turn a fault into a value that reads as a normal answer.
+A fault in a `tool.check` guard SHALL ask the person, and a fault in a `tool.call` guard SHALL refuse, each with the failure's message, or its `kind` when there is none. The side check of `claudetto-you-should-know` SHALL instead log its fault and let the call go on. Every other caught fault SHALL be logged with its cause or rethrown. A `catch` MUST NOT turn a fault into a value that reads as a normal answer.
 
 #### Scenario: A Gate That Throws
 
-- **WHEN** a `tool.check` hook throws while it reads a command
-- **THEN** the call is refused with the failure text, and does not run
+- **WHEN** a `tool.check` guard throws while it reads a command
+- **THEN** the verdict is `ask` with the failure text, and the call does not run unasked
 
-#### Scenario: A Call Hook That Throws Before the Tool
+#### Scenario: A Call Guard That Throws Before the Tool
 
-- **WHEN** a `tool.call` hook throws before it calls `next`
-- **THEN** its own `.catch` refuses, and the tool does not run
+- **WHEN** a `tool.call` guard throws before it calls `next`
+- **THEN** the call is refused with the failure text, and the tool does not run
+
+#### Scenario: A Call Guard That Throws After the Tool
+
+- **WHEN** a `tool.call` guard throws after `next` answered
+- **THEN** the tool has run once, and its result is withheld with the failure text
+
+#### Scenario: A Tool That Fails Beneath the Plugin
+
+- **WHEN** what is beneath the plugin throws while a `tool.call` guard waits on `next`
+- **THEN** that failure reaches the caller as its own, and no guard's refusal replaces it
 
 #### Scenario: A Hook That Overruns
 
-- **WHEN** a guard's own code runs past the hook time limit
-- **THEN** the call is refused, and the refusal names the kind `timeout`
+- **WHEN** the guards' own code runs past the hook time limit
+- **THEN** the `.catch` answers as for a throw, and its text names the kind `timeout`
 
-#### Scenario: The Validator Lists Each Guard
+#### Scenario: A Side Check That Fails
 
-- **WHEN** `claude plugin validate --strict --json` runs on a plugin
-- **THEN** each `tool.check` and `tool.call` gating hook it lists has `hasCatch` true, and a repository test fails on one that is false
+- **WHEN** the `tool.call` hook of `claudetto-you-should-know` throws
+- **THEN** the log holds the cause, and the call goes on as its spec requires
 
 #### Scenario: A Failed Side Read
 
