@@ -27,12 +27,12 @@ export const JEV_ORIGIN = "https://api.typesafe.ai";
 const ENGINE_THINKING_ROOM = 2048;
 // A measuring run waits this long, so a slow request still reports its usage; `Call.limitMs` keeps the limit today's code sets.
 const WAIT_MS = 180_000;
-const noUsage = (): Usage => ({
+const NO_USAGE: Usage = {
 	input_tokens: 0,
 	output_tokens: 0,
 	cache_read_input_tokens: 0,
 	cache_creation_input_tokens: 0,
-});
+};
 
 /** Everything one run shares: where Jev is, what it has spent, and what it measured. */
 export interface Ctx {
@@ -78,7 +78,7 @@ export const newCtx = (
 // A token is at most a few characters, so half the body's length bounds the input from above.
 const worstCase = (price: Price, body: string, maxTokens: number): number =>
 	costOf(price, {
-		...noUsage(),
+		...NO_USAGE,
 		input_tokens: Math.ceil(body.length / 2),
 		output_tokens: maxTokens,
 	});
@@ -111,7 +111,7 @@ export async function eachCase<T>(
 }
 
 const addTokens = (ctx: Ctx, model: string, usage: Usage): void => {
-	const total = ctx.tokens.get(model) ?? noUsage();
+	const total = ctx.tokens.get(model) ?? NO_USAGE;
 	ctx.tokens.set(model, {
 		input_tokens: total.input_tokens + usage.input_tokens,
 		output_tokens: total.output_tokens + usage.output_tokens,
@@ -133,7 +133,7 @@ async function complete(
 	const limit = (request.maxTokens ?? 0) + ENGINE_THINKING_ROOM;
 	if (ctx.usd + worstCase(price, body, limit) > ctx.maxUsd) {
 		ctx.stopped = true;
-		return { isAnswered: false, reason: "aborted", usage: noUsage() };
+		return { isAnswered: false, reason: "aborted", usage: NO_USAGE };
 	}
 	const saveResponse = await keep($, ctx, ctx.label, body);
 	const started = Date.now();
