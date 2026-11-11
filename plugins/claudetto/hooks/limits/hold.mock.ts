@@ -1,4 +1,15 @@
-import type { PluginOptions } from "claude-code";
+import type { AgentSpawnInput, PluginOptions } from "claude-code";
+
+export const SPAWN: AgentSpawnInput = {
+	tool_use_id: "toolu_1",
+	prompt: "Read README.md.",
+	description: "read",
+	subagentType: "claudetto:Heracles",
+	provider: { plugin: "claudetto", tier: "core" },
+	parentModel: "opus",
+	background: false,
+	fork: false,
+};
 
 export const usage = (tokens: number) => ({
 	startedAt: 0,

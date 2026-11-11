@@ -6,6 +6,7 @@ import type {
 	TurnUsage,
 } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "../chain.ts";
 import { atRoot } from "../handoff/layout.ts";
 import { WITHHELD } from "../texts.ts";
 import { heartbeatPath } from "./heartbeat.ts";
@@ -89,12 +90,12 @@ const beatOf = ($: EngineInterface) => async (): Promise<void> => {
 };
 
 /** The reading of `step`, or `null` when the stop chunk has not come by the time the hook's own budget runs short. The wait is the hook's own time, and a step can stream long after its calls. */
-const readingOf = (
+function readingOf(
 	$: EngineInterface,
 	step: Step,
 	remainingMs: number,
 	signal: AbortSignal,
-): Promise<TurnUsage | null> => {
+): Promise<TurnUsage | null> {
 	const done = new AbortController();
 	const late = async (): Promise<null> => {
 		try {
@@ -110,7 +111,7 @@ const readingOf = (
 	return Promise.race([step.reading, late()]).finally(() => {
 		done.abort();
 	});
-};
+}
 
 const stepHook = (on: On, byCall: Map<string, Step>): void => {
 	on("turn.step", async function* ($, e, next) {
@@ -138,41 +139,43 @@ const stepHook = (on: On, byCall: Map<string, Step>): void => {
 	});
 };
 
-const callHook = (on: On, byCall: Map<string, Step>): void => {
-	on("tool.call", async ($, e, next) => {
-		const step = byCall.get(e.tool_use_id);
-		byCall.delete(e.tool_use_id);
-		const answer = await next(e);
-		if (step === undefined || answer.deny !== undefined) {
-			return answer;
-		}
-		const usage = await readingOf(
-			$,
-			step,
-			next.budget.remainingMs,
-			next.signal,
-		);
-		// A result counts with its `context`, since both land in the next request.
-		const chars =
-			modelText(answer.result, answer.text).length +
-			(answer.context?.join("").length ?? 0);
-		const bound = boundOf(usage, step.passed, chars);
-		if (bound.withhold) {
-			return { deny: WITHHELD(bound) };
-		}
-		step.passed += bound.tokens;
+/** The steps of the calls in flight, keyed by `tool_use_id`, which names one call in one step on any loop. */
+export type PriceStepState = Map<string, Step>;
+
+/** Makes the map a step's calls and its `turn.step` hook share. */
+export const priceStepState = (): PriceStepState => new Map<string, Step>();
+
+/** Withholds a result of a bounded step that would cross the price step. */
+export async function priceStepCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	state: PriceStepState,
+): Promise<Awaited<CallAnswer>> {
+	const step = state.get(e.tool_use_id);
+	state.delete(e.tool_use_id);
+	const answer = await next(e);
+	if (step === undefined || answer.deny !== undefined) {
 		return answer;
-	});
-};
+	}
+	const usage = await readingOf($, step, next.budget.remainingMs, next.signal);
+	// A result counts with its `context`, since both land in the next request.
+	const chars =
+		modelText(answer.result, answer.text).length +
+		(answer.context?.join("").length ?? 0);
+	const bound = boundOf(usage, step.passed, chars);
+	if (bound.withhold) {
+		return { deny: WITHHELD(bound) };
+	}
+	step.passed += bound.tokens;
+	return answer;
+}
 
 /**
  * The engine runs a tool while its step still streams, so a call can finish before the stop chunk: each call of a
  * bounded step waits on its own step. `turn.step` also writes the heartbeat, since the loader takes one
  * `turn.step` hook without a matcher.
  */
-export const priceStepHooks = (on: On): void => {
-	// Keyed by `tool_use_id`, which names one call in one step on any loop.
-	const byCall = new Map<string, Step>();
+export const priceStepHooks = (on: On, byCall: PriceStepState): void => {
 	stepHook(on, byCall);
-	callHook(on, byCall);
 };

@@ -15,25 +15,15 @@ import {
 	STALL_STOP,
 	STOP_TASKS,
 } from "../texts.ts";
-import { ANY_TOOL, WRITERS } from "../tools.ts";
 import { ASK_MCP } from "../verify.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 import { gradeBlock } from "./grade.ts";
 import { namedPaths } from "./named-files.ts";
 import { commandForm, openItems, turnOf } from "./open-items.ts";
-
-/** How the CLI words a refused ask; a headless refusal repeats the ask's reason instead. */
-const REFUSED =
-	/^(?:Permission (?:to use|for this)|The user doesn't want to proceed with this tool use)/u;
+import type { StopState, Turn } from "./turn.ts";
 
 const AGREES =
 	/^(?:you(?:['’]| a)re (?:right|correct)|(?:good|great|fair) (?:catch|point|call)|fair enough|agreed\b)/iu;
-
-/** A write that ran: a denied or failed one wrote nothing. */
-export const didWrite = (answer: {
-	readonly deny?: string | undefined;
-	readonly isError?: unknown;
-}): boolean => answer.deny === undefined && answer.isError === undefined;
 
 /** The stop that ends a turn whose stretch since the last Stop wrote no file, in place of the block that would continue it. */
 const stallStop = (block: string) => ({
@@ -107,55 +97,6 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
-/** Collects the ids of the calls a refusal ended into `denied`. A denied call reaches `tool.call` as an error, the same as one that ran and failed; only `tool.check` tells them apart. */
-const watchRefusedCalls = (on: On, denied: Set<string>): void => {
-	const asked = new Map<string, string>();
-	on("tool.check", { tool: ANY_TOOL }, async (_$, e, next) => {
-		const verdict = await next(e);
-		if (e.tool_use_id !== undefined && verdict.decision === "deny") {
-			denied.add(e.tool_use_id);
-		}
-		if (e.tool_use_id !== undefined && verdict.decision === "ask") {
-			asked.set(e.tool_use_id, verdict.reason ?? "");
-		}
-		return verdict;
-	});
-	on("tool.call", { tool: ANY_TOOL }, async (_$, e, next) => {
-		const answer = await next(e);
-		const reason = asked.get(e.tool_use_id);
-		const text = answer.text ?? "";
-		if (
-			answer.isError &&
-			reason !== undefined &&
-			(text === reason || REFUSED.test(text))
-		) {
-			denied.add(e.tool_use_id);
-		}
-		return answer;
-	});
-};
-
-/** What the hooks before Stop record for it. */
-interface Turn {
-	wrote: boolean;
-	// A headless session has no person to answer, so no ask can reach anyone.
-	interactive: boolean;
-	readonly denied: Set<string>;
-}
-
-const watchTurn = (on: On, turn: Turn): void => {
-	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
-		turn.interactive = e.isInteractive;
-		return next(e);
-	});
-	on("tool.call", { tool: WRITERS }, async (_$, e, next) => {
-		const answer = await next(e);
-		turn.wrote ||= didWrite(answer);
-		return answer;
-	});
-	watchRefusedCalls(on, turn.denied);
-};
-
 const stopBlock = async (
 	$: EngineInterface,
 	e: Parameters<typeof gradeBlock>[1],
@@ -173,11 +114,18 @@ const stopBlock = async (
  * Stop: the stall rule, then the named-files, open-items, and graded-reply checks, then the background-task list, then the cleanup of what the session created. The flag, the task key and
  * the budget band sit in this closure: no `await` stands between a read and its write.
  */
-export const stopHooks = (on: On, options: PluginOptions): void => {
+export const stopHooks = (
+	on: On,
+	options: PluginOptions,
+	state: StopState,
+): void => {
 	const isOpenItemsOn = switchOption(options, "openItemsCheckEnabled");
 	const noticeTasks = tasksNotice();
-	const turn: Turn = { wrote: false, interactive: true, denied: new Set() };
-	watchTurn(on, turn);
+	const { turn } = state;
+	on("session.start", { isInteractive: [true, false] }, (_$, e, next) => {
+		turn.interactive = e.isInteractive;
+		return next(e);
+	});
 	on("classic.Stop", async ($, e, next) => {
 		const stretchWrote = turn.wrote;
 		turn.wrote = false;

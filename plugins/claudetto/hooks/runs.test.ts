@@ -66,6 +66,7 @@ const lab = (on: On, block = false): Lab => {
 	};
 	scanner(on);
 	on("agent.list", () => ({ value: [] }));
+	on("fs.exists", () => ({ value: false }));
 	on("session.messages", () => ({ value: [] }));
 	on("env.get", () => ({ value: undefined }));
 	on("session.cwd", () => ({ value: "/repo" }));

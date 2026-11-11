@@ -1,5 +1,13 @@
 import type { EngineInterface, On, SessionMessage } from "claude-code";
 
+import type {
+	CallAnswer,
+	CallEvent,
+	CallNext,
+	CheckAnswer,
+	CheckEvent,
+	CheckNext,
+} from "./chain.ts";
 import { deny } from "./gate/verdict.ts";
 import { breaks } from "./pin-rules.ts";
 import {
@@ -12,7 +20,7 @@ import {
 	type PinConstraint,
 	type PinKind,
 } from "./texts-handoff.ts";
-import { ANY_TOOL, isRecord } from "./tools.ts";
+import { isRecord } from "./tools.ts";
 import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/u;
@@ -135,7 +143,7 @@ const awaitsAnswer = (
 	!(kind !== "remark" && LOOKUPS.has(e.tool)) &&
 	!(kind === "dispute" && e.tool === "Bash");
 
-interface PinState {
+export interface PinState {
 	ledger: PinConstraint[];
 	/** What the latest person message is; a failed extraction leaves it a task, which no check touches. */
 	kind: PinKind;
@@ -188,38 +196,50 @@ const ledgerHooks = (on: On, s: PinState): void => {
 	});
 };
 
-const gateHooks = (on: On, s: PinState): void => {
-	// `delegation` answers the ask tool in its own `tool.call`, so `tool.check` never runs for it: the ask's checks sit here, and `register` puts `pin` first.
-	on("tool.call", { tool: ASK_TOOL }, async (_$, e, next) => {
-		await s.pending;
-		const hit = s.ledger.find((c) => c.rule === "no-questions");
-		return hit === undefined ? next(e) : { deny: PIN_NO_QUESTIONS(hit.text) };
-	});
-	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
-		await s.pending;
-		const hit = s.ledger.find((c) => breaks(c, e.tool, e.input));
-		if (hit !== undefined) {
-			return deny(PIN_BLOCKED(hit.text));
-		}
-		if (!awaitsAnswer(s.kind, e)) {
-			return next(e);
-		}
-		const messages = await $.session.messages();
-		if (!hasSpoken(messages) && isFirstBatch(s, messages)) {
-			s.nudgedAt = messages.length;
-			return deny(PIN_ANSWER_FIRST);
-		}
+/** Denies the ask tool while a no-questions constraint stands. `delegation` answers the ask tool in its own `tool.call`, so `tool.check` never runs for it: the ask's checks sit here, and the chain puts `pin` first. */
+export async function pinCall(
+	e: CallEvent,
+	next: CallNext,
+	state: PinState,
+): Promise<Awaited<CallAnswer>> {
+	if (!ASK_TOOL.test(e.tool)) {
 		return next(e);
-	});
-};
+	}
+	await state.pending;
+	const hit = state.ledger.find((c) => c.rule === "no-questions");
+	return hit === undefined ? next(e) : { deny: PIN_NO_QUESTIONS(hit.text) };
+}
 
-export const pin = (on: On): void => {
-	const state: PinState = {
-		ledger: [],
-		kind: "task",
-		nudgedAt: -1,
-		pending: Promise.resolve(),
-	};
+/** Denies a call that breaks a pinned constraint, and the first batch of calls made before the answer to a question or dispute. */
+export async function pinCheck(
+	$: EngineInterface,
+	e: CheckEvent,
+	next: CheckNext,
+	state: PinState,
+): Promise<Awaited<CheckAnswer>> {
+	await state.pending;
+	const hit = state.ledger.find((c) => breaks(c, e.tool, e.input));
+	if (hit !== undefined) {
+		return deny(PIN_BLOCKED(hit.text));
+	}
+	if (!awaitsAnswer(state.kind, e)) {
+		return next(e);
+	}
+	const messages = await $.session.messages();
+	if (!hasSpoken(messages) && isFirstBatch(state, messages)) {
+		state.nudgedAt = messages.length;
+		return deny(PIN_ANSWER_FIRST);
+	}
+	return next(e);
+}
+
+export const pinState = (): PinState => ({
+	ledger: [],
+	kind: "task",
+	nudgedAt: -1,
+	pending: Promise.resolve(),
+});
+
+export const pin = (on: On, state: PinState): void => {
 	ledgerHooks(on, state);
-	gateHooks(on, state);
 };

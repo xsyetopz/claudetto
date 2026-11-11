@@ -1,8 +1,15 @@
 import type { EngineInterface, On } from "claude-code";
 
+import type {
+	CallAnswer,
+	CallEvent,
+	CallNext,
+	CheckAnswer,
+	CheckEvent,
+	CheckNext,
+} from "../chain.ts";
 import { redactAll, redactWith, secretsIn } from "../secrets.ts";
-import { GATE_CHECK_FAILED, GATE_READ_ONLY, gateRule } from "../texts-gate.ts";
-import { ANY_TOOL } from "../tools.ts";
+import { GATE_READ_ONLY, gateRule } from "../texts-gate.ts";
 import {
 	type Denials,
 	DENIALS_PER_CALL_MAX,
@@ -23,6 +30,12 @@ const PERSON = /^(?:composer|bridge)$/u;
 /** What the hooks keep between calls: the denials of this session so far. */
 export interface Memory {
 	denials: Denials;
+}
+
+/** What the gate guards share: the walls and the memory of one session. */
+export interface GateState {
+	walls: Walls;
+	memory: Memory;
 }
 
 type Found = Awaited<ReturnType<EngineInterface["tool"]["check"]>>;
@@ -61,29 +74,30 @@ const settle = (
 };
 
 /** The gate only tightens, except that an `ask` no rule, option, hook, or plugin made, on a read-only command, becomes an `allow`. */
-export const watchTools = (on: On, walls: Walls, memory: Memory): void => {
-	on("tool.check", { tool: ANY_TOOL }, async ($, e, next) => {
-		const refused = repeatedText(
-			memory.denials,
-			signature(e.tool, e.input),
-			fieldOf(e.input, "command") ?? `${e.tool} ${JSON.stringify(e.input)}`,
-		);
-		if (refused !== undefined) {
-			const verdict = deny(refused);
-			await log($, e, verdict);
-			return verdict;
-		}
-		// Computed before `next`, so a throw leaves `next` uncalled and the `.catch` asks in its place.
-		const recreated = await recreates(hostOf($), walls.files, e.tool, e.input);
-		const own = (await ownVerdict($, walls, e.tool, e.input)) ?? recreated;
-		const verdict = settle(named(await next(e)), own, e.tool, e.input);
+export async function gateCheck(
+	$: EngineInterface,
+	e: CheckEvent,
+	next: CheckNext,
+	state: GateState,
+): Promise<Awaited<CheckAnswer>> {
+	const { walls, memory } = state;
+	const refused = repeatedText(
+		memory.denials,
+		signature(e.tool, e.input),
+		fieldOf(e.input, "command") ?? `${e.tool} ${JSON.stringify(e.input)}`,
+	);
+	if (refused !== undefined) {
+		const verdict = deny(refused);
 		await log($, e, verdict);
 		return verdict;
-	}).catch((_error, _e, next) => ({
-		decision: "ask",
-		reason: GATE_CHECK_FAILED(next.error.message ?? next.error.kind),
-	}));
-};
+	}
+	// Computed before `next`, so a throw leaves `next` uncalled and the hook's fault handler asks in its place.
+	const recreated = await recreates(hostOf($), walls.files, e.tool, e.input);
+	const own = (await ownVerdict($, walls, e.tool, e.input)) ?? recreated;
+	const verdict = settle(named(await next(e)), own, e.tool, e.input);
+	await log($, e, verdict);
+	return verdict;
+}
 
 /** The permission and prompt events: a denial is remembered, and a new message from the person clears them. */
 export const watchPermissionEvents = (
@@ -122,39 +136,36 @@ export const watchPermissionEvents = (
 };
 
 /** Every result is scanned, so a secret any tool prints reaches the model as `[REDACTED]`. */
-export const watchResults = (on: On, walls: Walls): void => {
-	on("tool.call", { tool: ANY_TOOL }, async ($, e, next) => {
-		const answer = await next(e);
-		if (answer.deny !== undefined) {
-			return answer;
-		}
-		const seen =
-			answer.text ??
-			(typeof answer.result === "string"
-				? answer.result
-				: (JSON.stringify(answer.result) ?? ""));
-		if (!answer.isError) {
-			await saw(hostOf($), walls.files, e.tool, e, seen);
-		}
-		const secrets = await secretsIn(
-			(argv, init) => $.process.run(argv, init),
-			seen,
-		);
-		if (secrets.length === 0) {
-			return answer;
-		}
-		// A hook's `{ result }` cannot carry an error, so an errored result reaches the model as a deny.
-		return answer.isError
-			? { deny: redactWith(seen, secrets) }
-			: {
-					result: redactAll(answer.result, secrets),
-					...(answer.context && { context: answer.context }),
-				};
-	}).catch(async (_error, e, next) => {
-		// The replay rethrows what failed beneath, so only a failed scan withholds the result.
-		await next(e);
-		return {
-			deny: next.error.message ?? `The secret scan ${next.error.kind}.`,
-		};
-	});
-};
+export async function gateCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	state: GateState,
+): Promise<Awaited<CallAnswer>> {
+	const answer = await next(e);
+	if (answer.deny !== undefined) {
+		return answer;
+	}
+	const seen =
+		answer.text ??
+		(typeof answer.result === "string"
+			? answer.result
+			: (JSON.stringify(answer.result) ?? ""));
+	if (!answer.isError) {
+		await saw(hostOf($), state.walls.files, e.tool, e, seen);
+	}
+	const secrets = await secretsIn(
+		(argv, init) => $.process.run(argv, init),
+		seen,
+	);
+	if (secrets.length === 0) {
+		return answer;
+	}
+	// A hook's `{ result }` cannot carry an error, so an errored result reaches the model as a deny.
+	return answer.isError
+		? { deny: redactWith(seen, secrets) }
+		: {
+				result: redactAll(answer.result, secrets),
+				...(answer.context && { context: answer.context }),
+			};
+}

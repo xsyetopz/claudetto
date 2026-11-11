@@ -1,7 +1,7 @@
-import type { AgentInfo, AgentSpawnInput, On } from "claude-code";
+import type { AgentInfo, On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { set, usage } from "./hold.mock.ts";
+import { set, SPAWN, usage } from "./hold.mock.ts";
 
 const agent = (id: string, status: AgentInfo["status"]): AgentInfo => ({
 	id,
@@ -9,17 +9,6 @@ const agent = (id: string, status: AgentInfo["status"]): AgentInfo => ({
 	type: "claudetto:Heracles",
 	status,
 });
-
-const SPAWN: AgentSpawnInput = {
-	tool_use_id: "toolu_1",
-	prompt: "Read README.md.",
-	description: "read",
-	subagentType: "claudetto:Heracles",
-	provider: { plugin: "claudetto", tier: "core" },
-	parentModel: "opus",
-	background: false,
-	fork: false,
-};
 
 const spawnLab = (on: On, running: number | AgentInfo[], cap?: string) => {
 	const clock = mock.clock(on, { now: 0 });
@@ -34,6 +23,7 @@ const spawnLab = (on: On, running: number | AgentInfo[], cap?: string) => {
 		cap === undefined ? {} : { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: cap },
 	);
 	on("agent.spawn", () => ({ model: "sonnet", agentId: "started" }));
+	on("fs.exists", () => ({ value: false }));
 	return clock;
 };
 

@@ -1,8 +1,5 @@
 import type { BuiltinToolName } from "claude-code";
 
-// A module may register one hook per event with no matcher, so each further hook on every tool uses this pattern, which matches any name.
-export const ANY_TOOL = /^/u;
-
 /** The tools whose result is a file the session changed. */
 export const WRITERS = [
 	"Edit",

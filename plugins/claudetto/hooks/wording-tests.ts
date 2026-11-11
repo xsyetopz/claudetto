@@ -1,5 +1,6 @@
-import type { EngineInterface, On } from "claude-code";
+import type { EngineInterface } from "claude-code";
 
+import type { CheckAnswer, CheckEvent, CheckNext } from "./chain.ts";
 import { deny, fieldOf } from "./gate/verdict.ts";
 import { WORDING_TEST } from "./texts.ts";
 
@@ -15,10 +16,10 @@ const assertedPhrases = (code: string): string[] =>
 		.map((m) => (m[2] ?? "").split(/\\|\$\{/u)[0]?.trim() ?? "")
 		.filter((phrase) => PHRASE.test(phrase));
 
-const shippedIn = async (
+async function shippedIn(
 	$: EngineInterface,
 	phrase: string,
-): Promise<string | undefined> => {
+): Promise<string | undefined> {
 	const r = await $.process
 		.run(
 			[
@@ -37,19 +38,24 @@ const shippedIn = async (
 		)
 		.catch(() => void 0);
 	return r?.exitCode === 0 ? r.stdout.split("\n")[0] : undefined;
-};
+}
 
 /** Denies a test edit whose assertion copies a phrase a non-test file ships: such a test breaks on each rewording and catches no defect. */
-export const wordingTests = (on: On): void => {
-	on("tool.check", { tool: /^(?:Edit|Write)$/u }, async ($, e, next) => {
-		const path = fieldOf(e.input, "file_path") ?? "";
-		const code =
-			fieldOf(e.input, "new_string") ?? fieldOf(e.input, "content") ?? "";
-		const phrases = TEST_FILE.test(path) ? assertedPhrases(code) : [];
-		const files = await Promise.all(phrases.map((p) => shippedIn($, p)));
-		const hit = files.findIndex((file) => file !== undefined);
-		return hit === -1
-			? next(e)
-			: deny(WORDING_TEST(phrases[hit] ?? "", files[hit] ?? ""));
-	});
-};
+export async function wordingTestsCheck(
+	$: EngineInterface,
+	e: CheckEvent,
+	next: CheckNext,
+): Promise<Awaited<CheckAnswer>> {
+	if (!/^(?:Edit|Write)$/u.test(e.tool)) {
+		return next(e);
+	}
+	const path = fieldOf(e.input, "file_path") ?? "";
+	const code =
+		fieldOf(e.input, "new_string") ?? fieldOf(e.input, "content") ?? "";
+	const phrases = TEST_FILE.test(path) ? assertedPhrases(code) : [];
+	const files = await Promise.all(phrases.map((p) => shippedIn($, p)));
+	const hit = files.findIndex((file) => file !== undefined);
+	return hit === -1
+		? next(e)
+		: deny(WORDING_TEST(phrases[hit] ?? "", files[hit] ?? ""));
+}

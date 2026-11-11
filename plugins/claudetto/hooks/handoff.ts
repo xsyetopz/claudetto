@@ -1,5 +1,6 @@
-import type { On, PluginOptions } from "claude-code";
+import type { EngineInterface, On, PluginOptions } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import { type CallState, handOff } from "./handoff/call.ts";
 import {
 	afterTurn,
@@ -16,6 +17,16 @@ import {
 } from "./texts-handoff.ts";
 
 const ANY_ID = /./u;
+
+/** The turn and goal that the handoff call needs, and whether a handoff runs. */
+export type HandoffState = CallState;
+
+/** Makes the handoff call state of one session. */
+export const handoffState = (): HandoffState => ({
+	handingOff: false,
+	turn: undefined,
+	goal: undefined,
+});
 
 /** The handoff block rides the first user message's context: a hook cannot write Claude's handoff itself. */
 const handoffBlock = {
@@ -94,10 +105,20 @@ const onCallState = (on: On, call: CallState): void => {
 		}
 		return next(e);
 	});
-	on("tool.call", { tool: [HANDOFF_CALLED] }, async ($, e) => ({
-		result: await handOff($, call, e),
-	}));
 };
+
+/** Answers a call of the handoff tool with the handoff's result; every other tool passes on. */
+export async function handoffCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	call: HandoffState,
+): Promise<Awaited<CallAnswer>> {
+	if (!HANDOFF_CALLED.test(e.tool)) {
+		return next(e);
+	}
+	return { result: await handOff($, call, e) };
+}
 
 const onPromptContext = (on: On): void => {
 	on("prompt.context", async (_$, e, next) => {
@@ -128,12 +149,11 @@ const onTurnComplete = (
 	});
 };
 
-export const handoff = (on: On, options: PluginOptions): void => {
-	const call: CallState = {
-		handingOff: false,
-		turn: undefined,
-		goal: undefined,
-	};
+export const handoff = (
+	on: On,
+	options: PluginOptions,
+	call: HandoffState,
+): void => {
 	const handover: HandoverState = newHandoverState();
 	const watched: { transcript: string | undefined } = { transcript: undefined };
 	onCompact(on, handover, watched);

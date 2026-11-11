@@ -6,6 +6,7 @@ import { WORDING_TEST } from "./texts.ts";
 const SHIPPED = "the gate holds this call";
 const lab = (on: On) => {
 	on("session.cwd", () => ({ value: "/repo" }));
+	on("tool.check", () => ({ decision: "allow" }));
 	on("process.run", (_$, e) => ({
 		value: {
 			exitCode: e.argv.includes(SHIPPED) ? 0 : 1,

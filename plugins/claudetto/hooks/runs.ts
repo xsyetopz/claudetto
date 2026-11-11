@@ -1,8 +1,9 @@
 import type { EngineInterface, On } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import { atRoot } from "./handoff/layout.ts";
 import { lineOf, pathOf } from "./handoff/transcript.ts";
-import { isRecord, isWriter, WRITERS } from "./tools.ts";
+import { isRecord, isWriter } from "./tools.ts";
 
 /** One JSON line per delegated run, read by hand to set the delegation cut-offs and the subagent cache TTL. */
 export const RUN_LOG = ".claude/claudetto/runs.jsonl";
@@ -92,6 +93,18 @@ interface Pending {
 
 type Started = Map<string, { agent: string; model: string; at: number }>;
 
+/** The delegated runs that started, and those that wait for the root's turns. */
+export interface RunsState {
+	readonly started: Started;
+	readonly pending: Pending[];
+}
+
+/** Makes the run record of one session. */
+export const runsState = (): RunsState => ({
+	started: new Map(),
+	pending: [],
+});
+
 const appendLine = async (
 	$: EngineInterface,
 	line: Record<string, unknown>,
@@ -141,17 +154,23 @@ const trackStops = (on: On, started: Started, pending: Pending[]): void => {
 	});
 };
 
-const trackEdits = (on: On, pending: readonly Pending[]): void => {
-	on("tool.call", { tool: WRITERS }, (_$, e, next) => {
-		const path = pathOf(e);
-		if (e.agentId === undefined && path !== undefined) {
-			for (const run of pending.filter((p) => p.files.includes(path))) {
-				run.redone = true;
-			}
-		}
+/** Marks each pending run redone when the root edits a file that the run edited. */
+export function runsCall(
+	e: CallEvent,
+	next: CallNext,
+	state: RunsState,
+): CallAnswer {
+	if (e.tool !== "Edit" && e.tool !== "Write" && e.tool !== "NotebookEdit") {
 		return next(e);
-	});
-};
+	}
+	const path = pathOf(e);
+	if (e.agentId === undefined && path !== undefined) {
+		for (const run of state.pending.filter((p) => p.files.includes(path))) {
+			run.redone = true;
+		}
+	}
+	return next(e);
+}
 
 const flushRuns = (on: On, pending: Pending[]): void => {
 	let writing = Promise.resolve();
@@ -184,11 +203,8 @@ const flushRuns = (on: On, pending: Pending[]): void => {
 };
 
 /** Logs each delegated run once the root has had 3 turns to redo it: an edit by the root of a file the run edited marks it redone. */
-export const runs = (on: On): void => {
-	const started: Started = new Map();
-	const pending: Pending[] = [];
+export const runs = (on: On, { started, pending }: RunsState): void => {
 	trackSpawns(on, started);
 	trackStops(on, started, pending);
-	trackEdits(on, pending);
 	flushRuns(on, pending);
 };

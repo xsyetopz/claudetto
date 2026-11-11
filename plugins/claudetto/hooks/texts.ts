@@ -232,6 +232,13 @@ export const DENY_FAILED = (v: {
 export const DENY_OVERTIME = (minutes: number): string =>
 	`This agent has run past its ${minutes}-minute limit, so each further tool call is refused. End now: report what is done with its check, and what is left with the place each part stands. The limit is \`agentMaxMinutes\`.`;
 
+export const MEMORY_SHORT = (
+	share: number,
+	limit: number,
+	largest: readonly string[],
+): string =>
+	`The machine has ${share}% of its memory free, under the ${limit}% limit, so new commands and subagents are held. Stop your own runs that are no longer needed, with TaskStop or \`kill <pid>\`, and wait for the others to end before you start another. The largest processes (pid, size, name):\n${largest.join("\n")}\nThe limit is \`memoryFreeMinPercent\`.`;
+
 export const STOP_TASKS = (lines: readonly string[]): string =>
 	`Background tasks still running at Stop:\n${lines.join("\n")}\nYour last reply stands: send it again nowhere. When the user waits on one of these tasks, follow its output with mcp__claudetto__monitor, filtered to its step and error lines, and report each result as it lands.`;
 

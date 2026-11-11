@@ -64,6 +64,12 @@
 			"description": "How long a subagent may run before each further tool call it makes is refused and it is told to report and end. 0 turns the limit off. Left unset, it is 15.",
 			"min": 0
 		},
+		"memoryFreeMinPercent": {
+			"type": "number",
+			"title": "Free memory share that holds new work",
+			"description": "Below this share of free memory, new commands and subagents are refused until runs end. 0 turns it off. Left unset, it is 20.",
+			"min": 0
+		},
 		"maxIdenticalFailures": {
 			"type": "number",
 			"title": "Identical failures before a refusal",

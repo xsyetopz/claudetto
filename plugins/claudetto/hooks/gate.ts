@@ -3,20 +3,23 @@ import type { On, PluginOptions } from "claude-code";
 import { homeOf } from "./gate/own.ts";
 import { newRecreation } from "./gate/recreate.ts";
 import { unguarded } from "./gate/walled.ts";
-import {
-	type Memory,
-	watchPermissionEvents,
-	watchResults,
-	watchTools,
-} from "./gate/watch.ts";
+import { type GateState, watchPermissionEvents } from "./gate/watch.ts";
 import { listOption } from "./options.ts";
 import { walledUnguarded } from "./texts-gate.ts";
 
 export { isMarked } from "./gate/ownership.ts";
 
-export const gate = (on: On, options: PluginOptions): void => {
-	const files = newRecreation();
-	const walls = { paths: listOption(options, "protectedPaths"), files };
+/** Builds the walls and the memory the gate guards share. */
+export const gateState = (options: PluginOptions): GateState => ({
+	walls: {
+		paths: listOption(options, "protectedPaths"),
+		files: newRecreation(),
+	},
+	memory: { denials: {} },
+});
+
+export const gate = (on: On, { walls, memory }: GateState): void => {
+	const { files } = walls;
 
 	// A deny rule in the settings can vanish unnoticed, as it did on 2026-11-07, while the gate's wall stays.
 	on("classic.SessionStart", { source: "startup" }, async ($, e, next) => {
@@ -31,8 +34,5 @@ export const gate = (on: On, options: PluginOptions): void => {
 		return next(e);
 	});
 
-	const memory: Memory = { denials: {} };
-	watchTools(on, walls, memory);
 	watchPermissionEvents(on, walls, memory);
-	watchResults(on, walls);
 };

@@ -1,5 +1,6 @@
-import type { On } from "claude-code";
+import type { EngineInterface, On } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import { deferral } from "./surface.ts";
 import { AGENT_TEXT, agentForm } from "./texts.ts";
 
@@ -69,6 +70,121 @@ const running = { ask: 0, monitor: 0 };
 const failure = (error: unknown): string =>
 	error instanceof Error ? error.message : String(error);
 
+type Call<T extends CallEvent["tool"]> = Extract<CallEvent, { tool: T }>;
+
+// A rewritten input voids auto mode's server review of every call in the response, so an off call is refused with its exact form, never changed.
+async function agentCall(
+	e: Call<"Agent">,
+	next: CallNext,
+): Promise<Awaited<CallAnswer>> {
+	const agent = agentFor(e.subagent_type);
+	if (agent === undefined) {
+		return next(e);
+	}
+	const oneShot = ONE_SHOT.has(agent);
+	const type = qualified(agent);
+	const foreground = oneShot && e.run_in_background === undefined;
+	if (e.subagent_type !== type || foreground) {
+		return { deny: agentForm(type, foreground) };
+	}
+	const out = await next(e);
+	return oneShot && !out.isError && out.result !== undefined
+		? { ...out, result: { ...out.result, agentType: "Explore" } }
+		: out;
+}
+
+async function askCall(
+	$: EngineInterface,
+	e: Call<"mcp__claudetto__ask-user-question">,
+): Promise<Awaited<CallAnswer>> {
+	running.ask++;
+	try {
+		const options = strings(e.options);
+		const answer = await $.ui.ask(
+			text(e.question),
+			e.multiSelect === true ? { options, multiSelect: true } : options,
+		);
+		return { result: `The user answered: ${answer}` };
+	} catch (error) {
+		return { result: `ask failed: ${failure(error)}` };
+	} finally {
+		running.ask--;
+	}
+}
+
+function oldAskCall(e: Call<"AskUserQuestion">, next: CallNext): CallAnswer {
+	return running.ask > 0
+		? next(e)
+		: {
+				deny: "AskUserQuestion is off here: call mcp__claudetto__ask-user-question with question and options.",
+			};
+}
+
+async function monitorCall(
+	$: EngineInterface,
+	e: Call<"mcp__claudetto__monitor">,
+): Promise<Awaited<CallAnswer>> {
+	running.monitor++;
+	try {
+		const ws = wsOf(e.ws);
+		const out = await $.tool.call({
+			tool: "Monitor",
+			description: text(e.description),
+			timeout_ms: typeof e.timeout_ms === "number" ? e.timeout_ms : 300_000,
+			...(ws === undefined ? { command: text(e.command) } : { ws }),
+		});
+		return { result: out.deny ?? out.text ?? "" };
+	} catch (error) {
+		return { result: `monitor failed: ${failure(error)}` };
+	} finally {
+		running.monitor--;
+	}
+}
+
+function oldMonitorCall(e: Call<"Monitor">, next: CallNext): CallAnswer {
+	return running.monitor > 0
+		? next(e)
+		: { deny: "Monitor is off here: call mcp__claudetto__monitor." };
+}
+
+// Only the result is rewritten: a rewritten query would void auto mode's server review of the response's other calls.
+async function searchCall(
+	e: Call<"ToolSearch">,
+	next: CallNext,
+): Promise<Awaited<CallAnswer>> {
+	const out = await next(e);
+	const result = out.isError || out.deny !== undefined ? undefined : out.result;
+	const matches = result && wrapMatches(result.matches);
+	return result && matches ? { result: { ...result, matches } } : out;
+}
+
+/** Delegates `Agent`, ask, `Monitor`, and `ToolSearch` calls to claudetto's agents and wrappers; every other tool passes on. */
+export function delegationCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+): CallAnswer {
+	if (e.tool === "Agent") {
+		return agentCall(e, next);
+	}
+	if (e.tool === "mcp__claudetto__ask-user-question") {
+		return askCall($, e);
+	}
+	if (e.tool === "AskUserQuestion") {
+		return oldAskCall(e, next);
+	}
+	if (e.tool === "mcp__claudetto__monitor") {
+		return monitorCall($, e);
+	}
+	if (e.tool === "Monitor") {
+		return oldMonitorCall(e, next);
+	}
+	if (e.tool === "ToolSearch") {
+		return searchCall(e, next);
+	}
+	return next(e);
+}
+
 const agentHooks = (on: On): void => {
 	on("agent.offer", (_$, e, next) =>
 		e.source === "built-in" ? { isOffered: false } : next(e),
@@ -78,24 +194,6 @@ const agentHooks = (on: On): void => {
 		...(await next(e)),
 		description: AGENT_TEXT,
 	}));
-
-	// A rewritten input voids auto mode's server review of every call in the response, so an off call is refused with its exact form, never changed.
-	on("tool.call", { tool: "Agent" }, async (_$, e, next) => {
-		const agent = agentFor(e.subagent_type);
-		if (agent === undefined) {
-			return next(e);
-		}
-		const oneShot = ONE_SHOT.has(agent);
-		const type = qualified(agent);
-		const foreground = oneShot && e.run_in_background === undefined;
-		if (e.subagent_type !== type || foreground) {
-			return { deny: agentForm(type, foreground) };
-		}
-		const out = await next(e);
-		return oneShot && !out.isError && out.result !== undefined
-			? { ...out, result: { ...out.result, agentType: "Explore" } }
-			: out;
-	});
 };
 
 const listingHook = (on: On): void => {
@@ -117,82 +215,15 @@ const listingHook = (on: On): void => {
 	);
 };
 
-const askHooks = (on: On): void => {
-	on(
-		"tool.call",
-		{ tool: "mcp__claudetto__ask-user-question" },
-		async ($, e) => {
-			running.ask++;
-			try {
-				const options = strings(e.options);
-				const answer = await $.ui.ask(
-					text(e.question),
-					e.multiSelect === true ? { options, multiSelect: true } : options,
-				);
-				return { result: `The user answered: ${answer}` };
-			} catch (error) {
-				return { result: `ask failed: ${failure(error)}` };
-			} finally {
-				running.ask--;
-			}
-		},
-	);
-
-	on("tool.call", { tool: "AskUserQuestion" }, (_$, e, next) =>
-		running.ask > 0
-			? next(e)
-			: {
-					deny: "AskUserQuestion is off here: call mcp__claudetto__ask-user-question with question and options.",
-				},
-	);
-};
-
-const monitorHooks = (on: On): void => {
-	on("tool.call", { tool: "mcp__claudetto__monitor" }, async ($, e) => {
-		running.monitor++;
-		try {
-			const ws = wsOf(e.ws);
-			const out = await $.tool.call({
-				tool: "Monitor",
-				description: text(e.description),
-				timeout_ms: typeof e.timeout_ms === "number" ? e.timeout_ms : 300_000,
-				...(ws === undefined ? { command: text(e.command) } : { ws }),
-			});
-			return { result: out.deny ?? out.text ?? "" };
-		} catch (error) {
-			return { result: `monitor failed: ${failure(error)}` };
-		} finally {
-			running.monitor--;
-		}
-	});
-
-	on("tool.call", { tool: "Monitor" }, (_$, e, next) =>
-		running.monitor > 0
-			? next(e)
-			: { deny: "Monitor is off here: call mcp__claudetto__monitor." },
-	);
-};
-
 const searchHooks = (on: On): void => {
 	on("tool.describe", { tool: [OLD_ASK, "Monitor"] }, async ($, e, next) => ({
 		...(await next(e)),
 		...deferral(await $.tool.list()),
 	}));
-
-	// Only the result is rewritten: a rewritten query would void auto mode's server review of the response's other calls.
-	on("tool.call", { tool: "ToolSearch" }, async (_$, e, next) => {
-		const out = await next(e);
-		const result =
-			out.isError || out.deny !== undefined ? undefined : out.result;
-		const matches = result && wrapMatches(result.matches);
-		return result && matches ? { result: { ...result, matches } } : out;
-	});
 };
 
 export const delegation = (on: On): void => {
 	agentHooks(on);
 	listingHook(on);
-	askHooks(on);
-	monitorHooks(on);
 	searchHooks(on);
 };

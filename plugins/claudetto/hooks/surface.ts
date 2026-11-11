@@ -1,5 +1,6 @@
 import type { HookFor, On, PluginOptions } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import { switchOption } from "./options.ts";
 import {
 	BUN_FACT,
@@ -238,16 +239,22 @@ const bunRuleHook = (on: On, options: PluginOptions): void => {
 	);
 };
 
-const guardHooks = (on: On, options: PluginOptions): void => {
-	bunRuleHook(on, options);
-
-	on("tool.call", { tool: "Read" }, (_$, e, next) =>
+/** Denies a whole-file `Read` of a lock file or generated folder. */
+export function surfaceCall(
+	e: CallEvent,
+	next: CallNext,
+	options: PluginOptions,
+): CallAnswer {
+	return e.tool === "Read" &&
 		switchOption(options, "readGuardEnabled") &&
 		e.limit === undefined &&
 		heavyFile(e.file_path)
-			? { deny: REFUSAL }
-			: next(e),
-	);
+		? { deny: REFUSAL }
+		: next(e);
+}
+
+const guardHooks = (on: On, options: PluginOptions): void => {
+	bunRuleHook(on, options);
 
 	on("settings.read", onSettingsRead);
 

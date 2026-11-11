@@ -1,31 +1,31 @@
 import type { EngineInterface, On } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import { BOUND_OUTPUT_DIR } from "./limits/bound-output.ts";
-import { didWrite } from "./limits/stop.ts";
+import { didWrite } from "./limits/turn.ts";
 import { PERSON, rootOf } from "./pin.ts";
 import { SLICE_COMMIT } from "./texts.ts";
-import { WRITERS } from "./tools.ts";
 
 const RENAMED = /^[RC]/u;
 
-const git = async (
+async function git(
 	$: EngineInterface,
 	argv: string[],
-): Promise<string | undefined> => {
+): Promise<string | undefined> {
 	const r = await $.process.run(["git", ...argv]).catch(() => void 0);
 	return r?.exitCode === 0 ? r.stdout : undefined;
-};
+}
 
-const hashOne = async ($: EngineInterface, file: string): Promise<string> => {
+async function hashOne($: EngineInterface, file: string): Promise<string> {
 	const out = await git($, ["hash-object", "--", file]);
 	return out?.trim() ?? "";
-};
+}
 
 /** The blob hash of each file, "" for one git cannot read; one call, or one per file when the batch fails on a vanished file. */
-const hashes = async (
+async function hashes(
 	$: EngineInterface,
 	files: readonly string[],
-): Promise<string[]> => {
+): Promise<string[]> {
 	if (files.length === 0) {
 		return [];
 	}
@@ -34,7 +34,7 @@ const hashes = async (
 	return all?.length === files.length
 		? all
 		: Promise.all(files.map((f) => hashOne($, f)));
-};
+}
 
 /** The changed paths of a `git status --porcelain -z` output, each with whether it is deleted. */
 const entriesOf = (
@@ -138,17 +138,30 @@ const movedSince = async (
 				)
 				.map(([path]) => path);
 
-const writeHook = (on: On, mine: Map<string, string>): void => {
-	on("tool.call", { tool: WRITERS }, async ($, e, next) => {
-		const answer = await next(e);
-		const path = "file_path" in e ? e.file_path : e.notebook_path;
-		if (didWrite(answer)) {
-			const awaited2 = await hashes($, [path]);
-			mine.set(path, awaited2[0] ?? "");
-		}
-		return answer;
-	});
-};
+/** The agent's written files, by the hash it left each with. */
+export type SlicesState = Map<string, string>;
+
+/** Makes the written-files record of one session. */
+export const slicesState = (): SlicesState => new Map();
+
+/** Records the hash of each file that an `Edit`, `Write`, or `NotebookEdit` wrote. */
+export async function slicesCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	mine: SlicesState,
+): Promise<Awaited<CallAnswer>> {
+	if (e.tool !== "Edit" && e.tool !== "Write" && e.tool !== "NotebookEdit") {
+		return next(e);
+	}
+	const answer = await next(e);
+	const path = e.tool === "NotebookEdit" ? e.notebook_path : e.file_path;
+	if (didWrite(answer)) {
+		const awaited2 = await hashes($, [path]);
+		mine.set(path, awaited2[0] ?? "");
+	}
+	return answer;
+}
 
 /** The block that asks for the commits; none when no commit could be made or nothing moved. */
 const sliceBlock = async (
@@ -172,8 +185,7 @@ const sliceBlock = async (
  * tell the agent's change from a formatter's or the user's. Every other file in the cwd's repo that moved since the session's first prompt,
  * a file the agent wrote and another hand changed since included, is asked for as its own commit under its likely source.
  */
-export const slices = (on: On): void => {
-	const mine = new Map<string, string>();
+export const slices = (on: On, mine: SlicesState): void => {
 	// The cwd repo's changed files at the session's first prompt.
 	let known: Map<string, string> | undefined;
 	let interactive = true;
@@ -185,7 +197,6 @@ export const slices = (on: On): void => {
 		known ??= await dirty($);
 		return next(e);
 	});
-	writeHook(on, mine);
 	on("classic.Stop", { stop_hook_active: false }, async ($, e, next) => {
 		const answer = await next(e);
 		if (

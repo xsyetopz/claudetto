@@ -1,5 +1,6 @@
-import type { EngineInterface, On, PluginOptions } from "claude-code";
+import type { EngineInterface, PluginOptions } from "claude-code";
 
+import type { CallAnswer, CallEvent, CallNext } from "../chain.ts";
 import { parse, programOf } from "../gate/shell-words.ts";
 import { atRoot } from "../handoff/layout.ts";
 import { numberOption } from "../options.ts";
@@ -111,20 +112,29 @@ const boundResult = (
 };
 
 /** A file that cannot be written leaves the cut in place and says so in its marker. */
-const save = async (
+async function save(
 	$: EngineInterface,
 	path: string,
 	text: string,
-): Promise<string | undefined> => {
+): Promise<string | undefined> {
 	try {
 		await $.fs.write(atRoot(await $.session.root(), path), text);
 		return path;
 	} catch {
 		return undefined;
 	}
-};
+}
 
-export const boundOutputHooks = (on: On, options: PluginOptions): void => {
+/** Cuts the output of a Bash test, build, lint, or check run to the `maxTestOutputChars` limit and saves the full text to a file. */
+export async function boundOutputCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	options: PluginOptions,
+): Promise<Awaited<CallAnswer>> {
+	if (e.tool !== "Bash") {
+		return next(e);
+	}
 	// `0` is off.
 	const limit = numberOption(
 		options,
@@ -132,29 +142,27 @@ export const boundOutputHooks = (on: On, options: PluginOptions): void => {
 		DEFAULT_OUTPUT_CHARS,
 		0,
 	);
-	on("tool.call", { tool: ["Bash"] }, async ($, e, next) => {
-		const answer = await next(e);
-		if (limit === 0 || answer.deny !== undefined || !isBoundedRun(e.command)) {
-			return answer;
-		}
-		const full = fullTextOf(answer.result);
-		// Streams that each fit are left whole, whatever they total.
-		if (
-			full === undefined ||
-			full.length <= limit ||
-			JSON.stringify(boundResult(answer.result, limit)) ===
-				JSON.stringify(answer.result)
-		) {
-			return answer;
-		}
-		const path = `${BOUND_OUTPUT_DIR}/output-${e.tool_use_id.replaceAll(/[^\w-]/gu, "_")}.txt`;
-		const saved = await save($, path, full);
-		return {
-			...answer,
-			result: boundResult(answer.result, limit, saved),
-			...(answer.text === undefined
-				? {}
-				: { text: boundText(answer.text, limit, saved) }),
-		};
-	});
-};
+	const answer = await next(e);
+	if (limit === 0 || answer.deny !== undefined || !isBoundedRun(e.command)) {
+		return answer;
+	}
+	const full = fullTextOf(answer.result);
+	// Streams that each fit are left whole, whatever they total.
+	if (
+		full === undefined ||
+		full.length <= limit ||
+		JSON.stringify(boundResult(answer.result, limit)) ===
+			JSON.stringify(answer.result)
+	) {
+		return answer;
+	}
+	const path = `${BOUND_OUTPUT_DIR}/output-${e.tool_use_id.replaceAll(/[^\w-]/gu, "_")}.txt`;
+	const saved = await save($, path, full);
+	return {
+		...answer,
+		result: boundResult(answer.result, limit, saved),
+		...(answer.text === undefined
+			? {}
+			: { text: boundText(answer.text, limit, saved) }),
+	};
+}
