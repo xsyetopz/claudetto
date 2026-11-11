@@ -10,7 +10,7 @@ import {
 	checkFault,
 	type CheckNext,
 } from "./chain.ts";
-import { decideCall } from "./decide.ts";
+import { decideCall, typesafeKey } from "./decide.ts";
 import { delegation, delegationCall } from "./delegation.ts";
 import { gate, gateState } from "./gate.ts";
 import { gateCall, gateCheck } from "./gate/watch.ts";
@@ -28,7 +28,6 @@ import {
 import { budgetHooks, stopHooks, subagentStopHooks } from "./limits/stop.ts";
 import { stopCall, stopCheck, stopState } from "./limits/turn.ts";
 import { notify } from "./notify.ts";
-import { stringOption } from "./options.ts";
 import { pin, pinCall, pinCheck, pinState } from "./pin.ts";
 import { reply } from "./reply.ts";
 import { runs, runsCall, runsState } from "./runs.ts";
@@ -107,7 +106,7 @@ const callGuards = (
 		(at, step) => pinCall(at, step, state.pinned),
 		(at, step) => delegationCall($, at, step),
 		(at, step) => runsCall(at, step, state.ran),
-		(at, step) => decideCall($, at, step, options),
+		(at, step) => decideCall($, at, step),
 		(at, step) => handoffCall($, at, step, state.handoff),
 		(at, step) => gateCall($, at, step, state.gate),
 	]);
@@ -127,13 +126,13 @@ const registerGuards = (on: On, options: PluginOptions, state: State): void => {
 };
 
 // The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.
-const registerTools = (on: On, options: PluginOptions): void => {
+const registerTools = (on: On): void => {
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
 		await $.tool.register(ASK_SPEC);
 		await $.tool.register(MONITOR_SPEC);
 		await $.command.register(REPLY_SPEC);
-		if (stringOption(options, "typesafeApiKey") !== "") {
+		if ((await typesafeKey($)) !== "") {
 			await $.tool.register(DECIDE_SPEC);
 		}
 		return out;
@@ -146,5 +145,5 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerOuter(on, options, state);
 	registerGuards(on, options, state);
 	registerInner(on, options, state);
-	registerTools(on, options);
+	registerTools(on);
 };

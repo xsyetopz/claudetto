@@ -1,4 +1,4 @@
-import type { EngineInterface, PluginOptions } from "claude-code";
+import type { EngineInterface } from "claude-code";
 
 import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import {
@@ -8,20 +8,23 @@ import {
 	verdictsOf,
 } from "./decide/judge.ts";
 import { postJev } from "./decider/jev.ts";
-import { stringOption } from "./options.ts";
 import { DECIDE_CALL } from "./texts-gate.ts";
+
+/** The key of TypeSafe, or an empty string when the environment holds none. */
+export async function typesafeKey($: EngineInterface): Promise<string> {
+	return (await $.env.get("TYPESAFE_API_KEY")) ?? "";
+}
 
 /** Answers a `decide` call through Jev; every other tool, and `AskUserQuestion`, passes on. */
 export async function decideCall(
 	$: EngineInterface,
 	e: CallEvent,
 	next: CallNext,
-	options: PluginOptions,
 ): Promise<Awaited<CallAnswer>> {
 	if (![DECIDE_CALL].includes(e.tool)) {
 		return next(e);
 	}
-	const key = stringOption(options, "typesafeApiKey");
+	const key = await typesafeKey($);
 	const questions = questionsOfInput(e);
 	if (!key || questions === undefined) {
 		return next(e);

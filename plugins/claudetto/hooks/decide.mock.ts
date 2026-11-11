@@ -1,13 +1,11 @@
-import type { HttpInit, On, PluginOptions } from "claude-code";
+import type { HttpInit, On } from "claude-code";
 import { type Engine, mock } from "claude-code/testing";
 
+import { bodyOf } from "./decider/decider.mock.ts";
 import { scanner } from "./secrets.mock.ts";
 
 export const DECIDE = "mcp__claudetto__decide";
 export const KEY = "typesafe-key";
-export const WITH_KEY: { options: PluginOptions } = {
-	options: { typesafeApiKey: KEY },
-};
 
 export const reply = (status: number, text: string) => ({
 	value: { status, ok: status >= 200 && status < 300, headers: {}, text },
@@ -51,8 +49,10 @@ interface Fetched {
 	init?: HttpInit;
 }
 
-export const stub = (on: On, send: Send) => {
+/** A lab whose environment holds `TYPESAFE_API_KEY`, unless `env` says otherwise. */
+export const stub = (on: On, send: Send, env?: Record<string, string>) => {
 	scanner(on);
+	mock.env(on, env ?? { TYPESAFE_API_KEY: KEY });
 	const clock = mock.clock(on);
 	const fetches: Fetched[] = [];
 	on("http.fetch", (_$, e) => {
@@ -80,18 +80,6 @@ export const registered = async ($: Engine, on: On) => {
 	on("command.register", (_$, e) => ({ value: { command: e.name } }));
 	await $.session.start({ cwd: "/repo", surface: null, isInteractive: false });
 	return names.filter((name) => name === "decide");
-};
-
-const bodyOf = (fetched: Fetched | undefined): Record<string, unknown> => {
-	const body = fetched?.init?.body ?? "{}";
-	const parsed: unknown = JSON.parse(
-		typeof body === "string"
-			? body
-			: Buffer.from(body.base64, "base64").toString(),
-	);
-	return typeof parsed === "object" && parsed !== null
-		? Object.fromEntries(Object.entries(parsed))
-		: {};
 };
 
 /** The sorted top-level keys of a request body. */

@@ -27,6 +27,10 @@ claudetto needs `betterleaks` and `mole`, and a `/claudetto:setup` run in each p
 
 Each plugin's options are its `userConfig` fields, set in `/plugin` → the plugin → Configure. The field descriptions in each `plugins/*/.claude-plugin/plugin.json` say what each one does and its default. To turn on `claudetto-you-should-know`, set `sideCheckEnabled` to `true`.
 
+## TypeSafe Key
+
+claudetto reads `TYPESAFE_API_KEY` from the environment of the shell that launched Claude Code, or from the `env` block of your Claude Code settings. It does not read a project `.env` file, so a key that sits only there is not seen. With a key, claudetto registers the `decide` tool, which asks Jev, TypeSafe's decision model, to settle a choice or a yes/no question. Without one, `decide` is not registered, and the Decider answers with `claude-haiku-5-5`.
+
 ## License
 
 See [LICENSE](LICENSE).

@@ -2,6 +2,8 @@ import { expect, test } from "bun:test";
 
 import { Glob } from "bun";
 
+import { contentsOf, fieldOf, listOf, PLUGINS } from "./validator.ts";
+
 const ROOT = `${import.meta.dir}/..`;
 
 const sourcesWith = async (needle: string): Promise<string[]> => {
@@ -21,5 +23,31 @@ const sourcesWith = async (needle: string): Promise<string[]> => {
 test("only the Decider module names the TypeSafe host", async () => {
 	expect(await sourcesWith("api.typesafe.ai")).toEqual([
 		"plugins/claudetto/hooks/decider/jev.ts",
+	]);
+});
+
+const envReadsOf = async (plugin: string): Promise<string[]> => {
+	const contents = await contentsOf(plugin);
+	return contents
+		.flatMap((content) => listOf(fieldOf(content, "notes")))
+		.filter((note) => typeof note === "string" && note.includes("env reads:"))
+		.flatMap((note) => String(note).split("env reads:")[1]?.split(",") ?? [])
+		.map((name) => name.trim());
+};
+
+test("the validator lists the TypeSafe key among the reads of claudetto alone", async () => {
+	const reads = await Promise.all(PLUGINS.map((name) => envReadsOf(name)));
+
+	expect(reads.map((names) => names.includes("TYPESAFE_API_KEY"))).toEqual([
+		true,
+		false,
+		false,
+	]);
+});
+
+test("only the Decider and the decide tool read the TypeSafe key", async () => {
+	expect(await sourcesWith('env.get("TYPESAFE_API_KEY")')).toEqual([
+		"plugins/claudetto/hooks/decide.ts",
+		"plugins/claudetto/hooks/decider/settle.ts",
 	]);
 });

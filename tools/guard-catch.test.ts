@@ -1,40 +1,12 @@
 import { expect, test } from "bun:test";
 
-import { spawn } from "bun";
+import { contentsOf, fieldOf, listOf, PLUGINS } from "./validator.ts";
 
-const PLUGINS = [
-	"claudetto",
-	"claudetto-openspec",
-	"claudetto-you-should-know",
-];
 const EVENTS = ["tool.check", "tool.call"];
 
-const fieldOf = (value: unknown, key: string): unknown =>
-	typeof value === "object" && value !== null
-		? Object.entries(value).find(([k]) => k === key)?.[1]
-		: undefined;
-const listOf = (value: unknown): unknown[] =>
-	Array.isArray(value) ? value : [];
-
-// `--strict` exits 1 on the manifest's missing `version`, so the report is read whatever the exit code.
 const guardsOf = async (plugin: string): Promise<unknown[]> => {
-	const proc = spawn(
-		[
-			"claude",
-			"plugin",
-			"validate",
-			"--strict",
-			"--json",
-			`${import.meta.dir}/../plugins/${plugin}`,
-		],
-		{
-			env: { ...process.env, DISABLE_TELEMETRY: "1" },
-			stderr: "ignore",
-			stdout: "pipe",
-		},
-	);
-	const report: unknown = await new Response(proc.stdout).json();
-	return listOf(fieldOf(report, "contents"))
+	const contents = await contentsOf(plugin);
+	return contents
 		.flatMap((c) => listOf(fieldOf(c, "gatingHooks")))
 		.filter((g) => EVENTS.some((event) => fieldOf(g, "pattern") === event));
 };

@@ -127,12 +127,6 @@
 			"title": "Open items at Stop",
 			"description": "Use `false` to skip the Stop check. On by default: a reply that defers work or ends on an offer is sent back once, unless each item names a blocker: a `! <command>`, a denial, or a question.",
 			"default": true
-		},
-		"typesafeApiKey": {
-			"type": "string",
-			"title": "TypeSafe API key",
-			"description": "Key for api.typesafe.ai. With a key, claudetto registers mcp__claudetto__decide, which asks Jev to settle a choice or yes/no question and sends only the question and option texts.",
-			"sensitive": true
 		}
 	}
 }

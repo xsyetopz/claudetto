@@ -23,8 +23,3 @@ export const listOption = (
 	const value = options[key];
 	return typeof value === "object" ? value : [];
 };
-
-export const stringOption = (options: PluginOptions, key: string): string => {
-	const value = options[key];
-	return typeof value === "string" ? value : "";
-};
