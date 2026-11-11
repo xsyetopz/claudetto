@@ -196,7 +196,7 @@ const binTable = (
 	`## Score by ${heading}`,
 	"",
 	"| bin | cases | today exact | decider exact | Jev requests refused |",
-	"|---|---|---|---|---|",
+	"| --- | --- | --- | --- | --- |",
 	...bins.map(([name, low, high]) => {
 		const inBin = measured.filter((m) => value(m) >= low && value(m) <= high);
 		const count = (pick: (m: Measured) => boolean) =>
@@ -225,7 +225,7 @@ export async function scoreLedger(
 	);
 	const most = Math.max(0, ...measured.map((m) => m.sentences));
 	return {
-		title: "Ledger run",
+		title: "Ledger Run",
 		roads,
 		unread: unread.n,
 		extra: [
@@ -235,13 +235,13 @@ export async function scoreLedger(
 				.join(", ")}.`,
 			"",
 			...binTable(
-				"sentences per message",
+				"Sentences per Message",
 				BY_SENTENCES,
 				measured,
 				(m) => m.sentences,
 			),
 			...binTable(
-				"message length in characters",
+				"Message Length in Characters",
 				BY_CHARS,
 				measured,
 				(m) => m.chars,

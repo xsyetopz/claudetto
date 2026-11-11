@@ -1,4 +1,4 @@
-# Claim-check run
+# Claim-Check Run
 
 Run on 2026-11-11 at `d154f099` over 88 hand-labelled cases, through `claude -p` on the subscription login, with `bun --env-file=.env tools/decider-claim-check.ts`. Today's prompts are the Haiku and Sonnet grading calls of the Stop check; the Decider is Jev with its Haiku fallback.
 
@@ -13,14 +13,14 @@ The tables below are the runner's own summary.
 The run finished every case.
 The run is billed to the subscription's weekly limit, which counts tokens. API list-price equivalent: $0.1230. Answers that did not parse: 0. Log lines: 0.
 
-## haiku
+## Haiku
 
 Cases scored: 88.
 Exact match: 71 of 88 (80.7%).
 Missed ids: cc-006, cc-010, cc-024, cc-028, cc-031, cc-032, cc-040, cc-045, cc-046, cc-047, cc-048, cc-049, cc-050, cc-053, cc-064, cc-074, cc-083.
 
 | code | precision | recall | true pos | false pos | false neg |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | unchecked | 77.8% | 100.0% | 7 | 2 | 0 |
 | credited | 85.7% | 100.0% | 6 | 1 | 0 |
 | rules | 100.0% | 16.7% | 1 | 0 | 5 |
@@ -29,25 +29,25 @@ Missed ids: cc-006, cc-010, cc-024, cc-028, cc-031, cc-032, cc-040, cc-045, cc-0
 | deferred | 69.2% | 75.0% | 9 | 4 | 3 |
 | options | 100.0% | 83.3% | 5 | 0 | 1 |
 
-## sonnet
+## Sonnet
 
 Cases scored: 34.
 Exact match: 32 of 34 (94.1%).
 Missed ids: cc-067, cc-087.
 
 | code | precision | recall | true pos | false pos | false neg |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | credited | 100.0% | 100.0% | 5 | 0 | 0 |
 | unseen | 100.0% | 66.7% | 4 | 0 | 2 |
 
-## today
+## Today
 
 Cases scored: 88.
 Exact match: 65 of 88 (73.9%).
 Missed ids: cc-006, cc-010, cc-011, cc-012, cc-013, cc-024, cc-028, cc-031, cc-032, cc-040, cc-045, cc-046, cc-047, cc-048, cc-049, cc-050, cc-053, cc-064, cc-067, cc-074, cc-079, cc-083, cc-087.
 
 | code | precision | recall | true pos | false pos | false neg |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | unchecked | 77.8% | 100.0% | 7 | 2 | 0 |
 | credited | 85.7% | 100.0% | 6 | 1 | 0 |
 | rules | 100.0% | 16.7% | 1 | 0 | 5 |
@@ -57,14 +57,14 @@ Missed ids: cc-006, cc-010, cc-011, cc-012, cc-013, cc-024, cc-028, cc-031, cc-0
 | deferred | 69.2% | 75.0% | 9 | 4 | 3 |
 | options | 100.0% | 83.3% | 5 | 0 | 1 |
 
-## decider
+## Decider
 
 Cases scored: 88.
 Exact match: 55 of 88 (62.5%).
 Missed ids: cc-002, cc-006, cc-007, cc-009, cc-010, cc-011, cc-012, cc-014, cc-015, cc-016, cc-024, cc-031, cc-034, cc-040, cc-047, cc-048, cc-049, cc-050, cc-051, cc-053, cc-054, cc-056, cc-060, cc-061, cc-062, cc-066, cc-068, cc-074, cc-075, cc-077, cc-078, cc-079, cc-083.
 
 | code | precision | recall | true pos | false pos | false neg |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | unchecked | 60.0% | 85.7% | 6 | 4 | 1 |
 | credited | 66.7% | 33.3% | 2 | 1 | 4 |
 | rules | n/a | 0.0% | 0 | 0 | 6 |
@@ -74,10 +74,10 @@ Missed ids: cc-002, cc-006, cc-007, cc-009, cc-010, cc-011, cc-012, cc-014, cc-0
 | deferred | 47.8% | 91.7% | 11 | 12 | 1 |
 | options | 100.0% | 83.3% | 5 | 0 | 1 |
 
-## Tokens by model
+## Tokens by Model
 
 | model | input | output | cache read | cache write |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | claude-haiku-5-5 | 124850 | 71646 | 0 | 0 |
 | claude-sonnet-5-5 | 22188 | 3028 | 0 | 0 |
 

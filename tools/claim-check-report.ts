@@ -74,7 +74,7 @@ const codeTable = (
 	rows: readonly Row[],
 ): string[] => [
 	"| code | precision | recall | true pos | false pos | false neg |",
-	"|---|---|---|---|---|---|",
+	"| --- | --- | --- | --- | --- | --- |",
 	...scope.map((code) => {
 		const found = rows.filter((row) => row.found.includes(code));
 		const real = rows.filter((row) => row.expected.includes(code));
@@ -96,7 +96,7 @@ const roadSection = (
 	name: string,
 	road: { scope: readonly string[] | undefined; rows: Row[] },
 ): string[] => [
-	`## ${name}`,
+	`## ${name.charAt(0).toUpperCase()}${name.slice(1)}`,
 	"",
 	`Cases scored: ${road.rows.length}.`,
 	...exactTable(road.scope, road.rows),
@@ -125,10 +125,10 @@ const cacheLine = (calls: readonly Call[]): string => {
 };
 
 const tokenSection = (tokens: ReadonlyMap<string, Usage>): string[] => [
-	"## Tokens by model",
+	"## Tokens by Model",
 	"",
 	"| model | input | output | cache read | cache write |",
-	"|---|---|---|---|---|",
+	"| --- | --- | --- | --- | --- |",
 	...[...tokens].map(
 		([model, t]) =>
 			`| ${model} | ${t.input_tokens} | ${t.output_tokens} | ${t.cache_read_input_tokens} | ${t.cache_creation_input_tokens} |`,

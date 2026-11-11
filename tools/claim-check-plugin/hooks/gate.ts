@@ -83,5 +83,5 @@ export async function scoreGate(
 		lines(text).map((line) => asCase(line)),
 		(c) => scoreCase($, ctx, c, roads),
 	);
-	return { title: "Branch-gate run", roads, unread: 0, extra: [] };
+	return { title: "Branch-Gate Run", roads, unread: 0, extra: [] };
 }

@@ -152,5 +152,5 @@ export async function scoreClaimCheck(
 		lines(text).map((line) => asCase(line)),
 		(c) => scoreCase($, ctx, c, roads, unread),
 	);
-	return { title: "Claim-check run", roads, unread: unread.n, extra: [] };
+	return { title: "Claim-Check Run", roads, unread: unread.n, extra: [] };
 }
