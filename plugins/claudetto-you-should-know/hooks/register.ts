@@ -10,6 +10,7 @@ import {
 	remember,
 } from "./note.ts";
 import { press } from "./press.ts";
+import { type Settings, settingsOf } from "./settings.ts";
 import {
 	countIgnored,
 	type Engine,
@@ -95,6 +96,7 @@ const showReply = async (
 const runCheck = async (
 	$: Engine,
 	mem: Memory,
+	settings: Settings,
 	at: Turn,
 ): Promise<string | undefined> => {
 	const body = checkBody({
@@ -104,8 +106,7 @@ const runCheck = async (
 		earlier: mem.earlier,
 	});
 	const result = await $.model.complete({
-		model: "claude-haiku-5-5",
-		effort: "high",
+		...settings,
 		maxTokens: LIMITS.maxTokens,
 		prompt: [{ text: CHECK_INSTRUCTIONS, cache: true }, { text: body }],
 	});
@@ -115,6 +116,7 @@ const runCheck = async (
 const startCheck = async (
 	$: Engine,
 	mem: Memory,
+	settings: Settings,
 	at: Turn,
 ): Promise<string | undefined> => {
 	const surfaces = await $.session.surfaces();
@@ -135,20 +137,21 @@ const startCheck = async (
 		return undefined;
 	}
 	await saveRow($, { ...row, askedTurn: at.turnId });
-	return runCheck($, mem, at);
+	return runCheck($, mem, settings, at);
 };
 
 // Calls the model sends in one response arrive together, so they share the check already running.
 const checkBefore = (
 	$: Engine,
 	mem: Memory,
+	settings: Settings,
 	at: Turn,
 ): Promise<string | undefined> => {
 	const running = mem.inFlight.get(at.id);
 	if (running !== undefined) {
 		return running;
 	}
-	const check = startCheck($, mem, at)
+	const check = startCheck($, mem, settings, at)
 		.catch((error: unknown): undefined => {
 			$.ui.log(`The side check failed (${String(error)})`);
 		})
@@ -264,6 +267,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	if (options["sideCheckEnabled"] !== true) {
 		return;
 	}
+	const settings = settingsOf(options);
 	const mem: Memory = {
 		typedPast: new Map(),
 		ended: new Set(),
@@ -286,7 +290,7 @@ export const register = (on: On, options: PluginOptions): void => {
 		}
 		addToLog(mem, logEntry("assistant", `about to call ${JSON.stringify(e)}`));
 		const id = await $.session.id();
-		const line = await checkBefore($, mem, {
+		const line = await checkBefore($, mem, settings, {
 			id,
 			turnId: mem.turns.get(id) ?? "",
 		});

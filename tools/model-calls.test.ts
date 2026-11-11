@@ -2,8 +2,15 @@ import { expect, test } from "bun:test";
 
 import { Glob } from "bun";
 
+import {
+	EFFORTS,
+	MODELS,
+	settingsOf,
+} from "../plugins/claudetto-you-should-know/hooks/settings.ts";
+
 const ROOT = `${import.meta.dir}/..`;
-const MODELS = ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"];
+const SETTINGS_IMPORT =
+	/import \{[^}]*\bsettingsOf\b[^}]*\} from "\.\/settings\.ts"/u;
 const CALL = /\$\.model\s*\.complete\s*\(\s*\{/gu;
 const OPENERS = "([{";
 const CLOSERS = ")]}";
@@ -111,11 +118,20 @@ const modelsOf = (call: Call): string[] => {
 const faultsOf = (call: Call): string[] => {
 	const at = `${call.file}:${call.line}`;
 	const faults: string[] = [];
+	if (
+		call.fields.get("...") === "settings" &&
+		SETTINGS_IMPORT.test(call.source)
+	) {
+		return faults;
+	}
 	if (!call.fields.has("effort")) {
 		faults.push(`${at} passes no effort`);
 	}
 	const models = modelsOf(call);
-	if (models.length === 0 || !models.every((m) => MODELS.includes(m))) {
+	if (
+		models.length === 0 ||
+		!models.every((m) => MODELS.some((id) => id === m))
+	) {
 		faults.push(
 			`${at} model is ${call.fields.get("model") ?? "missing"}, which is not a full ID of ${MODELS.join(", ")}`,
 		);
@@ -132,9 +148,11 @@ const isShipped = (file: string): boolean =>
 const callsOf = async (file: string): Promise<Call[]> =>
 	callsIn(file, await Bun.file(`${ROOT}/${file}`).text());
 
-const faultsAt = (body: string): string[] =>
-	callsIn("x.ts", `await $.model.complete({ ${body} });`).flatMap((call) =>
-		faultsOf(call),
+const SETTINGS_HEAD = 'import { settingsOf } from "./settings.ts";\n';
+
+const faultsAt = (body: string, head = ""): string[] =>
+	callsIn("x.ts", `${head}await $.model.complete({ ${body} });`).flatMap(
+		(call) => faultsOf(call),
 	);
 
 test("every $.model.complete call in plugins passes effort and a full model ID", async () => {
@@ -148,9 +166,10 @@ test("every $.model.complete call in plugins passes effort and a full model ID",
 	expect(calls.flatMap((call) => faultsOf(call))).toEqual([]);
 });
 
-test("a call with an alias, a spread, or no effort is a fault", () => {
+test("a call with an alias, an unvalidated spread, or no effort is a fault", () => {
 	expect(faultsAt('model: "haiku", prompt: "p"')).toHaveLength(2);
 	expect(faultsAt("...settings, prompt: p")).toHaveLength(2);
+	expect(faultsAt("...other, prompt: p", SETTINGS_HEAD)).toHaveLength(2);
 	expect(faultsAt('model: "claude-haiku-5-5", prompt: f(a, b)')).toHaveLength(
 		1,
 	);
@@ -159,4 +178,20 @@ test("a call with an alias, a spread, or no effort is a fault", () => {
 			'model: "claude-haiku-5-5", effort: "low", prompt: f(a, { b: 1 })',
 		),
 	).toEqual([]);
+	expect(faultsAt("...settings, prompt: p", SETTINGS_HEAD)).toEqual([]);
+});
+
+test("the settings a spread carries are always inside the allowed models and efforts", () => {
+	for (const model of ["haiku", "", 7, "claude-haiku-4-5", ...MODELS]) {
+		for (const effort of ["extreme", 3, ...EFFORTS]) {
+			const got = settingsOf({
+				sideCheckModel: model,
+				sideCheckEffortLevel: effort,
+			});
+
+			expect(MODELS).toContain(got.model);
+			expect(EFFORTS).toContain(got.effort);
+		}
+	}
+	expect(settingsOf({})).toEqual({ model: "claude-haiku-5-5", effort: "high" });
 });
