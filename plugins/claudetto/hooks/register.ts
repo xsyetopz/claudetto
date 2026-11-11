@@ -87,7 +87,7 @@ const checkGuards = (
 		(at, step) => memoryGuard($, at, step, state.hold.memory),
 		(at, step) => holdCheck($, at, step, state.hold),
 		(at, step) => stopCheck(at, step, state.stop),
-		(at, step) => pinCheck($, at, step, state.pinned),
+		(at, step) => pinCheck(at, step, state.pinned),
 		(at, step) => wordingTestsCheck($, at, step),
 		(at, step) => gateCheck($, at, step, state.gate),
 	]);

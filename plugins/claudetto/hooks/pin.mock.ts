@@ -10,11 +10,11 @@ const SENTENCES = /<sentences>\n([\s\S]*?)\n<\/sentences>/u;
 const NUMBERED = /^(\d+)\. (.*)$/gmu;
 const MESSAGE = /<message>\n([\s\S]*?)\n<\/message>/u;
 
-const replyTo = (prompt: string, limits: Limits, kind: string): string => {
+const replyTo = (prompt: string, limits: Limits): string => {
 	const listed = [...(SENTENCES.exec(prompt)?.[1] ?? "").matchAll(NUMBERED)];
 	return JSON.stringify(
-		Object.fromEntries([
-			...listed.flatMap(([, i, sentence = ""]): [string, object][] =>
+		Object.fromEntries(
+			listed.flatMap(([, i, sentence = ""]): [string, object][] =>
 				Object.hasOwn(limits, sentence)
 					? [
 							[`restricts_${i}`, { answer: "yes", evidence: sentence }],
@@ -22,18 +22,16 @@ const replyTo = (prompt: string, limits: Limits, kind: string): string => {
 						]
 					: [[`restricts_${i}`, { answer: "no" }]],
 			),
-			["kind", { answer: kind, evidence: listed[0]?.[2] }],
-		]),
+		),
 	);
 };
 
-/** Stubs beneath the pin: no key is set, so the ledger's model answers. It reads each sentence in `limits` as a limit and the message as `kind`, records each prompt it is sent in `seen`, and answers about a message in `held` once that promise settles. */
+/** Stubs beneath the pin: no key is set, so the ledger's model answers. It reads each sentence in `limits` as a limit, records each prompt it is sent in `seen`, and answers about a message in `held` once that promise settles. */
 export const lab = (
 	on: On,
 	limits: Limits,
 	messages: SessionMessage[] = [],
 	seen: string[] = [],
-	kind = "task",
 	held: Readonly<Record<string, Promise<unknown>>> = {},
 ): void => {
 	on("prompt.submit", (_$, e) => e);
@@ -45,7 +43,7 @@ export const lab = (
 	on("model.complete", async (_$, e) => {
 		seen.push(e.prompt);
 		await held[MESSAGE.exec(e.prompt)?.[1] ?? ""];
-		return { value: haikuText(replyTo(e.prompt, limits, kind)) };
+		return { value: haikuText(replyTo(e.prompt, limits)) };
 	});
 };
 
@@ -75,22 +73,8 @@ export const RESULT_ROW: SessionMessage = {
 	toolResults: [{ tool_use_id: "t", text: "", isError: false }],
 };
 
-export const person: SessionMessage = {
-	role: "user",
-	text: "Who told you to lint the docs?",
-	toolUses: [],
-};
-
-export const spoken = (text: string, ...tools: string[]): SessionMessage => ({
+export const spoken = (text: string): SessionMessage => ({
 	role: "assistant",
 	text,
-	toolUses: tools.map((tool) => ({ tool_use_id: "t", tool, input: {} })),
+	toolUses: [],
 });
-
-/** A turn whose ledger reads the person's message as `kind`, with `after` following it in the transcript. */
-export const turn =
-	(kind: string, ...after: SessionMessage[]) =>
-	($: Engine, on: On) => {
-		lab(on, {}, [person, ...after], [], kind);
-		return submit($, person.text);
-	};

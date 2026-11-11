@@ -52,7 +52,7 @@ Before 1.0.0, a release can change or remove behavior.
 - Every description the model sees fits 200 characters, where 18 of 59 did not, and every model call names its model, its effort, and its `maxTokens`.
 - The session-start hook adds its lines to the env file once. Before, each start added a copy, and every `Bash` command ran them all.
 - `claudetto-you-should-know` checks before each main-loop tool call that can change something, in place of every sixth step. The call waits for the check. When the check has a note, the call is stopped, and the agent brings the note to you before it acts. Reads, searches, and questions to you run with no check.
-- Four prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
+- Three prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, and the unchecked-claim block calls the user's statement a claim to check.
 - `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone. Any other command the sandbox blocks, such as `claude -p` reading its login from the Keychain, can retry outside the sandbox. Auto mode's classifier or your approval decides each retry, so the agent runs the command itself and no longer hands it to you.
 - The root prompt casts the agent as an expert junior software engineer working in your repository, and has it report a defect it caused as a third-person bug report rather than an admission.
 - The rule modules that `scripts/vendor-rules.ts` generates pass through `bun fmt` before they are written, so each one stays within the 300-line lint limit after formatting and is unchanged by the format check.
@@ -73,7 +73,6 @@ Before 1.0.0, a release can change or remove behavior.
 - The secret scan reads each string of a structured tool result as raw text, so a secret after a line break inside a result object is redacted.
 - The claim check counts a popup answer as the person's words.
 - Hygiene finds old build folders in other checkouts again: it walks each folder in Mole's `purge_paths` besides the project, and never enters `~/.claude/projects` or `~/.claude/plugins`. Before, it walked only the project, whose own checkout always stays, so it found nothing outside a nested checkout.
-- The answer-first gate no longer denies the first tool call after a compaction, because it no longer reads the summary as an unanswered remark.
 - The `Bash` tool text names `cat`, `head`, `tail`, `sed`, `awk`, and `echo` as commands not to read or change a file with, as the stock text does, so the agent stops sending reads the gate refuses.
 - When the gate itself fails, it asks with the failure text and no longer runs the hooks beneath it.
 - The temp-folder gate treats the sandbox `TMPDIR`, `/tmp/claude-<uid>`, as a temp base, so a folder made there gets its marker, and it expands a variable set earlier in the command in the path it made.
@@ -81,7 +80,6 @@ Before 1.0.0, a release can change or remove behavior.
 - The run limits count only file-tool writes that ran.
 - The gate sends a file read to `Read` anywhere in a chain, such as `cd src && sed -n '1,5p' a.ts`; a read piped into another command still runs. It names the file in place of a `head -n` count or a `sed` script.
 - The gate denies an in-place edit written as `sed --in-place`, run by `find -exec` or `-execdir`, or run behind `xargs`.
-- A remark that an earlier request covers counts as a task.
 - No claudetto hook changes a tool call input any more, so auto mode keeps its review of the other calls in the response: `Agent` denies an off-form call with the form to send, and a `ToolSearch` query and its result pass as they came.
 - The `autoMode` lists that `/claudetto:setup` writes define the trusted repo and its source control again, which the replaced list had dropped. They add two soft rules, `Write Outside the Trusted Repo` and a closing `Any Other Danger`, so a block has a rule to cite. Claude Code shows the cited rule in the denial, as in `Auto mode: [Write Outside the Trusted Repo]`. Before, a push to another of your repos fit no rule and came back with "it gave no explanation". Naming the repository in your message clears that rule. Run `/claudetto:setup` again to write the new lists.
 
@@ -90,6 +88,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The `typesafeApiKey` option, in favor of the `TYPESAFE_API_KEY` variable.
 - The tool `mcp__claudetto__ask-user-question`, in favor of the built-in `AskUserQuestion`.
 - The tool `mcp__claudetto__monitor`, in favor of the built-in `Monitor`.
+- **Breaking:** the answer-first gate, which denied the first tool call after a message it read as a remark or a question. It denied work you had asked for, as after "Now it's active". No tool call is held for an answer any more, and the ledger no longer classes each message as a task, question, remark, or dispute.
 - The ledger's Haiku extraction prompt, its parser, and its quote check, which the Decider's per-sentence read replaces.
 - The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
 - The `fold` hook is gone, so grouped tool results keep Claude Code's own fold.

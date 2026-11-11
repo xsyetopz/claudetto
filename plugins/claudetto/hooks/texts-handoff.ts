@@ -41,8 +41,6 @@ export const STALE_HANDOFF = (name: string, days: number): string =>
 
 // Constraint ledger: the user's standing constraints, kept across turns and compaction.
 
-export type PinKind = "remark" | "question" | "dispute" | "task";
-
 export interface PinConstraint {
 	text: string;
 	rule:
@@ -63,9 +61,6 @@ export const PIN_BLOCKED = (constraint: string): string =>
 
 export const PIN_NO_QUESTIONS = (constraint: string): string =>
 	`The user asked for no questions: "${constraint}". Settle the point from the conversation and the repository, state the reading you took, and go on. End the reply with each choice only the user can make, as the assumption you took, so the user can correct it.`;
-
-export const PIN_ANSWER_FIRST =
-	"The user's latest message asks or remarks and requests no work. Reply with the answer itself, from what the session holds, and mark what you did not check. When only a command can supply the answer, send this call again with no text before it. Open the reply with the answer, because what you will do is no answer.";
 
 export const PIN_COMPACT = (
 	instructions: string | undefined,

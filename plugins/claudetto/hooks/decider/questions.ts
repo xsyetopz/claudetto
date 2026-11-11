@@ -1,6 +1,6 @@
 import type { EngineInterface } from "claude-code";
 
-import type { PinConstraint, PinKind } from "../texts-handoff.ts";
+import type { PinConstraint } from "../texts-handoff.ts";
 
 /** One judgment about the state that has a yes or a no. */
 export interface Noul {
@@ -71,14 +71,6 @@ export const RULE_CRITERIA: Readonly<
 	"no-questions": "The sentence forbids asking the user questions.",
 };
 
-/** The kinds a message of the person can be. */
-export const KIND_CRITERIA: Readonly<Record<PinKind, string>> = {
-	task: "The message asks the assistant to do work.",
-	question: "The message asks the assistant for information.",
-	remark: "The message states a fact or an opinion and asks for nothing.",
-	dispute: "The message doubts or contradicts what the assistant said or did.",
-};
-
 const perSentence = (n: number): [string, Noul | Choice][] =>
 	Array.from({ length: n }, (_, i): [string, Noul | Choice][] => [
 		[
@@ -107,7 +99,7 @@ const perEntry = (n: number): [string, Noul][] =>
 		},
 	]);
 
-/** The constraint ledger's judgments: a `restricts` and a `rule` question per sentence, `kind`, and a `lifts` question per entry. */
+/** The constraint ledger's judgments: a `restricts` and a `rule` question per sentence, and a `lifts` question per entry. */
 export const ledgerQuestions = (
 	sentences: number,
 	entries: number,
@@ -116,15 +108,6 @@ export const ledgerQuestions = (
 	escalate: true,
 	questions: Object.fromEntries([
 		...perSentence(sentences),
-		[
-			"kind",
-			{
-				type: "choice",
-				instructions:
-					"Is `message` a task, a question, a remark, or a dispute?",
-				criteria: KIND_CRITERIA,
-			},
-		],
 		...perEntry(entries),
 	]),
 });

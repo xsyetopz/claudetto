@@ -32,23 +32,18 @@ const asCase = (line: string) => {
 		id: String(field(raw, "id")),
 		previous: list(field(input, "previous")),
 		now: String(field(input, "now")),
-		expected: {
-			kind: String(field(expected, "kind")),
-			entries: list(field(expected, "entries")),
-		},
+		expected: list(field(expected, "entries")),
 	};
 };
 
 type Case = ReturnType<typeof asCase>;
 
-/** The codes of an outcome: its kind, and each entry as its rule and the person's words. */
-const codesOf = (kind: string, entries: readonly PinConstraint[]): string[] => [
-	`kind:${kind}`,
-	...entries.map(
+/** The codes of an outcome: each entry as its rule and the person's words. */
+const codesOf = (entries: readonly PinConstraint[]): string[] =>
+	entries.map(
 		(e) =>
 			`entry:${e.rule}:${e.text.toLowerCase().replaceAll(/\s+/gu, " ").trim()}`,
-	),
-];
+	);
 
 interface Measured {
 	readonly sentences: number;
@@ -68,14 +63,14 @@ async function scoreCase(
 	ctx.label = "decider-fallback";
 	ctx.sent = 0;
 	const refusedBefore = ctx.jev.refused;
-	const read = await readLedger(host($, ctx), [], c.now, c.previous);
+	const ledger = await readLedger(host($, ctx), [], c.now, c.previous);
 	if (ctx.stopped) {
 		return;
 	}
 	const row: Row = {
 		id: c.id,
-		expected: codesOf(c.expected.kind, c.expected.entries),
-		found: codesOf(read.kind, read.ledger),
+		expected: codesOf(c.expected),
+		found: codesOf(ledger),
 	};
 	rows.push(row);
 	measured.push({

@@ -136,7 +136,6 @@ test("a prompt sent before the read of the one before it settles keeps both prom
 		{ "Do not push.": "no-push", "Do not commit.": "no-commit" },
 		[],
 		[],
-		"task",
 		{ "Do not push.": first.promise },
 	);
 	await submit($, "Do not push.");
