@@ -117,7 +117,7 @@ export const extractFrom = async (
 		model: "claude-haiku-5-5",
 		effort: "high",
 		prompt: PIN_EXTRACT(history, previous, text),
-		maxTokens: 600,
+		maxTokens: 2659,
 		timeoutMs: 20_000,
 	});
 	return r.isAnswered ? parseLedger(r.text, [...history, text], $) : undefined;
