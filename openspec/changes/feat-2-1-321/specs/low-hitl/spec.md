@@ -2,7 +2,7 @@
 
 ### Requirement: No Hook Changes a Call's Input in Auto Mode
 
-No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for Artemis and Metis) and name the form to send; the `ToolSearch` hook SHALL rewrite only the result.
+No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for Artemis and Metis) and name the form to send. Claudetto SHALL register no `tool.call` hook that rewrites a `ToolSearch` query or result.
 
 #### Scenario: An Agent Call Off Its Form
 
@@ -18,9 +18,20 @@ No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.3
 #### Scenario: A ToolSearch Query Naming Monitor
 
 - **WHEN** a `ToolSearch` query names `Monitor`
-- **THEN** the query reaches `ToolSearch` as written and the result lists `mcp__claudetto__monitor` in its place
+- **THEN** the query reaches `ToolSearch` as written and the result lists `Monitor` as it came
+- **AND** the lab test is `delegation-tools.test.ts`, "a result that lists Monitor is returned as it came"
 
 ## ADDED Requirements
+
+### Requirement: A Watch Runs Through the Built-in Monitor
+
+The model SHALL watch a command or a WebSocket through the built-in `Monitor`, and claudetto SHALL register no monitor tool of its own, because the rebuild passed its inputs to the built-in tool and added no effect. Claudetto SHALL deny no `Monitor` call for being the built-in one; the gate and the memory hold judge its `command` as they judge a `Bash` command.
+
+#### Scenario: The Model Starts a Watch
+
+- **WHEN** the model calls `Monitor` with a command the gate allows
+- **THEN** the call reaches the engine as sent, and its start text comes back as the engine gave it
+- **AND** the lab test is `delegation-tools.test.ts`, "the model's own Monitor call reaches the engine as sent"
 
 ### Requirement: A Question to the Person Goes Through the Built-in Dialog
 
