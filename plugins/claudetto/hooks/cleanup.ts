@@ -48,11 +48,6 @@ const keepInOrder = async <T>(
  */
 async function cleanUp($: EngineInterface, past: Past): Promise<string[]> {
 	const cwd = await $.session.cwd();
-	await inOrder(markedTopsOf(past), async (top) => {
-		if (await isMarked($, top)) {
-			await $.process.run(["rm", "-rf", top]);
-		}
-	});
 	const { paths, branches, workers } = createdOf(past);
 	const root = workers.length > 0 ? await $.session.root() : "";
 	const leftPaths = await keepInOrder(
@@ -61,6 +56,13 @@ async function cleanUp($: EngineInterface, past: Past): Promise<string[]> {
 			!(await succeeds($, ["git", "worktree", "remove", path], cwd)) &&
 			(await $.fs.exists(path)),
 	);
+	// A worktree that refused removal holds work, so the folder around it stays.
+	await inOrder(markedTopsOf(past), async (top) => {
+		const holds = leftPaths.some((path) => path.startsWith(`${top}/`));
+		if (!holds && (await isMarked($, top))) {
+			await $.process.run(["rm", "-rf", top]);
+		}
+	});
 	const leftBranches = await keepInOrder(
 		[...branches, ...workers.map((id) => `worktree-agent-${id}`)],
 		async (branch) =>

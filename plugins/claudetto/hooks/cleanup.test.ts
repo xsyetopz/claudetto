@@ -180,6 +180,30 @@ test("a clean worker worktree and its merged branch go; a dirty worktree and an 
 	}
 });
 
+// Seen in a worker: its marked folder went with `rm -rf` and took the 41 staged files of the worktree inside it.
+test("a marked /tmp folder that holds a dirty worktree stays, and the stop names the worktree", async ($: Engine, on: On) => {
+	const runs: string[][] = [];
+	const top = "/tmp/probe-wt";
+	const tree = `${top}/wt`;
+	lab(
+		on,
+		{
+			"": [
+				{ command: MAKE(top) },
+				{ command: `git worktree add -b fix ${tree}` },
+			],
+		},
+		{ [MARK(top)]: "S1\n", [tree]: "" },
+		{ dirty: [tree], unmerged: ["fix"] },
+		runs,
+	);
+
+	const out = await stop($);
+
+	expect(removed(runs)).not.toContain(top);
+	expect(out.block).toContain(`\`${tree}\``);
+});
+
 test("a stop whose reply names every leftover passes", async ($: Engine, on: On) => {
 	lab(
 		on,
