@@ -59,36 +59,6 @@ On each prompt the person types, the mod SHALL split the message into sentences 
 - **WHEN** the Decider answers `yes` for a sentence and `unsettled` for its rule
 - **THEN** the entry has rule `none`, which is shown and not enforced
 
-### Requirement: A Remark Is Answered Before Any Tool Runs
-
-The same Decider call SHALL also class the latest person message as a task, a dispute, a question, or a remark. On a question or a remark, `tool.check` SHALL deny the turn's first tool batch when no assistant text follows the person message, except that a question's calls that change nothing SHALL pass. A task, an `unsettled` class, or a failed call SHALL NOT be held. The class SHALL follow the person's own words.
-
-#### Scenario: A Dispute
-
-- **WHEN** the Decider classes the message as a dispute
-- **THEN** this requirement holds nothing, and the dispute requirement decides the turn's first batch
-
-#### Scenario: Pasted Report with a Request
-
-- **WHEN** the person pastes the agent's last report and adds "Continue from here and handle them as you go about."
-- **THEN** the message is a task and the first `Bash` call is not denied
-
-#### Scenario: Remark
-
-- **WHEN** the person writes "Who told you to lint the docs?" and the agent's first move is a Grep
-- **THEN** the Grep is denied with a text that says to answer from what the session holds, and the retry after it passes
-
-#### Scenario: A Question Needs a Lookup
-
-- **WHEN** the person asks a question about the code and the agent's first call is `Read`, `Grep`, `Glob`, or `ListAgents`
-- **THEN** the call passes, because it changes nothing
-- **AND** a first call that writes or runs a command is denied, and so is a sibling call of the same batch
-
-#### Scenario: A Class Not Settled
-
-- **WHEN** the Decider answers `unsettled` for the message's class
-- **THEN** the message is a task and the first tool batch is not denied
-
 ### Requirement: Each Constraint Quotes the Person
 
 Each ledger entry's text SHALL be one sentence of one of the person's own messages, word for word, so the ledger MUST NOT hold words the person did not write. A later message of the person that the Decider answers as allowing the act an entry forbids SHALL lift that entry.
@@ -121,3 +91,23 @@ Under a `no-questions` constraint, the ledger's `tool.call` hook SHALL deny `Ask
 
 - **WHEN** the person wrote "stop asking questions. fix the problems" and the agent calls `AskUserQuestion`
 - **THEN** the call is denied with a text that tells the agent to state its reading, and the text does not ask the person anything
+
+## REMOVED Requirements
+
+### Requirement: A Remark Is Answered Before Any Tool Runs
+
+**Reason**: The gate denied work the person had asked for. Of its 132 denials in three days of sessions, eight are recorded as false, among them the call after "Now it's active", a message that reported the step the agent had waited on. The class of a message is a judgment no hook settles without such misses, and the person chose on 2026-11-12 to delete the gate with its classifier question and its tests.
+
+**Migration**: No tool call is held for an answer, and the ledger's Decider call no longer asks what kind of message the person sent. The root prompt still says that a question wants an answer and then a wait, and the Concise style still opens a reply with the outcome. The ledger's entries and their enforcement are unchanged.
+
+### Requirement: A Dispute Is Settled by Running the Disputed Code
+
+**Reason**: It was an exception to the answer-first gate, which let a dispute's first `Bash` call pass and held its first edit. With the gate gone, no call is held, so the exception has nothing to except.
+
+**Migration**: None. A command and an edit after a dispute both pass, unless a ledger entry forbids them. The Concise style still tells the agent to run the check when the person disputes a reply.
+
+### Requirement: A Compaction Ends the Remark Turn
+
+**Reason**: It reset the message kind at `session.compact` so the answer-first gate would not read the summary as an unanswered remark. No kind is kept any more.
+
+**Migration**: None. A list of faults the person pastes is read sentence by sentence under "Constraints Come From the Person's Own Words", and a sentence becomes an entry only on a `yes`.
