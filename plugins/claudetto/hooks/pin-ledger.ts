@@ -20,7 +20,8 @@ export interface LedgerRead {
 	kind: PinKind;
 }
 
-const sentencesOf = (message: string): string[] =>
+/** The sentences of a message, each without the space around it. */
+export const sentencesOf = (message: string): string[] =>
 	[...SEGMENTER.segment(message)]
 		.map((part) => part.segment.trim())
 		.filter((sentence) => sentence !== "");
@@ -46,12 +47,11 @@ const among = <Option extends string>(
 const entryOf = (text: string, rule: string | undefined): PinConstraint => {
 	const files = rule === "only-files" ? (text.match(FILE) ?? []) : [];
 	if (files.length > 0) {
-		return { text, rule: "only-files", quote: text, files: [...files] };
+		return { text, rule: "only-files", files: [...files] };
 	}
 	return {
 		text,
 		rule: among(RULE_CRITERIA, rule) && rule !== "only-files" ? rule : "none",
-		quote: text,
 	};
 };
 

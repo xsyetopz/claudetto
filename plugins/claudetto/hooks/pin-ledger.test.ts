@@ -50,7 +50,6 @@ const jev = (sentences: number, entries: number, given: object = {}) =>
 const LEAVE: PinConstraint = {
 	text: "Leave alone package.json.",
 	rule: "none",
-	quote: "Leave alone package.json.",
 };
 
 test("A Stated Constraint: the limiting sentence becomes the entry, word for word, and the other sentence does not", async () => {
@@ -64,13 +63,7 @@ test("A Stated Constraint: the limiting sentence becomes the entry, word for wor
 
 	expect(read).toEqual({
 		kind: "task",
-		ledger: [
-			{
-				text: "Nothing should change on disk.",
-				rule: "read-only",
-				quote: "Nothing should change on disk.",
-			},
-		],
+		ledger: [{ text: "Nothing should change on disk.", rule: "read-only" }],
 	});
 	expect(sent(fetches, "state")).toEqual({
 		message,
@@ -139,11 +132,7 @@ test("A Sentence Not Settled: an answer in the band goes to the fallback, and wi
 });
 
 test("Lifted by the Person: a yes to an entry's `lifts` question removes it, and the others stay", async () => {
-	const stays: PinConstraint = {
-		text: "Do not push.",
-		rule: "no-push",
-		quote: "Do not push.",
-	};
+	const stays: PinConstraint = { text: "Do not push.", rule: "no-push" };
 	const { $, fetches } = jev(1, 2, { lifts_1: noul(0.9) });
 
 	const read = await readLedger($, [], "commit those", [LEAVE, stays]);

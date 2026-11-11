@@ -20,7 +20,7 @@ test("a remark's first tool call, a read-only one too, is denied with the answer
 });
 
 test("a remark typed over a running turn holds that turn's next call for an answer", async ($: Engine, on: On) => {
-	lab(on, [], [person], [], "remark");
+	lab(on, {}, [person], [], "remark");
 	await $.prompt.submit({
 		text: person.text,
 		wait: false,
@@ -42,7 +42,7 @@ test("a subagent's call passes after the person's remark, since the answer-first
 });
 
 test("a question's first call that writes or runs a command is denied, and so is a sibling call of the same batch", async ($: Engine, on: On) => {
-	lab(on, [], [person], [], "question");
+	lab(on, {}, [person], [], "question");
 	await submit($, person.text);
 	const awaited19 = await check($, "Bash", { command: "ls" });
 	expect(awaited19.decision).toBe("deny");
@@ -82,7 +82,7 @@ test("a remark's call passes once assistant text precedes it in the turn", async
 test("text from before the person's message does not count as an answer", async ($: Engine, on: On) => {
 	lab(
 		on,
-		[],
+		{},
 		[spoken("Earlier reply."), person, spoken("", "Grep")],
 		[],
 		"remark",
@@ -109,7 +109,7 @@ test("after a compaction the summary is no new remark, so the resumed turn's fir
 		person,
 		spoken("Nobody did; I misread the task."),
 	];
-	lab(on, [], messages, [], "remark");
+	lab(on, {}, messages, [], "remark");
 	on("session.compact", () => ({ skip: "core ran" }));
 	await submit($, person.text);
 	const awaited29 = await check($, "Grep", {});
@@ -126,7 +126,7 @@ test("after a compaction the summary is no new remark, so the resumed turn's fir
 
 test("the call that retries after the deny passes once, with no text, because the turn has moved on", async ($: Engine, on: On) => {
 	const messages: SessionMessage[] = [person];
-	lab(on, [], messages, [], "remark");
+	lab(on, {}, messages, [], "remark");
 	await submit($, person.text);
 	const awaited31 = await check($, "Grep", {});
 	expect(awaited31.decision).toBe("deny");

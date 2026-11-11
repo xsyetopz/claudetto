@@ -71,7 +71,6 @@ test("a request is saved and its tokens are added to its model's total", async (
 			tokens: ctx.tokens,
 			usd: ctx.usd,
 			stopped: false,
-			unread: 0,
 			logLines: 0,
 		}),
 	).toContain(`${MODEL} in 10 out 5 cache-read 2 cache-write 1`);

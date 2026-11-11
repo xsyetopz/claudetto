@@ -1,7 +1,15 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { added, check, lab, RESULT_ROW, RO, submit } from "./pin.mock.ts";
+import {
+	added,
+	check,
+	lab,
+	RESULT_ROW,
+	RO,
+	spoken,
+	submit,
+} from "./pin.mock.ts";
 import { PIN_NO_QUESTIONS } from "./texts-handoff.ts";
 
 test("a constraint found on one prompt rides the next prompt as context, and the first prompt is not held for it", async ($: Engine, on: On) => {
@@ -31,14 +39,14 @@ test("a resumed session's first prompt waits for the constraint its earlier mess
 
 test("the classifier sees the request that ends a long pasted message", async ($: Engine, on: On) => {
 	const seen: string[] = [];
-	lab(on, [], [], seen);
+	lab(on, {}, [], seen);
 	await submit($, `${"Log line from a build. ".repeat(40)}Rename the file.`);
 	await check($, "Read", { file_path: "/p/a.ts" });
 	expect(seen.join("\n")).toContain("Rename the file.");
 });
 
 test("no constraint adds no context", async ($: Engine, on: On) => {
-	lab(on, []);
+	lab(on, {});
 	const awaited4 = await submit($);
 	expect(added(awaited4)).toEqual([]);
 });
@@ -67,9 +75,7 @@ test("read-only denies Edit, Write and writing Bash and lets reads through", asy
 });
 
 test("no-commit denies git commit only", async ($: Engine, on: On) => {
-	lab(on, [
-		{ text: "Do not commit.", rule: "no-commit", quote: "do not commit" },
-	]);
+	lab(on, { "Fix it, but do not commit.": "no-commit" });
 	await submit($, "Fix it, but do not commit.");
 	const awaited12 = await check($, "Bash", { command: "git commit -m x" });
 	expect(awaited12.decision).toBe("deny");
@@ -78,14 +84,7 @@ test("no-commit denies git commit only", async ($: Engine, on: On) => {
 });
 
 test("only-files denies an edit of another file", async ($: Engine, on: On) => {
-	lab(on, [
-		{
-			text: "Only touch src/config.ts.",
-			rule: "only-files",
-			files: ["src/config.ts"],
-			quote: "Only touch src/config.ts.",
-		},
-	]);
+	lab(on, { "Only touch src/config.ts.": "only-files" });
 	await submit($, "Only touch src/config.ts.");
 	const awaited14 = await check($, "Edit", { file_path: "/p/src/config.ts" });
 	expect(awaited14.decision).not.toBe("deny");
@@ -93,7 +92,7 @@ test("only-files denies an edit of another file", async ($: Engine, on: On) => {
 	expect(awaited15.decision).toBe("deny");
 });
 
-test("the prior messages reach the extractor even when a message has no toolResults field", async ($: Engine, on: On) => {
+test("the prior messages reach the ledger's model even when a message has no toolResults field", async ($: Engine, on: On) => {
 	const seen: string[] = [];
 	lab(
 		on,
@@ -109,48 +108,49 @@ test("the prior messages reach the extractor even when a message has no toolResu
 	expect(seen.join("\n")).toContain("1. Nothing should change on disk.");
 });
 
-test("each entry rides the note with the person's words that set it", async ($: Engine, on: On) => {
-	lab(on, [{ ...RO[0], quote: "nothing should change  on disk" }]);
-	await submit($);
-	await check($, "Read", { file_path: "/p/a.ts" });
-	const awaited16 = await submit($);
-	expect(awaited16.context?.join("\n")).toContain(
-		'Nothing should change on disk. (the user: "nothing should change  on disk")',
-	);
-});
-
-for (const [name, quote] of [
-	["no quote", undefined],
-	["a quote only the agent's reply holds", "leave package.json alone"],
+for (const [scenario, row] of [
+	[
+		"Agent Text Read as a Constraint",
+		spoken("I will leave package.json alone."),
+	],
+	[
+		"A Tool Result That Reads as a Limit",
+		{ ...RESULT_ROW, text: "Do not edit the lockfile." },
+	],
 ] as const) {
-	test(`Agent Text Read as a Constraint: an entry with ${name} is dropped`, async ($: Engine, on: On) => {
-		lab(
-			on,
-			[{ text: "Leave alone package.json.", rule: "none", quote }],
-			[
-				{
-					role: "assistant",
-					text: "I will leave package.json alone.",
-					toolUses: [],
-				},
-			],
-		);
+	test(`${scenario}: the ledger is not asked about the text, so it sets no entry`, async ($: Engine, on: On) => {
+		const seen: string[] = [];
+		lab(on, { [row.text]: "read-only" }, [row], seen);
 		await submit($, "Commit the rest.");
 		await check($, "Read", { file_path: "/p/a.ts" });
 		const awaited17 = await submit($, "Go on.");
+		expect(seen.join("\n")).not.toContain(row.text);
 		expect(added(awaited17)).toEqual([]);
 	});
 }
 
+test("a prompt sent before the read of the one before it settles keeps both prompts' limits", async ($: Engine, on: On) => {
+	const first = Promise.withResolvers<boolean>();
+	lab(
+		on,
+		{ "Do not push.": "no-push", "Do not commit.": "no-commit" },
+		[],
+		[],
+		"task",
+		{ "Do not push.": first.promise },
+	);
+	await submit($, "Do not push.");
+	await submit($, "Do not commit.");
+	first.resolve(true);
+	const push = await check($, "Bash", { command: "git push" });
+	const commit = await check($, "Bash", { command: "git commit -m x" });
+	expect([push.decision, commit.decision]).toEqual(["deny", "deny"]);
+});
+
 test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
-	lab(on, [
-		{
-			text: "Stop asking questions.",
-			rule: "no-questions",
-			quote: "stop asking questions",
-		},
-	]);
-	await submit($, "stop asking questions. fix the problems");
+	const message = "stop asking questions. fix the problems";
+	lab(on, { [message]: "no-questions" });
+	await submit($, message);
 	const asks = await Promise.all([
 		$.tool.call({
 			tool: "mcp__claudetto__ask-user-question",
@@ -172,8 +172,8 @@ test("no-questions denies both ask tools, before delegation answers them, and no
 			],
 		}),
 	]);
-	expect(asks[0]?.deny).toBe(PIN_NO_QUESTIONS("Stop asking questions."));
-	expect(asks[1]?.deny).toBe(PIN_NO_QUESTIONS("Stop asking questions."));
+	expect(asks[0]?.deny).toBe(PIN_NO_QUESTIONS(message));
+	expect(asks[1]?.deny).toBe(PIN_NO_QUESTIONS(message));
 	const awaited18 = await check($, "Edit", { file_path: "/p/a.ts" });
 	expect(awaited18.decision).not.toBe("deny");
 });

@@ -8,127 +8,26 @@ import type {
 	CheckEvent,
 	CheckNext,
 } from "./chain.ts";
-import type { Host } from "./decider/questions.ts";
 import { deny } from "./gate/verdict.ts";
+import { readLedger } from "./pin-ledger.ts";
 import { breaks } from "./pin-rules.ts";
 import {
 	PIN_ANSWER_FIRST,
 	PIN_BLOCKED,
 	PIN_COMPACT,
-	PIN_EXTRACT,
 	PIN_NO_QUESTIONS,
 	PIN_NOTE,
 	type PinConstraint,
 	type PinKind,
 } from "./texts-handoff.ts";
-import { isRecord } from "./tools.ts";
 import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/u;
-const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
-	"read-only",
-	"no-commit",
-	"no-push",
-	"only-files",
-	"no-questions",
-	"none",
-]);
-/** Whether `x` names a rule of the ledger. */
-export const isRule = (x: unknown): x is PinConstraint["rule"] => RULES.has(x);
-
-const flat = (s: string) => s.toLowerCase().replaceAll(/\s+/gu, " ").trim();
-
-// An entry stands only on words a message of the person holds, so a remark or the agent's own text sets none.
-const toConstraint = (c: unknown, said: string[]): PinConstraint[] => {
-	if (!(
-		isRecord(c) &&
-		typeof c["text"] === "string" &&
-		typeof c["quote"] === "string" &&
-		flat(c["quote"]) !== "" &&
-		isRule(c["rule"])
-	)) {
-		return [];
-	}
-	const quote = flat(c["quote"]);
-	if (!said.some((t) => flat(t).includes(quote))) {
-		return [];
-	}
-	const files = c["files"];
-	return [
-		{
-			text: c["text"],
-			rule: c["rule"],
-			quote: c["quote"],
-			...(Array.isArray(files) ? { files: files.map(String) } : {}),
-		},
-	];
-};
-
-const KINDS: ReadonlySet<unknown> = new Set<PinKind>([
-	"remark",
-	"question",
-	"dispute",
-	"task",
-]);
-const isKind = (x: unknown): x is PinKind => KINDS.has(x);
-
-/** What the extraction read from a message: the ledger entries and the kind of message. */
-export interface Extraction {
-	constraints: PinConstraint[];
-	kind: PinKind;
-}
-
-const parseLedger = (
-	text: string,
-	said: string[],
-	$: Pick<Host, "ui">,
-): Extraction | undefined => {
-	try {
-		const json: unknown = JSON.parse(
-			text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),
-		);
-		const list = isRecord(json) ? json["constraints"] : undefined;
-		const kind = isRecord(json) ? json["kind"] : undefined;
-		return Array.isArray(list)
-			? {
-					constraints: list.flatMap((c) => toConstraint(c, said)),
-					kind: isKind(kind) ? kind : "task",
-				}
-			: undefined;
-	} catch (error) {
-		$.ui.log(`The constraint extraction did not parse (${String(error)})`);
-		return undefined;
-	}
-};
 
 const personTexts = async ($: EngineInterface): Promise<string[]> => {
 	const messages = await $.session.messages();
 	return messages.filter((item) => isPersonMessage(item)).map((m) => m.text);
 };
-
-/** Today's extraction: one Haiku call over the person's `history`, which holds `text`, and the `previous` entries. */
-export const extractFrom = async (
-	$: Pick<Host, "model" | "ui">,
-	history: string[],
-	previous: PinConstraint[],
-	text: string,
-): Promise<Extraction | undefined> => {
-	const r = await $.model.complete({
-		model: "claude-haiku-5-5",
-		effort: "high",
-		prompt: PIN_EXTRACT(history, previous, text),
-		maxTokens: 2659,
-		timeoutMs: 20_000,
-	});
-	return r.isAnswered ? parseLedger(r.text, [...history, text], $) : undefined;
-};
-
-const extractLedger = async (
-	$: EngineInterface,
-	text: string,
-	previous: PinConstraint[],
-): Promise<Extraction | undefined> =>
-	extractFrom($, await personTexts($), previous, text);
 
 /** The repo root as the cwd spells it: `cdup` is `git rev-parse --show-cdup`, one `../` per level up. */
 export const rootOf = (cwd: string, cdup: string): string =>
@@ -162,44 +61,49 @@ const awaitsAnswer = (
 
 export interface PinState {
 	ledger: PinConstraint[];
-	/** What the latest person message is; a failed extraction leaves it a task, which no check touches. */
+	/** What the latest person message is; a read that fails leaves it a task, which no check touches. */
 	kind: PinKind;
 	/** The message count at which the answer-first deny fired this turn: calls of that one batch are denied, the retry is not. */
 	nudgedAt: number;
-	/** The extraction runs beside the reply so the prompt is not held for it; tool.check waits on it. */
+	/** The Decider reads the message beside the reply so the prompt is not held for it; tool.check waits on it. */
 	pending: Promise<void>;
 }
 
 const isFirstBatch = (s: PinState, messages: SessionMessage[]): boolean =>
 	s.nudgedAt < 0 || s.nudgedAt === messages.length;
 
+// Each read updates the ledger the read before it left, so it starts once that one has settled.
 const adopt = async (
 	$: EngineInterface,
 	s: PinState,
-	job: Promise<Extraction | undefined>,
+	earlier: string[],
+	text: string,
+	before: Promise<void>,
 ): Promise<void> => {
-	const found = await job.catch((error: unknown) => {
-		$.ui.log(`The constraint extraction failed (${String(error)})`);
-	});
-	// A failed or unreadable answer keeps the last ledger rather than dropping constraints.
-	s.ledger = found?.constraints ?? s.ledger;
-	s.kind = found?.kind ?? s.kind;
+	await before;
+	try {
+		const read = await readLedger($, earlier, text, s.ledger);
+		s.ledger = read.ledger;
+		s.kind = read.kind;
+	} catch (error) {
+		$.ui.log(`The constraint ledger was not read (${String(error)})`);
+	}
 };
 
 const ledgerHooks = (on: On, s: PinState): void => {
-	// A resumed session holds person messages this process never saw: its first prompt waits for the extraction, so the note rides it.
+	// A resumed session holds person messages this process never saw: its first read covers them, and its first prompt waits for that read, so the note rides it.
 	let seen = false;
 	on("prompt.submit", { origin: { kind: PERSON } }, async ($, e, next) => {
 		s.kind = "task";
 		s.nudgedAt = -1;
 		if (!(e.command || e.isMeta)) {
-			s.pending = adopt($, s, extractLedger($, e.text, s.ledger));
-			const awaited = await personTexts($);
-			const earlier = awaited.some((t) => t !== e.text);
-			if (!seen && earlier) {
+			const said = seen ? [] : await personTexts($);
+			const earlier = said.filter((t) => t !== e.text);
+			seen = true;
+			s.pending = adopt($, s, earlier, e.text, s.pending);
+			if (earlier.length > 0) {
 				await s.pending;
 			}
-			seen = true;
 		}
 		const shown = s.ledger;
 		return shown.length === 0

@@ -1,43 +1,23 @@
-// Scores the stored ledger cases through today's extraction (`pin.ts`) and through the Decider's per-sentence questions, on the engine's `$`. The engine loads this module, so it uses no Bun or node API.
-import type { State } from "../../../plugins/claudetto/hooks/decider/questions.ts";
-import { settle } from "../../../plugins/claudetto/hooks/decider/settle.ts";
+// Scores the stored ledger cases through the ledger's own `readLedger`, on the engine's `$`. The engine loads this module, so it uses no Bun or node API.
+import { RULE_CRITERIA } from "../../../plugins/claudetto/hooks/decider/questions.ts";
 import {
-	extractFrom,
-	type Extraction,
-	isRule,
-} from "../../../plugins/claudetto/hooks/pin.ts";
+	readLedger,
+	sentencesOf,
+} from "../../../plugins/claudetto/hooks/pin-ledger.ts";
 import type { PinConstraint } from "../../../plugins/claudetto/hooks/texts-handoff.ts";
-import { field, lines, strings } from "../../claim-check-prices.ts";
-import { type Findings, matches, type Row } from "../../claim-check-report.ts";
+import { field, lines } from "../../claim-check-prices.ts";
+import { matches, type Row } from "../../claim-check-report.ts";
 import { type Ctx, eachCase, type Engine, host } from "./client.ts";
-import {
-	isKind,
-	questionsOf,
-	type Rule,
-	RULE_CRITERIA,
-} from "./ledger-questions.ts";
 import type { Scored } from "./scored.ts";
 
-const SEGMENTER = new Intl.Segmenter("en", { granularity: "sentence" });
-
-/** The sentences of a message, split with `Intl.Segmenter`. */
-const sentencesOf = (message: string): string[] =>
-	[...SEGMENTER.segment(message)]
-		.map((part) => part.segment.trim())
-		.filter((sentence) => sentence !== "");
-
-const numbered = (items: readonly string[]): string =>
-	items.map((item, i) => `${i + 1}. ${item}`).join("\n");
-
-const flat = (text: string): string =>
-	text.toLowerCase().replaceAll(/\s+/gu, " ").trim();
+const isRule = (value: unknown): value is keyof typeof RULE_CRITERIA =>
+	typeof value === "string" && Object.hasOwn(RULE_CRITERIA, value);
 
 const entry = (item: unknown): PinConstraint => {
 	const rule = field(item, "rule");
 	return {
 		text: String(field(item, "text")),
 		rule: isRule(rule) ? rule : "none",
-		quote: String(field(item, "quote") ?? field(item, "text")),
 	};
 };
 
@@ -50,7 +30,6 @@ const asCase = (line: string) => {
 	const expected = field(raw, "expected");
 	return {
 		id: String(field(raw, "id")),
-		history: strings(field(input, "history")),
 		previous: list(field(input, "previous")),
 		now: String(field(input, "now")),
 		expected: {
@@ -62,69 +41,19 @@ const asCase = (line: string) => {
 
 type Case = ReturnType<typeof asCase>;
 
-/** The codes of an outcome: its kind, and each entry as its rule and the person's words. An entry whose text or quote is an expected sentence takes that sentence's identity, so today's paraphrase is not charged for wording. */
-const codesOf = (
-	kind: string,
-	entries: readonly PinConstraint[],
-	said: readonly string[],
-): string[] => [
+/** The codes of an outcome: its kind, and each entry as its rule and the person's words. */
+const codesOf = (kind: string, entries: readonly PinConstraint[]): string[] => [
 	`kind:${kind}`,
-	...entries.map((e) => {
-		const own = [flat(e.text), flat(e.quote)].find((t) => said.includes(t));
-		return `entry:${e.rule}:${own ?? flat(e.text)}`;
-	}),
+	...entries.map(
+		(e) =>
+			`entry:${e.rule}:${e.text.toLowerCase().replaceAll(/\s+/gu, " ").trim()}`,
+	),
 ];
-
-const todayOutcome = (found: Extraction | undefined, c: Case) =>
-	found === undefined
-		? { kind: "task", entries: c.previous }
-		: { kind: found.kind, entries: found.constraints };
-
-async function deciderOutcome(
-	$: Engine,
-	ctx: Ctx,
-	c: Case,
-	sentences: string[],
-) {
-	ctx.label = "decider-fallback";
-	ctx.sent = 0;
-	const state: State = {
-		message: c.now,
-		sentences: numbered(sentences),
-		...(c.previous.length === 0
-			? {}
-			: { entries: numbered(c.previous.map((p) => p.text)) }),
-	};
-	const answers = await settle(
-		host($, ctx),
-		questionsOf(sentences.length, c.previous.length),
-		state,
-	);
-	const rule = (i: number): Rule => {
-		const picked = answers[`rule_${i + 1}`] ?? "";
-		return Object.hasOwn(RULE_CRITERIA, picked) && isRule(picked)
-			? picked
-			: "none";
-	};
-	const kind = answers["kind"];
-	return {
-		kind: isKind(kind) ? kind : "task",
-		entries: [
-			...c.previous.filter((_, j) => answers[`lifts_${j + 1}`] !== "yes"),
-			...sentences.flatMap((text, i) =>
-				answers[`restricts_${i + 1}`] === "yes"
-					? [{ text, rule: rule(i), quote: text }]
-					: [],
-			),
-		],
-	};
-}
 
 interface Measured {
 	readonly sentences: number;
 	readonly chars: number;
-	readonly today: boolean;
-	readonly decider: boolean;
+	readonly exact: boolean;
 	readonly refused: number;
 }
 
@@ -132,41 +61,27 @@ async function scoreCase(
 	$: Engine,
 	ctx: Ctx,
 	c: Case,
-	roads: Findings["roads"],
+	rows: Row[],
 	measured: Measured[],
-	unread: { n: number },
 ): Promise<void> {
 	ctx.caseId = c.id;
-	ctx.label = "today";
+	ctx.label = "decider-fallback";
 	ctx.sent = 0;
-	const found = await extractFrom(host($, ctx), c.history, c.previous, c.now);
-	if (found === undefined) {
-		unread.n += 1;
-	}
-	const sentences = sentencesOf(c.now);
 	const refusedBefore = ctx.jev.refused;
-	const decider = await deciderOutcome($, ctx, c, sentences);
+	const read = await readLedger(host($, ctx), [], c.now, c.previous);
 	if (ctx.stopped) {
 		return;
 	}
-	const said = c.expected.entries.map((e) => flat(e.text));
-	const row = (outcome: {
-		kind: string;
-		entries: readonly PinConstraint[];
-	}): Row => ({
+	const row: Row = {
 		id: c.id,
-		expected: codesOf(c.expected.kind, c.expected.entries, said),
-		found: codesOf(outcome.kind, outcome.entries, said),
-	});
-	const today = row(todayOutcome(found, c));
-	const mine = row(decider);
-	roads.get("today")?.rows.push(today);
-	roads.get("decider")?.rows.push(mine);
+		expected: codesOf(c.expected.kind, c.expected.entries),
+		found: codesOf(read.kind, read.ledger),
+	};
+	rows.push(row);
 	measured.push({
-		sentences: sentences.length,
+		sentences: sentencesOf(c.now).length,
 		chars: c.now.length,
-		today: matches(undefined, today),
-		decider: matches(undefined, mine),
+		exact: matches(undefined, row),
 		refused: ctx.jev.refused - refusedBefore,
 	});
 }
@@ -195,39 +110,32 @@ const binTable = (
 ): string[] => [
 	`## Score by ${heading}`,
 	"",
-	"| bin | cases | today exact | decider exact | Jev requests refused |",
-	"| --- | --- | --- | --- | --- |",
+	"| bin | cases | exact | Jev requests refused |",
+	"| --- | --- | --- | --- |",
 	...bins.map(([name, low, high]) => {
 		const inBin = measured.filter((m) => value(m) >= low && value(m) <= high);
-		const count = (pick: (m: Measured) => boolean) =>
-			inBin.filter((m) => pick(m)).length;
-		return `| ${name} | ${inBin.length} | ${count((m) => m.today)} | ${count((m) => m.decider)} | ${inBin.reduce((sum, m) => sum + m.refused, 0)} |`;
+		return `| ${name} | ${inBin.length} | ${inBin.filter((m) => m.exact).length} | ${inBin.reduce((sum, m) => sum + m.refused, 0)} |`;
 	}),
 	"",
 ];
 
-/** Scores each ledger case through today's extraction and through the Decider's per-sentence questions. A case's entries compare on rule and the person's words; `files` is not scored. */
+/** Scores each ledger case through the ledger's `readLedger`. A case's entries compare on rule and the person's words; `files` is not scored. */
 export async function scoreLedger(
 	$: Engine,
 	ctx: Ctx,
 	text: string,
 ): Promise<Scored> {
-	const roads: Findings["roads"] = new Map([
-		["today", { scope: undefined, rows: [] }],
-		["decider", { scope: undefined, rows: [] }],
-	]);
+	const rows: Row[] = [];
 	const measured: Measured[] = [];
-	const unread = { n: 0 };
 	await eachCase(
 		ctx,
 		lines(text).map((line) => asCase(line)),
-		(c) => scoreCase($, ctx, c, roads, measured, unread),
+		(c) => scoreCase($, ctx, c, rows, measured),
 	);
 	const most = Math.max(0, ...measured.map((m) => m.sentences));
 	return {
 		title: "Ledger Run",
-		roads,
-		unread: unread.n,
+		roads: new Map([["decider", { scope: undefined, rows }]]),
 		extra: [
 			`Most sentences in one message: ${most}. Sentences per message: ${measured
 				.map((m) => m.sentences)

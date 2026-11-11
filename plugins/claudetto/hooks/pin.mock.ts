@@ -1,33 +1,51 @@
 import type { On, SessionMessage } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-/** Stubs beneath the pin: the ledger model answers `kind` and `constraints`, and records each prompt it is sent in `seen`. */
+import { haikuText } from "./decider/decider.mock.ts";
+
+/** The sentences the model reads as a limit, each with the rule it states. */
+type Limits = Readonly<Record<string, string>>;
+
+const SENTENCES = /<sentences>\n([\s\S]*?)\n<\/sentences>/u;
+const NUMBERED = /^(\d+)\. (.*)$/gmu;
+const MESSAGE = /<message>\n([\s\S]*?)\n<\/message>/u;
+
+const replyTo = (prompt: string, limits: Limits, kind: string): string => {
+	const listed = [...(SENTENCES.exec(prompt)?.[1] ?? "").matchAll(NUMBERED)];
+	return JSON.stringify(
+		Object.fromEntries([
+			...listed.flatMap(([, i, sentence = ""]): [string, object][] =>
+				Object.hasOwn(limits, sentence)
+					? [
+							[`restricts_${i}`, { answer: "yes", evidence: sentence }],
+							[`rule_${i}`, { answer: limits[sentence], evidence: sentence }],
+						]
+					: [[`restricts_${i}`, { answer: "no" }]],
+			),
+			["kind", { answer: kind, evidence: listed[0]?.[2] }],
+		]),
+	);
+};
+
+/** Stubs beneath the pin: no key is set, so the ledger's model answers. It reads each sentence in `limits` as a limit and the message as `kind`, records each prompt it is sent in `seen`, and answers about a message in `held` once that promise settles. */
 export const lab = (
 	on: On,
-	constraints: unknown[],
+	limits: Limits,
 	messages: SessionMessage[] = [],
 	seen: string[] = [],
 	kind = "task",
+	held: Readonly<Record<string, Promise<unknown>>> = {},
 ): void => {
 	on("prompt.submit", (_$, e) => e);
 	on("tool.check", () => ({ decision: "allow" }));
 	on("session.messages", () => ({ value: messages }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("fs.exists", () => ({ value: false }));
-	on("model.complete", (_$, e) => {
+	on("env.get", () => ({ value: undefined }));
+	on("model.complete", async (_$, e) => {
 		seen.push(e.prompt);
-		return {
-			value: {
-				isAnswered: true,
-				text: JSON.stringify({ kind, constraints }),
-				usage: {
-					input_tokens: 1,
-					output_tokens: 1,
-					cache_read_input_tokens: 0,
-					cache_creation_input_tokens: 0,
-				},
-			},
-		};
+		await held[MESSAGE.exec(e.prompt)?.[1] ?? ""];
+		return { value: haikuText(replyTo(e.prompt, limits, kind)) };
 	});
 };
 
@@ -47,13 +65,7 @@ export const added = (out: {
 	context?: readonly string[] | undefined;
 }): readonly string[] => out.context ?? [];
 
-export const RO = [
-	{
-		text: "Nothing should change on disk.",
-		rule: "read-only",
-		quote: "Nothing should change on disk.",
-	},
-];
+export const RO = { "Nothing should change on disk.": "read-only" };
 
 /** A user message that carries one tool result and no text. */
 export const RESULT_ROW: SessionMessage = {
@@ -79,6 +91,6 @@ export const spoken = (text: string, ...tools: string[]): SessionMessage => ({
 export const turn =
 	(kind: string, ...after: SessionMessage[]) =>
 	($: Engine, on: On) => {
-		lab(on, [], [person, ...after], [], kind);
+		lab(on, {}, [person, ...after], [], kind);
 		return submit($, person.text);
 	};

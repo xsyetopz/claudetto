@@ -43,7 +43,6 @@ export interface Findings {
 	readonly tokens: ReadonlyMap<string, Usage>;
 	readonly usd: number;
 	readonly stopped: boolean;
-	readonly unread: number;
 	readonly logLines: number;
 }
 
@@ -154,7 +153,7 @@ export const summary = (f: Findings): string =>
 		f.stopped
 			? "The run stopped before a request that could pass the cap."
 			: "The run finished every case.",
-		`The run is billed to the subscription's weekly limit, which counts tokens. API list-price equivalent: $${f.usd.toFixed(4)}. Answers that did not parse: ${f.unread}. Log lines: ${f.logLines}.`,
+		`The run is billed to the subscription's weekly limit, which counts tokens. API list-price equivalent: $${f.usd.toFixed(4)}. Log lines: ${f.logLines}.`,
 		"",
 		...[...f.roads].flatMap(([name, road]) => roadSection(name, road)),
 		...tokenSection(f.tokens),

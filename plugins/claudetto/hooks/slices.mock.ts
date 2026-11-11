@@ -71,6 +71,7 @@ const wireSession = (on: On, answer: string): void => {
 	on("prompt.submit", (_$, e) => e);
 	on("clock.now", () => ({ value: 0 }));
 	on("fs.exists", () => ({ value: true }));
+	on("env.get", () => ({ value: undefined }));
 	on("model.complete", () => ({
 		value: {
 			isAnswered: true,
