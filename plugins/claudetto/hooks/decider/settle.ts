@@ -9,6 +9,7 @@ import {
 	type State,
 	UNSETTLED,
 } from "./questions.ts";
+import { redactedState, STATE_MAX_CHARS } from "./redact.ts";
 
 const JEV_MODEL = "jev-1.14.0";
 const REJECTED = new Set([400, 413, 415, 422]);
@@ -92,9 +93,17 @@ async function askJev(
 	state: State,
 ): Promise<Answers | undefined> {
 	try {
+		const safe = await redactedState($, state);
+		const length = Object.values(safe).join("").length;
+		if (length > STATE_MAX_CHARS) {
+			$.ui.log(
+				`The state is ${length} characters, over the ${STATE_MAX_CHARS} Jev takes, so it is not sent.`,
+			);
+			return undefined;
+		}
 		const wire = await postJev(
 			key,
-			{ model: JEV_MODEL, state, questions: set.questions },
+			{ model: JEV_MODEL, state: safe, questions: set.questions },
 			{
 				fetch: (url, init) => $.http.fetch(url, init),
 				sleep: (ms, wait) => $.clock.sleep(ms, wait),

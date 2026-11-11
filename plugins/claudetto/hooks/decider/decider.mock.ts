@@ -3,6 +3,7 @@ import type {
 	ModelCompleteRequest,
 	ModelCompleteResult,
 	ModelTextBlock,
+	ProcessRunResult,
 } from "claude-code";
 
 import type { Host, QuestionSet } from "./questions.ts";
@@ -95,7 +96,24 @@ interface Rig {
 	readonly jev?: (n: number) => Reply | Promise<Reply>;
 	/** The model's answer to its `n`th request. */
 	readonly haiku?: (n: number) => ModelCompleteResult;
+	/** True: the secret scanner exits with an error. */
+	readonly scanFails?: boolean;
 }
+
+// What the scanner's `secret-named-assignment` rule finds: the value of a NAME=value line whose NAME names a secret.
+const ASSIGNMENT =
+	/^\s*(?:export\s+)?\w*(?:token|secret|key|password)\w*=["']?([^\s"']+)/gimu;
+
+const scanned = (stdin: string, fails: boolean): ProcessRunResult => {
+	const found = [...stdin.matchAll(ASSIGNMENT)].map((m) => ({ Secret: m[1] }));
+	return {
+		exitCode: fails ? 2 : 0,
+		stdout: JSON.stringify(found),
+		stderr: fails ? "scanner crashed" : "",
+		isStdoutTruncated: false,
+		isStderrTruncated: false,
+	};
+};
 
 interface Fetched {
 	readonly url: string;
@@ -103,8 +121,9 @@ interface Fetched {
 }
 
 /** A stand-in for `$`: its key, Jev, the model and the clock, with each request and log line kept. */
-export const rig = ({ env, jev, haiku }: Rig = {}) => {
+export const rig = ({ env, jev, haiku, scanFails = false }: Rig = {}) => {
 	const fetches: Fetched[] = [];
+	const scans: string[] = [];
 	const asked: ModelCompleteRequest[] = [];
 	const logs: string[] = [];
 	const vars = env ?? { TYPESAFE_API_KEY: KEY };
@@ -117,6 +136,12 @@ export const rig = ({ env, jev, haiku }: Rig = {}) => {
 					throw new Error("no request was expected");
 				}
 				return Promise.resolve(jev(fetches.length));
+			},
+		},
+		process: {
+			run: (_argv, init) => {
+				scans.push(init?.stdin ?? "");
+				return Promise.resolve(scanned(init?.stdin ?? "", scanFails));
 			},
 		},
 		clock: { sleep: () => Promise.resolve() },
@@ -132,7 +157,7 @@ export const rig = ({ env, jev, haiku }: Rig = {}) => {
 			},
 		},
 	};
-	return { $, fetches, asked, logs };
+	return { $, fetches, asked, logs, scans };
 };
 
 /** The text blocks of one model request's prompt. */

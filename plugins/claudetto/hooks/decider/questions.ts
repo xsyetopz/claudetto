@@ -38,6 +38,7 @@ export const UNSETTLED = "unsettled";
 export interface Host {
 	readonly env: Pick<EngineInterface["env"], "get">;
 	readonly http: Pick<EngineInterface["http"], "fetch">;
+	readonly process: Pick<EngineInterface["process"], "run">;
 	readonly clock: Pick<EngineInterface["clock"], "sleep">;
 	readonly model: Pick<EngineInterface["model"], "complete">;
 	readonly ui: Pick<EngineInterface["ui"], "log">;
