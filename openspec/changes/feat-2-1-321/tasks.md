@@ -49,7 +49,7 @@ Each slice is one commit, with its failing test first where it changes behavior.
 
 ## 5. Recorded Checks, Paid, Each After the Person Approves
 
-- [ ] 5.1 Build the case files for the claim check, the ledger, and the branch gate from the spec scenarios and the lab tests' inputs, each with the expected answer written by hand. Split each set into tuning cases and held-out cases. Ask the person before reading past sessions for more cases.
+- [x] 5.1 Build the case files for the claim check, the ledger, and the branch gate from the spec scenarios and the lab tests' inputs, each with the expected answer written by hand. Split each set into tuning cases and held-out cases. Ask the person before reading past sessions for more cases.
 - [ ] 5.2 Ask the person for permission, a budget, and a go-ahead on the data the cases hold, and say that `TYPESAFE_API_KEY` will be used. Then run the claim-check cases through today's Haiku and Sonnet prompts and through the Decider, keep each exact request payload, and record in `docs/`: both scores, the cost, the weekly share, `usage.cache_read_input_tokens` of each fallback request after the first, the largest output usage against `maxTokens` plus 2,048, and the size in characters and tokens of the largest state Jev accepts. Set the size bound of decision 4 from the last figure.
 - [ ] 5.3 From the 5.2 run, record the share of Nouls that land in the unsettled band and the fallback's score on them, and set the claim-check thresholds from the tuning cases only.
 - [ ] 5.4 Run the ledger cases the same way, with sentences that lean on the sentence before them and a pasted log among them, and set the cap on sentences per message from the result.
