@@ -10,7 +10,7 @@ import {
 import { claimTurn, parseFaults } from "../verify.ts";
 
 /** The codes sonnet grades beside `unseen`: its answer on `fallback` is dropped; its `credited` vote is ORed with haiku's (on a replay, haiku alone missed 4 of 12, and sonnet missed 5 of 12 but flagged 0 of 30 clean replies). */
-const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback"];
+export const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback"];
 
 /** The codes the haiku call is offered: a lookup this turn rules out `unchecked` and `rules`; a failed last Bash call offers `unfixed`; a headless session, which no ask reaches, is not offered `options`. */
 const offeredCodes = (
@@ -32,15 +32,19 @@ const GRADERS = {
 } as const;
 
 /** What each model call of one grading shares: the turn, its final reply, and the background tasks. */
-interface Graded {
+export interface Graded {
 	readonly turn: ReturnType<typeof claimTurn>;
 	readonly reply: string;
-	readonly tasks: readonly BackgroundTaskSummary[];
+	/** The lines of the background-task list, as `taskLines` writes them. */
+	readonly tasks: readonly string[];
 }
 
 /** The faults of `list` that one model call finds, narrowed to those in `keep`; a call that failed or went unanswered finds none; an answer that does not parse throws. */
-async function gradeOnce(
-	$: EngineInterface,
+export async function gradeOnce(
+	$: {
+		readonly model: Pick<EngineInterface["model"], "complete">;
+		readonly ui: Pick<EngineInterface["ui"], "log">;
+	},
 	{ turn, reply, tasks }: Graded,
 	{
 		model,
@@ -65,7 +69,7 @@ async function gradeOnce(
 				reply,
 				list,
 				results,
-				taskLines(tasks),
+				tasks,
 				turn.failed,
 			),
 			maxTokens: 300,
@@ -98,7 +102,11 @@ export async function gradeBlock(
 	if (reply === "") {
 		return undefined;
 	}
-	const graded: Graded = { turn, reply, tasks: e.background_tasks ?? [] };
+	const graded: Graded = {
+		turn,
+		reply,
+		tasks: taskLines(e.background_tasks ?? []),
+	};
 	const codes = offeredCodes(turn.looked, turn.failed !== "", interactive);
 	// Haiku missed or over-flagged `unseen` on held-out turns, so sonnet grades it, only when a tool ran. Asked for `unseen` alone,
 	// sonnet flagged 8 of 39 clean replies; beside the other codes it flagged at most 1 of 39, so it sees them and keeps `unseen`.
