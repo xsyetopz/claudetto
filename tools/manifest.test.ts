@@ -21,14 +21,22 @@ const firstOf = (value: unknown): unknown => {
 };
 
 // The lab cannot read the manifest: a hooks module imports only its own code and "claude-code".
-test("no plugin option chooses the compaction path or a summary model", async () => {
+const optionKeys = async (): Promise<string[]> => {
 	const plugin: unknown = await file(
 		`${import.meta.dir}/../plugins/claudetto/.claude-plugin/plugin.json`,
 	).json();
-	const keys = Object.keys(recordOf(recordOf(plugin).userConfig));
+	return Object.keys(recordOf(recordOf(plugin).userConfig));
+};
+
+test("no plugin option chooses the compaction path or a summary model", async () => {
+	const keys = await optionKeys();
 
 	expect(keys).toContain("handoverThresholdTokens");
 	expect(keys.filter((k) => PATH_CHOICE.test(k))).toEqual([]);
+});
+
+test("The Removed Option: no plugin option holds the TypeSafe key", async () => {
+	expect(await optionKeys()).not.toContain("typesafeApiKey");
 });
 
 // 18.28: the hooks module serves /claudetto:setup, and a registered command cannot keep the prefix, so the file holds only the description.
