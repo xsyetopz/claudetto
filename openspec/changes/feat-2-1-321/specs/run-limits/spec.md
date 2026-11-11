@@ -28,7 +28,7 @@ Before each `Bash` or `Monitor` call and each subagent start, the system SHALL r
 
 ### Requirement: A Closing Stop Removes the Session's Leftovers
 
-At each stop of the lead, the system SHALL remove the agent worktrees that nothing needs, as `session-hygiene` defines them, from git's own list. When none of the agent's own tasks runs, it SHALL also remove the worktrees and branches the agent created, with a plain `git worktree remove` and `git branch -d`, so what holds work stays. It SHALL block once to name what stays of what the agent or a worker it started made, unless the reply names each. An agent worktree another session left SHALL NOT be named at a stop; the hygiene report names it.
+At each stop of the lead, the system SHALL remove the agent worktrees that nothing needs, as `session-hygiene` defines them. When no task of the agent runs, it SHALL also remove the worktrees and branches the agent created, with plain `git worktree remove` and `git branch -d`, so what holds work stays. It SHALL block once to name what stays of what the agent or a worker it started made, unless the reply names each. A stop SHALL NOT name another session's agent worktree; the hygiene report does.
 
 #### Scenario: A Dirty Worktree
 
