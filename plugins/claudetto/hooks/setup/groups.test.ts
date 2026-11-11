@@ -139,9 +139,9 @@ test("the sandbox group lists what is dangerous: home-wide writes, denies for fi
 			enableWeakerNetworkIsolation: true,
 			excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
 			filesystem: {
-				allowWrite: ["~/", "/Volumes/", "/private/tmp"],
+				allowWrite: ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"],
 				denyWrite: words(
-					"~/.zshrc ~/.zshenv ~/.zprofile ~/.bashrc ~/.bash_profile ~/.profile ~/.config/fish ~/.gitconfig ~/.config/git ~/.ssh ~/Library/LaunchAgents ~/.local/bin ~/.bun/bin ~/bin",
+					"~/.zshrc ~/.zshenv ~/.zprofile ~/.bashrc ~/.bash_profile ~/.profile ~/.config/fish ~/.gitconfig ~/.config/git ~/.ssh ~/Library/LaunchAgents ~/.local/bin ~/.bun/bin ~/bin /private/var/folders/*/*/T/xcrun_db*",
 				),
 				denyRead: words(
 					"~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials",

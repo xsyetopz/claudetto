@@ -177,7 +177,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Sandbox",
-		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folder, except the files that run later (shell startup files, git config, SSH, launch agents, and the PATH folders in your home folder). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and retries any other command the sandbox blocks outside it only after auto mode or you approve that retry.",
+		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folders, except the files that run later (shell startup files, git config, SSH, launch agents, the PATH folders in your home folder, and the xcrun tool cache). It reads no cloud credential or keychain file, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and retries any other command the sandbox blocks outside it only after auto mode or you approve that retry.",
 		settings: {
 			sandbox: {
 				enabled: true,
@@ -188,8 +188,13 @@ export const GROUPS: readonly Group[] = [
 				// Read-only commands that fail sandboxed under every key: `ps` and `top` are setuid root, and `sysctl` reads a fixed name list.
 				excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
 				filesystem: {
-					// The sandbox does not follow the `/tmp` link on macOS, so only the real path opens it.
-					allowWrite: ["~/", "/Volumes/", "/private/tmp"],
+					// The sandbox does not follow the `/tmp` link on macOS, so only the real path opens it. A compiler or a JVM ignores `$TMPDIR` and writes to the per-user temp folder under `/private/var/folders`, whose path differs per person and which no glob opens.
+					allowWrite: [
+						"~/",
+						"/Volumes/",
+						"/private/tmp",
+						"/private/var/folders",
+					],
 					denyWrite: [
 						"~/.zshrc",
 						"~/.zshenv",
@@ -205,6 +210,8 @@ export const GROUPS: readonly Group[] = [
 						"~/.local/bin",
 						"~/.bun/bin",
 						"~/bin",
+						// `xcrun` reads from this file which binary `git` and each other developer tool is.
+						"/private/var/folders/*/*/T/xcrun_db*",
 					],
 					denyRead: [
 						"~/Library/Keychains",

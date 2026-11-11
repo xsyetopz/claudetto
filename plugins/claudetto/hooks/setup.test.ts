@@ -31,7 +31,7 @@ test("setup on an empty file writes the telemetry env and the eight denies and n
 	}
 });
 
-const BASE_WRITES = ["~/", "/Volumes/", "/private/tmp"];
+const BASE_WRITES = ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"];
 
 const allowWrite = (state: Lab): unknown =>
 	valueAt(saved(state), ["sandbox", "filesystem", "allowWrite"]);
