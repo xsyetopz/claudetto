@@ -508,3 +508,18 @@ Each row gives the hypothesis, the prediction, the command, and the result. Comm
 | `TOOL_TEXTS.Write` | 177 | 192 | None; "partial change" is now "change" | "Do not read it back" added, so the rule holds in `Read`, `Edit`, and `Write` |
 
 The reasons for a drop that say a stock parameter, result, or message "describes itself" are hypotheses from the stock tool schema listed in a session and from the hooks' texts; no eval measures them, and the 7.2 eval rerun decides which rule must come back. The test found no description over 200 characters beyond the 18 listed. `plugins/claudetto/agents/Metis.md` holds `description: Plans an implementation: ordered steps, ...`, a plain YAML scalar with `: ` that `Bun.YAML.parse` refuses, so the test reads each frontmatter `description` by a line match as Claude Code does, and leaves the file as it is.
+
+### Model Call Settings
+
+`tools/model-calls.test.ts` finds each `$.model.complete` call in the non-test files of `plugins/` and fails, naming `file:line`, on a call with no `effort` or a `model` that is not `claude-opus-5-5`, `claude-sonnet-5-5`, or `claude-haiku-5-5`. It reads the object literal's top-level fields, so a spread, an alias, or a computed model fails. Before the fix it failed on four calls, not two: the setup advice call (`setup/engine.ts:90`), the `claudetto-you-should-know` call (`register.ts:108`, which spread `settings` and so showed neither field), and two more it found, the ledger call (`pin.ts:112`, alias `haiku`) and the stop-check grading call (`limits/grade.ts:52`, alias `haiku` or `sonnet`).
+
+| Call | Model | Effort | `maxTokens` |
+| --- | --- | --- | --- |
+| Setup advice | `claude-haiku-5-5` | `low` | 200, kept |
+| `claudetto-you-should-know` check | `claude-haiku-5-5` | `high` | 512, kept |
+| Constraint ledger | `claude-haiku-5-5` | `high` | 600, kept |
+| Stop-check grading | `claude-haiku-5-5` and `claude-sonnet-5-5` | `high` | 300, kept |
+
+**`maxTokens` is unchanged because no usage is recorded.** Read: `.claude/claudetto/runs.jsonl` holds agent runs (requests, cache hit rate), `~/.claude/claudetto/gate-asks/*.jsonl` holds permission asks, and neither holds the output tokens of a hook's model call; a hook's call writes to no transcript. The only `output_tokens` values in the repository are the mocks' own (`0` and `1`). Measuring needs a paid call, which this task rules out, so task 5.2 still owns the number, and it sets `maxTokens` to the largest output usage plus a quarter. Each effort is a first choice that no run has tested. The engine adds 2,048 to `maxTokens` (P10), so each limit leaves thinking that room.
+
+**The `claudetto-you-should-know` options are gone.** The call spread `settings` read from `sideCheckModel` and `sideCheckEffortLevel`, a model a person could set to an alias, which no test can rule out. The call now names `claude-haiku-5-5` and `high`, `settings.ts` and both options are deleted from `plugin.json`, and the delta of `openspec/specs/you-should-know/spec.md` (requirement "The Model and Effort Have Defaults") needs the matching change when this change is archived.
