@@ -152,7 +152,9 @@ const checkBefore = (
 		return running;
 	}
 	const check = startCheck($, mem, settings, at)
-		.catch(() => void 0)
+		.catch((error: unknown): undefined => {
+			$.ui.log(`The side check failed (${String(error)})`);
+		})
 		.finally(() => {
 			mem.inFlight.delete(at.id);
 		});
@@ -188,7 +190,9 @@ const logHooks = (on: On, mem: Memory): void => {
 		if (e.agentId !== undefined) {
 			return yield* next(e);
 		}
-		await onStep($, mem, e).catch(() => void 0);
+		await onStep($, mem, e).catch((error: unknown) => {
+			$.ui.log(`The step record failed (${String(error)})`);
+		});
 		const result = yield* next(e);
 		if (result.answer.trim() !== "") {
 			addToLog(mem, logEntry("assistant", result.answer));
@@ -198,7 +202,9 @@ const logHooks = (on: On, mem: Memory): void => {
 	on("prompt.submit", async ($, e, next) => {
 		if (e.origin.kind === "composer" || e.origin.kind === "bridge") {
 			addToLog(mem, logEntry("person", e.text));
-			const id = await $.session.id().catch(() => void 0);
+			const id = await $.session.id().catch((error: unknown) => {
+				$.ui.log(`The session id was not read (${String(error)})`);
+			});
 			if (id !== undefined) {
 				mem.typedPast.set(id, (mem.typedPast.get(id) ?? 0) + 1);
 			}
@@ -213,9 +219,13 @@ const viewHooks = (on: On, mem: Memory): void => {
 		mem.typedPast.delete(e.sessionId);
 		mem.inFlight.delete(e.sessionId);
 		mem.turns.delete(e.sessionId);
-		const row = await loadRow($, e.sessionId).catch(() => void 0);
+		const row = await loadRow($, e.sessionId).catch((error: unknown) => {
+			$.ui.log(`The session row was not loaded (${String(error)})`);
+		});
 		if (row !== undefined && row.view !== null) {
-			await saveRow($, closed(row)).catch(() => void 0);
+			await saveRow($, closed(row)).catch((error: unknown) => {
+				$.ui.log(`The session row was not closed (${String(error)})`);
+			});
 		}
 		return next(e);
 	});
@@ -233,7 +243,9 @@ const viewHooks = (on: On, mem: Memory): void => {
 			view: row.view,
 			tag: row.tag,
 			press: (key) => {
-				press($, id, key).catch(() => void 0);
+				press($, id, key).catch((error: unknown) => {
+					$.ui.log(`The key press was not handled (${String(error)})`);
+				});
 			},
 		});
 	});

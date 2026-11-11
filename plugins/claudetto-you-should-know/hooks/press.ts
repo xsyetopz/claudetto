@@ -51,7 +51,9 @@ async function askWhy($: Engine, row: Row, view: View): Promise<void> {
 	const shownAt = Date.now();
 	await saveRow($, { ...row, view: { ...view, kind: "asked", shownAt } });
 	$.clock.after(LIMITS.askedMs, () => {
-		expire($, row.id, shownAt).catch(() => void 0);
+		expire($, row.id, shownAt).catch((error: unknown) => {
+			$.ui.log(`The asked view was not expired (${String(error)})`);
+		});
 	});
 }
 
