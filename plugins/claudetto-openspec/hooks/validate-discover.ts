@@ -130,7 +130,8 @@ export const linkEscapes = async (fs: Fs, mainSpecsDir: string, id: string) => {
 			nonEmpty(own) &&
 			(within(root, target) || within(own, target))
 		);
-	} catch {
+	} catch (error) {
+		fs.log(`The link check of ${id} did not resolve (${String(error)})`);
 		// No specs tree: nothing to escape. Any other failure to resolve is an escape.
 		return fs.exists(mainSpecsDir);
 	}

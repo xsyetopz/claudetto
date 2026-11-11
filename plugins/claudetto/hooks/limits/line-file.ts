@@ -24,8 +24,9 @@ export const lineFileHooks = (on: On): void => {
 					...(typeof theme === "string" ? { theme } : {}),
 				}),
 			);
-		} catch {
+		} catch (error) {
 			// The line leaves out what it cannot read, so a missed write costs one refresh's context part and colour.
+			$.ui.log(`The line file was not written (${String(error)})`);
 		}
 		return next(e);
 	});

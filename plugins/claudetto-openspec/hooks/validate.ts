@@ -25,7 +25,8 @@ const tryBase = async (
 ): Promise<Base> => {
 	try {
 		return await baseBlocks(fs, mainSpecsDir, id);
-	} catch {
+	} catch (error) {
+		fs.log(`The base spec of ${id} was not read (${String(error)})`);
 		return "unreadable";
 	}
 };

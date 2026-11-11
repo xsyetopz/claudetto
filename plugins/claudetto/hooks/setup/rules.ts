@@ -51,7 +51,8 @@ async function offerRule(
 			await $.store.set(hashKey(name), await sha256(shipped));
 		}
 		return failed ?? `Wrote ${path}.`;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The ${name} rule was not offered or written (${String(error)})`);
 		return DISMISSED;
 	}
 }

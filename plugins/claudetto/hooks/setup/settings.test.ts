@@ -85,9 +85,9 @@ test("other keys of the user's file stay as they are", () => {
 });
 
 test("a file that is not a JSON object is refused and a missing file is empty", () => {
-	expect(parseSettings("[1]")).toBeUndefined();
-	expect(parseSettings("{")).toBeUndefined();
-	expect(parseSettings()).toEqual({});
+	expect(parseSettings("[1]", () => void 0)).toBeUndefined();
+	expect(parseSettings("{", () => void 0)).toBeUndefined();
+	expect(parseSettings(undefined, () => void 0)).toEqual({});
 });
 
 test("the auto-mode lists replace the built-ins, so none names $defaults", () => {
@@ -230,7 +230,7 @@ test("a null value in the user's file is replaced, not walked into", () => {
 	expect(applyChanges(held, changes, "fill")).toEqual({
 		worktree: { baseRef: "head" },
 	});
-	expect(parseSettings("null")).toBeUndefined();
+	expect(parseSettings("null", () => void 0)).toBeUndefined();
 });
 
 test("only a permission list merges; another list is replaced", () => {

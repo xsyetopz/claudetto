@@ -12,7 +12,9 @@ async function git(
 	$: EngineInterface,
 	argv: string[],
 ): Promise<string | undefined> {
-	const r = await $.process.run(["git", ...argv]).catch(() => void 0);
+	const r = await $.process.run(["git", ...argv]).catch((error: unknown) => {
+		$.ui.log(`The git ${argv[0]} call failed (${String(error)})`);
+	});
 	return r?.exitCode === 0 ? r.stdout : undefined;
 }
 

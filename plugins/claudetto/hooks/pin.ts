@@ -75,7 +75,11 @@ interface Extraction {
 	kind: PinKind;
 }
 
-const parseLedger = (text: string, said: string[]): Extraction | undefined => {
+const parseLedger = (
+	text: string,
+	said: string[],
+	$: EngineInterface,
+): Extraction | undefined => {
 	try {
 		const json: unknown = JSON.parse(
 			text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),
@@ -88,7 +92,8 @@ const parseLedger = (text: string, said: string[]): Extraction | undefined => {
 					kind: isKind(kind) ? kind : "task",
 				}
 			: undefined;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The constraint extraction did not parse (${String(error)})`);
 		return undefined;
 	}
 };
@@ -110,7 +115,7 @@ const extractLedger = async (
 		maxTokens: 600,
 		timeoutMs: 20_000,
 	});
-	return r.isAnswered ? parseLedger(r.text, [...history, text]) : undefined;
+	return r.isAnswered ? parseLedger(r.text, [...history, text], $) : undefined;
 };
 
 /** The repo root as the cwd spells it: `cdup` is `git rev-parse --show-cdup`, one `../` per level up. */
@@ -157,10 +162,13 @@ const isFirstBatch = (s: PinState, messages: SessionMessage[]): boolean =>
 	s.nudgedAt < 0 || s.nudgedAt === messages.length;
 
 const adopt = async (
+	$: EngineInterface,
 	s: PinState,
 	job: Promise<Extraction | undefined>,
 ): Promise<void> => {
-	const found = await job.catch(() => void 0);
+	const found = await job.catch((error: unknown) => {
+		$.ui.log(`The constraint extraction failed (${String(error)})`);
+	});
 	// A failed or unreadable answer keeps the last ledger rather than dropping constraints.
 	s.ledger = found?.constraints ?? s.ledger;
 	s.kind = found?.kind ?? s.kind;
@@ -173,7 +181,7 @@ const ledgerHooks = (on: On, s: PinState): void => {
 		s.kind = "task";
 		s.nudgedAt = -1;
 		if (!(e.command || e.isMeta)) {
-			s.pending = adopt(s, extractLedger($, e.text, s.ledger));
+			s.pending = adopt($, s, extractLedger($, e.text, s.ledger));
 			const awaited = await personTexts($);
 			const earlier = awaited.some((t) => t !== e.text);
 			if (!seen && earlier) {

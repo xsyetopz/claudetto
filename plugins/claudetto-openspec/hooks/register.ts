@@ -30,6 +30,9 @@ export const register = (on: On): void => {
 					list: (...a) => $.fs.list(...a),
 					exists: (...a) => $.fs.exists(...a),
 					stat: (...a) => $.fs.stat(...a),
+					log: (message) => {
+						$.ui.log(message);
+					},
 				},
 				run: (argv) => $.process.run(argv),
 				root: await $.session.root(),

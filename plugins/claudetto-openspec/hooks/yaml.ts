@@ -1,6 +1,8 @@
 // The smallest YAML reader that serves `.openspec.yaml` and a project's `schema.yaml`: top-level
 // keys with scalar, flow, or block values. Nested content is skipped, not read.
 // Why not a library: a hooks module has no Bun or Node API and the engine loads only its own files.
+import type { Log } from "./fs.ts";
+
 const KEY =
 	/^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*'|[^\s"'#\-[\]{}][^:]*?|-[^\s:][^:]*?)[ \t]*:(?:[ \t]+(.*))?$/u;
 const COMMENT = /(?:^|[ \t])#.*$/u;
@@ -34,11 +36,12 @@ const balanced = (text: string) => {
 	return depth === 0 && quote === "";
 };
 
-const quoted = (text: string): unknown => {
+const quoted = (text: string, log: Log): unknown => {
 	if (text.startsWith('"')) {
 		try {
 			return JSON.parse(text);
-		} catch {
+		} catch (error) {
+			log(`The quoted YAML value ${text} did not parse (${String(error)})`);
 			return INVALID;
 		}
 	}
@@ -57,13 +60,13 @@ const plain = (text: string): unknown => {
 	return NUMBER.test(text) ? Number(text) : text;
 };
 
-const scalar = (raw: string): unknown => {
+const scalar = (raw: string, log: Log): unknown => {
 	const text = raw.replace(COMMENT, "").trim();
 	if (text === "" || text === "~" || text === "null") {
 		return null;
 	}
 	if (text.startsWith('"') || text.startsWith("'")) {
-		return quoted(text);
+		return quoted(text, log);
 	}
 	if (text.startsWith("[") || text.startsWith("{")) {
 		return balanced(text) ? [] : INVALID;
@@ -74,8 +77,8 @@ const scalar = (raw: string): unknown => {
 const INDENTED = /^\s/u;
 const LINE_BREAKS = /\r\n?/gu;
 
-const keyOf = (raw: string) => {
-	const value = scalar(raw);
+const keyOf = (raw: string, log: Log) => {
+	const value = scalar(raw, log);
 	return typeof value === "string" ? value : INVALID;
 };
 
@@ -96,13 +99,14 @@ const keyLine = (
 	out: Record<string, unknown>,
 	body: string,
 	last: string | undefined,
+	log: Log,
 ) => {
 	const m = KEY.exec(body.trimEnd());
 	if (!m) {
 		return last === undefined && balanced(body) ? null : false;
 	}
-	const key = keyOf(m[1] ?? "");
-	const value = scalar(m[2] ?? "");
+	const key = keyOf(m[1] ?? "", log);
+	const value = scalar(m[2] ?? "", log);
 	if (key === INVALID || value === INVALID) {
 		return false;
 	}
@@ -130,6 +134,7 @@ const indentedLine = (
 /** The top-level map; `null` for a document that is no map; `undefined` when it is not valid YAML. */
 export const parseYaml = (
 	text: string,
+	log: Log,
 ): Record<string, unknown> | null | undefined => {
 	const out: Record<string, unknown> = {};
 	let last: string | undefined;
@@ -144,7 +149,7 @@ export const parseYaml = (
 			}
 			continue;
 		}
-		const key = keyLine(out, body, last);
+		const key = keyLine(out, body, last, log);
 		if (key === false) {
 			return undefined;
 		}

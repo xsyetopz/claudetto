@@ -17,7 +17,9 @@ async function succeeds(
 	argv: string[],
 	cwd: string,
 ): Promise<boolean> {
-	const awaited = await $.process.run(argv, { cwd }).catch(() => void 0);
+	const awaited = await $.process.run(argv, { cwd }).catch((error: unknown) => {
+		$.ui.log(`The ${argv[0]} call failed (${String(error)})`);
+	});
 	return awaited?.exitCode === 0;
 }
 

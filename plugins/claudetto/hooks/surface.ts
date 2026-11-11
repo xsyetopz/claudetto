@@ -144,7 +144,8 @@ const namesIn = async ($: SettingsContext, dir: string): Promise<string[]> => {
 				? entry.name.slice(0, -".md".length)
 				: entry.name,
 		);
-	} catch {
+	} catch (error) {
+		$.ui.log(`The directory ${dir} was not listed (${String(error)})`);
 		return [];
 	}
 };

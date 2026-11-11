@@ -112,7 +112,9 @@ export async function protectedChanges(
 					"--",
 					...paths,
 				])
-				.catch(() => void 0);
+				.catch((error: unknown) => {
+					$.ui.log(`The git diff call failed (${String(error)})`);
+				});
 			return r?.exitCode === 0
 				? r.stdout.split("\n").filter((f) => f !== "")
 				: [];

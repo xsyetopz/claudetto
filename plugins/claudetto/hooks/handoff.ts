@@ -74,15 +74,19 @@ const onSessionStart = (on: On): void => {
 		let early = true;
 		try {
 			await $.tool.register(spec);
-		} catch {
+		} catch (error) {
+			$.ui.log(
+				`The handoff tool is not registered yet, so it is retried after the start (${String(error)})`,
+			);
 			early = false;
 		}
 		const started = await next(e);
 		if (!early) {
 			try {
 				await $.tool.register(spec);
-			} catch {
+			} catch (error) {
 				// The tool stays unregistered; the code-built handoff still works.
+				$.ui.log(`The handoff tool was not registered (${String(error)})`);
 			}
 		}
 		return started;

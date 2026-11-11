@@ -96,7 +96,9 @@ export async function handOff(
 			.finally(() => {
 				state.handingOff = false;
 			})
-			.catch(() => void 0);
+			.catch((error: unknown) => {
+				$.ui.log(`The clear and resubmit failed (${String(error)})`);
+			});
 	});
 	// Ending the turn spares the request that would read the whole context only to answer this result.
 	if (state.turn !== undefined) {

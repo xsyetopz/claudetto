@@ -32,6 +32,7 @@ try {
 			Boolean,
 		),
 		configDir,
+		log: (message) => console.error(message),
 	});
 	console.log(reportText(report, args.dryRun));
 	console.log(await cleanCaches(args.dryRun));

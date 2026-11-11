@@ -36,7 +36,9 @@ async function shippedIn(
 			],
 			{ cwd: await $.session.cwd() },
 		)
-		.catch(() => void 0);
+		.catch((error: unknown) => {
+			$.ui.log(`The git grep for a test phrase failed (${String(error)})`);
+		});
 	return r?.exitCode === 0 ? r.stdout.split("\n")[0] : undefined;
 }
 

@@ -15,7 +15,9 @@ export const notify = (on: On, options: PluginOptions): void => {
 				.notify(`Claude stopped on an error: ${e.error}`, {
 					title: "claudetto",
 				})
-				.catch(() => void 0);
+				.catch((error: unknown) => {
+					$.ui.log(`The stop notice was not shown (${String(error)})`);
+				});
 		}
 		return next(e);
 	});

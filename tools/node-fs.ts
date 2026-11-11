@@ -21,6 +21,9 @@ const kindOf = (e: { isDirectory: () => boolean; isFile: () => boolean }) => {
 
 export const nodeFs: Fs = {
 	read: (path) => readFile(path, "utf8"),
+	log: (message) => {
+		console.error(message);
+	},
 	write: async (path, text) => {
 		await mkdir(dirname(path), { recursive: true });
 		await writeFile(path, text);

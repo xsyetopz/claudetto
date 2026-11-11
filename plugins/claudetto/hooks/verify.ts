@@ -96,36 +96,32 @@ const squash = (text: string): string => text.replaceAll(/\s+/gu, " ");
 
 /**
  * The fault codes in a grader answer, read structurally: a JSON `faults` list whose entries name a code in `allowed` and quote words that stand in
- * the reply. A quote the reply does not hold is a made-up finding, so it is dropped; an unreadable answer holds none.
+ * the reply. A quote the reply does not hold is a made-up finding, so it is dropped; an unreadable answer throws.
  */
 export const parseFaults = (
 	text: string,
 	allowed: readonly GradeFault[],
 	reply: string,
 ): GradeFault[] => {
-	try {
-		const json: unknown = JSON.parse(
-			text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),
-		);
-		const list =
-			typeof json === "object" && json !== null && "faults" in json
-				? json.faults
-				: undefined;
-		const found = new Set(
-			(Array.isArray(list) ? list : []).flatMap((entry: unknown) =>
-				typeof entry === "object" &&
-				entry !== null &&
-				"code" in entry &&
-				"quote" in entry &&
-				typeof entry.quote === "string" &&
-				entry.quote.trim() !== "" &&
-				squash(reply).includes(squash(entry.quote).trim())
-					? [entry.code]
-					: [],
-			),
-		);
-		return allowed.filter((code) => found.has(code));
-	} catch {
-		return [];
-	}
+	const json: unknown = JSON.parse(
+		text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),
+	);
+	const list =
+		typeof json === "object" && json !== null && "faults" in json
+			? json.faults
+			: undefined;
+	const found = new Set(
+		(Array.isArray(list) ? list : []).flatMap((entry: unknown) =>
+			typeof entry === "object" &&
+			entry !== null &&
+			"code" in entry &&
+			"quote" in entry &&
+			typeof entry.quote === "string" &&
+			entry.quote.trim() !== "" &&
+			squash(reply).includes(squash(entry.quote).trim())
+				? [entry.code]
+				: [],
+		),
+	);
+	return allowed.filter((code) => found.has(code));
 };

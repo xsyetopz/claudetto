@@ -50,8 +50,8 @@ export async function log(
 	logging = (async () => {
 		try {
 			await write();
-		} catch {
-			// The line is lost.
+		} catch (error) {
+			$.ui.log(`The gate log line was not written (${String(error)})`);
 		}
 	})();
 	await logging;

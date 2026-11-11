@@ -38,6 +38,7 @@ export interface Host {
 	realPath: (path: string) => Promise<string | undefined>;
 	list: (path: string) => Promise<{ name: string }[]>;
 	home: () => Promise<string>;
+	log: (message: string) => void;
 	/** The tool uses of the transcript so far, each with its outcome once it has one. */
 	past: () => Promise<
 		{ tool: string; input: unknown; text?: string; isError?: true }[]
@@ -190,7 +191,11 @@ const listed = async (
 	await Promise.all(
 		(folders.length > 0 ? folders : ["."]).map(async (folder) => {
 			const dir = await place(host, state, cwd, folder);
-			for (const { name } of await host.list(dir).catch(() => [])) {
+			const entries = await host.list(dir).catch((error: unknown) => {
+				host.log(`The folder ${dir} was not listed (${String(error)})`);
+				return [];
+			});
+			for (const { name } of entries) {
 				see(state, flatten(`${dir}/${name}`));
 			}
 		}),
@@ -257,7 +262,10 @@ export const saw = async (
 // After a `--resume` the transcript holds the calls of the earlier run; a call without a text is still in flight, and the current one is. A transcript that cannot be read leaves the state empty, as a fresh session starts. It runs before the first call is recorded, so its older calls never overwrite a newer record.
 const replay = (host: Host, state: Recreation): Promise<void> => {
 	state.replayed ??= (async () => {
-		const calls = await host.past().catch(() => []);
+		const calls = await host.past().catch((error: unknown) => {
+			host.log(`The transcript calls were not read (${String(error)})`);
+			return [];
+		});
 		await inOrder(calls, async (t) => {
 			if (t.text !== undefined && !t.isError) {
 				await saw(host, state, t.tool, t.input, t.text);

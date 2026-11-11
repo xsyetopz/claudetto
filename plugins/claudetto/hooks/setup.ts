@@ -76,7 +76,8 @@ async function askGroup(
 			return "skip";
 		}
 		return answer.trim() === REPLACE ? "replace" : "fill";
-	} catch {
+	} catch (error) {
+		$.ui.log(`The setup question was not answered (${String(error)})`);
 		return undefined;
 	}
 }
@@ -117,7 +118,11 @@ async function settingsPart(
 		return `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP} again.`;
 	}
 	const extra = [
-		capGroup(parseSettings(await textOf($, await loginFile($)))),
+		capGroup(
+			parseSettings(await textOf($, await loginFile($)), (message) => {
+				$.ui.log(message);
+			}),
+		),
 		wallGroup(walls),
 	].filter((group) => group !== undefined);
 	const result = await askGroups($, [...GROUPS, ...extra], held, []);
@@ -162,7 +167,8 @@ async function keyPart($: EngineInterface): Promise<string | undefined> {
 			[SKIP, NO_KEY],
 		);
 		answer = awaited2.trim();
-	} catch {
+	} catch (error) {
+		$.ui.log(`The Context7 key question was not answered (${String(error)})`);
 		return undefined;
 	}
 	if (answer === "" || answer === SKIP || answer === NO_KEY) {

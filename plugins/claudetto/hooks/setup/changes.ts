@@ -99,14 +99,18 @@ export const settingsText = (settings: Json): string =>
 	`${JSON.stringify(settings, undefined, 2)}\n`;
 
 /** The settings a file holds, `{}` for no file, or `undefined` when the text is not a JSON object. */
-export const parseSettings = (text?: string): Json | undefined => {
+export const parseSettings = (
+	text: string | undefined,
+	log: (message: string) => void,
+): Json | undefined => {
 	if (text === undefined) {
 		return {};
 	}
 	try {
 		const parsed: unknown = JSON.parse(text);
 		return isRecord(parsed) ? parsed : undefined;
-	} catch {
+	} catch (error) {
+		log(`The settings text did not parse (${String(error)})`);
 		return undefined;
 	}
 };

@@ -84,8 +84,9 @@ const beatOf = ($: EngineInterface) => async (): Promise<void> => {
 			$.clock.now(),
 		]);
 		await $.fs.write(atRoot(root, heartbeatPath(session)), String(now));
-	} catch {
+	} catch (error) {
 		// The status line reads a missing or old heartbeat as hooks that stopped.
+		$.ui.log(`The heartbeat was not written (${String(error)})`);
 	}
 };
 
@@ -103,8 +104,9 @@ function readingOf(
 				Math.max(0, Math.min(remainingMs, BUDGET_MS) - SPARE_MS),
 				{ signal: AbortSignal.any([signal, done.signal]) },
 			);
-		} catch {
+		} catch (error) {
 			// An aborted wait ends the same way as one that ran out.
+			$.ui.log(`The usage wait ended early (${String(error)})`);
 		}
 		return null;
 	};

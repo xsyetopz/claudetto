@@ -48,15 +48,22 @@ async function promptsOf(
 	try {
 		return transcript === undefined
 			? []
-			: humanPrompts(await $.fs.read(transcript));
-	} catch {
+			: humanPrompts(await $.fs.read(transcript), (message) => {
+					$.ui.log(message);
+				});
+	} catch (error) {
+		$.ui.log(`The transcript was not read for prompts (${String(error)})`);
 		return [];
 	}
 }
 
 /** What `git status -sb` prints, or nothing when git fails. */
 export async function gitStatusOf($: EngineInterface): Promise<string> {
-	const r = await $.process.run(["git", "status", "-sb"]).catch(() => void 0);
+	const r = await $.process
+		.run(["git", "status", "-sb"])
+		.catch((error: unknown) => {
+			$.ui.log(`The git status call failed (${String(error)})`);
+		});
 	return r?.exitCode === 0 ? r.stdout : "";
 }
 

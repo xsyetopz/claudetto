@@ -42,7 +42,8 @@ export async function textOf(
 ): Promise<string | undefined> {
 	try {
 		return (await $.fs.exists(path)) ? await $.fs.read(path) : undefined;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The file ${path} was not read (${String(error)})`);
 		return undefined;
 	}
 }
@@ -55,6 +56,9 @@ export async function userSettings($: EngineInterface): Promise<UserSettings> {
 		file,
 		held: parseSettings(
 			(await $.fs.exists(file)) ? await $.fs.read(file) : undefined,
+			(message) => {
+				$.ui.log(message);
+			},
 		),
 	};
 }
@@ -102,7 +106,8 @@ async function adviceOf(
 			return { pick: parsed.pick, why: parsed.why };
 		}
 		return undefined;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The setup advice was not read (${String(error)})`);
 		return undefined;
 	}
 }
@@ -139,7 +144,8 @@ export async function lines(
 	try {
 		const awaited = await $.process.run(argv, { timeoutMs: PROCESS_MS });
 		return awaited.stdout;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The ${argv[0]} call failed (${String(error)})`);
 		return "";
 	}
 }

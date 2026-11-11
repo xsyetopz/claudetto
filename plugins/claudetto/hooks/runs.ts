@@ -51,10 +51,13 @@ const cacheHitRateOf = (usages: readonly unknown[]): number => {
 };
 
 /** A request spans one transcript line per content block, all with its message id: the first line dates it, and the last holds its usage. */
-export const runStats = (jsonl: string): Stats => {
+export const runStats = (
+	jsonl: string,
+	log: (message: string) => void,
+): Stats => {
 	const requests = new Map<string, { at: number; usage: unknown }>();
 	const files = new Set<string>();
-	for (const entry of jsonl.split("\n").map((item) => lineOf(item))) {
+	for (const entry of jsonl.split("\n").map((item) => lineOf(item, log))) {
 		const message = isRecord(entry) ? entry["message"] : undefined;
 		if (
 			!isRecord(entry) ||
@@ -110,7 +113,10 @@ const appendLine = async (
 	line: Record<string, unknown>,
 ): Promise<void> => {
 	const path = atRoot(await $.session.root(), RUN_LOG);
-	const held = await $.fs.read(path).catch(() => "");
+	const held = await $.fs.read(path).catch((error: unknown) => {
+		$.ui.log(`The run log was not read (${String(error)})`);
+		return "";
+	});
 	await $.fs.write(path, `${held}${JSON.stringify(line)}\n`);
 };
 
@@ -137,7 +143,13 @@ const trackStops = (on: On, started: Started, pending: Pending[]): void => {
 		}
 		started.delete(e.agent_id);
 		const stats = runStats(
-			await $.fs.read(e.agent_transcript_path).catch(() => ""),
+			await $.fs.read(e.agent_transcript_path).catch((error: unknown) => {
+				$.ui.log(`The agent transcript was not read (${String(error)})`);
+				return "";
+			}),
+			(message) => {
+				$.ui.log(message);
+			},
 		);
 		pending.push({
 			line: {

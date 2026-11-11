@@ -23,8 +23,13 @@ export function hostOf($: EngineInterface): Host {
 		realPath: async (path) => {
 			const found = await $.fs
 				.stat(path, { resolve: true })
-				.catch(() => void 0);
+				.catch((error: unknown) => {
+					$.ui.log(`The path ${path} was not resolved (${String(error)})`);
+				});
 			return found?.realPath;
+		},
+		log: (message) => {
+			$.ui.log(message);
 		},
 		list: (path) => $.fs.list(path),
 		// `$.process` has no environment of its own; the shell that runs a command expands `~` from this one.

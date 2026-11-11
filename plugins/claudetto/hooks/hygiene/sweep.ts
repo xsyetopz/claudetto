@@ -5,7 +5,14 @@ import { join } from "node:path";
 import { MARKER } from "../gate/processes.ts";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
 import type { Args } from "./args.ts";
-import { guardOf, realOr, refusal, trashRoots } from "./roots.ts";
+import {
+	guardOf,
+	type Log,
+	logged,
+	realOr,
+	refusal,
+	trashRoots,
+} from "./roots.ts";
 import {
 	checkoutOf,
 	heldPaths,
@@ -27,6 +34,7 @@ interface Host {
 	/** `CLAUDE_CODE_TMPDIR`, `/tmp`, and the system temp folder. */
 	readonly tempBases: readonly string[];
 	readonly configDir: string;
+	readonly log: Log;
 }
 
 interface Removed {
@@ -52,11 +60,11 @@ const namesIn = (dir: string) =>
 	);
 
 /** Each `claude-<uid>` folder that exists and that `uid` owns, once per real path. */
-const tempRoots = async (bases: readonly string[], uid: number) => {
+const tempRoots = async (bases: readonly string[], uid: number, log: Log) => {
 	const found = await Promise.all(
 		bases.map(async (base) => {
 			const real = await realpath(join(base, `claude-${uid}`)).catch(
-				() => void 0,
+				logged(log, `The temp folder under ${base} was not resolved`, void 0),
 			);
 			const info = real === undefined ? undefined : await stat(real);
 			return info?.uid === uid ? real : undefined;
@@ -66,11 +74,15 @@ const tempRoots = async (bases: readonly string[], uid: number) => {
 };
 
 /** The text of `~/.claude/sessions`: a session id in it is alive. */
-const liveSessions = async (configDir: string): Promise<string> => {
+const liveSessions = async (configDir: string, log: Log): Promise<string> => {
 	const dir = join(configDir, "sessions");
 	const files = await namesIn(dir);
 	const texts = await Promise.all(
-		files.map((file) => readFile(join(dir, file.name), "utf8").catch(() => "")),
+		files.map((file) =>
+			readFile(join(dir, file.name), "utf8").catch(
+				logged(log, `The session file ${file.name} was not read`, ""),
+			),
+		),
 	);
 	return texts.join("\n");
 };
@@ -142,7 +154,11 @@ const markedTemp = async (
 	limitMs: number,
 	host: Host,
 ) => {
-	const bases = [...new Set(await Promise.all(host.tempBases.map(realOr)))];
+	const bases = [
+		...new Set(
+			await Promise.all(host.tempBases.map((base) => realOr(base, host.log))),
+		),
+	];
 	const found = await Promise.all(
 		bases.map(async (base) => {
 			const entries = await namesIn(base);
@@ -153,7 +169,7 @@ const markedTemp = async (
 						const rule = tempRule(trash, entry.name);
 						const path = join(base, entry.name);
 						const marker = await readFile(join(path, MARKER), "utf8").catch(
-							() => "",
+							logged(host.log, `The marker of ${path} was not read`, ""),
 						);
 						// A missing marker reads as "", which every text includes, so an unmarked folder stays.
 						return rule && !live.includes(marker.trim())
@@ -175,14 +191,16 @@ const builtTrash = async (trash: Trash, limitMs: number, host: Host) => {
 	}
 	const [own, realHome, roots] = await Promise.all([
 		checkoutOf(host.cwd),
-		realOr(host.home),
-		trashRoots(host.cwd, host.home),
+		realOr(host.home, host.log),
+		trashRoots(host.cwd, host.home, host.log),
 	]);
 	const walks = await Promise.all(
 		roots.map((root) =>
 			projectTrash(root, trash, (dir) =>
 				guardOf(dir, realHome) === undefined
-					? readdir(dir, { withFileTypes: true }).catch(() => [])
+					? readdir(dir, { withFileTypes: true }).catch(
+							logged(host.log, `The folder ${dir} was not listed`, []),
+						)
 					: Promise.resolve([]),
 			),
 		),
@@ -204,8 +222,8 @@ const builtTrash = async (trash: Trash, limitMs: number, host: Host) => {
 const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 	const handoffMs = (args.handoffDays ?? args.days ?? host.days) * DAY_MS;
 	const claudetto = join(host.cwd, ".claude/claudetto");
-	const live = `${args.session ?? ""}\n${await liveSessions(host.configDir)}`;
-	const roots = await tempRoots(host.tempBases, host.uid);
+	const live = `${args.session ?? ""}\n${await liveSessions(host.configDir, host.log)}`;
+	const roots = await tempRoots(host.tempBases, host.uid, host.log);
 	const trash = await loadTrash(host.cwd);
 	const parts = await Promise.all([
 		builtTrash(trash, (args.trashDays ?? TRASH_DAYS) * DAY_MS, host),
@@ -230,7 +248,7 @@ const sizeOf = async (path: string, info: Stats): Promise<number> => {
 };
 
 export const sweep = async (args: Args, host: Host): Promise<Report> => {
-	const why = await refusal(host.cwd, host.home);
+	const why = await refusal(host.cwd, host.home, host.log);
 	if (why !== undefined) {
 		return { removed: [], refused: [`hygiene refused ${host.cwd}: ${why}`] };
 	}
@@ -238,7 +256,9 @@ export const sweep = async (args: Args, host: Host): Promise<Report> => {
 	const found = await Promise.all(
 		listed.map(async (item) => {
 			// A Nix result link counts by its own time, and its store path may be gone.
-			const info = await lstat(item.path).catch(() => void 0);
+			const info = await lstat(item.path).catch(
+				logged(host.log, `The path ${item.path} was not read`, void 0),
+			);
 			return info !== undefined && host.now - info.mtimeMs > item.limitMs
 				? [
 						{

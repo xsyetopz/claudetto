@@ -46,7 +46,7 @@ const JSONL = [
 ].join("\n");
 
 test("Requests Count Once: two requests, the hit rate of their input, and the longest gap", () => {
-	expect(runStats(JSONL)).toEqual({
+	expect(runStats(JSONL, () => void 0)).toEqual({
 		requests: 2,
 		cacheHitRate: 0.5,
 		maxGapSeconds: 400,

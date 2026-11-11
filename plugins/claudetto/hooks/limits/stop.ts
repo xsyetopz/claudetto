@@ -159,7 +159,9 @@ export const budgetHooks = (on: On): void => {
 	let band = "";
 	// Rides the prompt, which costs a request already; `classic.Stop` would cost its own.
 	on("prompt.submit", async ($, e, next) => {
-		const usage = await $.session.usage().catch(() => void 0);
+		const usage = await $.session.usage().catch((error: unknown) => {
+			$.ui.log(`The session usage was not read (${String(error)})`);
+		});
 		const line = usage === undefined ? undefined : budgetLine(usage);
 		if (
 			usage === undefined ||

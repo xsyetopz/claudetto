@@ -120,7 +120,8 @@ async function save(
 	try {
 		await $.fs.write(atRoot(await $.session.root(), path), text);
 		return path;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The full output was not saved to ${path} (${String(error)})`);
 		return undefined;
 	}
 }

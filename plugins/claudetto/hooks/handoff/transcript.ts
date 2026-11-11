@@ -51,10 +51,17 @@ export const readMessages = (messages: readonly SessionMessage[]): Tail => {
 	};
 };
 
-export const lineOf = (line: string): unknown => {
+export const lineOf = (
+	line: string,
+	log: (message: string) => void,
+): unknown => {
+	if (line.trim() === "") {
+		return undefined;
+	}
 	try {
 		return JSON.parse(line);
-	} catch {
+	} catch (error) {
+		log(`A transcript line did not parse (${String(error)})`);
 		return undefined;
 	}
 };
@@ -63,9 +70,12 @@ export const lineOf = (line: string): unknown => {
  * The prompts the user typed, from the whole transcript file. An entry stamped `origin.kind` `human` counts;
  * an entry of an older transcript, with no stamp, counts when it is no meta line and its text is no tag.
  */
-export const humanPrompts = (jsonl: string): string[] =>
+export const humanPrompts = (
+	jsonl: string,
+	log: (message: string) => void,
+): string[] =>
 	jsonl.split("\n").flatMap((line) => {
-		const entry = lineOf(line);
+		const entry = lineOf(line, log);
 		if (
 			!isRecord(entry) ||
 			entry["type"] !== "user" ||

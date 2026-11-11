@@ -48,7 +48,8 @@ async function repoFiles($: EngineInterface) {
 async function cwdOf($: EngineInterface): Promise<string | undefined> {
 	try {
 		return await $.session.cwd();
-	} catch {
+	} catch (error) {
+		$.ui.log(`The working directory was not read (${String(error)})`);
 		return undefined;
 	}
 }
@@ -95,7 +96,8 @@ export async function starterPart(
 			`${previewOf(files)}\nWrite these files? A file that exists is never replaced.`,
 			[WRITE, SKIP],
 		);
-	} catch {
+	} catch (error) {
+		$.ui.log(`The starter file question was not answered (${String(error)})`);
 		return dismissed("starter file");
 	}
 	if (answer.trim() !== WRITE) {
@@ -151,7 +153,8 @@ export async function ignoresPart(
 			`${previewEdits(edits)}\nWrite the ignore file block? Lines outside the marked block are never changed. The block narrows \`Grep\` (a call with no \`glob\`) and not \`Glob\`, which still lists ignored files.`,
 			[WRITE, SKIP],
 		);
-	} catch {
+	} catch (error) {
+		$.ui.log(`The ignore file question was not answered (${String(error)})`);
 		return dismissed("ignore file");
 	}
 	if (answer.trim() !== WRITE) {
@@ -184,7 +187,8 @@ export async function toolPart(
 			`\`${tool.name}\` is not installed. Run \`${shown}\`?`,
 			[YES, NO],
 		);
-	} catch {
+	} catch (error) {
+		$.ui.log(`The install question was not answered (${String(error)})`);
 		return dismissed("install");
 	}
 	if (answer.trim() !== YES) {

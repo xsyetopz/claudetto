@@ -47,7 +47,7 @@ const schemaResolves = async (fs: Fs, dir: string, name: string) => {
 		fs,
 		join(root, "openspec", "schemas", name, "schema.yaml"),
 	);
-	const parsed = raw === undefined ? undefined : parseYaml(raw);
+	const parsed = raw === undefined ? undefined : parseYaml(raw, fs.log);
 	return (
 		raw !== undefined &&
 		isMap(parsed) &&
@@ -106,7 +106,7 @@ export const metadata = async (fs: Fs, dir: string): Promise<Meta> => {
 					invalid: `the metadata file cannot be read (${file.error})`,
 				};
 	}
-	const parsed = parseYaml(file.raw);
+	const parsed = parseYaml(file.raw, fs.log);
 	if (parsed === undefined) {
 		return {
 			...NONE,

@@ -24,7 +24,8 @@ async function heavyTokens($: EngineInterface): Promise<number | undefined> {
 	try {
 		const awaited = await $.session.usage();
 		return awaited.context.tokens;
-	} catch {
+	} catch (error) {
+		$.ui.log(`The session usage was not read (${String(error)})`);
 		return undefined;
 	}
 }

@@ -2,7 +2,7 @@ import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 import { scanner } from "../secrets.mock.ts";
-import { GRADE_FAULTS, VERIFY_BLOCK } from "../texts-grade.ts";
+import { GRADE_FAULTS, VERIFY_BLOCK, VERIFY_UNREAD } from "../texts-grade.ts";
 import { found, lab, stop, used, user } from "./verify.mock.ts";
 
 test("a claim about the work with no tool this turn gets one block", async ($: Engine, on: On) => {
@@ -190,10 +190,16 @@ test("a fault whose code the turn ruled out passes", async ($: Engine, on: On) =
 	expect(awaited13.block).toBeUndefined();
 });
 
-for (const verdict of ["fail", "unanswered", "not json"] as const) {
+for (const verdict of ["fail", "unanswered"] as const) {
 	test(`a grader call that is ${verdict} passes`, async ($: Engine, on: On) => {
 		lab(on, [user("x")], verdict);
 		const awaited14 = await stop($);
 		expect(awaited14.block).toBeUndefined();
 	});
 }
+
+test("a grader answer that is not JSON is a fault, not a clean reply", async ($: Engine, on: On) => {
+	lab(on, [user("x")], "not json");
+	const out = await stop($);
+	expect(out.block).toBe(VERIFY_UNREAD);
+});

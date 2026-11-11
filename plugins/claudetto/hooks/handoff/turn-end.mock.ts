@@ -6,7 +6,7 @@ import type {
 } from "claude-code";
 import { type Engine, mock } from "claude-code/testing";
 
-import { scanner } from "../secrets.mock.ts";
+import { scanned } from "../secrets.mock.ts";
 
 export const HANDOFF = `# Handoff
 
@@ -82,6 +82,22 @@ interface Ending {
 const wireIo = (on: On, seen: Seen, refuseSubmit: boolean): void => {
 	on("env.get", () => ({ value: undefined }));
 	on("session.root", () => ({ value: "/repo" }));
+	on(
+		"process.run",
+		(_$, e, next) =>
+			scanned(e, [GITHUB_TOKEN]) ??
+			(e.argv[0] === "git"
+				? {
+						value: {
+							exitCode: 0,
+							stdout: "",
+							stderr: "",
+							isStdoutTruncated: false,
+							isStderrTruncated: false,
+						},
+					}
+				: next(e)),
+	);
 	on("ui.log", (_$, e) => {
 		seen.lines.push(e.text);
 		return { value: undefined };
@@ -140,7 +156,6 @@ export const lab = (
 	refuseSubmit = false,
 	context: Context = {},
 ) => {
-	scanner(on, [GITHUB_TOKEN]);
 	const seen: Seen = {
 		runs: 0,
 		compacted: [],
