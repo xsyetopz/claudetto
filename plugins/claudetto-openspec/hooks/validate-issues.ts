@@ -2,7 +2,8 @@ import { type Block, fold, norm } from "./spec-lines.ts";
 import { missingScenarios } from "./spec-merge.ts";
 import type { Plan } from "./spec-plan.ts";
 // The issues of one delta file: notices, conflicts inside it, and scenarios a MODIFIED block would lose.
-import { at, blockIssues, type Issue } from "./spec-rules.ts";
+import { at, blockIssues, type Issue, MAX_REQUIREMENT } from "./spec-rules.ts";
+import { requirementText } from "./spec.ts";
 import type { Found } from "./validate-discover.ts";
 
 const NAMELESS = /^requirement:?$/iu;
@@ -136,17 +137,27 @@ const baseFor = (
 	return hit;
 };
 
+// Each MODIFIED block with the main-spec block it replaces, if any.
+const pairs = (plan: Plan, base: Block[] | undefined) => {
+	const away = new Set(plan.renamed.map((x) => norm(x.from)));
+	const origin = new Map(plan.renamed.map((x) => [norm(x.to), norm(x.from)]));
+	return plan.modified.map(
+		(b) =>
+			[
+				b,
+				away.has(norm(b.name))
+					? undefined
+					: baseFor(base, norm(b.name), origin),
+			] as const,
+	);
+};
+
 const lossIssues = (
 	plan: Plan,
 	base: Block[] | undefined,
 	path: string,
-): Issue[] => {
-	const away = new Set(plan.renamed.map((x) => norm(x.from)));
-	const origin = new Map(plan.renamed.map((x) => [norm(x.to), norm(x.from)]));
-	return plan.modified.flatMap((b) => {
-		const current = away.has(norm(b.name))
-			? undefined
-			: baseFor(base, norm(b.name), origin);
+): Issue[] =>
+	pairs(plan, base).flatMap(([b, current]) => {
 		const lost = current ? missingScenarios(current, b) : [];
 		return lost.length > 0
 			? [
@@ -158,7 +169,26 @@ const lossIssues = (
 				]
 			: [];
 	});
-};
+
+// A MODIFIED text over the limit that the main spec's text is within: archive would merge it into a spec whose check warns.
+const growIssues = (
+	plan: Plan,
+	base: Block[] | undefined,
+	path: string,
+): Issue[] =>
+	pairs(plan, base).flatMap(([b, current]) =>
+		current &&
+		requirementText(b.raw).length > MAX_REQUIREMENT &&
+		requirementText(current.raw).length <= MAX_REQUIREMENT
+			? [
+					at(
+						path,
+						"WARNING",
+						`MODIFIED "${b.name}": Requirement text grows past ${MAX_REQUIREMENT} characters. Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.`,
+					),
+				]
+			: [],
+	);
 
 export const deltaIssues = ({ id, path, plan, base }: Loaded): Issue[] => [
 	...noticeIssues(plan, path),
@@ -173,5 +203,5 @@ export const deltaIssues = ({ id, path, plan, base }: Loaded): Issue[] => [
 					`Could not read the main spec for ${id} to check the MODIFIED requirements against it.`,
 				),
 			]
-		: lossIssues(plan, base, path)),
+		: [...lossIssues(plan, base, path), ...growIssues(plan, base, path)]),
 ];

@@ -26,7 +26,7 @@ export interface Report {
 }
 
 const MIN_PURPOSE = 50;
-const MAX_REQUIREMENT = 500;
+export const MAX_REQUIREMENT = 500;
 const PLACEHOLDER =
 	/TBD - created by archiving change [\s\S]*\. Update Purpose after archive\./u;
 const MARKER = /^(?:TBD|TODO)(?![\p{L}\p{N}\p{M}_])/u;
