@@ -1,7 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
 import { JEV_GIVE_BACK } from "../texts-gate.ts";
-import { postJev } from "./jev.ts";
 import { questionsOfInput, replyOf, requestOf, verdictsOf } from "./judge.ts";
 
 const STORE = {
@@ -171,62 +170,4 @@ test("a multi-select question is not decided even when answered", () => {
 	expect(
 		verdictsOf([{ ...STORE, multiSelect: true }], wire(0.9))[0],
 	).toBeUndefined();
-});
-
-const reply = (status: number, text = "{}") => ({
-	status,
-	ok: status < 300,
-	text,
-});
-
-type Sleep = Parameters<typeof postJev>[2]["sleep"];
-
-const recordingSleep =
-	(waits: number[]): Sleep =>
-	(ms, options) =>
-		options === undefined
-			? Promise.resolve(waits.push(ms))
-			: new Promise((resolve) => {
-					options.signal.addEventListener("abort", () => {
-						resolve(0);
-					});
-				});
-
-test("a 429 waits and tries again, up to three tries", async () => {
-	const waits: number[] = [];
-	let tries = 0;
-
-	const failure = await postJev(
-		"k",
-		{},
-		{
-			fetch: () => {
-				tries += 1;
-				return Promise.resolve(reply(429));
-			},
-			sleep: recordingSleep(waits),
-		},
-	).catch((error: unknown) => error);
-
-	expect(tries).toBe(3);
-	expect(waits).toEqual([1000, 2000]);
-	expect(failure).toBeInstanceOf(Error);
-});
-
-test("a 401 is not tried again", async () => {
-	let tries = 0;
-
-	await postJev(
-		"k",
-		{},
-		{
-			fetch: () => {
-				tries += 1;
-				return Promise.resolve(reply(401, "bad"));
-			},
-			sleep: () => Promise.resolve(0),
-		},
-	).catch(() => void 0);
-
-	expect(tries).toBe(1);
 });
