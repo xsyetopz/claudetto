@@ -23,6 +23,7 @@ The code around those sites grew by accretion. Measured on `12a3f8a1`, each figu
 - **Faults.** **BREAKING:** the guards are rebuilt. Each plugin registers one `tool.check` hook and one `tool.call` hook, each with one `.catch`, and runs its guards inside them as named functions in a listed order; the 22 matched registrations of `claudetto` go. A `tool.check` fault asks the person and a `tool.call` fault refuses, where a guard without a `.catch` fails open today. Every other caught fault is logged with its cause. The secret scan of a structured tool result reads each string as raw text. The session-start hook adds its lines to the env file once, where today each start adds a copy that every Bash command then runs.
 - **Agent-seen text.** Every description fits 200 characters, against 18 of 59 that pass it today, and every model call names its model, its effort, and a measured `maxTokens`. Each prompt, description, and hook text is reviewed against the prompting guides in `clawdipedia-docs`.
 - **Removals.** Three dead definitions, three guards for states the engine rules out, the `disable` and `override` paths of the rule vendoring script (its patch file uses only `add`), internal notes in source, and the stale `decideProvider` line in `.env.example`.
+- **A machine short of memory holds new work.** Below a free-memory share, a new `Bash` or `Monitor` command or subagent is denied until the agent stops its own runs, because many lint runs at once froze the machine on 2026-11-11.
 - **A green baseline.** The two new clones go, the 13 invalid main specs are repaired without a change of meaning, and the two tests that fail only inside the sandbox, which refuses `ps` and `renice`, assert the niceness only where `renice` is allowed.
 
 Each move to the Decider ships only after a recorded check on stored cases shows it keeps or beats the current behavior, as `mod-architecture` already requires. A site whose check fails keeps its current code, and its delta leaves this change.
@@ -41,6 +42,7 @@ Each move to the Decider ships only after a recorded check on stored cases shows
 - `constraint-ledger`: The Decider answers per sentence of the person's message, and the ledger is updated in place.
 - `permission-policy`: The branch gate asks the Decider whether the person asked for the delete.
 - `mod-architecture`: New requirements for registration, shared helpers, shipped folders, and faults.
+- `run-limits`: A new requirement holds new work on a machine short of memory.
 - `lean-openspec`: The change check warns on a MODIFIED requirement that grows past 500 characters, so a change that validates does not turn a valid main spec invalid at its archive.
 
 ## Impact
