@@ -40,17 +40,27 @@ export const refusal = async (root: string, home: string, log: Log) => {
 	return part === undefined ? undefined : `is inside ~/.claude/${part}`;
 };
 
-/** The session's project and each folder Mole's `purge_paths` lists that hygiene may sweep, by real path. */
-export const trashRoots = async (cwd: string, home: string, log: Log) => {
+/** The session's project, each of Claude Code's `projects`, and each folder Mole's `purge_paths` lists, when hygiene may sweep it, by real path. */
+export const trashRoots = async (
+	cwd: string,
+	projects: readonly string[],
+	home: string,
+	log: Log,
+) => {
 	const text = await readFile(join(home, PURGE_PATHS), "utf8").catch(
 		logged(log, "The Mole purge paths were not read", ""),
 	);
 	const allowed = await Promise.all(
-		listedPaths(text, home).map(async (dir) =>
-			(await refusal(dir, home, log)) === undefined
-				? [await realOr(dir, log)]
-				: [],
-		),
+		[...projects, ...listedPaths(text, home)].map(async (dir) => {
+			// Claude Code keeps a project in its list after its folder is gone.
+			const real = await realpath(dir).catch(
+				logged(log, `The root ${dir} was not resolved`, void 0),
+			);
+			return real === undefined ||
+				(await refusal(real, home, log)) !== undefined
+				? []
+				: [real];
+		}),
 	);
 	return [...new Set([await realOr(cwd, log), ...allowed.flat()])];
 };

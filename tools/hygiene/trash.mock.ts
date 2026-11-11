@@ -34,6 +34,7 @@ export const repo = async () => {
 export const logged: string[] = [];
 export const host = (root: string, proj: string) => ({
 	cwd: proj,
+	projects: [],
 	home: join(root, "home"),
 	now: NOW,
 	uid: UID,

@@ -39,9 +39,10 @@ const world = async (listed?: (root: string) => string) => {
 			`# Mole Purge Paths\n\n${listed(root)}\n`,
 		);
 	}
-	const removed = async () => {
+	const removed = async (projects: string[] = []) => {
 		const report = await sweep(parseArgs(["--dry-run"]), {
 			cwd: proj,
+			projects,
 			home,
 			now: NOW,
 			uid: process.getuid?.() ?? 0,
@@ -71,6 +72,21 @@ test("with no purge_paths file another checkout is not walked", async () => {
 	const { root, removed } = await world();
 	await idleCheckout(join(root, "work/other"));
 	expect(await removed()).toEqual([]);
+});
+
+test("an old build folder in an idle checkout that Claude Code lists is swept", async () => {
+	const { root, removed } = await world();
+	const other = join(root, "work/other");
+	await idleCheckout(other);
+	expect(await removed([other, join(root, "gone")])).toEqual([
+		join(other, "node_modules"),
+	]);
+});
+
+test("a listed project that is the home folder is not walked", async () => {
+	const { home, removed } = await world();
+	await idleCheckout(join(home, "code/other"));
+	expect(await removed([home])).toEqual([]);
 });
 
 test("the walk skips ~/.claude/plugins and ~/.claude/projects inside a purge path", async () => {

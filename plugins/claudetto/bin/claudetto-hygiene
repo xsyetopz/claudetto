@@ -26,8 +26,16 @@ const log: Log = (message) => console.error(message);
 
 try {
 	const args = parseArgs(process.argv.slice(2));
+	// Claude Code keeps this file in its config folder when one is set, and in the home folder otherwise.
+	const projects = await readFile(
+		join(process.env["CLAUDE_CONFIG_DIR"] || home, ".claude.json"),
+		"utf8",
+	)
+		.then(projectsOf)
+		.catch(logged(log, "The project list was not read", []));
 	const report = await sweep(args, {
 		cwd: process.cwd(),
+		projects,
 		home,
 		now: Date.now(),
 		uid: process.getuid?.() ?? 0,
@@ -39,13 +47,6 @@ try {
 		log,
 	});
 	console.log(reportText(report, args.dryRun));
-	// Claude Code keeps this file in its config folder when one is set, and in the home folder otherwise.
-	const projects = await readFile(
-		join(process.env["CLAUDE_CONFIG_DIR"] || home, ".claude.json"),
-		"utf8",
-	)
-		.then(projectsOf)
-		.catch(logged(log, "The project list was not read", []));
 	console.log(
 		await worktreeReport(
 			outputOr(log),

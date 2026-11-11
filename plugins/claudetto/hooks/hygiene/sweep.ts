@@ -31,6 +31,8 @@ import {
 
 interface Host {
 	readonly cwd: string;
+	/** The project paths Claude Code lists in `.claude.json`. */
+	readonly projects: readonly string[];
 	readonly home: string;
 	readonly now: number;
 	readonly uid: number;
@@ -140,7 +142,7 @@ const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 	];
 };
 
-/** Each folder a project rule names, under the project or a Mole purge path, that `keepReason` lets go. */
+/** Each folder a project rule names, under a root of `trashRoots`, that `keepReason` lets go. */
 const builtTrash = async (
 	trash: Trash,
 	limitMs: number,
@@ -150,7 +152,7 @@ const builtTrash = async (
 	const [own, realHome, roots] = await Promise.all([
 		checkoutOf(host.cwd),
 		realOr(host.home, host.log),
-		trashRoots(host.cwd, host.home, host.log),
+		trashRoots(host.cwd, host.projects, host.home, host.log),
 	]);
 	const walks = await Promise.all(
 		roots.map((root) =>

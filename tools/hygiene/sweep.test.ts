@@ -24,6 +24,7 @@ const project = async () => {
 const logged: string[] = [];
 const host = (root: string, over: Partial<Host> = {}): Host => ({
 	cwd: join(root, "proj"),
+	projects: [],
 	home: join(root, "home"),
 	now: NOW,
 	uid: UID,
