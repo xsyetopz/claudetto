@@ -40,7 +40,7 @@ const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 	required: ["questions"],
 };
 
-const DECIDE_DESCRIPTION = `Asks Jev, a TypeSafe model, to settle a decision that is yours, not the user's, when no repository fact settles it and waiting would stop the work. It never answers an \`AskUserQuestion\` dialog.`;
+const DECIDE_DESCRIPTION = `Asks Jev, a TypeSafe model, to settle a decision that is yours, not the user's, when no repository fact settles it and waiting would stop the work. A dialog for the user stays with the user.`;
 
 export const DECIDE_SPEC = {
 	name: DECIDE_TOOL,

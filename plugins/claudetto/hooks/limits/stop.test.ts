@@ -170,7 +170,7 @@ test("a changed list of background tasks is added once", async ($: Engine, on: O
 	expect(first.additionalContext?.join("\n")).toContain("`b1`");
 	// The notice wakes the model: it keeps the sent reply and watches a task the user waits on.
 	expect(first.additionalContext?.join("\n")).toContain(
-		"Your last reply stands: send it again nowhere",
+		"Your last reply stands as sent",
 	);
 	expect(first.additionalContext?.join("\n")).toContain(
 		"mcp__claudetto__monitor",
