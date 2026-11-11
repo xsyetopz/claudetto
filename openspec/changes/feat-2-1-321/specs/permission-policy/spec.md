@@ -38,6 +38,30 @@ An `rm` whose every path lies under a temp base, and a move or delete of a branc
 - **WHEN** the agent runs `git branch -f <name>` on a branch this session created
 - **THEN** no vendored rule and no ref-move ask meets it
 
+### Requirement: A Shell In-Place Edit Is Denied
+
+The gate SHALL deny a Bash command in which `sed`, `perl`, or `ruby` reads `-i` or `--in-place` as its own flag, alone, in a chain, behind `xargs`, or run by `find -exec`, `-execdir`, `-ok`, or `-okdir`, and name `Edit` with the file, because an in-place shell edit skips the edit tool's diff and the user's review. A letter in another flag's value, such as the `i` of `-Mstrict`, and a flag after the program file of `perl` or `ruby` SHALL NOT count.
+
+#### Scenario: An In-Place Edit
+
+- **WHEN** the agent runs `git status && sed -i 's/a/b/' src/a.ts`
+- **THEN** the gate denies it and names `Edit` on `src/a.ts`
+
+#### Scenario: Several Scripts and a Chain
+
+- **WHEN** the agent runs `sed -i '' -e 's/a/b/' -e 's/c/d/' src/a.ts; grep -n a src/a.ts`
+- **THEN** the gate denies it and names `Edit` on `src/a.ts`
+
+#### Scenario: A Letter in a Flag's Value
+
+- **WHEN** the agent runs `perl -Mstrict -e 'print 1'`, `ruby -rtime -e 'puts 1'`, or `sed -es/i/j/` on stdin
+- **THEN** the call passes
+
+#### Scenario: A Flag of the Script
+
+- **WHEN** the agent runs `perl tool.pl -i in.txt`
+- **THEN** the call passes
+
 ## ADDED Requirements
 
 ### Requirement: A Temp Base Itself Stays
