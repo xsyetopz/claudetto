@@ -1,5 +1,5 @@
 import { isRecord } from "../tools.ts";
-import { unsettled } from "./fallback.ts";
+import { fallback } from "./fallback.ts";
 import { JevStatusError, postJev } from "./jev.ts";
 import {
 	type Answers,
@@ -123,5 +123,5 @@ export async function settle(
 		key === "" || key === refusedKey
 			? undefined
 			: await askJev($, key, set, state);
-	return answers ?? unsettled(set);
+	return answers ?? fallback($, set, state);
 }

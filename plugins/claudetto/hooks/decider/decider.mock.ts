@@ -2,6 +2,7 @@ import type {
 	HttpInit,
 	ModelCompleteRequest,
 	ModelCompleteResult,
+	ModelTextBlock,
 } from "claude-code";
 
 import type { Host, QuestionSet } from "./questions.ts";
@@ -133,6 +134,12 @@ export const rig = ({ env, jev, haiku }: Rig = {}) => {
 	};
 	return { $, fetches, asked, logs };
 };
+
+/** The text blocks of one model request's prompt. */
+export const blocksOf = (
+	request: ModelCompleteRequest | undefined,
+): readonly ModelTextBlock[] =>
+	typeof request?.prompt === "object" ? request.prompt : [];
 
 /** The JSON body of one request to Jev. */
 export const bodyOf = (
