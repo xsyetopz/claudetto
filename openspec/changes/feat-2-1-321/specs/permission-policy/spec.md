@@ -40,19 +40,19 @@ An `rm` whose every path lies under a temp base, and a move or delete of a branc
 
 ## ADDED Requirements
 
-### Requirement: Work Under a Temp Base Passes, and the Base Itself Stays
+### Requirement: A Temp Base Itself Stays
 
-A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or without `/private` before it. The gate SHALL let a `mkdir`, a `mktemp`, a file write, and an `rm` under a temp base pass with no marker file. It SHALL deny an `rm` that names a temp base itself, or a path under one that holds `..`, and the denial SHALL tell the agent to name the folder it made.
+A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or without `/private` before it, or `$TMPDIR` as written. The gate SHALL deny an `rm` that names a temp base itself, every entry of one through a glob, or a path under one that holds `..`, and the denial SHALL tell the agent to name the folder it made. Any other `rm` under a temp base SHALL pass.
 
 #### Scenario: A Scratch Folder
 
-- **WHEN** the agent runs `mkdir -p /tmp/claude-501/gate20`, writes a file into a new folder under `/tmp`, and runs `rm -rf /tmp/claude-501/gate20`
-- **THEN** each call passes
+- **WHEN** the agent runs `rm -rf /tmp/claude-501/gate20` or `rm /tmp/el.log`
+- **THEN** the call passes
 - **AND** the lab tests are in `gate/processes.owned.test.ts`
 
 #### Scenario: The Base Itself
 
-- **WHEN** the agent runs `rm -rf /tmp`, `rm -rf /private/tmp/claude-501`, or `rm -rf /tmp/mine/../other`
+- **WHEN** the agent runs `rm -rf /tmp`, `rm -rf /private/tmp/claude-501`, `rm -rf /tmp/claude-501/*`, `rm -rf "$TMPDIR"`, or `rm -rf /tmp/mine/../other`
 - **THEN** the call is denied
 
 ## REMOVED Requirements
@@ -67,4 +67,4 @@ A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or witho
 
 **Reason**: The rule denied the removal of the session's own scratch files and folders, about 350 times in three days.
 
-**Migration**: Remove a temp folder with a plain `rm`. The requirement "Work Under a Temp Base Passes, and the Base Itself Stays" keeps the base and a path with `..` denied.
+**Migration**: Remove a temp folder with a plain `rm`. The requirement "A Temp Base Itself Stays" keeps the base and a path with `..` denied.
