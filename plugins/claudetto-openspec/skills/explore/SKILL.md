@@ -5,7 +5,7 @@ description: Think through an idea, problem or requirement in a project that use
 
 The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, load it with ToolSearch `select:mcp__claudetto-openspec__openspec`.
 
-Explore is for thinking. Write no code and edit no file in the repo, except OpenSpec artifacts when the user asks for them.
+Explore is for thinking, so keep the repo unchanged except OpenSpec artifacts the user asks for.
 
 1. Call `{action:"status"}` to see the active changes. If the topic matches one, read its files under `openspec/changes/<name>/`.
 2. Read the code and `openspec/specs/` the topic touches before you opine. Cite file and line.

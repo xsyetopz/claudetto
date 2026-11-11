@@ -6,10 +6,10 @@ description: Implement the tasks of an OpenSpec change. Use for "openspec apply"
 The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, load it with ToolSearch `select:mcp__claudetto-openspec__openspec`.
 
 1. Pick the change: the name the user gave, else the one change `{action:"status"}` lists. Several changes and no name: ask which.
-2. Validate first: `{action:"validate", change}`. On any ERROR or WARNING, stop. Name each issue (path and message), implement no task, edit nothing. The user fixes the change or runs the update skill.
+2. Validate first: `{action:"validate", change}`. On any ERROR or WARNING, stop and name each issue (path and message); an invalid change is no base for edits. The user fixes the change or runs the update skill.
 3. `{action:"status", change}`. Read the files it lists (proposal, design, specs, tasks.md) before the first edit.
 4. Work the unticked tasks in order. Keep each edit to what its task says. After a task is done, change its `- [ ]` to `- [x]` in tasks.md, in the same turn.
-5. Stop when a task needs a decision, hits a denial, or needs something only the user can run. Do not guess past it.
+5. Stop when a task needs a decision, hits a denial, or needs something only the user can run. Wait for the user there, because a guess builds on a wrong choice.
 
 ## Ending A Pause Or A Report
 
@@ -19,4 +19,4 @@ End every pause and every final report by copying each task you leave unticked a
 - the denial from this turn, quoted;
 - an open question to the user.
 
-Do not paraphrase a task or leave one out. When none are left, say the change is done and name the verify skill.
+Copy each task whole, so the user can match it to `tasks.md`. When none are left, say the change is done and name the verify skill.
