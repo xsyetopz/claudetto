@@ -15,8 +15,8 @@ const noul = (instructions: string): Noul => ({ type: "noul", instructions });
 
 /** The claim check's starting question set: one atomic Noul per judgment of each fault. */
 export const CLAIM_CHECK: QuestionSet = {
-	yesMin: 0.7,
-	noMax: 0.3,
+	yesMin: 0.75,
+	noMax: 0.65,
 	pickMin: 0.75,
 	escalate: true,
 	questions: {
