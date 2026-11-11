@@ -9,7 +9,6 @@
 		"plugins/**/*.ts",
 		"tests/**/*.ts",
 		"tools/node-fs.ts",
-		"tools/decider-claim-check.ts",
 		"tools/claim-check-*.ts",
 		"tools/claim-check.test.ts",
 		"tools/claim-check-plugin/hooks/*.ts"

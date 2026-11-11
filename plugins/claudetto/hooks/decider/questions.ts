@@ -36,11 +36,12 @@ export type Answers = Readonly<Record<string, string>>;
 
 export const UNSETTLED = "unsettled";
 
+/** The thresholds each site's question set takes. */
+export const THRESHOLDS = { yesMin: 0.7, noMax: 0.3, pickMin: 0.75 } as const;
+
 /** The branch gate's one judgment. A yes lets a delete through, so it reads the person's latest word on the branch and counts an instruction only. */
 export const BRANCH_GATE: QuestionSet = {
-	yesMin: 0.7,
-	noMax: 0.3,
-	pickMin: 0.75,
+	...THRESHOLDS,
 	questions: {
 		asks_delete_branch: {
 			type: "noul",

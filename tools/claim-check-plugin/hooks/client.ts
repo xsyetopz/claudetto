@@ -1,6 +1,8 @@
-// The `Host` of the claim-check run: the engine's own `$`, wrapped to keep the cost ledger, each request, and the Jev stats. The engine loads this module, so it uses no Bun or node API.
-import { CLAIM_CHECK } from "../../../plugins/claudetto/hooks/decider/claim-check.ts";
-import type { Host } from "../../../plugins/claudetto/hooks/decider/questions.ts";
+// The `Host` of a tuning run: the engine's own `$`, wrapped to keep the cost ledger, each request, and the Jev stats. The engine loads this module, so it uses no Bun or node API.
+import {
+	type Host,
+	THRESHOLDS,
+} from "../../../plugins/claudetto/hooks/decider/questions.ts";
 import { isRecord } from "../../../plugins/claudetto/hooks/tools.ts";
 import {
 	costOf,
@@ -14,7 +16,7 @@ import type { Call, JevStats } from "../../claim-check-report.ts";
 type Request = Parameters<Host["model"]["complete"]>[0];
 type Result = Awaited<ReturnType<Host["model"]["complete"]>>;
 
-/** What the engine's `$` gives the claim-check hook beyond the `Host`. */
+/** What the engine's `$` gives the tuning hook beyond the `Host`. */
 export type Engine = Host & {
 	readonly fs: { write: (path: string, text: string) => Promise<void> };
 };
@@ -184,7 +186,7 @@ const observeJev = (
 	const ps = noulsIn(field(reply, "answers"));
 	jev.nouls += ps.length;
 	jev.banded += ps.filter(
-		(p) => p > CLAIM_CHECK.noMax && p < CLAIM_CHECK.yesMin,
+		(p) => p > THRESHOLDS.noMax && p < THRESHOLDS.yesMin,
 	).length;
 };
 

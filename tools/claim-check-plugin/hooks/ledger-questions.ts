@@ -1,8 +1,9 @@
 // The Decider's question set for one message of the ledger run. The engine loads this module, so it uses no Bun or node API.
-import type {
-	Choice,
-	Noul,
-	QuestionSet,
+import {
+	type Choice,
+	type Noul,
+	type QuestionSet,
+	THRESHOLDS,
 } from "../../../plugins/claudetto/hooks/decider/questions.ts";
 import type {
 	PinConstraint,
@@ -69,9 +70,7 @@ export const questionsOf = (
 	sentences: number,
 	entries: number,
 ): QuestionSet => ({
-	yesMin: 0.7,
-	noMax: 0.3,
-	pickMin: 0.75,
+	...THRESHOLDS,
 	questions: Object.fromEntries([
 		...perSentence(sentences),
 		[
