@@ -2,8 +2,8 @@ import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 import { scanner } from "./secrets.mock.ts";
+import { ASK_TEXT } from "./texts.ts";
 
-const ASK = "mcp__claudetto__ask-user-question";
 const MONITOR = "mcp__claudetto__monitor";
 
 const bind = async ($: Engine, on: On): Promise<void> => {
@@ -38,55 +38,29 @@ const stockAsk = (on: On): unknown[] => {
 	return seen;
 };
 
-test("the model's own AskUserQuestion call is denied with the way out", async ($: Engine, on: On) => {
-	stockAsk(on);
-	await bind($, on);
-
-	const out = await $.tool.call({ tool: "AskUserQuestion", questions: [] });
-
-	expect(out.deny).toBeDefined();
-});
-
-test("ask calls the stock tool with its options and multiSelect", async ($: Engine, on: On) => {
+test("the model's own AskUserQuestion call reaches the dialog as sent", async ($: Engine, on: On) => {
 	const seen = stockAsk(on);
 	await bind($, on);
+	const questions = [
+		{
+			question: "Which?",
+			header: "Pick",
+			multiSelect: false,
+			options: [
+				{ label: "Alpha", description: "The first" },
+				{ label: "Beta", description: "The second" },
+			],
+		},
+	];
 
-	const out = await $.tool.call({
-		tool: ASK,
-		question: "Which?",
-		options: ["Alpha", "Beta"],
-		multiSelect: true,
-	});
+	const out = await $.tool.call({ tool: "AskUserQuestion", questions });
 
-	expect(out.result).toContain("Alpha");
-	expect(JSON.stringify(seen)).toContain('"multiSelect":true');
-	expect(JSON.stringify(seen)).toContain("Beta");
+	expect(out.deny).toBeUndefined();
+	expect(seen).toEqual([questions]);
+	expect(out.result).toMatchObject({ answers: { "Which?": "Alpha" } });
 });
 
-test("after ask returns, the stock tool is denied again", async ($: Engine, on: On) => {
-	stockAsk(on);
-	await bind($, on);
-	await $.tool.call({ tool: ASK, question: "Which?", options: ["A", "B"] });
-
-	const out = await $.tool.call({ tool: "AskUserQuestion", questions: [] });
-
-	expect(out.deny).toBeDefined();
-});
-
-test("a refused ask comes back as text, not a throw", async ($: Engine, on: On) => {
-	on("tool.call", { tool: "AskUserQuestion" }, () => ({ deny: "dismissed" }));
-	await bind($, on);
-
-	const out = await $.tool.call({
-		tool: ASK,
-		question: "Which?",
-		options: ["A", "B"],
-	});
-
-	expect(typeof out.result).toBe("string");
-});
-
-// With no ToolSearch to load them, a deferral flag set after the first request rewrites the cache (18.26).
+// With no ToolSearch to load them, a deferral flag set after the first request rewrites the cache.
 const describeStock = ($: Engine, on: On, names: string[]) => {
 	on("tool.list", () => ({
 		value: names.map((name) => ({ name, description: "", mcp: false })),
@@ -101,18 +75,20 @@ const describeStock = ($: Engine, on: On, names: string[]) => {
 	);
 };
 
-test("the stock AskUserQuestion and Monitor go behind ToolSearch", async ($: Engine, on: On) => {
-	for (const out of await describeStock($, on, ["Read", "ToolSearch"])) {
-		expect(out.isDeferred).toBe(true);
-		expect(out.description).toBe("stock");
-	}
+test("AskUserQuestion gets the one-sentence description and goes behind ToolSearch", async ($: Engine, on: On) => {
+	const [ask, monitor] = await describeStock($, on, ["Read", "ToolSearch"]);
+
+	expect(ask).toMatchObject({ description: ASK_TEXT, isDeferred: true });
+	expect(monitor).toMatchObject({ description: "stock", isDeferred: true });
 });
 
-test("the stock AskUserQuestion and Monitor stay in the list when the session has no ToolSearch", async ($: Engine, on: On) => {
-	for (const out of await describeStock($, on, ["Read", "AskUserQuestion"])) {
-		expect(out.isDeferred).toBeUndefined();
-		expect(out.description).toBe("stock");
-	}
+test("AskUserQuestion stays in the list when the session has no ToolSearch", async ($: Engine, on: On) => {
+	const [ask, monitor] = await describeStock($, on, ["Read", "Monitor"]);
+
+	expect(ask?.description).toBe(ASK_TEXT);
+	expect(ask?.isDeferred).toBeUndefined();
+	expect(monitor?.description).toBe("stock");
+	expect(monitor?.isDeferred).toBeUndefined();
 });
 
 test("the model's own Monitor call is denied with the way out", async ($: Engine, on: On) => {
@@ -226,18 +202,18 @@ test("a query reaches ToolSearch as it was, even one that names AskUserQuestion"
 	);
 });
 
-test("a query that names AskUserQuestion gets the wrapper in its result", async ($: Engine, on: On) => {
+test("a result that lists AskUserQuestion is returned as it came", async ($: Engine, on: On) => {
 	stockSearch(on, ["AskUserQuestion"]);
 
 	const out = await $.tool.call(search("select:AskUserQuestion"));
 
-	expect(out.result).toMatchObject({ matches: [ASK] });
+	expect(out.result).toMatchObject({ matches: ["AskUserQuestion"] });
 });
 
-test("a result that lists the stock ask lists the wrapper once", async ($: Engine, on: On) => {
-	stockSearch(on, ["AskUserQuestion", ASK]);
+test("a result that lists the stock Monitor and the wrapper lists the wrapper once", async ($: Engine, on: On) => {
+	stockSearch(on, ["Monitor", MONITOR]);
 
-	const out = await $.tool.call(search("ask the user"));
+	const out = await $.tool.call(search("monitor"));
 
-	expect(out.result).toMatchObject({ matches: [ASK] });
+	expect(out.result).toMatchObject({ matches: [MONITOR] });
 });

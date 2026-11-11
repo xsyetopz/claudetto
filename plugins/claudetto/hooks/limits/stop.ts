@@ -15,7 +15,6 @@ import {
 	STALL_STOP,
 	STOP_TASKS,
 } from "../texts.ts";
-import { ASK_MCP } from "../verify.ts";
 import { budgetBand, budgetLine } from "./budget.ts";
 import { gradeBlock } from "./grade.ts";
 import { namedPaths } from "./named-files.ts";
@@ -75,9 +74,7 @@ const openBlock = async (
 		return COMMAND_FORM(form);
 	}
 	const items = openItems(reply, turnOf(await $.session.messages()));
-	return items.length === 0 || !interactive
-		? undefined
-		: ASK_FORM(ASK_MCP, items);
+	return items.length === 0 || !interactive ? undefined : ASK_FORM(items);
 };
 
 const filesBlock = async (

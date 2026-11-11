@@ -44,7 +44,7 @@ test("the grader sees each popup answer, before and in this turn, as the person'
 			user("set up the branch"),
 			answered("AskUserQuestion", '"Which branch?"="feat/2.1.319+1"'),
 			user("go on"),
-			answered("mcp__claudetto__ask-user-question", '"Which port?"="8080"'),
+			answered("AskUserQuestion", '"Which port?"="8080"'),
 		],
 		'{"faults":[]}',
 		seen,

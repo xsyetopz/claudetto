@@ -74,7 +74,7 @@ test("the output style asks for the open-item form the Stop check reads", async 
 		"as a `- ! <command>` bullet under one `## What I Need From You` heading",
 	);
 	expect(requests).toContain(
-		"Ask each question for the user once, through the popup (`mcp__claudetto__ask-user-question`), and repeat it nowhere in the reply.",
+		"Ask each question for the user once, through the popup (`AskUserQuestion`), and repeat it nowhere in the reply.",
 	);
 	expect(requests).toContain(
 		"such a bullet holds that command and never a question.",

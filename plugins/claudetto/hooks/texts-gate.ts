@@ -49,7 +49,7 @@ export const DECIDE_SPEC = {
 };
 
 export const JEV_GIVE_BACK =
-	"Decide each question with no answer yourself and state the assumption, or put it to the user with `mcp__claudetto__ask-user-question`.";
+	"Decide each question with no answer yourself and state the assumption, or put it to the user with `AskUserQuestion`.";
 
 export const jevSilent = (question: string): string =>
 	`Jev gives no answer to "${question}".`;

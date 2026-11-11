@@ -147,33 +147,25 @@ test("a prompt sent before the read of the one before it settles keeps both prom
 	expect([push.decision, commit.decision]).toEqual(["deny", "deny"]);
 });
 
-test("no-questions denies both ask tools, before delegation answers them, and nothing else", async ($: Engine, on: On) => {
+test("no-questions denies AskUserQuestion and nothing else", async ($: Engine, on: On) => {
 	const message = "stop asking questions. fix the problems";
 	lab(on, { [message]: "no-questions" });
 	await submit($, message);
-	const asks = await Promise.all([
-		$.tool.call({
-			tool: "mcp__claudetto__ask-user-question",
-			question: "Which?",
-			options: ["Alpha", "Beta"],
-		}),
-		$.tool.call({
-			tool: "AskUserQuestion",
-			questions: [
-				{
-					question: "Which?",
-					header: "Pick",
-					options: [
-						{ label: "Alpha", description: "a" },
-						{ label: "Beta", description: "b" },
-					],
-					multiSelect: false,
-				},
-			],
-		}),
-	]);
-	expect(asks[0]?.deny).toBe(PIN_NO_QUESTIONS(message));
-	expect(asks[1]?.deny).toBe(PIN_NO_QUESTIONS(message));
+	const ask = await $.tool.call({
+		tool: "AskUserQuestion",
+		questions: [
+			{
+				question: "Which?",
+				header: "Pick",
+				options: [
+					{ label: "Alpha", description: "a" },
+					{ label: "Beta", description: "b" },
+				],
+				multiSelect: false,
+			},
+		],
+	});
+	expect(ask.deny).toBe(PIN_NO_QUESTIONS(message));
 	const awaited18 = await check($, "Edit", { file_path: "/p/a.ts" });
 	expect(awaited18.decision).not.toBe("deny");
 });

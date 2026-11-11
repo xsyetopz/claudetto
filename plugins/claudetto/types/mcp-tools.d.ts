@@ -2,11 +2,6 @@
 
 declare module "claude-code" {
 	interface McpToolInputs {
-		"mcp__claudetto__ask-user-question": {
-			question: string;
-			options: readonly string[];
-			multiSelect?: boolean;
-		};
 		mcp__claudetto__monitor: {
 			description: string;
 			command?: string;

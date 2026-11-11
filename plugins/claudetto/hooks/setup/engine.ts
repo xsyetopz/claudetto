@@ -7,7 +7,6 @@ import { recommended, SETUP_ADVICE } from "./text.ts";
 
 const TRAILING_SLASHES = /\/+$/u;
 const PROCESS_MS = 5000;
-const ANSWERED = "The user answered: ";
 const ADVICE_MS = 20_000;
 
 export const WRITE = "Write";
@@ -113,29 +112,19 @@ async function adviceOf(
 	}
 }
 
-/** The stock dialog is denied outside `mcp__claudetto__ask-user-question`, so a question goes through that tool; it rejects when the dialog is dismissed. */
+/** Asks the person in the engine's dialog, with the advised option first; it rejects when the dialog is dismissed. */
 export async function ask(
 	$: EngineInterface,
 	question: string,
 	options: readonly string[],
 ): Promise<string> {
 	const advice = await adviceOf($, question, options);
-	const out = await $.tool.call({
-		tool: "mcp__claudetto__ask-user-question",
-		question:
-			advice === undefined
-				? question
-				: question + recommended(advice.pick, advice.why),
-		options:
-			advice === undefined
-				? options
-				: [advice.pick, ...options.filter((o) => o !== advice.pick)],
-	});
-	const result = typeof out.result === "string" ? out.result : "";
-	if (!result.startsWith(ANSWERED)) {
-		throw new Error(out.deny ?? result);
-	}
-	return result.slice(ANSWERED.length);
+	return advice === undefined
+		? $.ui.ask(question, [...options])
+		: $.ui.ask(question + recommended(advice.pick, advice.why), [
+				advice.pick,
+				...options.filter((o) => o !== advice.pick),
+			]);
 }
 
 export async function lines(

@@ -120,13 +120,13 @@ const ledgerHooks = (on: On, s: PinState): void => {
 	});
 };
 
-/** Denies the ask tool while a no-questions constraint stands. `delegation` answers the ask tool in its own `tool.call`, so `tool.check` never runs for it: the ask's checks sit here, and the chain puts `pin` first. */
+/** Denies `AskUserQuestion` while a no-questions constraint stands. */
 export async function pinCall(
 	e: CallEvent,
 	next: CallNext,
 	state: PinState,
 ): Promise<Awaited<CallAnswer>> {
-	if (!ASK_TOOL.test(e.tool)) {
+	if (e.tool !== ASK_TOOL) {
 		return next(e);
 	}
 	await state.pending;

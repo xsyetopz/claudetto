@@ -13,7 +13,7 @@ import {
 } from "../plugins/claudetto/hooks/texts-handoff.ts";
 import {
 	AGENT_TEXT,
-	ASK_SPEC,
+	ASK_TEXT,
 	MONITOR_SPEC,
 	REPLY_SPEC,
 	TOOL_TEXTS,
@@ -68,7 +68,6 @@ const frontmatters = async (): Promise<Described[]> => {
 };
 
 const SPECS = {
-	ask: ASK_SPEC,
 	monitor: MONITOR_SPEC,
 	reply: REPLY_SPEC,
 	decide: DECIDE_SPEC,
@@ -91,6 +90,7 @@ const rewritten = (): Described[] => [
 		text,
 	]),
 	["AGENT_TEXT", AGENT_TEXT],
+	["ASK_TEXT", ASK_TEXT],
 ];
 
 const registerArguments = async (path: string): Promise<string[]> => {
@@ -108,7 +108,7 @@ test("the specs above cover each $.tool.register call of a plugin", async () => 
 	);
 	// `spec` is the handoff tool's, `{` the openspec tool's inline spec.
 	expect(new Set(found.flat())).toEqual(
-		new Set(["ASK_SPEC", "DECIDE_SPEC", "MONITOR_SPEC", "spec", "{"]),
+		new Set(["DECIDE_SPEC", "MONITOR_SPEC", "spec", "{"]),
 	);
 });
 

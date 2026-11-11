@@ -6,7 +6,7 @@ You are an expert junior software engineer in user's repository. User decides wh
 </role>
 
 <requests>
-Sort each message before you act: a remark, brainstorm, or pasted material is context; a question or plan request wants an answer, then a wait; a message naming a defect asks for its fix. A change request covers the change and each caller or test it breaks. Settle an ambiguity from conversation and repository, state your reading, and go on. Call \`mcp__claudetto__ask-user-question\` only for what user alone holds: intent, a preference, meaning of their own term.
+Sort each message before you act: a remark, brainstorm, or pasted material is context; a question or plan request wants an answer, then a wait; a message naming a defect asks for its fix. A change request covers the change and each caller or test it breaks. Settle an ambiguity from conversation and repository, state your reading, and go on. Call \`AskUserQuestion\` only for what user alone holds: intent, a preference, meaning of their own term.
 </requests>
 
 <evidence>
@@ -116,12 +116,12 @@ Plan file: ${file}${hasPlan ? ". It already holds a plan: read it, then edit it 
 2. Search with \`claudetto:Artemis\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
 3. Weigh the options, read the critical files, and check the plan against the request.
 4. Write the final plan, short to scan and exact enough to run: context and outcome, the one recommended approach, the files to change, the code to reuse with paths, and how to check it end to end.
-5. Ask each open question with \`mcp__claudetto__ask-user-question\` before you present the plan for approval.`;
+5. Ask each open question with \`AskUserQuestion\` before you present the plan for approval.`;
 
 export const INTERVIEW_TEXT = `Write this project's memory files with the user, through an interview.
 
 1. Read the repository, its \`CLAUDE.md\`, \`CLAUDE.local.md\`, and \`.claude/rules/\`, and also \`~/.claude/CLAUDE.md\` and \`~/.claude/rules/\`.
-2. Ask the user with \`mcp__claudetto__ask-user-question\` what the files leave out: conventions, the reasons behind them, and what newcomers get wrong.
+2. Ask the user with \`AskUserQuestion\` what the files leave out: conventions, the reasons behind them, and what newcomers get wrong.
 3. Ask which scope each instruction belongs to:
    - global: \`~/.claude/CLAUDE.md\`, for every project of this user;
    - repo: \`./CLAUDE.md\`, shared through git;
@@ -158,21 +158,8 @@ export const REPLY_SPEC = {
 	argumentHint: "[N]",
 };
 
-export const ASK_SPEC = {
-	name: "ask-user-question",
-	isDeferred: true,
-	description:
-		"Asks the user one question with 2-4 short options; they may type another answer. With multiSelect they may pick several. Returns the answer.",
-	inputSchema: {
-		type: "object",
-		properties: {
-			question: { type: "string" },
-			options: { type: "array", items: { type: "string" } },
-			multiSelect: { type: "boolean" },
-		},
-		required: ["question", "options"],
-	},
-};
+export const ASK_TEXT =
+	"Asks user 1-4 questions, each with 2-4 options or a typed answer, and returns the answers.";
 
 export const MONITOR_SPEC = {
 	name: "monitor",
@@ -245,11 +232,11 @@ export const STOP_TASKS = (lines: readonly string[]): string =>
 export const STALL_STOP = (blocks: string): string =>
 	`A Stop hook blocked and no file changed since the last stop, so the turn ends here: ${blocks}. If a goal keeps the session going, \`/goal clear\` drops it.`;
 
-export const ASK_FORM = (tool: string, items: readonly string[]): string =>
+export const ASK_FORM = (items: readonly string[]): string =>
 	[
 		"The reply puts a question to the user as a checklist item.",
 		...items.map((item) => `- [ ] ${item}`),
-		`A checklist item is a question, whether it reads "Tell me where X is", "give me the ID", or "enable Bash". Ask each with ${tool} and delete it from the reply.`,
+		`A checklist item is a question, whether it reads "Tell me where X is", "give me the ID", or "enable Bash". Ask each with AskUserQuestion and delete it from the reply.`,
 	].join("\n");
 
 export const COMMAND_FORM = (v: {

@@ -2,8 +2,7 @@ import type { SessionMessage, ToolUseSummary } from "claude-code";
 
 import type { GradeFault } from "./texts-grade.ts";
 
-export const ASK_MCP = "mcp__claudetto__ask-user-question";
-export const ASK_TOOL = new RegExp(`^(?:AskUserQuestion|${ASK_MCP})$`, "u");
+export const ASK_TOOL = "AskUserQuestion";
 
 // A tool call that is not a lookup of the tool list does not ground a claim; every other call looked at the workspace.
 const NOT_A_LOOK = new Set(["ToolSearch"]);
@@ -42,7 +41,7 @@ const popupAnswers = (
 		.flatMap((m) => m.toolUses)
 		.filter(
 			(use) =>
-				ASK_TOOL.test(use.tool) &&
+				use.tool === ASK_TOOL &&
 				use.text !== undefined &&
 				!use.isError &&
 				!denied.has(use.tool_use_id),

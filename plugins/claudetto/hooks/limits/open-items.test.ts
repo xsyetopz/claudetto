@@ -84,11 +84,7 @@ test("a checkbox item is a question, and the block names each item", async ($: E
 	);
 
 	expect(out.block).toContain(
-		ASK_FORM("mcp__claudetto__ask-user-question", [
-			"Tell me where the repo is",
-			"give me the ID",
-			"enable Bash",
-		]),
+		ASK_FORM(["Tell me where the repo is", "give me the ID", "enable Bash"]),
 	);
 });
 

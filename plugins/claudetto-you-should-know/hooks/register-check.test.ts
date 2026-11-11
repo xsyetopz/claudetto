@@ -131,21 +131,23 @@ test(
 	ON,
 	async ($: Engine, on: On) => {
 		const f = fixture(on);
-		await $.tool.call({
-			tool: "mcp__claudetto__ask-user-question",
-			question: "Write items 11 to 13?",
-			options: ["Yes", "No"],
-		});
+		const options = [
+			{ label: "Yes", description: "Do it." },
+			{ label: "No", description: "Leave it." },
+		];
 		await $.tool.call({
 			tool: "AskUserQuestion",
 			questions: [
 				{
+					question: "Write items 11 to 13?",
+					header: "Items",
+					options,
+					multiSelect: false,
+				},
+				{
 					question: "Keep the cap?",
 					header: "Cap",
-					options: [
-						{ label: "Yes", description: "Keep it." },
-						{ label: "No", description: "Drop it." },
-					],
+					options,
 					multiSelect: false,
 				},
 			],

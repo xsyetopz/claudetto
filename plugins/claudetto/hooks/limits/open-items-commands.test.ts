@@ -22,14 +22,12 @@ test("a backtick command the reply asks the user to run without ! is stray", () 
 	]);
 });
 
-test("a question item names the claudetto ask tool, with no tool.list call", async ($: Engine, on: On) => {
+test("a question item names AskUserQuestion, with no tool.list call", async ($: Engine, on: On) => {
 	const tools = lab(on);
 
 	const out = await stop($, "- [ ] Which region should I use?");
 
-	expect(out.block).toContain(
-		"Ask each with mcp__claudetto__ask-user-question and",
-	);
+	expect(out.block).toContain("Ask each with AskUserQuestion and");
 	expect(out.block).toContain("Which region should I use?");
 	expect(tools.listed()).toBe(0);
 });

@@ -36,7 +36,7 @@ import { setup } from "./setup.ts";
 import { slices, slicesCall, slicesState } from "./slices.ts";
 import { surface, surfaceCall } from "./surface.ts";
 import { DECIDE_SPEC } from "./texts-gate.ts";
-import { ASK_SPEC, MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
+import { MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
 import { wordingTestsCheck } from "./wording-tests.ts";
 
 const stateOf = (options: PluginOptions) => ({
@@ -132,7 +132,6 @@ const registerGuards = (on: On, options: PluginOptions, state: State): void => {
 const registerTools = (on: On): void => {
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
-		await $.tool.register(ASK_SPEC);
 		await $.tool.register(MONITOR_SPEC);
 		await $.command.register(REPLY_SPEC);
 		if ((await typesafeKey($)) !== "") {

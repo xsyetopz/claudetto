@@ -39,6 +39,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 - **Breaking:** claudetto reads the TypeSafe key only from `TYPESAFE_API_KEY`, in the shell that launches Claude Code or in the `env` block of the settings. The `typesafeApiKey` option is gone, so an install that set it must set the variable. A project `.env` file is not read.
 - **Breaking:** with a key, the constraint ledger and the branch gate send your messages to `api.typesafe.ai`, redacted by the secret scan first. Before, only the `decide` tool reached that host. Without a key, no request reaches it.
+- **Breaking:** the popup is Claude Code's own `AskUserQuestion` again, with its description cut to one sentence. Auto mode reads a popup answer only from that tool, so an action you approved in claudetto's popup, such as a merge, was judged as if nobody had asked for it. The tool `mcp__claudetto__ask-user-question` is gone.
 - **Breaking:** each plugin runs its guards in one `tool.check` hook and one `tool.call` hook. A guard that throws in `tool.check` asks you, and one that throws in `tool.call` refuses the call. Before, 2 of the 25 gating hooks caught a fault, and a guard that threw without a `.catch` let the call through.
 - The constraint ledger asks the Decider about each sentence of your message, and each entry is one of your sentences, word for word. Before, Haiku wrote the whole ledger with a quote per entry. A message of more than 41 sentences is read by its first 20 and its last 21. The first prompt after a resume reads your earlier messages too.
 - The branch gate asks the Decider whether you told the agent to delete the branch, in place of three regular expressions. Only a `yes` allows the delete; a `no`, an unsettled answer, and a Decider that fails all leave the gate asking you.
@@ -85,6 +86,7 @@ Before 1.0.0, a release can change or remove behavior.
 ### Removed
 
 - The `typesafeApiKey` option, in favor of the `TYPESAFE_API_KEY` variable.
+- The tool `mcp__claudetto__ask-user-question`, in favor of the built-in `AskUserQuestion`.
 - The ledger's Haiku extraction prompt, its parser, and its quote check, which the Decider's per-sentence read replaces.
 - The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
 - The `fold` hook is gone, so grouped tool results keep Claude Code's own fold.

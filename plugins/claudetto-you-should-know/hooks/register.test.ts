@@ -90,12 +90,21 @@ test(
 		const f = fixture(on);
 		await act($, f, "t1", { tool: "Read", file_path: "a.md" });
 		await $.tool.call({
-			tool: "mcp__claudetto__ask-user-question",
-			question: "Push now?",
-			options: ["Yes", "No"],
+			tool: "AskUserQuestion",
+			questions: [
+				{
+					question: "Push now?",
+					header: "Push",
+					options: [
+						{ label: "Yes", description: "Push it." },
+						{ label: "No", description: "Keep it local." },
+					],
+					multiSelect: false,
+				},
+			],
 		});
 		expect(f.asked).toHaveLength(0);
-		expect(f.ran).toEqual(["Read", "mcp__claudetto__ask-user-question"]);
+		expect(f.ran).toEqual(["Read", "AskUserQuestion"]);
 	},
 );
 

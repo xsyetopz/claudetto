@@ -1,6 +1,6 @@
 import type { CatchHandler, HookFor, On, PluginOptions } from "claude-code";
 
-import { ASK, questionsOf, READERS } from "./calls.ts";
+import { READERS } from "./calls.ts";
 import {
 	closed,
 	isRepeat,
@@ -279,9 +279,9 @@ export const register = (on: On, options: PluginOptions): void => {
 	logHooks(on, mem);
 	viewHooks(on, mem);
 	on("tool.call", async ($, e, next) => {
-		if (ASK.test(e.tool)) {
-			for (const q of questionsOf(e)) {
-				addToLog(mem, logEntry("assistant", `asked the person: ${q}`));
+		if (e.tool === "AskUserQuestion") {
+			for (const { question } of e.questions) {
+				addToLog(mem, logEntry("assistant", `asked the person: ${question}`));
 			}
 			return next(e);
 		}
