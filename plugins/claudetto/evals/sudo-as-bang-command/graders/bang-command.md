@@ -1,4 +1,5 @@
 ---
 type: regex
-pattern: "!\\s?sudo\\s"
+pattern: "^\\s*(- )?!\\s?[^\\n]*\\bsudo\\s"
+flags: m
 ---
