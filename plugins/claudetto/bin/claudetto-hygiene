@@ -8,6 +8,9 @@ import { numberOption } from "../hooks/options.ts";
 import { parseArgs } from "../hooks/hygiene/args.ts";
 import { cleanCaches } from "../hooks/hygiene/mole.ts";
 import { reportText, sweep } from "../hooks/hygiene/sweep.ts";
+import { type Log, logged } from "../hooks/hygiene/roots.ts";
+import { outputOr } from "../hooks/hygiene/trash.ts";
+import { projectsOf, worktreeReport } from "../hooks/hygiene/worktrees.ts";
 
 const home = process.env["HOME"] || homedir();
 const configDir =
@@ -19,6 +22,7 @@ const settings: PluginOptions = await readFile(
 	.then((text) => JSON.parse(text) ?? {})
 	.catch(() => ({}));
 const days = numberOption(settings, "cleanupPeriodDays", 30);
+const log: Log = (message) => console.error(message);
 
 try {
 	const args = parseArgs(process.argv.slice(2));
@@ -32,9 +36,23 @@ try {
 			Boolean,
 		),
 		configDir,
-		log: (message) => console.error(message),
+		log,
 	});
 	console.log(reportText(report, args.dryRun));
+	// Claude Code keeps this file in its config folder when one is set, and in the home folder otherwise.
+	const projects = await readFile(
+		join(process.env["CLAUDE_CONFIG_DIR"] || home, ".claude.json"),
+		"utf8",
+	)
+		.then(projectsOf)
+		.catch(logged(log, "The project list was not read", []));
+	console.log(
+		await worktreeReport(
+			outputOr(log),
+			[process.cwd(), ...projects],
+			args.dryRun,
+		),
+	);
 	console.log(await cleanCaches(args.dryRun));
 } catch (error) {
 	console.error(String(error));

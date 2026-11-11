@@ -13,7 +13,28 @@ interface Refusals {
 	dirty?: string[];
 	unmerged?: string[];
 	gone?: string[];
+	/** The agent worktrees git lists, by name: one whose commits the branch has, one with a new commit, or one an agent still holds. */
+	agents?: Record<string, "free" | "ahead" | "locked">;
 }
+
+export const agentPath = (name: string): string =>
+	`/repo/.claude/worktrees/${name}`;
+
+/** What git prints: the worktree list, with each agent's name as its `HEAD`, and a `+` line from `git cherry` for an agent with a new commit. */
+const stdoutOf = (argv: readonly string[], state: Refusals): string => {
+	const [, verb, sub, target = ""] = argv;
+	if (verb === "worktree" && sub === "list") {
+		return Object.entries(state.agents ?? {})
+			.map(
+				([name, kind]) =>
+					`worktree ${agentPath(name)}\nHEAD ${name}\nbranch refs/heads/worktree-${name}${kind === "locked" ? "\nlocked claude agent" : ""}\n`,
+			)
+			.join("\n");
+	}
+	return verb === "cherry" && state.agents?.[target] === "ahead"
+		? "+ c1\n"
+		: "";
+};
 
 interface Task {
 	id: string;
@@ -22,10 +43,10 @@ interface Task {
 	description: string;
 }
 
-const exit = (code: number) => ({
+const exit = (code: number, stdout: string) => ({
 	value: {
 		exitCode: code,
-		stdout: "",
+		stdout,
 		stderr: "",
 		isStdoutTruncated: false,
 		isStderrTruncated: false,
@@ -35,7 +56,9 @@ const exit = (code: number) => ({
 const exitOf = (argv: readonly string[], state: Refusals): number => {
 	const [, verb, , target = ""] = argv;
 	if (verb === "worktree") {
-		return state.dirty?.includes(target) === true ? 1 : 0;
+		return argv[2] === "remove" && state.dirty?.includes(target) === true
+			? 1
+			: 0;
 	}
 	if (verb === "branch") {
 		return [...(state.unmerged ?? []), ...(state.gone ?? [])].includes(target)
@@ -94,7 +117,7 @@ export const lab = (
 			return found;
 		}
 		runs.push([...e.argv]);
-		return exit(exitOf(e.argv, state));
+		return exit(exitOf(e.argv, state), stdoutOf(e.argv, state));
 	});
 	wireSession(on, past, existing);
 };

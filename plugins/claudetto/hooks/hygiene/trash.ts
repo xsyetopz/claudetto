@@ -3,6 +3,9 @@ import { dirname, join, relative, sep } from "node:path";
 
 import { spawn, TOML } from "bun";
 
+import { type Log, logged } from "./roots.ts";
+import type { Run } from "./worktrees.ts";
+
 export interface Rule {
 	readonly id: string;
 	readonly path: RegExp;
@@ -174,6 +177,14 @@ export const output = async (
 	const text = await new Response(child.stdout).text();
 	return (await child.exited) === 0 ? text : undefined;
 };
+
+/** `output`, with a command that could not start logged and answered as nothing: the folder of a listed project may be gone. */
+export const outputOr =
+	(log: Log): Run =>
+	(argv, cwd) =>
+		output(argv, cwd).catch(
+			logged(log, `The ${argv[0]} call in ${cwd} did not start`, void 0),
+		);
 
 export interface Held {
 	/** Working folders, which mark a whole checkout as in use. */

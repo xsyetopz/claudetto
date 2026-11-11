@@ -41,12 +41,12 @@ test("a committed edit passes", async ($: Engine, on: On) => {
 	expect(awaited2.block).toBeUndefined();
 });
 
-test("a stop with no write runs no git and passes", async ($: Engine, on: On) => {
+test("a stop with no write asks git only for its worktree list and passes", async ($: Engine, on: On) => {
 	const runs: string[][] = [];
 	lab(on, fakeRepo({ [A]: " M" }), "allow", runs);
 	const awaited3 = await stop($);
 	expect(awaited3.block).toBeUndefined();
-	expect(runs).toEqual([]);
+	expect(runs).toEqual([["git", "worktree", "list", "--porcelain"]]);
 });
 
 test("when the permission chain denies a commit, the stop passes", async ($: Engine, on: On) => {
