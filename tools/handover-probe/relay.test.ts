@@ -1,8 +1,7 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdtemp } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import { tempDir } from "../temp.mock.ts";
 import { answersOf, errorOf, startRelay } from "./relay.ts";
 
 const EVENTS: readonly (readonly [string, object])[] = [
@@ -69,7 +68,7 @@ test("the relay forwards the request and logs the upstream usage, context, and h
 		},
 	});
 	stops.push(() => void upstream.stop(true));
-	const log = join(await mkdtemp(join(tmpdir(), "relay-")), "requests.jsonl");
+	const log = join(await tempDir("relay-"), "requests.jsonl");
 	await Bun.write(log, "");
 	const relay = startRelay({
 		log,

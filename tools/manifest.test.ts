@@ -1,9 +1,10 @@
 import { expect, test } from "bun:test";
-import { mkdtemp } from "node:fs/promises";
-import { availableParallelism, tmpdir, totalmem } from "node:os";
+import { availableParallelism, totalmem } from "node:os";
 import { join } from "node:path";
 
 import { file, spawn } from "bun";
+
+import { tempDir } from "./temp.mock.ts";
 
 const PATH_CHOICE = /compaction|summary/iu;
 
@@ -141,7 +142,7 @@ test("a prompt that starts with /claudetto:setup is blocked with a plain reason"
 
 // Claude's Bash commands source this file: nice 10 lets the user's apps win the CPU, and one core stays out of cargo and Go builds. `make` and CMake are left alone, since make runs one job by default.
 const startedShell = async (env: Record<string, string>) => {
-	const envFile = join(await mkdtemp(join(tmpdir(), "envfile-")), "env");
+	const envFile = join(await tempDir("envfile-"), "env");
 	const run = (command: string) =>
 		new Response(
 			spawn(["sh", "-c", command], {

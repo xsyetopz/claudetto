@@ -1,17 +1,10 @@
 import { expect, test } from "bun:test";
-import {
-	mkdir,
-	mkdtemp,
-	realpath,
-	symlink,
-	utimes,
-	writeFile,
-} from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, symlink, utimes, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
 import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { tempDir } from "../temp.mock.ts";
 
 type Host = Parameters<typeof sweep>[1];
 
@@ -20,7 +13,7 @@ const NOW = Date.now();
 const UID = process.getuid?.() ?? 0;
 
 const project = async () => {
-	const root = await realpath(await mkdtemp(join(tmpdir(), "hygiene-")));
+	const root = await tempDir("hygiene-");
 	await mkdir(join(root, "home"), { recursive: true });
 	await mkdir(join(root, "proj/.claude/claudetto/handoffs"), {
 		recursive: true,

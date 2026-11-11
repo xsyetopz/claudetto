@@ -1,6 +1,5 @@
 import { expect, test } from "bun:test";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { spawn } from "bun";
@@ -9,11 +8,12 @@ import {
 	loadTrash,
 	PROJECT_TRASH,
 } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+import { tempDir } from "../temp.mock.ts";
 
 type Rules = Awaited<ReturnType<typeof loadTrash>>["rules"];
 
 const project = async () => {
-	const proj = await mkdtemp(join(tmpdir(), "trash-rules-"));
+	const proj = await tempDir("trash-rules-");
 	await mkdir(join(proj, ".claude/claudetto"), { recursive: true });
 	return proj;
 };

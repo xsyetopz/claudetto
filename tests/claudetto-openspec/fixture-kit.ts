@@ -1,15 +1,8 @@
 // Bun-only helpers for fixtures.spec.ts: the ported upstream records and their trees on disk.
-import {
-	mkdir,
-	mkdtemp,
-	readdir,
-	readFile,
-	symlink,
-	writeFile,
-} from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, readdir, readFile, symlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
+import { tempDir } from "../../tools/temp.mock.ts";
 import { isObject, items } from "./fixture-shape.ts";
 
 export { nodeFs } from "../../tools/node-fs.ts";
@@ -104,7 +97,7 @@ const place = async (root: string, rel: string, e: Entry) => {
 
 // Writes the record's before-tree into a fresh directory and returns it with the args rooted there.
 export const materialize = async (rec: Rec) => {
-	const root = await mkdtemp(join(tmpdir(), "cos-fx-"));
+	const root = await tempDir("cos-fx-");
 	// Links go last: one may point at a directory or file another entry creates.
 	const entries = Object.entries(rec.before ?? {});
 	await Promise.all(

@@ -1,12 +1,12 @@
 import { expect, test } from "bun:test";
-import { mkdir, mkdtemp, realpath, utimes, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, utimes, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { $ } from "bun";
 
 import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
 import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { tempDir } from "../temp.mock.ts";
 
 const DAY = 86_400_000;
 const NOW = Date.now();
@@ -27,7 +27,7 @@ const idleCheckout = async (dir: string) => {
 
 /** A session project and a home folder whose Mole `purge_paths` holds `listed`. */
 const world = async (listed?: (root: string) => string) => {
-	const root = await realpath(await mkdtemp(join(tmpdir(), "purge-")));
+	const root = await tempDir("purge-");
 	const home = join(root, "home");
 	const proj = join(root, "proj");
 	await mkdir(proj, { recursive: true });

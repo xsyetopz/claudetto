@@ -1,11 +1,11 @@
-import { mkdir, mkdtemp, realpath, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { sleep, spawn } from "bun";
 
 import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
 import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { tempDir } from "../temp.mock.ts";
 
 export const DAY = 86_400_000;
 export const NOW = Date.now();
@@ -18,7 +18,7 @@ export const git = (cwd: string, ...args: string[]) =>
 
 /** A repo that ignores `.build/` and tracks `dist/`, with one worktree under `.claude/worktrees/w`. */
 export const repo = async () => {
-	const root = await realpath(await mkdtemp(join(tmpdir(), "trash-")));
+	const root = await tempDir("trash-");
 	const proj = join(root, "proj");
 	await mkdir(join(proj, "dist"), { recursive: true });
 	await mkdir(join(proj, ".claude/claudetto"), { recursive: true });

@@ -1,12 +1,12 @@
 // Upstream's `openspec validate --strict` must pass on what the plugin's code wrote (bun test only: the lab has no node APIs).
 import { expect, test } from "bun:test";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { spawn } from "bun";
 
 import { openspec } from "../../plugins/claudetto-openspec/hooks/openspec.ts";
+import { tempDir } from "../../tools/temp.mock.ts";
 import { nodeFs } from "./fixture-kit.ts";
 
 const BIN = `${import.meta.dir}/../../node_modules/.bin/openspec`;
@@ -25,7 +25,7 @@ const put = async (root: string, rel: string, text: string) => {
 };
 
 test("upstream validate --strict passes on a change the plugin validated and archived", async () => {
-	const root = await mkdtemp(join(tmpdir(), "cos-up-"));
+	const root = await tempDir("cos-up-");
 	const c = "openspec/changes/add-thing";
 	await put(root, `${c}/.openspec.yaml`, "schema: spec-driven\n");
 	await put(

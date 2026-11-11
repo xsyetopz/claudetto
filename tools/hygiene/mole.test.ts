@@ -1,9 +1,9 @@
 import { afterEach, expect, test } from "bun:test";
-import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { chmod, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { cleanCaches } from "../../plugins/claudetto/hooks/hygiene/mole.ts";
+import { tempDir } from "../temp.mock.ts";
 
 const PATH = process.env.PATH;
 afterEach(() => {
@@ -12,7 +12,7 @@ afterEach(() => {
 
 /** A `mo` that records its arguments and whether stdin is a terminal, then exits `code`. */
 const fakeMole = async (code: number) => {
-	const dir = await mkdtemp(join(tmpdir(), "mole-"));
+	const dir = await tempDir("mole-");
 	const log = join(dir, "log");
 	await writeFile(
 		join(dir, "mo"),
@@ -36,7 +36,7 @@ test("a dry run previews mo clean and a failure reports its exit code", async ()
 });
 
 test("a missing mo names its install command", async () => {
-	process.env.PATH = await mkdtemp(join(tmpdir(), "no-mole-"));
+	process.env.PATH = await tempDir("no-mole-");
 	expect(await cleanCaches(false)).toBe(
 		"mo is not on PATH, so no cache was cleaned: install it with `brew install mole`.",
 	);
