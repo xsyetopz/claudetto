@@ -10,8 +10,9 @@
 		"tests/**/*.ts",
 		"tools/node-fs.ts",
 		"tools/decider-claim-check.ts",
-		"tools/claim-check-client.ts",
-		"tools/claim-check-report.ts"
+		"tools/claim-check-*.ts",
+		"tools/claim-check.test.ts",
+		"tools/claim-check-plugin/hooks/*.ts"
 	],
 	"exclude": [
 		"node_modules",

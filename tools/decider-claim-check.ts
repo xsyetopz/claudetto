@@ -1,241 +1,137 @@
-// Scores the stored claim-check cases through today's Haiku and Sonnet prompts and through the Decider, and keeps each request body.
-// Usage: bun tools/decider-claim-check.ts <cases.jsonl> <payload-folder> --summary <file.md> --prices <file.json> --max-usd <n>
-//   [--anthropic-base-url <url>] [--typesafe-base-url <url>]
-// `ANTHROPIC_API_KEY` is read from the environment. `TYPESAFE_API_KEY` is read through Bun's `.env` loading. Neither is printed or written.
+// Scores the stored claim-check cases through today's Haiku and Sonnet prompts and through the Decider, and keeps each request.
+// Usage: bun tools/decider-claim-check.ts <cases.jsonl> <payload-folder> --summary <file.md> --prices <file.json> --max-usd <n> [--typesafe-base-url <url>]
+// It writes a job file into the payload folder, bundles the plugin in `tools/claim-check-plugin` there, and starts `claude -p` with it; its `session.start` hook runs the scoring on the engine's `$`.
+// Every model call goes through `$.model.complete` under the Claude Code login, so the run counts against the subscription's weekly token limit.
+// `TYPESAFE_API_KEY` is read from the environment and never printed or written; `.env` is loaded only when `bun --env-file=.env` says so.
 // `--prices` is JSON of USD per million tokens: {"claude-haiku-5-5": {"input", "output", "cacheRead", "cacheWrite"}, "claude-sonnet-5-5": {...}},
-// copied from the Anthropic pricing page (https://platform.claude.com/docs/en/about-claude/pricing).
+// copied from the Anthropic pricing page (https://platform.claude.com/docs/en/about-claude/pricing). It prices the API list-price equivalent and the `--max-usd` cap.
+import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 
-import { env, file, write } from "bun";
+import { build, env, file, spawn, write } from "bun";
 
-import {
-	CLAIM_CHECK,
-	type ClaimFault,
-	claimState,
-	faultsOf,
-	noulsFor,
-} from "../plugins/claudetto/hooks/decider/claim-check.ts";
-import type { QuestionSet } from "../plugins/claudetto/hooks/decider/questions.ts";
-import { settle } from "../plugins/claudetto/hooks/decider/settle.ts";
-import {
-	type Graded,
-	gradeOnce,
-	UNSEEN_PEERS,
-} from "../plugins/claudetto/hooks/limits/grade.ts";
-import {
-	GRADE_FAULTS,
-	type GradeFault,
-} from "../plugins/claudetto/hooks/texts-grade.ts";
-import { type Ctx, host, JEV_ORIGIN, newCtx } from "./claim-check-client.ts";
-import { fail, field, readPrices } from "./claim-check-prices.ts";
-import {
-	finalLine,
-	type Findings,
-	type Row,
-	summary,
-} from "./claim-check-report.ts";
+import { JEV_ORIGIN } from "./claim-check-plugin/hooks/client.ts";
+import type { Job } from "./claim-check-plugin/hooks/score.ts";
+import { fail, field, numberOf, pricesOf } from "./claim-check-prices.ts";
 
-type Roads = Findings["roads"];
-
-const isFault = (code: unknown): code is GradeFault =>
-	typeof code === "string" && Object.hasOwn(GRADE_FAULTS, code);
-
-const strings = (value: unknown): string[] =>
-	Array.isArray(value) && value.every((item) => typeof item === "string")
-		? value
-		: fail("A case field is not a list of strings.");
-
-const asCase = (line: string) => {
-	const raw: unknown = JSON.parse(line);
-	const input = field(raw, "input");
-	const turn = {
-		user: String(field(input, "user")),
-		people: strings(field(input, "people")),
-		shown: strings(field(input, "shown")),
-		results: strings(field(input, "results")),
-		failed: String(field(input, "failed")),
-		looked: false,
-	};
-	return {
-		id: String(field(raw, "id")),
-		expected: strings(field(raw, "expected")),
-		turn,
-		reply: String(field(input, "reply")),
-		tasks: strings(field(input, "tasks")),
-		codes: strings(field(input, "codes")).filter((code) => isFault(code)),
-	};
-};
-
-type Case = ReturnType<typeof asCase>;
-
-const gradeRoad = (ctx: Ctx, c: Case, model: "haiku" | "sonnet") => {
-	ctx.label = model;
-	ctx.sent = 0;
-	const graded: Graded = { turn: c.turn, reply: c.reply, tasks: c.tasks };
-	if (model === "haiku") {
-		const list = c.codes.filter((code) => code !== "unseen");
-		return gradeOnce(host(ctx), graded, { model, list, results: [] });
-	}
-	return gradeOnce(host(ctx), graded, {
-		model,
-		list: [...UNSEEN_PEERS, "unseen"],
-		results: c.turn.results,
-		keep: ["credited", "unseen"],
-	});
-};
-
-const subset = (names: readonly string[]): QuestionSet => ({
-	...CLAIM_CHECK,
-	questions: Object.fromEntries(
-		Object.entries(CLAIM_CHECK.questions).filter(([name]) =>
-			names.includes(name),
-		),
-	),
-});
-
-const deciderRoad = async (ctx: Ctx, c: Case): Promise<ClaimFault[]> => {
-	ctx.label = "decider-fallback";
-	ctx.sent = 0;
-	const answers = await settle(
-		host(ctx),
-		subset(noulsFor(c.codes)),
-		claimState({ ...c.turn, reply: c.reply, tasks: c.tasks }),
-	);
-	return faultsOf(c.codes, answers);
-};
-
-const ALL = Object.keys(GRADE_FAULTS);
-const emptyRoads = (): Roads =>
-	new Map([
-		["haiku", { scope: ALL.filter((code) => code !== "unseen"), rows: [] }],
-		["sonnet", { scope: ["credited", "unseen"], rows: [] }],
-		["today", { scope: ALL, rows: [] }],
-		["decider", { scope: ALL, rows: [] }],
-	]);
-
-const add = (into: Roads, name: string, row: Row): void => {
-	into.get(name)?.rows.push(row);
-};
-
-const scoreCase = async (
-	ctx: Ctx,
-	c: Case,
-	into: Roads,
-	unread: { n: number },
-): Promise<void> => {
-	ctx.caseId = c.id;
-	const lost = (): GradeFault[] => {
-		unread.n += 1;
-		return [];
-	};
-	const haiku = await gradeRoad(ctx, c, "haiku").catch(lost);
-	const withTools = c.turn.results.length > 0;
-	const sonnet = withTools ? await gradeRoad(ctx, c, "sonnet").catch(lost) : [];
-	const decider = await deciderRoad(ctx, c);
-	if (ctx.stopped) {
-		return;
-	}
-	const row = (found: readonly string[]): Row => ({
-		id: c.id,
-		expected: c.expected,
-		found,
-	});
-	add(into, "haiku", row(haiku));
-	if (withTools) {
-		add(into, "sonnet", row(sonnet));
-	}
-	add(into, "today", row([...haiku, ...sonnet]));
-	add(into, "decider", row(decider));
-};
-
-const keyOf = (name: string, where: string): string =>
-	env[name] ?? fail(`${name} is not set. ${where}`);
+const PLUGIN_SOURCE = resolve(import.meta.dir, "claim-check-plugin");
+const BUNFIG = resolve(import.meta.dir, "../bunfig.toml");
 
 const OPTIONS = {
 	summary: { type: "string" },
 	prices: { type: "string" },
 	"max-usd": { type: "string" },
-	"anthropic-base-url": {
-		type: "string",
-		default: "https://api.anthropic.com",
-	},
 	"typesafe-base-url": { type: "string", default: JEV_ORIGIN },
 } as const;
 
-const context = async () => {
+const USAGE =
+	"Usage: bun tools/decider-claim-check.ts <cases.jsonl> <payload-folder> --summary <file.md> --prices <file.json> --max-usd <n>";
+
+const keyHint = async (): Promise<string> =>
+	/^\s*env\s*=\s*false\b/mu.test(await file(BUNFIG).text())
+		? "Run it as `bun --env-file=.env tools/decider-claim-check.ts ...`, because bunfig.toml turns `.env` loading off."
+		: "Set it in the shell or in a .env file Bun loads.";
+
+const job = async (): Promise<Job> => {
 	const { values, positionals } = parseArgs({
 		allowPositionals: true,
 		options: OPTIONS,
 	});
 	const [casesPath, outDir] = positionals;
 	const maxUsd = Number(values["max-usd"]);
-	const { summary: summaryPath, prices } = values;
+	const { summary, prices } = values;
 	if (
 		casesPath === undefined ||
 		outDir === undefined ||
-		summaryPath === undefined ||
+		summary === undefined ||
 		prices === undefined ||
 		!(maxUsd > 0)
 	) {
-		return fail(
-			"Usage: decider-claim-check.ts <cases.jsonl> <payload-folder> --summary <file.md> --prices <file.json> --max-usd <n>",
-		);
+		return fail(USAGE);
 	}
-	const ctx = newCtx({
-		anthropicUrl: values["anthropic-base-url"],
-		typesafeUrl: values["typesafe-base-url"],
-		anthropicKey: keyOf(
-			"ANTHROPIC_API_KEY",
-			"Export it in the shell that runs this tool.",
-		),
-		typesafeKey: keyOf(
-			"TYPESAFE_API_KEY",
-			"Set it in the shell or in a .env file Bun loads.",
-		),
-		prices: await readPrices(prices),
+	if (env["TYPESAFE_API_KEY"] === undefined) {
+		return fail(`TYPESAFE_API_KEY is not set. ${await keyHint()}`);
+	}
+	return {
+		cases: await file(casesPath).text(),
+		prices: pricesOf(await file(prices).json(), prices),
 		maxUsd,
-		outDir,
-	});
-	return { ctx, casesPath, summaryPath };
+		typesafeUrl: values["typesafe-base-url"],
+		outDir: resolve(outDir),
+		summaryPath: resolve(summary),
+		finalPath: resolve(outDir, "final.json"),
+	};
 };
 
-// One case at a time, so each request is checked against the cap before it is sent.
-const scoreAll = async (
-	ctx: Ctx,
-	cases: readonly Case[],
-	into: Roads,
-	unread: { n: number },
-): Promise<void> => {
-	const [c, ...rest] = cases;
-	if (c === undefined || ctx.stopped) {
-		return;
+// The engine reads a module's exports only as function declarations (`export function name`), and a bundle lists them in a closing `export { ... }`, so each is moved onto its declaration.
+const exportInline = (code: string): string => {
+	let text = code.replace(/\nexport \{[^}]*\};?\s*$/u, "\n");
+	for (const name of ["jobOf", "runJob"]) {
+		text = text.replace(
+			new RegExp(`\\n(async function|function) ${name}\\b`, "u"),
+			(_, kind: string) => `\nexport ${kind} ${name}`,
+		);
 	}
-	await scoreCase(ctx, c, into, unread);
-	await scoreAll(ctx, rest, into, unread);
+	return text;
+};
+
+// The engine refuses a module outside the plugin's folder, so the scoring and the modules it imports are bundled into a copy of the plugin in the payload folder.
+const bundlePlugin = async (outDir: string): Promise<string> => {
+	const dir = `${outDir}/plugin`;
+	const built = await build({
+		entrypoints: [`${PLUGIN_SOURCE}/hooks/score.ts`],
+		target: "browser",
+		external: ["claude-code"],
+	});
+	const [bundle] = built.outputs;
+	if (!built.success || bundle === undefined) {
+		return fail(
+			`The plugin did not bundle: ${built.logs.map((log) => log.message).join("; ")}`,
+		);
+	}
+	await write(`${dir}/hooks/score.ts`, exportInline(await bundle.text()));
+	await Promise.all(
+		[".claude-plugin/plugin.json", "hooks/hooks.json", "hooks/register.ts"].map(
+			(path) => write(`${dir}/${path}`, file(`${PLUGIN_SOURCE}/${path}`)),
+		),
+	);
+	return dir;
 };
 
 const main = async (): Promise<number> => {
-	const { ctx, casesPath, summaryPath } = await context();
-	const text = await file(casesPath).text();
-	const cases = text
-		.trim()
-		.split("\n")
-		.map((line) => asCase(line));
-	const roads = emptyRoads();
-	const unread = { n: 0 };
-	await scoreAll(ctx, cases, roads, unread);
-	const findings: Findings = {
-		roads,
-		calls: ctx.calls,
-		jev: ctx.jev,
-		usd: ctx.usd,
-		stopped: ctx.stopped,
-		unread: unread.n,
-		logLines: ctx.logLines,
-	};
-	await write(summaryPath, summary(findings));
-	console.info(finalLine(findings));
-	return ctx.stopped ? 2 : 0;
+	const run = await job();
+	const jobPath = `${run.outDir}/job.json`;
+	await write(jobPath, JSON.stringify(run));
+	const proc = spawn(
+		[
+			"claude",
+			"-p",
+			"Reply ok",
+			"--plugin-dir",
+			await bundlePlugin(run.outDir),
+			"--model",
+			"haiku",
+			"--no-session-persistence",
+			"--debug-file",
+			`${run.outDir}/debug.log`,
+		],
+		{
+			cwd: run.outDir,
+			env: { ...env, CLAIM_CHECK_JOB: jobPath },
+			stdout: "ignore",
+			stderr: "inherit",
+		},
+	);
+	await proc.exited;
+	const done = file(run.finalPath);
+	if (!(await done.exists())) {
+		return fail(
+			`The run left no final line. Read ${run.outDir}/debug.log for the hook's error.`,
+		);
+	}
+	const final: unknown = await done.json();
+	console.info(String(field(final, "line")));
+	return numberOf(field(final, "code"));
 };
 
 process.exitCode = await main().catch((error: unknown) => {

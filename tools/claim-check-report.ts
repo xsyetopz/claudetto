@@ -1,4 +1,5 @@
-// Scores and the Markdown summary of `decider-claim-check.ts`. A summary holds case ids and numbers, never case text.
+// Scores and the Markdown summary of the claim-check run. A summary holds case ids and numbers, never case text. The engine loads this module, so it uses no Bun or node API.
+import type { Usage } from "./claim-check-prices.ts";
 
 /** What one road found for one case. */
 export interface Row {
@@ -36,6 +37,7 @@ export interface Findings {
 	>;
 	readonly calls: readonly Call[];
 	readonly jev: JevStats;
+	readonly tokens: ReadonlyMap<string, Usage>;
 	readonly usd: number;
 	readonly stopped: boolean;
 	readonly unread: number;
@@ -98,7 +100,7 @@ const largest = (calls: readonly Call[], label: string): string => {
 	const top = mine.toSorted((a, b) => b.output - a.output)[0];
 	return top === undefined
 		? `- ${label}: no request.`
-		: `- ${label}: largest \`output_tokens\` ${top.output} against ${top.limit} sent as \`max_tokens\` (\`maxTokens\` + 2,048), over ${mine.length} requests; ${mine.filter((call) => call.ms > call.limitMs).length} took longer than their \`timeoutMs\`.`;
+		: `- ${label}: largest \`output_tokens\` ${top.output} against ${top.limit} as the worst case, over ${mine.length} requests; ${mine.filter((call) => call.ms > call.limitMs).length} took longer than their \`timeoutMs\`.`;
 };
 
 const cacheLine = (calls: readonly Call[]): string => {
@@ -110,6 +112,18 @@ const cacheLine = (calls: readonly Call[]): string => {
 		? "- No fallback request after the first."
 		: `- \`cache_read_input_tokens\` of each fallback request after the first: ${later.join(", ")}.`;
 };
+
+const tokenSection = (tokens: ReadonlyMap<string, Usage>): string[] => [
+	"## Tokens by model",
+	"",
+	"| model | input | output | cache read | cache write |",
+	"|---|---|---|---|---|",
+	...[...tokens].map(
+		([model, t]) =>
+			`| ${model} | ${t.input_tokens} | ${t.output_tokens} | ${t.cache_read_input_tokens} | ${t.cache_creation_input_tokens} |`,
+	),
+	"",
+];
 
 const jevSection = (jev: JevStats): string[] => [
 	"## Jev",
@@ -129,9 +143,10 @@ export const summary = (f: Findings): string =>
 		f.stopped
 			? "The run stopped before a request that could pass the cap."
 			: "The run finished every case.",
-		`Total cost: $${f.usd.toFixed(4)} (Anthropic requests only). Answers that did not parse: ${f.unread}. Log lines: ${f.logLines}.`,
+		`The run is billed to the subscription's weekly limit, which counts tokens. API list-price equivalent: $${f.usd.toFixed(4)}. Answers that did not parse: ${f.unread}. Log lines: ${f.logLines}.`,
 		"",
 		...[...f.roads].flatMap(([name, road]) => roadSection(name, road)),
+		...tokenSection(f.tokens),
 		"## Usage",
 		"",
 		cacheLine(f.calls),
@@ -142,6 +157,14 @@ export const summary = (f: Findings): string =>
 		...jevSection(f.jev),
 	].join("\n");
 
+const tokenLine = (tokens: ReadonlyMap<string, Usage>): string =>
+	[...tokens]
+		.map(
+			([model, t]) =>
+				`${model} in ${t.input_tokens} out ${t.output_tokens} cache-read ${t.cache_read_input_tokens} cache-write ${t.cache_creation_input_tokens}`,
+		)
+		.join(" | ") || "none";
+
 /** The last line of a run. */
 export const finalLine = (f: Findings): string =>
-	`total cost $${f.usd.toFixed(4)}; cases scored: ${[...f.roads].map(([name, road]) => `${name} ${road.rows.length}`).join(", ")}`;
+	`tokens ${tokenLine(f.tokens)}; API list-price equivalent $${f.usd.toFixed(4)}; cases scored: ${[...f.roads].map(([name, road]) => `${name} ${road.rows.length}`).join(", ")}`;

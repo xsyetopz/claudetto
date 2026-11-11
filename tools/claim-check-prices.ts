@@ -1,6 +1,4 @@
-// Prices, and the small helpers that read untrusted JSON, for `decider-claim-check.ts`.
-import { file } from "bun";
-
+// Prices, and the small helpers that read untrusted JSON, for the claim-check run. The engine loads this module, so it uses no Bun or node API.
 import { isRecord } from "../plugins/claudetto/hooks/tools.ts";
 
 /** The token counts of one response. */
@@ -43,15 +41,15 @@ export const costOf = (price: Price, usage: Usage): number =>
 
 const PRICE_KEYS = ["input", "output", "cacheRead", "cacheWrite"];
 
-/** The prices of the two models, from a JSON file of USD per million tokens. */
-export const readPrices = async (
-	path: string,
-): Promise<Record<string, Price>> => {
-	const raw: unknown = await file(path).json();
+/** The prices of the two models, from parsed JSON of USD per million tokens; `source` names the file in an error. */
+export const pricesOf = (
+	raw: unknown,
+	source: string,
+): Record<string, Price> => {
 	const price = (model: string): Price => {
 		const row = field(raw, model);
 		if (!PRICE_KEYS.every((key) => typeof field(row, key) === "number")) {
-			return fail(`${path} has no complete price for ${model}.`);
+			return fail(`${source} has no complete price for ${model}.`);
 		}
 		return {
 			input: numberOf(field(row, "input")),
