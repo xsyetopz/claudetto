@@ -43,6 +43,8 @@ export interface Findings {
 	readonly tokens: ReadonlyMap<string, Usage>;
 	readonly usd: number;
 	readonly stopped: boolean;
+	/** Why the run stopped at a model call that gave no answer, else `undefined`. */
+	readonly failure: string | undefined;
 	readonly logLines: number;
 }
 
@@ -150,9 +152,10 @@ export const summary = (f: Findings): string =>
 	[
 		`# ${f.title}`,
 		"",
-		f.stopped
-			? "The run stopped before a request that could pass the cap."
-			: "The run finished every case.",
+		f.failure ??
+			(f.stopped
+				? "The run stopped before a request that could pass the cap."
+				: "The run finished every case."),
 		`The run is billed to the subscription's weekly limit, which counts tokens. API list-price equivalent: $${f.usd.toFixed(4)}. Log lines: ${f.logLines}.`,
 		"",
 		...[...f.roads].flatMap(([name, road]) => roadSection(name, road)),
@@ -178,4 +181,4 @@ const tokenLine = (tokens: ReadonlyMap<string, Usage>): string =>
 
 /** The last line of a run. */
 export const finalLine = (f: Findings): string =>
-	`tokens ${tokenLine(f.tokens)}; API list-price equivalent $${f.usd.toFixed(4)}; cases scored: ${[...f.roads].map(([name, road]) => `${name} ${road.rows.length}`).join(", ")}`;
+	`${f.failure === undefined ? "" : `${f.failure} `}tokens ${tokenLine(f.tokens)}; API list-price equivalent $${f.usd.toFixed(4)}; cases scored: ${[...f.roads].map(([name, road]) => `${name} ${road.rows.length}`).join(", ")}`;

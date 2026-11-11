@@ -52,6 +52,13 @@ function scored($: Engine, ctx: Ctx, job: Job): Promise<Scored> {
 	return scoreGate($, ctx, job.cases);
 }
 
+const exitCode = (ctx: Ctx): number => {
+	if (ctx.failure !== undefined) {
+		return 1;
+	}
+	return ctx.stopped ? 2 : 0;
+};
+
 /** Scores every case of the job, writes the summary and the final-line file, and returns. */
 export async function runJob($: Engine, job: Job): Promise<void> {
 	const ctx = newCtx(job);
@@ -62,11 +69,12 @@ export async function runJob($: Engine, job: Job): Promise<void> {
 		tokens: ctx.tokens,
 		usd: ctx.usd,
 		stopped: ctx.stopped,
+		failure: ctx.failure,
 		logLines: ctx.logLines,
 	};
 	await $.fs.write(job.summaryPath, summary(findings));
 	await $.fs.write(
 		job.finalPath,
-		JSON.stringify({ line: finalLine(findings), code: ctx.stopped ? 2 : 0 }),
+		JSON.stringify({ line: finalLine(findings), code: exitCode(ctx) }),
 	);
 }

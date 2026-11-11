@@ -48,6 +48,7 @@ export interface Ctx {
 	sent: number;
 	usd: number;
 	stopped: boolean;
+	failure: string | undefined;
 	logLines: number;
 }
 
@@ -72,6 +73,7 @@ export const newCtx = (
 	sent: 0,
 	usd: 0,
 	stopped: false,
+	failure: undefined,
 	logLines: 0,
 });
 
@@ -149,6 +151,10 @@ async function complete(
 		ms: Date.now() - started,
 		limitMs: request.timeoutMs ?? WAIT_MS,
 	});
+	if (!result.isAnswered) {
+		ctx.stopped = true;
+		ctx.failure = `A model call of case ${ctx.caseId} gave no answer (${result.reason === "api-error" ? `${result.reason}: ${result.error}` : result.reason}), so the run stopped and scored only the cases before it.`;
+	}
 	return result;
 }
 
