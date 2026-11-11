@@ -16,8 +16,13 @@ Hygiene SHALL remove a top-level file or folder of Claude Code's temp folder `cl
 
 #### Scenario: Claude Code's Own Entry
 
-- **WHEN** the entry is `-Users-me-project`, `bash-edit-diff`, or `plugin-tool-staging`
-- **THEN** this rule leaves it
+- **WHEN** the entry is `-Users-me-project`, `bash-edit-diff`, `plugin-tool-staging`, `cc-socks`, or a nested `claude-<uid>`
+- **THEN** this rule leaves it, because the rule's allowlist in the trash file names it
+
+#### Scenario: An Entry That Cannot Be Removed
+
+- **WHEN** `rm` fails on one idle entry
+- **THEN** the failure is logged, the entry is left out of the report, and the other entries are removed
 
 #### Scenario: Process List Unreadable
 
