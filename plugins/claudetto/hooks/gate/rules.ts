@@ -16,13 +16,7 @@ import {
 import { killVerdict, releaseVerdict } from "./kill.ts";
 import { packageVerdict } from "./packages.ts";
 import { maskedExitVerdict } from "./pipefail.ts";
-import {
-	markerVerdict,
-	NOBODY,
-	ownedRemoval,
-	ownedVerdict,
-	type Owns,
-} from "./processes.ts";
+import { NOBODY, ownedRemoval, ownedVerdict, type Owns } from "./processes.ts";
 import { refVerdict } from "./refs.ts";
 import { type Command, parse, programOf, scriptOf } from "./shell-words.ts";
 import { upstreamVerdict } from "./upstream.ts";
@@ -110,7 +104,6 @@ const judgeText = (
 		...parsed.commands.flatMap((c, i) =>
 			commandVerdicts(c, has, own, c.into ? parsed.commands[i + 1] : undefined),
 		),
-		markerVerdict(command, parsed.commands, own),
 		maskedExitVerdict(parsed.commands),
 	]);
 };

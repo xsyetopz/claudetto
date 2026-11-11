@@ -3,29 +3,26 @@ import {
 	exists,
 	lutimes,
 	mkdir,
-	mkdtemp,
-	realpath,
 	symlink,
 	utimes,
 	writeFile,
 } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { sleep, spawn } from "bun";
+import { spawn } from "bun";
 
 import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
 import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
 import { PROJECT_TRASH } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
-
-const DAY = 86_400_000;
-const NOW = Date.now();
-const UID = process.getuid?.() ?? 0;
-
-const git = (cwd: string, ...args: string[]) =>
-	spawn(["git", "-c", "user.name=t", "-c", "user.email=t@t", ...args], {
-		cwd,
-	}).exited;
+import {
+	DAY,
+	git,
+	host,
+	NOW,
+	repo,
+	swept,
+	sweptWhileOpen,
+} from "./trash.mock.ts";
 
 /** A folder of `bytes` zero bytes, every entry `days` old. */
 const built = async (path: string, days: number, bytes = 4096) => {
@@ -39,50 +36,10 @@ const built = async (path: string, days: number, bytes = 4096) => {
 	);
 };
 
-/** A repo that ignores `.build/` and tracks `dist/`, with one worktree under `.claude/worktrees/w`. */
-const repo = async () => {
-	const root = await realpath(await mkdtemp(join(tmpdir(), "trash-")));
-	const proj = join(root, "proj");
-	await mkdir(join(proj, "dist"), { recursive: true });
-	await mkdir(join(proj, ".claude/claudetto"), { recursive: true });
-	await writeFile(join(proj, ".gitignore"), ".build/\n.claude/\n");
-	await writeFile(join(proj, "dist/app.js"), "x");
-	await git(proj, "init", "-q");
-	await git(proj, "add", ".");
-	await git(proj, "commit", "-qm", "i");
-	await git(proj, "worktree", "add", "-q", ".claude/worktrees/w");
-	return { root, proj, worktree: join(proj, ".claude/worktrees/w") };
-};
-
-/** Marks a folder as made by the session `owner`; a folder with no owner stays unmarked. */
-const mark = async (dir: string, owner: string | undefined) => {
-	if (owner === undefined) {
-		return;
-	}
-	await writeFile(join(dir, ".created-by-claudetto"), `${owner}\n`);
-};
-
 /** Ages the worktree's git index, so its checkout reads as unused. */
 const idle = async (proj: string) => {
 	const at = new Date(NOW - 10 * DAY);
 	await utimes(join(proj, ".git/worktrees/w/index"), at, at);
-};
-
-const logged: string[] = [];
-const host = (root: string, proj: string) => ({
-	cwd: proj,
-	home: join(root, "home"),
-	now: NOW,
-	uid: UID,
-	days: 30,
-	tempBases: [join(root, "tmp")],
-	configDir: join(root, "home/.claude"),
-	log: (line: string) => logged.push(line),
-});
-
-const swept = async (root: string, proj: string, argv: string[] = []) => {
-	const report = await sweep(parseArgs(argv), host(root, proj));
-	return report.removed.map((item) => [item.kind, item.path]);
 };
 
 test("an old build folder in an idle worktree goes, and the session's own checkout keeps its", async () => {
@@ -203,16 +160,10 @@ test("a folder stays while a process outside the checkout holds a file in it ope
 	const { root, proj, worktree } = await repo();
 	await built(join(worktree, ".build"), 10);
 	await idle(proj);
-	const reader = spawn(["tail", "-f", join(worktree, ".build/debug/a")], {
-		cwd: root,
-		stdout: "ignore",
-	});
-	await sleep(200);
 
-	const found = await swept(root, proj);
-	reader.kill();
-
-	expect(found).toEqual([]);
+	expect(
+		await sweptWhileOpen(root, proj, join(worktree, ".build/debug/a")),
+	).toEqual([]);
 });
 
 test("--trash-days 0 turns project trash off and a size counts the folder's files", async () => {
@@ -223,26 +174,6 @@ test("--trash-days 0 turns project trash off and a size counts the folder's file
 	expect(await swept(root, proj, ["--trash-days", "0"])).toEqual([]);
 	const report = await sweep(parseArgs(["--dry-run"]), host(root, proj));
 	expect(report.removed[0]?.bytes).toBeGreaterThanOrEqual(1_048_576);
-});
-
-test("a temp folder marked by an ended session goes, and a live one's and an unmarked one stay", async () => {
-	const { root, proj } = await repo();
-	const tmp = join(root, "tmp");
-	await Promise.all(
-		[
-			["probe-ended", "s-ended"],
-			["probe-live", "s-live"],
-			["probe-unmarked", undefined],
-		].map(async ([name = "", owner]) => {
-			await mkdir(join(tmp, name), { recursive: true });
-			await mark(join(tmp, name), owner);
-			await utimes(join(tmp, name), new Date(NOW - DAY), new Date(NOW - DAY));
-		}),
-	);
-
-	expect(await swept(root, proj, ["--session", "s-live"])).toEqual([
-		["claudetto-temp", join(tmp, "probe-ended")],
-	]);
 });
 
 test("an allowlist path keeps a folder a rule names", async () => {

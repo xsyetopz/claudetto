@@ -118,5 +118,5 @@ export async function ownVerdict(
 	if (!isWriter(tool) || path === undefined) {
 		return undefined;
 	}
-	return writeVerdict($, path);
+	return writeVerdict(path);
 }

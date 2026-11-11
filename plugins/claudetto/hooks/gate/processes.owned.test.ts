@@ -1,14 +1,21 @@
-import { gateRmTmp, gateTmpMarker, gateWorktreeRemove } from "../texts-gate.ts";
-import { allowed, asks, denied, MARK } from "./processes.mock.ts";
+import { gateRmTmp, gateWorktreeRemove } from "../texts-gate.ts";
+import { allowed, asks, denied } from "./processes.mock.ts";
 
-denied("rm -rf /tmp/other/x", gateRmTmp("/tmp/other/x"));
-denied("rm -f /private/tmp/other", gateRmTmp("/private/tmp/other"));
+// A temp base holds every session's files: the base, all of its entries, and a path that leaves it through `..` stay.
 denied("rm -rf /tmp", gateRmTmp("/tmp"));
-denied("rm -rf /tmp/mine", gateRmTmp("/tmp/mine"), [], { [MARK]: "S2" });
-denied("rm -rf /tmp/mine/../other", gateRmTmp("/tmp/mine/../other"), [], {
-	[MARK]: "S1",
-});
-allowed("rm /tmp/mine/sub", [], { [MARK]: "S1\n" });
+denied("rm -rf /private/tmp/claude-501", gateRmTmp("/private/tmp/claude-501"));
+denied("rm -rf /tmp/claude-501/", gateRmTmp("/tmp/claude-501/"));
+denied("rm -rf /tmp/claude-501/*", gateRmTmp("/tmp/claude-501/*"));
+denied("rm -rf /tmp/claude-*", gateRmTmp("/tmp/claude-*"));
+denied('rm -rf "$TMPDIR"', gateRmTmp("$TMPDIR"));
+denied("rm -rf /tmp/mine/../other", gateRmTmp("/tmp/mine/../other"));
+denied("rm -rf /tmp/mine /tmp", gateRmTmp("/tmp"));
+// Seen in 58 sampled denials: each was the session's own scratch file or folder.
+allowed("rm -rf /tmp/other/x");
+allowed("rm -f /private/tmp/other");
+allowed("rm -rf /tmp/claude-501/gate20");
+allowed('rm -rf "$TMPDIR/x"');
+allowed("rm /tmp/el.log");
 allowed("rm notes.txt");
 
 denied("git worktree remove /w/old", gateWorktreeRemove("/w/old"));
@@ -51,21 +58,11 @@ asks("git branch -d --force theirs", [
 ]);
 
 // Owned passes with no prompt; unowned twins and mixed targets keep their verdicts.
-allowed("rm -rf /tmp/mine", [], { [MARK]: "S1" });
-// The sandbox's TMPDIR, `/tmp/claude-<uid>`, is a base like `/tmp`: each folder in it is a top with its own marker.
-allowed("rm -rf /tmp/claude-501/gate20", [], {
-	"/tmp/claude-501/gate20/.created-by-claudetto": "S1",
-});
-denied("rm -rf /tmp/claude-501/other", gateRmTmp("/tmp/claude-501/other"));
-denied("rm -rf /tmp/claude-501", gateRmTmp("/tmp/claude-501"));
 allowed("git worktree remove --force /w/new", [
 	{ command: "git worktree add /w/new", text: "" },
 ]);
 denied("git worktree remove --force /w/old", gateWorktreeRemove("/w/old"));
 allowed("kill -9 4242", [{ command: "sleep 60 & echo $!", text: "4242" }]);
-denied("rm -rf /tmp/mine /tmp/other", gateRmTmp("/tmp/other"), [], {
-	[MARK]: "S1",
-});
 asks("git branch -D mine theirs", [{ command: "git branch mine", text: "" }]);
 
 const MINE = [{ command: "git branch mine", text: "" }];
@@ -84,35 +81,3 @@ asks(
 	MINE,
 );
 asks("git reset --soft abc1234", MINE);
-
-// 18.41: a /tmp folder gets its marker in the command that makes it.
-denied("mkdir -p /tmp/probe-x/sub", gateTmpMarker("/tmp/probe-x/sub"));
-denied("mktemp -d /tmp/probe-XXXX", gateTmpMarker("/tmp/probe-XXXX"));
-denied("cd /p && mkdir /private/tmp/y", gateTmpMarker("/private/tmp/y"));
-// Seen live: a folder made through a variable got no marker and outlived the session.
-denied(
-	"S=/tmp/claude-501/gate20 && mkdir -p $S",
-	gateTmpMarker("/tmp/claude-501/gate20"),
-);
-allowed(
-	"mkdir -p /tmp/probe-x && printenv CLAUDE_CODE_SESSION_ID > /tmp/probe-x/.created-by-claudetto",
-);
-allowed(
-	'd=$(mktemp -d /tmp/probe-XXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto"',
-);
-allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S1" });
-// A folder that is there already, made by another session or the user, gets no new folder from a mkdir under it.
-allowed("mkdir -p /tmp/mine/sub", [], { [MARK]: "S2" });
-allowed("mkdir -p /tmp/proj/build", [], { "/tmp/proj/README.md": "x" });
-allowed("mkdir -p build/out");
-// A relative path after `cd` or `pushd` makes a folder in the folder it moved to.
-denied("cd /tmp && mkdir probe-r", gateTmpMarker("/tmp/probe-r"));
-denied("pushd /private/tmp; mkdir -p a/b", gateTmpMarker("/private/tmp/a/b"));
-allowed(
-	"cd /tmp && mkdir probe-r && printenv CLAUDE_CODE_SESSION_ID > probe-r/.created-by-claudetto",
-);
-allowed("cd /tmp/mine && mkdir sub", [], { [MARK]: "S2" });
-allowed("cd build && mkdir out");
-// A path ends at a shell operator, so the folder checked is the one the command names.
-allowed("mkdir /tmp/mine;ls", [], { [MARK]: "S2" });
-allowed("mktemp -d");

@@ -1,8 +1,6 @@
-import type { Stats } from "node:fs";
 import { lstat, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-import { MARKER } from "../gate/processes.ts";
 import { HANDOFF_NAME } from "../handoff/layout.ts";
 import type { Args } from "./args.ts";
 import {
@@ -14,13 +12,20 @@ import {
 	trashRoots,
 } from "./roots.ts";
 import {
+	batched,
+	type Candidate,
+	idleTemp,
+	MINUTE_MS,
+	namesIn,
+} from "./temp.ts";
+import {
 	checkoutOf,
+	type Held,
 	heldPaths,
 	keepReason,
 	loadTrash,
 	output,
 	projectTrash,
-	tempRule,
 	type Trash,
 } from "./trash.ts";
 
@@ -48,16 +53,9 @@ interface Report {
 	readonly refused: readonly string[];
 }
 
-const MINUTE_MS = 60_000;
 const DAY_MS = 86_400_000;
 // Mole's `mo purge` waits as long before it calls a build folder old (lib/clean/project.sh MIN_AGE_DAYS).
 const TRASH_DAYS = 7;
-
-const namesIn = (dir: string) =>
-	readdir(dir, { withFileTypes: true }).then(
-		(entries) => entries.filter((entry) => !entry.isSymbolicLink()),
-		() => [],
-	);
 
 /** Each `claude-<uid>` folder that exists and that `uid` owns, once per real path. */
 const tempRoots = async (bases: readonly string[], uid: number, log: Log) => {
@@ -87,12 +85,6 @@ const liveSessions = async (configDir: string, log: Log): Promise<string> => {
 	return texts.join("\n");
 };
 
-interface Candidate {
-	readonly kind: string;
-	readonly path: string;
-	readonly limitMs: number;
-}
-
 const inFolder = async (
 	kind: string,
 	dir: string,
@@ -117,11 +109,12 @@ const handoffsOf = async (dir: string, limitMs: number) => {
 const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 	const sessionMs = (args.sessionDays ?? args.days ?? host.days) * DAY_MS;
 	const probeMs = (args.probeMinutes ?? 60) * MINUTE_MS;
+	// Claude Code names a project's temp folder for its path, with `-` for each `/`.
 	const projects = await inFolder(
 		"session-temp",
 		root,
 		0,
-		(n) => !n.startsWith("fswatch-probe-"),
+		(n) => n.startsWith("-"),
 		true,
 	);
 	const sessions = await Promise.all(
@@ -147,48 +140,13 @@ const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 	];
 };
 
-/** Each top-level temp folder a temp rule names whose marker names a session that is no longer alive. */
-const markedTemp = async (
+/** Each folder a project rule names, under the project or a Mole purge path, that `keepReason` lets go. */
+const builtTrash = async (
 	trash: Trash,
-	live: string,
 	limitMs: number,
+	held: Held,
 	host: Host,
 ) => {
-	const bases = [
-		...new Set(
-			await Promise.all(host.tempBases.map((base) => realOr(base, host.log))),
-		),
-	];
-	const found = await Promise.all(
-		bases.map(async (base) => {
-			const entries = await namesIn(base);
-			const items = await Promise.all(
-				entries
-					.filter((entry) => entry.isDirectory())
-					.map(async (entry) => {
-						const rule = tempRule(trash, entry.name);
-						const path = join(base, entry.name);
-						const marker = await readFile(join(path, MARKER), "utf8").catch(
-							logged(host.log, `The marker of ${path} was not read`, ""),
-						);
-						// A missing marker reads as "", which every text includes, so an unmarked folder stays.
-						return rule && !live.includes(marker.trim())
-							? [{ kind: rule.id, path, limitMs }]
-							: [];
-					}),
-			);
-			return items.flat();
-		}),
-	);
-	return found.flat();
-};
-
-/** Each folder a project rule names, under the project or a Mole purge path, that `keepReason` lets go; nothing when the running processes cannot be read. */
-const builtTrash = async (trash: Trash, limitMs: number, host: Host) => {
-	const held = limitMs > 0 ? await heldPaths(host.uid) : undefined;
-	if (held === undefined) {
-		return [];
-	}
 	const [own, realHome, roots] = await Promise.all([
 		checkoutOf(host.cwd),
 		realOr(host.home, host.log),
@@ -225,9 +183,18 @@ const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 	const live = `${args.session ?? ""}\n${await liveSessions(host.configDir, host.log)}`;
 	const roots = await tempRoots(host.tempBases, host.uid, host.log);
 	const trash = await loadTrash(host.cwd);
+	const trashMs = (args.trashDays ?? TRASH_DAYS) * DAY_MS;
+	const probeMs = (args.probeMinutes ?? 60) * MINUTE_MS;
+	// Nothing a process could hold goes when the open files cannot be read.
+	const held =
+		trashMs > 0 || probeMs > 0 ? await heldPaths(host.uid) : undefined;
 	const parts = await Promise.all([
-		builtTrash(trash, (args.trashDays ?? TRASH_DAYS) * DAY_MS, host),
-		markedTemp(trash, live, (args.probeMinutes ?? 60) * MINUTE_MS, host),
+		held !== undefined && trashMs > 0
+			? builtTrash(trash, trashMs, held, host)
+			: [],
+		...(held !== undefined && probeMs > 0
+			? roots.map((root) => idleTemp(root, trash, probeMs, held, host.log))
+			: []),
 		handoffsOf(join(claudetto, "handoffs"), handoffMs),
 		inFolder("bound-output", join(claudetto, "output"), DAY_MS, (n) =>
 			n.startsWith("output-"),
@@ -238,13 +205,19 @@ const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 	return parts.flat().filter((item) => item.limitMs > 0);
 };
 
-// A folder's own size is its entry list; `du` counts what removing it frees.
-const sizeOf = async (path: string, info: Stats): Promise<number> => {
-	if (!info.isDirectory()) {
-		return info.size;
-	}
-	const du = await output(["du", "-sk", path], "/");
-	return Number(du?.split("\t")[0] ?? 0) * 1024;
+/** The bytes that removing each folder frees, which `du` counts; a folder's own size is only its entry list. */
+const folderBytes = async (paths: readonly string[]) => {
+	const texts = await Promise.all(
+		batched(paths).map((batch) => output(["du", "-sk", ...batch], "/")),
+	);
+	return new Map(
+		texts.flatMap((text) =>
+			(text ?? "").split("\n").map((line): [string, number] => {
+				const [kb = "", path = ""] = line.split("\t");
+				return [path, Number(kb) * 1024];
+			}),
+		),
+	);
 };
 
 export const sweep = async (args: Args, host: Host): Promise<Report> => {
@@ -253,30 +226,33 @@ export const sweep = async (args: Args, host: Host): Promise<Report> => {
 		return { removed: [], refused: [`hygiene refused ${host.cwd}: ${why}`] };
 	}
 	const listed = await candidates(args, host);
-	const found = await Promise.all(
+	const aged = await Promise.all(
 		listed.map(async (item) => {
 			// A Nix result link counts by its own time, and its store path may be gone.
 			const info = await lstat(item.path).catch(
 				logged(host.log, `The path ${item.path} was not read`, void 0),
 			);
 			return info !== undefined && host.now - info.mtimeMs > item.limitMs
-				? [
-						{
-							kind: item.kind,
-							path: item.path,
-							bytes: await sizeOf(item.path, info),
-						},
-					]
+				? [{ ...item, info }]
 				: [];
 		}),
 	);
-	const removed = found.flat();
-	if (!args.dryRun) {
-		await Promise.all(
-			removed.map((item) => rm(item.path, { recursive: true, force: true })),
-		);
-	}
-	return { removed, refused: [] };
+	const old = aged.flat();
+	const bytes = await folderBytes(
+		old.filter((item) => item.info.isDirectory()).map((item) => item.path),
+	);
+	const found = await Promise.all(
+		old.map(async ({ kind, path, info }) =>
+			args.dryRun ||
+			(await rm(path, { recursive: true, force: true }).then(
+				() => true,
+				logged(host.log, `The path ${path} was not removed`, false),
+			))
+				? [{ kind, path, bytes: bytes.get(path) ?? info.size }]
+				: [],
+		),
+	);
+	return { removed: found.flat(), refused: [] };
 };
 
 export const reportText = (report: Report, dryRun: boolean): string => {

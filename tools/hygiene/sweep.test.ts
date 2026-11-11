@@ -139,7 +139,7 @@ test("an unset probe limit is 60 minutes", async () => {
 
 test("a session folder named by a live session stays and an old one goes", async () => {
 	const root = await project();
-	const tmp = join(root, "tmp", `claude-${UID}`, "proj");
+	const tmp = join(root, "tmp", `claude-${UID}`, "-Users-me-proj");
 	await mkdir(join(tmp, "live-1"), { recursive: true });
 	await mkdir(join(tmp, "dead-2"), { recursive: true });
 	const old = new Date(NOW - 90 * DAY);

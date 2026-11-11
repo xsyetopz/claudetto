@@ -1,7 +1,7 @@
 # Trash rules for claudetto hygiene, in the gitleaks config format (https://github.com/gitleaks/gitleaks#configuration).
 # A rule's `path` is a regex on a folder's path relative to the project root, or to the temp folder for a `temp` rule.
 # A project folder goes only when it sits in another checkout than the session's, no process works in that checkout or holds a file in the folder open, the checkout's git index and every file in the folder are older than the age limit, and git ignores the folder with nothing in it tracked.
-# A temp folder goes only when it holds a `.created-by-claudetto` file naming a session that is no longer alive.
+# A `temp` rule names top-level entries of Claude Code's temp folder `claude-<uid>`. An entry goes only when nothing in it changed within the age limit and no process holds a file in it open; Claude Code's own entries stay.
 # A project overrides this file with `.claude/claudetto/trash.toml`; `[extend] useDefault = true` keeps these rules, and `disabledRules` drops some by id.
 # The names come from Mole's purge targets (`mo purge`, lib/clean/purge_shared.sh), minus `bin`, which can hold scripts, and from each tool's docs.
 # A name that several tools share, such as `build` or `target`, sits in each of their rules: the report names the first rule that matches, and disabling one rule leaves the others.
@@ -244,7 +244,19 @@ tags = ["project", "gcroot", "nix"]
 # Temp
 
 [[rules]]
-id = "claudetto-temp"
-description = "A temp folder an ended claudetto session made"
+id = "idle-temp"
+description = "A file or folder a command left in Claude Code's temp folder"
 path = '''^[^/]+$'''
 tags = ["temp"]
+
+# Claude Code 2.1.322 makes these itself: a folder per project, its edit diffs, its staged plugin tools, its file watch probes, and, when a session starts inside the temp folder, a nested temp folder and its sockets.
+[[rules.allowlists]]
+paths = [
+	'''^-''',
+	'''^bash-edit-diff$''',
+	'''^plugin-tool-staging$''',
+	'''^fswatch-probe-''',
+	'''^claude-\d+$''',
+	'''^cc-daemon-\d+$''',
+	'''^cc-socks(-\d+)?$''',
+]

@@ -54,7 +54,7 @@ const exitOf = (argv: readonly string[], state: Refusals): number => {
 const wireSession = (
 	on: On,
 	past: Record<string, Call[]>,
-	files: Record<string, string>,
+	existing: readonly string[],
 ): void => {
 	on("classic.Stop", () => ({}));
 	on("classic.SubagentStop", () => ({}));
@@ -63,8 +63,7 @@ const wireSession = (
 	on("session.root", () => ({ value: "/repo" }));
 	on("tool.list", () => ({ value: [] }));
 	on("clock.now", () => ({ value: 0 }));
-	on("fs.exists", (_$, e) => ({ value: e.path in files }));
-	on("fs.read", (_$, e) => ({ value: files[e.path] ?? "" }));
+	on("fs.exists", (_$, e) => ({ value: existing.includes(e.path) }));
 	on("session.messages", (_$, e) => ({
 		value: [
 			{
@@ -81,11 +80,11 @@ const wireSession = (
 	}));
 };
 
-/** A repo at /repo where `dirty` worktrees and `unmerged` branches refuse plain removal, and so does each `gone` branch, which no longer exists; `past` maps an agent id ("" for the main loop) to its calls; `files` holds each existing path and its content. */
+/** A repo at /repo where `dirty` worktrees and `unmerged` branches refuse plain removal, and so does each `gone` branch, which no longer exists; `past` maps an agent id ("" for the main loop) to its calls; `existing` lists the paths that are there. */
 export const lab = (
 	on: On,
 	past: Record<string, Call[]>,
-	files: Record<string, string>,
+	existing: readonly string[] = [],
 	state: Refusals = {},
 	runs: string[][] = [],
 ): void => {
@@ -97,7 +96,7 @@ export const lab = (
 		runs.push([...e.argv]);
 		return exit(exitOf(e.argv, state));
 	});
-	wireSession(on, past, files);
+	wireSession(on, past, existing);
 };
 
 export const stop = ($: Engine, reply = "Done.", tasks: Task[] = []) =>
@@ -106,12 +105,6 @@ export const stop = ($: Engine, reply = "Done.", tasks: Task[] = []) =>
 		last_assistant_message: reply,
 		background_tasks: tasks,
 	});
-
-export const MARK = (top: string): string => `${top}/.created-by-claudetto`;
-export const MAKE = (top: string): string =>
-	`mkdir -p ${top} && printenv CLAUDE_CODE_SESSION_ID > ${top}/.created-by-claudetto`;
-export const removed = (runs: string[][]) =>
-	runs.filter((argv) => argv[0] === "rm").map((argv) => argv.at(-1));
 
 export const MONITOR: Task = {
 	id: "m7",
@@ -126,7 +119,7 @@ export const SHELL: Task = {
 	description: "dev server",
 };
 export const ARMED: Call[] = [
-	{ command: MAKE("/tmp/probe-a") },
+	{ command: "git worktree add /w/armed" },
 	{
 		tool: "mcp__claudetto__monitor",
 		command: "",

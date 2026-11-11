@@ -7,8 +7,6 @@ import { type GateState, watchPermissionEvents } from "./gate/watch.ts";
 import { listOption } from "./options.ts";
 import { walledUnguarded } from "./texts-gate.ts";
 
-export { isMarked } from "./gate/ownership.ts";
-
 /** Builds the walls and the memory the gate guards share. */
 export const gateState = (options: PluginOptions): GateState => ({
 	walls: {

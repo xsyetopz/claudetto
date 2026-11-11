@@ -103,8 +103,8 @@
 		},
 		"probeCleanupPeriodMinutes": {
 			"type": "number",
-			"title": "Probe folder retention in minutes",
-			"description": "Minutes after which hygiene removes an `fswatch-probe-*` temp folder, or one an ended session marked with `.created-by-claudetto`. `0` keeps them all. Unset: 60.",
+			"title": "Idle temp entry retention in minutes",
+			"description": "Minutes with no change after which hygiene removes an entry of Claude Code's temp folder that no process holds open. `0` keeps them all. Unset: 60.",
 			"default": 60,
 			"min": 0
 		},

@@ -1,35 +1,16 @@
 import type { EngineInterface } from "claude-code";
 
-import { GATE_SYSTEM_WRITE, gateTmpMarker } from "../texts-gate.ts";
+import { GATE_SYSTEM_WRITE } from "../texts-gate.ts";
 import { isPersonMessage } from "../verify.ts";
 import { askedToDelete } from "./asked.ts";
 import { POLICY_FILES } from "./packages.ts";
-import {
-	forceDeleted,
-	MARKER,
-	ownsOf,
-	tmpTopOf,
-	tmpTops,
-} from "./processes.ts";
+import { forceDeleted, ownsOf } from "./processes.ts";
 import { judge, systemPath } from "./rules.ts";
 import { parse } from "./shell-words.ts";
 import { deny, type Verdict } from "./verdict.ts";
 
-// Only a command that could need the transcript or a marker file reads them.
+// Only a command that could need the transcript reads it.
 const OWNED = /\b(?:kill|worktree|branch|update-ref)\b/u;
-const TMP_TOUCH = /\b(?:rm|mkdir|mktemp)\b/u;
-
-/** Tells whether the /tmp folder holds this session's marker. */
-export async function isMarked(
-	$: EngineInterface,
-	top: string,
-): Promise<boolean> {
-	if (!(await $.fs.exists(`${top}/${MARKER}`))) {
-		return false;
-	}
-	const held = await $.fs.read(`${top}/${MARKER}`);
-	return held.trim() === (await $.session.id());
-}
 
 const kept = async (
 	names: readonly string[],
@@ -41,15 +22,10 @@ const kept = async (
 	return new Set(found.filter((n) => n !== undefined));
 };
 
-/** What this session owns, read from its transcript and the marker files, for the parts of `command` that need them, with the foreign branches the person asked to delete. */
+/** What this session owns, read from its transcript when `command` needs it, with the foreign branches the person asked to delete. */
 async function ownershipOf($: EngineInterface, command: string) {
-	const tops = TMP_TOUCH.test(command) ? tmpTops(command) : [];
 	const messages = OWNED.test(command) ? await $.session.messages() : [];
-	const own = ownsOf(
-		messages.flatMap((m) => m.toolUses),
-		await kept(tops, (top) => isMarked($, top)),
-		await kept(tops, (top) => $.fs.exists(top)),
-	);
+	const own = ownsOf(messages.flatMap((m) => m.toolUses));
 	const said = messages
 		.filter((item) => isPersonMessage(item))
 		.map((m) => m.text);
@@ -88,14 +64,6 @@ export async function commandVerdict(
 		: { ...own, reason: `${own.reason} (\`${command}\`)` };
 }
 
-/** The verdict on a file write to `path`. A write makes its missing folders, so it would make a /tmp folder no marker names (seen live, 18.41). */
-export async function writeVerdict(
-	$: EngineInterface,
-	path: string,
-): Promise<Verdict | undefined> {
-	const top = tmpTopOf(path);
-	if (top !== undefined && top !== path && !(await $.fs.exists(top))) {
-		return deny(gateTmpMarker(top));
-	}
-	return systemPath(path) ? deny(GATE_SYSTEM_WRITE) : undefined;
-}
+/** The verdict on a file write to `path`. */
+export const writeVerdict = (path: string): Verdict | undefined =>
+	systemPath(path) ? deny(GATE_SYSTEM_WRITE) : undefined;

@@ -99,11 +99,9 @@ export const gateWalled = (path: string, wall: string): string =>
 export const walledUnguarded = (walls: readonly string[]): string =>
 	`claudetto walls off ${walls.map((w) => `\`${w}\``).join(", ")}, but your settings hold no ${walls.map((w) => `\`Read(${w}/**)\``).join(", ")} in \`permissions.deny\`, so only claudetto's gate keeps sessions out.`;
 export const gateRmTmp = (path: string): string =>
-	`${path} is under a /tmp folder that this session did not create: it holds no \`.created-by-claudetto\` file with this session's id. Leave it. Remove only a folder you made in this session, after you write the session id into \`<folder>/.created-by-claudetto\`.`;
-export const gateTmpMarker = (path: string): string =>
-	`${path} is a /tmp folder with no \`.created-by-claudetto\` file, so no session can prove it made the folder and nothing cleans it up. Make the folder and its marker in one Bash command: \`mkdir -p /tmp/<name> && printenv CLAUDE_CODE_SESSION_ID > /tmp/<name>/.created-by-claudetto\`, or \`d=$(mktemp -d /tmp/<name>-XXXXXX) && printenv CLAUDE_CODE_SESSION_ID > "$d/.created-by-claudetto" && echo "$d"\`.`;
+	`\`${path}\` names a temp base or leaves one through \`..\`, and a base holds every session's files. Remove the folder you made, by its full path.`;
 export const CLEANUP_LEFT = (left: readonly string[]): string =>
-	`claudetto removed the folders, worktrees, and branches this agent created and no longer needs. These stay because they hold work: ${left.map((item) => `\`${item}\``).join(", ")}. A worktree has uncommitted changes, or a branch has commits the current branch lacks or is checked out in such a worktree. In your reply, list each of these paths and branches by name with what it holds, so the user can merge or drop it.`;
+	`claudetto removed the worktrees and branches this agent created and no longer needs. These stay because they hold work: ${left.map((item) => `\`${item}\``).join(", ")}. A worktree has uncommitted changes, or a branch has commits the current branch lacks or is checked out in such a worktree. In your reply, list each of these paths and branches by name with what it holds, so the user can merge or drop it.`;
 export const STALE_TASKS = (lines: readonly string[]): string =>
 	`These background tasks of this agent still run, and once it stops nothing reads them; a monitor that outlives the reply wakes the session later with nothing to do:\n${lines.join("\n")}\nStop each with \`TaskStop\`. If your next step waits on one, name its id in your reply with what you wait for.`;
 export const gateWorktreeRemove = (path: string): string =>

@@ -39,7 +39,7 @@ const gate = (
 ) => {
 	const fetches: Parameters<typeof bodyOf>[0][] = [];
 	const prompts: string[] = [];
-	lab(on, past, {}, said);
+	lab(on, past, said);
 	mock.env(on, jev === undefined ? {} : { TYPESAFE_API_KEY: KEY });
 	mock.clock(on);
 	on("ui.log", () => ({ value: undefined }));

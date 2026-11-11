@@ -1,7 +1,6 @@
 import type { BackgroundTaskSummary, EngineInterface } from "claude-code";
 
-import { isMarked } from "./gate.ts";
-import { createdOf, markedTopsOf } from "./gate/processes.ts";
+import { createdOf } from "./gate/processes.ts";
 import { CLEANUP_LEFT, STALE_TASKS } from "./texts-gate.ts";
 
 type Past = Parameters<typeof createdOf>[0];
@@ -44,7 +43,7 @@ const keepInOrder = async <T>(
 };
 
 /**
- * Removes what one agent's own calls created: its marked /tmp folders, its worktrees, and its branches. Plain `git worktree remove` refuses a
+ * Removes what one agent's own calls created: its worktrees and its branches. Plain `git worktree remove` refuses a
  * checkout with uncommitted changes and plain `git branch -d` a branch with commits the current branch lacks, so what holds work stays and is
  * returned. Ignored build folders go with their worktree.
  */
@@ -58,13 +57,6 @@ async function cleanUp($: EngineInterface, past: Past): Promise<string[]> {
 			!(await succeeds($, ["git", "worktree", "remove", path], cwd)) &&
 			(await $.fs.exists(path)),
 	);
-	// A worktree that refused removal holds work, so the folder around it stays.
-	await inOrder(markedTopsOf(past), async (top) => {
-		const holds = leftPaths.some((path) => path.startsWith(`${top}/`));
-		if (!holds && (await isMarked($, top))) {
-			await $.process.run(["rm", "-rf", top]);
-		}
-	});
 	const leftBranches = await keepInOrder(
 		[...branches, ...workers.map((id) => `worktree-agent-${id}`)],
 		async (branch) =>

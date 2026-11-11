@@ -7,9 +7,8 @@ import {
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
 	gateKillPid,
-	gateTmpMarker,
 } from "../texts-gate.ts";
-import { lab, MARK } from "./processes.mock.ts";
+import { lab } from "./processes.mock.ts";
 
 const RELEASE = "/Users/u/.local/share/claude/versions/2.1.319";
 
@@ -86,26 +85,6 @@ for (const make of [
 		expect(awaited8.decision).toBe("allow");
 	});
 }
-
-// Seen live: a worker denied a bare `mkdir` made its /tmp folder with Write, which makes missing folders.
-const write = ($: Engine, file_path: string) =>
-	$.tool.check({ tool: "Write", input: { file_path, content: "x" } });
-test("a Write that would make a /tmp folder is denied with the marker line", async ($: Engine, on: On) => {
-	lab(on);
-	const v = await write($, "/tmp/live-1/notes.txt");
-	expect(v.decision).toBe("deny");
-	expect(v.reason).toContain(gateTmpMarker("/tmp/live-1"));
-});
-// Seen live: a session's repo sat in a /tmp folder another session marked.
-test("a Write under a /tmp folder that is there already, or outside /tmp, passes", async ($: Engine, on: On) => {
-	lab(on, [], { [MARK]: "S2" });
-	const awaited9 = await write($, "/tmp/mine/notes.txt");
-	expect(awaited9.decision).toBe("allow");
-	const awaited10 = await write($, "/p/tmp/x/notes.txt");
-	expect(awaited10.decision).toBe("allow");
-	const awaited11 = await write($, "/tmp/notes.txt");
-	expect(awaited11.decision).toBe("allow");
-});
 
 // Seen in another session: a background wait for four successes polled for 32 minutes after one job failed.
 const WAIT =
