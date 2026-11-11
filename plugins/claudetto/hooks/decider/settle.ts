@@ -132,5 +132,16 @@ export async function settle(
 		key === "" || key === refusedKey
 			? undefined
 			: await askJev($, key, set, state);
-	return answers ?? fallback($, set, state);
+	if (answers === undefined) {
+		return fallback($, set, state);
+	}
+	const inBand = Object.entries(set.questions)
+		.filter(
+			([name, question]) =>
+				question.type === "noul" && answers[name] === UNSETTLED,
+		)
+		.map(([name]) => name);
+	return set.escalate === true && inBand.length > 0
+		? { ...answers, ...(await fallback($, set, state, inBand)) }
+		: answers;
 }
