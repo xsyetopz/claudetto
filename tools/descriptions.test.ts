@@ -14,7 +14,6 @@ import {
 import {
 	AGENT_TEXT,
 	ASK_TEXT,
-	MONITOR_SPEC,
 	REPLY_SPEC,
 	TOOL_TEXTS,
 } from "../plugins/claudetto/hooks/texts.ts";
@@ -68,7 +67,6 @@ const frontmatters = async (): Promise<Described[]> => {
 };
 
 const SPECS = {
-	monitor: MONITOR_SPEC,
 	reply: REPLY_SPEC,
 	decide: DECIDE_SPEC,
 	handoff: { name: HANDOFF_TOOL, description: TOOL_HANDOFF },
@@ -107,9 +105,7 @@ test("the specs above cover each $.tool.register call of a plugin", async () => 
 		sources.map((path) => registerArguments(path)),
 	);
 	// `spec` is the handoff tool's, `{` the openspec tool's inline spec.
-	expect(new Set(found.flat())).toEqual(
-		new Set(["DECIDE_SPEC", "MONITOR_SPEC", "spec", "{"]),
-	);
+	expect(new Set(found.flat())).toEqual(new Set(["DECIDE_SPEC", "spec", "{"]));
 });
 
 test(`no description the model sees is over ${LIMIT} characters`, async () => {

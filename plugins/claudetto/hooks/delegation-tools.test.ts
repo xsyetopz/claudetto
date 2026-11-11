@@ -4,8 +4,6 @@ import { type Engine, expect, test } from "claude-code/testing";
 import { scanner } from "./secrets.mock.ts";
 import { ASK_TEXT } from "./texts.ts";
 
-const MONITOR = "mcp__claudetto__monitor";
-
 const bind = async ($: Engine, on: On): Promise<void> => {
 	on("session.start", () => ({ cwd: "/repo" }));
 	on("tool.register", (_$, e) => ({
@@ -66,48 +64,29 @@ const describeStock = ($: Engine, on: On, names: string[]) => {
 		value: names.map((name) => ({ name, description: "", mcp: false })),
 	}));
 	on("tool.describe", (_$, e) => e);
-	const origin = { plugin: "engine", tier: "core" } as const;
 
-	return Promise.all(
-		["AskUserQuestion", "Monitor"].map((tool) =>
-			$.tool.describe({ tool, description: "stock", provider: origin }),
-		),
-	);
+	return $.tool.describe({
+		tool: "AskUserQuestion",
+		description: "stock",
+		provider: { plugin: "engine", tier: "core" },
+	});
 };
 
 test("AskUserQuestion gets the one-sentence description and goes behind ToolSearch", async ($: Engine, on: On) => {
-	const [ask, monitor] = await describeStock($, on, ["Read", "ToolSearch"]);
+	const ask = await describeStock($, on, ["Read", "ToolSearch"]);
 
 	expect(ask).toMatchObject({ description: ASK_TEXT, isDeferred: true });
-	expect(monitor).toMatchObject({ description: "stock", isDeferred: true });
 });
 
 test("AskUserQuestion stays in the list when the session has no ToolSearch", async ($: Engine, on: On) => {
-	const [ask, monitor] = await describeStock($, on, ["Read", "Monitor"]);
+	const ask = await describeStock($, on, ["Read", "Monitor"]);
 
-	expect(ask?.description).toBe(ASK_TEXT);
-	expect(ask?.isDeferred).toBeUndefined();
-	expect(monitor?.description).toBe("stock");
-	expect(monitor?.isDeferred).toBeUndefined();
+	expect(ask.description).toBe(ASK_TEXT);
+	expect(ask.isDeferred).toBeUndefined();
 });
 
-test("the model's own Monitor call is denied with the way out", async ($: Engine, on: On) => {
-	on("tool.call", { tool: "Monitor" }, () => ({
-		result: { taskId: "t", timeoutMs: 1 },
-	}));
-	await bind($, on);
-
-	const out = await $.tool.call({
-		tool: "Monitor",
-		description: "d",
-		timeout_ms: 1000,
-		command: "x",
-	});
-
-	expect(out.deny).toBeDefined();
-});
-
-test("monitor passes a command to the stock Monitor, whose text it returns", async ($: Engine, on: On) => {
+test("the model's own Monitor call reaches the engine as sent", async ($: Engine, on: On) => {
+	scanner(on);
 	const seen: unknown[] = [];
 	on("tool.call", { tool: "Monitor" }, (_$, e) => {
 		seen.push({ command: e.command, ws: e.ws, timeout_ms: e.timeout_ms });
@@ -116,33 +95,13 @@ test("monitor passes a command to the stock Monitor, whose text it returns", asy
 	await bind($, on);
 
 	const out = await $.tool.call({
-		tool: MONITOR,
+		tool: "Monitor",
 		description: "d",
-		command: "tail -f x",
-	});
-
-	expect(seen).toEqual([
-		{ command: "tail -f x", ws: undefined, timeout_ms: 300_000 },
-	]);
-	expect(out.deny).toBeUndefined();
-	expect(typeof out.result).toBe("string");
-});
-
-test("monitor passes a ws source with its protocols", async ($: Engine, on: On) => {
-	const seen: unknown[] = [];
-	on("tool.call", { tool: "Monitor" }, (_$, e) => {
-		seen.push({ command: e.command, ws: e.ws, timeout_ms: e.timeout_ms });
-		return { result: { taskId: "t2", timeoutMs: e.timeout_ms } };
-	});
-	await bind($, on);
-
-	await $.tool.call({
-		tool: MONITOR,
-		description: "d",
-		ws: { url: "ws://127.0.0.1:1", protocols: ["p"] },
 		timeout_ms: 5000,
+		ws: { url: "ws://127.0.0.1:1", protocols: ["p"] },
 	});
 
+	expect(out.deny).toBeUndefined();
 	expect(seen).toEqual([
 		{
 			command: undefined,
@@ -150,6 +109,7 @@ test("monitor passes a ws source with its protocols", async ($: Engine, on: On) 
 			timeout_ms: 5000,
 		},
 	]);
+	expect(out.result).toMatchObject({ taskId: "t1" });
 });
 
 const search = (query: string) => ({
@@ -170,20 +130,12 @@ const stockSearch = (on: On, matches: string[]): string[] => {
 	return queries;
 };
 
-test("a keyword search that lists Monitor lists the wrapper instead", async ($: Engine, on: On) => {
+test("a result that lists Monitor is returned as it came", async ($: Engine, on: On) => {
 	stockSearch(on, ["Monitor", "Bash"]);
 
 	const out = await $.tool.call(search("monitor"));
 
-	expect(out.result).toMatchObject({ matches: [MONITOR, "Bash"] });
-});
-
-test("a search that lists neither tool is returned as it came", async ($: Engine, on: On) => {
-	stockSearch(on, ["Bash"]);
-
-	const out = await $.tool.call(search("bash"));
-
-	expect(out.result).toMatchObject({ matches: ["Bash"] });
+	expect(out.result).toMatchObject({ matches: ["Monitor", "Bash"] });
 });
 
 test("a query reaches ToolSearch as it was, even one that names AskUserQuestion", async ($: Engine, on: On) => {
@@ -208,12 +160,4 @@ test("a result that lists AskUserQuestion is returned as it came", async ($: Eng
 	const out = await $.tool.call(search("select:AskUserQuestion"));
 
 	expect(out.result).toMatchObject({ matches: ["AskUserQuestion"] });
-});
-
-test("a result that lists the stock Monitor and the wrapper lists the wrapper once", async ($: Engine, on: On) => {
-	stockSearch(on, ["Monitor", MONITOR]);
-
-	const out = await $.tool.call(search("monitor"));
-
-	expect(out.result).toMatchObject({ matches: [MONITOR] });
 });

@@ -2,12 +2,6 @@
 
 declare module "claude-code" {
 	interface McpToolInputs {
-		mcp__claudetto__monitor: {
-			description: string;
-			command?: string;
-			ws?: { url: string; protocols?: readonly string[] };
-			timeout_ms?: number;
-		};
 		mcp__claudetto__decide: {
 			questions: readonly {
 				question: string;

@@ -144,9 +144,9 @@ export const SHELL: Task = {
 export const ARMED: Call[] = [
 	{ command: "git worktree add /w/armed" },
 	{
-		tool: "mcp__claudetto__monitor",
+		tool: "Monitor",
 		command: "",
-		text: "Monitor started (task m7, timeout 300000ms).",
+		text: "Monitor started (task m7, expires in 300s unless the source ends first).",
 	},
 	{
 		command: "bun run dev",

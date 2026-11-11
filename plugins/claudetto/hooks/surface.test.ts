@@ -60,6 +60,11 @@ for (const tool of Object.keys(TOOL_TEXTS)) {
 	});
 }
 
+test("Monitor, ToolSearch, and the plan-mode tools each carry a text of ours", () => {
+	const named = ["Monitor", "ToolSearch", "EnterPlanMode", "ExitPlanMode"];
+	expect(named.filter((tool) => textOf(tool) === "")).toEqual([]);
+});
+
 for (const tool of ["Workflow", "ScheduleWakeup", "ReportFindings"]) {
 	test(`${tool} goes behind ToolSearch with its stock text`, async ($: Engine, on: On) => {
 		listing(on, ["ToolSearch"]);

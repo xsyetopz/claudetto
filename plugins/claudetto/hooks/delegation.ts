@@ -1,4 +1,4 @@
-import type { EngineInterface, On } from "claude-code";
+import type { On } from "claude-code";
 
 import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
 import { deferral } from "./surface.ts";
@@ -29,43 +29,6 @@ const agentFor = (type: string | undefined): string | undefined => {
 
 const qualified = (agent: string): string => PREFIX + agent;
 
-const strings = (value: unknown): string[] =>
-	Array.isArray(value)
-		? value.filter((item): item is string => typeof item === "string")
-		: [];
-
-const wsOf = (
-	value: unknown,
-): { url: string; protocols: string[] } | undefined =>
-	typeof value === "object" &&
-	value !== null &&
-	"url" in value &&
-	typeof value.url === "string"
-		? {
-				url: value.url,
-				protocols: "protocols" in value ? strings(value.protocols) : [],
-			}
-		: undefined;
-
-const text = (value: unknown): string =>
-	typeof value === "string" ? value : "";
-
-const WRAPPERS: ReadonlyMap<string, string> = new Map([
-	["Monitor", "mcp__claudetto__monitor"],
-]);
-
-// The names a ToolSearch result lists, with a stock tool's claudetto wrapper in its place; undefined when nothing changes.
-const wrapMatches = (matches: readonly string[]): string[] | undefined =>
-	matches.some((name) => WRAPPERS.has(name))
-		? [...new Set(matches.map((name) => WRAPPERS.get(name) ?? name))]
-		: undefined;
-
-// The stock Monitor answers only a call its wrapper makes, so the wrapper counts its calls in flight.
-const running = { monitor: 0 };
-
-const failure = (error: unknown): string =>
-	error instanceof Error ? error.message : String(error);
-
 type Call<T extends CallEvent["tool"]> = Extract<CallEvent, { tool: T }>;
 
 // A rewritten input voids auto mode's server review of every call in the response, so an off call is refused with its exact form, never changed.
@@ -89,63 +52,9 @@ async function agentCall(
 		: out;
 }
 
-async function monitorCall(
-	$: EngineInterface,
-	e: Call<"mcp__claudetto__monitor">,
-): Promise<Awaited<CallAnswer>> {
-	running.monitor++;
-	try {
-		const ws = wsOf(e.ws);
-		const out = await $.tool.call({
-			tool: "Monitor",
-			description: text(e.description),
-			timeout_ms: typeof e.timeout_ms === "number" ? e.timeout_ms : 300_000,
-			...(ws === undefined ? { command: text(e.command) } : { ws }),
-		});
-		return { result: out.deny ?? out.text ?? "" };
-	} catch (error) {
-		return { result: `monitor failed: ${failure(error)}` };
-	} finally {
-		running.monitor--;
-	}
-}
-
-function oldMonitorCall(e: Call<"Monitor">, next: CallNext): CallAnswer {
-	return running.monitor > 0
-		? next(e)
-		: { deny: "Monitor is off here: call mcp__claudetto__monitor." };
-}
-
-// Only the result is rewritten: a rewritten query would void auto mode's server review of the response's other calls.
-async function searchCall(
-	e: Call<"ToolSearch">,
-	next: CallNext,
-): Promise<Awaited<CallAnswer>> {
-	const out = await next(e);
-	const result = out.isError || out.deny !== undefined ? undefined : out.result;
-	const matches = result && wrapMatches(result.matches);
-	return result && matches ? { result: { ...result, matches } } : out;
-}
-
-/** Delegates `Agent`, `Monitor`, and `ToolSearch` calls to claudetto's agents and wrappers; every other tool passes on. */
-export function delegationCall(
-	$: EngineInterface,
-	e: CallEvent,
-	next: CallNext,
-): CallAnswer {
-	if (e.tool === "Agent") {
-		return agentCall(e, next);
-	}
-	if (e.tool === "mcp__claudetto__monitor") {
-		return monitorCall($, e);
-	}
-	if (e.tool === "Monitor") {
-		return oldMonitorCall(e, next);
-	}
-	if (e.tool === "ToolSearch") {
-		return searchCall(e, next);
-	}
-	return next(e);
+/** Delegates an `Agent` call to claudetto's agents; every other tool passes on. */
+export function delegationCall(e: CallEvent, next: CallNext): CallAnswer {
+	return e.tool === "Agent" ? agentCall(e, next) : next(e);
 }
 
 const agentHooks = (on: On): void => {
@@ -179,11 +88,6 @@ const listingHook = (on: On): void => {
 };
 
 const searchHooks = (on: On): void => {
-	on("tool.describe", { tool: "Monitor" }, async ($, e, next) => ({
-		...(await next(e)),
-		...deferral(await $.tool.list()),
-	}));
-
 	// Auto mode reads a popup answer only from this tool, so the model calls it and only its description is cut.
 	on("tool.describe", { tool: "AskUserQuestion" }, async ($, e, next) => ({
 		...(await next(e)),

@@ -172,9 +172,8 @@ test("a changed list of background tasks is added once", async ($: Engine, on: O
 	expect(first.additionalContext?.join("\n")).toContain(
 		"Your last reply stands as sent",
 	);
-	expect(first.additionalContext?.join("\n")).toContain(
-		"mcp__claudetto__monitor",
-	);
+	expect(first.additionalContext?.join("\n")).toContain("with Monitor,");
+	expect(first.additionalContext?.join("\n")).not.toContain("mcp__");
 	expect(second.additionalContext).toBeUndefined();
 });
 

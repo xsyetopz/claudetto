@@ -36,7 +36,7 @@ import { setup } from "./setup.ts";
 import { slices, slicesCall, slicesState } from "./slices.ts";
 import { surface, surfaceCall } from "./surface.ts";
 import { DECIDE_SPEC } from "./texts-gate.ts";
-import { MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
+import { REPLY_SPEC } from "./texts.ts";
 import { wordingTestsCheck } from "./wording-tests.ts";
 
 const stateOf = (options: PluginOptions) => ({
@@ -106,7 +106,7 @@ const callGuards = (
 		(at, step) => boundOutputCall($, at, step, options),
 		(at, step) => surfaceCall(at, step, options),
 		(at, step) => pinCall(at, step, state.pinned),
-		(at, step) => delegationCall($, at, step),
+		(at, step) => delegationCall(at, step),
 		(at, step) => runsCall(at, step, state.ran),
 		(at, step) => decideCall($, at, step),
 		(at, step) => handoffCall($, at, step, state.handoff),
@@ -132,7 +132,6 @@ const registerGuards = (on: On, options: PluginOptions, state: State): void => {
 const registerTools = (on: On): void => {
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
-		await $.tool.register(MONITOR_SPEC);
 		await $.command.register(REPLY_SPEC);
 		if ((await typesafeKey($)) !== "") {
 			await $.tool.register(DECIDE_SPEC);

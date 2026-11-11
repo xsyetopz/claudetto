@@ -91,6 +91,17 @@ const NOTEBOOK_EDIT =
 
 const LIST_AGENTS = `Lists what SendMessage can reach: subagents, teammates, and local, cloud, and Remote Control sessions (a cloud one cannot reply: read its transcript). Send to a name as its row prints it.`;
 
+const MONITOR =
+	"Watches a command or WebSocket: each event is a notice to you, not user's reply. Print only lines you act on, failures too (grep --line-buffered, 2>&1). For one notice, use Bash run_in_background.";
+
+const TOOL_SEARCH = `Loads schemas of deferred tools, which <system-reminder> lists name, so you can call them. Query: "select:A,B" for exact names, words for a search, "+word" to require it in a name.`;
+
+const ENTER_PLAN_MODE =
+	"Asks user to enter plan mode, where you explore read-only and write a plan file for approval. Call it when user asks for a plan before any change.";
+
+const EXIT_PLAN_MODE =
+	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It takes no plan text. Ask an open question with AskUserQuestion first.";
+
 export const TOOL_TEXTS: Readonly<Record<string, string>> = {
 	Bash: BASH,
 	Read: READ,
@@ -105,6 +116,10 @@ export const TOOL_TEXTS: Readonly<Record<string, string>> = {
 	WebSearch: WEB_SEARCH,
 	NotebookEdit: NOTEBOOK_EDIT,
 	ListAgents: LIST_AGENTS,
+	Monitor: MONITOR,
+	ToolSearch: TOOL_SEARCH,
+	EnterPlanMode: ENTER_PLAN_MODE,
+	ExitPlanMode: EXIT_PLAN_MODE,
 };
 
 export const planModeText = (file: string, hasPlan: boolean): string =>
@@ -141,7 +156,7 @@ export const BUN_FACT =
 export const offCommandText = (command: string): string =>
 	`/${command} is off in claudetto.`;
 
-// Delegation: the Agent tool text and the ask and monitor tool specs.
+// Delegation: the Agent and ask tool texts and the reply command spec.
 
 export const AGENT_TEXT =
 	"Start a subagent for independent work. subagent_type, in full: claudetto:Artemis searches read-only, claudetto:Metis plans, claudetto:Heracles does the rest. Do a few tool calls yourself instead.";
@@ -160,38 +175,6 @@ export const REPLY_SPEC = {
 
 export const ASK_TEXT =
 	"Asks user 1-4 questions, each with 2-4 options or a typed answer, and returns the answers.";
-
-export const MONITOR_SPEC = {
-	name: "monitor",
-	isDeferred: true,
-	description:
-		"Runs a command or WebSocket in the background; each stdout line or text frame reaches you as a notification, not the user's reply. For one notice when something ends, use Bash run_in_background.",
-	inputSchema: {
-		type: "object",
-		properties: {
-			command: {
-				type: "string",
-				description:
-					"Print only lines you act on (grep --line-buffered -E 'ready|FAIL|Error'), flush each pipe stage, merge 2>&1.",
-			},
-			ws: {
-				type: "object",
-				properties: {
-					url: { type: "string" },
-					protocols: { type: "array", items: { type: "string" } },
-				},
-				required: ["url"],
-			},
-			description: { type: "string", description: "Names each notification." },
-			timeout_ms: {
-				type: "number",
-				description:
-					"Defaults to 300000, max 600000; too many events stop it; TaskStop ends it.",
-			},
-		},
-		required: ["description"],
-	},
-};
 
 // Limits: refusals and blocks of the run limits and the stall rule.
 
@@ -227,7 +210,7 @@ export const MEMORY_SHORT = (
 	`The machine has ${share}% of its memory free, under the ${limit}% limit, so new commands and subagents are held. Stop your own runs that are no longer needed, with TaskStop or \`kill <pid>\`, and wait for the others to end before you start another. The largest processes (pid, size, name):\n${largest.join("\n")}\nThe limit is \`memoryFreeMinPercent\`.`;
 
 export const STOP_TASKS = (lines: readonly string[]): string =>
-	`Background tasks still running at Stop:\n${lines.join("\n")}\nYour last reply stands as sent. When the user waits on one of these tasks, follow its output with mcp__claudetto__monitor, filtered to its step and error lines, and report each result as it lands.`;
+	`Background tasks still running at Stop:\n${lines.join("\n")}\nYour last reply stands as sent. When the user waits on one of these tasks, follow its output with Monitor, filtered to its step and error lines, and report each result as it lands.`;
 
 export const STALL_STOP = (blocks: string): string =>
 	`A Stop hook blocked and no file changed since the last stop, so the turn ends here: ${blocks}. If a goal keeps the session going, \`/goal clear\` drops it.`;
