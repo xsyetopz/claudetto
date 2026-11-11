@@ -86,7 +86,7 @@
 		"hygieneEnabled": {
 			"type": "boolean",
 			"title": "Session hygiene",
-			"description": "Use `false` to run no hygiene sweep at session start. On by default: it removes old temp folders and handoffs Claude Code never removes, and unused build folders `trash.toml` names in the project and in the folders Mole's `purge_paths` lists, then runs `mo clean`, which clears user caches without a prompt.",
+			"description": "Use `false` to run no sweep at session start. On by default: it removes old temp folders, handoffs, and build folders `trash.toml` or Mole's `purge_paths` names, then runs `mo clean` without a prompt.",
 			"default": true
 		},
 		"handoffCleanupPeriodDays": {
@@ -119,7 +119,7 @@
 			"type": "string",
 			"multiple": true,
 			"title": "Walled-off paths",
-			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. The default walls off the held-out eval set.",
+			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. Default: the held-out eval set.",
 			"default": ["~/.claudetto-holdout"]
 		},
 		"openItemsCheckEnabled": {

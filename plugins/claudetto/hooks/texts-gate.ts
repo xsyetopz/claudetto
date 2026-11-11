@@ -19,7 +19,7 @@ const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 					question: {
 						type: "string",
 						description:
-							"The decision, with the facts that settle it. Jev reads nothing else.",
+							"The decision, with each fact that settles it and its source: Jev reads no file or session. The text goes to the TypeSafe API, so keep secrets and personal data out.",
 					},
 					options: {
 						type: "array",
@@ -40,10 +40,7 @@ const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 	required: ["questions"],
 };
 
-const DECIDE_DESCRIPTION = `Asks Jev, a TypeSafe model that returns probabilities, to settle a decision that is yours, not the user's: a choice among options, or a yes/no question.
-Use it when no fact in the repository settles a choice that blocks you and waiting for the user would stop the work; in an autonomous run it is a second judgment.
-Jev reads only the question and option texts, no file and no session, so put every fact that settles it there, with its source. Keep secrets, keys, and personal data out: the text goes to the TypeSafe API.
-A question Jev is unsure about, or one touching money, a push, a release, or a delete, comes back unanswered: then decide yourself and state the assumption, or ask the user. This tool never answers an \`AskUserQuestion\` dialog.`;
+const DECIDE_DESCRIPTION = `Asks Jev, a TypeSafe model, to settle a decision that is yours, not the user's, when no repository fact settles it and waiting would stop the work. It never answers an \`AskUserQuestion\` dialog.`;
 
 export const DECIDE_SPEC = {
 	name: DECIDE_TOOL,
