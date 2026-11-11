@@ -68,6 +68,7 @@ const idle = async (proj: string) => {
 	await utimes(join(proj, ".git/worktrees/w/index"), at, at);
 };
 
+const logged: string[] = [];
 const host = (root: string, proj: string) => ({
 	cwd: proj,
 	home: join(root, "home"),
@@ -76,6 +77,7 @@ const host = (root: string, proj: string) => ({
 	days: 30,
 	tempBases: [join(root, "tmp")],
 	configDir: join(root, "home/.claude"),
+	log: (line: string) => logged.push(line),
 });
 
 const swept = async (root: string, proj: string, argv: string[] = []) => {

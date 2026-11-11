@@ -11,6 +11,7 @@ import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
 const DAY = 86_400_000;
 const NOW = Date.now();
 const OLD = new Date(NOW - 10 * DAY);
+const logged: string[] = [];
 
 /** A checkout at `dir` that ignores `node_modules/`, holding one that is, like its index, 10 days old. */
 const idleCheckout = async (dir: string) => {
@@ -47,6 +48,7 @@ const world = async (listed?: (root: string) => string) => {
 			days: 30,
 			tempBases: [],
 			configDir: join(home, ".claude"),
+			log: (line) => logged.push(line),
 		});
 		return report.removed.map((item) => item.path);
 	};

@@ -28,6 +28,7 @@ const project = async () => {
 	return root;
 };
 
+const logged: string[] = [];
 const host = (root: string, over: Partial<Host> = {}): Host => ({
 	cwd: join(root, "proj"),
 	home: join(root, "home"),
@@ -36,6 +37,7 @@ const host = (root: string, over: Partial<Host> = {}): Host => ({
 	days: 30,
 	tempBases: [join(root, "tmp")],
 	configDir: join(root, "home/.claude"),
+	log: (line) => logged.push(line),
 	...over,
 });
 
