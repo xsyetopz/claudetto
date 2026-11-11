@@ -12,7 +12,7 @@ import {
 	repo,
 	scanning,
 } from "./gate.mock.ts";
-import { scanner } from "./secrets.mock.ts";
+import { ruleScanner, scanner } from "./secrets.mock.ts";
 
 test("a shell command the gate refuses is denied over an allow, with the command in the reason", async ($: Engine, on: On) => {
 	repo(on);
@@ -193,6 +193,16 @@ test("a secret the scanner finds in a tool result reaches the model as [REDACTED
 	expect(JSON.stringify(out.result)).not.toContain(KEY);
 	expect(JSON.stringify(out.result)).toContain("TOKEN=[REDACTED]");
 	expect(JSON.stringify(out.result)).toContain("PORT=5432");
+});
+
+test("a secret after a line break in a result with no text reaches the model as [REDACTED]", async ($: Engine, on: On) => {
+	ruleScanner(on, /^export API_TOKEN=(\S+)/gmu);
+	// The lab engine redacts a key of a known shape on its own, so the token has none.
+	scanning(on, { result: { stdout: "ok\nexport API_TOKEN=plain7c3e9a41\n" } });
+
+	const out = await $.tool.call({ tool: "Bash", command: "x" });
+
+	expect(out.result).toEqual({ stdout: "ok\nexport API_TOKEN=[REDACTED]\n" });
 });
 
 test("a result with no secret comes back as it was", async ($: Engine, on: On) => {

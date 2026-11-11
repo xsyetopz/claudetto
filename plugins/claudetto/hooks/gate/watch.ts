@@ -8,7 +8,7 @@ import type {
 	CheckEvent,
 	CheckNext,
 } from "../chain.ts";
-import { redactAll, redactWith, secretsIn } from "../secrets.ts";
+import { redactAll, redactWith, secretsIn, stringsIn } from "../secrets.ts";
 import { GATE_READ_ONLY, gateRule } from "../texts-gate.ts";
 import {
 	type Denials,
@@ -146,11 +146,8 @@ export async function gateCall(
 	if (answer.deny !== undefined) {
 		return answer;
 	}
-	const seen =
-		answer.text ??
-		(typeof answer.result === "string"
-			? answer.result
-			: (JSON.stringify(answer.result) ?? ""));
+	// Each string is scanned raw, because JSON would escape the line breaks a rule anchors on.
+	const seen = answer.text ?? stringsIn(answer.result).join("\n");
 	if (!answer.isError) {
 		await saw(hostOf($), state.walls.files, e.tool, e, seen);
 	}

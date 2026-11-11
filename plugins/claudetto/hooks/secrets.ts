@@ -109,6 +109,16 @@ export const redactWith = (
 export const redact = async (run: Run, text: string): Promise<string> =>
 	redactWith(text, await secretsIn(run, text));
 
+/** Every string inside `value`, in order. */
+export const stringsIn = (value: unknown): string[] => {
+	if (typeof value === "string") {
+		return [value];
+	}
+	return typeof value === "object" && value !== null
+		? Object.values(value).flatMap((item) => stringsIn(item))
+		: [];
+};
+
 /** Every string inside `value`, with each secret replaced. */
 export const redactAll = (
 	value: unknown,

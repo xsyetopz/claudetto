@@ -27,6 +27,15 @@ export const scanner = (on: On, secrets: readonly string[] = []): void => {
 	on("process.run", (_$, e, next) => scanned(e, secrets) ?? next(e));
 };
 
+/** A scanner that finds the first group of each match of `rule`, so a rule anchored at a line start matches as the real one does. */
+export const ruleScanner = (on: On, rule: RegExp): void => {
+	on("process.run", (_$, e, next) => {
+		const text = e.init?.stdin ?? "";
+		const found = [...text.matchAll(rule)].map((match) => match[1] ?? "");
+		return scanned(e, found) ?? next(e);
+	});
+};
+
 /** The gate's verdict on one Bash command. */
 export const bash = ($: Engine, command: string) =>
 	$.tool.check({ tool: "Bash", input: { command } });
