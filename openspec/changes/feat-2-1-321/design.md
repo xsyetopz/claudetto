@@ -381,6 +381,81 @@ A guard reads the machine's free memory share before each `Bash` and `Monitor` c
 - **The env file grows by one copy at each session start.** The same hook appends its lines with `>>` each time `SessionStart` fires. This session's file holds 12 copies, and each Bash command runs all of them: 58.6 ms against 11.8 ms for one copy (P39). The lines are idempotent, so only time is lost, about 4 ms per copy per command. The hook appends only when the file does not yet hold its `renice` line (task 1.10). No main spec covers this hook, so the task carries its own failing test and no delta.
 - **`just validate` reads less than the validator reports.** `claude plugin validate --strict --json` answers `success: false` for all three plugins because of one `version` warning each, and `ICON_MISSING` for `claudetto-openspec`. The recipe's filter passes them on purpose. This change leaves the recipe as it is and names the gap here.
 
+## Reports from 2.1.319 Sessions
+
+The person collected 31 reports from sessions that ran the installed build `82b714c5ec41` (2.1.319), and a 32nd came from the session that recorded them. Each report is a pasted excerpt, so it is evidence the person reports and not a measurement. Task group 9 probes each cause before any fix: a cause below is a hypothesis until its row in the Probe Record holds a command and a result. A report from another repository names that repository's defect only where this plugin could have prevented it.
+
+### The Reports
+
+| ID | What the report shows | Cause |
+|---|---|---|
+| R1 | "I was wrong last time when I said the monitor would stop on its own. It reads the file with `tail -F`, which keeps waiting" | C2 |
+| R2 | "my sandbox blocks the keychain that `gh` needs for its login", and the same reply drawn a second time with characters missing ("my sandbo gh needs", "I'llmove on") | C5, C3 |
+| R3 | "Error: No deferred tool marker found in the resumed session. Either the session was not deferred, the marker is stale (tool already ran), or it exceeds the tail-scan window." | C4 |
+| R4 | The session got `GH_TOKEN` from its launch command, the same error printed anyway, "the token lasts only for this" session, and the reply lost characters ("an internal Claude resume went ahead regardless.If it keeps") | C4, C5, C3 |
+| R5 | "The sandbox blocks writes to `.git/hooks`, so `git clone` failed." | C6 |
+| R6 | "Chrome wrote no screenshot or report inside the sandbox, which matches the earlier `Permission denied` failure" | C7 |
+| R7 | "The sandbox blocks writes to `.git` (`index.lock: Operation not permitted`), so this one git command runs outside it." | C6 |
+| R8 | "The sandbox denies creating `.vscode` (`EPERM: operation not permitted, mkdir`), so the adopt step reruns outside it." | C7 |
+| R9 | The person wrote "Now, are you going to monitor the behaviour? User will try the 2.4 ghz mode first", and the Bash call was denied: "The user's latest message asks or remarks and requests no work." | C1 |
+| R10 | "The sandbox blocks writes to `.git/index.lock` (\"Operation not permitted\"), so the git write commands run outside it." | C6 |
+| R11 | "You're right that the note was wrong: this session only ran `osascript` commands, and the sudo password was typed into the Terminal windows, never into this chat." The line ends "· summary". | C14, C15 |
+| R12 | "⚠ Large MCP response (~11.4k tokens), this can fill up context quickly" | C16 |
+| R13 | The loop guard denied a background loop, and the agent then started `mcp__claudetto__monitor` on `tail -n +1 -F … \| grep`, which answered "expires in 10m unless the source ends first" | C2 |
+| R14 | Two permission dialogs for a Heracles agent. The second reads "The gate failed: claudetto: `$.fs.exists`: `/\|Catalog/OrderedJSON` refused: a network location is not reached from here" for a `grep -v '///\|Catalog/OrderedJSON'`. The first shows only `f=openspec/changes/0-6-0…` and no reason. | C8, C9 |
+| R15 | "If you want, I'll read both lists and add the chosen libraries to `design.md` and `tasks.md`" | C10 |
+| R16 | "I also left two busy-wait loops (`until grep …; do :; done`) running earlier. They used a full CPU core each" | C13 |
+| R17 | The person pasted a previous session's report and ended "Find more ways to optimise and any bug you find you must fix", and the Bash call was denied: "The user remarked or asked; they did not request work." The pasted report says a test run held over 6 GB per file and the machine restarted. The paste shows lost characters, and the reply ends "· summary". | C1, C26, C3, C15 |
+| R18 | "`brew install hashlink` failed because the sandbox can't write to `/opt/homebrew`." | C7 |
+| R19 | "I misread the binary paths: `.build/debug` links to the same build as the app I launched, so pid 49166 and 39648 were my own fresh dev builds". The line ends "· summary". | C27, C15 |
+| R20 | "I installed it only into a temporary folder for the test, not into the project", and the person answered "nobody told you to put it in temp and leave it there" | C17 |
+| R21 | "The two \"uncommitted\" folders are git worktrees for the 1.2 and 3.1 workers", and the agent added `.claude/worktrees/` to `.gitignore` by hand. The line ends "· summary". | C18, C15 |
+| R22 | "The sandbox blocked the write to `.git/config` (\"Operation not permitted\"). I'm retrying outside the sandbox" | C6 |
+| R23 | A permission dialog for a Heracles agent: "`$.fs.exists`: `/\.git` refused: a network location is not reached from here" for a `grep -v "/\.git/"` | C8 |
+| R24 | "Permission for this command was denied by a built-in Claude Code safety check", and "The safety check blocked my cleanup command, because it built the folder path from a variable." | C19 |
+| R25 | "my commit script was supposed to stop on a failed test run, and it didn't, so `e7e1bb8` and `d22208d` were committed without a clean run" | C20 |
+| R26 | A `! ` command for the person stopped at "`ANTHROPIC_API_KEY` is not set", and the person answered "use the OAUTH token" and "that is a hazardous violation" | C21 |
+| R27 | "the sandbox refused to create the worktree's folder inside `.git`", and "the commit was blocked by the pre-commit hook, which lints every file on disk, including the 10.3 worker's unfinished" files | C6, C22 |
+| R28 | The person asked why "`\"$id\": \"https://opensad.invalid`" was made up for schemas. The reply ends "· summary". | C23, C15 |
+| R29 | "Not checked: the 20 held-out branch cases were not rerun with the new wording", and the person answered "this is disgusting laziness. keep going." | C11 |
+| R30 | "If you want it settled, paste the case and I will check.", "Reply \"fix the runner\" and I will make it.", and a popup that asked whether to fix the agent's own defect. The reply also says "No Budget line came with your last two messages", and it lost characters. | C10, C12, C24, C3 |
+| R31 | A `Write` to `/tmp/claude-501/probe-runner-fail/cases.jsonl` was denied because the folder has no `.created-by-claudetto` file | C25 |
+| R32 | This session, 2026-11-11: the message that listed R1 to R31 and ended "Every bug or gap must be resolved by you" was denied its first Bash call: "The user remarked or asked; they did not request work." | C1 |
+
+### The Causes, Each a Hypothesis
+
+| ID | Hypothesis | The probe that settles it | Task |
+|---|---|---|---|
+| C1 | The answer-first gate of `pin.ts` reads a message that holds a question or a paste and also asks for work as `question` or `remark`. | The three messages of R9, R17, and R32 as stored cases through the kind question of `decider/questions.ts` and through the installed build's reading | 9.1 |
+| C2 | `mcp__claudetto__monitor` promises an end "unless the source ends first", and a `tail -F` source never ends after its writer exits. | A writer that exits, watched by `tail -F \| grep` in `$TMPDIR`; then the tool's text and its `timeout_ms` path | 9.2 |
+| C3 | Something writes to the terminal while Claude Code draws a reply, so characters go missing. The plugin's own writers are suspects: `notify.ts`, the status line, and `$.ui.log`. | The transcript line of a garbled reply (clean there means the drawing is at fault), then each place the plugin writes to a terminal | 9.3 |
+| C4 | Claude Code prints the error when a resume names a deferred tool call that is not in the session's tail. A launch command the plugin or the agent gave the person triggers it. | The error text and its condition in the installed Claude Code, and each launch command the plugin's texts teach | 9.4 |
+| C5 | The sandbox denies reads of `~/Library/Keychains`, where `gh` keeps its token, and nothing gives a sandboxed `gh` its login. | `gh auth status` inside and outside the sandbox, and the `sandbox` spec's keys | 9.5 |
+| C6 | The built-in sandbox denies writes to `.git/hooks` and `.git/config`, and in some layouts to `.git` as a whole, so `git clone`, a commit, a config write, and `git worktree add` fail. | Each of the five git commands in a throwaway repository inside the sandbox, with the denied path from the violation text | 9.6 |
+| C7 | The sandbox denies writes to `.vscode`, `/opt/homebrew`, and where headless Chrome writes, and setup's sandbox group allows none of them. | `mkdir .vscode`, a `brew` dry run, and a headless Chrome screenshot inside the sandbox | 9.7 |
+| C8 | A guard reads a `grep` pattern as a path and calls `$.fs.exists` on it, and the engine throws for a path that starts with `/\`. The throw reaches the fault handler, which asks the person. | A lab test with both commands of R14 and R23 | 9.8 |
+| C9 | The first dialog of R14 came from a rule that asks for an assignment such as `f=openspec/…` followed by a loop. | The rule a lab run names for commands of that shape; the report cuts off the command, so the exact one stays unknown | 9.8 |
+| C10 | The Stop check passes a reply that offers work the agent can do ("If you want, I'll…", "Reply … and I will"). | The grading texts for an offer rule, then the three replies as stored cases | 9.9 |
+| C11 | The Stop check passes a reply that lists a check as not run when the agent could run it. | The same texts, then R29's reply as a stored case | 9.9 |
+| C12 | No guard reads the popup's question, so a question whether to fix the agent's own defect reaches the person. | The registration of `mcp__claudetto__ask-user-question` and its lab tests | 9.10 |
+| C13 | The loop guard denies a wait with no time limit and passes a loop whose body is `:`, which spins a core. | A lab test with `until grep -q x f; do :; done`, in the foreground and in the background | 9.11 |
+| C14 | A hook note states that a password or secret was typed into the chat when the text only came through `osascript` or a terminal. | A search of the hook texts for the note, then a lab test with R11's commands | 9.12 |
+| C15 | "· summary" is drawn by Claude Code or added by the plugin to text between tool calls. | A search of the plugin and of the installed Claude Code for the string | 9.13 |
+| C16 | A tool result of an MCP server passes 10,000 tokens, and `limits/bound-output.ts` cuts only some tools' output. | The list of tools the cut covers, and the size of each registered tool's largest result | 9.14 |
+| C17 | The root prompt's "Run checks where undoing is free, such as `/tmp`" leads the agent to install a dependency the project needs into a temp folder. | The prompt lines an install touches, and an eval case from R20 | 9.15 |
+| C18 | Setup's ignore block does not hold `.claude/worktrees/`, so agent worktrees show as uncommitted folders. | The fixed paths of the ignore block in `setup/` | 9.16 |
+| C19 | A built-in check of Claude Code denies `rm -rf` on a path built from a variable, and the marker text of `texts-gate.ts` teaches `d=$(mktemp -d …)`, which leads to that form. | The built-in check's condition, and the cleanup form the plugin's texts teach | 9.17 |
+| C20 | A command that runs tests and then commits can commit after a failure (`;`, a pipe to `tail`, or a script file with no `set -e`), and `gate/pipefail.ts` covers only some of these shapes. | A lab test per shape | 9.18 |
+| C21 | A tool in `tools/` or a text of the plugin asks for `ANTHROPIC_API_KEY` where the subscription login serves. | A search of `tools/` and the plugin for the variable; one use is known, `tools/handover-probe/probe.ts:19` | 9.19 |
+| C22 | Agents that commit in one working tree block each other at the pre-commit hook, and nothing sends a committing agent to its own worktree. | The delegation texts and guards for `isolation`, and `git worktree add` inside the sandbox (with C6) | 9.20 |
+| C23 | No rule or check stops an invented URL or identifier in a written file. | The root prompt and the Stop check for a rule on invented names, and an eval case from R28 | 9.21 |
+| C24 | The "Budget" line arrives only on a typed prompt, so after the person runs a `! ` command the agent has no weekly share to report. | Which event carries the line in `limits/budget.ts`, and whether a `! ` command fires it | 9.22 |
+| C25 | The temp-folder guard denies a `Write` into a new folder under the sandbox's own `$TMPDIR`, which the system prompt tells the agent to use, and the agent needs a Bash call first. | A lab test with R31's path, and what `$TMPDIR` holds in a sandboxed session | 9.23 |
+| C26 | The memory guard of decision 18 holds new work and does not stop one running command that grows past the machine's memory. | The guard's lab tests against a single growing process, and what macOS offers to cap a child's memory | 9.24 |
+| C27 | Nothing shows the agent which processes its own commands started, so it took its own builds for another's. | What `gate/processes.ts` records and whether a denial or a tool shows it | 9.25 |
+
+A hypothesis the probe refutes gets a new one in its Probe Record row, and the task stays open until the report is explained.
+
 ## What Stays a Hypothesis
 
 Each of these needs a paid call or the person's key, so no free probe can settle it. The person's run in a plain shell settled one more (P37).
