@@ -56,10 +56,15 @@ test("a request is saved and its tokens are added to its model's total", async (
 		maxTokens: 8,
 	});
 	expect(result.isAnswered).toBe(true);
-	expect(written).toEqual(["/out/c1.haiku.1.json"]);
+	expect(written).toEqual([
+		"/out/c1.haiku.1.json",
+		"/out/c1.haiku.1.response.json",
+	]);
 	expect(ctx.tokens.get(MODEL)?.output_tokens).toBe(5);
 	expect(
 		finalLine({
+			title: "t",
+			extra: [],
 			roads: new Map(),
 			calls: [],
 			jev: ctx.jev,

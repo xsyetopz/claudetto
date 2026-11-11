@@ -81,12 +81,31 @@ const worstCase = (price: Price, body: string, maxTokens: number): number =>
 		output_tokens: maxTokens,
 	});
 
-async function keep($: Engine, ctx: Ctx, label: string, body: string) {
+/** Saves a request and returns the function that saves its response beside it. */
+async function keep(
+	$: Engine,
+	ctx: Ctx,
+	label: string,
+	body: string,
+): Promise<(response: string) => Promise<void>> {
 	ctx.sent += 1;
-	await $.fs.write(
-		`${ctx.outDir}/${ctx.caseId}.${label}.${ctx.sent}.json`,
-		body,
-	);
+	const stem = `${ctx.outDir}/${ctx.caseId}.${label}.${ctx.sent}`;
+	await $.fs.write(`${stem}.json`, body);
+	return (response) => $.fs.write(`${stem}.response.json`, response);
+}
+
+/** Runs `one` on each case in turn, so each request is checked against the cap before it is sent, and stops when the cap stops the run. */
+export async function eachCase<T>(
+	ctx: Pick<Ctx, "stopped">,
+	cases: readonly T[],
+	one: (c: T) => Promise<void>,
+): Promise<void> {
+	const [c, ...rest] = cases;
+	if (c === undefined || ctx.stopped) {
+		return;
+	}
+	await one(c);
+	await eachCase(ctx, rest, one);
 }
 
 const addTokens = (ctx: Ctx, model: string, usage: Usage): void => {
@@ -114,9 +133,10 @@ async function complete(
 		ctx.stopped = true;
 		return { isAnswered: false, reason: "aborted", usage: noUsage() };
 	}
-	await keep($, ctx, ctx.label, body);
+	const saveResponse = await keep($, ctx, ctx.label, body);
 	const started = Date.now();
 	const result = await $.model.complete({ ...request, timeoutMs: WAIT_MS });
+	await saveResponse(JSON.stringify(result));
 	ctx.usd += costOf(price, result.usage);
 	addTokens(ctx, request.model, result.usage);
 	ctx.calls.push({
@@ -171,12 +191,13 @@ const observeJev = (
 function jevFetch($: Engine, ctx: Ctx): Host["http"]["fetch"] {
 	return async (url, init) => {
 		const body = typeof init?.body === "string" ? init.body : "";
-		await keep($, ctx, "decider-jev", body);
+		const saveResponse = await keep($, ctx, "decider-jev", body);
 		const res = await $.http.fetch(url.replace(JEV_ORIGIN, ctx.typesafeUrl), {
 			...init,
 			method: init?.method ?? "POST",
 			body,
 		});
+		await saveResponse(JSON.stringify({ status: res.status, text: res.text }));
 		observeJev(ctx, body, res.status, res.text);
 		return res;
 	};

@@ -31,9 +31,12 @@ export interface JevStats {
 
 /** The numbers a run collected. */
 export interface Findings {
+	readonly title: string;
+	/** Markdown lines a run adds after its roads. */
+	readonly extra: readonly string[];
 	readonly roads: ReadonlyMap<
 		string,
-		{ scope: readonly string[]; rows: Row[] }
+		{ scope: readonly string[] | undefined; rows: Row[] }
 	>;
 	readonly calls: readonly Call[];
 	readonly jev: JevStats;
@@ -56,12 +59,10 @@ const sameSet = (a: readonly string[], b: readonly string[]): boolean =>
 	a.length === b.length && a.every((code, i) => code === b[i]);
 
 const exactTable = (
-	scope: readonly string[],
+	scope: readonly string[] | undefined,
 	rows: readonly Row[],
 ): string[] => {
-	const missed = rows.filter(
-		(row) => !sameSet(inScope(row.expected, scope), inScope(row.found, scope)),
-	);
+	const missed = rows.filter((row) => !matches(scope, row));
 	return [
 		`Exact match: ${rows.length - missed.length} of ${rows.length} (${share(rows.length - missed.length, rows.length)}).`,
 		`Missed ids: ${missed.map((row) => row.id).join(", ") || "none"}.`,
@@ -82,17 +83,27 @@ const codeTable = (
 	}),
 ];
 
+/** Whether a row's found codes equal its expected codes within `scope`; with no scope, all codes count. */
+export const matches = (
+	scope: readonly string[] | undefined,
+	row: Row,
+): boolean =>
+	scope === undefined
+		? sameSet(row.expected.toSorted(), row.found.toSorted())
+		: sameSet(inScope(row.expected, scope), inScope(row.found, scope));
+
 const roadSection = (
 	name: string,
-	road: { scope: readonly string[]; rows: Row[] },
+	road: { scope: readonly string[] | undefined; rows: Row[] },
 ): string[] => [
 	`## ${name}`,
 	"",
 	`Cases scored: ${road.rows.length}.`,
 	...exactTable(road.scope, road.rows),
 	"",
-	...codeTable(road.scope, road.rows),
-	"",
+	...(road.scope === undefined
+		? []
+		: [...codeTable(road.scope, road.rows), ""]),
 ];
 
 const largest = (calls: readonly Call[], label: string): string => {
@@ -138,7 +149,7 @@ const jevSection = (jev: JevStats): string[] => [
 /** The Markdown summary of a run. */
 export const summary = (f: Findings): string =>
 	[
-		"# Claim-check run",
+		`# ${f.title}`,
 		"",
 		f.stopped
 			? "The run stopped before a request that could pass the cap."
@@ -150,11 +161,12 @@ export const summary = (f: Findings): string =>
 		"## Usage",
 		"",
 		cacheLine(f.calls),
-		...["haiku", "sonnet", "decider-fallback"].map((label) =>
+		...[...new Set(f.calls.map((call) => call.label))].map((label) =>
 			largest(f.calls, label),
 		),
 		"",
 		...jevSection(f.jev),
+		...f.extra,
 	].join("\n");
 
 const tokenLine = (tokens: ReadonlyMap<string, Usage>): string =>

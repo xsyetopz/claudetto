@@ -17,57 +17,18 @@ import {
 	GRADE_FAULTS,
 	type GradeFault,
 } from "../../../plugins/claudetto/hooks/texts-grade.ts";
-import {
-	fail,
-	field,
-	numberOf,
-	type Price,
-	pricesOf,
-} from "../../claim-check-prices.ts";
-import {
-	finalLine,
-	type Findings,
-	type Row,
-	summary,
-} from "../../claim-check-report.ts";
-import { type Ctx, type Engine, host, newCtx } from "./client.ts";
+import { field, lines, strings } from "../../claim-check-prices.ts";
+import type { Findings, Row } from "../../claim-check-report.ts";
+import { type Ctx, eachCase, type Engine, host } from "./client.ts";
+import type { Scored } from "./scored.ts";
 
 type Roads = Findings["roads"];
-
-/** What the entry hands the hook: the cases, the prices, the cap, and where each file goes. */
-export interface Job {
-	readonly cases: string;
-	readonly prices: Readonly<Record<string, Price>>;
-	readonly maxUsd: number;
-	readonly typesafeUrl: string;
-	readonly outDir: string;
-	readonly summaryPath: string;
-	readonly finalPath: string;
-}
-
-/** The job a file holds. */
-export function jobOf(text: string): Job {
-	const raw: unknown = JSON.parse(text);
-	return {
-		cases: String(field(raw, "cases")),
-		prices: pricesOf(field(raw, "prices"), "The job"),
-		maxUsd: numberOf(field(raw, "maxUsd")),
-		typesafeUrl: String(field(raw, "typesafeUrl")),
-		outDir: String(field(raw, "outDir")),
-		summaryPath: String(field(raw, "summaryPath")),
-		finalPath: String(field(raw, "finalPath")),
-	};
-}
 
 const isFault = (code: unknown): code is GradeFault =>
 	typeof code === "string" && Object.hasOwn(GRADE_FAULTS, code);
 
-const strings = (value: unknown): string[] =>
-	Array.isArray(value) && value.every((item) => typeof item === "string")
-		? value
-		: fail("A case field is not a list of strings.");
-
-const asCase = (line: string) => {
+/** The case a JSONL line holds. */
+export const asCase = (line: string) => {
 	const raw: unknown = JSON.parse(line);
 	const input = field(raw, "input");
 	const turn = {
@@ -130,7 +91,8 @@ async function deciderRoad(
 	return faultsOf(c.codes, answers);
 }
 
-const ALL = Object.keys(GRADE_FAULTS);
+/** Every fault the claim check can name. */
+export const ALL = Object.keys(GRADE_FAULTS);
 const emptyRoads = (): Roads =>
 	new Map([
 		["haiku", { scope: ALL.filter((code) => code !== "unseen"), rows: [] }],
@@ -177,45 +139,18 @@ async function scoreCase(
 	add(into, "decider", row(decider));
 }
 
-// One case at a time, so each request is checked against the cap before it is sent.
-async function scoreAll(
+/** Scores each claim-check case through today's Haiku and Sonnet prompts and through the Decider. */
+export async function scoreClaimCheck(
 	$: Engine,
 	ctx: Ctx,
-	cases: readonly Case[],
-	into: Roads,
-	unread: { n: number },
-): Promise<void> {
-	const [c, ...rest] = cases;
-	if (c === undefined || ctx.stopped) {
-		return;
-	}
-	await scoreCase($, ctx, c, into, unread);
-	await scoreAll($, ctx, rest, into, unread);
-}
-
-/** Scores every case of the job, writes the summary and the final-line file, and returns. */
-export async function runJob($: Engine, job: Job): Promise<void> {
-	const ctx = newCtx(job);
-	const cases = job.cases
-		.trim()
-		.split("\n")
-		.map((line) => asCase(line));
+	text: string,
+): Promise<Scored> {
 	const roads = emptyRoads();
 	const unread = { n: 0 };
-	await scoreAll($, ctx, cases, roads, unread);
-	const findings: Findings = {
-		roads,
-		calls: ctx.calls,
-		jev: ctx.jev,
-		tokens: ctx.tokens,
-		usd: ctx.usd,
-		stopped: ctx.stopped,
-		unread: unread.n,
-		logLines: ctx.logLines,
-	};
-	await $.fs.write(job.summaryPath, summary(findings));
-	await $.fs.write(
-		job.finalPath,
-		JSON.stringify({ line: finalLine(findings), code: ctx.stopped ? 2 : 0 }),
+	await eachCase(
+		ctx,
+		lines(text).map((line) => asCase(line)),
+		(c) => scoreCase($, ctx, c, roads, unread),
 	);
+	return { title: "Claim-check run", roads, unread: unread.n, extra: [] };
 }

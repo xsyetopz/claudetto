@@ -77,6 +77,21 @@ export const unsettled = (
 	names: readonly string[] = Object.keys(set.questions),
 ): Answers => Object.fromEntries(names.map((name) => [name, UNSETTLED]));
 
+/** The answers `text`, a fallback reply, gives to `names`; none when it does not parse. */
+export const readReply = (
+	set: QuestionSet,
+	state: State,
+	names: readonly string[],
+	text: string,
+): Answers | undefined => {
+	const given = parsed(text);
+	return given === undefined
+		? undefined
+		: Object.fromEntries(
+				names.map((name) => [name, answerOf(set, state, name, given[name])]),
+			);
+};
+
 /**
  * Asks Haiku the questions `names` of `set` in one call, and keeps a `yes` or an option only when its evidence is words of the state.
  * A reply that is not answered or does not parse leaves every asked question `unsettled`; nothing is resent.
@@ -103,12 +118,10 @@ export async function fallback(
 		$.ui.log(`The fallback model gave no answer (${reply.reason}).`);
 		return unsettled(set, names);
 	}
-	const given = parsed(reply.text);
-	if (given === undefined) {
+	const read = readReply(set, state, names, reply.text);
+	if (read === undefined) {
 		$.ui.log("The fallback model's reply did not parse as a JSON object.");
 		return unsettled(set, names);
 	}
-	return Object.fromEntries(
-		names.map((name) => [name, answerOf(set, state, name, given[name])]),
-	);
+	return read;
 }

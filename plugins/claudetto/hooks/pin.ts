@@ -8,6 +8,7 @@ import type {
 	CheckEvent,
 	CheckNext,
 } from "./chain.ts";
+import type { Host } from "./decider/questions.ts";
 import { deny } from "./gate/verdict.ts";
 import { breaks } from "./pin-rules.ts";
 import {
@@ -32,7 +33,8 @@ const RULES: ReadonlySet<unknown> = new Set<PinConstraint["rule"]>([
 	"no-questions",
 	"none",
 ]);
-const isRule = (x: unknown): x is PinConstraint["rule"] => RULES.has(x);
+/** Whether `x` names a rule of the ledger. */
+export const isRule = (x: unknown): x is PinConstraint["rule"] => RULES.has(x);
 
 const flat = (s: string) => s.toLowerCase().replaceAll(/\s+/gu, " ").trim();
 
@@ -70,7 +72,8 @@ const KINDS: ReadonlySet<unknown> = new Set<PinKind>([
 ]);
 const isKind = (x: unknown): x is PinKind => KINDS.has(x);
 
-interface Extraction {
+/** What the extraction read from a message: the ledger entries and the kind of message. */
+export interface Extraction {
 	constraints: PinConstraint[];
 	kind: PinKind;
 }
@@ -78,7 +81,7 @@ interface Extraction {
 const parseLedger = (
 	text: string,
 	said: string[],
-	$: EngineInterface,
+	$: Pick<Host, "ui">,
 ): Extraction | undefined => {
 	try {
 		const json: unknown = JSON.parse(
@@ -103,12 +106,13 @@ const personTexts = async ($: EngineInterface): Promise<string[]> => {
 	return messages.filter((item) => isPersonMessage(item)).map((m) => m.text);
 };
 
-const extractLedger = async (
-	$: EngineInterface,
-	text: string,
+/** Today's extraction: one Haiku call over the person's `history`, which holds `text`, and the `previous` entries. */
+export const extractFrom = async (
+	$: Pick<Host, "model" | "ui">,
+	history: string[],
 	previous: PinConstraint[],
+	text: string,
 ): Promise<Extraction | undefined> => {
-	const history = await personTexts($);
 	const r = await $.model.complete({
 		model: "claude-haiku-5-5",
 		effort: "high",
@@ -118,6 +122,13 @@ const extractLedger = async (
 	});
 	return r.isAnswered ? parseLedger(r.text, [...history, text], $) : undefined;
 };
+
+const extractLedger = async (
+	$: EngineInterface,
+	text: string,
+	previous: PinConstraint[],
+): Promise<Extraction | undefined> =>
+	extractFrom($, await personTexts($), previous, text);
 
 /** The repo root as the cwd spells it: `cdup` is `git rev-parse --show-cdup`, one `../` per level up. */
 export const rootOf = (cwd: string, cdup: string): string =>
