@@ -8,7 +8,7 @@ import {
 } from "./questions.ts";
 
 const MODEL = "claude-haiku-5-5";
-const MAX_TOKENS = 1024;
+const MAX_TOKENS = 1715;
 const TIMEOUT_MS = 20_000;
 
 const FIXED = `Answer each question about the state. The state arrives in named tags, one tag per field, and the questions follow it.

@@ -72,7 +72,7 @@ export async function gradeOnce(
 				tasks,
 				turn.failed,
 			),
-			maxTokens: 300,
+			maxTokens: 1598,
 			timeoutMs: 15_000,
 		})
 		.catch((error: unknown) => {
