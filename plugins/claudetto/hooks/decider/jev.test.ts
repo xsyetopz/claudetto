@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { postJev } from "./jev.ts";
+import { JevStatusError, postJev } from "./jev.ts";
 
 const reply = (status: number, text = "{}") => ({
 	status,
@@ -82,4 +82,25 @@ test("a request that outlasts 5000 ms ends the try with no second request", asyn
 	expect(waits).toEqual([5000]);
 	expect(tries).toBe(1);
 	expect(failure).toBeInstanceOf(Error);
+});
+
+test("a refusal carries its status and its body, and one try stops at the first 429", async () => {
+	let tries = 0;
+
+	const failure = await postJev(
+		"k",
+		{},
+		{
+			fetch: () => {
+				tries += 1;
+				return Promise.resolve(reply(429, "slow down"));
+			},
+			sleep: () => Promise.resolve(0),
+		},
+		1,
+	).catch((error: unknown) => error);
+
+	expect(tries).toBe(1);
+	expect(failure).toBeInstanceOf(JevStatusError);
+	expect(failure).toMatchObject({ status: 429, body: "slow down" });
 });

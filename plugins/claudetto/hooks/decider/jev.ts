@@ -11,6 +11,18 @@ const BACKOFF_MS = 1000;
 const TRY_DEADLINE_MS = 5000;
 const ERROR_BODY_MAX = 200;
 
+/** A reply that was not 2xx, with the status and body a caller sorts it by. */
+export class JevStatusError extends Error {
+	readonly status: number;
+	readonly body: string;
+
+	constructor(status: number, body: string) {
+		super(`TypeSafe API ${status}: ${body.slice(0, ERROR_BODY_MAX)}`);
+		this.status = status;
+		this.body = body;
+	}
+}
+
 interface JevReply {
 	readonly status: number;
 	readonly ok: boolean;
@@ -52,11 +64,12 @@ const withDeadline = async (
 	}
 };
 
-/** Only a 429 or 529 is retried, with doubling backoff (https://docs.typesafe.ai/api/errors.md); a missed deadline is not. */
+/** Only a 429 or 529 is retried, up to `tries` times, with doubling backoff (https://docs.typesafe.ai/api/errors.md); a missed deadline is not. */
 export const postJev = (
 	key: string,
 	body: object,
 	transport: JevTransport,
+	tries = TRIES,
 ): Promise<unknown> => {
 	const init = {
 		method: "POST",
@@ -75,13 +88,11 @@ export const postJev = (
 			const parsed: unknown = JSON.parse(res.text);
 			return isRecord(parsed) ? parsed["answers"] : undefined;
 		}
-		if ((res.status === 429 || res.status === 529) && i < TRIES - 1) {
+		if ((res.status === 429 || res.status === 529) && i < tries - 1) {
 			await transport.sleep(BACKOFF_MS * 2 ** i);
 			return attempt(i + 1);
 		}
-		throw new Error(
-			`TypeSafe API ${res.status}: ${res.text.slice(0, ERROR_BODY_MAX)}`,
-		);
+		throw new JevStatusError(res.status, res.text);
 	};
 	return attempt(0);
 };
