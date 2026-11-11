@@ -1,5 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
+import type { PinConstraint, PinKind } from "../texts-handoff.ts";
+
 /** One judgment about the state that has a yes or a no. */
 export interface Noul {
 	readonly type: "noul";
@@ -55,6 +57,77 @@ export const BRANCH_GATE: QuestionSet = {
 		},
 	},
 };
+
+/** The rules a sentence can state and the ledger enforces. */
+export const RULE_CRITERIA: Readonly<
+	Record<Exclude<PinConstraint["rule"], "none">, string>
+> = {
+	"read-only":
+		"The sentence forbids changing files, so the assistant may only read.",
+	"no-commit": "The sentence forbids making a git commit.",
+	"no-push": "The sentence forbids pushing to a remote.",
+	"only-files":
+		"The sentence limits edits to files it names by path; a sentence that names no path does not fit.",
+	"no-questions": "The sentence forbids asking the user questions.",
+};
+
+/** The kinds a message of the person can be. */
+export const KIND_CRITERIA: Readonly<Record<PinKind, string>> = {
+	task: "The message asks the assistant to do work.",
+	question: "The message asks the assistant for information.",
+	remark: "The message states a fact or an opinion and asks for nothing.",
+	dispute: "The message doubts or contradicts what the assistant said or did.",
+};
+
+const perSentence = (n: number): [string, Noul | Choice][] =>
+	Array.from({ length: n }, (_, i): [string, Noul | Choice][] => [
+		[
+			`restricts_${i + 1}`,
+			{
+				type: "noul",
+				instructions: `Does sentence ${i + 1} in \`sentences\` limit what the assistant may do from now on?`,
+			},
+		],
+		[
+			`rule_${i + 1}`,
+			{
+				type: "choice",
+				instructions: `Which enforced rule does sentence ${i + 1} in \`sentences\` state?`,
+				criteria: RULE_CRITERIA,
+			},
+		],
+	]).flat();
+
+const perEntry = (n: number): [string, Noul][] =>
+	Array.from({ length: n }, (_, j): [string, Noul] => [
+		`lifts_${j + 1}`,
+		{
+			type: "noul",
+			instructions: `Does \`message\` allow what entry ${j + 1} in \`entries\` forbids?`,
+		},
+	]);
+
+/** The constraint ledger's judgments: a `restricts` and a `rule` question per sentence, `kind`, and a `lifts` question per entry. */
+export const ledgerQuestions = (
+	sentences: number,
+	entries: number,
+): QuestionSet => ({
+	...THRESHOLDS,
+	escalate: true,
+	questions: Object.fromEntries([
+		...perSentence(sentences),
+		[
+			"kind",
+			{
+				type: "choice",
+				instructions:
+					"Is `message` a task, a question, a remark, or a dispute?",
+				criteria: KIND_CRITERIA,
+			},
+		],
+		...perEntry(entries),
+	]),
+});
 
 /** What the Decider uses of `$`, so a test passes plain functions. */
 export interface Host {
