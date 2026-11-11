@@ -19,13 +19,13 @@ format-check:
 typecheck:
     bun check
 
-# Run oxlint. The base justfile lints Markdown.
+# Run oxlint, one type-aware run at a time on the machine. The base justfile lints Markdown.
 lint:
-    bun run oxlint
+    bun run typescript-bedrock lint
 
 # Apply oxlint's fixes.
 lint-fix:
-    bun run oxlint --fix
+    bun run typescript-bedrock lint --fix
 
 # Run the tests.
 test:
