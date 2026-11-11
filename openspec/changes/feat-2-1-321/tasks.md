@@ -59,11 +59,11 @@ Each slice is one commit, with its failing test first where it changes behavior.
 ## 6. Sites, Each Only After Its Check in Group 5 Passes
 
 - [ ] 6.1 Branch gate: replace `gate/asked.ts` with the Noul and its table, and delete the three patterns and their tests. Word the Noul to read the person's latest word on the branch and to count an instruction, not a question, because a false yes allows a delete nobody asked for (P68, P69). Check it on the tuning cases, and show no false yes on the retraction and question cases.
-- [ ] 6.2 Claim check: delete `plugins/claudetto/hooks/decider/claim-check.ts`, its question set and thresholds, and every test or mock that names them, because decision 9 keeps today's grading.
-- [ ] 6.3 Claim check: delete the claim-check runner and tuner in `tools/` (`decider-claim-check.ts`, `claim-check-tune.ts`, and the claim-check scoring in `tools/claim-check-plugin/`) with their tests. Keep what the ledger and branch-gate runners still use.
-- [ ] 6.4 Ledger: write the sentence split with `Intl.Segmenter`, the cap that 5.4 set, the question set, and the table of decision 10, with the first call of a process covering every earlier message.
-- [ ] 6.5 Ledger: replace the extraction prompt, its parser, and the quote check with the `settle` call, and delete them with their tests.
-- [ ] 6.6 `decide` tool: point it at the moved client, keep its three tries and its hand-back text, and add the scenario "The Removed Option".
+- [x] 6.2 Claim check: delete `plugins/claudetto/hooks/decider/claim-check.ts`, its question set and thresholds, and every test or mock that names them, because decision 9 keeps today's grading.
+- [x] 6.3 Claim check: delete the claim-check runner and tuner in `tools/` (`decider-claim-check.ts`, `claim-check-tune.ts`, and the claim-check scoring in `tools/claim-check-plugin/`) with their tests. Keep what the ledger and branch-gate runners still use.
+- [x] 6.4 Ledger: write the sentence split with `Intl.Segmenter`, the cap that 5.4 set, the question set, and the table of decision 10, with the first call of a process covering every earlier message.
+- [x] 6.5 Ledger: replace the extraction prompt, its parser, and the quote check with the `settle` call, and delete them with their tests.
+- [x] 6.6 `decide` tool: point it at the moved client, keep its three tries and its hand-back text, and add the scenario "The Removed Option".
 
 ## 7. Agent-Seen Text
 
@@ -76,7 +76,7 @@ Each slice is one commit, with its failing test first where it changes behavior.
 
 ## 8. Finish
 
-- [ ] 8.1 Update `README.md` (what a key sends, where it is read, and that a sandboxed command keeps niceness 0 because the sandbox refuses `renice`), `.env.example`, and `CHANGELOG.md` (the breaking changes, and the three numbers of 1.1 before and after, each with its command).
-- [ ] 8.2 Run `just check` and `just verify`, and fix each failure at its cause.
-- [ ] 8.3 Call the tool with `{action:"validate", change:"feat-2-1-321"}` and fix every issue.
+- [x] 8.1 Update `README.md` (what a key sends, where it is read, and that a sandboxed command keeps niceness 0 because the sandbox refuses `renice`), `.env.example`, and `CHANGELOG.md` (the breaking changes, and the three numbers of 1.1 before and after, each with its command).
+- [x] 8.2 Run `just check` and `just verify`, and fix each failure at its cause.
+- [x] 8.3 Call the tool with `{action:"validate", change:"feat-2-1-321"}` and fix every issue.
 - [x] 8.4 Write a failing lab test in `plugins/claudetto-openspec/hooks`: a change whose MODIFIED requirement grows from under 500 characters in the main spec to 501 validates with no warning today (P36). Then make the change check warn in that case and only in that case, as the `lean-openspec` delta requires. Check: both scenarios of the delta pass, the ported upstream cases still pass, and this change still validates.

@@ -9,6 +9,9 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- One Decider answers each typed question the hooks ask. With `TYPESAFE_API_KEY` set, Jev (`jev-1.14.0`) answers first; `claude-haiku-5-5` at `high` effort answers when there is no key, when Jev fails or refuses the key, and for a ledger question Jev leaves unsettled. A `yes` from Haiku counts only with evidence that is words of the text it was given.
+- Below `memoryFreeMinPercent` of free memory (default 20, `0` turns it off), a new `Bash` or `Monitor` command or subagent is refused until the agent's own runs end, because many lint runs at once froze the machine.
+- The `openspec` change check warns when a MODIFIED requirement grows from under 500 characters to over 500, so a change that validates no longer turns a main spec invalid at its archive.
 - A subagent that runs past `agentMaxMinutes` (default 15) has each further tool call refused and is told to report and end; `0` turns the limit off.
 - The gate denies a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that runs after a pipe, unless an earlier `set -o pipefail` keeps the exit code, because a pipe returns its last command's exit code and a failing check would read as a pass.
 - The gate denies `bun fmt` with no path or with `.`, and `prettier` or `biome` with `--write` over the whole repository, because these rewrite files outside the task. `bun fmt` with paths, `--check`, `--staged`, `--changed`, or `--stdin-filepath` still runs.
@@ -34,6 +37,17 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- **Breaking:** claudetto reads the TypeSafe key only from `TYPESAFE_API_KEY`, in the shell that launches Claude Code or in the `env` block of the settings. The `typesafeApiKey` option is gone, so an install that set it must set the variable. A project `.env` file is not read.
+- **Breaking:** with a key, the constraint ledger and the branch gate send your messages to `api.typesafe.ai`, redacted by the secret scan first. Before, only the `decide` tool reached that host. Without a key, no request reaches it.
+- **Breaking:** each plugin runs its guards in one `tool.check` hook and one `tool.call` hook. A guard that throws in `tool.check` asks you, and one that throws in `tool.call` refuses the call. Before, 2 of the 25 gating hooks caught a fault, and a guard that threw without a `.catch` let the call through.
+- The constraint ledger asks the Decider about each sentence of your message, and each entry is one of your sentences, word for word. Before, Haiku wrote the whole ledger with a quote per entry. A message of more than 41 sentences is read by its first 20 and its last 21. The first prompt after a resume reads your earlier messages too.
+- The branch gate asks the Decider whether you told the agent to delete the branch, in place of three regular expressions. Only a `yes` allows the delete; a `no`, an unsettled answer, and a Decider that fails all leave the gate asking you.
+- Every caught fault is logged with its cause. The `catch` sites that bind no error fell from 64 of 92 to 1 of 90, and the caller of the one that stays logs it (`rg -U --count-matches --no-filename -g '*.ts' -g '!*.test.ts' -g '!*.mock.ts' -g '!*.spec.ts' 'catch \{|\.catch\(\s*(async\s*)?\(\s*\)' plugins/*/hooks`, summed).
+- The clone gate passes: 19 clones with 2 new ones (193 of 43,099 lines, 0.45%) became 17 with none new (179 of 46,067 lines, 0.39%) (`just clones`).
+- The source of `plugins/claudetto/hooks` grew from 9,985 to 10,947 lines, with 542 of them in `hooks/decider/` (`find plugins/claudetto/hooks -name '*.ts' ! -name '*.test.ts' ! -name '*.mock.ts' ! -name '*.spec.ts' ! -path '*rules.generated*' -print0 | xargs -0 cat | wc -l`).
+- The installed `claudetto-openspec` plugin shrank from 2,394,380 to 108,922 bytes, because its Bun-run specs and fixtures moved to `tests/`.
+- Every description the model sees fits 200 characters, where 18 of 59 did not, and every model call names its model, its effort, and its `maxTokens`.
+- The session-start hook adds its lines to the env file once. Before, each start added a copy, and every `Bash` command ran them all.
 - `claudetto-you-should-know` checks before each main-loop tool call that can change something, in place of every sixth step. The call waits for the check. When the check has a note, the call is stopped, and the agent brings the note to you before it acts. Reads, searches, and questions to you run with no check.
 - Four prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
 - `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone. Any other command the sandbox blocks, such as `claude -p` reading its login from the Keychain, can retry outside the sandbox. Auto mode's classifier or your approval decides each retry, so the agent runs the command itself and no longer hands it to you.
@@ -44,7 +58,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The plugin manifests no longer pin a `version`, so `claude plugin update` and auto-update pick up each commit on `main`. The pinned `2.1.319` had kept installs on their cached copy. The release tags each plugin with the version in `package.json`.
 - The subagent cache TTL is set once, in `subagentPromptCacheTtl`, in place of `cacheTtl` in each agent file.
 - The status line measures context against the compaction window, paints with the Claude Code theme's colours, and flows its items into up to four rows.
-- The constraint ledger keeps a constraint only with the person's quoted words, and lifts it when the person allows it.
+- The constraint ledger lifts a constraint when the person allows it.
 - Each question for the user goes through the popup only.
 - A handoff dates its git state, and the read-back checks it again.
 - The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
@@ -53,6 +67,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- The secret scan reads each string of a structured tool result as raw text, so a secret after a line break inside a result object is redacted.
 - The claim check counts a popup answer as the person's words.
 - Hygiene finds old build folders in other checkouts again: it walks each folder in Mole's `purge_paths` besides the project, and never enters `~/.claude/projects` or `~/.claude/plugins`. Before, it walked only the project, whose own checkout always stays, so it found nothing outside a nested checkout.
 - The answer-first gate no longer denies the first tool call after a compaction, because it no longer reads the summary as an unanswered remark.
@@ -69,6 +84,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Removed
 
+- The `typesafeApiKey` option, in favor of the `TYPESAFE_API_KEY` variable.
+- The ledger's Haiku extraction prompt, its parser, and its quote check, which the Decider's per-sentence read replaces.
 - The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
 - The `fold` hook is gone, so grouped tool results keep Claude Code's own fold.
 

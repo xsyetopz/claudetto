@@ -29,7 +29,21 @@ Each plugin's options are its `userConfig` fields, set in `/plugin` → the plug
 
 ## TypeSafe Key
 
-claudetto reads `TYPESAFE_API_KEY` from the environment of the shell that launched Claude Code, or from the `env` block of your Claude Code settings. It does not read a project `.env` file, so a key that sits only there is not seen. With a key, claudetto registers the `decide` tool, which asks Jev, TypeSafe's decision model, to settle a choice or a yes/no question. Without one, `decide` is not registered, and the Decider answers with `claude-haiku-5-5`.
+claudetto reads `TYPESAFE_API_KEY` from the environment of the shell that launched Claude Code, or from the `env` block of your Claude Code settings. It does not read a project `.env` file, so a key that sits only there is not seen.
+
+With a key, claudetto sends three kinds of request to `api.typesafe.ai`, where Jev, TypeSafe's decision model, answers typed questions:
+
+- **Each prompt you type** sends the sentences of your message and the text of each constraint the ledger holds. The first prompt after a start or a resume also sends the sentences of your earlier messages. A message of more than 41 sentences sends its first 20 and its last 21.
+- **A delete of a branch the session did not make** sends your messages and the branch name.
+- **A call of the `decide` tool** sends the question the agent wrote and each option's label and description, and nothing else from the session.
+
+The first two hold only what you wrote, never agent text or a tool result, and the secret scan redacts them before they leave. When Jev fails or refuses the key, `claude-haiku-5-5` answers the same questions, and it also answers a ledger question that Jev leaves unsettled.
+
+Without a key, no request reaches that host: `decide` is not registered, and `claude-haiku-5-5` answers for the ledger and the branch gate.
+
+## Process Priority
+
+Each `Bash` command runs at niceness 10, so your own apps win the CPU, and one core stays out of `cargo` and Go builds. A sandboxed command keeps niceness 0, because the Claude Code sandbox refuses `renice`.
 
 ## License
 
