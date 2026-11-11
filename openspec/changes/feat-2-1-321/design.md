@@ -383,7 +383,7 @@ A guard reads the machine's free memory share before each `Bash` and `Monitor` c
 
 ## Reports from 2.1.319 Sessions
 
-The person collected 31 reports from sessions that ran the installed build `82b714c5ec41` (2.1.319), and a 32nd came from the session that recorded them. Each report is a pasted excerpt, so it is evidence the person reports and not a measurement. Task group 9 probes each cause before any fix: a cause below is a hypothesis until its row in the Probe Record holds a command and a result. A report from another repository names that repository's defect only where this plugin could have prevented it.
+The person collected 31 reports from sessions that ran the installed build `82b714c5ec41` (2.1.319), a 32nd came from the session that recorded them, and the person added R33 to R49 the same day. Each report is a pasted excerpt, so it is evidence the person reports and not a measurement. Task group 9 probes each cause before any fix: a cause below is a hypothesis until its row in the Probe Record holds a command and a result. A report from another repository names that repository's defect only where this plugin could have prevented it.
 
 ### The Reports
 
@@ -421,6 +421,23 @@ The person collected 31 reports from sessions that ran the installed build `82b7
 | R30 | "If you want it settled, paste the case and I will check.", "Reply \"fix the runner\" and I will make it.", and a popup that asked whether to fix the agent's own defect. The reply also says "No Budget line came with your last two messages", and it lost characters. | C10, C12, C24, C3 |
 | R31 | A `Write` to `/tmp/claude-501/probe-runner-fail/cases.jsonl` was denied because the folder has no `.created-by-claudetto` file | C25 |
 | R32 | This session, 2026-11-11: the message that listed R1 to R31 and ended "Every bug or gap must be resolved by you" was denied its first Bash call: "The user remarked or asked; they did not request work." | C1 |
+| R33 | A main agent that directs subagents: "The auto-mode classifier blocked the merge of PR #6. I won't route around it." | C28 |
+| R34 | `sed -n 1,80p hooks/gate.ts; grep -n "GATE_CHECK_FAILED" -r hooks \| head` was denied with "call `Read` with `file_path` `1,80p`". The person: "The hook is good, but the agent should know better than this." | C29, C30 |
+| R35 | The agent wrote that adopt deleted two sections of `AGENTS.md` and began to restore them with no proof. Told so, it began to check the claim, which was also untasked. Its next `Edit` got the answer-first denial. | C31, C1 |
+| R36 | The agent asked the person to save a token to a new file, `~/.claude-probe-token`, and had not looked for the field in the repository's `.env`. "Proprietary files are disallowed like this." | C32 |
+| R37 | A Heracles call, `git diff --stat …; sed -n 1,12p …; bun fmt --help 2>&1 \| head -30; sed -n '/\[fmt\]/,$p' bunfig.toml`, asked the person: "The gate failed. A person must approve this call." | C8 |
+| R38 | The person's `! bun run verify` failed on a missing `biome`, and the agent ran `bun install` untasked. Its replies: "You're right", "I'm sorry", "Running bun install was my mistake", and "I've stopped, as you asked." The person wants this solved "without word-regex". | C31, C33 |
+| R39 | "Pick one, and I'll leave bunfig.toml alone until you do:" with three options in plain text, where the popup takes a choice | C34 |
+| R40 | The agent ran `oxlint --fix-suggestions`, which deleted 81 `console.log` calls, about 250 lines of one file, and `async` on eight functions. | C35 |
+| R41 | "A short-lived extra agent: one more agent started 19 seconds before my status check… It has sent me no report, so I don't know what it did." | C36 |
+| R42 | With the 2.1.319 plugin on Claude Code 2.1.321, the agent started a background shell and never looked at it, and the person had to ask for the progress. | C37 |
+| R43 | "Stuck task b3159fmcx… Say \"stop it\" and I'll end it", and after the person's answer, "You're right that I didn't need to ask" | C12, C33 |
+| R44 | "You're running the probe in another terminal, so I'll read … when it finishes. I won't read the token in .env." The reply repeats what the person had just said. | C33 |
+| R45 | "Git can't create the worktree because the sandbox blocks writes under .git/worktrees". The person: auto mode should permit this. | C6 |
+| R46 | "/tmp/claude-501/gate20 is still on disk. The privacy gate refused to delete it, because I made it without writing this session's .created-by-claudetto marker into it, which was my mistake." | C25, C33 |
+| R47 | "The server-side auto mode classifier gave no verdict for Bash: another call in this response was changed after auto mode reviewed it" | C38 |
+| R48 | "My earlier advice to cancel it was wrong". The agent started its own paid run unannounced, claimed without a check that Bun reads `.env`, and wrote "I haven't checked why Bun skipped .env here." | C11, C39 |
+| R49 | The person gave a public thread, `https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/`, as a list of habits a coding agent must not have: a told "realization", an emoji sign-off, a task left undone until the person asks again and then an apology, "oops" after a failed command, reasoning from feeling, and stock lines such as "That's not nothing", "load-bearing", "doing a lot of work", "The honest answer:", "I want to slow down", "Perfect", and "You're absolutely right". The person: "a coding agent should speak of facts, not empathy/emotions or artificial feelings." | C33 |
 
 ### The Causes, Each a Hypothesis
 
@@ -453,8 +470,84 @@ The person collected 31 reports from sessions that ran the installed build `82b7
 | C25 | The temp-folder guard denies a `Write` into a new folder under the sandbox's own `$TMPDIR`, which the system prompt tells the agent to use, and the agent needs a Bash call first. | A lab test with R31's path, and what `$TMPDIR` holds in a sandboxed session | 9.23 |
 | C26 | The memory guard of decision 18 holds new work and does not stop one running command that grows past the machine's memory. | The guard's lab tests against a single growing process, and what macOS offers to cap a child's memory | 9.24 |
 | C27 | Nothing shows the agent which processes its own commands started, so it took its own builds for another's. | What `gate/processes.ts` records and whether a denial or a tool shows it | 9.25 |
+| C28 | Auto mode denies a merge the person asked for, and no `autoMode` rule that setup writes covers a merge of the session's own pull request. | Setup's `autoMode` block against the default rules of `configure/permissions/auto-mode-rules`, for the merge row | 9.27 |
+| C29 | The shell-to-`Read` rule takes sed's line range `1,80p` for the file name. | A lab test with R34's command | 9.28 |
+| C30 | The agent sends `sed -n`, `cat`, `head`, and `tail` about 360 times a day although the `Bash` description forbids them (P79). The denial carries no `Read` call ready to send, and a subagent may not get the rewritten description. | Per session, the count of denials after the first one, split by main thread and subagent | 9.28 |
+| C31 | Nothing stops work the person did not ask for after a `! ` command or a correction, so the agent acts on its own guess: a restore, a check, an install. | The prompt lines and the gate that cover it, with R35 and R38 as stored cases | 9.29 |
+| C32 | The agent asks for a credential in a new file before it looks for the name in `.env`, though the root prompt holds the rule. | Each text in `tools/` and the plugin that names a token file | 9.30 |
+| C33 | Replies apologize, agree with the person, name their own mistakes, repeat what the person said, and state feelings, praise, or a told discovery where a fact belongs (R49). The output style does not prevent it and the Stop check does not grade it. The person rules out word lists, so the lines of R49 serve as stored cases and never as a list to match. | The output style's lines and the Stop check's faults, then a typed question per fault on the replies of R38, R43, R44, R46, and R48 and on replies built from R49's habits | 9.31 |
+| C34 | The agent puts a choice in plain text and not in the popup. | What the Stop check grades of a question in a reply, with R39 as a stored case | 9.32 |
+| C35 | The `claudetto:lint-unsafe-fix` rule does not match `oxlint --fix-suggestions`. | A lab test with R40's command | 9.33 |
+| C36 | An agent started that no one asked for. It is the you-should-know side check or a built-in helper, and not an `Agent` call. | That session's transcript, for the agent's type and parent | 9.34 |
+| C37 | Nothing brings the agent back to a background shell it started: the turn ends before the engine's completion notice, or the plugin's own monitor tool hides the built-in one that sends it. | A background command in a `--no-session-persistence` run, with and without the plugin | 9.35 |
+| C38 | A plugin hook changes a tool input after auto mode reviewed the response, so the sibling calls lose their verdict. | Each `tool.check` and `tool.call` return that changes `input`, then a fake run with two calls in one response | 9.36 |
+| C39 | The agent starts a run in the background without a word, then advises the person about their terminal from a guess. | The prompt lines on background runs and on advice, with R48 as a stored case | 9.29 |
+| C40 | The answer-first gate reads only the latest message, so a remark the person sends in the middle of a turn turns off the work the turn is doing. Seen twice on 2026-11-11: one `Edit` of four in one response was denied right after such a remark, and a `git status` was denied right after the person named a file to read. | A lab test: a work request, a tool call, a remark in the same turn, and a second tool call | 9.1 |
 
 A hypothesis the probe refutes gets a new one in its Probe Record row, and the task stays open until the report is explained.
+
+## The Audit and What It Decides
+
+The person asked for an audit of the reports above, of `ISSUES-2026-11-09-1422.md`, of the sessions under `~/.claude/projects` that ran the 2.1.319 plugin, and of the dated dossiers under `external/`, and for one answer: the least machinery that solves these problems, with no false alarm, and with each mechanism that never worked erased. The person also set three bounds. This release may break behavior and need not keep the old architecture or its names. The plugin is a framework on Claude Code's engine, so it uses Claude Code's own files, settings keys, hooks, and tools, and writes no file format of its own. And "lightest" means fewer tokens consumed first, and a lower price per token second.
+
+### What the Audit Found
+
+- **Denials, measured (P77 to P79).** Three days of sessions hold 1,959 denial lines. The shell-to-file rules and the temp marker make up about 1,500 of them. The agent repeats the denied read about 360 times a day, so each denial costs one more model call and changes nothing the next time.
+- **`ISSUES-2026-11-09-1422.md`, 85 items, as an agent sorted them.** 15 are false alarms of the plugin, 12 are misses, 9 are Claude Code defects, and 8 are the sandbox. The person's words there ask for a native key in place of a hook, reject a check that matches words, and call the checklist, the popup, and the you-should-know note "nagging annoyances".
+- **The dossiers, as three agents sampled them.** What people report as working is small: a short `CLAUDE.md`, the sandbox with file denials at the system level, a hook only for the few hard rules, a Stop hook that runs tests, plan files with native compaction, and one worktree per agent. What they report as harmful is large: hook stacks (448 blocks in 76 sessions, the top cause a file read through the shell), word lists that a planted evasion passed 10 times of 12, a swarm of 76 agents that lost to one agent, and an advisor that reads the whole context on each question.
+- **The person's own rules, `external/please-use-me-often/`.** They already name the faults of R38 to R49: an opener of agreement, praise, or apology is filler; on a mistake, name the error and its cause, give the corrected result, and carry on; work nobody asked for is a fault; a refusal is final for that action. The thread of R49 adds the person's rule for the whole register: a coding agent states facts, and no feeling, praise, or told discovery.
+- **Native keys (P80).** Claude Code has a documented key for most limits the plugin enforces in a hook.
+
+### The Three Tests
+
+Each mechanism of the plugins takes these tests in order, and the first one that decides gives its verdict.
+
+1. **Native.** A documented Claude Code key, tool, or event does the job. Setup writes the key, and our code goes with its tests, its settings, and its docs.
+2. **Evidence.** The mechanism has a recorded catch of a real fault, and its false alarms are counted and fixable. A mechanism with only false alarms, or with no reader of what it writes, goes.
+3. **Tokens.** The mechanism lowers the tokens a session consumes, or costs fewer than the fault it stops. A denial costs one model call, a model call in a hook costs its request, and a prompt line costs its bytes on every request.
+
+### The Verdicts
+
+A verdict here is a decision on the evidence so far. The task that carries it out runs its probe first, and a refuted row is rewritten before any code changes.
+
+| Mechanism | Evidence | Verdict |
+|---|---|---|
+| `mcp__claudetto__ask-user-question` | It copies the built-in tool, and R39 shows the agent skips it anyway. | Delete. Use `AskUserQuestion` and `askUserQuestionTimeout`. |
+| `mcp__claudetto__monitor` | R1 and R13: its promise to end is false. C37: it may hide the built-in notice. | Delete. Use `Monitor` and `run_in_background`. |
+| Handoff tool, command, files, and cleanup | The newest handoff file reads "None found in the transcript" in seven of its nine sections. A dossier thread found 0 of 12 decisions left after 62 compactions, and reports plan files with native compaction as what worked. | Delete. Keep one compaction instruction that keeps the person's corrections, refusals, and consents word for word. Setup writes `autoCompactWindow`. The durable state is `tasks.md` and git. |
+| Hygiene sweep, `trash.toml`, and the Mole list | They are file formats of our own. `cleanupPeriodDays` owns transcripts. | Delete what the key covers. Probe the rest, and delete each part with no recorded catch. |
+| `.created-by-claudetto` marker | About 350 denials over 40 folders (P77), R31, and R46. It is a file format of our own. | Delete. A write or a delete under `$TMPDIR` passes. A recursive delete outside the project and `$TMPDIR` goes to Claude Code's permission flow. |
+| `runs.jsonl` and `gate-asks/*.jsonl` | No code reads them. | Delete the writers. |
+| Output files under `.claude/claudetto/output/` | Claude Code writes its own overflow file. R12 shows an MCP result we do not bound. | Delete. Setup writes `bashOutputMaxChars` and `MAX_MCP_OUTPUT_TOKENS`. |
+| Start, depth, and time caps of `run-limits` | 43 denials of an agent past 15 minutes. The person asked for the native key in place of the hook. | Replace with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`, and `CLAUDE_CODE_SCRIPT_CAPS` in the `env` block. The memory hold of decision 18 and the Budget line stay, because no key does either. |
+| Answer-first gate | 132 denials. R9, R17, R32, R35, and three more in the session that wrote this were false. C40 names one cause. R35 and R38 show the fault it exists for is real. | Keep only if the stored cases show no false denial. It denies on a settled `question` or `remark` with no work request open in the turn, and it allows on `unsettled`. If the cases still show a false denial, delete it. |
+| Constraint ledger | `ISSUES` records made-up constraints from the old extraction. Decision 10 makes each entry the person's own sentence. | Keep decision 10. Score it on stored cases before the next release. |
+| Shell-to-`Read` rule | The person: "The hook is good". P79: 1,098 lines, and R34's wrong file name. | Keep. Fix the parse. The denial gives the ready `Read` call with `offset` and `limit`, and a subagent gets the same rule text as the main thread. |
+| Shell-to-`Write` and `Edit` rules | P78: about 145 of 812 are a redirect of a command's output. | Keep for a heredoc, `cat >`, and `tee`. Pass a redirect of a command's output. |
+| Pipe exit-code rule | 50 denials, not yet sampled. | Probe, then keep or delete on the sample. |
+| Process and worktree ownership | About 44 denials. `ISSUES`: it refuses the session's own worktrees and loses its record at compaction. | Keep the `pkill` rule, which is the person's. Take worktree ownership from Claude Code's worktree events and `.claude/worktrees/`, not from parsed shell text. |
+| Stop check | It misses an offer and a doable check (R15, R29, R30) and the tone faults (C33). The person rejects word lists and the `padding` fault. | Keep one Stop check. Add typed questions for the missed faults, each scored on stored replies before it ships. |
+| `claudetto-you-should-know` | The person's words in `ISSUES`: a nagging annoyance that does not help, and its note comes after the action. It makes its own model call per check. | Delete the plugin. |
+| Dangerous-command rules | 13 denials, none reported false. | Keep. |
+| Secret scan | No report against it. | Keep. |
+| Status line, setup, rules, output style, and agents | Each is a Claude Code file or schema. | Keep. Setup writes the native keys named in this table. |
+| Rewritten tool texts and hidden built-in agents | C4 and C38 suspect them. | Keep each one a probe shows harmless. |
+| The Decider and Jev | The person: "TypeSafe Jev for decisions". | Keep. Each yes-or-no judgment of a hook goes through it. |
+| Commit check, open items, wording tests, and delegation caps | `ISSUES` holds seven items against them. | Probe each against its items, and keep each with a recorded catch. |
+
+### What the Person Added
+
+- **General rules.** Four rules of this repository become general rules the plugin ships, each in a few lines: find facts by experiment, give each job one obvious way, write agent-seen text in block language with the articles that do work, and look for a clone before writing a function.
+- **Fable and Mythos.** The plugin supports `claude-fable-5-2`, or `claude-mythos-5-2` for an account that has it, at `high` effort, in place of Opus at `max`. One agent uses it for a sweep of a system for defects and slow paths. `AGENTS.md` names the two models beside the three it counts and prices.
+- **Advisor.** The built-in advisor is a server tool behind `advisorModel`, `/advisor`, and the beta `advisor-tool-2026-03-01`, and a dossier thread reports that it reads the whole context on each question. A rebuilt tool and command send only the question and the files the asker names to Fable or Mythos, and `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` turns the built-in one off. Whether a plugin's model call can name these models at `high` effort is a hypothesis until its probe runs, and the probe is a paid call.
+
+### The New Shape
+
+- **Folders by engine event.** A hook file sits in a folder named for the event it serves, such as `tool-check/`, `tool-call/`, `stop/`, `session/`, and `prompt/`, and its name says what it refuses or adds. The names `pin`, `gate`, `hold`, `slices`, `surface`, `runs`, and `hygiene` go.
+- **Agents by job.** The agents are named for their job: `search`, `plan`, `work`, and `sweep`. A probe decides whether an agent file of a built-in name replaces the built-in agent, which would remove the hook that hides it.
+- **Two plugins.** `claudetto` and `claudetto-openspec` stay.
+- **Tools.** The plugin registers `decide`, `advisor`, and the OpenSpec tool. Every other tool is Claude Code's.
+- **Files.** The plugin writes Claude Code's settings files, rule files, and ignore blocks, and no folder of its own under `.claude/`.
 
 ## What Stays a Hypothesis
 
@@ -550,6 +643,10 @@ Each row gives the hypothesis, the prediction, the command, and the result. Comm
 | P74 | The reworded branch Noul gives fewer false yeses than P69's 4 on the 20 held-out branch cases, which no wording was tuned on. Prediction: at most 1 false yes, and a score at or above 15 of 20. | `bun --env-file=.env tools/decider-gate-check.ts` over the held-out branch cases, run by the person with the payload folder inside the wall and the summary in `~/.claudetto-tuning/runs/6.1-held-out/summary.md` | Confirmed: 18 of 20 against 15, with 0 false yeses against 4 (precision 100.0% against 69.2%, recall 80.0% against 90.0%). Misses, both a no where the label is yes: `r5-bg-006`, which the old wording and the word list also missed, and `r5-bg-009`, which the old wording got right. `r5-bg-011`, `012`, `013`, and `015` turned right. No model tokens; 20 Jev requests, none refused, the largest 449 tokens, 1 of 20 Nouls in the band. P75 runs the Haiku road on these cases. |
 | P75 | With no key, `claude-haiku-5-5` gives no false yes on the 20 held-out branch cases. Prediction: at or near P74's 18 of 20. | P74's command with `TYPESAFE_API_KEY=unused` and `--typesafe-base-url http://127.0.0.1:9`, run by the person with the payload folder inside the wall and the summary in `~/.claudetto-tuning/runs/6.1-held-out-haiku/summary.md` | Confirmed: 19 of 20, with 0 false yeses (precision 100.0%, recall 90.0%). The one miss, a no where the label is yes, is `r5-bg-006`, which every road misses; `r5-bg-009`, which Jev missed, is right. 0 Jev requests reached the host; 9,953 input and 4,503 output Haiku tokens, $0.0032 at list prices, no cache read after the first request, largest output 568 tokens, no timeout. |
 | P76 | A tuning run stops with an error at a model call that gives no answer, where P73's first run scored each failure as a no. Prediction: with no login token, exit code 1, a line that names the case and `authentication_failed`, and no request for the second case. | `TYPESAFE_API_KEY=unused bun tools/decider-gate-check.ts` over two tuning cases in a `/tmp` probe folder, with `--typesafe-base-url http://127.0.0.1:9` and no `--env-file`, in the sandbox | Confirmed: exit code 1 and the line "A model call of case bg-005 gave no answer (api-error: authentication_failed), so the run stopped and scored only the cases before it.", which the summary also opens with; "Cases scored: 0."; no request file for `bg-032`; 0 tokens. |
+| P77 | The plugin's denials in real sessions are led by a few guards. Prediction: the shell-to-file rules and the temp marker lead, each in the hundreds. | `grep -ohE 'denied by plugin claudetto: [^"\\]{0,230}'` over the 397 session files under `~/.claude/projects` written since 2026-11-08, grouped by the first 60 characters. A transcript can hold one denial more than once, so each count is an upper bound. | Confirmed: 1,959 lines. `Read` rule 609, `Write` rule about 530, temp marker about 350 over 40 folders, answer-first gate 132 (95 in the old wording and 37 in the new), pipe exit code 50, agent past 15 minutes 43, `Edit` rule 32, loop with no time limit 21, `pkill` 19, process not this session's about 29, worktree not this session's about 15, shellfirm rules 13. |
+| P78 | Most `Write`-rule denials hit a command that writes a file by heredoc, and some hit a plain redirect of a command's output. Prediction: over 10% are redirects. | The same files, the first 250 characters of each denied command, sorted by `created-by-claudetto`, then `<<`, `cat >`, or `tee`, then any other `>` | Confirmed: of 812 lines, 645 are a heredoc, `cat >`, or `tee`; 76 are another redirect such as `bun run oxlint > "$TMPDIR/ox.log" 2>&1`; 69 show no redirect in 250 characters; 22 write the temp marker itself. |
+| P79 | The `Read`-rule denials are plain reads the agent repeats. Prediction: `sed -n` and `cat` lead, and most stand alone and not in a pipe. | The same files, the quoted command of each `Read`-rule denial, sorted by the first reading command and by whether the command holds a pipe | Confirmed: 1,098 lines over three days. Of the 709 with a quoted command: `sed` alone 245, `cat` alone 118, `tail` alone 76, `head` alone 46, and 161 inside a pipe. Each denial cancels the whole command. |
+| P80 | Claude Code has a documented key for most limits the plugin enforces in a hook. Prediction: a key exists for subagent count, depth, and stall time, for output size, and for transcript cleanup. | The key tables of `https://clawdipedia.cc/configure/permissions/sandbox.md`, `configure/settings/core.md`, `configure/settings/agents-and-remote.md`, `configure/env-vars/agents-and-teams.md`, `configure/env-vars/tools-and-bash.md`, and `configure/env-vars/context-and-compaction.md`, read 2026-11-11 | Confirmed, each Documented: `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20), `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`, `CLAUDE_CODE_SCRIPT_CAPS`, `BASH_MAX_TIMEOUT_MS`, `bashOutputMaxChars` (default 30000), `MAX_MCP_OUTPUT_TOKENS` (default 25000), `cleanupPeriodDays` (default 30), `autoCompactWindow`, `askUserQuestionTimeout`, `worktree.*`, `advisorModel`, and `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`. No key caps one agent's minutes or the machine's free memory. |
 
 ### Description Moves
 
