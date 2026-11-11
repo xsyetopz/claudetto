@@ -5,12 +5,9 @@ import { join } from "node:path";
 import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
 import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
 import { tempDir } from "../temp.mock.ts";
+import { DAY, host as hostOf, NOW, UID } from "./trash.mock.ts";
 
 type Host = Parameters<typeof sweep>[1];
-
-const DAY = 86_400_000;
-const NOW = Date.now();
-const UID = process.getuid?.() ?? 0;
 
 const project = async () => {
 	const root = await tempDir("hygiene-");
@@ -21,17 +18,8 @@ const project = async () => {
 	return root;
 };
 
-const logged: string[] = [];
 const host = (root: string, over: Partial<Host> = {}): Host => ({
-	cwd: join(root, "proj"),
-	projects: [],
-	home: join(root, "home"),
-	now: NOW,
-	uid: UID,
-	days: 30,
-	tempBases: [join(root, "tmp")],
-	configDir: join(root, "home/.claude"),
-	log: (line) => logged.push(line),
+	...hostOf(root, join(root, "proj")),
 	...over,
 });
 
