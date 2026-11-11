@@ -72,7 +72,7 @@ Each slice is one commit, with its failing test first where it changes behavior.
 - [x] 7.3 Add the repository test that fails on a `$.model.complete` call without `effort` or a full model ID, then set both on the setup advice call and the `claudetto-you-should-know` default, with `maxTokens` from recorded usage.
 - [x] 7.4 Review each root prompt, subagent body, skill body, output style, and hook text against the guide of each model that receives it, rewrite each bare prohibition as an action with its reason, and record the pages read in `design.md`.
 - [x] 7.5 Run `just prompt-bytes` before 7.2 and after 7.4 and record both totals; the added prompt bytes must not grow.
-- [ ] 7.6 Ask the person for permission and a budget, then run `claude plugin eval --ablation` on the stored cases before 7.2 and after 7.4, and record both results, the cost, and the weekly share. A text whose cut lowers the result gets its rule back in the root prompt.
+- [x] 7.6 Ask the person for permission and a budget, then run `claude plugin eval --ablation` on the stored cases before 7.2 and after 7.4, and record both results, the cost, and the weekly share. A text whose cut lowers the result gets its rule back in the root prompt.
 
 ## 8. Finish
 
