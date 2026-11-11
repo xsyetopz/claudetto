@@ -1,18 +1,133 @@
-import type { On, PluginOptions } from "claude-code";
+import type { EngineInterface, On, PluginOptions } from "claude-code";
 
+import {
+	type CallAnswer,
+	type CallEvent,
+	type CallNext,
+	chain,
+	type CheckAnswer,
+	type CheckEvent,
+	checkFault,
+	type CheckNext,
+} from "./chain.ts";
+import { decideCall } from "./decide.ts";
+import { delegation, delegationCall } from "./delegation.ts";
+import { gate, gateState } from "./gate.ts";
+import { gateCall, gateCheck } from "./gate/watch.ts";
+import { handoff, handoffCall, handoffState } from "./handoff.ts";
+import { hygiene } from "./hygiene.ts";
+import { boundOutputCall } from "./limits/bound-output.ts";
+import { holdCheck, holdHooks, holdState } from "./limits/hold.ts";
+import { lineFileHooks } from "./limits/line-file.ts";
+import { memoryGuard } from "./limits/memory.ts";
+import {
+	priceStepCall,
+	priceStepHooks,
+	priceStepState,
+} from "./limits/price-step.ts";
+import { budgetHooks, stopHooks, subagentStopHooks } from "./limits/stop.ts";
+import { stopCall, stopCheck, stopState } from "./limits/turn.ts";
+import { notify } from "./notify.ts";
 import { stringOption } from "./options.ts";
-import { registerFirst } from "./register-first.ts";
-import { lastState, registerLast } from "./register-last.ts";
+import { pin, pinCall, pinCheck, pinState } from "./pin.ts";
+import { reply } from "./reply.ts";
+import { runs, runsCall, runsState } from "./runs.ts";
+import { setup } from "./setup.ts";
+import { slices, slicesCall, slicesState } from "./slices.ts";
+import { surface, surfaceCall } from "./surface.ts";
 import { DECIDE_SPEC } from "./texts-gate.ts";
 import { ASK_SPEC, MONITOR_SPEC, REPLY_SPEC } from "./texts.ts";
+import { wordingTestsCheck } from "./wording-tests.ts";
 
-// Registration order is wrap order, and `registerFirst` goes before `registerLast`.
-export const register = (on: On, options: PluginOptions): void => {
-	const last = lastState(options);
-	registerFirst(on, options, last);
-	registerLast(on, options, last);
+const stateOf = (options: PluginOptions) => ({
+	written: slicesState(),
+	price: priceStepState(),
+	hold: holdState(options),
+	stop: stopState(),
+	pinned: pinState(),
+	ran: runsState(),
+	gate: gateState(options),
+	handoff: handoffState(),
+});
 
-	// The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.
+type State = ReturnType<typeof stateOf>;
+
+// `slices` is outermost, so it asks for a commit only after every other Stop check passed; the price step comes next, so it bounds what every later hook adds.
+const registerOuter = (on: On, options: PluginOptions, state: State): void => {
+	slices(on, state.written);
+	priceStepHooks(on, state.price);
+	holdHooks(on, state.hold);
+	stopHooks(on, options, state.stop);
+	subagentStopHooks(on);
+	budgetHooks(on);
+	lineFileHooks(on);
+	setup(on, options);
+	surface(on, options);
+	pin(on, state.pinned);
+	delegation(on);
+	runs(on, state.ran);
+};
+
+const registerInner = (on: On, options: PluginOptions, state: State): void => {
+	handoff(on, options, state.handoff);
+	hygiene(on, options);
+	notify(on, options);
+	gate(on, state.gate);
+	reply(on);
+};
+
+const checkGuards = (
+	$: EngineInterface,
+	e: CheckEvent,
+	next: CheckNext,
+	state: State,
+): CheckAnswer =>
+	chain(e, next, [
+		(at, step) => memoryGuard($, at, step, state.hold.memory),
+		(at, step) => holdCheck($, at, step, state.hold),
+		(at, step) => stopCheck(at, step, state.stop),
+		(at, step) => pinCheck($, at, step, state.pinned),
+		(at, step) => wordingTestsCheck($, at, step),
+		(at, step) => gateCheck($, at, step, state.gate),
+	]);
+
+const callGuards = (
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	state: State,
+	options: PluginOptions,
+): CallAnswer =>
+	chain(e, next, [
+		(at, step) => slicesCall($, at, step, state.written),
+		(at, step) => priceStepCall($, at, step, state.price),
+		(at, step) => stopCall(at, step, state.stop),
+		(at, step) => boundOutputCall($, at, step, options),
+		(at, step) => surfaceCall(at, step, options),
+		(at, step) => pinCall(at, step, state.pinned),
+		(at, step) => delegationCall($, at, step),
+		(at, step) => runsCall(at, step, state.ran),
+		(at, step) => decideCall($, at, step, options),
+		(at, step) => handoffCall($, at, step, state.handoff),
+		(at, step) => gateCall($, at, step, state.gate),
+	]);
+
+const registerGuards = (on: On, options: PluginOptions, state: State): void => {
+	on("tool.check", ($, e, next) => checkGuards($, e, next, state)).catch(
+		(_error, _e, next) => ({ decision: "ask", reason: checkFault(next) }),
+	);
+	on("tool.call", ($, e, next) => callGuards($, e, next, state, options)).catch(
+		async (_error, e, next) => {
+			if (next.called) {
+				await next(e);
+			}
+			return { deny: next.error.message ?? next.error.kind };
+		},
+	);
+};
+
+// The engine takes one unmatched `session.start` per module, and `classic.SessionStart` under `-p` has no session to register a tool on.
+const registerTools = (on: On, options: PluginOptions): void => {
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
 		await $.tool.register(ASK_SPEC);
@@ -23,4 +138,13 @@ export const register = (on: On, options: PluginOptions): void => {
 		}
 		return out;
 	});
+};
+
+// Registration order is wrap order.
+export const register = (on: On, options: PluginOptions): void => {
+	const state = stateOf(options);
+	registerOuter(on, options, state);
+	registerGuards(on, options, state);
+	registerInner(on, options, state);
+	registerTools(on, options);
 };
