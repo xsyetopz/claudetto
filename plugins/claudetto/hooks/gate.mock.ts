@@ -56,6 +56,7 @@ export const bashOf = (stdout: string) => ({
 
 export const scanning = (on: On, answer: ToolCallResult) => {
 	on("session.cwd", () => ({ value: "/p" }));
+	on("session.root", () => ({ value: "/p" }));
 	on("clock.now", () => ({ value: 0 }));
 	on("fs.exists", () => ({ value: false }));
 	on("tool.check", () => ({ decision: "allow" }));
@@ -151,6 +152,7 @@ export const vanishing = (
 			: (scanned(e) ?? next(e)),
 	);
 	on("session.cwd", () => ({ value: "/p" }));
+	on("session.root", () => ({ value: "/p" }));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.id", () => ({ value: "S1" }));
 	filesLab(on, files, landedBy(aliases));
@@ -206,7 +208,6 @@ export const parsedLines = (lines: string[]): unknown[] =>
 export const walledLab = (on: On, deny: string[] = []) => {
 	const logs: string[] = [];
 	vanishing(on, new Set());
-	on("session.root", () => ({ value: "/p" }));
 	on("fs.write", () => ({ value: undefined }));
 	on("settings.read", () => ({ value: { permissions: { deny } } }));
 	on("classic.SessionStart", () => ({}));

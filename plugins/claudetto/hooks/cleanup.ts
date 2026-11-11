@@ -17,7 +17,8 @@ export const taskLines = (tasks: readonly BackgroundTaskSummary[]): string[] =>
 			`- ${task.type} \`${task.id}\` (${task.status}): ${task.description}`,
 	);
 
-function runOf($: EngineInterface): Run {
+/** Runs a command on the host and answers its stdout when it exits 0; a call that fails is logged. */
+export function runOf($: EngineInterface): Run {
 	return async (argv, cwd) => {
 		const awaited = await $.process
 			.run([...argv], { cwd })

@@ -106,6 +106,8 @@ export const STALE_TASKS = (lines: readonly string[]): string =>
 	`These background tasks of this agent still run, and once it stops nothing reads them; a monitor that outlives the reply wakes the session later with nothing to do:\n${lines.join("\n")}\nStop each with \`TaskStop\`. If your next step waits on one, name its id in your reply with what you wait for.`;
 export const gateWorktreeRemove = (path: string): string =>
 	`${path} is not a worktree this session created: no earlier successful \`git worktree add\` or EnterWorktree of this session names it. Leave it. Remove only a worktree this session added, or ask the user to remove this one.`;
+export const GIT_CLOSED =
+	'Sandbox set its rules for `.git` when this session started, and this folder held no repository then, so each git write here fails inside sandbox with "Operation not permitted" until Claude Code restarts. Tell user once to restart Claude Code in this folder with `claude --continue`. Until then, run each git write with `dangerouslyDisableSandbox: true`.';
 export const GATE_ENDLESS_WAIT =
 	"This background loop waits with no time limit, so it runs forever if what it waits for never comes, as a loop that counts successes does when one job fails. Give it a limit and an exit on failure: test `$SECONDS` in its condition, as in `until check || [ $SECONDS -gt 1800 ]; do sleep 30; done`, or wrap it in `timeout <seconds>`, and break as soon as a failure shows.";
 export const GATE_RELEASE_RUN =

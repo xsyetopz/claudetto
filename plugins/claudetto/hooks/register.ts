@@ -31,6 +31,7 @@ import { notify } from "./notify.ts";
 import { pin, pinCall, pinCheck, pinState } from "./pin.ts";
 import { reply } from "./reply.ts";
 import { runs, runsCall, runsState } from "./runs.ts";
+import { sandboxGitCall, sandboxGitState } from "./sandbox-git.ts";
 import { setup } from "./setup.ts";
 import { slices, slicesCall, slicesState } from "./slices.ts";
 import { surface, surfaceCall } from "./surface.ts";
@@ -47,6 +48,7 @@ const stateOf = (options: PluginOptions) => ({
 	ran: runsState(),
 	gate: gateState(options),
 	handoff: handoffState(),
+	sandboxGit: sandboxGitState(),
 });
 
 type State = ReturnType<typeof stateOf>;
@@ -108,6 +110,7 @@ const callGuards = (
 		(at, step) => runsCall(at, step, state.ran),
 		(at, step) => decideCall($, at, step),
 		(at, step) => handoffCall($, at, step, state.handoff),
+		(at, step) => sandboxGitCall($, at, step, state.sandboxGit),
 		(at, step) => gateCall($, at, step, state.gate),
 	]);
 
