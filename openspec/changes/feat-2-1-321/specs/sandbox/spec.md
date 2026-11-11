@@ -37,3 +37,44 @@ claudetto SHALL end the two git refusals of the sandbox that a hook can end, and
 
 - **WHEN** a sandboxed command adds a worktree under the name of one that existed at the start and was removed since, or removes a worktree of the start
 - **THEN** it fails with "Operation not permitted", and its retry outside the sandbox is the route
+
+### Requirement: The Per-User Temp Folder Is Open and the Tool Cache in It Stays Closed
+
+Setup's Sandbox group SHALL allow writes under `/private/var/folders`, where macOS keeps each person's temp and cache folders, and SHALL deny writes to `xcrun_db*` in the temp folder, because that file names the developer tools that run later.
+
+#### Scenario: A Tool Writes Its Temp File
+
+- **WHEN** a sandboxed command writes into the folder that `getconf DARWIN_USER_TEMP_DIR` prints, as a compiler, a Java library, and each tool that ignores `$TMPDIR` do
+- **THEN** the write passes, where it failed with "Operation not permitted" (fake API, 2.1.322, 2026-11-11)
+
+#### Scenario: The Tool Cache
+
+- **WHEN** a sandboxed command writes a file named `xcrun_db` or `xcrun_db-<id>` in that folder
+- **THEN** the write fails with "Operation not permitted"
+- **AND** the tool that tried it still runs and prints its own output after the message
+
+### Requirement: What the Sandbox Keeps Closed Goes Through the Retry
+
+claudetto SHALL leave closed the paths the engine closes at the root of the working folder and the PATH folder of Homebrew, and SHALL add no text of its own for a refused write, because each request already names the retry.
+
+#### Scenario: An Editor Folder at the Root
+
+- **WHEN** a sandboxed command creates or changes `.vscode`, `.idea`, or `.claude/commands` at the root of the working folder
+- **THEN** it fails with "Operation not permitted", also with an `allowWrite` entry that names the folder
+- **AND** the same folder one level down or beside the working folder passes
+
+#### Scenario: A Homebrew Install
+
+- **WHEN** a sandboxed command writes under `/opt/homebrew`
+- **THEN** it fails, and `brew --version`, `brew list`, and `brew install --dry-run` pass
+
+#### Scenario: Headless Chrome
+
+- **WHEN** a sandboxed command runs headless Chrome
+- **THEN** Chrome exits with an error and writes no file, also with `/private/var/folders` writable and `network.allowAllUnixSockets: true`
+
+#### Scenario: The Retry
+
+- **WHEN** one of these commands fails inside the sandbox
+- **THEN** its output holds "Operation not permitted", which the engine's own text in the request names as the evidence for a retry with `dangerouslyDisableSandbox: true`
+- **AND** the permission flow decides that retry, as the scenario "The Retry Outside the Sandbox" states
