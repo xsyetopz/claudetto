@@ -68,6 +68,42 @@ Hygiene SHALL remove a worktree that Claude Code made for an agent, with its bra
 - **WHEN** the sweep runs with `--dry-run`
 - **THEN** the report names what would go and nothing is removed
 
+## MODIFIED Requirements
+
+### Requirement: The Trash Walk and Age Limit
+
+The walk SHALL start at the project, at each project `.claude.json` lists, and at each folder that Mole's `~/.config/mole/purge_paths` lists, with a leading `~` read as the home folder, and SHALL skip a listed folder that hygiene refuses as a root. The walk SHALL stop at a match, SHALL skip `.git`, SHALL NOT follow a link, and SHALL NOT enter `~/.claude/projects` or `~/.claude/plugins`. The age limit SHALL be 7 days, or `--trash-days`, where 0 turns the kind off.
+
+#### Scenario: Kind Off
+
+- **WHEN** `--trash-days` is 0
+- **THEN** no build folder is removed
+
+#### Scenario: Another Checkout Under a Purge Path
+
+- **WHEN** `purge_paths` lists a folder holding an idle checkout with an old ignored `node_modules`
+- **THEN** the `node_modules` is removed ("an old build folder in an idle checkout under a Mole purge path is swept", "a purge path written with ~ is read from the home folder")
+
+#### Scenario: A Project Claude Code Lists
+
+- **WHEN** `.claude.json` lists an idle checkout with an old ignored `node_modules`, and `purge_paths` does not
+- **THEN** the `node_modules` is removed ("an old build folder in an idle checkout that Claude Code lists is swept")
+
+#### Scenario: A Listed Project in Use
+
+- **WHEN** the index of a listed checkout changed within the age limit, or a process runs in it
+- **THEN** its build folders stay
+
+#### Scenario: The Home Folder as a Project
+
+- **WHEN** `.claude.json` lists the home folder
+- **THEN** the walk does not start there ("a listed project that is the home folder is not walked")
+
+#### Scenario: Claude Code's Own Folders
+
+- **WHEN** `purge_paths` lists `~/.claude`, and checkouts under `~/.claude/plugins` and `~/.claude/projects` hold old ignored build folders
+- **THEN** none is removed ("the walk skips ~/.claude/plugins and ~/.claude/projects inside a purge path")
+
 ## REMOVED Requirements
 
 ### Requirement: Marked Temp Folders Go
