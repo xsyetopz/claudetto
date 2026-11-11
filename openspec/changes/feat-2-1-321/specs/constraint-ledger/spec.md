@@ -112,3 +112,12 @@ Each ledger entry's text SHALL be one sentence of one of the person's own messag
 
 - **WHEN** the ledger holds any entry
 - **THEN** its text is a substring of a message the person sent
+
+### Requirement: A No-Questions Constraint Holds the Ask Tools
+
+Under a `no-questions` constraint, the ledger's `tool.call` hook SHALL deny `AskUserQuestion` before any other plugin hook answers the call, because an answered call never reaches `tool.check`. The denial SHALL tell the agent to state the reading it took and to end the reply with each choice only the person can make, and SHALL NOT ask the person anything.
+
+#### Scenario: No Questions
+
+- **WHEN** the person wrote "stop asking questions. fix the problems" and the agent calls `AskUserQuestion`
+- **THEN** the call is denied with a text that tells the agent to state its reading, and the text does not ask the person anything

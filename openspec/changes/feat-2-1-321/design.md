@@ -384,6 +384,20 @@ Setup's Sandbox group adds `/private/var/folders` to `filesystem.allowWrite` and
 - No text is added. Each request already names "Operation not permitted" as the evidence and the retry with `dangerouslyDisableSandbox: true` as the step, and each of the three refusals prints that phrase. In R8 the agent took the step. A second text would cost tokens in every session to say the same.
 - An `excludedCommands` entry for `brew` or Chrome was rejected: the person's rule of 2026-11-09 rules out hand-written exclusions, and neither command is read-only, as the four entries the group holds are.
 
+### 21. The Popup Is the Built-in `AskUserQuestion`
+
+The model asks the person through the built-in `AskUserQuestion`. The plugin registers no ask tool, denies no `AskUserQuestion` call for being the built-in one, and lists the built-in name in a `ToolSearch` result as it came. A `tool.describe` hook replaces the tool's description with one sentence and keeps the tool deferred. Setup's own questions go through `$.ui.ask`. The person chose this on 2026-11-12.
+
+**Reasons:**
+
+- Auto mode's classifier reads a popup answer from one tool only (P93). An answer of `AskUserQuestion` enters its transcript as `[User answered AskUserQuestion]: …`, which its prompt treats "as direct user intent". Every other tool's result is dropped, the plugin tool's answer and its `context` included. So a merge, a push, or a delete the person approved in the plugin's popup was judged as if nobody had asked for it (R33).
+- No Mod API call gives the plugin's tool that standing: `$.tool.register` declares `mcp__<plugin>__<name>` only, and the builder matches the name `AskUserQuestion`. A user-role row written with `$.session.append` was rejected, because it would pose the plugin's text as the person's typed words.
+- The cost is characters, once per context window that asks: the built-in definition is 5,196 against 398. The hook cuts the 2,083 of description to one sentence, and no hook changes the 3,023 of input schema. The tool stays deferred, so a window that asks nothing pays nothing.
+- The plugin loses code: the tool's registration, its `tool.call` branch, the denial of the built-in call, and the second name in each check that reads a popup answer.
+- An `autoMode` rule that allows a merge was rejected: the rule would let an agent merge with no answer from the person, and the person's consent is what the classifier lacked.
+
+**Left as measured limits:** the built-in tool is off under `claude -p`, as the plugin's dialog was. What the server-side classifier reads of the messages was not measured, because that takes a paid run; the program's own classifier is the evidence.
+
 ## Risks
 
 - **Jev scores below today's prompts on a site.** Task group 5 runs stored cases through both before any site moves. A site that scores lower keeps its code, and the `update` skill removes its delta.
@@ -494,7 +508,7 @@ The person collected 31 reports from sessions that ran the installed build `82b7
 | C9 | The first dialog of R14 came from a rule that asks for an assignment such as `f=openspec/…` followed by a loop. | The rule a lab run names for commands of that shape; the report cuts off the command, so the exact one stays unknown | 9.8 |
 | C10 | The Stop check passes a reply that offers work the agent can do ("If you want, I'll…", "Reply … and I will"). | The grading texts for an offer rule, then the three replies as stored cases | 9.9 |
 | C11 | The Stop check passes a reply that lists a check as not run when the agent could run it. | The same texts, then R29's reply as a stored case | 9.9 |
-| C12 | No guard reads the popup's question, so a question whether to fix the agent's own defect reaches the person. | The registration of `mcp__claudetto__ask-user-question` and its lab tests | 9.10 |
+| C12 | No guard reads the popup's question, so a question whether to fix the agent's own defect reaches the person. | The hooks on `AskUserQuestion` and their lab tests | 9.10 |
 | C13 | The loop guard denies a wait with no time limit and passes a loop whose body is `:`, which spins a core. | A lab test with `until grep -q x f; do :; done`, in the foreground and in the background | 9.11 |
 | C14 | A hook note states that a password or secret was typed into the chat when the text only came through `osascript` or a terminal. | A search of the hook texts for the note, then a lab test with R11's commands | 9.12 |
 | C15 | "· summary" is drawn by Claude Code or added by the plugin to text between tool calls. | A search of the plugin and of the installed Claude Code for the string | 9.13 |
@@ -560,7 +574,7 @@ A verdict here is a decision on the evidence so far. The task that carries it ou
 
 | Mechanism | Evidence | Verdict |
 |---|---|---|
-| `mcp__claudetto__ask-user-question` | The person: it is "a cheap effective replacement to the bloated built-in `AskUserQuestion` tool". R39 shows the agent skips it, and R30 shows a question it should refuse. | Keep, and keep the built-in disabled. Compare it with the built-in through the Mod API docs, give it the same effect in the least code, and fix C12 and C34. |
+| `mcp__claudetto__ask-user-question` | The person: it is "a cheap effective replacement to the bloated built-in `AskUserQuestion` tool". R39 shows the agent skips it, and R30 shows a question it should refuse. | Delete, on the person's answer of 2026-11-12, and call the built-in `AskUserQuestion` with a one-sentence description (decision 21): auto mode's classifier reads a popup answer only from the built-in tool (P93). C12 and C34 are fixed for its calls. |
 | `mcp__claudetto__monitor` | The person: it is "a cheap replacement for `Monitor`". R1 and R13: its promise to end is false. R42: a shell nobody looked at. | Keep, and keep the built-in disabled. Compare it with the built-in the same way, and fix C2 and C37. |
 | Handoff tool, command, files, and cleanup | The newest handoff file reads "None found in the transcript" in seven of its nine sections. A dossier thread found 0 of 12 decisions left after 62 compactions, and reports plan files with native compaction as what worked. | Delete; the person approved it on 2026-11-11. Keep one compaction instruction that keeps the person's corrections, refusals, and consents word for word. Setup writes `autoCompactWindow`. The durable state is `tasks.md` and git. |
 | Hygiene sweep, `trash.toml`, and the Mole list | The person: the disk is 70% full, "so hygiene is not working at all when it should be more persistent". P81: the temp rule needs a marker, and 0 of 9,567 temp folders hold one, so it removes none of them. | Keep, and make it work. Probe what each run removed and what it left, by size, then fix each rule that removes nothing and run the sweep often enough to hold the disk. |
@@ -594,7 +608,7 @@ A verdict here is a decision on the evidence so far. The task that carries it ou
 - **Folders by hook type, files by rule key.** A hook file sits in a folder named for its hook type, which is the event it serves as the engine spells it, such as `tool.check/`, `tool.call/`, `classic.Stop/`, and `classic.SessionStart/`. Its file name is a rule key in the form a linter uses, such as `noTempBaseRemoval` or `useReadForFiles`, which is the form the rule files in `.claude/rules/` already have (R53). The names `pin`, `gate`, `hold`, `slices`, `surface`, `runs`, and `hygiene` go.
 - **Agents by job.** The agents are named for their job: `search`, `plan`, `work`, and `sweep`. A probe decides whether an agent file of a built-in name replaces the built-in agent, which would remove the hook that hides it.
 - **Three plugins.** `claudetto`, `claudetto-openspec`, and `claudetto-you-should-know` stay.
-- **Tools.** The plugin registers its rebuilds of built-in tools (`ask-user-question`, `monitor`, and `advisor`), `decide`, and the OpenSpec tool, and disables each built-in tool it rebuilds.
+- **Tools.** The plugin registers its rebuilds of built-in tools (`monitor` and `advisor`), `decide`, and the OpenSpec tool, and disables each built-in tool it rebuilds. The popup is the built-in `AskUserQuestion` (decision 21).
 - **Files.** The plugin writes Claude Code's settings files, rule files, and ignore blocks. The handoff files, the run logs, and the output files go, with the person's approval, and the folder `.claude/claudetto/` keeps only what a kept tool needs.
 
 ## What Stays a Hypothesis
