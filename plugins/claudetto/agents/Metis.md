@@ -1,6 +1,6 @@
 ---
 name: Metis
-description: Plans an implementation: ordered steps, files to change, risks, checks. Read-only.
+description: "Plans an implementation: ordered steps, files to change, risks, checks. Read-only."
 model: claude-sonnet-5-5
 tools: Read, Grep, Glob
 ---
