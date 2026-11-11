@@ -23,3 +23,15 @@ Before each `Bash` or `Monitor` call and each subagent start, the system SHALL r
 
 - **WHEN** the free share is at or above the limit, or `memoryFreeMinPercent` is 0, or the platform gives no share
 - **THEN** the call goes on
+
+## MODIFIED Requirements
+
+### Requirement: A Closing Stop Removes the Session's Leftovers
+
+When none of the agent's own tasks runs, the system SHALL remove the worktrees the agent created and the branches it created, with a plain `git worktree remove` and `git branch -d`, so what holds work stays. It SHALL block once to name what stays, unless the reply names each.
+
+#### Scenario: A Dirty Worktree
+
+- **WHEN** a worker's worktree holds uncommitted changes and its branch has an unmerged commit
+- **THEN** both stay and the Stop names them
+- **AND** the lab test is `cleanup.test.ts`, "a clean worker worktree and its merged branch go; a dirty worktree and an unmerged branch stay and the stop names them"

@@ -28,3 +28,43 @@ The branch gate SHALL ask, not deny, before `git branch -D` of a branch this ses
 
 - **WHEN** Jev does not answer and the fallback call is not answered
 - **THEN** the gate asks the person
+
+### Requirement: What the Session Made Meets No Vendored Delete Rule
+
+An `rm` whose every path lies under a temp base, and a move or delete of a branch this session created (`update-ref` of `refs/heads/<name>`, or `branch -f <name>`), SHALL NOT meet the vendored `fs:recursively_delete`, `git:force_delete_branch`, or `git:delete_ref` rule or the ref-move ask.
+
+#### Scenario: A Branch the Session Created
+
+- **WHEN** the agent runs `git branch -f <name>` on a branch this session created
+- **THEN** no vendored rule and no ref-move ask meets it
+
+## ADDED Requirements
+
+### Requirement: Work Under a Temp Base Passes, and the Base Itself Stays
+
+A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or without `/private` before it. The gate SHALL let a `mkdir`, a `mktemp`, a file write, and an `rm` under a temp base pass with no marker file. It SHALL deny an `rm` that names a temp base itself, or a path under one that holds `..`, and the denial SHALL tell the agent to name the folder it made.
+
+#### Scenario: A Scratch Folder
+
+- **WHEN** the agent runs `mkdir -p /tmp/claude-501/gate20`, writes a file into a new folder under `/tmp`, and runs `rm -rf /tmp/claude-501/gate20`
+- **THEN** each call passes
+- **AND** the lab tests are in `gate/processes.owned.test.ts`
+
+#### Scenario: The Base Itself
+
+- **WHEN** the agent runs `rm -rf /tmp`, `rm -rf /private/tmp/claude-501`, or `rm -rf /tmp/mine/../other`
+- **THEN** the call is denied
+
+## REMOVED Requirements
+
+### Requirement: A /tmp Folder Carries Its Session's Marker
+
+**Reason**: The marker stopped no delete of another session's folder in 58 sampled denials, and none of the 9,567 folders in the temp base held one, because test runs make the folders and no rule reaches them.
+
+**Migration**: Make a temp folder with a plain `mkdir` or `mktemp`. A `.created-by-claudetto` file that is there already is an ordinary file.
+
+### Requirement: A /tmp Removal Needs This Session's Marker
+
+**Reason**: The rule denied the removal of the session's own scratch files and folders, about 350 times in three days.
+
+**Migration**: Remove a temp folder with a plain `rm`. The requirement "Work Under a Temp Base Passes, and the Base Itself Stays" keeps the base and a path with `..` denied.
