@@ -69,7 +69,7 @@ const answersOf = (set: QuestionSet, wire: unknown): Answers | undefined => {
 	return out;
 };
 
-const logFailure = ($: Host, key: string, error: unknown): void => {
+function logFailure($: Host, key: string, error: unknown): void {
 	if (error instanceof JevStatusError && REFUSED.has(error.status)) {
 		refusedKey = key;
 		$.ui.log(
@@ -83,7 +83,7 @@ const logFailure = ($: Host, key: string, error: unknown): void => {
 		const why = error instanceof Error ? error.message : String(error);
 		$.ui.log(`Jev gave no answer (${why}).`);
 	}
-};
+}
 
 /** One try; a throw, a bad status, or an answer set that is not full is logged and gives none. */
 async function askJev(

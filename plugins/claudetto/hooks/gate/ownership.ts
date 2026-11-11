@@ -2,9 +2,17 @@ import type { EngineInterface } from "claude-code";
 
 import { GATE_SYSTEM_WRITE, gateTmpMarker } from "../texts-gate.ts";
 import { isPersonMessage } from "../verify.ts";
+import { askedToDelete } from "./asked.ts";
 import { POLICY_FILES } from "./packages.ts";
-import { MARKER, ownsOf, tmpTopOf, tmpTops } from "./processes.ts";
+import {
+	forceDeleted,
+	MARKER,
+	ownsOf,
+	tmpTopOf,
+	tmpTops,
+} from "./processes.ts";
 import { judge, systemPath } from "./rules.ts";
+import { parse } from "./shell-words.ts";
 import { deny, type Verdict } from "./verdict.ts";
 
 // Only a command that could need the transcript or a marker file reads them.
@@ -23,22 +31,35 @@ export async function isMarked(
 	return held.trim() === (await $.session.id());
 }
 
-/** What this session owns, read from its transcript and the marker files, for the parts of `command` that need them. */
+const kept = async (
+	names: readonly string[],
+	has: (name: string) => Promise<boolean>,
+) => {
+	const found = await Promise.all(
+		names.map(async (n) => ((await has(n)) ? n : undefined)),
+	);
+	return new Set(found.filter((n) => n !== undefined));
+};
+
+/** What this session owns, read from its transcript and the marker files, for the parts of `command` that need them, with the foreign branches the person asked to delete. */
 async function ownershipOf($: EngineInterface, command: string) {
 	const tops = TMP_TOUCH.test(command) ? tmpTops(command) : [];
-	const kept = async (has: (top: string) => Promise<boolean>) => {
-		const found = await Promise.all(
-			tops.map(async (t) => ((await has(t)) ? t : undefined)),
-		);
-		return new Set(found.filter((t) => t !== undefined));
-	};
 	const messages = OWNED.test(command) ? await $.session.messages() : [];
-	return ownsOf(
+	const own = ownsOf(
 		messages.flatMap((m) => m.toolUses),
-		await kept((top) => isMarked($, top)),
-		await kept((top) => $.fs.exists(top)),
-		messages.filter((item) => isPersonMessage(item)).map((m) => m.text),
+		await kept(tops, (top) => isMarked($, top)),
+		await kept(tops, (top) => $.fs.exists(top)),
 	);
+	const said = messages
+		.filter((item) => isPersonMessage(item))
+		.map((m) => m.text);
+	const foreign = parse(command)
+		.commands.flatMap((c) => forceDeleted(c) ?? [])
+		.filter((b) => !own.branch(b));
+	const asked = await kept([...new Set(foreign)], (branch) =>
+		askedToDelete($, said, branch),
+	);
+	return { ...own, asked: (name: string) => asked.has(name) };
 }
 
 async function presentFiles($: EngineInterface): Promise<Set<string>> {

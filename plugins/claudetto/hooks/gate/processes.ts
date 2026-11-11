@@ -1,5 +1,4 @@
 import { gateRmTmp, gateTmpMarker, gateWorktreeRemove } from "../texts-gate.ts";
-import { askedToDelete } from "./asked.ts";
 import { type Past, startedBy } from "./kill.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
 import { withoutGitOptions } from "./upstream.ts";
@@ -148,12 +147,11 @@ export const createdOf = (past: Past[]) => {
 	};
 };
 
-/** What the non-error calls of this session made or started, and which /tmp folders carry its marker. */
+/** What the non-error calls of this session made or started, and which /tmp folders carry its marker. The caller adds the branches the person asked to delete. */
 export const ownsOf = (
 	past: Past[],
 	marked: Set<string>,
 	standing: Set<string>,
-	said: readonly string[] = [],
 ): Owns => {
 	const { paths, branches, workers } = createdOf(past);
 	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
@@ -168,7 +166,7 @@ export const ownsOf = (
 		branch: (name) =>
 			branches.includes(name) ||
 			workers.some((id) => name === `worktree-agent-${id}`),
-		asked: (name) => askedToDelete(said, name),
+		asked: NOBODY.asked,
 	};
 };
 
@@ -222,6 +220,16 @@ const isForceDelete = (flags: string[]): boolean =>
 
 const plain = (words: string[]): string[] =>
 	words.filter((w) => !w.startsWith("-"));
+
+/** The branches a `git branch -D` names, or none when the command is no force delete. */
+export const forceDeleted = (c: Command): string[] | undefined => {
+	const { name, args } = programOf(c);
+	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
+	return verb === "branch" &&
+		isForceDelete(rest.filter((w) => w.startsWith("-")))
+		? plain(rest)
+		: undefined;
+};
 
 /** Denies `rm` under /tmp of a top folder without this session's marker, `git worktree remove` of a path this session did not create. */
 export const ownedVerdict = (
@@ -281,10 +289,5 @@ export const ownedRemoval = (c: Command, own: Owns): boolean => {
 	if (name === "rm") {
 		return plain(args).length > 0 && plain(args).every((p) => TMP_TOP.test(p));
 	}
-	const [verb = "", ...rest] = name === "git" ? withoutGitOptions(args) : [];
-	return (
-		verb === "branch" &&
-		isForceDelete(rest.filter((w) => w.startsWith("-"))) &&
-		plain(rest).every((b) => own.branch(b) || own.asked(b))
-	);
+	return forceDeleted(c)?.every((b) => own.branch(b) || own.asked(b)) ?? false;
 };

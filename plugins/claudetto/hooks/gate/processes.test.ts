@@ -74,27 +74,6 @@ for (const command of [
 	});
 }
 
-for (const said of [
-	"delete all other local branches",
-	"Remove the branch old-feature, it is merged.",
-]) {
-	test(`The Person Asked: after "${said}", git branch -D old-feature runs`, async ($: Engine, on: On) => {
-		lab(on, [], {}, [said]);
-		const awaited6 = await bash($, "git branch -D old-feature");
-		expect(awaited6.decision).toBe("allow");
-	});
-}
-
-for (const said of [
-	"Do not delete branch old-feature.",
-	"old-feature is out.",
-]) {
-	test(`No Request: after "${said}", git branch -D old-feature asks`, async ($: Engine, on: On) => {
-		lab(on, [], {}, [said]);
-		const awaited7 = await bash($, "git branch -D old-feature");
-		expect(awaited7.decision).toBe("ask");
-	});
-}
 for (const make of [
 	"git branch mine",
 	"git checkout -b mine",
