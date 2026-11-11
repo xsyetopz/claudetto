@@ -1,6 +1,7 @@
 # Every bedrock repo shares this file. Each language adds `.just/<language>.just`,
 # so `just <task>` runs the task for every language the repo has. Put project
-# recipes in `project.just`.
+# recipes in `project.just`; a recipe there named `project-<task>`, such as
+# `project-verify`, runs after the languages' <task>.
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
@@ -58,6 +59,10 @@ each recipe:
             {{ just_executable() }} "$language::{{ recipe }}"
         fi
     done
+    # project.just extends a task with a recipe named project-<task>.
+    case " $({{ just_executable() }} --summary) " in
+        *" project-{{ recipe }} "*) {{ just_executable() }} "project-{{ recipe }}" ;;
+    esac
 
 [private]
 lint-markdown *args:
