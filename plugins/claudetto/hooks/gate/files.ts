@@ -36,8 +36,12 @@ export const writesWhole = (
 			name === "echo" ||
 			(name === "cat" && operands(args).length === 0)));
 
-const IN_PLACE_EDITORS = new Set(["sed", "perl", "ruby"]);
-const IN_PLACE_FLAGS = new Set(["-i", "--in-place"]);
+/** Each in-place editor with `i` and its flag letters that take a value, so what follows such a letter is no flag. */
+const IN_PLACE_EDITORS = new Map([
+	["sed", /[ief]/u],
+	["perl", /[ieEMmIFCDV]/u],
+	["ruby", /[irIeEKFxCW]/u],
+]);
 const FIND_RUNS = new Set(["-exec", "-execdir", "-ok", "-okdir"]);
 
 /** The program a command runs, and each program its `find -exec` runs. */
@@ -56,15 +60,31 @@ const programsOf = (name: string, args: string[]): string[][] => {
 	return [[name, ...args], ...runs];
 };
 
+/** True when an editor reads `-i` or `--in-place` as its own flag: `sed` reads flags anywhere, and `perl` and `ruby` stop at the program file. */
+const editsInPlace = (name: string, [arg, ...rest]: string[]): boolean => {
+	const stops = IN_PLACE_EDITORS.get(name);
+	if (stops === undefined || arg === undefined || arg === "--") {
+		return false;
+	}
+	if (!arg.startsWith("-") || arg === "-") {
+		return name === "sed" && editsInPlace(name, rest);
+	}
+	if (arg.startsWith("--")) {
+		return arg.split("=")[0] === "--in-place" || editsInPlace(name, rest);
+	}
+	const stop = arg.search(stops);
+	// A value letter that ends its word takes the next word as its value.
+	const next = rest.slice(stop === arg.length - 1 ? 1 : 0);
+	return arg[stop] === "i" || editsInPlace(name, next);
+};
+
 /** The file an in-place editor changes, or undefined when the command edits nothing in place. */
 export const inPlaceTarget = (
 	name: string,
 	args: string[],
 ): string | undefined => {
-	const edit = programsOf(name, args).find(
-		([program = "", ...rest]) =>
-			IN_PLACE_EDITORS.has(baseName(program)) &&
-			flagsOf(rest).some((f) => IN_PLACE_FLAGS.has(f)),
+	const edit = programsOf(name, args).find(([program = "", ...rest]) =>
+		editsInPlace(baseName(program), rest),
 	);
 	return edit && (operands(edit.slice(1)).at(-1) ?? "");
 };

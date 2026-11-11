@@ -1,9 +1,9 @@
+import { inPlaceTarget } from "./gate/files.ts";
 import { type Command, parse, programOf } from "./gate/shell-words.ts";
 import { fieldOf } from "./gate/verdict.ts";
 import type { PinConstraint } from "./texts-handoff.ts";
 import { isWriter } from "./tools.ts";
 
-const IN_PLACE = /^-[a-z]*i/u;
 const WRITE_PROGRAMS = new Set([
 	"tee",
 	"mv",
@@ -44,7 +44,7 @@ const writesFiles = (c: Command): boolean => {
 	return (
 		writesFile(c) ||
 		WRITE_PROGRAMS.has(name) ||
-		(name === "sed" && args.some((a) => IN_PLACE.test(a))) ||
+		inPlaceTarget(name, args) !== undefined ||
 		(name === "bun" && ["add", "install", "remove"].includes(sub))
 	);
 };

@@ -11,6 +11,11 @@ const IN_PLACE = [
 	"find src -name '*.ts' -execdir perl -pi -e 's/a/b/' {} ';'",
 	"xargs sed -i 's/a/b/' < list",
 	"xargs -I {} -n 1 sed -i 's/a/b/' {} < list",
+	"sed -i '' -e 's/a/b/' -e 's/c/d/' src/a.ts; grep -n a src/a.ts",
+	"sed -e 's/a/b/' -i src/a.ts",
+	"perl -pe 's/a/b/' -i src/a.ts",
+	"perl -Mstrict -pi.bak -e 's/a/b/' src/a.ts",
+	"ruby -rtime -pi -e 'gsub(/a/, %q(b))' src/a.ts",
 ];
 
 for (const command of IN_PLACE) {
@@ -69,6 +74,14 @@ const KEPT = [
 	"cat src/a.ts | wc -l",
 	"cat src/a.ts | sed 's/a/b/' > /tmp/out.ts",
 	"find src -name '*.ts' -exec grep -l x {} +",
+	"perl -Mstrict -e 'print 1'",
+	"perl -MFile::Basename -e 'print basename(q(a/b))'",
+	"perl -CSi -e 'print 1'",
+	"perl -e '-d q(dist) and print 1'",
+	"perl tool.pl -i in.txt",
+	"ruby -rtime -e 'puts Time.now.iso8601'",
+	"ruby tool.rb -i in.txt",
+	"git diff | sed -es/i/j/",
 	"bun fmt src/a.ts plugins/b.ts",
 	"bun fmt --check",
 	"bun fmt --staged",
