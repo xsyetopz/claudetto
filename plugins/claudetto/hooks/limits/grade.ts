@@ -26,6 +26,11 @@ const offeredCodes = (
 	...(failed ? (["unfixed"] as const) : []),
 ];
 
+const GRADERS = {
+	haiku: "claude-haiku-5-5",
+	sonnet: "claude-sonnet-5-5",
+} as const;
+
 /** What each model call of one grading shares: the turn, its final reply, and the background tasks. */
 interface Graded {
 	readonly turn: ReturnType<typeof claimTurn>;
@@ -51,7 +56,8 @@ async function gradeOnce(
 ): Promise<GradeFault[]> {
 	const r = await $.model
 		.complete({
-			model,
+			model: GRADERS[model],
+			effort: "high",
 			prompt: VERIFY_GRADE(
 				turn.people,
 				turn.shown,

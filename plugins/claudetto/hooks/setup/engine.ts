@@ -88,7 +88,8 @@ async function adviceOf(
 			question,
 		);
 		const r = await $.model.complete({
-			model: "haiku",
+			model: "claude-haiku-5-5",
+			effort: "low",
 			prompt: SETUP_ADVICE(shown, options),
 			maxTokens: 200,
 			timeoutMs: ADVICE_MS,

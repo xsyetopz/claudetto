@@ -13,34 +13,15 @@ const typeTenLongPrompts = ($: Engine): Promise<void> =>
 	);
 
 test(
-	"a check makes one request with the option model, effort, and 512 tokens",
-	{
-		options: {
-			sideCheckEnabled: true,
-			sideCheckModel: "claude-sonnet-5-5",
-			sideCheckEffortLevel: "low",
-		},
-	},
+	"a check makes one request with claude-haiku-5-5, high effort, and 512 tokens",
+	ON,
 	async ($: Engine, on: On) => {
 		const f = fixture(on);
 		await act($, f, "t1");
 		expect(f.asked).toHaveLength(1);
-		expect(f.asked[0]?.model).toBe("claude-sonnet-5-5");
-		expect(f.asked[0]?.effort).toBe("low");
-		expect(f.asked[0]?.maxTokens).toBe(512);
-	},
-);
-
-test(
-	"a check without model options asks claude-haiku-5-5 at high effort, and an unknown effort falls back",
-	{
-		options: { sideCheckEnabled: true, sideCheckEffortLevel: "maximum" },
-	},
-	async ($: Engine, on: On) => {
-		const f = fixture(on);
-		await act($, f, "t1");
 		expect(f.asked[0]?.model).toBe("claude-haiku-5-5");
 		expect(f.asked[0]?.effort).toBe("high");
+		expect(f.asked[0]?.maxTokens).toBe(512);
 	},
 );
 

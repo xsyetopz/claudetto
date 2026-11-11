@@ -99,11 +99,11 @@ test("a turn with tool output is also graded by sonnet for the unseen fault, whi
 	const awaited15 = await stop($, false, UNSEEN_REPLY);
 	expect(awaited15.block).toBe(VERIFY_BLOCK(["unseen"]));
 	expect([...models].toSorted((a, b) => a.localeCompare(b))).toEqual([
-		"haiku",
-		"sonnet",
+		"claude-haiku-5-5",
+		"claude-sonnet-5-5",
 	]);
-	const haiku = promptTo(seen, models, "haiku");
-	const sonnet = promptTo(seen, models, "sonnet");
+	const haiku = promptTo(seen, models, "claude-haiku-5-5");
+	const sonnet = promptTo(seen, models, "claude-sonnet-5-5");
 	expect(sonnet).toContain("- unseen:");
 	expect(sonnet).toContain("- Bash git diff\n+# setup block");
 	expect(haiku).not.toContain("- unseen:");
@@ -118,7 +118,7 @@ test("sonnet sees the other codes beside unseen, and a fallback fault it finds d
 		'{"faults":[]}',
 		seen,
 		[],
-		{ sonnet: found("fallback", "Committed.") },
+		{ "claude-sonnet-5-5": found("fallback", "Committed.") },
 	);
 	const awaited16 = await stop($, false, UNSEEN_REPLY);
 	expect(awaited16.block).toBeUndefined();
@@ -134,7 +134,7 @@ test("a credited fault only sonnet finds blocks when a tool ran", async ($: Engi
 		'{"faults":[]}',
 		[],
 		[],
-		{ sonnet: found("credited", "Committed.") },
+		{ "claude-sonnet-5-5": found("credited", "Committed.") },
 	);
 	const awaited17 = await stop($, false, UNSEEN_REPLY);
 	expect(awaited17.block).toBe(VERIFY_BLOCK(["credited"]));
@@ -145,7 +145,7 @@ test("a turn with no tool output makes one call and cannot raise the unseen faul
 	lab(on, [user("hi")], found("unseen"), [], models);
 	const awaited18 = await stop($);
 	expect(awaited18.block).toBeUndefined();
-	expect(models).toEqual(["haiku"]);
+	expect(models).toEqual(["claude-haiku-5-5"]);
 });
 
 test("the grader sees the latest 8 tool results, 400 characters each", async ($: Engine, on: On) => {
@@ -188,7 +188,7 @@ for (const [error, command, reply] of [
 		);
 		const awaited19 = await stop($, false, reply);
 		expect(awaited19.block).toContain(RERUN);
-		const haiku = promptTo(seen, models, "haiku");
+		const haiku = promptTo(seen, models, "claude-haiku-5-5");
 		expect(haiku).toContain("- unfixed:");
 		expect(haiku).toContain(
 			`Fact: the last command this turn failed:\n- Bash ${command}\n${error}`,

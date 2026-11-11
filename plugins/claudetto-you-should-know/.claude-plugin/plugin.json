@@ -15,19 +15,6 @@
 			"title": "Side check",
 			"description": "Use `true` to turn the side check on. Left at `false`, every hook of this plugin passes straight through and nothing is requested, so an installed copy costs nothing until it is turned on.",
 			"default": false
-		},
-		"sideCheckModel": {
-			"type": "string",
-			"title": "Side check model",
-			"description": "The model that answers each check. The default is the small model that `docs/models.md` assigns to a handoff or a summary.",
-			"default": "claude-haiku-5-5"
-		},
-		"sideCheckEffortLevel": {
-			"type": "string",
-			"title": "Side check effort",
-			"description": "How hard the model thinks about each check.",
-			"default": "high",
-			"options": ["low", "medium", "high", "xhigh", "max"]
 		}
 	}
 }

@@ -110,7 +110,8 @@ const extractLedger = async (
 ): Promise<Extraction | undefined> => {
 	const history = await personTexts($);
 	const r = await $.model.complete({
-		model: "haiku",
+		model: "claude-haiku-5-5",
+		effort: "high",
 		prompt: PIN_EXTRACT(history, previous, text),
 		maxTokens: 600,
 		timeoutMs: 20_000,
