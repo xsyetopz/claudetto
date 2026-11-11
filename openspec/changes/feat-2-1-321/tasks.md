@@ -54,13 +54,13 @@ Each slice is one commit, with its failing test first where it changes behavior.
 - [x] 5.3 From the 5.2 run, record the share of Nouls that land in the unsettled band and the fallback's score on them, and set the claim-check thresholds from the tuning cases only.
 - [x] 5.4 Run the ledger cases the same way, with sentences that lean on the sentence before them and a pasted log among them, and set the cap on sentences per message from the result.
 - [x] 5.5 Run the branch-gate cases the same way against today's `askedToDelete`.
-- [ ] 5.6 For each site whose Decider score on the held-out cases is below today's, revise this change with the `update` skill: remove the site's delta and its tasks in group 6, and record the scores in `design.md`.
+- [x] 5.6 For each site whose Decider score on the held-out cases is below today's, revise this change with the `update` skill: remove the site's delta and its tasks in group 6, and record the scores in `design.md`.
 
 ## 6. Sites, Each Only After Its Check in Group 5 Passes
 
-- [ ] 6.1 Branch gate: replace `gate/asked.ts` with the Noul and its table, and delete the three patterns and their tests.
-- [ ] 6.2 Claim check: write the question set and the fault table of decision 9, with a test per table row that makes no model call.
-- [ ] 6.3 Claim check: replace `VERIFY_GRADE`, the Haiku call, the Sonnet call, and the quote parser with one `settle` call, and delete them with their tests.
+- [ ] 6.1 Branch gate: replace `gate/asked.ts` with the Noul and its table, and delete the three patterns and their tests. Word the Noul to read the person's latest word on the branch and to count an instruction, not a question, because a false yes allows a delete nobody asked for (P68, P69). Check it on the tuning cases, and show no false yes on the retraction and question cases.
+- [ ] 6.2 Claim check: delete `plugins/claudetto/hooks/decider/claim-check.ts`, its question set and thresholds, and every test or mock that names them, because decision 9 keeps today's grading.
+- [ ] 6.3 Claim check: delete the claim-check runner and tuner in `tools/` (`decider-claim-check.ts`, `claim-check-tune.ts`, and the claim-check scoring in `tools/claim-check-plugin/`) with their tests. Keep what the ledger and branch-gate runners still use.
 - [ ] 6.4 Ledger: write the sentence split with `Intl.Segmenter`, the cap that 5.4 set, the question set, and the table of decision 10, with the first call of a process covering every earlier message.
 - [ ] 6.5 Ledger: replace the extraction prompt, its parser, and the quote check with the `settle` call, and delete them with their tests.
 - [ ] 6.6 `decide` tool: point it at the moved client, keep its three tries and its hand-back text, and add the scenario "The Removed Option".

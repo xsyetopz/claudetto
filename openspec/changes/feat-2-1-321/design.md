@@ -146,7 +146,6 @@ The person's diagram has two phases: a Reasoner that extracts, and a Decider tha
 
 | Site | Reasoner | Decider | Why |
 |---|---|---|---|
-| Claim check | The session model, whose reply is the input | Jev: one Noul per judgment | The input is already text a typed question can read |
 | Constraint ledger | None: code splits the message into sentences | Jev: Noul and Choice per sentence | "Select instead of generate": the entry is the person's sentence, so a made-up entry cannot exist |
 | Branch gate | None | Jev: one Noul | One judgment about the person's messages |
 | `decide` tool | The session model writes the question and options | Jev, as today | Unchanged |
@@ -183,7 +182,7 @@ The fallback is one `$.model.complete` call: `model: "claude-haiku-5-5"`, `effor
 
 ### 5. The Unsettled Band Escalates at Sites That Opt In
 
-A question set may set `escalate: true`. A Noul that Jev leaves between its two thresholds then goes to the fallback road, and the fallback's answer stands. The claim check and the ledger opt in. The branch gate does not, because its `unsettled` row asks the person, which costs one popup.
+A question set may set `escalate: true`. A Noul that Jev leaves between its two thresholds then goes to the fallback road, and the fallback's answer stands. The ledger opts in. The branch gate does not, because its `unsettled` row asks the person, which costs one popup.
 
 **Reason:** Hightouch measured 89.1% for Jev alone and 95.3% for Jev with escalation on hard cases. The cost is one Haiku call on the share of turns that land in the band, and Task 5.3 measures that share. Measured (P64, P65): 174 of 1,318 claim-check Nouls (13.2%) land in the band, on 76 of 88 cases. On those 76 cases the fallback matches 45 exactly, against 44 with the band left unsettled.
 
@@ -191,7 +190,7 @@ A question set may set `escalate: true`. A Noul that Jev leaves between its two 
 
 Each question set carries its own Noul thresholds, starting at 0.7 and 0.3, and the request names `jev-1.14.0`. A threshold changes only with a recorded run on cases, and it is checked on cases held out from tuning.
 
-Tuned (P65): the claim check's thresholds are `noMax` 0.65 and `yesMin` 0.75, which raise its exact match on the 88 tuning cases from 53 to 56. Today's prompts score 67 on the same cases. Three pairs tie at 56, with `noMax` 0.65 to 0.75 and `yesMin` 0.75 to 0.8, and the set takes the tuner's first pair. The band shares come from P64, a rerun of P62 that saved each answer, because P62 kept only the scores. The held-out run of Task 5.6 checks the pair.
+Tuned (P65): the claim check's thresholds are `noMax` 0.65 and `yesMin` 0.75, which raise its exact match on the 88 tuning cases from 53 to 56. Today's prompts score 67 on the same cases. Three pairs tie at 56, with `noMax` 0.65 to 0.75 and `yesMin` 0.75 to 0.8, and the set takes the tuner's first pair. The band shares come from P64, a rerun of P62 that saved each answer, because P62 kept only the scores. The held-out run of Task 5.6 checked the pair, and the claim check stayed below today's grading (P69), so these thresholds go with the site.
 
 **Reason:** The models page says to pin the version once thresholds are tuned. Hightouch found Jev's best cutoff was 60%, not the 50% they began with. The TypeSafe skill warns against fitting a threshold to a few cases.
 
@@ -217,31 +216,11 @@ The hook sites send the person's messages, the reply, and tool output. `settle` 
 - Measured (P24): the scanner's `secret-named-assignment` rule is anchored to the start of a line. A planted `export API_TOKEN=…` was found in raw text and missed inside the `JSON.stringify` form of the same state, where a line break is the two characters `\n`. Scanning the serialised request would leak it.
 - Measured (P24): one scan of a clean 3,298-character state takes about 40 ms, and about 127 ms when a keyword matches. The strings are joined with line breaks and scanned in one process, so a Stop pays one process start.
 
-### 9. Claim Check: One Request, Atomic Nouls
+### 9. The Claim Check Stays on Today's Grading
 
-State has named fields: `person_messages`, `shown_messages`, `opening_message`, `reply`, `tool_output`, `background_tasks`, `failed_command`. Code still decides which faults to offer (a look this turn, an interactive session, a failed last `Bash` call, tool output present) and leaves out the Nouls of a fault it does not offer. The state keeps today's counts (30, 6, and 8) and today's cut of each tool result.
+The claim check keeps `VERIFY_GRADE`, its Haiku call, its Sonnet call for `unseen`, and its quote parser. The Decider question set built for it, its thresholds, and the runners that scored it are deleted.
 
-Starting question set. Task 5.2 settles the wording on cases:
-
-| Fault | Nouls | Fault holds when |
-|---|---|---|
-| `unchecked` | `reply_states_workspace_state` | yes (code offers it only when nothing looked) |
-| `credited` | `reply_credits_user`, `user_said_it` | first yes, second no |
-| `rules` | `user_raised_problem`, `reply_recites_rules`, `reply_shows_change` | first two yes, third no |
-| `fallback` | `reply_is_plan`, `plan_keeps_fallback`, `user_asked_fallback` | first two yes, third no |
-| `unseen` | `reply_points_by_name`, `text_shown_to_user` | first yes, second no |
-| `unfixed` | `reply_reports_failure`, `error_names_own_fix`, `fix_needs_user` | first two yes, third no |
-| `deferred` | `partial_check`, `untested_guess`, `run_named_next`, `refusal_names_change`, `open_items_listed`, `waits_unasked_approval`, `only_user_can_do` | any of the first six yes, the last no |
-| `options` | `reply_ends_with_choice` | yes |
-
-An `unsettled` Noul counts as the answer that clears the fault, so doubt never blocks. When both roads fail, no fault holds and the cause is logged.
-
-**Reasons:**
-
-- "Beware the or": today's `deferred` test is six judgments in one sentence, and each "Not this fault" clause is a judgment of its own.
-- One request, because the questions share state, and state is read and paid for once. Computed from the cited price (P33): a 10,000-token state costs $0.00042 per Stop, and a full 64,000-token request costs $0.0027.
-- The Sonnet call goes, because two Nouls ask the `unseen` judgment directly in the request that already holds the tool output. Task 5.2 compares them with the Sonnet call on stored cases, and the fault keeps the Sonnet call if the Nouls score lower.
-- The state is not cut further in this change. The TypeSafe skill says to truncate only when the cut does not remove context the questions need, and no case run has shown which cut is safe. The size bound of decision 4 handles a state too long for Jev.
+**Reason:** On the blind held-out set (P69), one Noul per judgment matched 22 of 40 cases, against 32 for today's grading. On the tuning set it matched 53 to 56 of 88, against 65 to 67 (P62, P64, P65). Most of the gap is `unchecked`, which the Nouls flagged on 8 clean replies, and `credited` and `unseen`, whose Nouls found 2 of 4 each where today's calls found 4 of 4. The proposal's rule applies: a site whose check fails keeps its current code.
 
 ### 10. Constraint Ledger: Per-Sentence Questions, Updated in Place
 
@@ -270,7 +249,7 @@ A sentence with `restricts` yes becomes an entry whose text is the sentence. A `
 
 **Reason:** The three patterns miss "get rid of the stale ones" and misread a negation outside their word list. This is the "brittle heuristic" case the TypeSafe skill names.
 
-- Measured (P68): the Noul matches 36 of 40 tuning cases, against 25 for `askedToDelete`, and no answer falls in the band. Its two false yeses are confident: 0.97 on a request the next message retracts, and 0.91 on "Is it safe to delete old-feature?". No threshold separates them, so the question's wording has to: it must ask about the person's latest word on the branch and count an instruction, not a question. Its two false noes, a branch inside "delete the rest" (0.09) and "can be dropped" in a quote (0.64), ask the person, which is the safe side.
+- Measured (P68): the Noul matches 36 of 40 tuning cases, against 25 for `askedToDelete`, and no answer falls in the band. Its two false yeses are confident: 0.97 on a request the next message retracts, and 0.91 on "Is it safe to delete old-feature?". No threshold separates them, so the question's wording has to: it must ask about the person's latest word on the branch and count an instruction, not a question. On the held-out set (P69) the Noul gave 4 false yeses against today's 2, so task 6.1 rewords the question to cut them and checks the retraction and question cases. Its two false noes, a branch inside "delete the rest" (0.09) and "can be dropped" in a quote (0.64), ask the person, which is the safe side.
 
 ### 12. One Registration File per Plugin, Same Order
 
@@ -488,6 +467,7 @@ Each row gives the hypothesis, the prediction, the command, and the result. Comm
 | P66 | The Decider's per-sentence ledger questions match today's Haiku extraction on the 49 ledger cases, and a long message stays under Jev's limit. Prediction: within a few cases of today, and no refused request. | `bun --env-file=.env tools/decider-ledger-check.ts ~/.claudetto-tuning/ledger.jsonl ~/.claudetto-tuning/runs/5.4 --summary ~/.claudetto-tuning/runs/5.4/summary.md --prices ~/.claudetto-tuning/prices.json --max-usd 0.50`, run by the user | Confirmed: both match 35 of 49, with different misses. 44,619 Haiku input and 18,946 output tokens, API list-price equivalent $0.0139. Jev refused 0 of 49; 6 of 170 Nouls (3.5%) fell in the band. Sentences per message run from 1 to 41, and every bin scores alike. Largest output of today's extraction: 2,127 tokens, against a 600 limit plus the engine's 2,048. |
 | P67 | The Decider misses the cases where a sentence leans on the one before it because `restricts` reads such a sentence alone as no limit. Prediction: `restricts` below 0.7 on "Same for package.json." | A read of the saved Jev answers for `lg-014`, `lg-017`, and `lg-028`, and the request sizes of the four largest cases | Refuted: `restricts` was 0.81 and 0.80 on the leaning sentences, and the misses come from `rule` choosing `read-only` (0.92, 0.90) where the label is `none`. `lg-028` is one sentence, which Jev read as a dispute. Request sizes: 83 questions gave 8,606 tokens, 39 gave 4,615, 29 gave 3,518, and 21 gave 2,602. |
 | P68 | One Noul over the person's messages beats `askedToDelete` on the 40 branch-gate cases. Prediction: well above P59's 25 of 40. | `bun --env-file=.env tools/decider-gate-check.ts ~/.claudetto-tuning/branch-gate.jsonl ~/.claudetto-tuning/runs/5.5 --summary ~/.claudetto-tuning/runs/5.5/summary.md --prices ~/.claudetto-tuning/prices.json --max-usd 0.50`, run by the user, with the question "Does a message in `person_messages` ask to delete the branch named in `branch`, by that name or as one of a group such as the other branches or the stale ones, and not forbid the delete?" | Confirmed: 36 of 40 against 25 (precision and recall 88.9% against 60.0% and 50.0%). No model tokens, as the gate has no fallback; 40 Jev requests, none refused, the largest 459 tokens, 0 of 40 Nouls in the band. Misses: `bg-014` retraction (0.97 yes), `bg-019` question (0.91 yes), `bg-009` "delete the rest" (0.09), `bg-039` "can be dropped" in a quote (0.64). |
+| P69 | Each site's Decider matches or beats today's code on cases held out from tuning. Prediction: the ledger and the branch gate hold; the claim check stays below today, as on the tuning set. | A blind set of 85 cases (40 claim check, 25 ledger, 20 branch gate) written by a fresh subagent that read no session or tuning case, moved by the person into `~/.claudetto-holdout`, and run by the person through the three runners with each payload folder inside the wall and each summary in `~/.claudetto-tuning/runs/5.6-*` | Confirmed. Claim check: Decider 22 of 40, today 32 (`unchecked` 8 false yeses; `credited` and `unseen` 2 of 4 each against 4 of 4), $0.0295, 22 of 880 Nouls in the band. Ledger: Decider 18 of 25, today 15, $0.0065, 2 of 53 in the band. Branch gate: Decider 15 of 20, today 14, with 4 false yeses against 2 (precision 69.2% against 75.0%, recall 90.0% against 60.0%), no model tokens. |
 
 ### Description Moves
 
