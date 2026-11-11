@@ -1,4 +1,4 @@
-import type { ModelEffort, On, PluginOptions } from "claude-code";
+import type { CatchHandler, HookFor, On, PluginOptions } from "claude-code";
 
 import { ASK, questionsOf, READERS } from "./calls.ts";
 import {
@@ -10,6 +10,7 @@ import {
 	remember,
 } from "./note.ts";
 import { press } from "./press.ts";
+import { type Settings, settingsOf } from "./settings.ts";
 import {
 	countIgnored,
 	type Engine,
@@ -32,33 +33,10 @@ interface Memory {
 	earlier: readonly string[];
 }
 
-interface Settings {
-	readonly model: string;
-	readonly effort: ModelEffort;
-}
-
 interface Turn {
 	readonly id: string;
 	readonly turnId: string;
 }
-
-const EFFORTS: readonly ModelEffort[] = [
-	"low",
-	"medium",
-	"high",
-	"xhigh",
-	"max",
-];
-
-const settingsOf = (options: PluginOptions): Settings => {
-	const model = options["sideCheckModel"];
-	return {
-		model:
-			typeof model === "string" && model !== "" ? model : "claude-haiku-5-5",
-		effort:
-			EFFORTS.find((e) => e === options["sideCheckEffortLevel"]) ?? "high",
-	};
-};
 
 const settleTyped = async (
 	$: Engine,
@@ -227,12 +205,6 @@ const logHooks = (on: On, mem: Memory): void => {
 		}
 		return next(e);
 	});
-	on("tool.call", { tool: ASK }, (_$, e, next) => {
-		for (const q of questionsOf(e)) {
-			addToLog(mem, logEntry("assistant", `asked the person: ${q}`));
-		}
-		return next(e);
-	});
 };
 
 const viewHooks = (on: On, mem: Memory): void => {
@@ -267,6 +239,18 @@ const viewHooks = (on: On, mem: Memory): void => {
 	});
 };
 
+type CallCatch = CatchHandler<HookFor<"tool.call">>;
+
+// The engine hands a `.catch` handler `$` first, which the lint's catch-name rule takes for an error.
+function sideCheckFault(
+	$: Parameters<CallCatch>[0],
+	e: Parameters<CallCatch>[1],
+	next: Parameters<CallCatch>[2],
+): ReturnType<CallCatch> {
+	$.ui.log(`The side check failed (${next.error.message ?? next.error.kind})`);
+	return next(e);
+}
+
 export const register = (on: On, options: PluginOptions): void => {
 	if (options["sideCheckEnabled"] !== true) {
 		return;
@@ -283,7 +267,13 @@ export const register = (on: On, options: PluginOptions): void => {
 	logHooks(on, mem);
 	viewHooks(on, mem);
 	on("tool.call", async ($, e, next) => {
-		if (e.agentId !== undefined || READERS.has(e.tool) || ASK.test(e.tool)) {
+		if (ASK.test(e.tool)) {
+			for (const q of questionsOf(e)) {
+				addToLog(mem, logEntry("assistant", `asked the person: ${q}`));
+			}
+			return next(e);
+		}
+		if (e.agentId !== undefined || READERS.has(e.tool)) {
 			return next(e);
 		}
 		addToLog(mem, logEntry("assistant", `about to call ${JSON.stringify(e)}`));
@@ -293,5 +283,5 @@ export const register = (on: On, options: PluginOptions): void => {
 			turnId: mem.turns.get(id) ?? "",
 		});
 		return line === undefined ? next(e) : { deny: stopFor(line) };
-	});
+	}).catch(sideCheckFault);
 };

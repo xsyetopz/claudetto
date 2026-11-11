@@ -30,6 +30,7 @@ export interface Ground {
 	box?: string;
 	fill?: PromptFilled;
 	fault?: boolean;
+	idFault?: boolean;
 	answer?: string;
 }
 
@@ -52,7 +53,12 @@ const wireSession = (on: On, ground: Ground): Map<string, unknown> => {
 		store.set(e.key, structuredClone(e.value));
 		return { value: undefined };
 	});
-	on("session.id", () => ({ value: "s1" }));
+	on("session.id", () => {
+		if (ground.idFault === true) {
+			throw new Error("no session");
+		}
+		return { value: "s1" };
+	});
 	on("session.surfaces", () => ({ value: ground.surfaces ?? ["terminal"] }));
 	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
 	on("ui.invalidate", () => ({ value: undefined }));

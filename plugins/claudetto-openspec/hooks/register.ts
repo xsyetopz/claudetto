@@ -38,5 +38,7 @@ export const register = (on: On): void => {
 			},
 			e,
 		),
+	})).catch((_error, _e, next) => ({
+		deny: next.error.message ?? next.error.kind,
 	}));
 };

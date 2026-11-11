@@ -181,6 +181,25 @@ test(
 );
 
 test(
+	"a fault in the tool.call hook is logged with its cause and the call goes on",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on, { idFault: true });
+		const lines: string[] = [];
+		on("ui.log", (_$, e) => {
+			lines.push(e.text);
+			return { value: undefined };
+		});
+		const out = await $.tool.call(PUSH);
+		expect(lines.join("\n")).toContain(
+			"The side check failed (no implementation for session.id)",
+		);
+		expect(out.deny).toBeUndefined();
+		expect(f.ran).toEqual(["Bash"]);
+	},
+);
+
+test(
 	"a check fault is swallowed and the person sees nothing",
 	ON,
 	async ($: Engine, on: On) => {
