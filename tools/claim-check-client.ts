@@ -89,10 +89,10 @@ const worstCase = (price: Price, body: string, maxTokens: number): number =>
 		output_tokens: maxTokens,
 	});
 
-const blocks = (prompt: NonNullable<Request["system"]>) =>
-	typeof prompt === "string"
-		? prompt
-		: prompt.map((block) => ({
+const blocks = (text: NonNullable<Request["system"]>) =>
+	typeof text === "string"
+		? [{ type: "text", text }]
+		: text.map((block) => ({
 				type: "text",
 				text: block.text,
 				...(block.cache === true
@@ -100,14 +100,23 @@ const blocks = (prompt: NonNullable<Request["system"]>) =>
 					: {}),
 			}));
 
-// The request body of the Messages API for what a hook hands `$.model.complete`; the engine's own wire form is a hypothesis this mirrors.
+// Captured from a real session against a fake Messages API: the keys sit in this order, a string `system` becomes one text block, and a string `prompt` stays a string.
+// The engine also puts a billing-header block first in `system` and adds `metadata`; both change per session, so a run sends neither.
 const wireBody = (request: Request): string =>
 	JSON.stringify({
 		model: request.model,
 		max_tokens: (request.maxTokens ?? 0) + ENGINE_THINKING_ROOM,
-		output_config: { effort: request.effort },
 		...(request.system === undefined ? {} : { system: blocks(request.system) }),
-		messages: [{ role: "user", content: blocks(request.prompt) }],
+		messages: [
+			{
+				role: "user",
+				content:
+					typeof request.prompt === "string"
+						? request.prompt
+						: blocks(request.prompt),
+			},
+		],
+		output_config: { effort: request.effort },
 	});
 
 const keep = async (ctx: Ctx, label: string, body: string): Promise<void> => {
