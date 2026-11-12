@@ -171,7 +171,7 @@ export const offCommandText = (command: string): string =>
 // Delegation: the Agent and ask tool texts and the reply command spec.
 
 export const AGENT_TEXT =
-	'Start a subagent. subagent_type, in full: claudetto:search searches, claudetto:plan plans, claudetto:sweep reviews, claudetto:work does the rest; isolation: "worktree" if it commits. Do a few tool calls yourself.';
+	'Start a subagent. subagent_type, in full: claudetto:search finds, claudetto:plan plans, claudetto:sweep reviews, claudetto:work the rest; isolation: "worktree" if it commits. Do a few calls yourself.';
 
 export const agentForm = (type: string, background: boolean): string =>
 	`Send this call again as subagent_type "${type}"${background ? " with run_in_background: false" : ""}. Nothing ran: a hook that changes a call's input makes auto mode skip its review of every call in the same response, so claudetto refuses this call instead of fixing it.`;
