@@ -118,7 +118,7 @@ export const gateWalled = (path: string, wall: string): string =>
 export const walledUnguarded = (walls: readonly string[]): string =>
 	`claudetto walls off ${walls.map((w) => `\`${w}\``).join(", ")}, but your settings hold no ${walls.map((w) => `\`Read(${w}/**)\``).join(", ")} in \`permissions.deny\`, so only claudetto's gate keeps sessions out.`;
 export const gateRmTmp = (path: string): string =>
-	`\`${path}\` names a temp base or leaves one through \`..\`, and a base holds every session's files. Remove the folder you made, by its full path.`;
+	`\`${path}\` names a temp base or leaves one through \`..\`, and a base holds every session's files. Remove the folder you made by its literal path, as \`rm -rf /tmp/<name>\`. Claude Code's own check denies a target that ends in \`$dir/\` or \`$dir/*\` or is a \`$(...)\`, and no rule allows it.`;
 export const CLEANUP_LEFT = (left: readonly string[]): string =>
 	`claudetto removed the worktrees and branches this agent created and no longer needs. These stay because they hold work: ${left.map((item) => `\`${item}\``).join(", ")}. A worktree has uncommitted changes, or a branch has commits the current branch lacks or is checked out in such a worktree. In your reply, list each of these paths and branches by name with what it holds, so the user can merge or drop it.`;
 export const STALE_TASKS = (lines: readonly string[]): string =>
