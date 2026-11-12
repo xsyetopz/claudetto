@@ -88,6 +88,55 @@ test("A Count Flag: the Read redirect names the file, never the count", () => {
 	}
 });
 
+test("A sed Range: the denial holds the Read call with offset and limit", () => {
+	const calls: [string, string][] = [
+		[
+			'sed -n 1,80p hooks/gate.ts; grep -n "GATE_CHECK_FAILED" -r hooks | head',
+			"`file_path` `hooks/gate.ts` (absolute), `offset` 1, and `limit` 80.",
+		],
+		[
+			"sed -n 5p f.ts",
+			"`file_path` `f.ts` (absolute), `offset` 5, and `limit` 1.",
+		],
+		["sed -n 10,20p f.ts", "`offset` 10, and `limit` 11."],
+		["head -n 5 f.ts", "`offset` 1, and `limit` 5."],
+		["head -3 f.ts", "`offset` 1, and `limit` 3."],
+		["head f.ts", "`offset` 1, and `limit` 10."],
+		["head --lines=7 f.ts", "`offset` 1, and `limit` 7."],
+	];
+	for (const [command, call] of calls) {
+		expect(judge(command, NONE)?.reason).toContain(call);
+	}
+});
+
+test("A Read With No Fixed Range: the denial names the file and no offset", () => {
+	for (const command of [
+		"cat f.ts",
+		"tail -n 5 f.ts",
+		"sed -n '$p' f.ts",
+		"sed -n 8,3p f.ts",
+		"head -c 5 f.ts",
+		"head -n 5 f.ts g.ts",
+	]) {
+		const reason = String(judge(command, NONE)?.reason);
+		expect(reason).toContain("`file_path` `");
+		expect(reason).not.toMatch(/`offset` \d/u);
+	}
+});
+
+test("A sed Script Flag: the Read redirect names the file for each spelling", () => {
+	for (const command of [
+		"sed --quiet 1,80p f.ts",
+		"sed --silent 1,80p f.ts",
+		"sed -n --expression=1p f.ts",
+		"sed -n --expression 1p f.ts",
+		"sed -n -e1p f.ts",
+		"sed -ne 1p f.ts",
+	]) {
+		expect(judge(command, NONE)?.reason).toContain("`file_path` `f.ts`");
+	}
+});
+
 test("A Count Flag: a count with no file reads stdin and passes", () => {
 	for (const command of [
 		"head -n 5",

@@ -9,6 +9,7 @@ import {
 	formatVerdict,
 	inPlaceTarget,
 	printedFiles,
+	printedRange,
 	printsFile,
 	writesWhole,
 	writeTargets,
@@ -76,7 +77,12 @@ const commandVerdicts = (
 		edited === undefined ? undefined : deny(GATE_EDIT_FILE(edited)),
 		// The file is the last operand: one before it can be a `head -n` count or a `sed` script. A read piped into a program that works on it, such as `wc`, stays.
 		(!c.into || shows(next)) && !redirected && printsFile(name, args)
-			? deny(GATE_READ_FILE(printedFiles(name, args).at(-1) ?? ""))
+			? deny(
+					GATE_READ_FILE(
+						printedFiles(name, args).at(-1) ?? "",
+						printedRange(name, args),
+					),
+				)
 			: undefined,
 	];
 };

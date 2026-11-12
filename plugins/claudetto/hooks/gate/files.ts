@@ -102,18 +102,42 @@ export const inPlaceTarget = (
 	return edit && (operands(edit.slice(1)).at(-1) ?? "");
 };
 
-const VALUED: Record<string, string[]> = {
-	head: ["-n", "-c", "--lines", "--bytes"],
-	tail: ["-n", "-c", "--lines", "--bytes"],
-	sed: ["-e", "-f", "--expression", "--file"],
+const COUNT_FLAGS = new Set(["-n", "-c", "--lines", "--bytes"]);
+
+/** Whether a word is a flag that holds a count or a `sed` script, and whether its value is the next word or joined to it, as in `-e1p` or `--expression=1p`. */
+const valueOf = (name: string, word: string): "next" | "joined" | undefined => {
+	if (name !== "sed") {
+		return COUNT_FLAGS.has(word) ? "next" : undefined;
+	}
+	if (word === "--expression" || word === "--file") {
+		return "next";
+	}
+	if (/^--(?:expression|file)=/u.test(word)) {
+		return "joined";
+	}
+	const flags = /^-[a-zA-Z]*?[ef]/u.exec(word)?.[0];
+	if (flags === undefined) {
+		return undefined;
+	}
+	return flags === word ? "next" : "joined";
 };
 
 /** The files a `head`, `tail`, `sed`, or `cat` prints: the operands without a count or a script, which is not a file. */
 export const printedFiles = (name: string, args: string[]): string[] => {
-	const valued = VALUED[name] ?? [];
-	const rest = args.filter((_, i) => !valued.includes(args[i - 1] ?? ""));
+	const rest: string[] = [];
+	let scripted = false;
+	let skip = false;
+	for (const word of args) {
+		const held: "next" | "joined" | undefined = skip
+			? undefined
+			: valueOf(name, word);
+		scripted ||= held !== undefined;
+		if (!skip && held === undefined) {
+			rest.push(word);
+		}
+		skip = !skip && held === "next";
+	}
 	const files = operands(rest);
-	const scripted = valued.some((f) => args.includes(f));
 	return name === "sed" && !scripted ? files.slice(1) : files;
 };
 
@@ -128,7 +152,45 @@ export const printsFile = (name: string, args: string[]): boolean => {
 			!flagsOf(args).some((f) => f === "-f" || f === "-F" || f === "--follow")
 		);
 	}
-	return name === "sed" && flagsOf(args).includes("-n") && files.length > 0;
+	return (
+		name === "sed" &&
+		flagsOf(args).some(
+			(f) => f === "-n" || f === "--quiet" || f === "--silent",
+		) &&
+		files.length > 0
+	);
+};
+
+const HEAD_COUNT = /^(?:-n|--lines=|-)(\d+)$/u;
+
+/** The first line and the number of lines that a `sed -n 5p`, `sed -n 10,20p`, or `head -n 5` of one file prints, or undefined when no range is fixed. */
+export const printedRange = (
+	name: string,
+	args: string[],
+): { offset: number; limit: number } | undefined => {
+	if (printedFiles(name, args).length !== 1) {
+		return undefined;
+	}
+	if (name === "sed") {
+		const [, from, to] =
+			/^(\d+)(?:,(\d+))?p$/u.exec(operands(args)[0] ?? "") ?? [];
+		const offset = Number(from);
+		const limit = Number(to ?? from) - offset + 1;
+		return offset > 0 && limit > 0 ? { offset, limit } : undefined;
+	}
+	if (
+		name !== "head" ||
+		flagsOf(args).some((f) => f === "-c" || f === "--bytes")
+	) {
+		return undefined;
+	}
+	const spelled = args.flatMap((word, i) =>
+		word === "-n" || word === "--lines"
+			? [args[i + 1]]
+			: [HEAD_COUNT.exec(word)?.[1]],
+	);
+	const limit = Number(spelled.find((s) => s !== undefined) ?? 10);
+	return limit > 0 ? { offset: 1, limit } : undefined;
 };
 
 export const writeTargets = (
