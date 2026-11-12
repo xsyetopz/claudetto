@@ -101,7 +101,7 @@ The gate SHALL ask on `git push <remote> :<ref>`, as it asks on `--delete`, `--f
 
 ### Requirement: A Branch the Person Named Is Not Denied
 
-The branch gate SHALL ask, not deny, before `git branch -D` of a branch this session did not create, and SHALL allow it when a message of the person in this session names that branch or asks to delete the other local branches.
+The branch gate SHALL ask, not deny, before `git branch -D` of a branch this session did not create. It SHALL ask the Decider one Noul over the person's messages in this session: whether a message asks to delete that branch, by its name or as one of a group such as the other local branches. It SHALL allow the delete on `yes`, and SHALL ask the person on `no`, on `unsettled`, and when the Decider fails.
 
 #### Scenario: The Person Asked
 
@@ -113,14 +113,30 @@ The branch gate SHALL ask, not deny, before `git branch -D` of a branch this ses
 - **WHEN** no message of the person mentions deleting branches
 - **THEN** the gate asks the person instead of denying
 
+#### Scenario: The Person Forbade It
+
+- **WHEN** the person wrote "do not delete old-feature" and the agent runs `git branch -D old-feature`
+- **THEN** the gate asks the person
+
+#### Scenario: Words Outside a Fixed List
+
+- **WHEN** the person wrote "get rid of the stale branches, old-feature included" and the agent runs `git branch -D old-feature`
+- **THEN** the command runs
+
+#### Scenario: The Decider Fails
+
+- **WHEN** Jev does not answer and the fallback call is not answered
+- **THEN** the gate asks the person
+
 ### Requirement: The Read Redirect Parses Only a File Operand
 
-The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is not an option or a `sed` script, and SHALL apply to a read anywhere in a chain. A read piped into a command that works on its output SHALL run as it is. A read piped into a command that only shows it, `cat`, `head`, `less`, `more`, `nl`, `tail`, or `sed -n`, SHALL be denied like a read on its own, because the pipe is still a file read.
+The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is no option or `sed` script, however the script flag is spelled, and SHALL apply to a read anywhere in a chain. For a `sed -n` line range or a `head` count it SHALL give the `Read` call with `offset` and `limit`. A read piped into a command that works on it SHALL run. A read piped into `cat`, `head`, `less`, `more`, `nl`, `tail`, or `sed -n`, which only show it, SHALL be denied.
 
 #### Scenario: A sed Range
 
-- **WHEN** the agent runs `sed -n 370,376p hooks/texts.ts`
-- **THEN** the redirect names `hooks/texts.ts`, never `370,376p`
+- **WHEN** the agent runs `sed -n 1,80p hooks/tool.check/useBashRules/gate.ts; grep -n "X" -r hooks | head`
+- **THEN** the denial names `hooks/tool.check/useBashRules/gate.ts`, never `1,80p`, with `offset` 1 and `limit` 80
+- **AND** the lab test is `gate/rules.test.ts`, "A sed Range: the denial holds the Read call with offset and limit"
 
 #### Scenario: A Compound Command
 
@@ -136,6 +152,16 @@ The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take
 
 - **WHEN** the agent runs `cat src/a.ts | head -5`
 - **THEN** the gate denies it and names `Read` on `src/a.ts`
+
+#### Scenario: A sed Script Flag
+
+- **WHEN** the agent runs `sed --quiet 1,80p f.ts`, `sed -n --expression=1p f.ts`, or `sed -n -e1p f.ts`
+- **THEN** the gate denies it and names `f.ts`
+
+#### Scenario: A Read With No Fixed Range
+
+- **WHEN** the agent runs `cat f.ts`, `tail -n 5 f.ts`, or `sed -n '$p' f.ts`
+- **THEN** the denial names `f.ts` and gives no `offset`
 
 ### Requirement: A Switch That Would Touch a Protected Path Stops First
 
@@ -233,56 +259,29 @@ The gate SHALL judge the `command` of a `Monitor` call by the same rules as a `B
 - **THEN** the call is denied
 - **AND** the lab test is `gate.test.ts`, "a Monitor command the gate refuses is denied like a Bash one"
 
-### Requirement: A /tmp Folder Carries Its Session's Marker
-
-The gate SHALL deny a `mkdir` or `mktemp` of a folder directly below `/tmp` (or `/private/tmp`) or below the sandbox's `/tmp/claude-<uid>`, when the command writes no `.created-by-claudetto` file and this session did not mark or find the folder, and SHALL deny a `Write`, `Edit`, or `NotebookEdit` that would make one. A variable set by an earlier assignment-only command of the call SHALL be expanded first. The denial SHALL give the one command that makes the folder and its marker together.
-
-#### Scenario: A Folder Made with No Marker
-
-- **WHEN** the agent runs `mkdir -p /tmp/probe` alone
-- **THEN** the call is denied with the `mkdir` and marker line
-
-#### Scenario: A Folder Made Through a Variable in the Sandbox Temp Base
-
-- **WHEN** the agent runs `S=/tmp/claude-501/gate20 && mkdir -p $S`
-- **THEN** the call is denied with the marker line for `/tmp/claude-501/gate20`
-- **AND** the lab test is `gate/processes.test.ts`, the `gateTmpMarker("/tmp/claude-501/gate20")` case
-
-#### Scenario: A Folder That Is There
-
-- **WHEN** a `Write` goes under a `/tmp` folder that exists already, or outside `/tmp`
-- **THEN** the call passes
-- **AND** the lab tests are `gate/processes.test.ts`, "a Write that would make a /tmp folder is denied with the marker line" and "a Write under a /tmp folder that is there already, or outside /tmp, passes"
-
-### Requirement: A /tmp Removal Needs This Session's Marker
-
-The gate SHALL deny an `rm` under `/tmp` of a top folder whose marker does not hold this session's id, and of any path with `..`. The sandbox's temp base `/tmp/claude-<uid>` SHALL be a base like `/tmp` itself: each folder in it is a top with its own marker, and the base is no top. A marker counts when a non-error `Bash` call of this session wrote it, and the file holds this session's id.
-
-#### Scenario: A Folder of Another Session
-
-- **WHEN** the agent runs `rm -rf /tmp/other` and its marker holds another session's id
-- **THEN** the call is denied
-
-#### Scenario: A Folder in the Sandbox Temp Base
-
-- **WHEN** the agent runs `rm -rf /tmp/claude-501/gate20` and its marker holds this session's id
-- **THEN** the call passes
-- **AND** `rm -rf /tmp/claude-501/other` with no marker of this session, and `rm -rf /tmp/claude-501` itself, are denied
-- **AND** the lab test is `gate/processes.test.ts`, the `/tmp/claude-501` cases
-
 ### Requirement: The Session Removes Only What It Made
 
-The gate SHALL deny `git worktree remove` of a path that no earlier successful `git worktree add` or `EnterWorktree` of this session names, and that is no isolated worker's `.claude/worktrees/agent-<id>` of an `Agent` call that returned that id. The denial SHALL tell the agent to leave it or ask the person.
+The gate SHALL deny `git worktree remove` of a path that Claude Code's `WorktreeCreate` event did not name in this session. The event's `name` gives the folder `.claude/worktrees/<name>` and the branch `worktree-<name>`, for an isolated agent (`agent-<agentId>`) and for `EnterWorktree` alike. The gate SHALL keep these names in memory, not read them from shell text or from the transcript, so compaction does not lose them. The denial SHALL tell the agent to leave it or ask the person.
 
 #### Scenario: A Worktree of Another Session
 
-- **WHEN** the agent runs `git worktree remove ../other` and no earlier call of the session made it
+- **WHEN** the agent runs `git worktree remove ../other` and no `WorktreeCreate` event of the session names it
 - **THEN** the call is denied as not owned
-- **AND** the lab tests are `gate/processes.test.ts`, "`<command>` is denied as not owned" and "`<command>` passes as owned"
+- **AND** the lab test is `gate/worktrees.test.ts`
+
+#### Scenario: A Worktree Claude Code Made for an Agent
+
+- **WHEN** a `WorktreeCreate` event named `agent-a1b2c3` came, and the agent runs `git worktree remove .claude/worktrees/agent-a1b2c3` or `git branch -D worktree-agent-a1b2c3`
+- **THEN** the call passes as owned
+
+#### Scenario: A Compacted Transcript
+
+- **WHEN** the transcript no longer holds the call that made a worktree
+- **THEN** the worktree is still owned
 
 ### Requirement: What the Session Made Meets No Vendored Delete Rule
 
-A removal of a /tmp folder with this session's marker, and a move or delete of a branch this session created (`update-ref` of `refs/heads/<name>`, or `branch -f <name>`), SHALL NOT meet the vendored `fs:recursively_delete`, `git:force_delete_branch`, or `git:delete_ref` rule or the ref-move ask.
+An `rm` whose every path lies under a temp base, and a move or delete of a branch this session created (`update-ref` of `refs/heads/<name>`, or `branch -f <name>`), SHALL NOT meet the vendored `fs:recursively_delete`, `git:force_delete_branch`, or `git:delete_ref` rule or the ref-move ask.
 
 #### Scenario: A Branch the Session Created
 
@@ -321,13 +320,19 @@ The gate SHALL ask before `git reset` to a ref other than `HEAD`, `@`, or their 
 
 ### Requirement: A Vanished File Is Not Recreated Unasked
 
-The gate SHALL ask when a call creates a file that this session saw (by `Read`, `Write`, `Edit`, a `Bash` operand that existed, an `ls` or `Glob` listing, or the transcript before a resume), that is gone now, and that no call of this session removed.
+The gate SHALL ask when a call creates a file that this session saw (by `Read`, `Write`, `Edit`, a `Bash` operand that existed, an `ls` or `Glob` listing, or the transcript before a resume), that is gone now, and that no call of this session removed. A `Bash` operand the engine refuses to read as a path SHALL count as a file that is not there, and the gate SHALL NOT ask the person about it.
 
 #### Scenario: A Copy over a Vanished File
 
 - **WHEN** the session read `notes.md`, the person deleted it, and the agent runs `cp /tmp/notes.md notes.md`
 - **THEN** the gate asks, because the file was removed outside this session
-- **AND** the lab tests are `gate.test.ts`, "a copy to a file the session saw and that is gone now asks" and "recreating a file after the session's own rm passes"
+- **AND** the lab tests are `gate.vanish.test.ts`, "a copy to a file the session saw and that is gone now asks" and "recreating a file after the session's own rm passes"
+
+#### Scenario: A Search Pattern That Is No Path
+
+- **WHEN** the agent runs `grep -v "/\.git/" list.txt`, and the engine refuses `$.fs.exists` on the pattern as a network location
+- **THEN** the call passes with no question
+- **AND** the lab tests are `gate.vanish.test.ts`, "a `grep -v …` passes, since its pattern is no path the engine reaches", one per reported command
 
 ### Requirement: What Counts as Creating a Vanished File
 
@@ -340,16 +345,31 @@ A `Write`, a `cp` or `mv` target, `touch`, and `ln -s` SHALL count as creating.
 
 ### Requirement: A Shell In-Place Edit Is Denied
 
-The gate SHALL deny a Bash command that edits a file in place with `sed`, `perl`, or `ruby` and `-i` or `--in-place`, alone, in a chain, behind `xargs`, or run by `find -exec`, `-execdir`, `-ok`, or `-okdir`, and name `Edit` with the file, because an in-place shell edit skips the edit tool's diff, its read-before-edit check, and the user's review.
+The gate SHALL deny a Bash command in which `sed`, `perl`, or `ruby` reads `-i` or `--in-place` as its own flag, alone, in a chain, behind `xargs`, or run by `find -exec`, `-execdir`, `-ok`, or `-okdir`, and name `Edit` with the file, because an in-place shell edit skips the edit tool's diff and the user's review. A letter in another flag's value, such as the `i` of `-Mstrict`, and a flag after the program file of `perl` or `ruby` SHALL NOT count.
 
 #### Scenario: An In-Place Edit
 
 - **WHEN** the agent runs `git status && sed -i 's/a/b/' src/a.ts`
 - **THEN** the gate denies it and names `Edit` on `src/a.ts`
 
+#### Scenario: Several Scripts and a Chain
+
+- **WHEN** the agent runs `sed -i '' -e 's/a/b/' -e 's/c/d/' src/a.ts; grep -n a src/a.ts`
+- **THEN** the gate denies it and names `Edit` on `src/a.ts`
+
+#### Scenario: A Letter in a Flag's Value
+
+- **WHEN** the agent runs `perl -Mstrict -e 'print 1'`, `ruby -rtime -e 'puts 1'`, or `sed -es/i/j/` on stdin
+- **THEN** the call passes
+
+#### Scenario: A Flag of the Script
+
+- **WHEN** the agent runs `perl tool.pl -i in.txt`
+- **THEN** the call passes
+
 ### Requirement: A Check's Exit Code Reaches the Chain
 
-The gate SHALL deny a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that follows any pipe, when no earlier `set -o pipefail` appears in the command, because a pipe returns its last command's exit code and a failing check then reads as a pass.
+The gate SHALL deny a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that follows any pipe, when no earlier `set -o pipefail` appears in the command, because a pipe returns its last command's exit code and a failing check then reads as a pass. It SHALL deny a `git commit` that follows a check or a loop of checks that `&&` does not tie to it, unless `set -e` comes first or `|| exit` follows the check.
 
 #### Scenario: A Trimmed Check
 
@@ -359,6 +379,17 @@ The gate SHALL deny a test, lint, type, or build check piped into `tail`, `head`
 #### Scenario: A Kept Exit Code
 
 - **WHEN** the agent runs `set -o pipefail; bun run lint 2>&1 | tail -8`
+- **THEN** the command runs
+
+#### Scenario: A Commit After a Check That Does Not Stop
+
+- **WHEN** the agent runs `bun test; git commit -m x`, `bun test | tail -3; git commit -m x`, or `for p in a b; do bun test $p; done; git commit -m x`
+- **THEN** the gate denies it and names `&&` and `set -e` as the forms that stop before the commit
+- **AND** the lab tests are `gate/pipefail.test.ts`, one per shape
+
+#### Scenario: A Commit a Failure Stops
+
+- **WHEN** the agent runs `bun test && git commit -m x`, `set -e; bun test; git commit -m x`, or `for p in a b; do bun test $p || exit 1; done; git commit -m x`
 - **THEN** the command runs
 
 ### Requirement: A Formatter Stays in the Task's Files
@@ -375,15 +406,6 @@ The gate SHALL deny `bun fmt` with no path or with `.`, unless it carries `--che
 - **WHEN** the agent runs `bun fmt src/a.ts`
 - **THEN** the command runs
 
-### Requirement: A Test of Shipped Wording Is Denied
-
-The gate SHALL deny an `Edit` or `Write` of a `*.test.*` or `*.spec.*` file whose assertion compares against a literal phrase of four words or more that a non-test file in the repository holds, because such a test breaks on each rewording and catches no defect.
-
-#### Scenario: A Wording Assertion
-
-- **WHEN** a test edit adds `expect(r.reason).toContain("the gate holds this call")` and `hooks/texts.ts` holds that phrase
-- **THEN** the gate denies the edit and names `hooks/texts.ts`
-
 ### Requirement: What Counts as a File the Session Saw
 
 A file seen by its real path and named through a symlink, or the reverse, SHALL be the same file. A read that failed, and a call still in flight in the transcript, SHALL NOT make a file seen.
@@ -395,13 +417,19 @@ A file seen by its real path and named through a symlink, or the reverse, SHALL 
 
 ### Requirement: An Unreadable Command Asks
 
-When the gate cannot parse a `Bash` command, it SHALL still apply the rules that read the whole text, and SHALL otherwise ask, with a text that says a person must approve the command.
+When the gate cannot parse a `Bash` command, it SHALL still apply the rules that read the whole text, and SHALL otherwise ask, with a text that says a person must approve the command. A command whose program is `[` or `[[` SHALL be read as the shell's test command, and the gate SHALL NOT ask about it for that word.
 
 #### Scenario: Unreadable
 
 - **WHEN** a command cannot be parsed and matches no rule that reads the whole text
 - **THEN** the gate asks
 - **AND** the lab test is `gate/rules.test.ts`, "an unreadable command asks"
+
+#### Scenario: A Bracket Test
+
+- **WHEN** the agent runs `[ -f x ] && echo y`, `[[ -f x ]] && echo y`, or `if [ -d node_modules ]; then echo y; fi`
+- **THEN** the gate has no objection
+- **AND** the lab tests are `gate/rules.test.ts`, "passes …", one per command
 
 ### Requirement: A Read-Only Ask Becomes an Allow
 
@@ -424,16 +452,6 @@ When the gate throws while it judges a call, it SHALL answer `ask` with the text
 - **THEN** the verdict is `ask`, and its reason matches "The gate failed: .+. A person must approve"
 - **AND** the lab test is `gate.test.ts`, "a gate that fails holds the call for a person"
 
-### Requirement: Each Ask and Deny Is Logged
-
-The gate SHALL append one JSON line for each `ask` or `deny` verdict, and none for an `allow`, to `~/.claude/claudetto/gate-asks/<session id>.jsonl`. The line SHALL hold the time, the tool, the decision, the repository root, the rule (or the reason when no rule), and the command, with each of the last two cut to 200 characters and each secret in them replaced by `[REDACTED]`. A failed write SHALL lose its line and keep the verdict. Writes SHALL queue, so parallel checks lose no line.
-
-#### Scenario: An Ask
-
-- **WHEN** the engine asks on `git push` by the rule `Bash(git push:*)`
-- **THEN** one line holds `tool`, `decision` `ask`, `rule` `Bash(git push:*)`, and `command` `git push`
-- **AND** the lab tests are `gate.test.ts`, "an ask is logged with its rule, tool, and time", "a deny is logged", "an allow is not logged", and "a command past 200 characters is cut to 200"
-
 ### Requirement: A Repeat Denial Is Explained
 
 When the same call (the same tool and input) has been denied twice since the person's last message, the gate SHALL deny it at `tool.check` before the engine answers, with a text that gives the count and the last reason, or "none given" when it was empty, and tells the agent to change the call or ask the person. A call with another input SHALL NOT be refused. A task notification SHALL NOT reset the count.
@@ -443,3 +461,39 @@ When the same call (the same tool and input) has been denied twice since the per
 - **WHEN** a call was denied twice with a reason, and the agent sends it again
 - **THEN** the gate denies it with the count and the earlier reason
 - **AND** the lab tests are `gate.test.ts`, "a call denied twice is refused at the next check with the earlier reason", "the same tool with another input is not refused after two denials", and "a task notification after two denials leaves the call refused"
+
+### Requirement: A Loop That Polls With No Pause Is Denied
+
+The gate SHALL deny a `Bash` or `Monitor` command that holds a `while` or `until` loop whose body runs only `:` or `true` and whose condition runs no `sleep`, `read`, or `wait`, in the foreground and in the background. The denial SHALL tell the agent to put a `sleep` in the body and to give the loop a time limit. A `for` loop and a loop whose body runs any other program SHALL pass this rule.
+
+#### Scenario: A Body That Runs Nothing
+
+- **WHEN** the agent runs `until grep -q x f; do :; done`, with or without `run_in_background`
+- **THEN** the call is denied
+- **AND** the lab tests are `gate/processes.test.ts`, "a foreground loop whose body runs nothing is denied" and "a background loop whose body runs nothing is denied"
+
+#### Scenario: A Loop That Pauses or Ends by Itself
+
+- **WHEN** the agent runs `until grep -q x f; do sleep 1; done`, `until sleep 2 && grep -q x f; do :; done`, `while read -r line; do :; done < f`, or `for i in 1 2 3; do :; done`
+- **THEN** the call passes
+- **AND** the lab tests are `gate/processes.test.ts`, "… passes, since it pauses or ends by itself", one per command
+
+### Requirement: A Temp Base Itself Stays
+
+A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or without `/private` before it, or `$TMPDIR` as written. The gate SHALL deny an `rm` that names a temp base itself, every entry of one through a glob, or a path under one that holds `..`, and the denial SHALL tell the agent to name the folder it made by its literal path, and that Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`. Any other `rm` under a temp base SHALL pass.
+
+#### Scenario: The Cleanup Form
+
+- **WHEN** the gate denies `rm -rf /tmp`
+- **THEN** the denial gives `rm -rf /tmp/<name>` and names the targets `$dir/`, `$dir/*`, and `$(...)`
+
+#### Scenario: A Scratch Folder
+
+- **WHEN** the agent runs `rm -rf /tmp/claude-501/gate20` or `rm /tmp/el.log`
+- **THEN** the call passes
+- **AND** the lab tests are in `gate/processes.owned.test.ts`
+
+#### Scenario: The Base Itself
+
+- **WHEN** the agent runs `rm -rf /tmp`, `rm -rf /private/tmp/claude-501`, `rm -rf /tmp/claude-501/*`, `rm -rf "$TMPDIR"`, or `rm -rf /tmp/mine/../other`
+- **THEN** the call is denied

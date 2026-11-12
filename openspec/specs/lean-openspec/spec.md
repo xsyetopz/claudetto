@@ -272,3 +272,31 @@ The verify skill MUST call validate and status for the change, name the file and
 
 - **WHEN** `tasks.md` holds `- [ ] 2.1 open`
 - **THEN** the critical list names task 2.1
+
+### Requirement: A MODIFIED Requirement That Grows Past the Limit Warns
+
+The validator MUST warn on a MODIFIED requirement whose text holds more than 500 characters when the main spec's text for that requirement holds 500 or fewer, because archive would merge it into a main spec whose check warns on every such text. A MODIFIED requirement whose main-spec text is already over the limit MUST get no length warning, as upstream gives none. This fix only fails a change that upstream passes.
+
+#### Scenario: A Text That Grows Past the Limit
+
+- **WHEN** a change restates a requirement of 417 characters under MODIFIED with a text of 501 characters and validation runs strict
+- **THEN** validation fails and names the requirement
+
+#### Scenario: A Text That Was Already Long
+
+- **WHEN** a change restates a requirement whose main-spec text holds 570 characters, and the MODIFIED text holds 560
+- **THEN** the validator gives no length warning for it, as upstream gives none
+
+### Requirement: The Tool Result Is Bounded
+
+The `openspec` tool MUST return at most 12,000 characters of result, because a `status` of a change with many open tasks reached about 11,400 tokens and Claude Code warns on an MCP result past 10,000 tokens. A longer result MUST keep whole lines up to the limit and end with a line that counts the lines not shown. A first line past the limit MUST be cut at the limit. A result within the limit MUST be returned whole.
+
+#### Scenario: Many Open Tasks
+
+- **WHEN** `status` names a change with 3,000 open tasks
+- **THEN** the result holds at most 12,000 characters of task lines and ends with the count of the lines not shown
+
+#### Scenario: A Short Result
+
+- **WHEN** a result holds fewer than 12,000 characters
+- **THEN** the tool returns it unchanged

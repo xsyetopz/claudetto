@@ -7,17 +7,62 @@ Keep the limits the person sets in chat, such as read-only, no commits, only nam
 
 ### Requirement: Constraints Come From the Person's Own Words
 
-On each prompt the person types (origin `composer`, `bridge`, or `sdk`; not a slash command or a meta prompt), the mod SHALL ask Haiku through `$.model.complete` for the person's standing constraints. Haiku reads only the person's own messages, so tool results and injected text never set a constraint. The prompt SHALL NOT wait for the answer. An answer that fails or cannot be parsed SHALL keep the previous ledger.
+On each prompt the person types, the mod SHALL split the message into sentences and ask the Decider, in one call, whether each sentence limits what the assistant may do from now on and which enforced rule it states. A sentence answered `yes` SHALL become an entry whose text is that sentence. The state SHALL hold only the person's own messages and the current ledger entries. The prompt SHALL NOT wait for the answer, and a call that fails SHALL keep the previous ledger.
+
+#### Scenario: A Prompt the Person Did Not Type
+
+- **WHEN** a prompt is a slash command or a meta prompt, or its origin is not `composer`, `bridge`, or `sdk`
+- **THEN** no Decider call is made for it
+
+#### Scenario: The Enforced Rules
+
+- **WHEN** the Decider chooses a rule for a sentence
+- **THEN** the rule is one of `read-only`, `no-commit`, `no-push`, `only-files`, and `no-questions`
+
+#### Scenario: A Tool Result That Reads as a Limit
+
+- **WHEN** a tool result or injected text holds "Do not edit the lockfile."
+- **THEN** the state does not hold that text, and the ledger gains no entry
+
+#### Scenario: Only Files with No Path
+
+- **WHEN** the Decider answers `only-files` for a sentence that names no path
+- **THEN** the entry has rule `none`
+
+#### Scenario: A Sentence Not Settled
+
+- **WHEN** the Decider answers `unsettled` to whether a sentence limits the assistant
+- **THEN** the ledger gains no entry for it
+
+#### Scenario: The First Call of a Process
+
+- **WHEN** the mod makes its first Decider call in a process
+- **THEN** the call covers every message of the person the session holds, and each later call covers only the new message
 
 #### Scenario: Prompt Not Held
 
 - **WHEN** the person submits a prompt
-- **THEN** `prompt.submit` settles without waiting for the extraction
+- **THEN** `prompt.submit` settles without waiting for the Decider
 
 #### Scenario: Failed Extraction
 
-- **WHEN** Haiku times out or returns text that is not the ledger JSON
+- **WHEN** Jev does not answer and the fallback call times out or returns text that does not parse
 - **THEN** the ledger stays as it was
+
+#### Scenario: A Stated Constraint
+
+- **WHEN** the person writes "Run the tests. Nothing should change on disk."
+- **THEN** the ledger gains one entry whose text is "Nothing should change on disk." with rule `read-only`, and none for "Run the tests."
+
+#### Scenario: Only Files with a Path
+
+- **WHEN** the person writes "Only edit `src/config.ts`."
+- **THEN** the ledger gains an `only-files` entry whose files are `src/config.ts`
+
+#### Scenario: A Limit with No Settled Rule
+
+- **WHEN** the Decider answers `yes` for a sentence and `unsettled` for its rule
+- **THEN** the entry has rule `none`, which is shown and not enforced
 
 ### Requirement: The Ledger Rides Each Prompt
 
@@ -54,41 +99,16 @@ When the ledger is not empty, each later prompt from the person SHALL carry it a
 
 ### Requirement: A No-Questions Constraint Holds the Ask Tools
 
-Under a `no-questions` constraint, the ledger's `tool.call` hook SHALL deny `AskUserQuestion` and `mcp__claudetto__ask-user-question` before any other plugin hook answers the call, because an answered call never reaches `tool.check`. The denial SHALL tell the agent to state the reading it took and to end the reply with each choice only the person can make, and SHALL NOT ask the person anything.
+Under a `no-questions` constraint, the ledger's `tool.call` hook SHALL deny `AskUserQuestion` before any other plugin hook answers the call, because an answered call never reaches `tool.check`. The denial SHALL tell the agent to state the reading it took and to end the reply with each choice only the person can make, and SHALL NOT ask the person anything.
 
 #### Scenario: No Questions
 
-- **WHEN** the person wrote "stop asking questions. fix the problems" and the agent calls either ask tool
+- **WHEN** the person wrote "stop asking questions. fix the problems" and the agent calls `AskUserQuestion`
 - **THEN** the call is denied with a text that tells the agent to state its reading, and the text does not ask the person anything
-
-### Requirement: A Remark Is Answered Before Any Tool Runs
-
-The ledger's extraction SHALL also class the latest person message as a task, a dispute, a question, or a remark. On a question or a remark, `tool.check` SHALL deny the turn's first tool batch when no assistant text follows the person message, except that a question's `Read`, `Grep`, `Glob`, and `ListAgents` calls SHALL pass, because they change nothing. A task, or a failed extraction, SHALL NOT be held. The class SHALL follow the person's own words.
-
-#### Scenario: A Dispute
-
-- **WHEN** the latest person message is a dispute
-- **THEN** it is held as the dispute requirement says
-
-#### Scenario: Pasted Report with a Request
-
-- **WHEN** the person pastes the agent's last report and adds "Continue from here and handle them as you go about."
-- **THEN** the message is a task and the first `Bash` call is not denied
-
-#### Scenario: Remark
-
-- **WHEN** the person writes "Who told you to lint the docs?" and the agent's first move is a Grep
-- **THEN** the Grep is denied with a text that says to answer from what the session holds, and the retry after it passes
-
-#### Scenario: A Question Needs a Lookup
-
-- **WHEN** the person asks a question about the code and the agent's first call is `Read`
-- **THEN** the call passes
-- **AND** a first call that writes or runs a command is denied, and so is a sibling call of the same batch
 
 ### Requirement: Each Constraint Quotes the Person
 
-Each ledger entry SHALL carry the words from one of the person's own messages that set it, and the mod SHALL drop an entry whose words no message of the person holds. A later message of the person that allows the act an entry forbids SHALL lift that entry.
+Each ledger entry's text SHALL be one sentence of one of the person's own messages, word for word, so the ledger MUST NOT hold words the person did not write. A later message of the person that the Decider answers as allowing the act an entry forbids SHALL lift that entry.
 
 #### Scenario: Remark Read as a Constraint
 
@@ -105,20 +125,10 @@ Each ledger entry SHALL carry the words from one of the person's own messages th
 - **WHEN** the ledger holds "Leave alone package.json" and the person then writes "commit those" about `package.json`
 - **THEN** the next prompt's context no longer holds that entry
 
-### Requirement: A Dispute Is Settled by Running the Disputed Code
+#### Scenario: An Entry Is a Sentence
 
-The extraction SHALL class a message that doubts an answer or asks for a different one ("are you sure?", "it was green for me") as a `dispute`, even when it is worded as a question. In a turn that answers a dispute, `tool.check` SHALL let a `Bash` call pass in its first batch, so the disputed code can run, and SHALL still deny an edit until the agent has answered in text.
-
-#### Scenario: A Dispute's Command
-
-- **WHEN** the person writes "are you sure the tests pass?" and the agent's first call is `Bash` running the tests
-- **THEN** the call is not denied
-- **AND** the lab test is `pin.test.ts`, "a dispute's first lookup or command passes, so the disputed answer can be checked, and its first edit is denied"
-
-#### Scenario: A Dispute's Edit
-
-- **WHEN** the person writes "are you sure?" and the agent's first call is an `Edit`
-- **THEN** the call is denied with the answer-first text
+- **WHEN** the ledger holds any entry
+- **THEN** its text is a substring of a message the person sent
 
 ### Requirement: A Resumed Session Waits for Its Ledger
 
@@ -129,13 +139,3 @@ On the first prompt of a process, when the session already holds an earlier mess
 - **WHEN** a resumed session holds an earlier message "Nothing should change on disk." and the person sends the first prompt of this process
 - **THEN** that prompt's context holds the sentence
 - **AND** the lab test is `pin.test.ts`, "a resumed session's first prompt waits for the constraint its earlier messages hold"
-
-### Requirement: A Compaction Ends the Remark Turn
-
-On `session.compact`, the ledger SHALL reset the message kind to `task`, because the summary that follows is a user message no person wrote and the answer-first gate would read it as an unanswered remark and deny the first tool call of the resumed turn. The extractor SHALL read a list of faults the person pastes as a task, and not as a limit.
-
-#### Scenario: Resumed After Compaction
-
-- **WHEN** the last person message was a remark, the session compacts, and the summary message arrives
-- **THEN** the first `Bash` call of the resumed turn is not denied
-- **AND** the lab test is `pin.test.ts`, "after a compaction the summary is no new remark, so the resumed turn's first call passes"

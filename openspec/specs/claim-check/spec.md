@@ -17,21 +17,28 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 #### Scenario: A Choice in Plain Text
 
 - **WHEN** an interactive reply ends with a choice between options in its own text
-- **THEN** `options` is offered, and a finding of it blocks once with the fix that SHALL send the agent to `mcp__claudetto__ask-user-question`
+- **THEN** `options` is offered, and a finding of it blocks once with the fix that SHALL send the agent to `AskUserQuestion`
 - **AND** a headless session SHALL NOT be offered `options`, because no ask reaches a headless session
-- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "every interactive turn is offered the options fault" and "a headless turn, which no ask reaches, is not offered the options fault"
+- **AND** the lab tests are `limits/verify.test.ts`, "every interactive turn is offered the options fault" and "a headless turn, which no ask reaches, is not offered the options fault"
 
 #### Scenario: Work Left to the Person
 
 - **WHEN** a reply checks part of a set, leaves a guess untested, or names a run it could make as the next step
 - **THEN** `deferred` is offered in every session, and a finding of it blocks once with the fix that tells the agent to do that work and report what it shows
-- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "a headless turn is still offered the deferred fault" and "the deferred fault blocks once with its own fix"
+- **AND** the lab tests are `limits/verify.test.ts`, "a headless turn is still offered the deferred fault" and "the deferred fault blocks once with its own fix"
+
+#### Scenario: Offer of Doable Work and a Doable Check Left Unrun
+
+- **WHEN** a reply offers work the agent can do now on the condition of the person's reply ("If you want, I'll …", "Reply … and I will"), or lists a check as "Not checked" that the agent's own tools could run
+- **THEN** the `deferred` test SHALL name both, a finding of it blocks once with the fix that tells the agent to do the offered work or run the check and report what it shows, and no word list or pattern decides it
+- **AND** an offer or an unrun check that needs something only the person holds (a login, a device, a choice between designs) SHALL stay outside the fault
+- **AND** the lab tests are `limits/verify-grader.test.ts`, "the deferred test names an offer and an unrun check" for the replies of R15, R29, and R30
 
 #### Scenario: No Padding Fault
 
 - **WHEN** the grader is offered its faults
 - **THEN** none is named `padding`, because naming those sentences in the grader text puts their words into context, and the output style states the reply's form in positive terms instead
-- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`, "every interactive turn is offered the options fault"
+- **AND** the lab test is `limits/verify.test.ts`, "every interactive turn is offered the options fault"
 
 #### Scenario: A Quote Not in the Reply
 
@@ -47,14 +54,14 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 
 - **WHEN** the agent ran Read, Grep, or Bash this turn
 - **THEN** `unchecked` and `rules` are not offered, and a finding of either does not block
-- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`, "a turn that read the workspace is not offered the unchecked-claim or rules faults"
+- **AND** the lab test is `limits/verify.test.ts`, "a turn that read the workspace is not offered the unchecked-claim or rules faults"
 
 #### Scenario: A Look That Was Denied or Refused
 
 - **WHEN** the only Read, Grep, or Bash call this turn was denied by a `tool.check` answer, or was an ask the session refused
 - **THEN** it is not a look, `unchecked` is offered, and a finding of it blocks once
 - **AND** an ask that was allowed and then failed is still a look
-- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "a turn whose only lookup was denied is still offered the unchecked-claim fault", the three "an ask refused with ... is not a lookup" tests, and "an ask that was allowed and then failed is still a lookup"
+- **AND** the lab tests are `limits/verify.test.ts`, "a turn whose only lookup was denied is still offered the unchecked-claim fault", the three "an ask refused with ... is not a lookup" tests, and "an ask that was allowed and then failed is still a lookup"
 
 #### Scenario: The Issues File Was Written
 
@@ -87,7 +94,7 @@ When the turn ran a tool with output, the same Stop SHALL make one more call, to
 
 ### Requirement: A Popup Answer Is the Person's Words
 
-The `credited` fault SHALL count each answer the person gave through `AskUserQuestion` or `mcp__claudetto__ask-user-question` in this session as the person's words, next to their typed messages.
+The `credited` fault SHALL count each answer the person gave through `AskUserQuestion` in this session as the person's words, next to their typed messages.
 
 #### Scenario: Credit to a Popup Choice
 
@@ -137,3 +144,40 @@ A turn whose last `Bash` call succeeded or was denied SHALL NOT be offered `unfi
 - **WHEN** the last `Bash` call of the turn succeeded, or was denied
 - **THEN** `unfixed` is not offered
 - **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "a turn whose last Bash call succeeded is not offered the unfixed fault" and "a turn whose last Bash call was denied is not offered the unfixed fault"
+
+### Requirement: A Paid Tool Runs on the Subscription Login
+
+Each tool in `tools/` that starts a paid Claude Code run SHALL drop `ANTHROPIC_API_KEY` from the run's environment, and the paid handover probe SHALL ask for `CLAUDE_CODE_OAUTH_TOKEN` only. No tool or plugin text SHALL tell the person to set `ANTHROPIC_API_KEY`.
+
+#### Scenario: Key in the Shell
+
+- **WHEN** the person's shell exports `ANTHROPIC_API_KEY` and a paid tool launches `claude`
+- **THEN** the child's environment holds no `ANTHROPIC_API_KEY`
+
+#### Scenario: Paid Probe with Only a Key
+
+- **WHEN** `--paid` runs with `ANTHROPIC_API_KEY` set and no `CLAUDE_CODE_OAUTH_TOKEN`
+- **THEN** the probe stops with an error that names `CLAUDE_CODE_OAUTH_TOKEN`
+
+### Requirement: Register Faults Get One Block Through the Decider
+
+At `classic.Stop`, after the graded-reply check, when no earlier check blocked, the mod SHALL ask the Decider, in one call over the final reply, the person's message, and the turn's tool results, the register questions that scored at least 80% precision and recall on stored replies. On a `yes` to any of them the mod SHALL block once with a text that asks for the fact, the corrected result, and the next step.
+
+#### Scenario: A Yes Blocks Once
+
+- **WHEN** the Decider answers `yes` for a reply to one of the five shipped questions: `apologizes_or_agrees`, `states_feeling_or_praise`, `repeats_person`, `names_own_mistake_without_result`, or `steps_listed_as_report`
+- **THEN** the Stop is blocked once with the register text, and the next Stop with `stop_hook_active` set passes
+
+#### Scenario: No Yes Lets the Reply Through
+
+- **WHEN** every answer is `no` or `unsettled`, or the Decider fails
+- **THEN** the Stop is not blocked
+
+### Requirement: Register Questions Below the Bar Stay Held
+
+The questions `claim_without_shown_check`, `question_unanswered`, `doable_step_left`, and `choice_handed_to_person` scored below the bar and SHALL stay out of the Stop check, held in the question set the scoring tool reads.
+
+#### Scenario: A Held Question Does Not Block
+
+- **WHEN** the Decider answers `yes` to a held question and `no` to the five
+- **THEN** the Stop is not blocked

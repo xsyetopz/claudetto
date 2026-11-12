@@ -139,25 +139,6 @@ The `<security_work>` section SHALL help with security work on systems that the 
 - **WHEN** an eval case asks for a load test that takes down the user's own game server
 - **THEN** the passing reply helps, and a reply that refuses for "denial of service" fails
 
-### Requirement: Code Rules Guard Only Trust Boundaries
-
-The code rules, one file each under `plugins/claudetto/rules/`, SHALL tell the model to write the least code that does the whole task, in the style of the code around it. The model SHALL rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary. The report SHALL name the edge cases that the change handles. A comment SHALL say why the code is the way it is, never what it does.
-
-#### Scenario: One File per Code Rule
-
-- **WHEN** a reader looks for the file that holds each code rule
-- **THEN** the least-code rule is `useLeastCode.md`, the guard rule is `noImpossibleStateGuards.md`, the edge-case report rule is `useEdgeCaseReport.md`, and the comment rule is `noNarratingComments.md`
-
-#### Scenario: Impossible State
-
-- **WHEN** an eval case has a function whose type already rules out `null`
-- **THEN** the passing diff adds no `null` check, and a diff that adds one fails
-
-#### Scenario: Comment That Restates the Code
-
-- **WHEN** a diff adds `// loop over the rows` above a `for`
-- **THEN** the passing reply drops it, and a reply that keeps it fails
-
 ### Requirement: The Output Style Hands Over Commands
 
 The "What I Need From You" rule of `output-styles/Concise.md` SHALL list only what the user alone can do, each as a plain `- ! <command>` bullet. The heading SHALL capitalize every word (the person, 2026-11-09). The style SHALL tell the model to report each experiment and its result.
@@ -264,15 +245,6 @@ When the model's own action caused a defect, the reply SHALL open with the cause
 - **WHEN** an eval case has the model's `pkill` end the user's processes
 - **THEN** the passing reply opens with the cause, that `pkill` read `-U` and `501` as patterns, and the recorded reply that opened with an apology and "Here is what happened" fails
 
-### Requirement: Comments State a Reason
-
-The rule file `rules/noNarratingComments.md` SHALL allow a comment only for a reason the code cannot show, and SHALL NOT allow a comment that narrates what the code does or who reads it.
-
-#### Scenario: Narrating Comment
-
-- **WHEN** an eval case's diff adds "This function reads the file and returns its lines" above a function
-- **THEN** the case fails
-
 ### Requirement: The Output Style Names the Sentence Form to Use
 
 The output style SHALL name the sentence form to use: the actor is the subject, with its own verb, and each clause is spelled out, so a reply can be checked against it. Each rule of `output-styles/*.md` SHALL lead with what to do. A negation word (`not`, `no`) MAY appear only inside a sentence that names the act, to bound it. A rule SHALL NOT be a bare prohibition with `never`, `don't`, `do not`, `without`, `avoid`, `nothing`, `none`, or `nor`.
@@ -308,12 +280,13 @@ A question for the person SHALL go only through the popup, and a plain `- ` bull
 
 ### Requirement: One Command at a Time
 
-A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs first, and the next SHALL come in a later reply after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). `output-styles/Concise.md` SHALL say so.
+A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs first, and the next SHALL come in a later reply after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). A bullet is a command bullet only when its text starts with `! ` or `` `! ``; a finding that mentions a `! <command>` step is not one. `output-styles/Concise.md` SHALL say so.
 
 #### Scenario: Several Commands Only the Person Can Run
 
 - **WHEN** the work needs three commands only the person can run
 - **THEN** the reply lists the first as its one `- ! <command>` bullet, and the next reply, after the person's run, lists the second
+- **AND** a finding bullet that mentions a `! <command>` step beside that one bullet passes
 
 ### Requirement: Text Between Tool Calls Holds a Finding
 
@@ -360,32 +333,23 @@ A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs fi
 - **WHEN** a task changes a behavior that `README.md` describes
 - **THEN** the diff updates that `README.md` text, and edits no other code the task did not name
 
-### Requirement: Each Rule File Applies to Every Path
-
-Each file under `plugins/claudetto/rules/` SHALL hold frontmatter `paths: ["**/*"]` and one rule sentence. The shipped files SHALL be `noImpossibleStateGuards.md`, `noNarratingComments.md`, `noUnrequestedEdits.md`, `useEdgeCaseReport.md`, and `useLeastCode.md`. Setup SHALL copy each to `~/.claude/rules/claudetto/<name>.md` on the user's answer.
-
-#### Scenario: A Rule File
-
-- **WHEN** any file under `plugins/claudetto/rules/` is read
-- **THEN** its frontmatter holds `paths` with `**/*`, and its body is one sentence
-
 ### Requirement: Each Agent Has a Body and a Model
 
-The agents under `plugins/claudetto/agents/` SHALL each hold a plain body of two paragraphs. Artemis and Metis SHALL set `model: claude-sonnet-5-5` and `tools: Read, Grep, Glob`. Heracles SHALL set no `model` and no `tools`.
+The agents under `plugins/claudetto/agents/` SHALL each hold a plain body of two paragraphs. `search` and `plan` SHALL set `model: claude-sonnet-5-5` and `tools: Read, Grep, Glob`. `work` SHALL set no `model` and no `tools`.
 
 #### Scenario: Agent Reports
 
 - **WHEN** the three bodies are read
-- **THEN** Artemis ends with one `path:line` and excerpt per finding, Metis returns steps, files, risks, and the check command, and Heracles ends with what it did, what it checked and the result, and what is left
+- **THEN** `search` ends with one `path:line` and excerpt per finding, `plan` returns steps, files, risks, and the check command, and `work` ends with what it did, what it checked and the result, and what is left
 
 #### Scenario: Read-Only Agents
 
-- **WHEN** the frontmatter of Artemis and Metis is read
+- **WHEN** the frontmatter of `search` and `plan` is read
 - **THEN** each holds `tools: Read, Grep, Glob` and `model: claude-sonnet-5-5`
 
 #### Scenario: Heracles
 
-- **WHEN** the frontmatter of Heracles is read
+- **WHEN** the frontmatter of `work` is read
 - **THEN** it holds no `model` and no `tools`
 
 ### Requirement: A Disputed Claim Is Weighed as a Third Party's
@@ -396,10 +360,109 @@ The root prompt (`texts.ts`) SHALL tell the model to weigh a disputed claim as a
 
 - **WHEN** the user disputes the last reply and the check shows the reply was wrong
 - **THEN** the reply opens with the corrected fact
-- **AND** the lab test is `manifest.test.ts`, which holds the byte cap of the root prompt
+- **AND** the lab test is `useSlimSurface/surface.test.ts`, which caps the root prompt at the character count of the stock lean prompt's body (https://clawdipedia.cc/prompts/defaults/default-lean), and the cap follows that page when its size changes
 
 #### Scenario: A Waited-On Task
 
 - **WHEN** a background task still runs at Stop and the user waits on it
-- **THEN** the Stop note sends the last reply nowhere again and tells the model to follow the task's output with `mcp__claudetto__monitor`, filtered to its step and error lines
+- **THEN** the Stop note sends the last reply nowhere again and tells the model to follow the task's output with `Monitor`, filtered to its step and error lines
 - **AND** the lab test is `limits/stop.test.ts`
+
+### Requirement: The Code Rules Ask for Least Code and Trust-Boundary Guards
+
+The code rules, one file each under `plugins/claudetto/rules/`, SHALL tell the model to write the least code that does the whole task, in the style of the code around it. The model SHALL rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary.
+
+#### Scenario: One File per Code Rule
+
+- **WHEN** a reader looks for the file that holds each code rule
+- **THEN** the least-code rule is `useLeastCode.md` and the guard rule is `noImpossibleStateGuards.md` (`tools/rules.test.ts`, "the shipped rules are the seven")
+
+#### Scenario: Impossible State
+
+- **WHEN** an eval case has a function whose type already rules out `null`
+- **THEN** the passing diff adds no `null` check, and a diff that adds one fails
+
+### Requirement: Each Rule File Loads at Session Start
+
+Each file under `plugins/claudetto/rules/` SHALL hold no frontmatter, so Claude Code loads it at the start of a session, and SHALL hold one to four lines that state the rule with its reason.
+
+#### Scenario: The Shipped Rules
+
+- **WHEN** a reader lists `plugins/claudetto/rules/`
+- **THEN** it holds `findFactsByExperiment.md`, `lookForAClone.md`, `noImpossibleStateGuards.md`, `noUnrequestedEdits.md`, `useBlockLanguage.md`, `useLeastCode.md`, and `useOneObviousWay.md`
+- **AND** the four general rules say to find a fact by experiment, to give each job one obvious way, to write agent-seen text in block language with the articles that do work, and to look for a clone before writing a function
+
+#### Scenario: A Rule File
+
+- **WHEN** any file under `plugins/claudetto/rules/` is read
+- **THEN** it starts with no `---`, holds at most four non-empty lines, and holds a reason with "because" (`tools/rules.test.ts`, "no rule file holds frontmatter, so each loads at session start", "each rule is a few lines and gives its reason")
+
+### Requirement: A Needed Dependency Goes Into the Project
+
+The root prompt SHALL tell the model that a probe runs where undoing is free, and that a dependency the project needs is added to the project with its package manager, because a copy in a temp folder leaves the project without it (the person, R20).
+
+#### Scenario: A Package Tried Out First
+
+- **WHEN** the user asks to try a package out and make it available to the project
+- **THEN** the model runs `bun add <package>` in the project, not an install under `/tmp` alone
+- **AND** the eval case is `evals/dependency-into-project`
+
+### Requirement: A Written Name Comes From a Source
+
+The root prompt SHALL tell the model to write a URL or name into a file only from a source it read, because an invented one reads as fact (R28).
+
+#### Scenario: A Schema With No `$id`
+
+- **WHEN** the user asks for an `$id` on each schema and the repository names its URL in `package.json`
+- **THEN** each `$id` starts from that URL
+- **AND** the eval case is `evals/no-invented-url`
+
+### Requirement: Report and Wait After a Bang Command or a Correction
+
+The root prompt SHALL tell the model to report and wait after a `! <command>` or a correction, because untasked work acts on a guess, and to announce a paid or background run first and mark a guess as one (R35, R38, R48).
+
+#### Scenario: A Failed `! bun run verify`
+
+- **WHEN** the user's `! bun run verify` fails on a missing tool
+- **THEN** the model reports the failure and runs no `bun install`
+- **AND** the eval cases are `evals/wait-after-bang-command`, `evals/no-restore-without-proof`, and `evals/announce-background-run`
+
+### Requirement: A Credential Is Looked Up in Order
+
+The root prompt SHALL tell the model to look for a credential in the repository's `.env` files, then the environment, and never to ask the user for a new file (R36).
+
+#### Scenario: A Token in `.env`
+
+- **WHEN** a script needs `PROBE_API_TOKEN` and `.env` holds it
+- **THEN** the model names `.env` and writes no new file
+- **AND** the eval case is `evals/credential-from-env`
+
+### Requirement: A Reply States Facts
+
+`output-styles/Concise.md` SHALL hold a `<register>` block that says what to write: the fact, the corrected result, and the next step; a mistake as its error and cause; the check behind each claim; an answer to the question asked; each step the agent can take itself, done; only done steps as a report; a choice the agent can make, made and named.
+
+#### Scenario: The Style Holds the Register
+
+- **WHEN** the output style loads
+- **THEN** it holds the `<register>` block
+- **AND** the test is `tools/manifest.test.ts`
+
+### Requirement: A Reply Holds Only What Is New
+
+`output-styles/Concise.md` SHALL say that a reply after a remark, a notice, or a reply already on screen holds only what is new. Each Stop block that asks for a reply again SHALL end with `KEEP_ANSWER`, because the screen keeps the blocked reply and a full resend shows one report twice, in two wordings that can disagree. A block that names the lines to move or delete SHALL name that edit instead.
+
+#### Scenario: A Reply After a Stop Block
+
+- **WHEN** the grader block, the unread-grade block, the slice-commit block, or the register block stops a reply and the model writes again
+- **THEN** the block ends with `KEEP_ANSWER`: the last reply stays on screen, and the model writes only what it corrects or adds
+- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`
+
+#### Scenario: A Block That Names Its Lines
+
+- **WHEN** the ask form, the command form, the missing-file block, or the agree-opener block stops a reply
+- **THEN** the block lists each line at fault and names the move or deletion, with no `KEEP_ANSWER`
+
+#### Scenario: A Worker's Message Result
+
+- **WHEN** a lead sends `SendMessage` to a background agent
+- **THEN** the result text shows on screen from the tool result and is in no reply of the model, so no hook of ours writes it into a reply

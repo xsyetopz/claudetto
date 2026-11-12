@@ -20,7 +20,7 @@ Every key that a group of `hooks/command.run/useSetup/settings.ts` sets SHALL ex
 
 ### Requirement: Agents Inherit the Tier
 
-Setup SHALL write `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5` in the "Models and windows" group. An agent file that names no `model:` line, as `Heracles` does, SHALL run on it. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27).
+Setup SHALL write `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5` in the "Models and windows" group. An agent file that names no `model:` line, as `work` does, SHALL run on it. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27).
 
 #### Scenario: Subagent Model
 
@@ -150,7 +150,7 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** the sum is computed
 - **THEN** the prompt is read from the `usage` of the step that made the call, and the result's size is estimated from its text
-- **AND** the check is needed because the handoff trigger is checked between calls (`plugins/claudetto/hooks/turn.step/usePriceStep/price-step.ts`, tested by `price-step.test.ts` in the same folder)
+- **AND** the check is needed because the price sum is checked between calls (`plugins/claudetto/hooks/turn.step/usePriceStep/price-step.ts`, tested by `price-step.test.ts` in the same folder)
 
 #### Scenario: The Wait Ends before the Hook Budget
 
