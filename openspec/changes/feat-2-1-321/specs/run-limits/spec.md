@@ -71,20 +71,14 @@ While a `Bash` call runs, the system SHALL read the machine's processes every fi
 
 ## MODIFIED Requirements
 
-### Requirement: End Stuck Agents
+### Requirement: Limits Are Settings
 
-A subagent SHALL run no longer than `agentMaxMinutes` (default 15, 0 off) from its `agent.spawn`. Past the limit, the `tool.check` hook SHALL deny each tool call the subagent makes, with a reason that tells it to end, report what is done and what is left, and names the setting. The hook API offers no call that ends a subagent (`$.agent` holds `spawn`, `list`, and `register`; `$.turn.abort` ends only the main loop's turn), so a refused call ends one.
+The window, the heavy-call cap, and the fail limits SHALL come from `userConfig`, and the user SHALL be able to override each. The default of the window is the value that `design.md`, "Run Limits", records. The start cap, the depth cap, and the time cap of a subagent are Claude Code's own keys in the `env` block that setup writes, and `userConfig` holds none of them.
 
-#### Scenario: Source of the Default
+#### Scenario: Override
 
-- **WHEN** the default is set
-- **THEN** it rests on 36 delegated runs across three projects on 2026-11-10: median 313 seconds, 75th percentile 676, 90th 1385, longest 1592, with 6 past 15 minutes, and on the person calling a 28-minute run too long to help
-
-#### Scenario: Overtime Subagent
-
-- **WHEN** a subagent calls a tool past `agentMaxMinutes`
-- **THEN** the call is denied, and a main-loop call at the same time still goes
-- **AND** the lab tests are `limits/hold.test.ts`, "a subagent's call past agentMaxMinutes is refused, and the main loop's still goes", "with no option a subagent runs 15 minutes", and "agentMaxMinutes 0 turns the time limit off"
+- **WHEN** the user sets a cap in `userConfig`
+- **THEN** the system uses it in place of the default
 
 ### Requirement: A Closing Stop Removes the Session's Leftovers
 
@@ -127,3 +121,21 @@ At each stop of the lead, the system SHALL remove the agent worktrees that nothi
 **Reason**: The plugin cuts no output, so no output needs an exception.
 
 **Migration**: A Bash result under `bashOutputMaxChars` reaches the model whole.
+
+### Requirement: Hold Subagent Fan-Out
+
+**Reason**: Claude Code ends a start past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` itself (3 started in one reply with the key at 1: 1 ran, and the other two got the error "...at once. Do not retry."), and the start cap per period guarded no recorded fault.
+
+**Migration**: Setup writes `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` for a plan that has a 5-hour window. The memory hold keeps its own check on each start.
+
+### Requirement: End Stuck Agents
+
+**Reason**: Claude Code ends a background subagent that shows no progress for `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` (a hung request ended at 3 s with the key at 3000, and at 25 s without it). The hook counted run time, so it also refused a call of an agent that was making progress, and 43 denials of an agent past 15 minutes are recorded.
+
+**Migration**: Setup writes `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` as `900000`.
+
+### Requirement: Subagent Starts Stay Under the Environment's Cap
+
+**Reason**: Claude Code enforces `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` itself, with its own error text, so the `agent.spawn` check that read the same key is a copy.
+
+**Migration**: None. The key stays in the `env` block that setup writes.

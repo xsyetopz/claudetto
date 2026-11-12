@@ -125,7 +125,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Features off",
-		why: "Turns off workflows, artifacts, Remote Control, the claude.ai integrations, push notifications, auto memory, prompt suggestions, tips, voice, the to-do list, cron, fast mode, subagents that start subagents, the advisor tool, telemetry, error reporting, git instructions, commit attribution, and the feedback prompts; sets the version floor.",
+		why: "Turns off workflows, artifacts, Remote Control, the claude.ai integrations, push notifications, auto memory, prompt suggestions, tips, voice, the to-do list, cron, fast mode, subagents that start subagents, a background subagent silent for 15 minutes, the advisor tool, telemetry, error reporting, git instructions, commit attribution, and the feedback prompts; sets the version floor.",
 		settings: {
 			$schema: "https://clawdipedia.cc/schemas/claude-code-settings.json",
 			minimumVersion: MINIMUM_VERSION,
@@ -166,6 +166,8 @@ export const GROUPS: readonly Group[] = [
 				CLAUDE_CODE_DISABLE_CRON: "1",
 				CLAUDE_CODE_FORK_SUBAGENT: "0",
 				CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
+				// A background subagent with no progress for 15 minutes is ended; the key counts silence, not run time.
+				CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
 				CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
 				CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "1",
 				CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",

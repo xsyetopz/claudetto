@@ -178,16 +178,10 @@ export const ASK_TEXT =
 
 // Limits: refusals and blocks of the run limits and the stall rule.
 
-export const DENY_SUBAGENTS = (v: { running: number; cap: number }): string =>
-	`${v.running} subagents run and the cap is ${v.cap}. Wait for one to finish. The cap is \`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS\` in the \`env\` setting.`;
-
 interface Rate {
 	cap: number;
 	seconds: number;
 }
-
-export const DENY_STARTS = (v: Rate & { starts: number }): string =>
-	`${v.starts} subagents started in ${v.seconds} seconds and the cap is ${v.cap}. Do the work yourself or wait. The user sets the cap with \`maxSubagentStarts\` and the period with \`limitPeriodSeconds\`.`;
 
 export const DENY_CALLS = (v: Rate & { calls: number }): string =>
 	`The context is heavy and ${v.calls} tool calls ran in ${v.seconds} seconds, past the cap of ${v.cap}. Compact or end the session, or ask the user to raise \`maxHeavyToolCalls\` or \`heavyContextTokens\`.`;
@@ -198,9 +192,6 @@ export const DENY_FAILED = (v: {
 	limit: number;
 }): string =>
 	`This call failed ${v.count} times with the same error: ${v.error}\nReport the error to the user and change the call before another try, because this one fails the same way. The limit is \`maxIdenticalFailures\` (${v.limit}).`;
-
-export const DENY_OVERTIME = (minutes: number): string =>
-	`This agent has run past its ${minutes}-minute limit, so each further tool call is refused. End now: report what is done with its check, and what is left with the place each part stands. The limit is \`agentMaxMinutes\`.`;
 
 export const MEMORY_SHORT = (
 	share: number,

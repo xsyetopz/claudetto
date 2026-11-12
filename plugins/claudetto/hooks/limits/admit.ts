@@ -1,27 +1,17 @@
-import type { AgentInfo, PluginOptions } from "claude-code";
+import type { PluginOptions } from "claude-code";
 
 import { signature } from "../gate/denials.ts";
 import { numberOption } from "../options.ts";
-import {
-	DENY_CALLS,
-	DENY_FAILED,
-	DENY_OVERTIME,
-	DENY_STARTS,
-	DENY_SUBAGENTS,
-} from "../texts.ts";
+import { DENY_CALLS, DENY_FAILED } from "../texts.ts";
 
 export interface Limits {
-	readonly startCap: number;
 	readonly windowMs: number;
 	readonly callCap: number;
 	readonly heavyTokens: number;
 	readonly failLimit: number;
-	readonly agentMs: number;
 }
 
 export const limitsOf = (options: PluginOptions): Limits => ({
-	agentMs: numberOption(options, "agentMaxMinutes", 15, 0) * 60_000,
-	startCap: numberOption(options, "maxSubagentStarts", 12),
 	windowMs: numberOption(options, "limitPeriodSeconds", 600) * 1000,
 	callCap: numberOption(options, "maxHeavyToolCalls", 20),
 	heavyTokens: numberOption(options, "heavyContextTokens", 400_000),
@@ -52,32 +42,6 @@ const admit = (
 		? { next: times, out: deny(times.length) }
 		: { next: [...times, now], out: undefined };
 };
-
-export const runningCount = (agents: readonly AgentInfo[]): number =>
-	agents.filter(
-		(agent) => agent.status === "pending" || agent.status === "running",
-	).length;
-
-export const crowded = (
-	running: number,
-	cap: number | undefined,
-): string | undefined =>
-	cap !== undefined && running >= cap
-		? DENY_SUBAGENTS({ running, cap })
-		: undefined;
-
-export const admitStart = (
-	held: readonly number[] | undefined,
-	now: number,
-	limits: Limits,
-): Changed<readonly number[], string | undefined> =>
-	admit(held, now, limits.startCap, limits.windowMs, (starts) =>
-		DENY_STARTS({
-			starts,
-			cap: limits.startCap,
-			seconds: limits.windowMs / 1000,
-		}),
-	);
 
 /** Calls count only while the context is heavy, so a light context keeps no ledger. */
 export const admitCall = (
@@ -121,16 +85,6 @@ export const withFailure = (
 		[key]: { count, error: call.error, last: now },
 	};
 };
-
-/** Why a subagent that started at `start` may not call again, or nothing. */
-export const overtimeText = (
-	start: number | undefined,
-	now: number,
-	limits: Limits,
-): string | undefined =>
-	start !== undefined && limits.agentMs > 0 && now - start > limits.agentMs
-		? DENY_OVERTIME(limits.agentMs / 60_000)
-		: undefined;
 
 export const failedText = (
 	held: Failures | undefined,

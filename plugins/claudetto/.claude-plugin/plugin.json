@@ -28,16 +28,10 @@
 			"description": "Use `false` to stop adding a short note naming the `bun` commands when the folder holds `package.json` and `bun.lock`. On by default, since an untold model reaches for `npm`.",
 			"default": true
 		},
-		"maxSubagentStarts": {
-			"type": "number",
-			"title": "Subagent starts per period",
-			"description": "The most subagent starts per `limitPeriodSeconds`. Unset: 12. Cap subagents at once with Claude Code's `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` env setting.",
-			"min": 1
-		},
 		"limitPeriodSeconds": {
 			"type": "number",
 			"title": "Period in seconds",
-			"description": "The length of the period that `maxSubagentStarts`, `maxHeavyToolCalls`, and `maxIdenticalFailures` count in. Left unset, it is 600.",
+			"description": "The length of the period that `maxHeavyToolCalls` and `maxIdenticalFailures` count in. Left unset, it is 600.",
 			"min": 1
 		},
 		"maxHeavyToolCalls": {
@@ -51,12 +45,6 @@
 			"title": "Heavy context in tokens",
 			"description": "The input tokens of the last response from which the context counts as heavy. Left unset, it is 400000.",
 			"min": 1
-		},
-		"agentMaxMinutes": {
-			"type": "number",
-			"title": "Minutes a subagent may run",
-			"description": "How long a subagent may run before each further tool call it makes is refused and it is told to report and end. 0 turns the limit off. Left unset, it is 15.",
-			"min": 0
 		},
 		"memoryFreeMinPercent": {
 			"type": "number",
