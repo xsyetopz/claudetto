@@ -84,6 +84,23 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	);
 });
 
+test("the output style states the register as what to write, and a later reply as what is new", async () => {
+	const style = await file(
+		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
+	).text();
+	const register = style.slice(
+		style.indexOf("<register>"),
+		style.indexOf("</register>"),
+	);
+
+	expect(register).toContain(
+		"the fact, the corrected result when a result was wrong, and the next step you take",
+	);
+	expect(register).toContain(
+		"A reply that follows a remark or a notice, and any reply after one already on screen, holds only what is new.",
+	);
+});
+
 // 18.24: the two reader rules sit in the style's `<sentence_style>`, outside `<requests_to_the_user>`.
 test("the output style says what an agent message and a user reply hold", async () => {
 	const style = await file(

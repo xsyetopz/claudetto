@@ -65,3 +65,20 @@ A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs fi
 - **WHEN** the work needs three commands only the person can run
 - **THEN** the reply lists the first as its one `- ! <command>` bullet, and the next reply, after the person's run, lists the second
 - **AND** a finding bullet that mentions a `! <command>` step beside that one bullet passes
+
+## ADDED Requirements
+
+### Requirement: A Reply States Facts and Holds Only What Is New
+
+`output-styles/Concise.md` SHALL hold a `<register>` block that says what to write: the fact, the corrected result, and the next step; a mistake as its error and cause; the check behind each claim; an answer to the question asked; each step the agent can take itself, done; only done steps as a report; a choice the agent can make, made and named. It SHALL say that a reply after a remark, a notice, or a reply already on screen holds only what is new. Each Stop block SHALL end with the same instruction, because the screen keeps the blocked reply and a full resend shows one report twice, in two wordings that can disagree.
+
+#### Scenario: A Reply After a Stop Block
+
+- **WHEN** the Stop check blocks a reply and the model writes again
+- **THEN** the block says the last reply stays on screen and asks for only what it corrects or adds
+- **AND** the lab test is `limits/verify.test.ts`, and `tools/manifest.test.ts` holds the style's `<register>` block
+
+#### Scenario: A Worker's Message Result
+
+- **WHEN** a lead sends `SendMessage` to a background agent
+- **THEN** the result text shows on screen from the tool result and is in no reply of the model, so no hook of ours writes it into a reply

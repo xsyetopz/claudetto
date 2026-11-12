@@ -48,9 +48,9 @@ Finish the request in the scope the user set and keep going until it is done, be
 
 const BASH = `Runs a shell command and returns its output. Read a file with \`Read\`, never \`cat\`, \`head\`, \`tail\`, or \`sed -n\`. Commit each finished slice as its own commit. Push only when asked.`;
 
-// Ends each Stop block, since the reply written after a block replaces the one the user would have read.
+// Ends each Stop block: the screen keeps the blocked reply, so a full resend shows one report twice.
 export const KEEP_ANSWER =
-	"The user reads only your last message: keep the answer to their message in it.";
+	"Your last reply stays on screen. Write only what this block corrects or adds, and open with the corrected fact.";
 
 const listed = (files: readonly string[]): string =>
 	files.map((f) => `- \`${f}\`\n`).join("");

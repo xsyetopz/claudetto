@@ -9,10 +9,11 @@ import { finalLine, type Findings, summary } from "../../claim-check-report.ts";
 import { type Ctx, type Engine, newCtx } from "./client.ts";
 import { scoreGate } from "./gate.ts";
 import { scoreLedger } from "./ledger.ts";
+import { scoreReply } from "./reply.ts";
 import type { Scored } from "./scored.ts";
 
 /** The runs this entry knows. */
-export type Kind = "ledger" | "branch-gate";
+export type Kind = "ledger" | "branch-gate" | "reply-register";
 
 /** What the launcher hands the hook: the cases, the prices, the cap, and where each file goes. */
 export interface Job {
@@ -27,7 +28,7 @@ export interface Job {
 }
 
 const kindOf = (value: unknown): Kind =>
-	value === "ledger" ? value : "branch-gate";
+	value === "ledger" || value === "reply-register" ? value : "branch-gate";
 
 /** The job a file holds. */
 export function jobOf(text: string): Job {
@@ -48,6 +49,9 @@ export function jobOf(text: string): Job {
 function scored($: Engine, ctx: Ctx, job: Job): Promise<Scored> {
 	if (job.kind === "ledger") {
 		return scoreLedger($, ctx, job.cases);
+	}
+	if (job.kind === "reply-register") {
+		return scoreReply($, ctx, job.cases);
 	}
 	return scoreGate($, ctx, job.cases);
 }

@@ -134,6 +134,34 @@ for (const code of FIXES) {
 	});
 }
 
+const PLAIN_CHOICE =
+	"Pick one, and I'll leave `bunfig.toml` alone until you do:\n- lower the threshold to today's level;\n- remove the threshold;\n- keep 90% and write tests to reach it.";
+
+test("a choice in plain text, after a popup call earlier in the turn, is offered and blocks once", async ($: Engine, on: On) => {
+	const seen: string[] = [];
+	lab(
+		on,
+		[user("what about coverage?"), used("AskUserQuestion")],
+		found(
+			"options",
+			"Pick one, and I'll leave `bunfig.toml` alone until you do:",
+		),
+		seen,
+	);
+	const first = await stop($, false, PLAIN_CHOICE);
+	expect(seen[0]).toContain("- options:");
+	expect(first.block).toContain("call AskUserQuestion");
+	const again = await stop($, true, PLAIN_CHOICE);
+	expect(again.block).toBeUndefined();
+});
+
+test("a block says the reply it blocks stays on screen, so the resend holds only what is new", async ($: Engine, on: On) => {
+	lab(on, [user("what is open?")], found("credited"));
+	const awaited = await stop($);
+	expect(awaited.block).toContain("stays on screen");
+	expect(awaited.block).not.toContain("reads only your last message");
+});
+
 // The user only asked for a script run, and the reply words the script's labels as theirs.
 const CREDITED_FORMS = [
 	"Your labels ended as follows: B-7 got P1. I ran `./judge.sh B-7` once and took those labels from its output.",

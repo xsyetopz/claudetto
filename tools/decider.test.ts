@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 
 import { Glob } from "bun";
 
+import { REPLY_REGISTER } from "../plugins/claudetto/hooks/decider/questions.ts";
 import { contentsOf, fieldOf, listOf, PLUGINS } from "./validator.ts";
 
 const ROOT = `${import.meta.dir}/..`;
@@ -43,6 +44,20 @@ test("the validator lists the TypeSafe key among the reads of claudetto alone", 
 		false,
 		false,
 	]);
+});
+
+test("the reply-register questions are Nouls that each state what a yes and a no mean", () => {
+	const questions = Object.values(REPLY_REGISTER.questions);
+
+	expect(questions).toHaveLength(9);
+	expect(questions.map((question) => question.type)).toEqual(
+		questions.map(() => "noul"),
+	);
+	expect(
+		questions.map((question) =>
+			JSON.stringify(question).includes('"criteria":"'),
+		),
+	).toEqual(questions.map(() => true));
 });
 
 test("only the Decider and the decide tool read the TypeSafe key", async () => {
