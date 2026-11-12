@@ -82,6 +82,7 @@ test("the features-off group ends a silent background subagent, quiets the turn 
 	const env = valueAt(groupNamed("Features off").settings, ["env"]);
 	expect(env).toMatchObject({
 		CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
+		CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
 		CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: SILENT_TURN_REMINDER,
 	});
 	expect(env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
