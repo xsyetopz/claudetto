@@ -2,6 +2,9 @@ import type { SessionMessage } from "claude-code";
 
 const OPEN_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+\[ \]\s+(.*\S)\s*$/u;
 
+/** A task list numbers each task `1.2`, and a report copies the unticked ones whole, so such an item reports a task and asks nothing. */
+const TASK_NUMBER = /^\d+(?:\.\d+)+\s/u;
+
 /** A plain bullet: the form of a command for the user, since nobody ticks a checkbox in a reply. */
 const BULLET = /^\s*(?:[-*+]|\d+[.)])\s+(?!\[[ xX]\])(.*\S)\s*$/u;
 
@@ -39,7 +42,7 @@ export const openItems = (reply: string, turn: Turn): readonly string[] =>
 		? []
 		: reply.split("\n").flatMap((line) => {
 				const item = OPEN_ITEM.exec(line)?.[1];
-				return item === undefined ? [] : [item];
+				return item === undefined || TASK_NUMBER.test(item) ? [] : [item];
 			});
 
 const inItem = (line: string): boolean =>

@@ -83,6 +83,16 @@ The Stop check for commands outside a `- ! <command>` bullet SHALL treat a `- [ 
 - **WHEN** the reply holds `- [ ] ! gh auth login`
 - **THEN** the stop is blocked and the item is listed, because the item is a command in a checkbox
 
+### Requirement: A Numbered Task Line Is No Question
+
+The Stop check for questions typed as checklist items SHALL leave out a `- [ ]` item whose text opens with a task number such as `9.31`, because a report copies each unticked task of a task list whole and that line asks nothing.
+
+#### Scenario: A Report of Unticked Tasks
+
+- **WHEN** the reply holds `- [ ] 10.21 Run just check and just verify.` and `- [ ] Which region should I use?`
+- **THEN** the stop is blocked for the region question only
+- **AND** the lab test is `open-items-commands.test.ts`, "a numbered task line copied from a task list is no question, and an unnumbered item still is"
+
 ### Requirement: A Subagent's Worktree Is No Slice of the Session
 
 The uncommitted-changes check SHALL leave out a file under `.claude/worktrees/` of the session's working directory, because a subagent wrote it in a worktree that the subagent's own stop commits.

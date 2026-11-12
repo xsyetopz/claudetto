@@ -11,6 +11,21 @@ test("openItems of an empty or blank reply finds nothing", () => {
 	expect(openItems("\n  \n", turn)).toEqual([]);
 });
 
+test("a numbered task line copied from a task list is no question, and an unnumbered item still is", () => {
+	const turn = { asking: false };
+	const reply = [
+		"- [ ] 9.31 C33 (R38, R43): replies apologize. Add one typed question per fault.",
+		"- [ ] 10.21 Run `just check` and `just verify`.",
+		"- [ ] Which region should I use?",
+		"- [ ] 3 retries or 5?",
+	].join("\n");
+
+	expect(openItems(reply, turn)).toEqual([
+		"Which region should I use?",
+		"3 retries or 5?",
+	]);
+});
+
 test("a backtick command the reply asks the user to run without ! is stray", () => {
 	expect(
 		commandForm("You need to run `gh auth login` first.").stray,
