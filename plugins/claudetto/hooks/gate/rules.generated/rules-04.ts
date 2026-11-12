@@ -228,7 +228,7 @@ export const RULES_04 = [
 		description:
 			"A linter's unsafe fixes can change what the code does, and one deleted working code. Run the safe `--fix`, read each remaining suggestion, and apply it with Edit.",
 		feed: "parsed",
-		regex: String.raw`(?:^|\s)(?:\S*\/)?(?:oxlint|biome|ruff)\s(?:.*\s)?(?:--fix-suggestions|--fix-dangerously|--unsafe|--unsafe-fixes)(?:=\S*)?(?:\s|$)`,
+		regex: String.raw`(?:^|\s)(?:(?:\S*\/)?(?:oxlint|biome|ruff)(?:@\S*)?\s(?:.*\s)?|(?:bun|npm|pnpm|yarn)\s+run\s+\S+\s(?:.*\s)?(?:\.\/)?)(?:--fix-suggestions|--fix-dangerously|--unsafe|--unsafe-fixes)(?:=\S*)?(?:\s|$)`,
 		flags: "",
 		filters: [],
 	},

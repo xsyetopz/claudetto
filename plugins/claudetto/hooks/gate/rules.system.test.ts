@@ -46,6 +46,29 @@ test("a linter's unsafe fixes are denied, its safe fixes pass", () => {
 	}
 });
 
+test("a linter's unsafe flag is denied behind a version spec or a package script", () => {
+	for (const command of [
+		"npx oxlint@latest --fix-suggestions",
+		"bunx oxlint@1.93.0 --fix-suggestions src",
+		"bunx @biomejs/biome@2 check --write --unsafe .",
+		"bun run lint -- --fix-suggestions",
+		"npm run lint -- --fix-dangerously",
+		"pnpm run lint --unsafe-fixes",
+	]) {
+		const verdict = judge(command, NONE);
+
+		expect(verdict?.decision).toBe("deny");
+		expect(verdict?.reason).toContain("claudetto:lint-unsafe-fix");
+	}
+	for (const command of [
+		"bunx oxlint@latest --fix",
+		"bun run lint -- --fix",
+		"bun run lint",
+	]) {
+		expect(decision(command)).toBeUndefined();
+	}
+});
+
 test("a recursive delete of a folder that is no root passes", () => {
 	for (const command of ["rm -rf tmp/x", "rm /", "ls -R /", "ls -R ~"]) {
 		expect(decision(command)).toBeUndefined();
