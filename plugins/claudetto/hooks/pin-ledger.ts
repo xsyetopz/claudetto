@@ -4,7 +4,7 @@ import {
 	RULE_CRITERIA,
 } from "./decider/questions.ts";
 import { settle } from "./decider/settle.ts";
-import type { PinConstraint } from "./texts-handoff.ts";
+import type { PinConstraint } from "./texts-pin.ts";
 
 const SEGMENTER = new Intl.Segmenter("en", { granularity: "sentence" });
 // The most sentences of one message a request asks about. A request often follows the material it is about, so a longer message keeps its head and its tail.

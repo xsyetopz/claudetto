@@ -7,10 +7,7 @@ import { hasSubscriptionLogin, subscriptionEnv } from "./subscription.ts";
 const ROOT = `${import.meta.dir}/..`;
 const KEY = "ANTHROPIC_API_KEY";
 const OWNER = "tools/subscription.ts";
-const PAID_LAUNCHERS = [
-	"tools/claim-check-launch.ts",
-	"tools/handover-probe/run.ts",
-];
+const PAID_LAUNCHERS = ["tools/claim-check-launch.ts"];
 
 test("subscriptionEnv drops the API key and keeps the rest", () => {
 	const env = subscriptionEnv({
@@ -27,9 +24,9 @@ test("a paid run needs the login token, and an API key does not stand in for it"
 	expect(hasSubscriptionLogin({ CLAUDE_CODE_OAUTH_TOKEN: "t" })).toBe(true);
 });
 
-test("no tool or plugin text names the API key except the fake one of the offline probe", async () => {
+test("no tool or plugin text names the API key", async () => {
 	const hits =
-		await $`git grep -n -e ${KEY} --and --not -e sk-ant-fake -- tools plugins ${":!*.test.ts"} ${`:!${OWNER}`}`
+		await $`git grep -n -e ${KEY} -- tools plugins ${":!*.test.ts"} ${`:!${OWNER}`}`
 			.cwd(ROOT)
 			.nothrow()
 			.text();

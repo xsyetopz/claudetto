@@ -1,7 +1,7 @@
 import { inPlaceTarget } from "./gate/files.ts";
 import { type Command, parse, programOf } from "./gate/shell-words.ts";
 import { fieldOf } from "./gate/verdict.ts";
-import type { PinConstraint } from "./texts-handoff.ts";
+import type { PinConstraint } from "./texts-pin.ts";
 import { isWriter } from "./tools.ts";
 
 const WRITE_PROGRAMS = new Set([

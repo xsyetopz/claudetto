@@ -104,7 +104,6 @@ test(
 	"the retention options go to the process as flags, and 0 is passed as off",
 	{
 		options: {
-			handoffCleanupPeriodDays: 0,
 			sessionTempCleanupPeriodDays: 3,
 			probeCleanupPeriodMinutes: 15,
 			trashCleanupPeriodDays: 0,
@@ -116,7 +115,7 @@ test(
 		await start($, "startup");
 
 		expect(launched[0]?.argv.join(" ")).toContain(
-			"--handoff-days 0 --session-days 3 --probe-minutes 15 --trash-days 0",
+			"--session-days 3 --probe-minutes 15 --trash-days 0",
 		);
 	},
 );

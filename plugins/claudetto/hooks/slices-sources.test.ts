@@ -22,16 +22,6 @@ test("a file changed through Bash, such as sed -i, is not the agent's and is ask
 	expect(out.block).toBe(SLICE_COMMIT([], ["src/b.ts"]));
 });
 
-test("the plugin's saved test output is not listed among the files to commit", async ($: Engine, on: On) => {
-	const repo = await started($, on, { [A]: " M" });
-	repo.dirty["/repo/.claude/claudetto/output/output-t1.txt"] = "??";
-	await bash($, "bun test");
-	await edit($);
-	const out = await stop($);
-	expect(out.block).toContain("`src/a.ts`");
-	expect(out.block).not.toContain("claudetto/output");
-});
-
 test("a file another hand changed after the agent wrote it is asked for under its source, not as the agent's", async ($: Engine, on: On) => {
 	const repo = await started($, on, { [A]: " M" });
 	await edit($);

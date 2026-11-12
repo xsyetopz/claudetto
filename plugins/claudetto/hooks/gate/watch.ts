@@ -18,7 +18,6 @@ import {
 	signature,
 	withDenial,
 } from "./denials.ts";
-import { log } from "./log.ts";
 import { hostOf, ownVerdict, type Walls } from "./own.ts";
 import { readOnly } from "./readonly.ts";
 import { recreates, saw } from "./recreate.ts";
@@ -87,16 +86,12 @@ export async function gateCheck(
 		fieldOf(e.input, "command") ?? `${e.tool} ${JSON.stringify(e.input)}`,
 	);
 	if (refused !== undefined) {
-		const verdict = deny(refused);
-		await log($, e, verdict);
-		return verdict;
+		return deny(refused);
 	}
 	// Computed before `next`, so a throw leaves `next` uncalled and the hook's fault handler asks in its place.
 	const recreated = await recreates(hostOf($), walls.files, e.tool, e.input);
 	const own = (await ownVerdict($, walls, e.tool, e.input)) ?? recreated;
-	const verdict = settle(named(await next(e)), own, e.tool, e.input);
-	await log($, e, verdict);
-	return verdict;
+	return settle(named(await next(e)), own, e.tool, e.input);
 }
 
 /** The permission and prompt events: a denial is remembered, and a new message from the person clears them. */

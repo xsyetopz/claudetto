@@ -7,9 +7,8 @@ import type {
 } from "claude-code";
 
 import type { CallAnswer, CallEvent, CallNext } from "../chain.ts";
-import { atRoot } from "../handoff/layout.ts";
 import { WITHHELD } from "../texts.ts";
-import { heartbeatPath } from "./heartbeat.ts";
+import { atRoot, heartbeatPath } from "./heartbeat.ts";
 
 const HAIKU_MODEL = "claude-haiku-5-5";
 

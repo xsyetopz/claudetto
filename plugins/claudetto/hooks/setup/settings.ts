@@ -86,7 +86,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Models and windows",
-		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, and the context windows with the compaction trigger the handoff is written against.`,
+		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, and the context windows with the compaction trigger.`,
 		settings: {
 			model: OPUS,
 			effortLevel: "medium",
@@ -114,6 +114,14 @@ export const GROUPS: readonly Group[] = [
 		label: "Worktrees",
 		why: 'Starts a worktree at the current branch with its unpushed commits (`worktree.baseRef: "head"`); unset, Claude Code starts it at `origin/<default branch>`.',
 		settings: { worktree: { baseRef: "head" } },
+	},
+	{
+		label: "Output limits",
+		why: "Caps a Bash result at 8000 characters and an MCP tool result at 10000 tokens; Claude Code saves a longer result to its own file and shows a preview.",
+		settings: {
+			bashOutputMaxChars: 8000,
+			env: { MAX_MCP_OUTPUT_TOKENS: "10000" },
+		},
 	},
 	{
 		label: "Features off",

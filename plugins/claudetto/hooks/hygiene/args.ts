@@ -2,7 +2,6 @@ export interface Args {
 	readonly dryRun: boolean;
 	readonly session?: string;
 	readonly days?: number;
-	readonly handoffDays?: number;
 	readonly sessionDays?: number;
 	readonly probeMinutes?: number;
 	readonly trashDays?: number;
@@ -10,10 +9,9 @@ export interface Args {
 
 const NUMBER_FLAGS = new Map<
 	string,
-	"days" | "handoffDays" | "sessionDays" | "probeMinutes" | "trashDays"
+	"days" | "sessionDays" | "probeMinutes" | "trashDays"
 >([
 	["--days", "days"],
-	["--handoff-days", "handoffDays"],
 	["--session-days", "sessionDays"],
 	["--probe-minutes", "probeMinutes"],
 	["--trash-days", "trashDays"],

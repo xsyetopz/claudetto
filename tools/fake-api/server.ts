@@ -1,12 +1,10 @@
 import { appendFile } from "node:fs/promises";
 
-import { FORK_PROMPT } from "../../plugins/claudetto/hooks/texts-handoff.ts";
 import { fakeContextTokens, fakeUsage } from "./fake.ts";
 import { type Reply, sse } from "./sse.ts";
-import { HANDOFF_ASK } from "./task.ts";
 import type { Usage } from "./usage.ts";
 
-export type Kind = "main" | "fork" | "summarizer" | "other";
+export type Kind = "main" | "summarizer" | "other";
 
 /** One line of the server log: what a request was, and the FAKE usage the server answered with. */
 export interface LogRecord {
@@ -15,8 +13,6 @@ export interface LogRecord {
 	readonly host: string;
 	readonly requestId: string;
 	readonly kind: Kind;
-	/** The scripted reply was a call of the handoff tool. */
-	readonly calledHandoff: boolean;
 	readonly contextTokens: number;
 	readonly toolNames: readonly string[];
 	readonly lastUserText: string;
@@ -55,11 +51,8 @@ const lastUser = (messages: readonly Message[]): Message | undefined => {
 
 const SUMMARIZER = /create a detailed summary/iu;
 
-/** A side request (a grader, a classifier) carries no tools. A fork repeats the main request, so it keeps them. */
+/** A side request (a grader, a classifier) carries no tools. */
 export const classify = (lastText: string, tools: number): Kind => {
-	if (lastText.startsWith(FORK_PROMPT.slice(0, 40))) {
-		return "fork";
-	}
 	if (SUMMARIZER.test(lastText)) {
 		return "summarizer";
 	}
@@ -80,7 +73,7 @@ const parseBody = (raw: string): Body => {
 	return body;
 };
 
-/** What the log needs from a request body, the same for the fake server and the relay. */
+/** What the log needs from a request body. */
 export const requestFacts = (raw: string) => {
 	const body = parseBody(raw);
 	const lastUserText = textOf(lastUser(body.messages));
@@ -91,35 +84,6 @@ export const requestFacts = (raw: string) => {
 		ttls: [...raw.matchAll(/"ttl":"(\w+)"/gu)].map((m) => m[1] ?? ""),
 		toolNames: (body.tools ?? []).map((t) => t.name),
 	};
-};
-
-const FAKE_HANDOFF = [
-	"# Handoff",
-	"",
-	"Written by Claude at FAKE.",
-	"## Goal",
-	"",
-	"FAKE handoff from the fake model.",
-	"## Standing Instructions",
-	"",
-	"None.",
-	"## Decisions Log",
-	"",
-	"FAKE: the fake model keeps no decisions.",
-	"## Current State",
-	"",
-	"FAKE.",
-	"## Next Steps",
-	"",
-	"Continue.",
-].join("\n");
-
-const HANDOFF_INPUT = {
-	goal: "FAKE goal",
-	standing: "FAKE standing",
-	state: "FAKE state",
-	decisions: "FAKE decisions",
-	next_prompt: "Continue the ledger service from the handoff (FAKE).",
 };
 
 export interface Fake {
@@ -149,26 +113,10 @@ export const logAppender = (path: string) => {
 	};
 };
 
-const replyFor = (
-	kind: Kind,
-	lastUserText: string,
-	body: Body,
-	handoffOnBoundary: boolean,
-): Reply => {
-	if (kind === "fork") {
-		return { text: FAKE_HANDOFF };
-	}
-	if (kind === "summarizer") {
-		return { text: "<summary>FAKE summary of the conversation.</summary>" };
-	}
-	const asked =
-		handoffOnBoundary &&
-		lastUserText.includes(HANDOFF_ASK) &&
-		(body.tools?.some((t) => t.name === "mcp__claudetto__handoff") ?? false);
-	return asked
-		? { tool: "mcp__claudetto__handoff", input: HANDOFF_INPUT }
+const replyFor = (kind: Kind): Reply =>
+	kind === "summarizer"
+		? { text: "<summary>FAKE summary of the conversation.</summary>" }
 		: { text: "FAKE reply." };
-};
 
 const respond = (
 	body: Body,
@@ -211,7 +159,6 @@ interface FakeState {
 	readonly previous: Map<string, number>;
 	readonly log: ReturnType<typeof logAppender>;
 	readonly bodies: ReturnType<typeof logAppender> | undefined;
-	readonly handoffOnBoundary: boolean;
 }
 
 const answer = async (
@@ -234,14 +181,13 @@ const answer = async (
 		output_tokens: 5,
 	};
 	state.previous.set(prefix, total);
-	const reply = replyFor(kind, lastUserText, body, state.handoffOnBoundary);
+	const reply = replyFor(kind);
 	const record: LogRecord = {
 		n: state.n,
 		path: url.pathname,
 		host: req.headers.get("host") ?? "",
 		requestId,
 		kind,
-		calledHandoff: "tool" in reply,
 		contextTokens: total,
 		toolNames,
 		lastUserText: lastUserText.slice(0, 200),
@@ -252,18 +198,14 @@ const answer = async (
 	return respond(body, requestId, reply, usage);
 };
 
-/** A fake Messages API. With `handoffOnBoundary`, a prompt that ends a task gets a scripted `mcp__claudetto__handoff` call. Every usage number it returns is FAKE. */
-export const startFake = (opts: {
-	readonly log: string;
-	readonly handoffOnBoundary: boolean;
-}): Fake => {
+/** A fake Messages API: it answers a summarizer request with a fixed summary and any other with a fixed reply. Every usage number it returns is FAKE. */
+export const startFake = (opts: { readonly log: string }): Fake => {
 	const bodiesPath = process.env.PROBE_BODIES;
 	const state: FakeState = {
 		n: 0,
 		previous: new Map<string, number>(),
 		log: logAppender(opts.log),
 		bodies: bodiesPath === undefined ? undefined : logAppender(bodiesPath),
-		handoffOnBoundary: opts.handoffOnBoundary,
 	};
 	const server = Bun.serve({
 		port: 0,

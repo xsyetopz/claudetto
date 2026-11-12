@@ -8,12 +8,5 @@ declare module "claude-code" {
 				options?: readonly { label: string; description: string }[];
 			}[];
 		};
-		mcp__claudetto__handoff: {
-			goal: string;
-			standing: string;
-			state: string;
-			decisions: string;
-			next_prompt: string;
-		};
 	}
 }

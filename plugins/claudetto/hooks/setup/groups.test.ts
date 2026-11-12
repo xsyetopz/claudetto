@@ -11,6 +11,7 @@ test("the groups are labelled in order", () => {
 		"Auto mode",
 		"Models and windows",
 		"Worktrees",
+		"Output limits",
 		"Features off",
 		"Sandbox",
 		"Status line",
@@ -67,6 +68,13 @@ test("the models group writes the models, ceilings, and windows", () => {
 			ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-5-5",
 			ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-5-5",
 		},
+	});
+});
+
+test("the output-limits group writes the Bash and MCP result limits Claude Code enforces", () => {
+	expect(groupNamed("Output limits").settings).toEqual({
+		bashOutputMaxChars: 8000,
+		env: { MAX_MCP_OUTPUT_TOKENS: "10000" },
 	});
 });
 

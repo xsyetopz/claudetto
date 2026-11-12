@@ -15,9 +15,7 @@ import { decideCall, typesafeKey } from "./decide.ts";
 import { delegation, delegationCall } from "./delegation.ts";
 import { gate, gateState } from "./gate.ts";
 import { gateCall, gateCheck } from "./gate/watch.ts";
-import { handoff, handoffCall, handoffState } from "./handoff.ts";
 import { hygiene } from "./hygiene.ts";
-import { boundOutputCall } from "./limits/bound-output.ts";
 import { holdCheck, holdHooks, holdState } from "./limits/hold.ts";
 import { lineFileHooks } from "./limits/line-file.ts";
 import { memoryGuard } from "./limits/memory.ts";
@@ -31,7 +29,6 @@ import { stopCall, stopCheck, stopState } from "./limits/turn.ts";
 import { notify } from "./notify.ts";
 import { pin, pinCall, pinCheck, pinState } from "./pin.ts";
 import { reply } from "./reply.ts";
-import { runs, runsCall, runsState } from "./runs.ts";
 import { sandboxGitCall, sandboxGitState } from "./sandbox-git.ts";
 import { setup } from "./setup.ts";
 import { slices, slicesCall, slicesState } from "./slices.ts";
@@ -46,9 +43,7 @@ const stateOf = (options: PluginOptions) => ({
 	hold: holdState(options),
 	stop: stopState(),
 	pinned: pinState(),
-	ran: runsState(),
 	gate: gateState(options),
-	handoff: handoffState(),
 	sandboxGit: sandboxGitState(),
 });
 
@@ -67,11 +62,9 @@ const registerOuter = (on: On, options: PluginOptions, state: State): void => {
 	surface(on, options);
 	pin(on, state.pinned);
 	delegation(on);
-	runs(on, state.ran);
 };
 
 const registerInner = (on: On, options: PluginOptions, state: State): void => {
-	handoff(on, options, state.handoff);
 	hygiene(on, options);
 	notify(on, options);
 	gate(on, state.gate);
@@ -104,14 +97,11 @@ const callGuards = (
 		(at, step) => slicesCall($, at, step, state.written),
 		(at, step) => priceStepCall($, at, step, state.price),
 		(at, step) => stopCall(at, step, state.stop),
-		(at, step) => boundOutputCall($, at, step, options),
 		(at, step) => surfaceCall(at, step, options),
 		(at, step) => pinCall(at, step, state.pinned),
 		(at, step) => askFixCall($, at, step),
 		(at, step) => delegationCall(at, step),
-		(at, step) => runsCall(at, step, state.ran),
 		(at, step) => decideCall($, at, step),
-		(at, step) => handoffCall($, at, step, state.handoff),
 		(at, step) => sandboxGitCall($, at, step, state.sandboxGit),
 		(at, step) => gateCall($, at, step, state.gate),
 	]);

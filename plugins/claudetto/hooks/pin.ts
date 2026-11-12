@@ -17,7 +17,7 @@ import {
 	PIN_NO_QUESTIONS,
 	PIN_NOTE,
 	type PinConstraint,
-} from "./texts-handoff.ts";
+} from "./texts-pin.ts";
 import { ASK_TOOL, isPersonMessage } from "./verify.ts";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/u;
@@ -76,9 +76,10 @@ const ledgerHooks = (on: On, s: PinState): void => {
 	});
 	on("session.compact", async (_$, e, next) => {
 		await s.pending;
-		return s.ledger.length === 0
-			? next(e)
-			: next({ ...e, instructions: PIN_COMPACT(e.instructions, s.ledger) });
+		return next({
+			...e,
+			instructions: PIN_COMPACT(e.instructions, s.ledger),
+		});
 	});
 };
 

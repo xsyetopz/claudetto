@@ -214,6 +214,12 @@ A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or witho
 
 ## REMOVED Requirements
 
+### Requirement: Each Ask and Deny Is Logged
+
+**Reason**: No code reads `~/.claude/claudetto/gate-asks/` (P193), and the person approved the removal of the writer.
+
+**Migration**: Count denials from the session transcript, where each denied call is a tool result with its reason.
+
 ### Requirement: A /tmp Folder Carries Its Session's Marker
 
 **Reason**: The marker stopped no delete of another session's folder in 58 sampled denials, and none of the 9,567 folders in the temp base held one, because test runs make the folders and no rule reaches them.

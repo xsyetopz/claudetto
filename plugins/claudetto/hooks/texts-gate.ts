@@ -62,7 +62,7 @@ export const jevSaid = (question: string, said: string, p: number): string =>
 
 export const jevFailed = (why: string): string => `Jev gives no answer: ${why}`;
 
-// Secrets: the scanner that redacts tool results and handoffs.
+// Secrets: the scanner that redacts tool results.
 export const secretScanFailed = (why: string): string =>
 	`The secret scanner \`betterleaks\` failed, so this text was withheld (${why}). Install it with \`brew install betterleaks\`, or run \`/claudetto:setup\`.`;
 

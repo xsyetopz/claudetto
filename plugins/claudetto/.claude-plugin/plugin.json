@@ -16,12 +16,6 @@
 			"description": "Use `false` to stop the notification claudetto raises when a turn stops on an API error.",
 			"default": true
 		},
-		"handoverThresholdTokens": {
-			"type": "number",
-			"title": "Handover size in tokens",
-			"description": "Input tokens at which a turn's end hands over: a fork writes a handoff, the chat compacts to it, and the next prompt is sent. Unset: 400000, or half the window if smaller.",
-			"min": 1
-		},
 		"readGuardEnabled": {
 			"type": "boolean",
 			"title": "Guard whole reads of heavy files",
@@ -76,24 +70,11 @@
 			"description": "How many times the same call fails with the same error before an identical retry is refused. Left unset, it is 3.",
 			"min": 1
 		},
-		"maxTestOutputChars": {
-			"type": "number",
-			"title": "Test and build output in characters",
-			"description": "The most characters of a test, build, or lint run the model reads; longer output keeps head, tail, and failures, and goes whole to `.claude/claudetto/output/`. `0` is off. Unset: 8000.",
-			"default": 8000,
-			"min": 0
-		},
 		"hygieneEnabled": {
 			"type": "boolean",
 			"title": "Session hygiene",
-			"description": "Use `false` to run no sweep at session start. On by default: it removes old temp folders, handoffs, and build folders `trash.toml` or Mole's `purge_paths` names, then runs `mo clean` without a prompt.",
+			"description": "Use `false` to run no sweep at session start. On by default: it removes old temp folders and build folders `trash.toml` or Mole's `purge_paths` names, then runs `mo clean` without a prompt.",
 			"default": true
-		},
-		"handoffCleanupPeriodDays": {
-			"type": "number",
-			"title": "Handoff retention in days",
-			"description": "The age in days from which hygiene removes a handoff, except the newest one that a resume reads. Use 0 to keep every handoff. Left unset, it follows `cleanupPeriodDays`.",
-			"min": 0
 		},
 		"sessionTempCleanupPeriodDays": {
 			"type": "number",

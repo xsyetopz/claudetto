@@ -1,7 +1,6 @@
 import type { EngineInterface, On } from "claude-code";
 
 import type { CallAnswer, CallEvent, CallNext } from "./chain.ts";
-import { BOUND_OUTPUT_DIR } from "./limits/bound-output.ts";
 import { didWrite } from "./limits/turn.ts";
 import { PERSON, rootOf } from "./pin.ts";
 import { SLICE_COMMIT } from "./texts.ts";
@@ -47,8 +46,7 @@ const entriesOf = (
 	const entries: { path: string; gone: boolean }[] = [];
 	for (let i = 0; i < fields.length; i++) {
 		const field = fields[i] ?? "";
-		// The plugin's own saved test output is not the agent's slice.
-		if (field !== "" && !field.slice(3).startsWith(`${BOUND_OUTPUT_DIR}/`)) {
+		if (field !== "") {
 			entries.push({
 				path: `${root}/${field.slice(3)}`,
 				gone: field.slice(0, 2).includes("D"),

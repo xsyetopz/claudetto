@@ -10,7 +10,39 @@ import {
 	spoken,
 	submit,
 } from "./pin.mock.ts";
-import { PIN_NO_QUESTIONS } from "./texts-handoff.ts";
+import { PIN_COMPACT_KEEP, PIN_NO_QUESTIONS } from "./texts-pin.ts";
+
+const listen = (on: On): (() => string | undefined) => {
+	let told: string | undefined;
+	on("session.compact", (_$, e) => {
+		told = e.instructions;
+		return { skip: "seen" };
+	});
+	return () => told;
+};
+
+const compact = ($: Engine): Promise<unknown> =>
+	$.session.compact({
+		trigger: "manual",
+		messages: [{ role: "user", text: "go", toolUses: [] }],
+	});
+
+test("a compaction is told to keep the person's corrections, refusals, and consents word for word", async ($: Engine, on: On) => {
+	lab(on, {});
+	const told = listen(on);
+	await compact($);
+	expect(told()).toBe(PIN_COMPACT_KEEP);
+});
+
+test("a compaction names each stored constraint after the standing instruction", async ($: Engine, on: On) => {
+	lab(on, RO);
+	const told = listen(on);
+	await submit($);
+	await check($, "Read", { file_path: "/p/a.ts" });
+	await compact($);
+	expect(told()).toContain(PIN_COMPACT_KEEP);
+	expect(told()).toContain("- Nothing should change on disk.");
+});
 
 test("a constraint found on one prompt rides the next prompt as context, and the first prompt is not held for it", async ($: Engine, on: On) => {
 	lab(on, RO);

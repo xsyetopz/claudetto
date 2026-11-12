@@ -36,6 +36,21 @@ When the engine refuses to read an operand of a `! <command>` step as a path, th
 
 ## MODIFIED Requirements
 
+### Requirement: End Stuck Agents
+
+A subagent SHALL run no longer than `agentMaxMinutes` (default 15, 0 off) from its `agent.spawn`. Past the limit, the `tool.check` hook SHALL deny each tool call the subagent makes, with a reason that tells it to end, report what is done and what is left, and names the setting. The hook API offers no call that ends a subagent (`$.agent` holds `spawn`, `list`, and `register`; `$.turn.abort` ends only the main loop's turn), so a refused call ends one.
+
+#### Scenario: Source of the Default
+
+- **WHEN** the default is set
+- **THEN** it rests on 36 delegated runs across three projects on 2026-11-10: median 313 seconds, 75th percentile 676, 90th 1385, longest 1592, with 6 past 15 minutes, and on the person calling a 28-minute run too long to help
+
+#### Scenario: Overtime Subagent
+
+- **WHEN** a subagent calls a tool past `agentMaxMinutes`
+- **THEN** the call is denied, and a main-loop call at the same time still goes
+- **AND** the lab tests are `limits/hold.test.ts`, "a subagent's call past agentMaxMinutes is refused, and the main loop's still goes", "with no option a subagent runs 15 minutes", and "agentMaxMinutes 0 turns the time limit off"
+
 ### Requirement: A Closing Stop Removes the Session's Leftovers
 
 At each stop of the lead, the system SHALL remove the agent worktrees that nothing needs, as `session-hygiene` defines them. When no task of the agent runs, it SHALL also remove the worktrees and branches the agent created, with plain `git worktree remove` and `git branch -d`, so what holds work stays. It SHALL block once to name what stays of what the agent or a worker it started made, unless the reply names each. A stop SHALL NOT name another session's agent worktree; the hygiene report does.
@@ -57,3 +72,23 @@ At each stop of the lead, the system SHALL remove the agent worktrees that nothi
 - **WHEN** the lead stops while a background worker runs and another worker's unlocked worktree holds only commits the lead's branch has
 - **THEN** that worktree and its branch are removed, and the Stop names nothing
 - **AND** the lab test is `cleanup.test.ts`, "an integrated worker worktree goes while another worker still runs"
+
+## REMOVED Requirements
+
+### Requirement: Test and Build Output Is Cut to Its Head and Tail
+
+**Reason**: The person approved the removal of the output files and their writer. Claude Code cuts a Bash result at `bashOutputMaxChars` and saves the rest to its own file, which P191 measured.
+
+**Migration**: Setup writes `bashOutputMaxChars` (requirement "Output Limits Are Written" of `setup`).
+
+### Requirement: The Whole Cut Output Is Saved
+
+**Reason**: Claude Code saves a Bash result past the limit to a file of its own, so the plugin's copy under `.claude/claudetto/output/` duplicated it (P191).
+
+**Migration**: Read the path that the preview names.
+
+### Requirement: Some Output Stays Whole
+
+**Reason**: The plugin cuts no output, so no output needs an exception.
+
+**Migration**: A Bash result under `bashOutputMaxChars` reaches the model whole.

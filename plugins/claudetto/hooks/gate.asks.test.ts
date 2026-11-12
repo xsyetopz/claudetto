@@ -1,14 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import {
-	asking,
-	logging,
-	parsedLines,
-	run,
-	start,
-	walledLab,
-} from "./gate.mock.ts";
+import { asking, run, start, walledLab } from "./gate.mock.ts";
 
 for (const command of [
 	"cd /tmp/p && ls -la 2>&1 | tail -50",
@@ -47,46 +40,6 @@ test("an ask a settings rule made on a read-only command stays an ask", async ($
 		input: { command: "git status" },
 	});
 	expect(verdict.decision).toBe("ask");
-});
-
-test("an ask is logged with its rule, tool, and time", async ($: Engine, on: On) => {
-	const lines = logging(on, { decision: "ask", rule: "Bash(git push:*)" });
-	await $.tool.check({ tool: "Bash", input: { command: "git push" } });
-	expect(parsedLines(lines)).toEqual([
-		{
-			time: "1970-01-01T00:00:00.000Z",
-			tool: "Bash",
-			decision: "ask",
-			root: "/p",
-			rule: "Bash(git push:*)",
-			command: "git push",
-		},
-	]);
-});
-
-test("a deny is logged", async ($: Engine, on: On) => {
-	const lines = logging(on, { decision: "deny", reason: "by a rule" });
-	await $.tool.check({ tool: "Bash", input: { command: "git push" } });
-	expect(parsedLines(lines)).toMatchObject([
-		{ decision: "deny", rule: "by a rule" },
-	]);
-});
-
-test("an allow is not logged", async ($: Engine, on: On) => {
-	const lines = logging(on, { decision: "allow" });
-	await $.tool.check({ tool: "Bash", input: { command: "git status" } });
-	expect(lines).toEqual([]);
-});
-
-test("a command past 200 characters is cut to 200", async ($: Engine, on: On) => {
-	const lines = logging(on, { decision: "ask", rule: "Bash(echo:*)" });
-	await $.tool.check({
-		tool: "Bash",
-		input: { command: `echo ${"a".repeat(300)}` },
-	});
-	expect(parsedLines(lines)).toMatchObject([
-		{ command: `echo ${"a".repeat(195)}` },
-	]);
 });
 
 test("by default a compound head, a grep, and a Read of the held-out folder are denied over an allow", async ($: Engine, on: On) => {

@@ -7,7 +7,6 @@ const SWEEP_TIMEOUT_MS = 600_000;
 
 /** The option as the flag that carries it. A number of 0 or more passes, and 0 turns the kind off. */
 const FLAGS = [
-	["handoffCleanupPeriodDays", "--handoff-days"],
 	["sessionTempCleanupPeriodDays", "--session-days"],
 	["probeCleanupPeriodMinutes", "--probe-minutes"],
 	["trashCleanupPeriodDays", "--trash-days"],

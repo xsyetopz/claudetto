@@ -8,10 +8,6 @@ import {
 } from "../plugins/claudetto-openspec/hooks/texts.ts";
 import { DECIDE_SPEC } from "../plugins/claudetto/hooks/texts-gate.ts";
 import {
-	HANDOFF_TOOL,
-	TOOL_HANDOFF,
-} from "../plugins/claudetto/hooks/texts-handoff.ts";
-import {
 	AGENT_TEXT,
 	ASK_TEXT,
 	REPLY_SPEC,
@@ -69,7 +65,6 @@ const frontmatters = async (): Promise<Described[]> => {
 const SPECS = {
 	reply: REPLY_SPEC,
 	decide: DECIDE_SPEC,
-	handoff: { name: HANDOFF_TOOL, description: TOOL_HANDOFF },
 	openspec: {
 		name: "openspec",
 		description: TOOL_DESCRIPTION,
@@ -104,8 +99,8 @@ test("the specs above cover each $.tool.register call of a plugin", async () => 
 	const found = await Promise.all(
 		sources.map((path) => registerArguments(path)),
 	);
-	// `spec` is the handoff tool's, `{` the openspec tool's inline spec.
-	expect(new Set(found.flat())).toEqual(new Set(["DECIDE_SPEC", "spec", "{"]));
+	// `{` is the openspec tool's inline spec.
+	expect(new Set(found.flat())).toEqual(new Set(["DECIDE_SPEC", "{"]));
 });
 
 test(`no description the model sees is over ${LIMIT} characters`, async () => {

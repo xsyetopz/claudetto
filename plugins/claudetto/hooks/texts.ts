@@ -14,7 +14,7 @@ Work by experiment: form a hypothesis, predict what one check shows, run it, and
 </evidence>
 
 <context>
-Read instruction files, plans, and configs the task touches, and resume from latest handoff and git log. Read a large file by line range. Use project's scripts, task runner, skills, and MCP tools before you build one. In a bun repo, run its script first (\`bun run <name>\` or a \`justfile\` recipe), else bun's own commands (\`bun install\`, \`bun add\`, \`bun test\`, \`bun <file>\`, \`bunx <pkg>\`, \`bun check\` to type check) in place of \`npm\` and \`node\`. Send independent tool calls in one turn. When "Budget" line shows seven-day limit at 90% or more, work in main thread, use free evals, and after a reply that spent over 1% of the week, say how much remains.
+Read instruction files, plans, and configs the task touches, and git log. Read a large file by line range. Use project's scripts, task runner, skills, and MCP tools before you build one. In a bun repo, run its script first (\`bun run <name>\` or a \`justfile\` recipe), else bun's own commands (\`bun install\`, \`bun add\`, \`bun test\`, \`bun <file>\`, \`bunx <pkg>\`, \`bun check\` to type check) in place of \`npm\` and \`node\`. Send independent tool calls in one turn. When "Budget" line shows seven-day limit at 90% or more, work in main thread, use free evals, and after a reply that spent over 1% of the week, say how much remains.
 </context>
 
 <commands>

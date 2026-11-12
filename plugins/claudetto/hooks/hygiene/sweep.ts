@@ -1,7 +1,6 @@
 import { lstat, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-import { HANDOFF_NAME } from "../handoff/layout.ts";
 import type { Args } from "./args.ts";
 import {
 	guardOf,
@@ -100,14 +99,6 @@ const inFolder = async (
 		.map((e) => ({ kind, path: join(dir, e.name), limitMs }));
 };
 
-/** The newest handoff by name stays: the resume reads that one back. */
-const handoffsOf = async (dir: string, limitMs: number) => {
-	const all = await inFolder("handoff", dir, limitMs, (n) =>
-		HANDOFF_NAME.test(n),
-	);
-	return all.toSorted((a, b) => a.path.localeCompare(b.path)).slice(0, -1);
-};
-
 const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 	const sessionMs = (args.sessionDays ?? args.days ?? host.days) * DAY_MS;
 	const probeMs = (args.probeMinutes ?? 60) * MINUTE_MS;
@@ -180,7 +171,6 @@ const builtTrash = async (
 };
 
 const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
-	const handoffMs = (args.handoffDays ?? args.days ?? host.days) * DAY_MS;
 	const claudetto = join(host.cwd, ".claude/claudetto");
 	const live = `${args.session ?? ""}\n${await liveSessions(host.configDir, host.log)}`;
 	const roots = await tempRoots(host.tempBases, host.uid, host.log);
@@ -197,10 +187,6 @@ const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 		...(held !== undefined && probeMs > 0
 			? roots.map((root) => idleTemp(root, trash, probeMs, held, host.log))
 			: []),
-		handoffsOf(join(claudetto, "handoffs"), handoffMs),
-		inFolder("bound-output", join(claudetto, "output"), DAY_MS, (n) =>
-			n.startsWith("output-"),
-		),
 		inFolder("heartbeat", join(claudetto, "heartbeat"), DAY_MS, () => true),
 		...roots.map((root) => tempOf(root, live, args, host)),
 	]);

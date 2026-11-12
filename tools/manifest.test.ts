@@ -32,7 +32,6 @@ const optionKeys = async (): Promise<string[]> => {
 test("no plugin option chooses the compaction path or a summary model", async () => {
 	const keys = await optionKeys();
 
-	expect(keys).toContain("handoverThresholdTokens");
 	expect(keys.filter((k) => PATH_CHOICE.test(k))).toEqual([]);
 });
 
@@ -235,11 +234,8 @@ test("after three session starts the env file holds the renice line once", async
 });
 
 test("other prompts are not blocked", async () => {
-	const outs = [
-		"hello",
-		"/claudetto:handoff",
-		"run /claudetto:setup",
-		"/claudetto:setupx",
-	].map((entry) => runPromptHook(entry));
-	expect(await Promise.all(outs)).toEqual(["", "", "", ""]);
+	const outs = ["hello", "run /claudetto:setup", "/claudetto:setupx"].map(
+		(entry) => runPromptHook(entry),
+	);
+	expect(await Promise.all(outs)).toEqual(["", "", ""]);
 });

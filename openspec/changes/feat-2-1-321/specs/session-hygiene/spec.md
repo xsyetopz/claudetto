@@ -1,5 +1,20 @@
 ## ADDED Requirements
 
+### Requirement: Heartbeat Files Go in a Day
+
+Hygiene SHALL remove each file under `.claude/claudetto/heartbeat/` older than one day. The limit SHALL not follow `cleanupPeriodDays`.
+
+#### Scenario: Old Heartbeat
+
+- **WHEN** a heartbeat file is two days old
+- **THEN** it is removed and counted as `heartbeat`
+- **AND** the test is `tools/hygiene/sweep.test.ts`, "a heartbeat file older than a day goes and a newer one stays"
+
+#### Scenario: Fresh Heartbeat
+
+- **WHEN** a heartbeat file is an hour old
+- **THEN** it stays
+
 ### Requirement: Idle Temp Entries Go
 
 Hygiene SHALL remove a top-level file or folder of Claude Code's temp folder `claude-<uid>` when a `temp` rule of the trash file names it, nothing in it changed within `probeCleanupPeriodMinutes` (60 when unset), and no process holds a file in it open. It SHALL keep the entries Claude Code owns, and SHALL remove no temp entry when the open files cannot be read. The entry SHALL need no marker file.
@@ -70,6 +85,20 @@ Hygiene SHALL remove a worktree that Claude Code made for an agent, with its bra
 
 ## MODIFIED Requirements
 
+### Requirement: Retention per Kind
+
+Each kind hygiene removes SHALL have its own retention key in the plugin's `userConfig`, named in Claude Code's style: `sessionTempCleanupPeriodDays` and `probeCleanupPeriodMinutes`. A key's value of 0 SHALL turn its kind off. An unset day key SHALL follow `cleanupPeriodDays`, and an unset `probeCleanupPeriodMinutes` SHALL be 60. `hygieneEnabled: false` SHALL start no hygiene process.
+
+#### Scenario: Kind Off
+
+- **WHEN** `probeCleanupPeriodMinutes` is 0 and a `fswatch-probe-*` folder is a day old
+- **THEN** the folder stays and the other kinds are still swept
+
+#### Scenario: Hygiene Off
+
+- **WHEN** `hygieneEnabled` is `false` and a session starts
+- **THEN** no hygiene process runs
+
 ### Requirement: The Trash Walk and Age Limit
 
 The walk SHALL start at the project, at each project `.claude.json` lists, and at each folder that Mole's `~/.config/mole/purge_paths` lists, with a leading `~` read as the home folder, and SHALL skip a listed folder that hygiene refuses as a root. The walk SHALL stop at a match, SHALL skip `.git`, SHALL NOT follow a link, and SHALL NOT enter `~/.claude/projects` or `~/.claude/plugins`. The age limit SHALL be 7 days, or `--trash-days`, where 0 turns the kind off.
@@ -105,6 +134,18 @@ The walk SHALL start at the project, at each project `.claude.json` lists, and a
 - **THEN** none is removed ("the walk skips ~/.claude/plugins and ~/.claude/projects inside a purge path")
 
 ## REMOVED Requirements
+
+### Requirement: Stale Claudetto Files Go
+
+**Reason**: The only claudetto files the rule removed were handoffs, and the handoff is deleted.
+
+**Migration**: Nothing writes a handoff, so nothing needs its sweep.
+
+### Requirement: Bound Output and Heartbeat Files Go in a Day
+
+**Reason**: The output files and their writer are deleted (P193).
+
+**Migration**: The requirement "Heartbeat Files Go in a Day" keeps the heartbeat half.
 
 ### Requirement: Marked Temp Folders Go
 

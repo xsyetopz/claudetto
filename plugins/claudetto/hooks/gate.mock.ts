@@ -1,5 +1,5 @@
-import type { On, ResultOf, ToolCallResult } from "claude-code";
-import { type Engine, expect } from "claude-code/testing";
+import type { On, ToolCallResult } from "claude-code";
+import type { Engine } from "claude-code/testing";
 
 import { scanned, scanner } from "./secrets.mock.ts";
 
@@ -194,27 +194,6 @@ export const asking = (on: On, extra: object = {}) => {
 		...extra,
 	}));
 };
-
-/** The lines the gate wrote to its ask log, which fills as the test runs. */
-export const logging = (on: On, engine: ResultOf["tool.check"]) => {
-	const lines: string[] = [];
-	repo(on);
-	on("session.root", () => ({ value: "/p" }));
-	on("env.get", () => ({ value: "/home/u" }));
-	on("session.id", () => ({ value: "s1" }));
-	on("clock.now", () => ({ value: 0 }));
-	on("fs.write", (_$, e) => {
-		expect(e.path).toBe("/home/u/.claude/claudetto/gate-asks/s1.jsonl");
-		lines.push(...e.text.trim().split("\n"));
-		return { value: undefined };
-	});
-	on("tool.check", () => engine);
-	return lines;
-};
-
-/** Each log line read as JSON. */
-export const parsedLines = (lines: string[]): unknown[] =>
-	lines.map((line): unknown => JSON.parse(line));
 
 export const walledLab = (on: On, deny: string[] = []) => {
 	const logs: string[] = [];

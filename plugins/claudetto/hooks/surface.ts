@@ -259,7 +259,7 @@ const guardHooks = (on: On, options: PluginOptions): void => {
 
 	on("settings.read", onSettingsRead);
 
-	// The handover compacts through `$.command.run`, which runs every hook but the caller's own, so a plugin's run goes on.
+	// A command a plugin runs goes on.
 	on("command.run", { command: [...OFF_COMMANDS] }, (_$, e, next) =>
 		e.origin.kind === "plugin" ? next(e) : { text: offCommandText(e.command) },
 	);

@@ -1,8 +1,16 @@
 import type { On, PluginOptions, SessionMessage } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { said } from "../handoff.mock.ts";
 import { scanner } from "../secrets.mock.ts";
+
+export const said = (
+	role: SessionMessage["role"],
+	text: string,
+): SessionMessage => ({
+	role,
+	text,
+	toolUses: [],
+});
 
 export const withUse = (use: {
 	tool: string;

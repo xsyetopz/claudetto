@@ -118,3 +118,25 @@ The rebuild SHALL record, before and after, the source lines under `plugins/clau
 
 - **WHEN** the rebuild is done
 - **THEN** `CHANGELOG.md` holds the three numbers before and after, each with the command that measured it
+
+### Requirement: Each Responsibility Has One Owner
+
+Each responsibility the plugin carries MUST have exactly one owner in the shipped plugin: a Claude Code setting or built-in behavior, a mod hook, a settings hook, a skill, or none because it is removed. Two code paths MUST NOT write the same file, settings key, or state key from different tables or with different rules. Code paths that write the same kind of file MAY exist when each fires on its own trigger and all of them take the file name, the root, and the layout from one shared function.
+
+#### Scenario: Setup Exists Twice
+
+- **WHEN** a command and a standalone script both write the user's settings from the same table
+- **THEN** one of them is removed before release
+
+#### Scenario: Two Writers of the Status Line
+
+- **WHEN** `/claudetto:setup` and a bare `/statusline` both write `statusLine`
+- **THEN** both read the one `STATUS_LINE` group of `hooks/setup/settings.ts` and write through `changesOf`, `applyChanges`, and `writeFile`, so the key has one table and one rule
+
+## REMOVED Requirements
+
+### Requirement: One Owner per Responsibility
+
+**Reason**: Its "Two Writers of a Handoff" scenario names the handoff writers, which the handoff removal deletes, and a MODIFIED block cannot drop a scenario.
+
+**Migration**: "Each Responsibility Has One Owner" keeps the rule and its other two scenarios.
