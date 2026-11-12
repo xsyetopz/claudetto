@@ -70,6 +70,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- A "You should know" note no longer says a password or secret was typed into the chat when it only sat inside a command such as an `osascript` keystroke; the side check's instructions now say to state only what the digest shows.
 - The Stop hook no longer counts a finding bullet that mentions a `! <command>` step as a second `- ! <command>` bullet; only a bullet that opens with the `!` step counts.
 - The gate denies a `git commit` that follows a check after `;`, a newline, `||`, or a loop with no `|| exit`, unless `set -e` comes first, because a failed test run did not stop that commit; `bun test && git commit` still runs.
 - The denial of a shell read (`sed -n 1,80p f`, `head -n 5 f`) holds the ready `Read` call with `offset` and `limit`, and the gate reads `sed --quiet`, `--expression=`, and `-e1p` as the script and not the file.

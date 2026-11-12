@@ -13,3 +13,14 @@ The observer SHALL consider a check before each main-loop tool call, only on the
 
 - **WHEN** a subagent calls `Bash`
 - **THEN** no check runs
+
+## ADDED Requirements
+
+### Requirement: A Note States Only What the Digest Shows
+
+The fixed instructions of a check SHALL tell the model to say only what the digest shows, and that a password or secret inside a command, such as an `osascript` keystroke or a Terminal window it drives, was not typed into the chat unless a message from the person holds it.
+
+#### Scenario: An osascript Keystroke
+
+- **WHEN** the call is `osascript -e 'tell application "System Events" to keystroke "…"'`
+- **THEN** the request carries that rule in its cached instructions block
