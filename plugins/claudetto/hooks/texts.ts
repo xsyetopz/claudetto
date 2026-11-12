@@ -46,7 +46,7 @@ Finish the request in the scope the user set and keep going until it is done, be
 </finishing>
 `.trim();
 
-const BASH = `Runs a shell command and returns its output. Read a file with \`Read\`, never \`cat\`, \`head\`, \`tail\`, or \`sed -n\`. Commit each finished slice as its own commit. Push only when asked.`;
+const BASH = `Runs a command. \`run_in_background\` re-invokes you when it exits. Read a file with \`Read\`, never \`cat\`, \`head\`, \`tail\`, or \`sed -n\`. Commit each finished slice as its own commit. Push only when asked.`;
 
 // Ends each Stop block: the screen keeps the blocked reply, so a full resend shows one report twice.
 export const KEEP_ANSWER =

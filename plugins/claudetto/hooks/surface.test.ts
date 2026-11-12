@@ -65,6 +65,11 @@ test("Monitor, ToolSearch, and the plan-mode tools each carry a text of ours", (
 	expect(named.filter((tool) => textOf(tool) === "")).toEqual([]);
 });
 
+test("the Bash text says a background command re-invokes the model when it exits", () => {
+	expect(textOf("Bash")).toContain("run_in_background");
+	expect(textOf("Bash")).toContain("re-invokes you when it exits");
+});
+
 for (const tool of ["Workflow", "ScheduleWakeup", "ReportFindings"]) {
 	test(`${tool} goes behind ToolSearch with its stock text`, async ($: Engine, on: On) => {
 		listing(on, ["ToolSearch"]);
