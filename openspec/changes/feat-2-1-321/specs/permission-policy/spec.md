@@ -94,6 +94,31 @@ When the gate cannot parse a `Bash` command, it SHALL still apply the rules that
 - **THEN** the gate has no objection
 - **AND** the lab tests are `gate/rules.test.ts`, "passes …", one per command
 
+### Requirement: A Check's Exit Code Reaches the Chain
+
+The gate SHALL deny a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that follows any pipe, when no earlier `set -o pipefail` appears in the command, because a pipe returns its last command's exit code and a failing check then reads as a pass. It SHALL deny a `git commit` that follows a check or a loop of checks that `&&` does not tie to it, unless `set -e` comes first or `|| exit` follows the check.
+
+#### Scenario: A Trimmed Check
+
+- **WHEN** the agent runs `bun run lint 2>&1 | tail -8`
+- **THEN** the gate denies it and names `set -o pipefail;` and a log file with `$?` as the forms that keep the exit code
+
+#### Scenario: A Kept Exit Code
+
+- **WHEN** the agent runs `set -o pipefail; bun run lint 2>&1 | tail -8`
+- **THEN** the command runs
+
+#### Scenario: A Commit After a Check That Does Not Stop
+
+- **WHEN** the agent runs `bun test; git commit -m x`, `bun test | tail -3; git commit -m x`, or `for p in a b; do bun test $p; done; git commit -m x`
+- **THEN** the gate denies it and names `&&` and `set -e` as the forms that stop before the commit
+- **AND** the lab tests are `gate/pipefail.test.ts`, one per shape
+
+#### Scenario: A Commit a Failure Stops
+
+- **WHEN** the agent runs `bun test && git commit -m x`, `set -e; bun test; git commit -m x`, or `for p in a b; do bun test $p || exit 1; done; git commit -m x`
+- **THEN** the command runs
+
 ## ADDED Requirements
 
 ### Requirement: A Loop That Polls With No Pause Is Denied
