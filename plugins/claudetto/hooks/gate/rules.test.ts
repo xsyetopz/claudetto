@@ -40,6 +40,9 @@ const PASSES = [
 	"cat src/a.ts | wc -l",
 	"head -n 5 src/a.ts | grep x",
 	"ls -la",
+	"[ -f x ] && echo y",
+	"[[ -f x ]] && echo y",
+	"if [ -d node_modules ]; then echo y; fi",
 ];
 
 for (const command of PASSES) {

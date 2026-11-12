@@ -1,4 +1,5 @@
 import {
+	GATE_BUSY_WAIT,
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
 	gateKillPid,
@@ -15,6 +16,10 @@ const PROBE = /^-[0lL]$/u;
 const PID = /^\d+$/u;
 const WAIT_LOOP = /\b(?:while|until)\b[\s\S]*\bsleep\b/u;
 const TIME_LIMIT = /\bg?timeout\s+(?:-\S+\s+)*\d|\bSECONDS\b/u;
+const LOOPS = new Set(["while", "until", "for"]);
+// A bare `do` on its own line names no program.
+const NO_OPS = new Set(["", ":", "true"]);
+const PAUSES = new Set(["sleep", "read", "wait"]);
 // A released program lives at `<data>/claude/versions/<version>`; the `cc-inspect` `code` action `installs` lists them.
 const RELEASE = /(?:^|\/)claude\/versions\/[^/\s]+/u;
 
@@ -46,7 +51,29 @@ const targetsOf = (args: string[]): string[] => {
 export const endlessWait = (command: string): boolean =>
 	WAIT_LOOP.test(command) && !TIME_LIMIT.test(command);
 
-/** Tells whether an earlier call of this session started the process: a Bash call that ran something in the background and whose result printed the pid. */
+/** The loop keyword a command opens with, as `until x` and `do while y` do. */
+const loopOf = (c: Command): string | undefined =>
+	c.words.slice(0, programOf(c).at + 1).findLast((w) => LOOPS.has(w));
+
+/** Denies a `while` or `until` loop whose body runs only `:` or `true` and whose condition runs no `sleep`, `read`, or `wait`: it tests its condition again at once and holds a CPU core until that turns. */
+export const busyWaitVerdict = (commands: Command[]): Verdict | undefined => {
+	const names = commands.map((c) => programOf(c).name);
+	const kinds = commands.map((c) => loopOf(c));
+	const spins = commands.some((c, at) => {
+		const open = kinds.slice(0, at).findLastIndex((k) => k !== undefined);
+		const done = commands.findIndex((d, i) => i > at && d.words[0] === "done");
+		return (
+			c.words[0] === "do" &&
+			open !== -1 &&
+			kinds[open] !== "for" &&
+			names.slice(at, done).every((n) => NO_OPS.has(n)) &&
+			!names.slice(open, at).some((n) => PAUSES.has(n))
+		);
+	});
+	return spins ? deny(GATE_BUSY_WAIT) : undefined;
+};
+
+/** Tells whether an earlier call of this session started the process:a Bash call that ran something in the background and whose result printed the pid. */
 export const startedBy =
 	(past: Past[]) =>
 	(pid: string): boolean => {

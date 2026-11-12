@@ -3,6 +3,7 @@ import { type Engine, expect, test } from "claude-code/testing";
 
 import { bash } from "../secrets.mock.ts";
 import {
+	GATE_BUSY_WAIT,
 	GATE_ENDLESS_WAIT,
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
@@ -114,3 +115,43 @@ test("the same wait loop in the foreground is not denied, since the Bash timeout
 	const awaited13 = await bash($, WAIT);
 	expect(awaited13.decision).not.toBe("deny");
 });
+
+// Seen in another session: two `until grep …; do :; done` loops each held a CPU core until they were stopped.
+const SPIN = "until grep -q x f; do :; done";
+for (const [where, check] of [
+	["foreground", bash],
+	["background", background],
+] as const) {
+	test(`a ${where} loop whose body runs nothing is denied`, async ($: Engine, on: On) => {
+		lab(on);
+		const v = await check($, SPIN);
+		expect(v.decision).toBe("deny");
+		expect(v.reason).toContain(GATE_BUSY_WAIT);
+	});
+}
+for (const command of [
+	"while ! test -f /tmp/x; do true; done",
+	"until grep -q x f\ndo\n  :\ndone",
+	`sh -c '${SPIN}'`,
+	"for f in a b; do until test -f $f; do :; done; done",
+]) {
+	test(`${JSON.stringify(command)} is denied as a busy wait`, async ($: Engine, on: On) => {
+		lab(on);
+		const v = await bash($, command);
+		expect(v.decision).toBe("deny");
+		expect(v.reason).toContain(GATE_BUSY_WAIT);
+	});
+}
+for (const command of [
+	"until grep -q x f; do sleep 1; done",
+	"until sleep 2 && grep -q x f; do :; done",
+	"while read -r line; do :; done < f",
+	"for i in 1 2 3; do :; done",
+	"until grep -q x f; do sleep 1; done; for i in 1 2; do :; done",
+]) {
+	test(`${JSON.stringify(command)} passes, since it pauses or ends by itself`, async ($: Engine, on: On) => {
+		lab(on);
+		const v = await bash($, command);
+		expect(v.decision).toBe("allow");
+	});
+}

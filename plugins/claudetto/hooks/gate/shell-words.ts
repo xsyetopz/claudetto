@@ -25,6 +25,8 @@ const REDIRECT = /^(?:&>>|&>|>>|>\||>&|>|<<<|<<-|<<|<&|<>|<)/u;
 const DIGITS = /^\d+$/u;
 const COMMAND_FLAG = /^-[a-z]*c$/u;
 export const SHELLS = new Set(["sh", "bash", "zsh", "dash", "ksh"]);
+// The shell's test commands: a `[` here opens no glob.
+const TESTS = new Set(["[", "[["]);
 
 export const programOf = (
 	c: Command,
@@ -56,7 +58,7 @@ const merge = (s: State, inner: string): void => {
 
 const checkProgram = (s: State, c: Command): void => {
 	const { name, at } = programOf(c);
-	if (c.dynamic.includes(at) || name === "eval") {
+	if ((c.dynamic.includes(at) && !TESTS.has(name)) || name === "eval") {
 		s.unreadable = true;
 	}
 	if (!SHELLS.has(name)) {

@@ -70,6 +70,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- A `while` or `until` loop whose body runs only `:` or `true`, such as `until grep -q x f; do :; done`, is denied in the foreground and in the background, because it holds a CPU core while it waits. The denial names the form to send: a `sleep` in the body and a time limit.
+- A command whose program is `[` or `[[`, such as `[ -f x ] && echo y` or `if [ -d node_modules ]; then …; fi`, no longer gets "The gate cannot read this command, so a person must approve it."
 - A search pattern that starts with `/\`, as in `grep -v "/\.git/"`, no longer opens a "The gate failed" permission dialog, and the same pattern in a `! <command>` step no longer makes the Stop hook drop its checks.
 - The secret scan reads each string of a structured tool result as raw text, so a secret after a line break inside a result object is redacted.
 - The claim check counts a popup answer as the person's words.

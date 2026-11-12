@@ -110,6 +110,8 @@ export const GIT_CLOSED =
 	'Sandbox set its rules for `.git` when this session started, and this folder held no repository then, so each git write here fails inside sandbox with "Operation not permitted" until Claude Code restarts. Tell user once to restart Claude Code in this folder with `claude --continue`. Until then, run each git write with `dangerouslyDisableSandbox: true`.';
 export const GATE_ENDLESS_WAIT =
 	"This background loop waits with no time limit, so it runs forever if what it waits for never comes, as a loop that counts successes does when one job fails. Give it a limit and an exit on failure: test `$SECONDS` in its condition, as in `until check || [ $SECONDS -gt 1800 ]; do sleep 30; done`, or wrap it in `timeout <seconds>`, and break as soon as a failure shows.";
+export const GATE_BUSY_WAIT =
+	"This loop's body runs nothing, so it tests its condition again at once and holds a CPU core for as long as it waits. Put a `sleep` in its body and give it a time limit, as in `until check || [ $SECONDS -gt 600 ]; do sleep 2; done`.";
 export const GATE_RELEASE_RUN =
 	"This runs a released Claude Code program to read it. Read it with the cc-inspect `code` tool instead; its `installs` action lists the releases. `claude --help` on the installed command is still allowed.";
 export const GATE_REF_MOVE =
