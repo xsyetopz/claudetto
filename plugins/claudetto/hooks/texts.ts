@@ -209,6 +209,14 @@ export const MEMORY_SHORT = (
 ): string =>
 	`The machine has ${share}% of its memory free, under the ${limit}% limit, so new commands and subagents are held. Stop your own runs that are no longer needed, with TaskStop or \`kill <pid>\`, and wait for the others to end before you start another. The largest processes (pid, size, name):\n${largest.join("\n")}\nThe limit is \`memoryFreeMinPercent\`.`;
 
+export const MEMORY_STOPPED = (
+	pid: string,
+	name: string,
+	size: string,
+	percent: number,
+): string =>
+	`claudetto stopped process ${pid} (${name}) of this command at ${size}, over the ${percent}% of the machine's memory that one process may hold, because it would have run the machine out of memory. Run a narrower part of it, such as one test file. \`memoryProcessMaxPercent\` sets the share.`;
+
 export const STOP_TASKS = (lines: readonly string[]): string =>
 	`Background tasks still running at Stop:\n${lines.join("\n")}\nYour last reply stands as sent. When the user waits on one of these tasks, follow its output with Monitor, filtered to its step and error lines, and report each result as it lands.`;
 

@@ -64,6 +64,12 @@
 			"description": "Below this share of free memory, new commands and subagents are refused until runs end. 0 turns it off. Left unset, it is 20.",
 			"min": 0
 		},
+		"memoryProcessMaxPercent": {
+			"type": "number",
+			"title": "Memory share one process of a command may hold",
+			"description": "A process that a running command started and that holds more than this share of the machine's memory is stopped. 0 turns it off. Left unset, it is 25.",
+			"min": 0
+		},
 		"maxIdenticalFailures": {
 			"type": "number",
 			"title": "Identical failures before a refusal",

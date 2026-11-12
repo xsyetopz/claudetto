@@ -13,7 +13,7 @@ import {
 	runningCount,
 	withFailure,
 } from "./admit.ts";
-import { memoryLimitOf, memoryShort } from "./memory.ts";
+import { memoryLimitOf, memoryProcessMaxOf, memoryShort } from "./memory.ts";
 
 const capOf = async ($: EngineInterface): Promise<number | undefined> => {
 	const cap = Number(await $.env.get("CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"));
@@ -94,12 +94,14 @@ export interface HoldState {
 	readonly started: Map<string, number>;
 	readonly ledger: { failures: Failures };
 	readonly memory: number;
+	readonly memoryProcessMax: number;
 }
 
 /** Makes the limits from `options` and empty ledgers. */
 export const holdState = (options: PluginOptions): HoldState => ({
 	limits: limitsOf(options),
 	memory: memoryLimitOf(options),
+	memoryProcessMax: memoryProcessMaxOf(options),
 	calls: [],
 	started: new Map<string, number>(),
 	ledger: { failures: {} },

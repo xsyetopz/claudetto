@@ -11,6 +11,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 - One Decider answers each typed question the hooks ask. With `TYPESAFE_API_KEY` set, Jev (`jev-1.14.0`) answers first; `claude-haiku-5-5` at `high` effort answers when there is no key, when Jev fails or refuses the key, and for a ledger question Jev leaves unsettled. A `yes` from Haiku counts only with evidence that is words of the text it was given.
 - Below `memoryFreeMinPercent` of free memory (default 20, `0` turns it off), a new `Bash` or `Monitor` command or subagent is refused until the agent's own runs end, because many lint runs at once froze the machine.
+- A `Bash` call that runs `claude -p` or a program given `--paid` ends its result with the `Budget:` line, because no prompt follows a paid run to carry it.
+- A process that a running `Bash` command started and that holds over `memoryProcessMaxPercent` of the machine's memory (default 25, `0` turns it off) is stopped with `kill <pid>`, and the result names it, because the free-memory hold reads only when a command starts and macOS has no memory `ulimit`.
 - The `openspec` change check warns when a MODIFIED requirement grows from under 500 characters to over 500, so a change that validates no longer turns a main spec invalid at its archive.
 - A subagent that runs past `agentMaxMinutes` (default 15) has each further tool call refused and is told to report and end; `0` turns the limit off.
 - The gate denies a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that runs after a pipe, unless an earlier `set -o pipefail` keeps the exit code, because a pipe returns its last command's exit code and a failing check would read as a pass.

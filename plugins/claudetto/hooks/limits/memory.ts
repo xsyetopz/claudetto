@@ -1,11 +1,19 @@
 import type { EngineInterface, PluginOptions } from "claude-code";
 
-import type { CheckAnswer, CheckEvent, CheckNext } from "../chain.ts";
+import type {
+	CallAnswer,
+	CallEvent,
+	CallNext,
+	CheckAnswer,
+	CheckEvent,
+	CheckNext,
+} from "../chain.ts";
 import { readOnly } from "../gate/readonly.ts";
 import { parse, programOf } from "../gate/shell-words.ts";
 import { deny, fieldOf } from "../gate/verdict.ts";
 import { numberOption } from "../options.ts";
-import { MEMORY_SHORT } from "../texts.ts";
+import { MEMORY_SHORT, MEMORY_STOPPED } from "../texts.ts";
+import { withNote } from "./result-note.ts";
 
 const COMMAND_TOOLS: ReadonlySet<string> = new Set(["Bash", "Monitor"]);
 // These look at or stop what holds the memory, which is how the agent frees it.
@@ -17,6 +25,10 @@ const SHOWN = 5;
 /** The free share, in percent, below which new work is held; 0 turns the hold off. */
 export const memoryLimitOf = (options: PluginOptions): number =>
 	numberOption(options, "memoryFreeMinPercent", 20, 0);
+
+/** The share of the machine's memory, in percent, that one process of a running command may hold before it is stopped; 0 turns the stop off. */
+export const memoryProcessMaxOf = (options: PluginOptions): number =>
+	numberOption(options, "memoryProcessMaxPercent", 25, 0);
 
 const kbOf = (text: string, key: string): number =>
 	Number(new RegExp(`^${key}:\\s+(\\d+)`, "mu").exec(text)?.[1]);
@@ -39,20 +51,50 @@ async function freeShare($: EngineInterface): Promise<number | undefined> {
 	return Number.isFinite(share) ? share : undefined;
 }
 
-async function largest($: EngineInterface): Promise<string[]> {
-	const { stdout } = await $.process.run(["ps", "-axo", "pid=,rss=,comm="]);
+interface Row {
+	readonly pid: string;
+	readonly seconds: number;
+	readonly kb: number;
+	readonly name: string;
+}
+
+// `ps` prints its elapsed time as `[[dd-]hh:]mm:ss`.
+const secondsOf = (etime: string): number => {
+	const [days = "0", clock = ""] = etime.includes("-")
+		? etime.split("-")
+		: ["0", etime];
+	return (
+		Number(days) * 86_400 +
+		clock.split(":").reduce((sum, part) => sum * 60 + Number(part), 0)
+	);
+};
+
+async function rowsOf($: EngineInterface): Promise<Row[]> {
+	const { stdout } = await $.process.run([
+		"ps",
+		"-axo",
+		"pid=,etime=,rss=,comm=",
+	]);
 	return stdout
 		.trim()
 		.split("\n")
 		.map((line) => line.trim().split(/\s+/u))
-		.map(([pid = "", rss = "0", ...name]) => ({
+		.map(([pid = "", etime = "0", rss = "0", ...name]) => ({
 			pid,
+			seconds: secondsOf(etime),
 			kb: Number(rss),
 			name: name.join(" "),
-		}))
+		}));
+}
+
+const gb = (kb: number): string => `${(kb / 1_048_576).toFixed(1)} GB`;
+
+async function largest($: EngineInterface): Promise<string[]> {
+	const rows = await rowsOf($);
+	return rows
 		.toSorted((a, b) => b.kb - a.kb)
 		.slice(0, SHOWN)
-		.map((p) => `${p.pid} ${(p.kb / 1_048_576).toFixed(1)} GB ${p.name}`);
+		.map((p) => `${p.pid} ${gb(p.kb)} ${p.name}`);
 }
 
 /** The reason to hold new work, or undefined when the machine has room or gives no share. */
@@ -90,4 +132,62 @@ export async function memoryGuard(
 	}
 	const short = await memoryShort($, limit);
 	return short === undefined ? next(e) : deny(short);
+}
+
+const WATCH_MS = 5000;
+// A process the call started shows an age within a second or two of the call's own.
+const SLACK_SECONDS = 2;
+const BYTES_PER_KB = 1024;
+
+async function totalKb($: EngineInterface): Promise<number> {
+	if (await $.fs.exists(MEMINFO)) {
+		return kbOf(await $.fs.read(MEMINFO), "MemTotal");
+	}
+	const { stdout } = await $.process.run(["sysctl", "-n", "hw.memsize"]);
+	return Number(stdout.trim()) / BYTES_PER_KB;
+}
+
+async function stopGrown(
+	$: EngineInterface,
+	startedAt: number,
+	percent: number,
+): Promise<string | undefined> {
+	const cap = ((await totalKb($)) * percent) / 100;
+	const age = ((await $.clock.now()) - startedAt) / 1000 + SLACK_SECONDS;
+	const rows = await rowsOf($);
+	const [grown] = rows
+		.filter((row) => row.seconds <= age && row.kb > cap)
+		.toSorted((a, b) => b.kb - a.kb);
+	if (grown === undefined) {
+		return undefined;
+	}
+	await $.process.run(["kill", grown.pid]);
+	return MEMORY_STOPPED(grown.pid, grown.name, gb(grown.kb), percent);
+}
+
+/** While a `Bash` call runs, stops the largest process that began with it and holds more than `percent` of the machine's memory, because the hold at the start of a call cannot see a command that grows after it began. */
+export async function memoryWatchCall(
+	$: EngineInterface,
+	e: CallEvent,
+	next: CallNext,
+	percent: number,
+): Promise<Awaited<CallAnswer>> {
+	if (percent === 0 || e.tool !== "Bash") {
+		return next(e);
+	}
+	const startedAt = await $.clock.now();
+	const done = new AbortController();
+	const poll = async (): Promise<string> => {
+		await $.clock.sleep(WATCH_MS, { signal: done.signal });
+		return (await stopGrown($, startedAt, percent)) ?? poll();
+	};
+	const watch = poll().catch((error: unknown) => {
+		if (!done.signal.aborted) {
+			$.ui.log(`The memory watch stopped (${String(error)})`);
+		}
+	});
+	const answer = await next(e);
+	done.abort();
+	const note = await watch;
+	return note === undefined ? answer : withNote(answer, note);
 }

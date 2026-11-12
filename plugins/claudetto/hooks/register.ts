@@ -16,9 +16,10 @@ import { delegation, delegationCall } from "./delegation.ts";
 import { gate, gateState } from "./gate.ts";
 import { gateCall, gateCheck } from "./gate/watch.ts";
 import { hygiene } from "./hygiene.ts";
+import { budgetRunCall } from "./limits/budget-run.ts";
 import { holdCheck, holdHooks, holdState } from "./limits/hold.ts";
 import { lineFileHooks } from "./limits/line-file.ts";
-import { memoryGuard } from "./limits/memory.ts";
+import { memoryGuard, memoryWatchCall } from "./limits/memory.ts";
 import {
 	priceStepCall,
 	priceStepHooks,
@@ -97,6 +98,8 @@ const callGuards = (
 		(at, step) => slicesCall($, at, step, state.written),
 		(at, step) => priceStepCall($, at, step, state.price),
 		(at, step) => stopCall(at, step, state.stop),
+		(at, step) => memoryWatchCall($, at, step, state.hold.memoryProcessMax),
+		(at, step) => budgetRunCall($, at, step),
 		(at, step) => surfaceCall(at, step, options),
 		(at, step) => pinCall(at, step, state.pinned),
 		(at, step) => askFixCall($, at, step),

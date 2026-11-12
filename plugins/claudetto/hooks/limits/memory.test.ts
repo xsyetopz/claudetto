@@ -5,7 +5,7 @@ import { set, SPAWN } from "./hold.mock.ts";
 
 const MEMORY_PRESSURE = "/usr/bin/memory_pressure";
 const MEMINFO = "/proc/meminfo";
-const PS = "  4242 9437184 tsgolint\n  77 1048576 claude\n";
+const PS = "  4242 00:30 9437184 tsgolint\n  77 01:00:00 1048576 claude\n";
 
 const ok = {
 	exitCode: 0,

@@ -34,6 +34,41 @@ When the engine refuses to read an operand of a `! <command>` step as a path, th
 - **THEN** the stop is blocked for `/tmp/list.txt`, and the block does not name the pattern
 - **AND** the lab test is `named-files.test.ts`, "a search pattern the engine refuses to read as a path is not called missing"
 
+### Requirement: A Paid Run Ends With the Budget Line
+
+When a `Bash` call runs a model call that bills the account, which is `claude` with `-p` or `--print` or any program given `--paid`, the system SHALL end the call's result with the `Budget:` line, whatever band the last prompt carried, because no prompt follows a paid run in the same turn to carry it. Where the login supplies no reading, the result SHALL stay whole.
+
+#### Scenario: A Paid Run
+
+- **WHEN** a `Bash` call runs `claude -p "grade the cases"` and the engine reports a seven-day share of 41%
+- **THEN** the result ends with `Budget: context 62% left, five-hour 23.5% used, seven-day 41% used`
+- **AND** the lab test is `budget-run.test.ts`, "a run that calls the model ends with the Budget line, with no prompt between"
+
+#### Scenario: Any Other Command
+
+- **WHEN** a `Bash` call runs `echo claude -p`
+- **THEN** the result is unchanged
+
+### Requirement: A Running Command Is Stopped When One of Its Processes Grows Past a Memory Cap
+
+While a `Bash` call runs, the system SHALL read the machine's processes every five seconds and, when a process that began after the call began holds more than `memoryProcessMaxPercent` (default 25, 0 off) of the machine's memory, SHALL stop the largest such process with `kill <pid>`. A process that began before the call SHALL stay, because it is not the call's.
+
+#### Scenario: The Result Names the Stopped Process
+
+- **WHEN** the system stops a process of the call
+- **THEN** the call's result ends with a note that names its pid, program, and size and tells the agent to run a narrower part
+
+#### Scenario: A Process Grows Past the Cap
+
+- **WHEN** a `Bash` call runs `bunx oxlint src` and, five seconds in, a process that began with it holds 9 GB of a 32 GB machine
+- **THEN** `kill 4242` runs, a larger process that began earlier is left alone, and the result names `4242` and `tsgolint`
+- **AND** the lab test is `memory-watch.test.ts`, "a command whose process passes the cap is stopped by its pid, and the result says so"
+
+#### Scenario: Nothing Passes the Cap
+
+- **WHEN** every process of the call is under the cap, or `memoryProcessMaxPercent` is 0
+- **THEN** no process is stopped, and with 0 no process list is read
+
 ## MODIFIED Requirements
 
 ### Requirement: End Stuck Agents
