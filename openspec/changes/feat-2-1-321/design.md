@@ -99,7 +99,7 @@ Each goal is a number a command can check.
 
 1. One module holds every Decider question, option, threshold, and client. Proof: no other file in `plugins/*/hooks` names `api.typesafe.ai`.
 2. With a key, a Stop makes one Jev request and no model call when Jev settles every question. Today it makes one or two model calls.
-3. Source lines in `plugins/claudetto/hooks` fall from 9,985 to 8,000 or fewer. The gate in `mod-architecture` stays "must not grow"; 8,000 is the target.
+3. Source lines in `plugins/claudetto/hooks` stay at or below 10,419, the count after the last cut. The first target was 8,000. The rebuild ended at 10,449, and a planning pass found only about 25 lines that could go without a change to data or text. The two shared helpers it named, `inOrder` and `probability` in `hooks/tools.ts`, with `judge.ts` reading `THRESHOLDS`, cut 30 lines. The person then set the target to the measured count (2026-11-13).
 4. Each helper that decision 13 names has one definition, against 4, 4, 4, and 2 today, and `just clones` reports 0 new clones, against 2 today. The goal no longer says "no exact clone among the source files", because that is already true (P2).
 5. No `catch` in a hook drops its error, against 64 of 92 today. `claude plugin validate --strict --json` lists at most one `tool.check` and one `tool.call` gating hook per plugin, each with `hasCatch: true`. Today it lists 22 in `claudetto` (2 with a `.catch`), 1 in `claudetto-openspec` (none), and 2 in `claudetto-you-should-know` (none).
 6. No plugin folder holds a file that only a Bun-run test loads. `plugins/claudetto-openspec` falls from 2,394,380 bytes to about 103,000. Lab tests and their mocks stay, because the lab loads a test only from inside the plugin folder (P6).

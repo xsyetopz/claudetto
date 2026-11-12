@@ -38,7 +38,7 @@ export type Answers = Readonly<Record<string, string>>;
 
 export const UNSETTLED = "unsettled";
 
-/** The thresholds each site's question set takes. */
+/** The thresholds each site's question set takes: the Noul starting points of https://docs.typesafe.ai/confidence.md, and a pick floor fixed rather than scaled by the option count, so more options never make a weaker pick pass. */
 export const THRESHOLDS = { yesMin: 0.7, noMax: 0.3, pickMin: 0.75 } as const;
 
 /** The branch gate's one judgment. A yes lets a delete through, so it reads the person's latest word on the branch and counts an instruction only. */

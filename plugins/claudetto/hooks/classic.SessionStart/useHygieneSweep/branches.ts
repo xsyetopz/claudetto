@@ -1,5 +1,5 @@
-import { isRecord } from "../../tools.ts";
-import { inOrder, type Run } from "./worktrees.ts";
+import { inOrder, isRecord } from "../../tools.ts";
+import type { Run } from "./worktrees.ts";
 
 const LINES = /\r?\n/u;
 

@@ -1,18 +1,15 @@
 // Each question is keyed by its index, so two questions with the same text stay two decisions.
 
+import { THRESHOLDS } from "../../decider/questions.ts";
 import {
 	JEV_GIVE_BACK,
 	jevFailed,
 	jevSaid,
 	jevSilent,
 } from "../../texts-gate.ts";
-import { isRecord } from "../../tools.ts";
+import { isRecord, probability } from "../../tools.ts";
 
-/** Fixed, not scaled by the option count, so more options never make a weaker pick pass. */
-const PICK_MIN = 0.75;
-/** The starting points of https://docs.typesafe.ai/confidence.md for a Noul; between them the question goes back. */
-const YES_MIN = 0.7;
-const NO_MAX = 0.3;
+const { pickMin, yesMin, noMax } = THRESHOLDS;
 /** A wrong "no" on the approval question would let Jev approve for the user. */
 const APPROVAL_MAX = 0.2;
 
@@ -103,9 +100,6 @@ export const requestOf = (
 	return { state, questions: Object.fromEntries(wire) };
 };
 
-const probability = (x: unknown): number | undefined =>
-	typeof x === "number" && x >= 0 && x <= 1 ? x : undefined;
-
 const noulOf = (answer: unknown): number | undefined =>
 	isRecord(answer) ? probability(answer["noul"]) : undefined;
 
@@ -121,7 +115,7 @@ const pickOf = (q: Question, answer: unknown): Verdict | undefined => {
 			: undefined;
 	return typeof choice === "string" &&
 		p !== undefined &&
-		p >= PICK_MIN &&
+		p >= pickMin &&
 		(q.options ?? []).some((o) => o.label === choice)
 		? { kind: "pick", choice, p }
 		: undefined;
@@ -132,10 +126,10 @@ const yesNoOf = (answer: unknown): Verdict | undefined => {
 	if (p === undefined) {
 		return undefined;
 	}
-	if (p >= YES_MIN) {
+	if (p >= yesMin) {
 		return { kind: "yes", p };
 	}
-	return p <= NO_MAX ? { kind: "no", p: 1 - p } : undefined;
+	return p <= noMax ? { kind: "no", p: 1 - p } : undefined;
 };
 
 export const verdictsOf = (

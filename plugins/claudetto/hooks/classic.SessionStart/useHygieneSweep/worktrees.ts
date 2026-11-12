@@ -1,4 +1,4 @@
-import { isRecord } from "../../tools.ts";
+import { inOrder, isRecord } from "../../tools.ts";
 
 /** Runs a command in `cwd` and answers its stdout when it exits 0. */
 export type Run = (
@@ -18,17 +18,6 @@ interface Kept {
 
 // Claude Code names an agent's worktree `agent-a` and 16 or 7 hex digits.
 const AGENT = /\/\.claude\/worktrees\/agent-a(?:[0-9a-f]{16}|[0-9a-f]{7})$/u;
-
-/** The results of `step` on each item, one call finishing before the next starts, because git locks its metadata while it removes a worktree or a branch. */
-export const inOrder = async <T, R>(
-	items: readonly T[],
-	step: (item: T) => Promise<R>,
-): Promise<R[]> => {
-	const [head, ...rest] = items;
-	return head === undefined
-		? []
-		: [await step(head), ...(await inOrder(rest, step))];
-};
 
 /** The project paths Claude Code keeps as the `projects` keys of its global config file. */
 export const projectsOf = (text: string): string[] => {

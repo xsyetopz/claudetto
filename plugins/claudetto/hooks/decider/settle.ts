@@ -1,4 +1,4 @@
-import { isRecord } from "../tools.ts";
+import { isRecord, probability } from "../tools.ts";
 import { fallback } from "./fallback.ts";
 import { JevStatusError, postJev } from "./jev.ts";
 import {
@@ -18,9 +18,6 @@ const LOG_BODY_MAX = 200;
 
 // A refused key stays refused for the session; another key gets its own try.
 let refusedKey = "";
-
-const probability = (x: unknown): number | undefined =>
-	typeof x === "number" && x >= 0 && x <= 1 ? x : undefined;
 
 const noulAnswer = (set: QuestionSet, answer: unknown): string | undefined => {
 	const p = isRecord(answer) ? probability(answer["noul"]) : undefined;

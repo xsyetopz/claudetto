@@ -1,4 +1,5 @@
 import { GATE_RECREATE } from "../../texts-gate.ts";
+import { inOrder } from "../../tools.ts";
 import { operands, writeTargets } from "./files.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
 import { ask, fieldOf, type Verdict } from "./verdict.ts";
@@ -116,20 +117,6 @@ const creates = (c: Command, name: string, args: string[]): string[] => {
 		...(name === "touch" ? files : []),
 		...(name === "ln" ? files.slice(-1) : []),
 	];
-};
-
-/** Runs `each` on one item after another, since each call reads what the one before it recorded. */
-const inOrder = async <T extends object>(
-	items: readonly T[],
-	each: (item: T) => Promise<void>,
-	from = 0,
-): Promise<void> => {
-	const item = items[from];
-	if (item === undefined) {
-		return;
-	}
-	await each(item);
-	await inOrder(items, each, from + 1);
 };
 
 const bashRecreates = async (
