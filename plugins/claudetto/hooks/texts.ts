@@ -92,7 +92,7 @@ const NOTEBOOK_EDIT =
 const LIST_AGENTS = `Lists what SendMessage can reach: subagents, teammates, and local, cloud, and Remote Control sessions (a cloud one cannot reply: read its transcript). Send to a name as its row prints it.`;
 
 const MONITOR =
-	"Watches a command or WebSocket: each event is a notice to you, not user's reply. Print only lines you act on, failures too (grep --line-buffered, 2>&1). For one notice, use Bash run_in_background.";
+	"Watches a command: each line is a notice, not user's reply. Print lines you act on, failures too (grep --line-buffered, 2>&1). Run the writer: tail -F never ends. One notice: Bash run_in_background.";
 
 const TOOL_SEARCH = `Loads schemas of deferred tools, which <system-reminder> lists name, so you can call them. Query: "select:A,B" for exact names, words for a search, "+word" to require it in a name.`;
 
