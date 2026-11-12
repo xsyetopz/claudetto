@@ -4,9 +4,8 @@ export DISABLE_TELEMETRY := "1"
 # OpenSpec reports each command unless this is 0 (`@fission-ai/openspec` `dist/telemetry/index.js`).
 export OPENSPEC_TELEMETRY := "0"
 
-# `typecheck` needs the declarations `just types` writes.
 # Run every check, then the clone scan, the manifest validation, and the hook labs.
-check: types-present verify clones validate lab
+check: verify clones validate lab
 
 # A print run writes them only with the plugin-dir watch on; the closed API port ends the run before any request, so it costs nothing.
 # Have the installed Claude Code write its declarations into plugins/claudetto/.claude-plugin/types/, as it does for any mod it loads.
@@ -14,8 +13,8 @@ types:
     -CLAUDE_CODE_PLUGIN_DIR_WATCH=1 CLAUDE_CODE_MAX_RETRIES=0 ANTHROPIC_BASE_URL=http://127.0.0.1:9 ENABLE_CLAUDEAI_MCP_SERVERS=false claude -p ok --max-turns 1 --no-session-persistence --setting-sources "" --tools "" --plugin-dir plugins/claudetto >/dev/null 2>&1
     test -s plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts
 
-[private]
-types-present:
+# Fail before the type check when the declarations `just types` writes are missing.
+project-pre-typecheck:
     @test -s plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts || { echo "run 'just types' first" >&2; exit 1; }
 
 # Report code cloned across the plugins and tools.

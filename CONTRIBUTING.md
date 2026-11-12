@@ -2,7 +2,7 @@
 
 ## Set Up
 
-1. Install Bun `1.4.4` (the `packageManager` field of `package.json`), `just`, and Claude Code `2.1.316` or later.
+1. Install Bun `1.4.4` (the `packageManager` field of `package.json`), `just`, and Claude Code `2.1.318` or later.
 2. Run `bun install` in the repository root.
 3. Run `just check`.
    It runs `just lint`, `just typecheck`, `just test`, `just validate`, and `just lab`, each of which you can run alone.

@@ -1,0 +1,11 @@
+name: project-setup
+description: Install the oldest Claude Code the plugin supports and have it write the plugin API declarations the type check reads.
+
+runs:
+  using: composite
+  steps:
+    # `MINIMUM_VERSION` in `plugins/claudetto/hooks/command.run/useSetup/settings.ts`; `tools/ci-claude.test.ts` fails when they differ.
+    - shell: bash
+      run: bun add --global @anthropic-ai/claude-code@2.1.318
+    - shell: bash
+      run: claude --version && just types
