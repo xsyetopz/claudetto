@@ -40,3 +40,15 @@ test(
 		);
 	},
 );
+
+test(
+	"the instructions ask for the line in the language of the person's messages",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on);
+		await act($, f, "t1");
+		expect(f.asked[0]?.promptBlocks?.[0]?.text).toContain(
+			"in the language of the person's messages",
+		);
+	},
+);

@@ -2,6 +2,7 @@ import type { CatchHandler, HookFor, On, PluginOptions } from "claude-code";
 
 import { READERS } from "./calls.ts";
 import {
+	addToLog,
 	closed,
 	isRepeat,
 	LIMITS,
@@ -108,9 +109,14 @@ const runCheck = async (
 	const result = await $.model.complete({
 		...settings,
 		maxTokens: LIMITS.maxTokens,
+		timeoutMs: LIMITS.checkTimeoutMs,
 		prompt: [{ text: CHECK_INSTRUCTIONS, cache: true }, { text: body }],
 	});
-	return result.isAnswered ? showReply($, mem, at, result.text) : undefined;
+	if (!result.isAnswered) {
+		$.ui.log(`The side check was not answered (${result.reason})`);
+		return undefined;
+	}
+	return showReply($, mem, at, result.text);
 };
 
 const startCheck = async (
@@ -172,17 +178,6 @@ const onStep = async (
 	if (e.index === 0) {
 		await settleTyped($, mem, id);
 	}
-};
-
-// A burst of tool calls pushes the person's request out of the log, and a check without it reads the asked-for action as unasked.
-const addToLog = (mem: Memory, entry: string): void => {
-	const log = [...mem.log, entry];
-	const dropped = log
-		.slice(0, -LIMITS.logEntries)
-		.filter((e) => e.startsWith("person: "))
-		.map((e) => e.slice(0, LIMITS.askChars));
-	mem.earlier = [...mem.earlier, ...dropped].slice(-LIMITS.earlierAsks);
-	mem.log = log.slice(-LIMITS.logEntries);
 };
 
 const logHooks = (on: On, mem: Memory): void => {

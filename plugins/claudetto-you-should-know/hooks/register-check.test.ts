@@ -28,6 +28,7 @@ test(
 		expect(f.asked[0]?.model).toBe("claude-sonnet-5-5");
 		expect(f.asked[0]?.effort).toBe("low");
 		expect(f.asked[0]?.maxTokens).toBe(512);
+		expect(f.asked[0]?.timeoutMs).toBe(LIMITS.checkTimeoutMs);
 	},
 );
 
@@ -182,5 +183,24 @@ test(
 		await act($, f, "t1");
 		expect(f.body().length).toBeGreaterThan(0);
 		expect(f.body().length).toBeLessThanOrEqual(8000);
+	},
+);
+
+test(
+	"a check the model does not answer is logged with its reason and the call goes on",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on, { unanswered: true });
+		const lines: string[] = [];
+		on("ui.log", (_$, e) => {
+			lines.push(e.text);
+			return { value: undefined };
+		});
+		const out = await act($, f, "t1");
+		expect(lines.join("\n")).toContain(
+			"The side check was not answered (aborted)",
+		);
+		expect(out.deny).toBeUndefined();
+		expect(f.ran).toEqual(["Bash"]);
 	},
 );

@@ -12,7 +12,7 @@ Say only what the digest shows. A password or secret inside a command, such as a
 
 Write for a smart reader who just switched in from other work. Use plain words, and the terms the person already uses. When you must name a thing in the code, first say what it is in everyday words, then give its name in backticks.
 
-The line is one short sentence of at most 20 words and it ends in a period.
+The line is one short sentence of at most 20 words and it ends in a period. Write it in the language of the person's messages.
 
 Answer in exactly one of two forms, because a program parses the reply.
 

@@ -30,6 +30,7 @@ export interface Ground {
 	box?: string;
 	fill?: PromptFilled;
 	fault?: boolean;
+	unanswered?: boolean;
 	idFault?: boolean;
 	answer?: string;
 }
@@ -105,6 +106,11 @@ const wireStep = (on: On, ground: Ground): void => {
 	});
 };
 
+const answerOf = (ground: Ground, reply: string) =>
+	ground.unanswered === true
+		? { isAnswered: false as const, reason: "aborted" as const, usage: USAGE }
+		: { isAnswered: true as const, text: reply, usage: USAGE };
+
 export const fixture = (on: On, ground: Ground = {}) => {
 	const clock = mock.clock(on, { now: 1000 });
 	const store = wireSession(on, ground);
@@ -123,7 +129,7 @@ export const fixture = (on: On, ground: Ground = {}) => {
 		if (ground.fault === true) {
 			throw new Error("model fault");
 		}
-		return { value: { isAnswered: true, text: reply, usage: USAGE } };
+		return { value: answerOf(ground, reply) };
 	});
 	wireStep(on, ground);
 	return {

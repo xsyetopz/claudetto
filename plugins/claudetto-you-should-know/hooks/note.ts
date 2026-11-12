@@ -18,6 +18,7 @@ export const LIMITS = {
 	earlierAsks: 3,
 	askChars: 400,
 	maxTokens: 512,
+	checkTimeoutMs: 20_000,
 	cards: 4,
 	titleChars: 120,
 	sketchLines: 12,
@@ -255,6 +256,20 @@ export const skipsAfter = (ignored: number): number =>
 
 export const logEntry = (who: "person" | "assistant", text: string): string =>
 	`${who}: ${text.trim()}`.slice(0, LIMITS.entryChars);
+
+// A burst of tool calls pushes the person's request out of the log, and a check without it reads the asked-for action as unasked.
+export const addToLog = (
+	mem: { log: readonly string[]; earlier: readonly string[] },
+	entry: string,
+): void => {
+	const log = [...mem.log, entry];
+	const dropped = log
+		.slice(0, -LIMITS.logEntries)
+		.filter((e) => e.startsWith("person: "))
+		.map((e) => e.slice(0, LIMITS.askChars));
+	mem.earlier = [...mem.earlier, ...dropped].slice(-LIMITS.earlierAsks);
+	mem.log = log.slice(-LIMITS.logEntries);
+};
 
 export const blankRow = (id: string): Row => ({
 	id,
