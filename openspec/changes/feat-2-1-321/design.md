@@ -787,6 +787,175 @@ Each row gives the hypothesis, the prediction, the command, and the result. Comm
 | P116 | C38: a plugin hook changes a tool input after auto mode reviewed it. Hypothesis: the source of the three plugins has a `tool.call`, `tool.check`, or classic hook that changes an input, or the installed release does. Prediction: a fake run with the source shows no changed input for any tool; the installed 2.1.319 release, whose `Agent` hook sets `subagent_type`, runs `claudetto:Heracles` for a call typed `general-purpose`. | Read `hooks.json` of the three plugins (no `PreToolUse`, no `updatedInput`) and each `next(` in `plugins/*/hooks`; read the Claude Code 2.1.322 binary (`strings`): the client compares the input after the hooks and mods with the input it validated (`inputChangedByHook`), and for a changed call it denies the call and its siblings with the "changed after auto mode reviewed it" text, so the server review is lost. Run `claude -p --debug-file` on a fake Messages API (`fake.ts` in a probe folder, one response with 4 to 11 tool calls of `Bash`, `Read`, `Write`, `Edit`, `Grep`, `Glob`, `Agent`, `Skill`, `ToolSearch`, `Monitor`) with the three plugins from this worktree, with the installed 2.1.319 release, and with a `PreToolUse` command hook that returns `updatedInput` as the control. Mutate `agentCall` to `next({ ...e, description: "x" })` and run the lab. | Confirmed for the installed release only. The control logged `modified tool input keys: [command, description]`; the worktree plugins logged no such line over 11 calls, and the `Agent` guard denied the off forms with the form to send. The 2.1.319 release ran `claudetto:Heracles` for `general-purpose` (`agentType=claudetto:Heracles` in the log), a changed input; its `delegation.ts` passes `{ ...e, subagent_type: type }` to `next`. The source already holds the fix. No new cause. The fake API cannot return the server verdict, so the denial text itself was not reproduced; that stays read from the binary. Fix: `input-unchanged.test.ts` holds each guard to the input it was sent at `tool.call` and `tool.check`; with the `Agent` guard mutated it fails 2 of its tests, and each test requires the call to reach the engine, because a `Bash` call that a missing stub failed closed had passed with nothing checked. The user needs the release that carries the fix. |
 | P117 | C3: replies lose characters on screen (R2, R4, R17, R30). Hypothesis: the transcript holds the clean text, and no writer of the plugin reaches the terminal outside Claude Code's renderer during a reply. Prediction: the source session's transcript holds "my sandbox blocks the keychain" and "went ahead regardless. If it keeps" and none of the garbled forms; the garbled forms appear only where the person pasted the screen; the plugin has no direct terminal write but the status line's `stdout`. | `grep -cF` of "I'llmove on", "my sandbo gh", and "regardless.If it keeps" in `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-….jsonl` and of the clean forms in all of `~/.claude/projects`; `jq` of the entries around the reply; `grep -rnE` of `plugins` for `process.stdout`, `process.stderr`, `/dev/tty`, `console.*`, `stdio`, `inherit`, escape codes, and `$.ui.`; read `$.ui.log`, `$.ui.toast`, and `$.ui.notify` in `.claude-plugin/types/claude-code/index.d.ts:2455-2525`. No model call. | Confirmed. The source transcript (Claude Code 2.1.322) holds each clean form in an assistant `text` block and 0 of the garbled forms; the entries around the reply are a tool result, an attachment, the request, thinking, the text, and `turn_duration`, with no plugin log row and no `StopFailure`. The garbled forms first appear in a `user` entry of a claudetto session (`0afb43bf…`, 2026-11-11T17:40), the person's paste of the screen. The plugin's only direct write is `statusline/main.ts:124`, whose `stdout` Claude Code reads through a pipe; no child inherits the terminal; `$.ui.log` and `$.ui.toast` queue a row for the engine's next frame; `$.ui.notify` writes to the terminal channel but runs only at `classic.StopFailure` in `notify.ts`, after the turn. So no writer of the plugin can interleave with the drawing, and the lost characters are a defect of Claude Code's renderer. Not measured: the terminal and its size in the reported sessions, and a reproduction of the drawing fault. No new cause. |
 | P118 | C5: a sandboxed `gh` and `git push` have no login (R2, R4, R56). Hypothesis: setup's `denyRead` of `~/Library/Keychains` blocks the read of the login keychain file; mach lookups are already open with `allowMachLookup` `["*"]`, and git's credential helper for github.com is `gh auth git-credential` (`~/.gitconfig`), so one cause covers both. Prediction: both fail inside the sandbox and pass outside it; under a Seatbelt profile that denies the folder both fail, and with `login.keychain-db` alone allowed back both pass, in `sandbox-exec` and in Claude Code's own sandbox. | In this session: `gh auth status` and `git push --dry-run origin HEAD` inside the sandbox and with `dangerouslyDisableSandbox`; `gh auth git-credential get` under `sandbox-exec` profiles `open`, `deny`, and `login` in `/tmp/claude-501/probe-9-5`; then `claude -p --bare --setting-sources local --settings <file>` (2.1.322) against a fake Messages API (`srv.ts` there) that answers with one `Bash` call, with `denyRead` `["~/Library/Keychains"]` alone and with `allowRead` `["~/Library/Keychains/login.keychain-db"]` added, `allowUnsandboxedCommands: false`. No model call. | Confirmed. Inside: "The token in default is invalid" and "Missing or invalid credentials" (the VS Code `GIT_ASKPASS` fallback after both helpers returned nothing); outside: "Logged in … (keyring)" and `da3c80e8..176a44fb HEAD -> feat/2.1.321`. The `gh` helper returned a credential under `open` and `login` and nothing under `deny`. Claude Code's sandbox: `gh auth status` gave "Failed to log in" with `denyRead` alone and "Logged in … (keyring)" with the `allowRead`; `git push --dry-run` gave "could not read Username" and `da3c80e8..176a44fb` in the same pair. The doc names `allowRead` as the key that reopens a part of a `denyRead` region (`https://clawdipedia.cc/configure/permissions/sandbox.md`). Fix, on the person's answer of 2026-11-12: setup's Sandbox group writes the one `allowRead` entry. Not measured: which other keychain items a sandboxed command can now read without a prompt. No new cause. |
+| P200 | 10.1(a): the plugins cut the first request. Hypothesis: the three plugins together add bytes to the first request that carries tools. Prediction: larger than stock by the root prompt and tool text. | `bun fake-run.ts stock`, `bun fake-run.ts three <the three plugin dirs>`, `bun size.ts <label>` (Claude Code 2.1.322, `-p ok --max-turns 1 --no-session-persistence --setting-sources ""`, fake Messages API on `ANTHROPIC_BASE_URL`, no model call; scripts in `/tmp/claude-501/probe-321/`). | Refuted: the first request fell from 43,382 to 19,675 bytes (-23,707). See "Three Numbers". |
+| P201 | 10.1(b): denial lines per day by rule. Hypothesis: a few rules give most lines. Prediction: the `Read`, `Write`, and temp-marker rules lead. | `denials.ts`: the P77 pattern `denied by plugin claudetto: [^"\\]{0,230}` over `~/.claude/projects/**/*.jsonl` with mtime in the last 3 days, grouped by the line's `timestamp` day and by rule. | Confirmed: 2,915 lines in 568 files; `Write` rule 966, `Read` rule 725, temp marker 400 over the three days. See "Three Numbers". |
+| P202 | 10.1(c): model calls per turn. Hypothesis: a plain turn makes 2 side calls and a tool turn makes 3 or more. Prediction: counts by request without `tools`, grouped by model. | `PROBE_PROMPT`, `PROBE_SCRIPT`, `PROBE_TURNS` set per path, `bun fake-run.ts three ...`, `bun count.ts three`. | Confirmed for the plain turn (2), a `Bash` turn (3), a foreign-branch force-delete (5). Not reached: `AskUserQuestion` (the ask-fix Decider did not fire in `-p`), the you-should-know side check, setup advice, the Jev escalation. |
+| P203 | 10.18: characters per built-in tool. Hypothesis: deferred tools load whole on `ToolSearch select:`, and a plugin `tool.describe` shortens them. Prediction: loaded text differs between stock and plugin. | Same fake run with a script that calls `ToolSearch select:` for eight tools; compare the second request's tools. | Confirmed for eight tools (see survey table). The loaded text of `Workflow` grew to 22,331 under the plugin. |
+| P204 | 10.18: slash commands, built-in plugins, and the skill list. Hypothesis: only skill-type commands add request characters. Prediction: the init event lists 43 commands and the Skill list holds the skill-type ones. | `sections.ts stock 0` and `sections.ts three 0`; the `system` init event of `claude -p --output-format stream-json` on the fake API. | Confirmed: skill list 5,907 chars with 12 entries in stock; 1,350 with the plugins; agent list 596 stock, 0 with the plugin. |
+| P205 | 9.38: the event lists. Hypothesis: the docs and the type file agree. Prediction: 33 classic events in both. | Fetch `https://code.claude.com/docs/en/hooks` and read `plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts` (`EngineEventOf`); read each plugin's `on(` and `hooks/hooks.json`. | Confirmed for the 33 classic events; the type file holds 44 mod events and the docs add `settings.read` and `classic.*`. Registered events are in the table below. Whether an `$` op event such as `model.complete` is hookable is a hypothesis. |
+| P206 | 9.38: a hook use the plugins lack, in the twelve R53 repositories. Hypothesis: most repositories use the same few events. Prediction: `PreToolUse`, `PostToolUse`, and `Stop` lead. | `curl` of each `https://codeload.github.com/<repo>/tar.gz/HEAD` into its own empty folder, read by `events-in-repos.ts` (a regex for `"<Event>": [` in `json`, `md`, `yaml`, `toml`). Nothing extracted was run; no instruction in it was followed. | Confirmed: `PreToolUse` and `PostToolUse` lead. Five repositories hold no hook config the regex found (feiskyer, Pantheon, hesreallyhim, VoltAgent, karanb192), and ykdojo holds one `Stop` mention. Uses are in the repository table below. |
+| P207 | 9.38: the earliest event per cause. Hypothesis: for most of C1 to C53 an event before `Stop` sees the cause. Prediction: yes for about three in four. | Read of each cause against the event semantics in the docs; no run. | Hypothesis only, no run. The column is in the cause table below. |
+
+### Three Numbers
+
+Measured on commit `1228c597`, with no paid call. A first request means the first request that carries `tools`; the fake API answers a request without `tools` as a side call.
+
+**(a) Bytes of the first request.** Command: `bun fake-run.ts <label> [--plugin-dir paths]`, then `bun size.ts <label>`.
+
+| Arm | Bytes | System chars | Tools | Tool chars | Message chars |
+|---|---|---|---|---|---|
+| Stock | 43,382 | 5,977 | 12 | 28,429 | 8,129 |
+| Three plugins | 19,675 | 6,553 | 8 | 8,154 | 4,286 |
+| claudetto only | 18,496 | | | | |
+| claudetto-openspec only | 44,676 | | | | |
+| claudetto-you-should-know only | 43,373 | | | | |
+
+The three plugins cut 23,707 bytes. claudetto alone cuts 24,886; openspec adds 1,294; you-should-know changes 9. In a trivial turn the plugins add two side requests: the Decider haiku call (2,006 bytes) and the Stop grade haiku call (4,117 bytes).
+
+**(b) Denial lines per day by rule.** Command: `bun denials.ts` (the P77 pattern over 568 files with mtime in the last 3 days; 2,915 lines). A transcript can repeat a denial, so each count is an upper bound. The first and last days are partial (now was 11-12 14:02), 265 lines carry no timestamp, and part of 11-12 comes from this change's own probes.
+
+| Rule | 11-09 | 11-10 | 11-11 | 11-12 | No timestamp |
+|---|---|---|---|---|---|
+| `Write` rule | | 117 | 631 | 189 | 29 |
+| `Read` rule | | 443 | 150 | 52 | 80 |
+| Temp marker | 65 | 62 | 137 | 54 | 82 |
+| Answer-first | 22 | 58 | 76 | 113 | 47 |
+| Pipe exit code | | 46 | | 14 | |
+| Agent past 15 minutes | | 40 | | | |
+| `Edit` rule | | 26 | 6 | | |
+| Process not ours | | 6 | 36 | 10 | |
+| `pkill` | | 6 | 30 | 4 | |
+| Loop with no time limit | | | 23 | 10 | |
+| PATH marker | | | 16 | | |
+| Sandbox rewrite | | | 12 | | |
+| Day total | 87 | 825 | 1,228 | 510 | 265 |
+
+**(c) Model calls the hooks make in one turn.** Command: `bun count.ts <label>` over the fake-API capture, split into requests with and without `tools`, grouped by model.
+
+| Path of the turn | Side calls | Source | How known |
+|---|---|---|---|
+| Typed prompt, no tool | 2: Decider fallback haiku at `prompt.submit` (`pin-ledger.ts`), Stop grade haiku (`limits/grade.ts`) | `decider/fallback.ts:105`, `limits/grade.ts` | measured |
+| Turn with one `Bash` call | 3: Decider haiku, grade haiku, grade sonnet (the sonnet grade runs when `turn.results.length > 0`) | same | measured |
+| Force-delete of a foreign branch | 5: three Decider calls (one pin, two branch gate), grade haiku, grade sonnet | `gate/asked.ts:13` via `gate/ownership.ts:36` | measured |
+| `AskUserQuestion` call | adds one `settle` call per call | `ask-fix.ts:32` | read; the `-p` run did not reach the hook |
+| `TYPESAFE_API_KEY` set | the Decider calls Jev over HTTP and makes no model call, except the escalation fallback for the unsettled band (`escalate: true`, `questions.ts:108`) | `decider/settle.ts:125-146` | read |
+| you-should-know side check | at most 1 per turn, only with `sideCheckEnabled=true` on a terminal or desktop surface | `plugins/claudetto-you-should-know/hooks/register.ts:108` | read; no call in `-p` |
+| Setup question | 1 haiku advice call | `setup/engine.ts:89` | read |
+| A Stop block | 1 more main request; the extra grade was not observed | | read |
+
+The grade counts 1 haiku call, plus 1 sonnet call when a tool ran, per Stop. The Decider timeout is 20 s and the grade timeout 15 s.
+
+### Survey of Request Characters (10.18, left open)
+
+Characters of the whole definition, from the fake-API capture of 2.1.322 (stock versus the three plugins). Eight deferred tools were loaded through `ToolSearch select:`.
+
+| Tool | Stock | Plugins | Note |
+|---|---|---|---|
+| Workflow | 5,355 | 22,331 loaded (deferred) | largest; the load grew |
+| DesignSync | 10,457 | | P95; not loaded in `-p` |
+| Monitor | 7,586 | 1,310 | deferred |
+| SendMessage | 5,698 | 1,532 | deferred |
+| ScheduleWakeup | 4,886 | 4,907 | deferred, text not shortened |
+| Agent | 4,850 | 2,117 | |
+| AskUserQuestion | 5,196 | 3,193 | P95 |
+| EnterWorktree | 4,034 | 942 | deferred |
+| EnterPlanMode | 4,333 | | P95 |
+| Bash | 3,041 | 1,947 | |
+| ExitWorktree | 2,526 | 734 | deferred |
+| ExitPlanMode | 2,464 | | P95 |
+| ReportFindings | 2,177 | 2,198 | deferred, text not shortened |
+| Read | 1,919 | 1,316 | |
+| Skill | 1,803 | deferred | |
+| NotebookEdit | 1,644 | 1,216 | deferred |
+| ToolSearch | 1,440 | 644 | |
+| ListAgents | 1,151 | 557 | |
+| WebFetch | 1,101 | 825 | deferred |
+| Edit | 964 | 780 | |
+| WebSearch | 882 | 714 | deferred |
+| TaskStop | 810 | 520 | deferred |
+| Write | 639 | 589 | |
+| DeferredToolPlaceholder | 204 | | |
+
+Other parts of the stock first request: main system block 5,841 chars (6,417 with the plugin's root prompt); skill list 5,907 chars with 12 entries (dataviz 1,447, code-review 840, update-config 707, run 368, plugin-authoring 266, workflow-authoring 252, keybindings-help 248, fewer-permission-prompts 191, simplify 188, claude-api 164, security-review 90, init 67); agent list 596 chars (0 with the plugin). Of the 43 built-in slash commands only the skill-type ones appear in the request, through the Skill list. The built-in plugins `cc-plugin-agents-md` and `cc-plugin-privacy` add 0 chars here (no `AGENTS.md`; `tool.check` only), and `cc-plugin-plugin-authoring` adds the 266-char skill.
+
+Candidates, each a hypothesis (no replacement was built or run):
+
+| Candidate | Characters | Which way gives the effect in fewer | Person in control |
+|---|---|---|---|
+| `Workflow` | 22,331 loaded | `tool.describe` shortening, or leave it deferred and unloaded | yes, by not selecting it |
+| `DesignSync` | 10,457 | `tool.describe`, or deferral | yes |
+| Stock skill list | 5,907 | `skill.prompt` shortening or a setting that hides a bundled skill; `dataviz` alone is 1,447 | yes |
+| `ScheduleWakeup` | 4,907 | `tool.describe` | yes |
+| `ReportFindings` | 2,198 | `tool.describe` | yes |
+| `Agent` | 2,117 | `tool.describe` further | yes |
+| `Bash` | 1,947 | `tool.describe` further; the gate's denial texts carry the rules at the point of use | yes |
+| `AskUserQuestion` | 3,193 | `tool.describe` | yes |
+
+`tool.describe` is confirmed for ToolSearch, Monitor, EnterPlanMode, and ExitPlanMode (P95) and for the eight tools above (P203). A classic hook, a command, or a skill cannot shorten a tool definition; they add text only when called.
+
+### Hook Events and Earlier Checks (9.38, left open)
+
+The 33 classic events, in the docs and the type file: SessionStart, Setup, UserPromptSubmit, UserPromptExpansion, PreToolUse, PermissionRequest, PermissionDenied, PostToolUse, PostToolUseFailure, PostToolBatch, Notification, MessageDisplay, SubagentStart, SubagentStop, TaskCreated, TaskCompleted, Stop, StopFailure, TeammateIdle, InstructionsLoaded, ConfigChange, CwdChanged, DirectoryAdded, FileChanged, WorktreeCreate, WorktreeRemove, PreCompact, PostCompact, PreModelSwitch, PostModelSwitch, Elicitation, ElicitationResult, SessionEnd.
+
+Registered by the plugins:
+
+| Plugin | Mod events | Classic events |
+|---|---|---|
+| claudetto | session.start, session.compact, session.measure, prompt.submit, prompt.context, prompt.section, prompt.compose, prompt.attachment, turn.start, turn.step, turn.complete, tool.check, tool.call, tool.describe, command.run, command.describe, skill.prompt, agent.offer, agent.spawn, settings.read | SessionStart, Stop, SubagentStop, StopFailure, PermissionRequest, PermissionDenied, PostToolUseFailure, Notification (through `classic.*`); SessionStart and UserPromptSubmit (`hooks/hooks.json`, command hooks) |
+| claudetto-openspec | session.start, tool.call | none |
+| claudetto-you-should-know | ui.render, tool.call, turn.step, session.end, prompt.submit | none |
+
+Classic events no plugin registers: Setup, UserPromptExpansion, PreToolUse, PostToolUse, PostToolBatch, MessageDisplay, SubagentStart, TaskCreated, TaskCompleted, TeammateIdle, InstructionsLoaded, ConfigChange, CwdChanged, DirectoryAdded, FileChanged, WorktreeCreate, WorktreeRemove, PreCompact, PostCompact, PreModelSwitch, PostModelSwitch, Elicitation, ElicitationResult, SessionEnd (`session.end` is the mod form and only you-should-know uses it). `tool.check` fires after PreToolUse and before the permission prompt, so it stands where PreToolUse would. Mod events in the type file no plugin registers: prompt.fill, prompt.suggest, prompt.edit, prompt.change, prompt.autocomplete, prompt.mention, config.set, config.describe, telemetry.log, telemetry.mark, attribution.text, session.receive, session.append, session.send, session.attach, session.detach, plugin.register, engine.create, ui.resolve, ui.press, ui.input, ui.select, ui.message, ui.fault, ui.scroll, ui.focus.
+
+The earliest event that sees each cause. All rows are hypotheses from the event semantics (P207); none ran. "None" means no event sees the fault.
+
+| Cause | Earliest event | Cause | Earliest event |
+|---|---|---|---|
+| C1 | prompt.submit | C28 | tool.check |
+| C2 | tool.describe | C29 | tool.check |
+| C3 | none (the plugin's writers: ui.render) | C30 | tool.check |
+| C4 | prompt.compose | C31 | prompt.submit |
+| C5 | settings.read | C32 | tool.check on Write |
+| C6 | settings.read | C33 | MessageDisplay |
+| C7 | settings.read | C34 | MessageDisplay |
+| C8 | tool.check | C35 | tool.check |
+| C9 | tool.check | C36 | agent.spawn |
+| C10 | MessageDisplay | C37 | PostToolUse on Bash |
+| C11 | MessageDisplay | C38 | tool.check |
+| C12 | tool.check on AskUserQuestion | C39 | tool.check on run_in_background |
+| C13 | tool.check | C40 | prompt.submit |
+| C14 | tool.call (the side check's input) | C41 | InstructionsLoaded |
+| C15 | none (not the plugin) | C42 | session.start |
+| C16 | PostToolUse | C43 | this table |
+| C17 | prompt.compose | C44 | SubagentStop, WorktreeRemove |
+| C18 | session.start | C45 | tool.check |
+| C19 | tool.check | C46 | none in the docs (a pull-request merge); SessionEnd for local branches |
+| C20 | tool.check | C47 | MessageDisplay |
+| C21 | tool.check | C48 | tool.describe |
+| C22 | agent.spawn | C49 | prompt.submit |
+| C23 | PostToolUse on Write | C50 | tool.check |
+| C24 | prompt.context | C51 | MessageDisplay |
+| C25 | tool.check | C52 | tool.call (the side check) |
+| C26 | none for growth; tool.check at start | C53 | tool.check on Bash env |
+| C27 | PostToolUse | | |
+
+The twelve R53 repositories, read as untrusted data. Each use below is one the plugins lack, with its source.
+
+| Hook use | Event | Source |
+|---|---|---|
+| Inject a read-only instruction into each subagent | SubagentStart | https://github.com/davila7/claude-code-templates/blob/HEAD/cli-tool/components/settings/hooks/subagents-explore-only.json |
+| Block production edits until a test failed, then hold the stop until the suite passes | PreToolUse, Stop | https://github.com/davila7/claude-code-templates/blob/HEAD/cli-tool/components/hooks/quality-gates/tdd-gate.json |
+| Open a terminal layout when a worktree is made, clean up on removal | WorktreeCreate, WorktreeRemove | https://github.com/davila7/claude-code-templates/blob/HEAD/cli-tool/components/hooks/development-tools/worktree-ghostty.json |
+| Rewrite displayed reply text | MessageDisplay | https://github.com/ccplugins/awesome-claude-code-plugins/blob/HEAD/plugins/claude-bionify/hooks/hooks.json |
+| Reminder after a `Bash` commit; check learnings before a compact | PostToolUse, PreCompact | https://github.com/ccplugins/awesome-claude-code-plugins/blob/HEAD/plugins/claude-reflect/hooks/hooks.json |
+| Security check before a tool runs | PreToolUse | https://github.com/ccplugins/awesome-claude-code-plugins/blob/HEAD/plugins/security-guidance/hooks/hooks.json |
+| Hook on every other event: Setup, UserPromptExpansion, PostToolBatch, TaskCreated, TaskCompleted, TeammateIdle, ConfigChange, CwdChanged, FileChanged, InstructionsLoaded, Elicitation, ElicitationResult, PostCompact, plus four `http` hooks | the same | https://github.com/shanraisshan/claude-code-best-practice/blob/HEAD/.claude/settings.json |
+| Hook on model switch | PreModelSwitch, PostModelSwitch | https://github.com/luongnv89/claude-howto/blob/HEAD/fa/06-hooks/README.md |
+| Hook on session end and subagent start | SessionEnd, SubagentStart | https://github.com/Druthulu/ProjectArchitect/blob/HEAD/project-architect-3.0/settings/user.snippet.json |
+| Example hooks for PreToolUse, PostToolUse, session start and end, notification | PreToolUse, PostToolUse, SessionEnd | https://github.com/FlorianBruniaux/claude-code-ultimate-guide/blob/HEAD/examples/hooks/README.md |
+| Hook on a failed tool call | PostToolUseFailure | https://github.com/davila7/claude-code-templates/blob/HEAD/cli-tool/components/hooks/quality-gates/tdd-gate.json |
+
+No repository tested holds a hook for a pull-request merge. The repositories feiskyer/claude-code-settings, Pantheon-Security/medusa, hesreallyhim/awesome-claude-code, VoltAgent/awesome-claude-code-subagents, and karanb192/awesome-claude-code-mods yielded no hook config by the regex; this is a limit of the regex (a hook written as code or in another format would not match), so it is not a finding of absence.
 
 ### Description Moves
 
