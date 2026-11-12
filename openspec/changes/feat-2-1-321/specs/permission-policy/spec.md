@@ -174,8 +174,12 @@ The gate SHALL deny a `Bash` or `Monitor` command that holds a `while` or `until
 
 ### Requirement: A Temp Base Itself Stays
 
-A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or without `/private` before it, or `$TMPDIR` as written. The gate SHALL deny an `rm` that names a temp base itself, every entry of one through a glob, or a path under one that holds `..`, and the denial SHALL tell the agent to name the folder it made. Any other `rm` under a temp base SHALL pass.
+A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or without `/private` before it, or `$TMPDIR` as written. The gate SHALL deny an `rm` that names a temp base itself, every entry of one through a glob, or a path under one that holds `..`, and the denial SHALL tell the agent to name the folder it made by its literal path, and that Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`. Any other `rm` under a temp base SHALL pass.
 
+#### Scenario: The Cleanup Form
+
+- **WHEN** the gate denies `rm -rf /tmp`
+- **THEN** the denial gives `rm -rf /tmp/<name>` and names the targets `$dir/`, `$dir/*`, and `$(...)`
 #### Scenario: A Scratch Folder
 
 - **WHEN** the agent runs `rm -rf /tmp/claude-501/gate20` or `rm /tmp/el.log`

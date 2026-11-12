@@ -70,6 +70,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- The gate's denial of an `rm` of a temp base teaches a cleanup by literal path, because Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`, and no rule allows it.
 - The `Monitor` text now says to run the writer itself in the command, because a watch on `tail -F` never ends after its writer exits, so "unless the source ends first" in the start notice holds for a command that ends.
 - A "You should know" note no longer says a password or secret was typed into the chat when it only sat inside a command such as an `osascript` keystroke; the side check's instructions now say to state only what the digest shows.
 - The paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` only, and it and the claim-check launcher drop `ANTHROPIC_API_KEY` from the environment of the `claude` they start, so a paid run bills the subscription login and never an API key.
