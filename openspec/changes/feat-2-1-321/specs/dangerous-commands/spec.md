@@ -53,3 +53,19 @@ The patch rule `claudetto:lint-unsafe-fix` SHALL deny `oxlint`, `biome`, or `ruf
 
 - **WHEN** the command is `bunx oxlint@1.93.0 --fix-suggestions` or `bun run lint -- --fix-suggestions`
 - **THEN** the gate denies it, naming `claudetto:lint-unsafe-fix`
+
+## ADDED Requirements
+
+### Requirement: A Denied Kill Shows the Pids the Session Started
+
+When the gate denies a `kill` of a pid no result of the session shows it started, or an `xargs kill`, the denial SHALL name the pids that the non-error `Bash` calls of the session which ran something in the background printed, the last 8 of them, oldest first. When no such call exists, the denial SHALL say that the session's commands have started no process yet. `gate/processes.ts` records the pids through `Owns.pids`, and the pids that pass `kill` are the same ones.
+
+#### Scenario: A Stranger Among Own Pids
+
+- **WHEN** an earlier `swift run & echo $!` printed 49166 and the command is `kill 31337`
+- **THEN** the gate denies it, and the denial lists 49166 as a pid the session's own commands started
+
+#### Scenario: A Pid From a Command That Did Not Background
+
+- **WHEN** only `pgrep app` printed 777, or the backgrounding call failed
+- **THEN** the denial does not list 777 and says the session's commands have started no process yet
