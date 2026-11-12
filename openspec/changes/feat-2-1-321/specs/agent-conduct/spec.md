@@ -16,6 +16,18 @@ The root prompt (`texts.ts`) SHALL tell the model to weigh a disputed claim as a
 - **THEN** the Stop note sends the last reply nowhere again and tells the model to follow the task's output with `Monitor`, filtered to its step and error lines
 - **AND** the lab test is `limits/stop.test.ts`
 
+### Requirement: One Command at a Time
+
+A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs first, and the next SHALL come in a later reply after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). A bullet is a command bullet only when its text starts with `! ` or `` `! ``; a finding that mentions a `! <command>` step is not one. `output-styles/Concise.md` SHALL say so.
+
+#### Scenario: Several Commands Only the Person Can Run
+
+- **WHEN** the work needs three commands only the person can run
+- **THEN** the reply lists the first as its one `- ! <command>` bullet, and the next reply, after the person's run, lists the second
+- **AND** a finding bullet that mentions a `! <command>` step beside that one bullet passes
+
+## ADDED Requirements
+
 ### Requirement: A Needed Dependency Goes Into the Project
 
 The root prompt SHALL tell the model that a probe runs where undoing is free, and that a dependency the project needs is added to the project with its package manager, because a copy in a temp folder leaves the project without it (the person, R20).
@@ -56,27 +68,25 @@ The root prompt SHALL tell the model to look for a credential in the repository'
 - **THEN** the model names `.env` and writes no new file
 - **AND** the eval case is `evals/credential-from-env`
 
-### Requirement: One Command at a Time
+### Requirement: A Reply States Facts
 
-A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs first, and the next SHALL come in a later reply after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). A bullet is a command bullet only when its text starts with `! ` or `` `! ``; a finding that mentions a `! <command>` step is not one. `output-styles/Concise.md` SHALL say so.
+`output-styles/Concise.md` SHALL hold a `<register>` block that says what to write: the fact, the corrected result, and the next step; a mistake as its error and cause; the check behind each claim; an answer to the question asked; each step the agent can take itself, done; only done steps as a report; a choice the agent can make, made and named.
 
-#### Scenario: Several Commands Only the Person Can Run
+#### Scenario: The Style Holds the Register
 
-- **WHEN** the work needs three commands only the person can run
-- **THEN** the reply lists the first as its one `- ! <command>` bullet, and the next reply, after the person's run, lists the second
-- **AND** a finding bullet that mentions a `! <command>` step beside that one bullet passes
+- **WHEN** the output style loads
+- **THEN** it holds the `<register>` block
+- **AND** the test is `tools/manifest.test.ts`
 
-## ADDED Requirements
+### Requirement: A Reply Holds Only What Is New
 
-### Requirement: A Reply States Facts and Holds Only What Is New
-
-`output-styles/Concise.md` SHALL hold a `<register>` block that says what to write: the fact, the corrected result, and the next step; a mistake as its error and cause; the check behind each claim; an answer to the question asked; each step the agent can take itself, done; only done steps as a report; a choice the agent can make, made and named. It SHALL say that a reply after a remark, a notice, or a reply already on screen holds only what is new. Each Stop block SHALL end with the same instruction, because the screen keeps the blocked reply and a full resend shows one report twice, in two wordings that can disagree.
+`output-styles/Concise.md` SHALL say that a reply after a remark, a notice, or a reply already on screen holds only what is new. Each Stop block SHALL end with the same instruction, because the screen keeps the blocked reply and a full resend shows one report twice, in two wordings that can disagree.
 
 #### Scenario: A Reply After a Stop Block
 
 - **WHEN** the Stop check blocks a reply and the model writes again
 - **THEN** the block says the last reply stays on screen and asks for only what it corrects or adds
-- **AND** the lab test is `limits/verify.test.ts`, and `tools/manifest.test.ts` holds the style's `<register>` block
+- **AND** the lab test is `limits/verify.test.ts`
 
 #### Scenario: A Worker's Message Result
 
