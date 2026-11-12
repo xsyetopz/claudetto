@@ -9,6 +9,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- Hygiene deletes a local branch once no worktree has it and `git cherry` finds each of its commits in the default branch, and `claudetto-hygiene --remote` names, or with no `--dry-run` deletes, the `origin` branches whose pull request merged and that no open pull request names.
+- Hygiene sweeps at each session start, resume, clear, and compaction, not only at a fresh start, so a session that runs for days still holds the disk.
 - One Decider answers each typed question the hooks ask. With `TYPESAFE_API_KEY` set, Jev (`jev-1.14.0`) answers first; `claude-haiku-5-5` at `high` effort answers when there is no key, when Jev fails or refuses the key, and for a ledger question Jev leaves unsettled. A `yes` from Haiku counts only with evidence that is words of the text it was given.
 - Below `memoryFreeMinPercent` of free memory (default 20, `0` turns it off), a new `Bash` or `Monitor` command or subagent is refused until the agent's own runs end, because many lint runs at once froze the machine.
 - A `Bash` call that runs `claude -p` or a program given `--paid` ends its result with the `Budget:` line, because no prompt follows a paid run to carry it.
@@ -72,6 +74,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- Hygiene removes the idle entries of Claude Code's temp folder even when another session removes one while the sweep searches; one vanished or unreadable entry no longer stops the whole batch of 500.
 - The gate's denial of an `rm` of a temp base teaches a cleanup by literal path, because Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`, and no rule allows it.
 - The `Monitor` text now says to run the writer itself in the command, because a watch on `tail -F` never ends after its writer exits, so "unless the source ends first" in the start notice holds for a command that ends.
 - A "You should know" note no longer says a password or secret was typed into the chat when it only sat inside a command such as an `osascript` keystroke; the side check's instructions now say to state only what the digest shows.

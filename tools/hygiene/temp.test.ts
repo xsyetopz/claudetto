@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { chmod, exists, mkdir, utimes, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import { changedTops } from "../../plugins/claudetto/hooks/hygiene/temp.ts";
 import { logged, NOW, repo, swept, sweptWhileOpen, UID } from "./trash.mock.ts";
 
 /** A folder of Claude Code's temp folder that holds one file, both `minutes` old. */
@@ -72,4 +73,43 @@ test("the temp entries Claude Code owns stay", async () => {
 	);
 
 	expect(await swept(root, proj)).toEqual([]);
+});
+
+// Seen on the author's machine: one `find` over 433 entries exited 1 because another session had removed a folder, and no entry went.
+test("a path that vanished during the search does not hide the entries that changed", async () => {
+	const { root } = await repo();
+	const busy = await tempEntry(root, "cos-fx-1", 1);
+	const base = join(root, "tmp", `claude-${UID}`);
+
+	const changed = await changedTops(
+		base,
+		[join(base, "gone-1"), busy],
+		60,
+		(message) => logged.push(message),
+	);
+
+	expect(changed).toEqual(new Set(["cos-fx-1"]));
+});
+
+test("an entry the search cannot read stays, and the others go", async () => {
+	const { root, proj } = await repo();
+	const sealed = await tempEntry(root, "gomod-1");
+	await mkdir(join(sealed, "inner"));
+	await chmod(join(sealed, "inner"), 0o000);
+	const gone = await tempEntry(root, "cos-fx-1");
+
+	const found = await swept(root, proj);
+	await chmod(join(sealed, "inner"), 0o755);
+
+	expect(found).toEqual([["idle-temp", gone]]);
+	expect(await exists(sealed)).toBe(true);
+});
+
+test("a dry run right after a sweep names no temp entry", async () => {
+	const { root, proj } = await repo();
+	await tempEntry(root, "cos-fx-1");
+	await tempEntry(root, "cos-fx-2");
+
+	expect(await swept(root, proj)).toHaveLength(2);
+	expect(await swept(root, proj, ["--dry-run"])).toEqual([]);
 });

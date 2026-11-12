@@ -44,6 +44,73 @@ Hygiene SHALL remove a top-level file or folder of Claude Code's temp folder `cl
 - **WHEN** `lsof` exits with an error
 - **THEN** no temp entry is removed
 
+#### Scenario: An Entry Vanishes During the Search
+
+- **WHEN** another process removes an entry while the sweep searches the temp folder for recent changes
+- **THEN** the other idle entries are still named and removed
+
+#### Scenario: An Entry the Search Cannot Read
+
+- **WHEN** the search fails on one entry for a reason other than that it vanished
+- **THEN** that entry stays, and the others are named and removed
+
+#### Scenario: A Second Dry Run
+
+- **WHEN** a sweep removed every idle entry and a dry run follows at once
+- **THEN** the dry run names no temp entry
+
+### Requirement: The Sweep Starts at Each Session Start
+
+Hygiene SHALL start its sweep at a `SessionStart` of source `startup`, `resume`, `clear`, or `compact`, so a session that runs for days still sweeps. The start SHALL NOT wait for the sweep.
+
+#### Scenario: A Resume or a Compaction
+
+- **WHEN** a session resumes or compacts
+- **THEN** the sweep runs in the project with the session id
+
+### Requirement: Local Branches Nothing Needs Go
+
+Hygiene SHALL delete a local branch of the session's project and of each project `.claude.json` lists when no worktree of the checkout has it checked out, it is not the default branch, its newest commit is older than `trashCleanupPeriodDays` (7 when unset), and `git cherry` finds each of its commits in the default branch, by `origin/HEAD` when set and by `main` or `master` otherwise. It SHALL name each deleted branch in the report, and in a dry run SHALL name it and delete nothing.
+
+#### Scenario: A Merged Branch
+
+- **WHEN** every commit of an old branch is in the default branch and no worktree has it checked out
+- **THEN** the branch is deleted
+
+#### Scenario: A Branch With Work
+
+- **WHEN** the branch holds a commit the default branch lacks, is checked out in a worktree, or is the current branch
+- **THEN** it stays
+
+#### Scenario: A New Branch
+
+- **WHEN** the newest commit of a branch with nothing of its own is newer than the age limit
+- **THEN** it stays
+
+### Requirement: Remote Branches Go Only on Request
+
+Hygiene SHALL name each remote branch of `origin` that nothing needs only when `--remote` is passed, and SHALL delete it only when `--remote` is passed without `--dry-run`. The automatic sweep SHALL NOT pass `--remote`.
+
+#### Scenario: What Nothing Needs
+
+- **WHEN** a remote branch is not the default branch, no open pull request names it as head, and no worktree of the checkout has it checked out
+- **THEN** it is one nothing needs when a merged pull request of the repository has its newest commit as head, or `git cherry` finds each of its commits in the default branch
+
+#### Scenario: A Merged Pull Request
+
+- **WHEN** a merged pull request has the tip of `origin/fix/x` as head and no open pull request names the branch
+- **THEN** `--remote --dry-run` names it and `--remote` deletes it
+
+#### Scenario: An Open Pull Request
+
+- **WHEN** an open pull request names the branch as head
+- **THEN** it stays
+
+#### Scenario: No Request
+
+- **WHEN** the sweep runs without `--remote`
+- **THEN** no remote branch is named or deleted
+
 ### Requirement: Agent Worktrees Nothing Needs Go
 
 Hygiene SHALL remove a worktree that Claude Code made for an agent, with its branch, when git lists it without a lock, `git status` shows no change in it, and `git cherry` finds each of its commits in the current branch of the checkout. It SHALL do this in the session's project and in each project `.claude.json` lists, and SHALL name each unlocked agent worktree that stays, with its size and the reason.

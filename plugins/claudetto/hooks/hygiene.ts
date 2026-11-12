@@ -17,33 +17,37 @@ export const hygiene = (on: On, options: PluginOptions): void => {
 		const value = numberOption(options, key, undefined, 0);
 		return value === undefined ? [] : [flag, String(Math.trunc(value))];
 	});
-	on("classic.SessionStart", { source: "startup" }, async ($, e, next) => {
-		if (switchOption(options, "hygieneEnabled")) {
-			const [session, root, days] = await Promise.all([
-				$.session.id(),
-				$.session.root(),
-				$.settings
-					.read({ key: "cleanupPeriodDays" })
+	on(
+		"classic.SessionStart",
+		{ source: ["startup", "resume", "clear", "compact"] },
+		async ($, e, next) => {
+			if (switchOption(options, "hygieneEnabled")) {
+				const [session, root, days] = await Promise.all([
+					$.session.id(),
+					$.session.root(),
+					$.settings
+						.read({ key: "cleanupPeriodDays" })
+						.catch((error: unknown) => {
+							$.ui.log(`The cleanup period was not read (${String(error)})`);
+						}),
+				]);
+				// The sweep removes files the session does not wait on, so the start goes on without it.
+				void $.process
+					.run(
+						[
+							`${$.plugin.root}/bin/claudetto-hygiene`,
+							"--session",
+							session,
+							...(typeof days === "number" ? ["--days", String(days)] : []),
+							...flags,
+						],
+						{ cwd: root, timeoutMs: SWEEP_TIMEOUT_MS },
+					)
 					.catch((error: unknown) => {
-						$.ui.log(`The cleanup period was not read (${String(error)})`);
-					}),
-			]);
-			// The sweep removes files the session does not wait on, so the start goes on without it.
-			void $.process
-				.run(
-					[
-						`${$.plugin.root}/bin/claudetto-hygiene`,
-						"--session",
-						session,
-						...(typeof days === "number" ? ["--days", String(days)] : []),
-						...flags,
-					],
-					{ cwd: root, timeoutMs: SWEEP_TIMEOUT_MS },
-				)
-				.catch((error: unknown) => {
-					$.ui.log(`The hygiene sweep failed (${String(error)})`);
-				});
-		}
-		return next(e);
-	});
+						$.ui.log(`The hygiene sweep failed (${String(error)})`);
+					});
+			}
+			return next(e);
+		},
+	);
 };

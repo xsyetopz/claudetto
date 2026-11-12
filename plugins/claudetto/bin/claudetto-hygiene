@@ -6,6 +6,7 @@ import { join } from "node:path";
 import type { PluginOptions } from "claude-code";
 import { numberOption } from "../hooks/options.ts";
 import { parseArgs } from "../hooks/hygiene/args.ts";
+import { branchReport } from "../hooks/hygiene/branches.ts";
 import { cleanCaches } from "../hooks/hygiene/mole.ts";
 import { reportText, sweep } from "../hooks/hygiene/sweep.ts";
 import { type Log, logged } from "../hooks/hygiene/roots.ts";
@@ -53,6 +54,14 @@ try {
 			[process.cwd(), ...projects],
 			args.dryRun,
 		),
+	);
+	console.log(
+		await branchReport(outputOr(log), [process.cwd(), ...projects], {
+			dryRun: args.dryRun,
+			remote: args.remote,
+			now: Date.now(),
+			limitMs: (args.trashDays ?? 7) * 86_400_000,
+		}),
 	);
 	console.log(await cleanCaches(args.dryRun));
 } catch (error) {

@@ -1,5 +1,7 @@
 export interface Args {
 	readonly dryRun: boolean;
+	/** Names the `origin` branches nothing needs, and deletes them unless `dryRun`. */
+	readonly remote: boolean;
 	readonly session?: string;
 	readonly days?: number;
 	readonly sessionDays?: number;
@@ -26,12 +28,17 @@ const numberArg = (flag: string, value: string | undefined): number => {
 };
 
 export const parseArgs = (argv: readonly string[]): Args => {
-	const args: { -readonly [K in keyof Args]: Args[K] } = { dryRun: false };
+	const args: { -readonly [K in keyof Args]: Args[K] } = {
+		dryRun: false,
+		remote: false,
+	};
 	const rest = [...argv];
 	for (let arg = rest.shift(); arg !== undefined; arg = rest.shift()) {
 		const key = NUMBER_FLAGS.get(arg);
 		if (arg === "--dry-run") {
 			args.dryRun = true;
+		} else if (arg === "--remote") {
+			args.remote = true;
 		} else if (arg === "--session") {
 			args.session = rest.shift() ?? "";
 		} else if (key === undefined) {

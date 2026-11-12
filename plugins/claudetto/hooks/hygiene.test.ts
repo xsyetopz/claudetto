@@ -42,7 +42,7 @@ const lab = (
 	return launched;
 };
 
-const start = ($: Engine, source: "startup" | "resume") =>
+const start = ($: Engine, source: "startup" | "resume" | "compact") =>
 	$.classic.SessionStart({ source, transcript_path: "/t.jsonl" });
 
 test("a startup runs the sweep in the project with the session id and cleanupPeriodDays", async ($: Engine, on: On) => {
@@ -92,12 +92,13 @@ test("a failed sweep does not fail the start", async ($: Engine, on: On) => {
 	expect(launched).toHaveLength(1);
 });
 
-test("a resume runs no sweep", async ($: Engine, on: On) => {
+test("a resume and a compaction run the sweep too, so a session that lasts days still sweeps", async ($: Engine, on: On) => {
 	const launched = lab(on);
 
 	await start($, "resume");
+	await start($, "compact");
 
-	expect(launched).toEqual([]);
+	expect(launched).toHaveLength(2);
 });
 
 test(
