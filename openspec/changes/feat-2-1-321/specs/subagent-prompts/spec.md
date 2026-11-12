@@ -30,10 +30,10 @@ An edit slice SHALL carry the command that checks it, and the root SHALL run tha
 - **WHEN** a Heracles report says done and the check command fails
 - **THEN** the root fixes or re-sends the slice with the failure text
 
-#### Scenario: The Agent Text Carries the Rule
+#### Scenario: The Root Prompt Carries the Rule
 
-- **WHEN** the root reads the `Agent` tool description
-- **THEN** it holds "Give an edit task the command that checks it, and run that command when the report arrives, before you build on it." (`hooks/texts.ts`, `AGENT_TEXT`)
+- **WHEN** the root reads its system prompt
+- **THEN** it holds "Give an edit task its checking command, and run it when the report arrives, before you build on it." (`hooks/texts.ts`, `ROOT_PROMPT`), because the `Agent` description, capped at 200 characters, holds only the agent names and the worktree rule
 
 ### Requirement: The Subagent Cache TTL Has One Setting
 

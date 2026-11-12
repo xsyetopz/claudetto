@@ -159,7 +159,7 @@ export const offCommandText = (command: string): string =>
 // Delegation: the Agent and ask tool texts and the reply command spec.
 
 export const AGENT_TEXT =
-	'Start a subagent for independent work. subagent_type, in full: claudetto:Artemis searches read-only, claudetto:Metis plans, claudetto:Heracles does the rest. Set isolation: "worktree" on an agent that commits, so it works in a worktree of its own and agents never block each other at the pre-commit hook. Do a few tool calls yourself instead.';
+	'Start a subagent. subagent_type, in full: claudetto:Artemis searches, claudetto:Metis plans, claudetto:Heracles does the rest; isolation: "worktree" if it commits. Do a few tool calls yourself.';
 
 export const agentForm = (type: string, background: boolean): string =>
 	`Send this call again as subagent_type "${type}"${background ? " with run_in_background: false" : ""}. Nothing ran: a hook that changes a call's input makes auto mode skip its review of every call in the same response, so claudetto refuses this call instead of fixing it.`;
