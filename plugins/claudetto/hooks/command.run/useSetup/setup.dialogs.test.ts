@@ -91,7 +91,7 @@ test("a clean write holds each planned key, only in the settings file, and no su
 	await run($, "claudetto:setup");
 	const written = saved(state);
 
-	expect(valueAt(written, ["minimumVersion"])).toBe("2.1.318");
+	expect(valueAt(written, ["minimumVersion"])).toBe("2.1.323");
 	expect(valueAt(written, ["workflowSizeGuideline"])).toBe("unrestricted");
 	expect(valueAt(written, ["subagentPromptCacheTtl"])).toBe("1h");
 	for (const key of [

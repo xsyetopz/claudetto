@@ -189,7 +189,7 @@ export const lab = (
 		"Write",
 	git: (argv: readonly string[]) => string = () => "",
 	failWrites = false,
-	version = "2.1.318",
+	version = "2.1.323",
 ): Lab => {
 	const state = emptyLab(held);
 	serveFiles(on, state, failWrites);

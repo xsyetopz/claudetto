@@ -7,6 +7,10 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+### Changed
+
+- Claudetto needs Claude Code 2.1.323 or later: setup writes `minimumVersion: "2.1.323"`, and a session on an older version logs a line that names `claude update`.
+
 ## [2.1.323] - 2026-11-13
 
 ### Added
