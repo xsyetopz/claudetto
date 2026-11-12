@@ -75,7 +75,7 @@ const exportInline = (code: string): string => {
 };
 
 // The engine refuses a module outside the plugin's folder, so the scoring and the modules it imports are bundled into a copy of the plugin in the payload folder.
-const bundlePlugin = async (outDir: string): Promise<string> => {
+export const bundlePlugin = async (outDir: string): Promise<string> => {
 	const dir = `${outDir}/plugin`;
 	const built = await build({
 		entrypoints: [`${PLUGIN_SOURCE}/hooks/run.ts`],

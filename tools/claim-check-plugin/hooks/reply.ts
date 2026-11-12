@@ -17,12 +17,8 @@ const asCase = (raw: unknown, input: unknown) => ({
 });
 
 /** Scores each reply-register case: the faults the questions answer `yes` to, against the hand-written list. */
-export const scoreReply = (
-	$: Engine,
-	ctx: Ctx,
-	text: string,
-): Promise<Scored> =>
-	scoreDecider(ctx, text, {
+export function scoreReply($: Engine, ctx: Ctx, text: string): Promise<Scored> {
+	return scoreDecider(ctx, text, {
 		title: "Reply-Register Run",
 		scope: FAULTS,
 		asCase,
@@ -31,3 +27,4 @@ export const scoreReply = (
 			return FAULTS.filter((name) => answers[name] === "yes").toSorted();
 		},
 	});
+}

@@ -15,11 +15,12 @@ const asCase = (raw: unknown, input: unknown) => ({
 });
 
 /** Scores each branch-gate case through the gate's `askedToDelete`. */
-export const scoreGate = ($: Engine, ctx: Ctx, text: string): Promise<Scored> =>
-	scoreDecider(ctx, text, {
+export function scoreGate($: Engine, ctx: Ctx, text: string): Promise<Scored> {
+	return scoreDecider(ctx, text, {
 		title: "Branch-Gate Run",
 		scope: [DELETE],
 		asCase,
 		found: async (c) =>
 			codes(await askedToDelete(host($, ctx), c.said, c.branch)),
 	});
+}
