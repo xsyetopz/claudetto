@@ -128,13 +128,18 @@ The root prompt SHALL tell the model to look for a credential in the repository'
 
 ### Requirement: A Reply Holds Only What Is New
 
-`output-styles/Concise.md` SHALL say that a reply after a remark, a notice, or a reply already on screen holds only what is new. Each Stop block SHALL end with the same instruction, because the screen keeps the blocked reply and a full resend shows one report twice, in two wordings that can disagree.
+`output-styles/Concise.md` SHALL say that a reply after a remark, a notice, or a reply already on screen holds only what is new. Each Stop block that asks for a reply again SHALL end with `KEEP_ANSWER`, because the screen keeps the blocked reply and a full resend shows one report twice, in two wordings that can disagree. A block that names the lines to move or delete SHALL name that edit instead.
 
 #### Scenario: A Reply After a Stop Block
 
-- **WHEN** the Stop check blocks a reply and the model writes again
-- **THEN** the block says the last reply stays on screen and asks for only what it corrects or adds
-- **AND** the lab test is `limits/verify.test.ts`
+- **WHEN** the grader block, the unread-grade block, the slice-commit block, or the register block stops a reply and the model writes again
+- **THEN** the block ends with `KEEP_ANSWER`: the last reply stays on screen, and the model writes only what it corrects or adds
+- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`
+
+#### Scenario: A Block That Names Its Lines
+
+- **WHEN** the ask form, the command form, the missing-file block, or the agree-opener block stops a reply
+- **THEN** the block lists each line at fault and names the move or deletion, with no `KEEP_ANSWER`
 
 #### Scenario: A Worker's Message Result
 

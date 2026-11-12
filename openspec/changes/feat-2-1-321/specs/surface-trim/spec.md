@@ -11,26 +11,27 @@ The built-in `/init` skill's prompt SHALL be replaced by `INTERVIEW_TEXT`, which
 
 ### Requirement: Built-in Agents Are Withheld and Mapped
 
-The system SHALL withhold each agent whose `source` is `built-in` with `agent.offer`, and SHALL map an `Agent` call by its `subagent_type`: `Explore` to `claudetto:search`, `Plan` to `claudetto:plan`, and `general-purpose`, `claude`, or a missing type to `claudetto:work`. A bare or `claudetto:`-prefixed name of the three SHALL map to itself, and `fork` SHALL pass through.
+The system SHALL withhold each agent whose `source` is `built-in` with `agent.offer`, and SHALL map an `Agent` call's `subagent_type` to a claudetto agent: `Explore` to `claudetto:search`, `Plan` to `claudetto:plan`, `general-purpose`, `claude`, or a missing type to `claudetto:work`, and a bare name of the four to its `claudetto:` form. A call whose type is not the mapped `claudetto:` name SHALL be denied with the exact form to send, never rewritten, because a rewritten input voids auto mode's review of every call in the response. A type claudetto does not map, such as `fork` or `statusline-setup`, SHALL pass through unchanged.
 
 #### Scenario: An Untyped Call
 
 - **WHEN** the model calls `Agent` with no `subagent_type`, or with `general-purpose` or `claude`
-- **THEN** `claudetto:work` runs
+- **THEN** the hook denies it, and the denial names `claudetto:work` as the type to send
 
 #### Scenario: A Withheld Agent with No Mapping
 
 - **WHEN** the model calls `Agent` with `statusline-setup`
-- **THEN** the call fails as "not found", and the listing of the first request names only claudetto's agents
+- **THEN** the hook passes the call unchanged, and the engine decides it
+- **AND** the lab test is `delegation.test.ts`, "statusline-setup passes through unchanged"
 
 ### Requirement: A Mapped Agent Call Runs in the Foreground and Is Rewritten Only When It Must Be
 
-The call SHALL carry `run_in_background: false` for `search` and `plan` unless the caller set it, because a plugin agent runs in the background otherwise (`settings-review.txt`, L17 item 3). A call that needs no change SHALL reach `next(e)` as `e` itself, because in auto mode a rewritten call sends it and every later call of the same response to the local classifier (L17 item 10 (g)).
+A call to `search`, `plan`, or `sweep` SHALL carry `run_in_background`, because a plugin agent runs in the background otherwise (`settings-review.txt`, L17 item 3); a call that omits it SHALL be denied with the exact form, which sets `run_in_background: false`. A call that needs no change SHALL reach `next(e)` as `e` itself, because in auto mode a rewritten call sends it and every later call of the same response to the local classifier (L17 item 10 (g)).
 
 #### Scenario: A Search Call with No Background Field
 
 - **WHEN** the model calls `Agent` with `Explore` and no `run_in_background`
-- **THEN** `claudetto:search` runs with `run_in_background: false`
+- **THEN** the hook denies it, and the denial names `claudetto:search` with `run_in_background: false`
 
 #### Scenario: A Call Written in Full
 

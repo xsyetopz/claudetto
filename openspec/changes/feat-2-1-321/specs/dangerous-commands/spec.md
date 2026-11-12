@@ -7,12 +7,13 @@
 #### Scenario: The System Path Check
 
 - **WHEN** `Write` or `Edit` targets a system path
-- **THEN** `systemPath` judges it, and it stays in `gate.ts`
+- **THEN** `systemPath` in `rules.ts` judges it, and `ownership.ts` denies it
 
 #### Scenario: The Command Verdicts
 
 - **WHEN** `commandVerdicts` judges a command
-- **THEN** it uses the package rules of `packages.ts`, ref moves (`refVerdict`), kill of an unowned pid (`killVerdict`), owned worktree and branch removal and an `rm` of a temp base (`ownedVerdict`), a run of a released `claude/versions/<v>` (`releaseVerdict`), the hook-write ask, `Write`-over-Bash (`writesWhole`), and `Read`-over-Bash (`printsFile`)
+- **THEN** it uses a formatter run over the whole repository (`formatVerdict`), the package rules of `packages.ts`, ref moves (`refVerdict`), kill of an unowned pid (`killVerdict`), owned worktree and branch removal and an `rm` of a temp base (`ownedVerdict`), a run of a released `claude/versions/<v>` (`releaseVerdict`), the hook-write ask, `Write`-over-Bash (`writesWhole`), `Edit`-over-Bash (`inPlaceTarget`), and `Read`-over-Bash (`printsFile`)
+- **AND** the whole command text also meets the generated rules (`upstreamVerdict`), a masked exit code (`maskedExitVerdict`), a `git commit` that a failed check before it does not stop (`unstoppedCommitVerdict`), and a loop with no pause (`busyWaitVerdict`)
 
 #### Scenario: A Package Tool Beside Another Tool's Files
 
@@ -47,7 +48,7 @@ The patch rule `claudetto:lint-unsafe-fix` SHALL deny `oxlint`, `biome`, or `ruf
 
 - **WHEN** the command is `oxlint --fix src`, `biome check --write .`, `ruff check --fix`, or `oxlint --help`
 - **THEN** the gate gives no verdict
-- **AND** the lab test is `gate/rules.test.ts`, "a linter's unsafe fixes are denied, its safe fixes pass"
+- **AND** the lab test is `useBashRules/rules.system.test.ts`, "a linter's unsafe fixes are denied, its safe fixes pass"
 
 #### Scenario: Unsafe Flag Behind a Version or a Script
 

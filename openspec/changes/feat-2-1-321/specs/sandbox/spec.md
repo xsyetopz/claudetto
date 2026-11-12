@@ -88,7 +88,8 @@ The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block 
 #### Scenario: The Keys of the Block
 
 - **WHEN** setup writes the `sandbox` block
-- **THEN** it holds `enabled: true`, `allowUnsandboxedCommands: true`, `enableWeakerNetworkIsolation: true`, `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `filesystem.allowRead` `["~/Library/Keychains/login.keychain-db"]`, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, and `network.allowLocalBinding` `true`
+- **THEN** it holds `enabled: true`, `allowUnsandboxedCommands: true`, `enableWeakerNetworkIsolation: true`, `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `filesystem.allowRead` `["~/Library/Keychains/login.keychain-db"]`, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, `network.allowLocalBinding` `true`, and `excludedCommands` `["ps *", "top *", "sysctl *", "launchctl list"]`
+- **AND** `excludedCommands` names only read-only commands that fail inside the sandbox under every key: `ps` and `top` are setuid root, and `sysctl` reads a fixed name list
 - **AND** `allowUnsandboxedCommands: true` lets a command the sandbox blocks, such as `claude -p` reading its login from the Keychain, retry outside it, and the permission flow decides each retry
 - **AND** `enableWeakerNetworkIsolation: true` is the person's choice, 2026-11-10: "allow both"
 - **AND** `network.allowLocalBinding` `true` lets a test server or a fake API bind a localhost port (the person's choice, 2026-11-09)
