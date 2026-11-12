@@ -7,7 +7,7 @@ import { spawn } from "bun";
 import {
 	loadTrash,
 	PROJECT_TRASH,
-} from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+} from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/trash.ts";
 import { tempDir } from "../temp.mock.ts";
 
 type Rules = Awaited<ReturnType<typeof loadTrash>>["rules"];
@@ -135,7 +135,10 @@ test("the plugin's trash file passes the gitleaks config check of betterleaks", 
 		"check",
 		"--no-banner",
 		"-c",
-		join(import.meta.dir, "../../plugins/claudetto/hooks/hygiene/trash.toml"),
+		join(
+			import.meta.dir,
+			"../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/trash.toml",
+		),
 	]);
 
 	expect(await new Response(check.stdout).text()).toContain("OK: 37 rules");

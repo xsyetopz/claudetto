@@ -7,7 +7,7 @@ Decide which shell commands the gate denies or asks on from shellfirm's generate
 
 ### Requirement: Generated Upstream Rules Decide Dangerous Commands
 
-The gate SHALL judge a shell command's danger by the generated rules of one pinned upstream list (shellfirm) plus claudetto's patch, and SHALL NOT keep a second list in `hooks/gate/rules.ts`. It SHALL feed each rule the raw text or each command `shell-words.ts` finds, re-quoted.
+The gate SHALL judge a shell command's danger by the generated rules of one pinned upstream list (shellfirm) plus claudetto's patch, and SHALL NOT keep a second list in `hooks/tool.check/useBashRules/rules.ts`. It SHALL feed each rule the raw text or each command `shell-words.ts` finds, re-quoted.
 
 #### Scenario: A Reset Inside a Wrapper
 
@@ -54,7 +54,7 @@ The generated file SHALL record its source, commit, and tarball SHA-256, the gen
 
 ### Requirement: The Gate Keeps Only What the Rules Do Not Cover
 
-`hooks/gate/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. `markerVerdict` SHALL judge the whole text against the `/tmp` markers. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`.
+`hooks/tool.check/useBashRules/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. `markerVerdict` SHALL judge the whole text against the `/tmp` markers. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`.
 
 #### Scenario: The System Path Check
 

@@ -19,7 +19,10 @@ const SEVERITY = new Map([
 	["Critical", "deny"],
 	["High", "ask"],
 ]);
-const GATE = new URL("../plugins/claudetto/hooks/gate/", import.meta.url);
+const GATE = new URL(
+	"../plugins/claudetto/hooks/tool.check/useBashRules/",
+	import.meta.url,
+);
 const LEADING_FLAGS = /^\(\?([a-z]+)\)/u;
 const JS_FLAGS = /[^ims]/gu;
 

@@ -1,7 +1,7 @@
 import { open, readdir, stat } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 
-import { lineFilePath } from "../hooks/limits/heartbeat.ts";
+import { lineFilePath } from "../hooks/session.measure/useLineFile/heartbeat.ts";
 import { num, parse, str } from "./input.ts";
 
 /** One OpenSpec change folder and the boxes of its `tasks.md`. */

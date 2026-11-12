@@ -22,7 +22,7 @@ The setup env group SHALL write `env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` as `"9
 #### Scenario: A Clean Write
 
 - **WHEN** setup writes the env group
-- **THEN** `env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` is `"900000"` and `env.CLAUDE_CODE_SCRIPT_CAPS` is absent (`hooks/setup/groups.test.ts`)
+- **THEN** `env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` is `"900000"` and `env.CLAUDE_CODE_SCRIPT_CAPS` is absent (`hooks/command.run/useSetup/groups.test.ts`)
 
 #### Scenario: A Working Subagent
 
@@ -43,7 +43,7 @@ Setup SHALL offer each of the seven shipped rules (`useLeastCode`, `noUnrequeste
 #### Scenario: Each Missing Rule
 
 - **WHEN** the user holds none of the rules
-- **THEN** each is a dialog of its own, and a Write puts the shipped text under `rules/claudetto` and writes no settings key (`hooks/setup.rules.test.ts`, "each rule the user lacks is a dialog of its own", "Write puts the shipped text under rules/claudetto and writes no settings key")
+- **THEN** each is a dialog of its own, and a Write puts the shipped text under `rules/claudetto` and writes no settings key (`hooks/command.run/useSetup/setup.rules.test.ts`, "each rule the user lacks is a dialog of its own", "Write puts the shipped text under rules/claudetto and writes no settings key")
 
 #### Scenario: A Dismissed Question
 

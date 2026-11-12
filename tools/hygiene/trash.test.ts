@@ -11,12 +11,12 @@ import { join } from "node:path";
 
 import { spawn } from "bun";
 
-import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
-import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { parseArgs } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/args.ts";
+import { sweep } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/sweep.ts";
 import {
 	outputOr,
 	PROJECT_TRASH,
-} from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+} from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/trash.ts";
 import {
 	DAY,
 	git,

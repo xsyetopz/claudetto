@@ -38,7 +38,7 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** the sum is computed
 - **THEN** the prompt is read from the `usage` of the step that made the call, and the result's size is estimated from its text
-- **AND** the check is needed because the price sum is checked between calls (`plugins/claudetto/hooks/limits/price-step.ts`, tested by `price-step.test.ts` in the same folder)
+- **AND** the check is needed because the price sum is checked between calls (`plugins/claudetto/hooks/turn.step/usePriceStep/price-step.ts`, tested by `price-step.test.ts` in the same folder)
 
 #### Scenario: The Wait Ends before the Hook Budget
 

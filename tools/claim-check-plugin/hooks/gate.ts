@@ -1,5 +1,5 @@
 // Scores the stored branch-gate cases through the gate's own `askedToDelete`, on the engine's `$`. The engine loads this module, so it uses no Bun or node API.
-import { askedToDelete } from "../../../plugins/claudetto/hooks/gate/asked.ts";
+import { askedToDelete } from "../../../plugins/claudetto/hooks/tool.check/useBashRules/asked.ts";
 import { field, strings } from "../../claim-check-prices.ts";
 import { type Ctx, type Engine, host } from "./client.ts";
 import { type Scored, scoreDecider } from "./scored.ts";

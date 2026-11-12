@@ -322,7 +322,7 @@ A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs fi
 #### Scenario: Narration between Calls
 
 - **WHEN** a turn holds the text "Now I will read the file" before a `Read` call
-- **THEN** the text breaks the rule, and "The hook has no retry; `hooks/gate.ts:234` registers one check." passes
+- **THEN** the text breaks the rule, and "The hook has no retry; `hooks/tool.check/useBashRules/gate.ts:234` registers one check." passes
 
 ### Requirement: Low-Risk Work Starts at Once
 

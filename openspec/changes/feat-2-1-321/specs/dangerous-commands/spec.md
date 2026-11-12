@@ -2,7 +2,7 @@
 
 ### Requirement: The Gate Keeps Only What the Rules Do Not Cover
 
-`hooks/gate/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`. `writesWhole` SHALL pass an `echo` of `$!`, `$$`, or `$?` alone, which records a value and no file content.
+`hooks/tool.check/useBashRules/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`. `writesWhole` SHALL pass an `echo` of `$!`, `$$`, or `$?` alone, which records a value and no file content.
 
 #### Scenario: The System Path Check
 

@@ -271,4 +271,4 @@ The server verdict `flagged` carries an optional `explanation`; when the server 
 #### Scenario: Denied Twice with No Reason
 
 - **WHEN** auto mode denies the same `make deploy` call twice with "(it gave no explanation)"
-- **THEN** the gate denies a third send and names the command as `` `! make deploy` `` for the user (`hooks/gate.test.ts`)
+- **THEN** the gate denies a third send and names the command as `` `! make deploy` `` for the user (`hooks/tool.check/useBashRules/gate.test.ts`)

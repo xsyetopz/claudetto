@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 
 import { file, which } from "bun";
 
-import { GROUPS } from "../plugins/claudetto/hooks/setup/settings.ts";
+import { GROUPS } from "../plugins/claudetto/hooks/command.run/useSetup/settings.ts";
 
 const keysOf = (node: unknown): string[] => {
 	if (typeof node !== "object" || node === null || Array.isArray(node)) {

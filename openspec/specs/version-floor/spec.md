@@ -7,7 +7,7 @@ Keep Claude Code at or above `2.1.316`, the version every check of claudetto run
 
 ### Requirement: Setup Writes the Floor
 
-Setup SHALL write `minimumVersion: "2.1.318"` (`MINIMUM_VERSION` in `hooks/setup/settings.ts:16`) in the "Features off" group. Setup SHALL keep a value the user set when the user answers "Fill in only what I have not set", and SHALL overwrite it when the user answers "Replace mine too", whether the value is higher or lower.
+Setup SHALL write `minimumVersion: "2.1.318"` (`MINIMUM_VERSION` in `hooks/command.run/useSetup/settings.ts:16`) in the "Features off" group. Setup SHALL keep a value the user set when the user answers "Fill in only what I have not set", and SHALL overwrite it when the user answers "Replace mine too", whether the value is higher or lower.
 
 #### Scenario: Higher Value Kept
 

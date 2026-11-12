@@ -5,9 +5,9 @@ import { join } from "node:path";
 import {
 	branchReport,
 	freeBranches,
-} from "../../plugins/claudetto/hooks/hygiene/branches.ts";
-import { output } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
-import type { Run } from "../../plugins/claudetto/hooks/hygiene/worktrees.ts";
+} from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/branches.ts";
+import { output } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/trash.ts";
+import type { Run } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
 import { DAY, git, repo } from "./trash.mock.ts";
 
 /** A branch of `proj` with one commit of its own, left with the default branch checked out. */

@@ -22,7 +22,7 @@ Each responsibility the plugin carries MUST have exactly one owner in the shippe
 #### Scenario: Two Writers of the Status Line
 
 - **WHEN** `/claudetto:setup` and a bare `/statusline` both write `statusLine`
-- **THEN** both read the one `STATUS_LINE` group of `hooks/setup/settings.ts` and write through `changesOf`, `applyChanges`, and `writeFile`, so the key has one table and one rule
+- **THEN** both read the one `STATUS_LINE` group of `hooks/command.run/useSetup/settings.ts` and write through `changesOf`, `applyChanges`, and `writeFile`, so the key has one table and one rule
 
 ### Requirement: The Owner Is Chosen by a Recorded Check
 

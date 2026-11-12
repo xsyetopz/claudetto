@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { chmod, exists, mkdir, utimes, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { changedTops } from "../../plugins/claudetto/hooks/hygiene/temp.ts";
+import { changedTops } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/temp.ts";
 import { logged, NOW, repo, swept, sweptWhileOpen, UID } from "./trash.mock.ts";
 
 /** A folder of Claude Code's temp folder that holds one file, both `minutes` old. */

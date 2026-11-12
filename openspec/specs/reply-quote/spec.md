@@ -12,7 +12,7 @@ The mod SHALL register the slash command `/reply`, which appends to the prompt d
 #### Scenario: Selection
 
 - **WHEN** the person selects `Second point.` with the mouse and runs `/reply`
-- **THEN** the prompt box gets `Re:\n> Second point.\n\n` appended (`hooks/reply.test.ts`)
+- **THEN** the prompt box gets `Re:\n> Second point.\n\n` appended (`hooks/command.run/useReplyCommand/reply.test.ts`)
 
 #### Scenario: Paragraph Number
 

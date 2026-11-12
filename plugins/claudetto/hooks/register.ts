@@ -1,6 +1,14 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
-import { askFixCall } from "./ask-fix.ts";
+import {
+	holdCheck,
+	holdHooks,
+	holdState,
+} from "./agent.spawn/useMemoryHold/hold.ts";
+import {
+	memoryGuard,
+	memoryWatchCall,
+} from "./agent.spawn/useMemoryHold/memory.ts";
 import {
 	type CallAnswer,
 	type CallEvent,
@@ -11,31 +19,56 @@ import {
 	checkFault,
 	type CheckNext,
 } from "./chain.ts";
-import { decideCall, typesafeKey } from "./decide.ts";
-import { delegation, delegationCall } from "./delegation.ts";
-import { gate, gateState } from "./gate.ts";
-import { gateCall, gateCheck } from "./gate/watch.ts";
-import { hygiene } from "./hygiene.ts";
-import { budgetRunCall } from "./limits/budget-run.ts";
-import { holdCheck, holdHooks, holdState } from "./limits/hold.ts";
-import { lineFileHooks } from "./limits/line-file.ts";
-import { memoryGuard, memoryWatchCall } from "./limits/memory.ts";
+import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene.ts";
+import {
+	slices,
+	slicesCall,
+	slicesState,
+} from "./classic.Stop/useSliceCommits/slices.ts";
+import {
+	budgetHooks,
+	stopHooks,
+	subagentStopHooks,
+} from "./classic.Stop/useStopChecks/stop.ts";
+import {
+	stopCall,
+	stopCheck,
+	stopState,
+} from "./classic.Stop/useStopChecks/turn.ts";
+import { notify } from "./classic.StopFailure/useStopNotice/notify.ts";
+import { reply } from "./command.run/useReplyCommand/reply.ts";
+import { setup } from "./command.run/useSetup/setup.ts";
+import {
+	pin,
+	pinCall,
+	pinCheck,
+	pinState,
+} from "./prompt.submit/useConstraintPin/pin.ts";
+import { lineFileHooks } from "./session.measure/useLineFile/line-file.ts";
+import {
+	surface,
+	surfaceCall,
+} from "./settings.read/useSlimSurface/surface.ts";
+import { DECIDE_SPEC } from "./texts-gate.ts";
+import { REPLY_SPEC } from "./texts.ts";
+import { askFixCall } from "./tool.call/useAskFix/ask-fix.ts";
+import { budgetRunCall } from "./tool.call/useBudgetRun/budget-run.ts";
+import {
+	delegation,
+	delegationCall,
+} from "./tool.call/useClaudettoAgents/delegation.ts";
+import { decideCall, typesafeKey } from "./tool.call/useDecideTool/decide.ts";
+import {
+	sandboxGitCall,
+	sandboxGitState,
+} from "./tool.call/useSandboxGit/sandbox-git.ts";
+import { gate, gateState } from "./tool.check/useBashRules/gate.ts";
+import { gateCall, gateCheck } from "./tool.check/useBashRules/watch.ts";
 import {
 	priceStepCall,
 	priceStepHooks,
 	priceStepState,
-} from "./limits/price-step.ts";
-import { budgetHooks, stopHooks, subagentStopHooks } from "./limits/stop.ts";
-import { stopCall, stopCheck, stopState } from "./limits/turn.ts";
-import { notify } from "./notify.ts";
-import { pin, pinCall, pinCheck, pinState } from "./pin.ts";
-import { reply } from "./reply.ts";
-import { sandboxGitCall, sandboxGitState } from "./sandbox-git.ts";
-import { setup } from "./setup.ts";
-import { slices, slicesCall, slicesState } from "./slices.ts";
-import { surface, surfaceCall } from "./surface.ts";
-import { DECIDE_SPEC } from "./texts-gate.ts";
-import { REPLY_SPEC } from "./texts.ts";
+} from "./turn.step/usePriceStep/price-step.ts";
 
 const stateOf = (options: PluginOptions) => ({
 	written: slicesState(),

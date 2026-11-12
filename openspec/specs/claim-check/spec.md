@@ -19,19 +19,19 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 - **WHEN** an interactive reply ends with a choice between options in its own text
 - **THEN** `options` is offered, and a finding of it blocks once with the fix that SHALL send the agent to `mcp__claudetto__ask-user-question`
 - **AND** a headless session SHALL NOT be offered `options`, because no ask reaches a headless session
-- **AND** the lab tests are `limits/verify.test.ts`, "every interactive turn is offered the options fault" and "a headless turn, which no ask reaches, is not offered the options fault"
+- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "every interactive turn is offered the options fault" and "a headless turn, which no ask reaches, is not offered the options fault"
 
 #### Scenario: Work Left to the Person
 
 - **WHEN** a reply checks part of a set, leaves a guess untested, or names a run it could make as the next step
 - **THEN** `deferred` is offered in every session, and a finding of it blocks once with the fix that tells the agent to do that work and report what it shows
-- **AND** the lab tests are `limits/verify.test.ts`, "a headless turn is still offered the deferred fault" and "the deferred fault blocks once with its own fix"
+- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "a headless turn is still offered the deferred fault" and "the deferred fault blocks once with its own fix"
 
 #### Scenario: No Padding Fault
 
 - **WHEN** the grader is offered its faults
 - **THEN** none is named `padding`, because naming those sentences in the grader text puts their words into context, and the output style states the reply's form in positive terms instead
-- **AND** the lab test is `limits/verify.test.ts`, "every interactive turn is offered the options fault"
+- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`, "every interactive turn is offered the options fault"
 
 #### Scenario: A Quote Not in the Reply
 
@@ -47,14 +47,14 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 
 - **WHEN** the agent ran Read, Grep, or Bash this turn
 - **THEN** `unchecked` and `rules` are not offered, and a finding of either does not block
-- **AND** the lab test is `limits/verify.test.ts`, "a turn that read the workspace is not offered the unchecked-claim or rules faults"
+- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`, "a turn that read the workspace is not offered the unchecked-claim or rules faults"
 
 #### Scenario: A Look That Was Denied or Refused
 
 - **WHEN** the only Read, Grep, or Bash call this turn was denied by a `tool.check` answer, or was an ask the session refused
 - **THEN** it is not a look, `unchecked` is offered, and a finding of it blocks once
 - **AND** an ask that was allowed and then failed is still a look
-- **AND** the lab tests are `limits/verify.test.ts`, "a turn whose only lookup was denied is still offered the unchecked-claim fault", the three "an ask refused with ... is not a lookup" tests, and "an ask that was allowed and then failed is still a lookup"
+- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "a turn whose only lookup was denied is still offered the unchecked-claim fault", the three "an ask refused with ... is not a lookup" tests, and "an ask that was allowed and then failed is still a lookup"
 
 #### Scenario: The Issues File Was Written
 
@@ -116,7 +116,7 @@ A reply that reports a failed last `Bash` call as the outcome or a blocker, when
 
 - **WHEN** `bun run probe` failed with "required option '--env-file <path>' not specified" and the reply says "The probe is blocked: it needs --env-file."
 - **THEN** the turn is blocked once with the fix and the rerun
-- **AND** the lab test is `limits/verify.test.ts`, "a reply that reports ... as the outcome gets one block that asks for the fix and the rerun"
+- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`, "a reply that reports ... as the outcome gets one block that asks for the fix and the rerun"
 
 ### Requirement: A Fix Only the Person Can Give Is Not the Unfixed Fault
 
@@ -126,7 +126,7 @@ A fix only the person can give (a `! <command>`, an interactive login with no to
 
 - **WHEN** `claude -p hi` failed with "Not logged in" and the reply asks the person to run `! claude` and log in
 - **THEN** the turn is not blocked
-- **AND** the lab test is `limits/verify.test.ts`, "a failed command whose fix needs the user is not the unfixed fault"
+- **AND** the lab test is `classic.Stop/useStopChecks/verify.test.ts`, "a failed command whose fix needs the user is not the unfixed fault"
 
 ### Requirement: A Turn Whose Last Bash Call Succeeded or Was Denied Is Not Offered Unfixed
 
@@ -136,4 +136,4 @@ A turn whose last `Bash` call succeeded or was denied SHALL NOT be offered `unfi
 
 - **WHEN** the last `Bash` call of the turn succeeded, or was denied
 - **THEN** `unfixed` is not offered
-- **AND** the lab tests are `limits/verify.test.ts`, "a turn whose last Bash call succeeded is not offered the unfixed fault" and "a turn whose last Bash call was denied is not offered the unfixed fault"
+- **AND** the lab tests are `classic.Stop/useStopChecks/verify.test.ts`, "a turn whose last Bash call succeeded is not offered the unfixed fault" and "a turn whose last Bash call was denied is not offered the unfixed fault"

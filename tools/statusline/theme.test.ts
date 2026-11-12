@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { lineFilePath } from "../../plugins/claudetto/hooks/limits/heartbeat.ts";
+import { lineFilePath } from "../../plugins/claudetto/hooks/session.measure/useLineFile/heartbeat.ts";
 import {
 	statusOf,
 	statusWithFiles,

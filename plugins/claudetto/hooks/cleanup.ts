@@ -1,13 +1,13 @@
 import type { BackgroundTaskSummary, EngineInterface } from "claude-code";
 
-import { createdOf } from "./gate/processes.ts";
 import {
 	agentWorktrees,
 	inOrder,
 	removeWorktrees,
 	type Run,
-} from "./hygiene/worktrees.ts";
+} from "./classic.SessionStart/useHygieneSweep/worktrees.ts";
 import { CLEANUP_LEFT, STALE_TASKS } from "./texts-gate.ts";
+import { createdOf } from "./tool.check/useBashRules/processes.ts";
 
 type Past = Parameters<typeof createdOf>[0];
 

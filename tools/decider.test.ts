@@ -62,7 +62,7 @@ test("the reply-register questions are Nouls that each state what a yes and a no
 
 test("only the Decider and the decide tool read the TypeSafe key", async () => {
 	expect(await sourcesWith('env.get("TYPESAFE_API_KEY")')).toEqual([
-		"plugins/claudetto/hooks/decide.ts",
 		"plugins/claudetto/hooks/decider/settle.ts",
+		"plugins/claudetto/hooks/tool.call/useDecideTool/decide.ts",
 	]);
 });

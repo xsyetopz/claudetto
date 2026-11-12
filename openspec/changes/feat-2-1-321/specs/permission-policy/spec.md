@@ -125,8 +125,8 @@ The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take
 
 #### Scenario: A sed Range
 
-- **WHEN** the agent runs `sed -n 1,80p hooks/gate.ts; grep -n "X" -r hooks | head`
-- **THEN** the denial names `hooks/gate.ts`, never `1,80p`, with `offset` 1 and `limit` 80
+- **WHEN** the agent runs `sed -n 1,80p hooks/tool.check/useBashRules/gate.ts; grep -n "X" -r hooks | head`
+- **THEN** the denial names `hooks/tool.check/useBashRules/gate.ts`, never `1,80p`, with `offset` 1 and `limit` 80
 - **AND** the lab test is `gate/rules.test.ts`, "A sed Range: the denial holds the Read call with offset and limit"
 
 #### Scenario: A Compound Command

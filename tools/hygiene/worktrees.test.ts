@@ -2,13 +2,13 @@ import { expect, test } from "bun:test";
 import { exists, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { presentProjects } from "../../plugins/claudetto/hooks/hygiene/roots.ts";
-import { output } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+import { presentProjects } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/roots.ts";
+import { output } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/trash.ts";
 import {
 	agentWorktrees,
 	projectsOf,
 	worktreeReport,
-} from "../../plugins/claudetto/hooks/hygiene/worktrees.ts";
+} from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
 import { git, repo } from "./trash.mock.ts";
 
 const INTEGRATED = "agent-a0000000000000001";

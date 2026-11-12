@@ -3,7 +3,7 @@ import { RULE_CRITERIA } from "../../../plugins/claudetto/hooks/decider/question
 import {
 	readLedger,
 	sentencesOf,
-} from "../../../plugins/claudetto/hooks/pin-ledger.ts";
+} from "../../../plugins/claudetto/hooks/prompt.submit/useConstraintPin/pin-ledger.ts";
 import type { PinConstraint } from "../../../plugins/claudetto/hooks/texts-pin.ts";
 import { field, lines } from "../../claim-check-prices.ts";
 import { matches, type Row } from "../../claim-check-report.ts";

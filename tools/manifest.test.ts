@@ -59,7 +59,7 @@ for (const name of ["search", "plan", "work"]) {
 	});
 }
 
-// `limits/open-items.ts` reads only `- [ ]` lines, so a request in any other form escapes the Stop check.
+// `classic.Stop/useStopChecks/open-items.ts` reads only `- [ ]` lines, so a request in any other form escapes the Stop check.
 test("the output style asks for the open-item form the Stop check reads", async () => {
 	const style = await file(
 		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,

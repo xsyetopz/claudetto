@@ -3,8 +3,8 @@ import { join } from "node:path";
 
 import { sleep, spawn } from "bun";
 
-import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
-import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
+import { parseArgs } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/args.ts";
+import { sweep } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/sweep.ts";
 import { tempDir } from "../temp.mock.ts";
 
 export const DAY = 86_400_000;

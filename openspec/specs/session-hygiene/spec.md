@@ -95,7 +95,7 @@ Hygiene SHALL add no model call, tool, command, skill, or prompt text. The promp
 
 ### Requirement: Build Folders Go by a Trash File
 
-Hygiene SHALL remove a project folder that a rule of `hooks/hygiene/trash.toml` names, in the gitleaks config format, and a `gcroot` rule SHALL name a symlink that points into `/nix/store/`.
+Hygiene SHALL remove a project folder that a rule of `hooks/classic.SessionStart/useHygieneSweep/trash.toml` names, in the gitleaks config format, and a `gcroot` rule SHALL name a symlink that points into `/nix/store/`.
 
 #### Scenario: Rule Names a Nix Root
 
