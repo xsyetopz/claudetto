@@ -70,6 +70,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- The Stop hook no longer counts a finding bullet that mentions a `! <command>` step as a second `- ! <command>` bullet; only a bullet that opens with the `!` step counts.
 - A `while` or `until` loop whose body runs only `:` or `true`, such as `until grep -q x f; do :; done`, is denied in the foreground and in the background, because it holds a CPU core while it waits. The denial names the form to send: a `sleep` in the body and a time limit.
 - A command whose program is `[` or `[[`, such as `[ -f x ] && echo y` or `if [ -d node_modules ]; then …; fi`, no longer gets "The gate cannot read this command, so a person must approve it."
 - A search pattern that starts with `/\`, as in `grep -v "/\.git/"`, no longer opens a "The gate failed" permission dialog, and the same pattern in a `! <command>` step no longer makes the Stop hook drop its checks.

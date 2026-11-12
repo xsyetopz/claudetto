@@ -8,6 +8,8 @@ const BULLET = /^\s*(?:[-*+]|\d+[.)])\s+(?!\[[ xX]\])(.*\S)\s*$/u;
 /** The syntax of a blocker the user can run: `! <command>`. */
 const COMMAND_STEP_WITHIN = /(?:^|[\s`(])!\s+\S/u;
 
+const COMMAND_BULLET = /^`?!\s+\S/u;
+
 /** A line that tells the user to run something: a `! <command>` line or span, `sudo`, or a backtick command after "you need to run" with no `! `. */
 const COMMAND_LINE =
 	/^\s*!\s+\S|`!\s+[^`]+`|\bsudo\s+\S|\byou\s+(?:need to|must|should|have to|can)\s+run\s+`[^`]+`/iu;
@@ -47,6 +49,10 @@ const holdsCommand = (pattern: RegExp, line: string): boolean => {
 
 const inItem = (line: string): boolean => holdsCommand(BULLET, line);
 
+/** A bullet whose text opens with `! ` or `` `! ``: a finding that mentions a `! <command>` step is none. */
+const isCommandBullet = (line: string): boolean =>
+	COMMAND_BULLET.test(BULLET.exec(line)?.[1] ?? "");
+
 /** The lines that name a command for the user outside a plain bullet, whether the bullets lack the one heading, and the command bullets when there are two or more, since the person's `!` runs queue while the agent works. */
 export const commandForm = (
 	reply: string,
@@ -57,7 +63,7 @@ export const commandForm = (
 } => {
 	const lines = reply.split("\n");
 	const items = lines
-		.filter((entry) => inItem(entry))
+		.filter((entry) => isCommandBullet(entry))
 		.map((line) => line.trim());
 	return {
 		stray: lines

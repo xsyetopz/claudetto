@@ -102,6 +102,24 @@ test("two ! command items block once, naming both, and keep the one the work nee
 	expect(tools.listed()).toBe(0);
 });
 
+test("a finding bullet that mentions a ! <command> step is no second command bullet", async ($: Engine, on: On) => {
+	lab(on);
+	const finding =
+		"- **Cause:** Claude Code refuses to check a path that starts with `/\\`, and the gate turned that refusal into a permission dialog. The Stop hook had the same fault: such a pattern in a `! <command>` step made it lose every check, and it now skips the word.";
+	const command = "- ! bun /tmp/claude-501/probe-ghenv/run.ts";
+
+	const out = await stop(
+		$,
+		`Fixed.\n\n${finding}\n\n## What I Need From You\n${command}`,
+	);
+
+	expect(out.block).toBeUndefined();
+	expect(commandForm(`${finding}\n${command}`).several).toEqual([]);
+	expect(
+		commandForm("- `! gh auth login`\n- ! gh auth login").several,
+	).toHaveLength(2);
+});
+
 test("a command block of a continued turn passes", async ($: Engine, on: On) => {
 	lab(on);
 
