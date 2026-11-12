@@ -20,6 +20,7 @@ The built-in `/init` skill's prompt SHALL be replaced by `INTERVIEW_TEXT`, which
 - **WHEN** `TOOL_TEXTS["Monitor"]` is read
 - **THEN** it says that a notice is not the user's reply, that the command prints only the lines the model acts on, failures among them, and that one notice is the job of `Bash` with `run_in_background`
 - **AND** it says to run the writer itself in the command, because `tail -F` never ends after its writer exits and so the watch never ends
+
 #### Scenario: The Four Texts
 
 - **WHEN** the engine describes `Monitor`, `ToolSearch`, `EnterPlanMode`, or `ExitPlanMode` with a longer stock description

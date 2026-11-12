@@ -180,6 +180,7 @@ A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or witho
 
 - **WHEN** the gate denies `rm -rf /tmp`
 - **THEN** the denial gives `rm -rf /tmp/<name>` and names the targets `$dir/`, `$dir/*`, and `$(...)`
+
 #### Scenario: A Scratch Folder
 
 - **WHEN** the agent runs `rm -rf /tmp/claude-501/gate20` or `rm /tmp/el.log`
