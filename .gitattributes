@@ -1,2 +1,33 @@
 # LF everywhere, so the linters and the hooks see the same bytes in each checkout.
 * text=auto eol=lf
+
+# >>> bedrock
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+*.md diff=markdown
+*.sh diff=bash
+.githooks/* text eol=lf diff=bash
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.wasm binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+# <<< bedrock
+
+# >>> typescript-bedrock
+bun.lock text linguist-generated
+*.lockb binary
+# <<< typescript-bedrock

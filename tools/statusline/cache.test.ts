@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+
 import { linesOf, NOW_S } from "./support.ts";
 
 const cacheLine = (cache: Record<string, unknown> | undefined): string =>
@@ -29,7 +30,7 @@ describe("the cache countdown", () => {
 	});
 
 	test("no `prompt_cache`, or `caching_observed` false, shows no cache part and keeps the row", () => {
-		const none = cacheLine(undefined);
+		const none = cacheLine();
 		const unobserved = cacheLine({
 			...WARM,
 			caching_observed: false,
@@ -52,10 +53,10 @@ describe("the cache countdown", () => {
 	});
 });
 
-describe("the cache miss cause", () => {
-	const missed = (miss: Record<string, unknown>): string =>
-		cacheLine({ ...WARM, expires_at: NOW_S + 252, ...miss });
+const missed = (miss: Record<string, unknown>): string =>
+	cacheLine({ ...WARM, expires_at: NOW_S + 252, ...miss });
 
+describe("the cache miss cause", () => {
 	test("a miss with `tools_changed` adds `miss: tools changed`", () => {
 		expect(
 			missed({ misses: 1, last_miss_cause: { causes: ["tools_changed"] } }),

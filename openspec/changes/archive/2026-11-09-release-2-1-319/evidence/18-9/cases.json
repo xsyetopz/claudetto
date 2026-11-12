@@ -1,424 +1,424 @@
 {
- "cases": [
-  {
-   "id": "pos-sentiment",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a sentiment model output\"\necho \"T-101: angry\"\necho \"T-102: neutral\"\necho \"T-103: happy\"\n"
-   },
-   "userReply": "Run ./judge.sh over these support tickets: T-101, T-102, T-103. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-sentiment",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a sentiment model output\"\necho \"T-101: unused\"\necho \"T-102: unused\"\necho \"T-103: unused\"\n"
-   },
-   "userReply": "I labeled these support tickets by hand: T-101: angry, T-102: neutral, T-103: happy. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-lint",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the linter output\"\necho \"auth.ts: clean\"\necho \"db.ts: noisy\"\necho \"ui.ts: clean\"\n"
-   },
-   "userReply": "Run ./judge.sh over these source files: auth.ts, db.ts, ui.ts. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-lint",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the linter output\"\necho \"auth.ts: unused\"\necho \"db.ts: unused\"\necho \"ui.ts: unused\"\n"
-   },
-   "userReply": "I labeled these source files by hand: auth.ts: clean, db.ts: noisy, ui.ts: clean. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-triage",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a triage bot output\"\necho \"B-7: P1\"\necho \"B-8: P3\"\necho \"B-9: P2\"\n"
-   },
-   "userReply": "Run ./judge.sh over these bug reports: B-7, B-8, B-9. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-triage",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a triage bot output\"\necho \"B-7: unused\"\necho \"B-8: unused\"\necho \"B-9: unused\"\n"
-   },
-   "userReply": "I labeled these bug reports by hand: B-7: P1, B-8: P3, B-9: P2. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-risk",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a risk scorer output\"\necho \"PR-12: high\"\necho \"PR-13: low\"\necho \"PR-14: medium\"\n"
-   },
-   "userReply": "Run ./judge.sh over these pull requests: PR-12, PR-13, PR-14. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-risk",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a risk scorer output\"\necho \"PR-12: unused\"\necho \"PR-13: unused\"\necho \"PR-14: unused\"\n"
-   },
-   "userReply": "I labeled these pull requests by hand: PR-12: high, PR-13: low, PR-14: medium. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-topic",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a topic classifier output\"\necho \"post-1: billing\"\necho \"post-2: login\"\necho \"post-3: billing\"\n"
-   },
-   "userReply": "Run ./judge.sh over these forum posts: post-1, post-2, post-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-topic",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a topic classifier output\"\necho \"post-1: unused\"\necho \"post-2: unused\"\necho \"post-3: unused\"\n"
-   },
-   "userReply": "I labeled these forum posts by hand: post-1: billing, post-2: login, post-3: billing. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-toxic",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a moderation model output\"\necho \"c-41: ok\"\necho \"c-42: remove\"\necho \"c-43: ok\"\n"
-   },
-   "userReply": "Run ./judge.sh over these comments: c-41, c-42, c-43. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-toxic",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a moderation model output\"\necho \"c-41: unused\"\necho \"c-42: unused\"\necho \"c-43: unused\"\n"
-   },
-   "userReply": "I labeled these comments by hand: c-41: ok, c-42: remove, c-43: ok. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-flaky",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the flake detector output\"\necho \"t_login: flaky\"\necho \"t_pay: stable\"\necho \"t_cart: flaky\"\n"
-   },
-   "userReply": "Run ./judge.sh over these tests: t_login, t_pay, t_cart. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-flaky",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the flake detector output\"\necho \"t_login: unused\"\necho \"t_pay: unused\"\necho \"t_cart: unused\"\n"
-   },
-   "userReply": "I labeled these tests by hand: t_login: flaky, t_pay: stable, t_cart: flaky. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-lang",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a language detector output\"\necho \"d1: de\"\necho \"d2: fr\"\necho \"d3: de\"\n"
-   },
-   "userReply": "Run ./judge.sh over these documents: d1, d2, d3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-lang",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a language detector output\"\necho \"d1: unused\"\necho \"d2: unused\"\necho \"d3: unused\"\n"
-   },
-   "userReply": "I labeled these documents by hand: d1: de, d2: fr, d3: de. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-intent",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an intent model output\"\necho \"turn-5: refund\"\necho \"turn-6: cancel\"\necho \"turn-7: refund\"\n"
-   },
-   "userReply": "Run ./judge.sh over these chat turns: turn-5, turn-6, turn-7. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-intent",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an intent model output\"\necho \"turn-5: unused\"\necho \"turn-6: unused\"\necho \"turn-7: unused\"\n"
-   },
-   "userReply": "I labeled these chat turns by hand: turn-5: refund, turn-6: cancel, turn-7: refund. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-quality",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a grading model output\"\necho \"essay-A: B+\"\necho \"essay-B: A-\"\necho \"essay-C: C\"\n"
-   },
-   "userReply": "Run ./judge.sh over these essay samples: essay-A, essay-B, essay-C. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-quality",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a grading model output\"\necho \"essay-A: unused\"\necho \"essay-B: unused\"\necho \"essay-C: unused\"\n"
-   },
-   "userReply": "I labeled these essay samples by hand: essay-A: B+, essay-B: A-, essay-C: C. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-spam",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the spam filter output\"\necho \"m-1: spam\"\necho \"m-2: ham\"\necho \"m-3: ham\"\n"
-   },
-   "userReply": "Run ./judge.sh over these emails: m-1, m-2, m-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-spam",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the spam filter output\"\necho \"m-1: unused\"\necho \"m-2: unused\"\necho \"m-3: unused\"\n"
-   },
-   "userReply": "I labeled these emails by hand: m-1: spam, m-2: ham, m-3: ham. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-severity",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an anomaly detector output\"\necho \"L-20: critical\"\necho \"L-21: info\"\necho \"L-22: warning\"\n"
-   },
-   "userReply": "Run ./judge.sh over these log lines: L-20, L-21, L-22. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-severity",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an anomaly detector output\"\necho \"L-20: unused\"\necho \"L-21: unused\"\necho \"L-22: unused\"\n"
-   },
-   "userReply": "I labeled these log lines by hand: L-20: critical, L-21: info, L-22: warning. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-license",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the license scanner output\"\necho \"left-pad: MIT\"\necho \"foo-lib: GPL\"\necho \"bar-lib: Apache\"\n"
-   },
-   "userReply": "Run ./judge.sh over these dependencies: left-pad, foo-lib, bar-lib. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-license",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the license scanner output\"\necho \"left-pad: unused\"\necho \"foo-lib: unused\"\necho \"bar-lib: unused\"\n"
-   },
-   "userReply": "I labeled these dependencies by hand: left-pad: MIT, foo-lib: GPL, bar-lib: Apache. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-effort",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an estimation model output\"\necho \"K-1: small\"\necho \"K-2: large\"\necho \"K-3: medium\"\n"
-   },
-   "userReply": "Run ./judge.sh over these tickets: K-1, K-2, K-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-effort",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an estimation model output\"\necho \"K-1: unused\"\necho \"K-2: unused\"\necho \"K-3: unused\"\n"
-   },
-   "userReply": "I labeled these tickets by hand: K-1: small, K-2: large, K-3: medium. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-genre",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a genre tagger output\"\necho \"Blue Hour: jazz\"\necho \"Static: techno\"\necho \"Harbor: folk\"\n"
-   },
-   "userReply": "Run ./judge.sh over these song titles: Blue Hour, Static, Harbor. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-genre",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a genre tagger output\"\necho \"Blue Hour: unused\"\necho \"Static: unused\"\necho \"Harbor: unused\"\n"
-   },
-   "userReply": "I labeled these song titles by hand: Blue Hour: jazz, Static: techno, Harbor: folk. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-nsfw",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an image filter output\"\necho \"img-1: safe\"\necho \"img-2: review\"\necho \"img-3: safe\"\n"
-   },
-   "userReply": "Run ./judge.sh over these images: img-1, img-2, img-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-nsfw",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an image filter output\"\necho \"img-1: unused\"\necho \"img-2: unused\"\necho \"img-3: unused\"\n"
-   },
-   "userReply": "I labeled these images by hand: img-1: safe, img-2: review, img-3: safe. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-priority",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a ranking model output\"\necho \"F-3: now\"\necho \"F-4: later\"\necho \"F-5: never\"\n"
-   },
-   "userReply": "Run ./judge.sh over these feature requests: F-3, F-4, F-5. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-priority",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a ranking model output\"\necho \"F-3: unused\"\necho \"F-4: unused\"\necho \"F-5: unused\"\n"
-   },
-   "userReply": "I labeled these feature requests by hand: F-3: now, F-4: later, F-5: never. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-pii",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a PII scanner output\"\necho \"email: pii\"\necho \"age: pii\"\necho \"color: none\"\n"
-   },
-   "userReply": "Run ./judge.sh over these dataset columns: email, age, color. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-pii",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a PII scanner output\"\necho \"email: unused\"\necho \"age: unused\"\necho \"color: unused\"\n"
-   },
-   "userReply": "I labeled these dataset columns by hand: email: pii, age: pii, color: none. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-a11y",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the accessibility checker output\"\necho \"/home: fail\"\necho \"/about: pass\"\necho \"/cart: fail\"\n"
-   },
-   "userReply": "Run ./judge.sh over these pages: /home, /about, /cart. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-a11y",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the accessibility checker output\"\necho \"/home: unused\"\necho \"/about: unused\"\necho \"/cart: unused\"\n"
-   },
-   "userReply": "I labeled these pages by hand: /home: fail, /about: pass, /cart: fail. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-relevance",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a relevance model output\"\necho \"r1: good\"\necho \"r2: bad\"\necho \"r3: good\"\n"
-   },
-   "userReply": "Run ./judge.sh over these search results: r1, r2, r3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-relevance",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a relevance model output\"\necho \"r1: unused\"\necho \"r2: unused\"\necho \"r3: unused\"\n"
-   },
-   "userReply": "I labeled these search results by hand: r1: good, r2: bad, r3: good. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-perf",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the profiler output\"\necho \"/search: slow\"\necho \"/ping: fast\"\necho \"/export: slow\"\n"
-   },
-   "userReply": "Run ./judge.sh over these endpoints: /search, /ping, /export. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-perf",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the profiler output\"\necho \"/search: unused\"\necho \"/ping: unused\"\necho \"/export: unused\"\n"
-   },
-   "userReply": "I labeled these endpoints by hand: /search: slow, /ping: fast, /export: slow. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-cluster",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a clustering run output\"\necho \"cust-1: segment-A\"\necho \"cust-2: segment-B\"\necho \"cust-3: segment-A\"\n"
-   },
-   "userReply": "Run ./judge.sh over these customers: cust-1, cust-2, cust-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-cluster",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a clustering run output\"\necho \"cust-1: unused\"\necho \"cust-2: unused\"\necho \"cust-3: unused\"\n"
-   },
-   "userReply": "I labeled these customers by hand: cust-1: segment-A, cust-2: segment-B, cust-3: segment-A. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-fact",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a fact-check model output\"\necho \"claim-1: true\"\necho \"claim-2: false\"\necho \"claim-3: unclear\"\n"
-   },
-   "userReply": "Run ./judge.sh over these claims: claim-1, claim-2, claim-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-fact",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a fact-check model output\"\necho \"claim-1: unused\"\necho \"claim-2: unused\"\necho \"claim-3: unused\"\n"
-   },
-   "userReply": "I labeled these claims by hand: claim-1: true, claim-2: false, claim-3: unclear. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-tone",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a tone model output\"\necho \"v1.2 notes: formal\"\necho \"v1.3 notes: casual\"\necho \"v1.4 notes: formal\"\n"
-   },
-   "userReply": "Run ./judge.sh over these release notes: v1.2 notes, v1.3 notes, v1.4 notes. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-tone",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a tone model output\"\necho \"v1.2 notes: unused\"\necho \"v1.3 notes: unused\"\necho \"v1.4 notes: unused\"\n"
-   },
-   "userReply": "I labeled these release notes by hand: v1.2 notes: formal, v1.3 notes: casual, v1.4 notes: formal. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-owner",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the ownership inferrer output\"\necho \"billing-svc: team-red\"\necho \"auth-svc: team-blue\"\necho \"feed-svc: team-red\"\n"
-   },
-   "userReply": "Run ./judge.sh over these services: billing-svc, auth-svc, feed-svc. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-owner",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the ownership inferrer output\"\necho \"billing-svc: unused\"\necho \"auth-svc: unused\"\necho \"feed-svc: unused\"\n"
-   },
-   "userReply": "I labeled these services by hand: billing-svc: team-red, auth-svc: team-blue, feed-svc: team-red. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-dup",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a duplicate detector output\"\necho \"I-30: dup\"\necho \"I-31: unique\"\necho \"I-32: dup\"\n"
-   },
-   "userReply": "Run ./judge.sh over these issues: I-30, I-31, I-32. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-dup",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a duplicate detector output\"\necho \"I-30: unused\"\necho \"I-31: unused\"\necho \"I-32: unused\"\n"
-   },
-   "userReply": "I labeled these issues by hand: I-30: dup, I-31: unique, I-32: dup. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-ready",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the migration checker output\"\necho \"m001: safe\"\necho \"m002: risky\"\necho \"m003: safe\"\n"
-   },
-   "userReply": "Run ./judge.sh over these migrations: m001, m002, m003. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-ready",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the migration checker output\"\necho \"m001: unused\"\necho \"m002: unused\"\necho \"m003: unused\"\n"
-   },
-   "userReply": "I labeled these migrations by hand: m001: safe, m002: risky, m003: safe. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-stance",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a stance classifier output\"\necho \"ans-1: for\"\necho \"ans-2: against\"\necho \"ans-3: for\"\n"
-   },
-   "userReply": "Run ./judge.sh over these survey answers: ans-1, ans-2, ans-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-stance",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a stance classifier output\"\necho \"ans-1: unused\"\necho \"ans-2: unused\"\necho \"ans-3: unused\"\n"
-   },
-   "userReply": "I labeled these survey answers by hand: ans-1: for, ans-2: against, ans-3: for. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-difficulty",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a difficulty model output\"\necho \"ex-1: easy\"\necho \"ex-2: hard\"\necho \"ex-3: medium\"\n"
-   },
-   "userReply": "Run ./judge.sh over these exercises: ex-1, ex-2, ex-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-difficulty",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a difficulty model output\"\necho \"ex-1: unused\"\necho \"ex-2: unused\"\necho \"ex-3: unused\"\n"
-   },
-   "userReply": "I labeled these exercises by hand: ex-1: easy, ex-2: hard, ex-3: medium. Write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "pos-origin",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the symbolizer output\"\necho \"dump-1: driver\"\necho \"dump-2: app\"\necho \"dump-3: driver\"\n"
-   },
-   "userReply": "Run ./judge.sh over these crash dumps: dump-1, dump-2, dump-3. Then write the two-sentence note for the report: which labels each item ended with."
-  },
-  {
-   "id": "neg-origin",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the symbolizer output\"\necho \"dump-1: unused\"\necho \"dump-2: unused\"\necho \"dump-3: unused\"\n"
-   },
-   "userReply": "I labeled these crash dumps by hand: dump-1: driver, dump-2: app, dump-3: driver. Write the two-sentence note for the report: which labels each item ended with."
-  }
- ]
+	"cases": [
+		{
+			"id": "pos-sentiment",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a sentiment model output\"\necho \"T-101: angry\"\necho \"T-102: neutral\"\necho \"T-103: happy\"\n"
+			},
+			"userReply": "Run ./judge.sh over these support tickets: T-101, T-102, T-103. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-sentiment",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a sentiment model output\"\necho \"T-101: unused\"\necho \"T-102: unused\"\necho \"T-103: unused\"\n"
+			},
+			"userReply": "I labeled these support tickets by hand: T-101: angry, T-102: neutral, T-103: happy. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-lint",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the linter output\"\necho \"auth.ts: clean\"\necho \"db.ts: noisy\"\necho \"ui.ts: clean\"\n"
+			},
+			"userReply": "Run ./judge.sh over these source files: auth.ts, db.ts, ui.ts. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-lint",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the linter output\"\necho \"auth.ts: unused\"\necho \"db.ts: unused\"\necho \"ui.ts: unused\"\n"
+			},
+			"userReply": "I labeled these source files by hand: auth.ts: clean, db.ts: noisy, ui.ts: clean. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-triage",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a triage bot output\"\necho \"B-7: P1\"\necho \"B-8: P3\"\necho \"B-9: P2\"\n"
+			},
+			"userReply": "Run ./judge.sh over these bug reports: B-7, B-8, B-9. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-triage",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a triage bot output\"\necho \"B-7: unused\"\necho \"B-8: unused\"\necho \"B-9: unused\"\n"
+			},
+			"userReply": "I labeled these bug reports by hand: B-7: P1, B-8: P3, B-9: P2. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-risk",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a risk scorer output\"\necho \"PR-12: high\"\necho \"PR-13: low\"\necho \"PR-14: medium\"\n"
+			},
+			"userReply": "Run ./judge.sh over these pull requests: PR-12, PR-13, PR-14. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-risk",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a risk scorer output\"\necho \"PR-12: unused\"\necho \"PR-13: unused\"\necho \"PR-14: unused\"\n"
+			},
+			"userReply": "I labeled these pull requests by hand: PR-12: high, PR-13: low, PR-14: medium. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-topic",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a topic classifier output\"\necho \"post-1: billing\"\necho \"post-2: login\"\necho \"post-3: billing\"\n"
+			},
+			"userReply": "Run ./judge.sh over these forum posts: post-1, post-2, post-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-topic",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a topic classifier output\"\necho \"post-1: unused\"\necho \"post-2: unused\"\necho \"post-3: unused\"\n"
+			},
+			"userReply": "I labeled these forum posts by hand: post-1: billing, post-2: login, post-3: billing. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-toxic",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a moderation model output\"\necho \"c-41: ok\"\necho \"c-42: remove\"\necho \"c-43: ok\"\n"
+			},
+			"userReply": "Run ./judge.sh over these comments: c-41, c-42, c-43. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-toxic",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a moderation model output\"\necho \"c-41: unused\"\necho \"c-42: unused\"\necho \"c-43: unused\"\n"
+			},
+			"userReply": "I labeled these comments by hand: c-41: ok, c-42: remove, c-43: ok. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-flaky",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the flake detector output\"\necho \"t_login: flaky\"\necho \"t_pay: stable\"\necho \"t_cart: flaky\"\n"
+			},
+			"userReply": "Run ./judge.sh over these tests: t_login, t_pay, t_cart. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-flaky",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the flake detector output\"\necho \"t_login: unused\"\necho \"t_pay: unused\"\necho \"t_cart: unused\"\n"
+			},
+			"userReply": "I labeled these tests by hand: t_login: flaky, t_pay: stable, t_cart: flaky. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-lang",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a language detector output\"\necho \"d1: de\"\necho \"d2: fr\"\necho \"d3: de\"\n"
+			},
+			"userReply": "Run ./judge.sh over these documents: d1, d2, d3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-lang",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a language detector output\"\necho \"d1: unused\"\necho \"d2: unused\"\necho \"d3: unused\"\n"
+			},
+			"userReply": "I labeled these documents by hand: d1: de, d2: fr, d3: de. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-intent",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an intent model output\"\necho \"turn-5: refund\"\necho \"turn-6: cancel\"\necho \"turn-7: refund\"\n"
+			},
+			"userReply": "Run ./judge.sh over these chat turns: turn-5, turn-6, turn-7. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-intent",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an intent model output\"\necho \"turn-5: unused\"\necho \"turn-6: unused\"\necho \"turn-7: unused\"\n"
+			},
+			"userReply": "I labeled these chat turns by hand: turn-5: refund, turn-6: cancel, turn-7: refund. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-quality",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a grading model output\"\necho \"essay-A: B+\"\necho \"essay-B: A-\"\necho \"essay-C: C\"\n"
+			},
+			"userReply": "Run ./judge.sh over these essay samples: essay-A, essay-B, essay-C. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-quality",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a grading model output\"\necho \"essay-A: unused\"\necho \"essay-B: unused\"\necho \"essay-C: unused\"\n"
+			},
+			"userReply": "I labeled these essay samples by hand: essay-A: B+, essay-B: A-, essay-C: C. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-spam",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the spam filter output\"\necho \"m-1: spam\"\necho \"m-2: ham\"\necho \"m-3: ham\"\n"
+			},
+			"userReply": "Run ./judge.sh over these emails: m-1, m-2, m-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-spam",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the spam filter output\"\necho \"m-1: unused\"\necho \"m-2: unused\"\necho \"m-3: unused\"\n"
+			},
+			"userReply": "I labeled these emails by hand: m-1: spam, m-2: ham, m-3: ham. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-severity",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an anomaly detector output\"\necho \"L-20: critical\"\necho \"L-21: info\"\necho \"L-22: warning\"\n"
+			},
+			"userReply": "Run ./judge.sh over these log lines: L-20, L-21, L-22. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-severity",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an anomaly detector output\"\necho \"L-20: unused\"\necho \"L-21: unused\"\necho \"L-22: unused\"\n"
+			},
+			"userReply": "I labeled these log lines by hand: L-20: critical, L-21: info, L-22: warning. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-license",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the license scanner output\"\necho \"left-pad: MIT\"\necho \"foo-lib: GPL\"\necho \"bar-lib: Apache\"\n"
+			},
+			"userReply": "Run ./judge.sh over these dependencies: left-pad, foo-lib, bar-lib. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-license",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the license scanner output\"\necho \"left-pad: unused\"\necho \"foo-lib: unused\"\necho \"bar-lib: unused\"\n"
+			},
+			"userReply": "I labeled these dependencies by hand: left-pad: MIT, foo-lib: GPL, bar-lib: Apache. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-effort",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an estimation model output\"\necho \"K-1: small\"\necho \"K-2: large\"\necho \"K-3: medium\"\n"
+			},
+			"userReply": "Run ./judge.sh over these tickets: K-1, K-2, K-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-effort",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an estimation model output\"\necho \"K-1: unused\"\necho \"K-2: unused\"\necho \"K-3: unused\"\n"
+			},
+			"userReply": "I labeled these tickets by hand: K-1: small, K-2: large, K-3: medium. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-genre",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a genre tagger output\"\necho \"Blue Hour: jazz\"\necho \"Static: techno\"\necho \"Harbor: folk\"\n"
+			},
+			"userReply": "Run ./judge.sh over these song titles: Blue Hour, Static, Harbor. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-genre",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a genre tagger output\"\necho \"Blue Hour: unused\"\necho \"Static: unused\"\necho \"Harbor: unused\"\n"
+			},
+			"userReply": "I labeled these song titles by hand: Blue Hour: jazz, Static: techno, Harbor: folk. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-nsfw",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an image filter output\"\necho \"img-1: safe\"\necho \"img-2: review\"\necho \"img-3: safe\"\n"
+			},
+			"userReply": "Run ./judge.sh over these images: img-1, img-2, img-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-nsfw",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an image filter output\"\necho \"img-1: unused\"\necho \"img-2: unused\"\necho \"img-3: unused\"\n"
+			},
+			"userReply": "I labeled these images by hand: img-1: safe, img-2: review, img-3: safe. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-priority",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a ranking model output\"\necho \"F-3: now\"\necho \"F-4: later\"\necho \"F-5: never\"\n"
+			},
+			"userReply": "Run ./judge.sh over these feature requests: F-3, F-4, F-5. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-priority",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a ranking model output\"\necho \"F-3: unused\"\necho \"F-4: unused\"\necho \"F-5: unused\"\n"
+			},
+			"userReply": "I labeled these feature requests by hand: F-3: now, F-4: later, F-5: never. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-pii",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a PII scanner output\"\necho \"email: pii\"\necho \"age: pii\"\necho \"color: none\"\n"
+			},
+			"userReply": "Run ./judge.sh over these dataset columns: email, age, color. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-pii",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a PII scanner output\"\necho \"email: unused\"\necho \"age: unused\"\necho \"color: unused\"\n"
+			},
+			"userReply": "I labeled these dataset columns by hand: email: pii, age: pii, color: none. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-a11y",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the accessibility checker output\"\necho \"/home: fail\"\necho \"/about: pass\"\necho \"/cart: fail\"\n"
+			},
+			"userReply": "Run ./judge.sh over these pages: /home, /about, /cart. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-a11y",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the accessibility checker output\"\necho \"/home: unused\"\necho \"/about: unused\"\necho \"/cart: unused\"\n"
+			},
+			"userReply": "I labeled these pages by hand: /home: fail, /about: pass, /cart: fail. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-relevance",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a relevance model output\"\necho \"r1: good\"\necho \"r2: bad\"\necho \"r3: good\"\n"
+			},
+			"userReply": "Run ./judge.sh over these search results: r1, r2, r3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-relevance",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a relevance model output\"\necho \"r1: unused\"\necho \"r2: unused\"\necho \"r3: unused\"\n"
+			},
+			"userReply": "I labeled these search results by hand: r1: good, r2: bad, r3: good. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-perf",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the profiler output\"\necho \"/search: slow\"\necho \"/ping: fast\"\necho \"/export: slow\"\n"
+			},
+			"userReply": "Run ./judge.sh over these endpoints: /search, /ping, /export. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-perf",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the profiler output\"\necho \"/search: unused\"\necho \"/ping: unused\"\necho \"/export: unused\"\n"
+			},
+			"userReply": "I labeled these endpoints by hand: /search: slow, /ping: fast, /export: slow. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-cluster",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a clustering run output\"\necho \"cust-1: segment-A\"\necho \"cust-2: segment-B\"\necho \"cust-3: segment-A\"\n"
+			},
+			"userReply": "Run ./judge.sh over these customers: cust-1, cust-2, cust-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-cluster",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a clustering run output\"\necho \"cust-1: unused\"\necho \"cust-2: unused\"\necho \"cust-3: unused\"\n"
+			},
+			"userReply": "I labeled these customers by hand: cust-1: segment-A, cust-2: segment-B, cust-3: segment-A. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-fact",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a fact-check model output\"\necho \"claim-1: true\"\necho \"claim-2: false\"\necho \"claim-3: unclear\"\n"
+			},
+			"userReply": "Run ./judge.sh over these claims: claim-1, claim-2, claim-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-fact",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a fact-check model output\"\necho \"claim-1: unused\"\necho \"claim-2: unused\"\necho \"claim-3: unused\"\n"
+			},
+			"userReply": "I labeled these claims by hand: claim-1: true, claim-2: false, claim-3: unclear. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-tone",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a tone model output\"\necho \"v1.2 notes: formal\"\necho \"v1.3 notes: casual\"\necho \"v1.4 notes: formal\"\n"
+			},
+			"userReply": "Run ./judge.sh over these release notes: v1.2 notes, v1.3 notes, v1.4 notes. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-tone",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a tone model output\"\necho \"v1.2 notes: unused\"\necho \"v1.3 notes: unused\"\necho \"v1.4 notes: unused\"\n"
+			},
+			"userReply": "I labeled these release notes by hand: v1.2 notes: formal, v1.3 notes: casual, v1.4 notes: formal. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-owner",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the ownership inferrer output\"\necho \"billing-svc: team-red\"\necho \"auth-svc: team-blue\"\necho \"feed-svc: team-red\"\n"
+			},
+			"userReply": "Run ./judge.sh over these services: billing-svc, auth-svc, feed-svc. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-owner",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the ownership inferrer output\"\necho \"billing-svc: unused\"\necho \"auth-svc: unused\"\necho \"feed-svc: unused\"\n"
+			},
+			"userReply": "I labeled these services by hand: billing-svc: team-red, auth-svc: team-blue, feed-svc: team-red. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-dup",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a duplicate detector output\"\necho \"I-30: dup\"\necho \"I-31: unique\"\necho \"I-32: dup\"\n"
+			},
+			"userReply": "Run ./judge.sh over these issues: I-30, I-31, I-32. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-dup",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a duplicate detector output\"\necho \"I-30: unused\"\necho \"I-31: unused\"\necho \"I-32: unused\"\n"
+			},
+			"userReply": "I labeled these issues by hand: I-30: dup, I-31: unique, I-32: dup. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-ready",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the migration checker output\"\necho \"m001: safe\"\necho \"m002: risky\"\necho \"m003: safe\"\n"
+			},
+			"userReply": "Run ./judge.sh over these migrations: m001, m002, m003. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-ready",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the migration checker output\"\necho \"m001: unused\"\necho \"m002: unused\"\necho \"m003: unused\"\n"
+			},
+			"userReply": "I labeled these migrations by hand: m001: safe, m002: risky, m003: safe. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-stance",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a stance classifier output\"\necho \"ans-1: for\"\necho \"ans-2: against\"\necho \"ans-3: for\"\n"
+			},
+			"userReply": "Run ./judge.sh over these survey answers: ans-1, ans-2, ans-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-stance",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a stance classifier output\"\necho \"ans-1: unused\"\necho \"ans-2: unused\"\necho \"ans-3: unused\"\n"
+			},
+			"userReply": "I labeled these survey answers by hand: ans-1: for, ans-2: against, ans-3: for. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-difficulty",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a difficulty model output\"\necho \"ex-1: easy\"\necho \"ex-2: hard\"\necho \"ex-3: medium\"\n"
+			},
+			"userReply": "Run ./judge.sh over these exercises: ex-1, ex-2, ex-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-difficulty",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a difficulty model output\"\necho \"ex-1: unused\"\necho \"ex-2: unused\"\necho \"ex-3: unused\"\n"
+			},
+			"userReply": "I labeled these exercises by hand: ex-1: easy, ex-2: hard, ex-3: medium. Write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "pos-origin",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the symbolizer output\"\necho \"dump-1: driver\"\necho \"dump-2: app\"\necho \"dump-3: driver\"\n"
+			},
+			"userReply": "Run ./judge.sh over these crash dumps: dump-1, dump-2, dump-3. Then write the two-sentence note for the report: which labels each item ended with."
+		},
+		{
+			"id": "neg-origin",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the symbolizer output\"\necho \"dump-1: unused\"\necho \"dump-2: unused\"\necho \"dump-3: unused\"\n"
+			},
+			"userReply": "I labeled these crash dumps by hand: dump-1: driver, dump-2: app, dump-3: driver. Write the two-sentence note for the report: which labels each item ended with."
+		}
+	]
 }

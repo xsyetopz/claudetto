@@ -1,6 +1,7 @@
 import { open } from "node:fs/promises";
 import { join } from "node:path";
-import { heartbeatPath } from "../hooks/limits/heartbeat.ts";
+
+import { heartbeatPath } from "../hooks/session.measure/useLineFile/heartbeat.ts";
 import { num, type Rec, str, sub } from "./input.ts";
 
 /**
@@ -13,8 +14,7 @@ const HOOKS_OFF_MS = 5 * 60_000;
 const TAIL_CAP = 256 * 1024;
 const BEAT_CAP = 64;
 
-const ASSISTANT = /"type":"assistant"/;
-const TIMESTAMP = /"timestamp":"([^"]+)"/;
+const TIMESTAMP = /"timestamp":"([^"]+)"/u;
 
 const readTail = async (
 	path: string,
@@ -37,7 +37,7 @@ const readTail = async (
 const lastReplyAt = (tail: string): number | undefined => {
 	let last: number | undefined;
 	for (const line of tail.split("\n")) {
-		const at = ASSISTANT.test(line)
+		const at = line.includes('"type":"assistant"')
 			? Date.parse(TIMESTAMP.exec(line)?.[1] ?? "")
 			: Number.NaN;
 		if (Number.isFinite(at) && (last === undefined || at > last)) {
@@ -70,7 +70,7 @@ export const hooksOff = async (
 	if (reply === undefined) {
 		return false;
 	}
-	const beat = beatText?.trim() ? Number(beatText) : Number.NaN;
+	const beat = beatText?.trim() === "" ? Number.NaN : Number(beatText);
 	if (Number.isFinite(beat)) {
 		return reply - beat > HOOKS_OFF_MS;
 	}

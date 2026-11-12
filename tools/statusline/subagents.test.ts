@@ -1,13 +1,26 @@
 import { describe, expect, test } from "bun:test";
+
 import { subagentsOf } from "../../plugins/claudetto/statusline/main.ts";
 import { plain, width } from "../../plugins/claudetto/statusline/width.ts";
 import { NOW } from "./support.ts";
 
 const env = { COLUMNS: "100", NO_COLOR: "1" };
 const parseRow = (line: string): { id: string; content: string } => {
-	const row: { id: string; content: string } = JSON.parse(line);
-	return row;
+	const row: unknown = JSON.parse(line);
+	if (
+		typeof row === "object" &&
+		row !== null &&
+		"id" in row &&
+		typeof row.id === "string" &&
+		"content" in row &&
+		typeof row.content === "string"
+	) {
+		return { id: row.id, content: row.content };
+	}
+	throw new Error(`not a subagent row: ${line}`);
 };
+const contentWidth = (row: { content: string } | undefined): number =>
+	width(plain(row?.content ?? ""));
 const rows = (input: unknown, e = env) =>
 	subagentsOf(JSON.stringify(input), e, NOW)
 		.split("\n")
@@ -21,7 +34,7 @@ describe("subagent rows", () => {
 				{
 					id: "a1",
 					name: "scout",
-					agentType: "claudetto:Artemis",
+					agentType: "claudetto:search",
 					status: "running",
 					model: "claude-haiku-4-5",
 					effort: "low",
@@ -33,7 +46,7 @@ describe("subagent rows", () => {
 		});
 		expect(row?.id).toBe("a1");
 		expect(row?.content).toBe(
-			"⏵ scout (Artemis) haiku-4-5 low · ◫ 12k/200k 6% · ◔ 1m",
+			"⏵ scout (search) haiku-4-5 low · ◫ 12k/200k 6% · ◔ 1m",
 		);
 	});
 
@@ -62,7 +75,7 @@ describe("subagent rows", () => {
 				},
 			],
 		});
-		expect(width(plain(row?.content ?? ""))).toBeLessThanOrEqual(36);
+		expect(contentWidth(row)).toBeLessThanOrEqual(36);
 		expect(row?.content).toContain("...");
 	});
 

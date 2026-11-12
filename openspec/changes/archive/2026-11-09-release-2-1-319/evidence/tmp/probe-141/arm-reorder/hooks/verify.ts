@@ -1,4 +1,5 @@
 import type { SessionMessage } from "claude-code";
+
 import type { GradeFault } from "./texts.ts";
 
 // A tool call that is not a lookup of the tool list does not ground a claim; every other call looked at the workspace.

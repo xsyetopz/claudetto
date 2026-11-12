@@ -3,7 +3,7 @@
 ## Purpose
 One table holds the cost-driving values, with a row per subscription tier, and setup writes the keys the user keeps.
 
-No reading splits a written key by tier, and no tier table ships: `plugins/claudetto/hooks/setup/settings.ts` holds one set of groups for every login, and `plugins/claudetto/hooks/setup/settings.test.ts` pins each key it writes.
+No reading splits a written key by tier, and no tier table ships: `plugins/claudetto/hooks/command.run/useSetup/settings.ts` holds one set of groups for every login, and `plugins/claudetto/hooks/command.run/useSetup/settings.test.ts` pins each key it writes.
 
 Setup therefore reads no plan. The premise that "settings that drive cost differ by subscription tier" is not supported by any reading this change took, and this Purpose records that rather than restating it.
 
@@ -11,7 +11,7 @@ Setup therefore reads no plan. The premise that "settings that drive cost differ
 
 ### Requirement: Keys Are Checked
 
-Every key that a group of `hooks/setup/settings.ts` sets SHALL exist in the settings schema or the installed binary, and a test SHALL pin it.
+Every key that a group of `hooks/command.run/useSetup/settings.ts` sets SHALL exist in the settings schema or the installed binary, and a test SHALL pin it.
 
 #### Scenario: Missing Key
 
@@ -20,7 +20,7 @@ Every key that a group of `hooks/setup/settings.ts` sets SHALL exist in the sett
 
 ### Requirement: Agents Inherit the Tier
 
-Setup SHALL write `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5` in the "Models and windows" group. An agent file that names no `model:` line, as `Heracles` does, SHALL run on it. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27).
+Setup SHALL write `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5` in the "Models and windows" group. An agent file that names no `model:` line, as `work` does, SHALL run on it. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27).
 
 #### Scenario: Subagent Model
 
@@ -64,13 +64,13 @@ Setup SHALL run from inside Claude Code with no checkout of this repository, no 
 #### Scenario: The Dialog
 
 - **WHEN** `/claudetto:setup` runs with a person to ask
-- **THEN** one dialog per group of `GROUPS` in `plugins/claudetto/hooks/setup/settings.ts` offers "Smaller prompt", "Auto mode", "Models and windows", "Worktrees", "Features off", and "Status line", and every key setup writes sits in exactly one group
+- **THEN** one dialog per group of `GROUPS` in `plugins/claudetto/hooks/command.run/useSetup/settings.ts` offers "Smaller prompt", "Auto mode", "Models and windows", "Worktrees", "Features off", and "Status line", and every key setup writes sits in exactly one group
 
 #### Scenario: A Fact of This Repository Is Not Shipped
 
 - **WHEN** a value would carry a reading of this repository rather than a value true of any machine
 - **THEN** no group SHALL hold it, because the command writes the groups for every user
-- **AND** the "Auto mode" group SHALL hold the lists of `plugins/claudetto/hooks/setup/auto-mode.ts`, whose `environment` list names no fact of one repository
+- **AND** the "Auto mode" group SHALL hold the lists of `plugins/claudetto/hooks/command.run/useSetup/auto-mode.ts`, whose `environment` list names no fact of one repository
 
 #### Scenario: A Discarded Group
 
@@ -150,7 +150,7 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** the sum is computed
 - **THEN** the prompt is read from the `usage` of the step that made the call, and the result's size is estimated from its text
-- **AND** the check is needed because the handoff trigger is checked between calls (`plugins/claudetto/hooks/limits/price-step.ts`, tested by `price-step.test.ts` in the same folder)
+- **AND** the check is needed because the price sum is checked between calls (`plugins/claudetto/hooks/turn.step/usePriceStep/price-step.ts`, tested by `price-step.test.ts` in the same folder)
 
 #### Scenario: The Wait Ends before the Hook Budget
 

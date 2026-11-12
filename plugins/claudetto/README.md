@@ -1,23 +1,23 @@
-# claudetto
+# Claudetto
 
 Tunes Claude Code for coding at the lowest token cost. It uses only Claude Code's official extension points (settings, hooks, agents, commands, a skill, and an output style) and patches nothing.
 
-## What it does
+## What It Does
 
-- Gates risky shell commands and asks for a marker file in each folder a session makes under `/tmp`.
+- Gates risky shell commands, and denies an `rm` of a temp base such as `/tmp` or `$TMPDIR` itself.
 - Scans every tool result for secrets with `betterleaks`.
-- Cuts long test, build, and lint output to its head, tail, and failures, and keeps the whole run in `.claude/claudetto/output/`.
-- Hands a long session over to a fresh one through a handoff file; `/claudetto:handoff` does it by hand.
+- Caps a Bash result and an MCP tool result through the output limits that `/claudetto:setup` writes; Claude Code saves a longer result to its own file.
+- Tells each compaction to keep the person's corrections, refusals, and consents word for word.
 - Caps subagent starts, heavy tool calls, and identical retries per period.
 - Checks each final reply before the turn ends, and sends back one that defers work without naming a blocker.
-- Cleans up at the end of a task: the agent's own marked temp folders, worktrees, and branches, and any background task nothing will read.
-- Sweeps old temp folders, handoffs, and unused build folders at session start; `hooks/hygiene/trash.toml` lists the build folders, and `.claude/claudetto/trash.toml` overrides it per project.
-- Ships the agents Artemis (read-only search), Heracles (default worker), and Metis (planning), the `docs` skill, and the Concise output style.
+- Cleans up at the end of a task: the agent's own worktrees and branches, and any background task nothing will read.
+- Sweeps idle entries of Claude Code's temp folder and unused build folders, and local branches that `git cherry` finds in the default branch, at each session start, resume, clear, and compaction, in the project and in each folder Mole's `purge_paths` lists, then runs `mo clean` for user caches; `hooks/classic.SessionStart/useHygieneSweep/trash.toml` lists the build folders, and `.claude/claudetto/trash.toml` overrides it per project. `claudetto-hygiene --remote --dry-run` names the `origin` branches whose pull request merged, and `--remote` without `--dry-run` deletes them; no hook passes `--remote`.
+- Ships the agents `search` (read-only search), `work` (default worker), `plan` (planning), and `sweep` (read-only defect review on `fable`), the `docs` skill, and the Concise output style.
 
 ## Install
 
 ```sh
-claude plugin install claudetto --marketplace xsyetopz/claudetto
+claude plugin install claudetto --marketplace xsyetopz/bedrock
 ```
 
 ## Setup

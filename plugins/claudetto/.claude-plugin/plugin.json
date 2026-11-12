@@ -16,12 +16,6 @@
 			"description": "Use `false` to stop the notification claudetto raises when a turn stops on an API error.",
 			"default": true
 		},
-		"handoverThresholdTokens": {
-			"type": "number",
-			"title": "Handover size in tokens",
-			"description": "Input tokens at which a turn's end hands over: a fork writes a handoff, the chat compacts to it, and the next prompt is sent. Unset: 400000, or half the window if smaller.",
-			"min": 1
-		},
 		"readGuardEnabled": {
 			"type": "boolean",
 			"title": "Guard whole reads of heavy files",
@@ -34,16 +28,10 @@
 			"description": "Use `false` to stop adding a short note naming the `bun` commands when the folder holds `package.json` and `bun.lock`. On by default, since an untold model reaches for `npm`.",
 			"default": true
 		},
-		"maxSubagentStarts": {
-			"type": "number",
-			"title": "Subagent starts per period",
-			"description": "The most subagent starts per `limitPeriodSeconds`. Unset: 12. Cap subagents at once with Claude Code's `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` env setting.",
-			"min": 1
-		},
 		"limitPeriodSeconds": {
 			"type": "number",
 			"title": "Period in seconds",
-			"description": "The length of the period that `maxSubagentStarts`, `maxHeavyToolCalls`, and `maxIdenticalFailures` count in. Left unset, it is 600.",
+			"description": "The length of the period that `maxHeavyToolCalls` and `maxIdenticalFailures` count in. Left unset, it is 600.",
 			"min": 1
 		},
 		"maxHeavyToolCalls": {
@@ -58,30 +46,29 @@
 			"description": "The input tokens of the last response from which the context counts as heavy. Left unset, it is 400000.",
 			"min": 1
 		},
+		"memoryFreeMinPercent": {
+			"type": "number",
+			"title": "Free memory share that holds new work",
+			"description": "Below this share of free memory, new commands and subagents are refused until runs end. 0 turns it off. Left unset, it is 20.",
+			"min": 0
+		},
+		"memoryProcessMaxPercent": {
+			"type": "number",
+			"title": "Memory share one process of a command may hold",
+			"description": "A process that a running command started and that holds more than this share of the machine's memory is stopped. 0 turns it off. Left unset, it is 25.",
+			"min": 0
+		},
 		"maxIdenticalFailures": {
 			"type": "number",
 			"title": "Identical failures before a refusal",
 			"description": "How many times the same call fails with the same error before an identical retry is refused. Left unset, it is 3.",
 			"min": 1
 		},
-		"maxTestOutputChars": {
-			"type": "number",
-			"title": "Test and build output in characters",
-			"description": "The most characters of a test, build, or lint run the model reads; longer output keeps head, tail, and failures, and goes whole to `.claude/claudetto/output/`. `0` is off. Unset: 8000.",
-			"default": 8000,
-			"min": 0
-		},
 		"hygieneEnabled": {
 			"type": "boolean",
 			"title": "Session hygiene",
-			"description": "Use `false` to run no hygiene sweep at session start. On by default: it removes old temp folders and handoffs Claude Code never removes, and unused build folders `trash.toml` names.",
+			"description": "Use `false` to run no sweep at session start. On by default: it removes old temp folders and build folders `trash.toml` or Mole's `purge_paths` names, then runs `mo clean` without a prompt.",
 			"default": true
-		},
-		"handoffCleanupPeriodDays": {
-			"type": "number",
-			"title": "Handoff retention in days",
-			"description": "The age in days from which hygiene removes a handoff, except the newest one that a resume reads. Use 0 to keep every handoff. Left unset, it follows `cleanupPeriodDays`.",
-			"min": 0
 		},
 		"sessionTempCleanupPeriodDays": {
 			"type": "number",
@@ -91,8 +78,8 @@
 		},
 		"probeCleanupPeriodMinutes": {
 			"type": "number",
-			"title": "Probe folder retention in minutes",
-			"description": "Minutes after which hygiene removes an `fswatch-probe-*` temp folder, or one an ended session marked with `.created-by-claudetto`. `0` keeps them all. Unset: 60.",
+			"title": "Idle temp entry retention in minutes",
+			"description": "Minutes with no change after which hygiene removes an entry of Claude Code's temp folder that no process holds open. `0` keeps them all. Unset: 60.",
 			"default": 60,
 			"min": 0
 		},
@@ -107,7 +94,7 @@
 			"type": "string",
 			"multiple": true,
 			"title": "Walled-off paths",
-			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. The default walls off the held-out eval set.",
+			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. Default: the held-out eval set.",
 			"default": ["~/.claudetto-holdout"]
 		},
 		"openItemsCheckEnabled": {
@@ -115,12 +102,6 @@
 			"title": "Open items at Stop",
 			"description": "Use `false` to skip the Stop check. On by default: a reply that defers work or ends on an offer is sent back once, unless each item names a blocker: a `! <command>`, a denial, or a question.",
 			"default": true
-		},
-		"typesafeApiKey": {
-			"type": "string",
-			"title": "TypeSafe API key",
-			"description": "Key for api.typesafe.ai. With a key, claudetto registers mcp__claudetto__decide, which asks Jev to settle a choice or yes/no question and sends only the question and option texts.",
-			"sensitive": true
 		}
 	}
 }

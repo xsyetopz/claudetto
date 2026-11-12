@@ -1,21 +1,58 @@
 // bun mk.ts TAG STEPS_JSON USER_SETTINGS_JSON PLUGIN : fake API + tmux session "p114-TAG" running claude TUI with user settings in the run's config dir. Stays up until /tmp/probe-114/TAG.stop exists.
 import { mkdir, realpath, rm } from "node:fs/promises";
 import { join } from "node:path";
+
 import { startFake } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/fake/fake.ts";
 import { createRun } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/workspace/workspace.ts";
-const [tag = "x", steps = "[]", user = "{}", plugin = "/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto"] = process.argv.slice(2);
+const [
+	tag = "x",
+	steps = "[]",
+	user = "{}",
+	plugin = "/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto",
+] = process.argv.slice(2);
 const run = await createRun({ probe: "tui" });
-const cfg = join(run.dir, "config"), work = join(run.dir, "work");
-await mkdir(cfg, { recursive: true }); await mkdir(work, { recursive: true });
-await Bun.write(join(cfg, ".claude.json"), JSON.stringify({ hasCompletedOnboarding: true, lastReleaseNotesSeen: "2.1.318", lastClawdEntranceVersion: "2.1.318", hasSeenAutoDefaultNotice: true, numStartups: 200, customApiKeyResponses: { approved: ["sk-ant-fake-probe"], rejected: [] }, projects: { [await realpath(work)]: { hasTrustDialogAccepted: true } } }));
+const cfg = join(run.dir, "config"),
+	work = join(run.dir, "work");
+await mkdir(cfg, { recursive: true });
+await mkdir(work, { recursive: true });
+await Bun.write(
+	join(cfg, ".claude.json"),
+	JSON.stringify({
+		hasCompletedOnboarding: true,
+		lastReleaseNotesSeen: "2.1.318",
+		lastClawdEntranceVersion: "2.1.318",
+		hasSeenAutoDefaultNotice: true,
+		numStartups: 200,
+		customApiKeyResponses: { approved: ["sk-ant-fake-probe"], rejected: [] },
+		projects: { [await realpath(work)]: { hasTrustDialogAccepted: true } },
+	}),
+);
 if (user !== "{}") await Bun.write(join(cfg, "settings.json"), user);
-const fake = await startFake({ plan: { steps: JSON.parse(steps), fallback: { blocks: [{ type: "text", text: "OK" }] } }, dir: join(run.dir, "requests") });
+const fake = await startFake({
+	plan: {
+		steps: JSON.parse(steps),
+		fallback: { blocks: [{ type: "text", text: "OK" }] },
+	},
+	dir: join(run.dir, "requests"),
+});
 const sess = `p114-${tag}`;
 Bun.spawnSync(["tmux", "kill-session", "-t", sess]);
 const cmd = `cd ${work} && env -i HOME=${process.env.HOME} PATH="${process.env.PATH}" TERM=xterm-256color CLAUDE_CONFIG_DIR=${cfg} ANTHROPIC_BASE_URL=${fake.url} ANTHROPIC_API_KEY=sk-ant-fake-probe DISABLE_TELEMETRY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --setting-sources user,project --plugin-dir ${plugin} --debug-file ${run.dir}/debug.log; echo CLAUDE-EXIT $?; sleep 600`;
-Bun.spawnSync(["tmux", "new-session", "-d", "-s", sess, "-x", "170", "-y", "60", cmd]);
+Bun.spawnSync([
+	"tmux",
+	"new-session",
+	"-d",
+	"-s",
+	sess,
+	"-x",
+	"170",
+	"-y",
+	"60",
+	cmd,
+]);
 console.log(JSON.stringify({ sess, run: run.dir, cfg, work }));
-const stop = `/tmp/probe-114/${tag}.stop`; await rm(stop, { force: true });
+const stop = `/tmp/probe-114/${tag}.stop`;
+await rm(stop, { force: true });
 while (!(await Bun.file(stop).exists())) await Bun.sleep(500);
 Bun.spawnSync(["tmux", "kill-session", "-t", sess]);
 await fake.stop();

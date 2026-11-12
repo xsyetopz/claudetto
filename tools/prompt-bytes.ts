@@ -1,6 +1,7 @@
 import { cp, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+
 import { file, spawn, stdout, write } from "bun";
 
 // Measures the texts a plugin sends to the model by driving its hooks with engine events, in a scratch copy of the plugin, so no source module is imported
@@ -130,8 +131,17 @@ if (!pluginDir) {
 	throw new Error("usage: bun tools/prompt-bytes.ts <pluginDir>");
 }
 
-const SKIPPED = /\/(tests|node_modules|__tests__)(\/|$)/;
-const ROSTER = /export const AGENT_ROSTER =\s*("(?:[^"\\]|\\.)*")/;
+const SKIPPED = /\/(tests|node_modules|__tests__)(\/|$)/u;
+const rosterBytes = (literal: string | undefined): number | string => {
+	if (literal === undefined || literal === "") {
+		return "absent";
+	}
+	const parsed: unknown = JSON.parse(literal);
+	return typeof parsed === "string"
+		? new TextEncoder().encode(parsed).length
+		: "absent";
+};
+const ROSTER = /export const AGENT_ROSTER =\s*("(?:[^"\\]|\\.)*")/u;
 
 const scratch = await mkdtemp(join(tmpdir(), "prompt-bytes-"));
 try {
@@ -170,7 +180,7 @@ try {
 			.catch(() => ""),
 	);
 	lines.push(
-		`${"AGENT_ROSTER (source constant)".padEnd(48)}${roster?.[1] ? new TextEncoder().encode(JSON.parse(roster[1])).length : "absent"}`,
+		`${"AGENT_ROSTER (source constant)".padEnd(48)}${rosterBytes(roster?.[1])}`,
 	);
 	if (rows.length === 0) {
 		lines.push(`no measurement printed:\n${out}${err}`);

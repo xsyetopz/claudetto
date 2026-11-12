@@ -5,7 +5,13 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PluginOptions } from "claude-code";
 import { numberOption } from "../hooks/options.ts";
-import { parseArgs, reportText, sweep } from "../hooks/hygiene/sweep.ts";
+import { parseArgs } from "../hooks/classic.SessionStart/useHygieneSweep/args.ts";
+import { branchReport } from "../hooks/classic.SessionStart/useHygieneSweep/branches.ts";
+import { cleanCaches } from "../hooks/classic.SessionStart/useHygieneSweep/mole.ts";
+import { reportText, sweep } from "../hooks/classic.SessionStart/useHygieneSweep/sweep.ts";
+import { type Log, logged, presentProjects } from "../hooks/classic.SessionStart/useHygieneSweep/roots.ts";
+import { outputOr } from "../hooks/classic.SessionStart/useHygieneSweep/trash.ts";
+import { projectsOf, worktreeReport } from "../hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
 
 const home = process.env["HOME"] || homedir();
 const configDir =
@@ -17,11 +23,21 @@ const settings: PluginOptions = await readFile(
 	.then((text) => JSON.parse(text) ?? {})
 	.catch(() => ({}));
 const days = numberOption(settings, "cleanupPeriodDays", 30);
+const log: Log = (message) => console.error(message);
 
 try {
 	const args = parseArgs(process.argv.slice(2));
+	// Claude Code keeps this file in its config folder when one is set, and in the home folder otherwise.
+	const projects = await readFile(
+		join(process.env["CLAUDE_CONFIG_DIR"] || home, ".claude.json"),
+		"utf8",
+	)
+		.then(projectsOf)
+		.catch(logged(log, "The project list was not read", []))
+		.then(async (dirs) => presentProjects(dirs, log));
 	const report = await sweep(args, {
 		cwd: process.cwd(),
+		projects,
 		home,
 		now: Date.now(),
 		uid: process.getuid?.() ?? 0,
@@ -30,8 +46,25 @@ try {
 			Boolean,
 		),
 		configDir,
+		log,
 	});
 	console.log(reportText(report, args.dryRun));
+	console.log(
+		await worktreeReport(
+			outputOr(log),
+			[process.cwd(), ...projects],
+			args.dryRun,
+		),
+	);
+	console.log(
+		await branchReport(outputOr(log), [process.cwd(), ...projects], {
+			dryRun: args.dryRun,
+			remote: args.remote,
+			now: Date.now(),
+			limitMs: (args.trashDays ?? 7) * 86_400_000,
+		}),
+	);
+	console.log(await cleanCaches(args.dryRun));
 } catch (error) {
 	console.error(String(error));
 	process.exitCode = 1;

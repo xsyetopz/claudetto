@@ -1,4 +1,5 @@
-import { ArchiveBlocked, archive, type Run } from "./archive.ts";
+import { ArchiveBlocked } from "./archive-merge.ts";
+import { archive, type Run } from "./archive.ts";
 import type { Fs } from "./fs.ts";
 import { create, init } from "./layout.ts";
 import { checkSpec, mainSpecs, requirementCount } from "./main-specs.ts";
@@ -8,13 +9,14 @@ import {
 	archived,
 	archivedLine,
 	badName,
+	cutNote,
 	issueLine,
+	needsChange,
 	NO_CHANGES,
 	NO_OPENSPEC,
 	NO_SPECS,
-	NOTHING,
-	needsChange,
 	noChange,
+	NOTHING,
 	openLine,
 	refused,
 	specLine,
@@ -32,8 +34,12 @@ export interface Deps {
 	date: string;
 }
 
+// A model-supplied value as text for a refusal or a name check; an object shows as JSON.
+const shown = (value: unknown) =>
+	typeof value === "string" ? value : (JSON.stringify(value) ?? "");
+
 // The name becomes a path segment, so it is checked where the model's input enters.
-const NAME = /^[\w][\w.-]*$/;
+const NAME = /^[\w][\w.-]*$/u;
 
 const report = (name: string, r: Report) =>
 	[
@@ -66,11 +72,11 @@ const status = async (d: Deps, names: string[], single: boolean) => {
 const archiveChange = async (d: Deps, change: string) => {
 	try {
 		return archived(change, await archive(d.fs, d.run, d.root, change, d.date));
-	} catch (e) {
-		if (e instanceof ArchiveBlocked) {
-			return refused(change, e.message);
+	} catch (error) {
+		if (error instanceof ArchiveBlocked) {
+			return refused(change, error.message);
 		}
-		throw e;
+		throw error;
 	}
 };
 
@@ -80,7 +86,7 @@ const checkedChange = async (d: Deps, change: unknown) => {
 		return { change };
 	}
 	if (typeof change !== "string" || !NAME.test(change)) {
-		return { refusal: badName(String(change)) };
+		return { refusal: badName(shown(change)) };
 	}
 	if (!(await d.fs.exists(changeDir(d.root, change)))) {
 		return { refusal: noChange(change) };
@@ -99,9 +105,10 @@ const everything = async (d: Deps, names: string[]) => {
 };
 
 const overview = async (d: Deps, names: string[]) => {
+	const awaited = await archivedChanges(d.fs, d.root);
 	const lines = [
 		await status(d, names, false),
-		...(await archivedChanges(d.fs, d.root)).map(archivedLine),
+		...awaited.map((item) => archivedLine(item)),
 	].filter(Boolean);
 	return lines.length > 0 ? lines.join("\n") : NO_CHANGES;
 };
@@ -117,10 +124,28 @@ const openNew = (d: Deps, change: unknown) => {
 	if (change === undefined) {
 		return needsChange("new");
 	}
-	return create(d.fs, d.root, String(change), d.date);
+	return create(d.fs, d.root, shown(change), d.date);
 };
 
-export const openspec = async (d: Deps, call: Call): Promise<string> => {
+// About 3,000 tokens: far under the 10,000-token warning of Claude Code, and room for a long task list.
+const MAX_CHARS = 12_000;
+
+// Keeps whole lines up to the limit; a first line past the limit is cut by characters and its rest counts as a line.
+const bounded = (text: string): string => {
+	if (text.length <= MAX_CHARS) {
+		return text;
+	}
+	const cut = text.slice(0, MAX_CHARS);
+	const end = cut.lastIndexOf("\n");
+	const kept = end > 0 ? cut.slice(0, end) : cut;
+	const rest = text.slice(kept.length).replace(/^\n/u, "").trimEnd();
+	return `${kept}\n${cutNote(rest.split("\n").length)}`;
+};
+
+export const openspec = async (d: Deps, call: Call): Promise<string> =>
+	bounded(await act(d, call));
+
+const act = async (d: Deps, call: Call): Promise<string> => {
 	const action = call["action"] ?? "validate";
 	if (action === "init") {
 		return init(d.fs, d.root);
@@ -143,7 +168,7 @@ export const openspec = async (d: Deps, call: Call): Promise<string> => {
 	if (action === "archive") {
 		return change === undefined
 			? needsChange("archive")
-			: await archiveChange(d, change);
+			: archiveChange(d, change);
 	}
 	if (action === "status") {
 		return change === undefined

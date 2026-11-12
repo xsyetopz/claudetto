@@ -1,0 +1,1 @@
+Write a prompt, a tool or agent description, and a hook text in block language, the register of labels, notices, and recipes. Drop "the" before a noun the reader already holds. Keep "a" where it means any one, the article before a noun that also reads as a verb, and each article whose loss makes a garden path, because a model reads those words for meaning.

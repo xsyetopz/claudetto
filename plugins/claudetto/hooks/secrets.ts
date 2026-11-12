@@ -1,5 +1,6 @@
 import type { EngineInterface } from "claude-code";
-import { secretScanFailed } from "./texts.ts";
+
+import { secretScanFailed } from "./texts-gate.ts";
 
 export const SCANNER = "betterleaks";
 export const SCANNER_INSTALL = ["brew", "install", SCANNER] as const;
@@ -81,7 +82,9 @@ export const secretsIn = async (
 	}
 	const found: unknown = JSON.parse(result.stdout);
 	if (!Array.isArray(found)) {
-		throw new Error(secretScanFailed(`unexpected output: ${result.stdout}`));
+		throw new TypeError(
+			secretScanFailed(`unexpected output: ${result.stdout}`),
+		);
 	}
 	const secrets = found.map((f: { Secret?: unknown }) =>
 		typeof f.Secret === "string" ? f.Secret : "",
@@ -89,7 +92,7 @@ export const secretsIn = async (
 	// Longest first, so a secret inside a longer one does not split it.
 	return [...new Set(secrets)]
 		.filter((secret) => secret !== "")
-		.sort((a, b) => b.length - a.length);
+		.toSorted((a, b) => b.length - a.length);
 };
 
 export const redactWith = (
@@ -105,6 +108,16 @@ export const redactWith = (
 
 export const redact = async (run: Run, text: string): Promise<string> =>
 	redactWith(text, await secretsIn(run, text));
+
+/** Every string inside `value`, in order. */
+export const stringsIn = (value: unknown): string[] => {
+	if (typeof value === "string") {
+		return [value];
+	}
+	return typeof value === "object" && value !== null
+		? Object.values(value).flatMap((item) => stringsIn(item))
+		: [];
+};
 
 /** Every string inside `value`, with each secret replaced. */
 export const redactAll = (

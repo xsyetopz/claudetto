@@ -1,7 +1,7 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto-you-should-know",
-	"description": "Shows a short note above the prompt when a side check finds something about the work you likely missed. Off by default; once on, one small request every sixth step, no telemetry.",
+	"description": "Shows a note above the prompt when a side check finds something you likely missed. Off by default; once on, one small request before each action that can change something, and no telemetry.",
 	"author": {
 		"name": "xsyetopz"
 	},
@@ -19,7 +19,7 @@
 		"sideCheckModel": {
 			"type": "string",
 			"title": "Side check model",
-			"description": "The model that answers each check. The default is the small model that `docs/models.md` assigns to a handoff or a summary.",
+			"description": "The model that answers each check. The default is the small model that `docs/models.md` assigns to a summary.",
 			"default": "claude-haiku-5-5"
 		},
 		"sideCheckEffortLevel": {

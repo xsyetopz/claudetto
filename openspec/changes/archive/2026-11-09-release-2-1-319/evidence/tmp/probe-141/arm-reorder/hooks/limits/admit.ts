@@ -1,4 +1,5 @@
 import type { AgentInfo, PluginOptions } from "claude-code";
+
 import { numberOption } from "../options.ts";
 import {
 	DENY_CALLS,

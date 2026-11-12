@@ -9,8 +9,22 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- Hygiene deletes a local branch once no worktree has it and `git cherry` finds each of its commits in the default branch, and `claudetto-hygiene --remote` names, or with no `--dry-run` deletes, the `origin` branches whose pull request merged and that no open pull request names.
+- Hygiene sweeps at each session start, resume, clear, and compaction, not only at a fresh start, so a session that runs for days still holds the disk.
+- One Decider answers each typed question the hooks ask. With `TYPESAFE_API_KEY` set, Jev (`jev-1.14.0`) answers first; `claude-haiku-5-5` at `high` effort answers when there is no key, when Jev fails or refuses the key, and for a ledger question Jev leaves unsettled. A `yes` from Haiku counts only with evidence that is words of the text it was given.
+- Below `memoryFreeMinPercent` of free memory (default 20, `0` turns it off), a new `Bash` or `Monitor` command or subagent is refused until the agent's own runs end, because many lint runs at once froze the machine.
+- A `Bash` call that runs `claude -p` or a program given `--paid` ends its result with the `Budget:` line, because no prompt follows a paid run to carry it.
+- A process that a running `Bash` command started and that holds over `memoryProcessMaxPercent` of the machine's memory (default 25, `0` turns it off) is stopped with `kill <pid>`, and the result names it, because the free-memory hold reads only when a command starts and macOS has no memory `ulimit`.
+- The `openspec` change check warns when a MODIFIED requirement grows from under 500 characters to over 500, so a change that validates no longer turns a main spec invalid at its archive.
+- `/claudetto:setup` sets `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` to `900000`, so Claude Code ends a background subagent that shows no progress for 15 minutes.
+- The gate denies a test, lint, type, or build check piped into `tail`, `head`, `grep`, or `rg`, and a `git commit` or `git push` that runs after a pipe, unless an earlier `set -o pipefail` keeps the exit code, because a pipe returns its last command's exit code and a failing check would read as a pass.
+- The gate denies `bun fmt` with no path or with `.`, and `prettier` or `biome` with `--write` over the whole repository, because these rewrite files outside the task. `bun fmt` with paths, `--check`, `--staged`, `--changed`, or `--stdin-filepath` still runs.
+- Each session caps Go's heap with `GOMEMLIMIT` at a quarter of memory, unless you set it yourself, so type-aware `oxlint` (tsgolint) no longer climbs to 16 GB.
+- The Stop grader flags a reply that leaves doable work to the user: a check on part of a set, an untested guess, or a run named as the next step.
 - `/reply` quotes your mouse selection, or paragraph N of the last reply (`/reply N`), into the prompt as a `Re:` block.
-- Each finished subagent run is logged to `.claude/claudetto/runs.jsonl`, with whether the root agent edited the same files within its next 3 turns.
+- An `advisor` tool and an `/advisor <question>` command send one question, with only the files it names (`@path` in the command), to `claude-fable-5-2` at `high` effort, or to `claude-mythos-5-2` when `ANTHROPIC_DEFAULT_FABLE_MODEL` names it. The question and files are redacted first, and a request over 400,000 characters is refused. `/claudetto:setup` sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, because the built-in advisor reads the whole context on each question.
+- A `sweep` agent (`claudetto:sweep`) reviews a change or a system for defects and slow paths on Fable at `high` effort, read-only.
+- Four general rules ship in `plugins/claudetto/rules/`: find facts by experiment, one obvious way per job, block language with the articles that do work, and look for a clone before writing a function.
 - The root agent gives each edit task the command that checks it, and runs that command when the report arrives, before it builds on it.
 - The injected rules say a removal deletes the feature's code, tests, and docs, adds no test that it stays gone, and keeps no compatibility path before 1.0.0.
 - The `openspec` tool validates the main specs with no change open, and adds `init`, `new`, `list`, and the status graph.
@@ -20,39 +34,100 @@ Before 1.0.0, a release can change or remove behavior.
 - The gate denies a linter's unsafe fixes (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes` of `oxlint`, `biome`, `ruff`); the safe `--fix` still runs.
 - `/claudetto:setup` sets `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to `1`, so a subagent has no `Agent` tool and cannot start an agent of its own.
 - The Stop grader flags, in an interactive session, a choice asked in plain text in place of the popup.
+- The gate sends a file read piped into a program that only shows it, such as `cat a.ts | head` or `cat a.ts | sed -n '1,5p'`, to `Read`. A read piped into a program that works on it, such as `wc`, still runs.
+- The Stop check blocks a final reply that opens by agreeing with the user, such as "You're right" or "Good catch", and asks for the fact the check decided.
+- The Stop grader flags a reply that leaves a step undone because a call was refused when the refusal named a change to the call, such as a command form or a flag. The agent changes the call as the reason says and sends it again. An action a denial declined stays declined.
+- The Stop grader flags a reply that ends on a list of open items the agent could still do, or on an action it says waits for your approval without asking for it in the popup. The agent does the item, or asks in the popup and then does it.
+- `claudetto-you-should-know` keeps your last 3 messages that a burst of tool calls pushed out of its 8-entry log, and no longer notes an action you asked for. Before, a run of tool calls dropped your request, and the side agent warned about the push you had asked for.
+- Hygiene runs `mo clean` at each session start, with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`.
 
 ### Changed
 
-- Four prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, the answer-first denial asks the model to say what it did not check, and the unchecked-claim block calls the user's statement a claim to check.
-- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone.
+- **Breaking:** the agents are named by job: `search`, `plan`, and `work` (`claudetto:search`, `claudetto:plan`, `claudetto:work`) replace `Artemis`, `Metis`, and `Heracles`. Their behavior does not change.
+- **Breaking:** the hooks that register on one engine event sit in a folder named for that event, such as `tool.check/`, `tool.call/`, `classic.Stop/`, and `command.run/`, and then in a folder named by rule key, such as `useBashRules` or `useAdvisorTool`. The top-level files `pin.ts`, `slices.ts`, `surface.ts`, `hygiene.ts`, `delegation.ts`, `sandbox-git.ts`, `reply.ts`, and `ask-fix.ts` moved there, as did the files of the `gate/`, `limits/`, and `setup/` folders; `decider/` stays as the one shared module.
+- The three cost numbers, measured with Claude Code 2.1.322 against a stand-in Messages API (no model call), on `1228c597` before the rebuild and on `85987b8e` after it:
+  - The first request that carries tools, with all three plugins, fell from 19,686 to 19,392 bytes; stock Claude Code sends 43,099. The system text grew from 6,756 to 7,139 characters, and the message text fell from 4,297 to 3,595.
+  - A plain turn whose reply passes the Stop grade makes 3 side model calls, up from 2: the ledger's Decider call, the Stop grade, and the new register check, each `claude-haiku-5-5` without a TypeSafe key. With a key, the two Decider calls go to Jev.
+  - Denial lines: 2,915 in three days of sessions before. The deleted rules gave 772 of them (temp marker 400, answer-first gate 316, agent past 15 minutes 40, `PATH` marker 16). No session has run this release yet, so the count after is not measured.
+- **Breaking:** claudetto reads the TypeSafe key only from `TYPESAFE_API_KEY`, in the shell that launches Claude Code or in the `env` block of the settings. The `typesafeApiKey` option is gone, so an install that set it must set the variable. A project `.env` file is not read.
+- **Breaking:** with a key, the constraint ledger and the branch gate send your messages to `api.typesafe.ai`, redacted by the secret scan first. Before, only the `decide` tool reached that host. Without a key, no request reaches it.
+- **Breaking:** the popup is Claude Code's own `AskUserQuestion` again, with its description cut to one sentence. Auto mode reads a popup answer only from that tool, so an action you approved in claudetto's popup, such as a merge, was judged as if nobody had asked for it. The tool `mcp__claudetto__ask-user-question` is gone.
+- **Breaking:** the monitor is Claude Code's own `Monitor` again, with its description cut from 6,354 characters to under 200. The wrapper `mcp__claudetto__monitor` did nothing the built-in tool does not, and it cost a registration, a denial of the built-in call, and a rewrite of each `ToolSearch` result. The tool `mcp__claudetto__monitor` is gone.
+- `ToolSearch`, `EnterPlanMode`, and `ExitPlanMode` each carry a description of at most 200 characters in place of the stock one, which is 953 characters for `ToolSearch`.
+- **Breaking:** each plugin runs its guards in one `tool.check` hook and one `tool.call` hook. A guard that throws in `tool.check` asks you, and one that throws in `tool.call` refuses the call. Before, 2 of the 25 gating hooks caught a fault, and a guard that threw without a `.catch` let the call through.
+- The constraint ledger asks the Decider about each sentence of your message, and each entry is one of your sentences, word for word. Before, Haiku wrote the whole ledger with a quote per entry. A message of more than 41 sentences is read by its first 20 and its last 21. The first prompt after a resume reads your earlier messages too.
+- The branch gate asks the Decider whether you told the agent to delete the branch, in place of three regular expressions. Only a `yes` allows the delete; a `no`, an unsettled answer, and a Decider that fails all leave the gate asking you.
+- Every caught fault is logged with its cause. The `catch` sites that bind no error fell from 64 of 92 to 1 of 90, and the caller of the one that stays logs it (`rg -U --count-matches --no-filename -g '*.ts' -g '!*.test.ts' -g '!*.mock.ts' -g '!*.spec.ts' 'catch \{|\.catch\(\s*(async\s*)?\(\s*\)' plugins/*/hooks`, summed).
+- The clone gate passes: 19 clones with 2 new ones (193 of 43,099 lines, 0.45%) became 17 with none new (179 of 46,067 lines, 0.39%) (`just clones`).
+- The source of `plugins/claudetto/hooks` grew from 9,985 to 10,419 lines, with 627 of them in `hooks/decider/`; 10,419 is the new ceiling, and the source must not grow past it (`find plugins/claudetto/hooks -name '*.ts' ! -name '*.test.ts' ! -name '*.mock.ts' ! -name '*.spec.ts' ! -path '*rules.generated*' -print0 | xargs -0 cat | wc -l`).
+- The installed `claudetto-openspec` plugin shrank from 2,394,380 to 108,922 bytes, because its Bun-run specs and fixtures moved to `tests/`.
+- Every description the model sees fits 200 characters, where 18 of 59 did not, and every model call names its model, its effort, and its `maxTokens`.
+- The session-start hook adds its lines to the env file once. Before, each start added a copy, and every `Bash` command ran them all.
+- `claudetto-you-should-know` checks before each main-loop tool call that can change something, in place of every sixth step. The call waits for the check. When the check has a note, the call is stopped, and the agent brings the note to you before it acts. Reads, searches, and questions to you run with no check.
+- Three prompt wordings no longer prime the wrong move: the Concise style says to call a reply wrong only when the check shows it, and to ask through the popup only for what the user alone holds, and the unchecked-claim block calls the user's statement a claim to check.
+- `/claudetto:setup` writes the sandbox as a deny list: writes allowed across the home folder, `/Volumes/`, and `/private/tmp`, with the files that run later write-denied; Keychains and cloud credentials read-denied, except the login keychain, which a sandboxed `gh` and `git push` need for their login; `allowMachLookup` `["*"]` and `enableWeakerNetworkIsolation`, so `gh` and other Go tools verify TLS certificates; localhost ports open to bind; and `ps`, `top`, `sysctl`, and `launchctl list` run outside the sandbox. The per-tool cache entries are gone. Any other command the sandbox blocks, such as `claude -p` reading its login from the Keychain, can retry outside the sandbox. Auto mode's classifier or your approval decides each retry, so the agent runs the command itself and no longer hands it to you.
+- The root prompt casts the agent as an expert junior software engineer working in your repository, and has it report a defect it caused as a third-person bug report rather than an admission.
+- The rule modules that `scripts/vendor-rules.ts` generates pass through `bun fmt` before they are written, so each one stays within the 300-line lint limit after formatting and is unchanged by the format check.
 - The root prompt has the agent weigh a disputed claim as a third party's claim before it checks it.
 - The root prompt drops "the" where the reader already knows the referent, in the style of instruction labels. It shrinks from 5,205 to 5,041 bytes.
 - The plugin manifests no longer pin a `version`, so `claude plugin update` and auto-update pick up each commit on `main`. The pinned `2.1.319` had kept installs on their cached copy. The release tags each plugin with the version in `package.json`.
 - The subagent cache TTL is set once, in `subagentPromptCacheTtl`, in place of `cacheTtl` in each agent file.
 - The status line measures context against the compaction window, paints with the Claude Code theme's colours, and flows its items into up to four rows.
-- The constraint ledger keeps a constraint only with the person's quoted words, and lifts it when the person allows it.
+- The constraint ledger lifts a constraint when the person allows it.
 - Each question for the user goes through the popup only.
-- A handoff dates its git state, and the read-back checks it again.
 - The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
 - The root prompt drops an act the user says nobody asked for, and finds a credential's name in the repo's `.env` files before it asks; the Concise style says only what to write: a correction opens with the corrected fact, and each sentence of a reply carries a fact, a result, or a step the person has not yet seen; the Stop note on background tasks says to follow a waited-on task with the monitor.
+- The plugins move to the `xsyetopz` marketplace, which lists every xsyetopz plugin: add it with `/plugin marketplace add xsyetopz/bedrock` and install `claudetto@xsyetopz`. This repo no longer ships its own `claudetto` marketplace; the status line finds claudetto under `plugins/cache/xsyetopz/`.
 
 ### Fixed
 
+- Hygiene removes the idle entries of Claude Code's temp folder even when another session removes one while the sweep searches; one vanished or unreadable entry no longer stops the whole batch of 500.
+
+- The Stop check no longer blocks a reply that copies a task line quoting a `!` command in backticks, and no longer lists a subagent's files under `.claude/worktrees/` as the session's uncommitted edits.
+- The gate's denial of an `rm` of a temp base teaches a cleanup by literal path, because Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`, and no rule allows it.
+- The `Monitor` text now says to run the writer itself in the command, because a watch on `tail -F` never ends after its writer exits, so "unless the source ends first" in the start notice holds for a command that ends.
+- A "You should know" note no longer says a password or secret was typed into the chat when it only sat inside a command such as an `osascript` keystroke; the side check's instructions now say to state only what the digest shows.
+- The paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` only, and it and the claim-check launcher drop `ANTHROPIC_API_KEY` from the environment of the `claude` they start, so a paid run bills the subscription login and never an API key.
+- The gate's denial of a `kill` of a pid the session did not start now lists the pids the session's own background commands printed (the last 8), or says none was started, so the agent no longer takes its own fresh builds for another's processes.
+- The Stop grader flags a reply that offers work it can do now ("If you want, I'll …", "Reply … and I will") and a check listed as "Not checked" that its own tools could run, and the block tells the agent to do the work.
+- An `AskUserQuestion` call that asks leave to fix a defect the agent found or caused is denied, and the agent is told to make the fix and report it. One Decider call judges the question and its option labels, after the secret scan, and a `no`, an unsettled answer, or a failed Decider lets the question through.
+- The `openspec` tool cuts a result past 12,000 characters at a line and counts the lines it drops, so `status` of a change with many open tasks no longer puts about 11,400 tokens in context and no longer trips the large-MCP-response warning.
+- The Stop hook no longer counts a finding bullet that mentions a `! <command>` step as a second `- ! <command>` bullet; only a bullet that opens with the `!` step counts.
+- The gate denies a `git commit` that follows a check after `;`, a newline, `||`, or a loop with no `|| exit`, unless `set -e` comes first, because a failed test run did not stop that commit; `bun test && git commit` still runs.
+- The denial of a shell read (`sed -n 1,80p f`, `head -n 5 f`) holds the ready `Read` call with `offset` and `limit`, and the gate reads `sed --quiet`, `--expression=`, and `-e1p` as the script and not the file.
+- The gate denies a linter's unsafe flag (`--fix-suggestions`, `--fix-dangerously`, `--unsafe`, `--unsafe-fixes`) behind a version, as in `npx oxlint@latest --fix-suggestions`, and in a `bun run lint -- --fix-suggestions` package script.
+- A `while` or `until` loop whose body runs only `:` or `true`, such as `until grep -q x f; do :; done`, is denied in the foreground and in the background, because it holds a CPU core while it waits. The denial names the form to send: a `sleep` in the body and a time limit.
+- A command whose program is `[` or `[[`, such as `[ -f x ] && echo y` or `if [ -d node_modules ]; then …; fi`, no longer gets "The gate cannot read this command, so a person must approve it."
+- A search pattern that starts with `/\`, as in `grep -v "/\.git/"`, no longer opens a "The gate failed" permission dialog, and the same pattern in a `! <command>` step no longer makes the Stop hook drop its checks.
+- The secret scan reads each string of a structured tool result as raw text, so a secret after a line break inside a result object is redacted.
 - The claim check counts a popup answer as the person's words.
-- The answer-first gate no longer denies the first tool call after a compaction, because it no longer reads the summary as an unanswered remark.
+- Hygiene finds old build folders in other checkouts again: it walks each folder in Mole's `purge_paths` besides the project, and never enters `~/.claude/projects` or `~/.claude/plugins`. Before, it walked only the project, whose own checkout always stays, so it found nothing outside a nested checkout.
 - The `Bash` tool text names `cat`, `head`, `tail`, `sed`, `awk`, and `echo` as commands not to read or change a file with, as the stock text does, so the agent stops sending reads the gate refuses.
 - When the gate itself fails, it asks with the failure text and no longer runs the hooks beneath it.
-- The temp-folder gate treats the sandbox `TMPDIR`, `/tmp/claude-<uid>`, as a temp base, so a folder made there gets its marker, and it expands a variable set earlier in the command in the path it made.
 - The worktree gate lets an agent remove a worktree it added through a variable set earlier in the same command, such as `M=$TMPDIR/w && git worktree add $M`.
 - The run limits count only file-tool writes that ran.
-- The gate sends only a lone file read to `Read`, and names the file in place of a `head -n` count or a `sed` script.
-- A remark that an earlier request covers counts as a task.
-- No claudetto hook changes a tool call input any more, so auto mode keeps its review of the other calls in the response: `Agent` denies an off-form call with the form to send, and `ToolSearch` rewrites only its result.
+- The gate sends a file read to `Read` anywhere in a chain, such as `cd src && sed -n '1,5p' a.ts`; a read piped into another command still runs. It names the file in place of a `head -n` count or a `sed` script.
+- The gate denies an in-place edit written as `sed --in-place`, run by `find -exec` or `-execdir`, or run behind `xargs`.
+- No claudetto hook changes a tool call input any more, so auto mode keeps its review of the other calls in the response: `Agent` denies an off-form call with the form to send, and a `ToolSearch` query and its result pass as they came.
+- Auto mode's "another call in this response was changed after auto mode reviewed it" came from the installed 2.1.319 release, whose `Agent` hook rewrote `subagent_type` and `run_in_background`; update claudetto to get the build that rewrites nothing. A lab test now fails when any guard hands `Bash`, `Read`, `Write`, `Edit`, `WebFetch`, or `Agent` a changed input at `tool.call` or `tool.check`.
+- The `autoMode` lists that `/claudetto:setup` writes define the trusted repo and its source control again, which the replaced list had dropped. They add two soft rules, `Write Outside the Trusted Repo` and a closing `Any Other Danger`, so a block has a rule to cite. Claude Code shows the cited rule in the denial, as in `Auto mode: [Write Outside the Trusted Repo]`. Before, a push to another of your repos fit no rule and came back with "it gave no explanation". Naming the repository in your message clears that rule. Run `/claudetto:setup` again to write the new lists.
+- The gate no longer sends `echo $! > "$TMPDIR/s.pid"`, which records the pid of a launched command, to `Write`; a heredoc, `cat >`, `tee`, and a `printf` or `echo` of file content still go there.
 
 ### Removed
 
+- The check that denied a test edit asserting on a phrase a source file ships, because the logs of seven days hold no denial it made.
+- The `typesafeApiKey` option, in favor of the `TYPESAFE_API_KEY` variable.
+- The tool `mcp__claudetto__ask-user-question`, in favor of the built-in `AskUserQuestion`.
+- The tool `mcp__claudetto__monitor`, in favor of the built-in `Monitor`.
+- **Breaking:** the answer-first gate, which denied the first tool call after a message it read as a remark or a question. It denied work you had asked for, as after "Now it's active". No tool call is held for an answer any more, and the ledger no longer classes each message as a task, question, remark, or dispute.
+- The ledger's Haiku extraction prompt, its parser, and its quote check, which the Decider's per-sentence read replaces.
 - The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
 - The `fold` hook is gone, so grouped tool results keep Claude Code's own fold.
+- **Breaking:** the handoff: the tool `mcp__claudetto__handoff`, the `/claudetto:handoff` command, the files under `.claude/claudetto/handoffs/`, their cleanup, and the options `handoverThresholdTokens` and `handoffCleanupPeriodDays`. Claude Code's own compaction replaces it: `/claudetto:setup` writes `autoCompactWindow`, and one compaction instruction keeps your corrections, refusals, and consents word for word. Keep durable state in `tasks.md` and git.
+- **Breaking:** the `.created-by-claudetto` temp marker and the denials it caused. A write or a delete under `$TMPDIR` passes, and a recursive delete outside the project and `$TMPDIR` goes to Claude Code's permission flow.
+- The run logs `.claude/claudetto/runs.jsonl` and `.claude/claudetto/gate-asks/*.jsonl`, which no code read.
+- **Breaking:** the output files under `.claude/claudetto/output/` and the `maxTestOutputChars` option. `/claudetto:setup` writes `bashOutputMaxChars` (8,000) and `MAX_MCP_OUTPUT_TOKENS` (10,000), and Claude Code writes its own overflow file.
+- **Breaking:** the subagent start, depth, and time caps and the `maxSubagentStarts` option. `/claudetto:setup` writes `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, and `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` in their place.
 
 ## [2.1.319] - 2026-11-07
 

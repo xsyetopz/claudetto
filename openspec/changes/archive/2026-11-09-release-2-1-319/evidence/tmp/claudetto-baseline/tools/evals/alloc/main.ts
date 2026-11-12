@@ -3,6 +3,7 @@
 import { dirname, join, resolve } from "node:path";
 import { cwd } from "node:process";
 import { fileURLToPath } from "node:url";
+
 import type { CommandRunner } from "../../../claudekit/session/command.ts";
 import {
 	makeFolders,
@@ -11,9 +12,9 @@ import {
 import { total } from "../../../claudekit/total.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../../limits.ts";
 import {
+	parseFlags,
 	type Patch,
 	POSITIVE_INTEGER,
-	parseFlags,
 } from "../classifier/main.ts";
 import { executeSession, type Outcome } from "../execute.ts";
 import { seededKeys } from "../fixture.ts";

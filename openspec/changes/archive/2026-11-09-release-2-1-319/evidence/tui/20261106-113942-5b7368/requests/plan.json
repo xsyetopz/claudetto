@@ -23,11 +23,7 @@
 						"name": "mcp__claudetto__ask-user-question",
 						"input": {
 							"question": "Pick some?",
-							"options": [
-								"Alpha",
-								"Beta",
-								"Gamma"
-							],
+							"options": ["Alpha", "Beta", "Gamma"],
 							"multiSelect": true
 						}
 					}

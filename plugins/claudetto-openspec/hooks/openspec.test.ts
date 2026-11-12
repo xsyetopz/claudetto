@@ -1,5 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+
 import { memory } from "./memory-fs.ts";
 
 const TOOL = "mcp__claudetto-openspec__openspec";
@@ -14,6 +15,11 @@ const change = (extra: Record<string, string> = {}) => ({
 	[`${C}/c/specs/cap/spec.md`]: delta("ADDED", "The system SHALL y."),
 	...extra,
 });
+
+const scenario = (n: string) =>
+	`#### Scenario: ${n}\n- **WHEN** a\n- **THEN** b\n`;
+const req = (n: string) =>
+	`### Requirement: ${n}\nThe system SHALL ${n}.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n`;
 
 const call = async (
 	$: Engine,
@@ -84,7 +90,7 @@ test("Archive Refuses Open Tasks: names 1.2 and moves nothing", async ($: Engine
 	expect(tree.has("/repo/openspec/specs/cap/spec.md")).toBe(false);
 });
 
-test("Archive has no override for open tasks (#2006, #1652)", async ($: Engine, on: On) => {
+test("Archive has no override for open tasks", async ($: Engine, on: On) => {
 	const { runs } = memory(
 		on,
 		change({ [`${C}/c/tasks.md`]: "- [ ] 1.1 open\n" }),
@@ -105,7 +111,7 @@ test("Archive merges, moves with mv, and writes the main spec", async ($: Engine
 	);
 });
 
-test("A Notes File beside a Delta: validation names it and archive merges nothing (#2173)", async ($: Engine, on: On) => {
+test("A Notes File beside a Delta: validation names it and archive merges nothing", async ($: Engine, on: On) => {
 	const { runs, tree } = memory(
 		on,
 		change({ [`${C}/c/specs/cap/notes/extra.md`]: "notes\n" }),
@@ -120,7 +126,7 @@ test("A Notes File beside a Delta: validation names it and archive merges nothin
 	expect(tree.has("/repo/openspec/specs/cap/spec.md")).toBe(false);
 });
 
-test("An unknown delta section fails validation (#2195)", async ($: Engine, on: On) => {
+test("An unknown delta section fails validation", async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({
@@ -130,7 +136,7 @@ test("An unknown delta section fails validation (#2195)", async ($: Engine, on: 
 	expect(await call($, { change: "c" })).toContain("CHANGED");
 });
 
-test("Validate fails what archive would refuse (#1112)", async ($: Engine, on: On) => {
+test("Validate fails what archive would refuse", async ($: Engine, on: On) => {
 	const files = change({
 		[`${C}/c/specs/cap/spec.md`]: delta(
 			"MODIFIED",
@@ -157,9 +163,7 @@ test("MODIFIED that drops a scenario fails (kept from upstream)", async ($: Engi
 	expect(await call($, { change: "c" })).toContain("T");
 });
 
-test("MODIFIED that replaces a scenario by two keeps upstream's verdict: invalid, naming the omitted one (#1697)", async ($: Engine, on: On) => {
-	const scenario = (n: string) =>
-		`#### Scenario: ${n}\n- **WHEN** a\n- **THEN** b\n`;
+test("MODIFIED that replaces a scenario by two keeps upstream's verdict: invalid, naming the omitted one", async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({
@@ -180,7 +184,7 @@ test("File Compatibility: x- keys in .openspec.yaml are read and kept", async ($
 });
 
 const S = "/repo/openspec/specs";
-const bare = base.replace(/\n#### Scenario[\s\S]*$/, "\n");
+const bare = base.replace(/\n#### Scenario[\s\S]*$/u, "\n");
 
 test("No Active Change: validate checks each main spec", async ($: Engine, on: On) => {
 	memory(on, {
@@ -195,13 +199,15 @@ test("A Main Spec Without a Scenario: validate names the spec and the requiremen
 	const out = await call($, {});
 	expect(out).toContain("c: valid");
 	expect(out).toContain("specs/run-limits: INVALID");
-	expect(out).toContain('Requirement "Thing": Requirement must have at least one scenario');
+	expect(out).toContain(
+		'Requirement "Thing": Requirement must have at least one scenario',
+	);
 });
 
 test("Empty Project: init writes the layout, and validate then passes", async ($: Engine, on: On) => {
 	const { tree, runs } = memory(on, {});
 	expect(await call($, { action: "init" })).toContain("openspec/config.yaml");
-	expect([...tree.keys()].sort()).toEqual([
+	expect([...tree.keys()].toSorted()).toEqual([
 		"/repo/openspec/changes/archive/.gitkeep",
 		"/repo/openspec/config.yaml",
 		"/repo/openspec/specs/.gitkeep",
@@ -227,7 +233,10 @@ test("Valid Name: new writes the change's .openspec.yaml", async ($: Engine, on:
 });
 
 test("Taken Name: new names the archived folder and writes nothing", async ($: Engine, on: On) => {
-	const files = { ...change(), [`${C}/archive/2026-11-09-add-init/proposal.md`]: "# P\n" };
+	const files = {
+		...change(),
+		[`${C}/archive/2026-11-09-add-init/proposal.md`]: "# P\n",
+	};
 	const { tree } = memory(on, files);
 	const out = await call($, { action: "new", change: "add-init" });
 	expect(out).toContain("archive/2026-11-09-add-init");
@@ -237,7 +246,9 @@ test("Taken Name: new names the archived folder and writes nothing", async ($: E
 test("New refuses a name that is not kebab-case or is an active change", async ($: Engine, on: On) => {
 	const { tree } = memory(on, change());
 	const size = tree.size;
-	expect(await call($, { action: "new", change: "Add_Init" })).toContain("kebab-case");
+	expect(await call($, { action: "new", change: "Add_Init" })).toContain(
+		"kebab-case",
+	);
 	expect(await call($, { action: "new", change: "c" })).toContain("c");
 	expect(await call($, { action: "new" })).toContain("`new` needs `change`");
 	expect(tree.size).toBe(size);
@@ -262,8 +273,6 @@ test("Archived Changes: status lists them after the active changes", async ($: E
 });
 
 test("Two Specs: list names each spec with its requirement count", async ($: Engine, on: On) => {
-	const req = (n: string) =>
-		`### Requirement: ${n}\nThe system SHALL ${n}.\n\n#### Scenario: S\n- **WHEN** a\n- **THEN** b\n\n`;
 	memory(on, {
 		[`${C}/archive/.gitkeep`]: "",
 		[`${S}/a/spec.md`]: `## Purpose\nP.\n\n## Requirements\n\n${req("x")}${req("y")}${req("z")}`,
@@ -272,7 +281,7 @@ test("Two Specs: list names each spec with its requirement count", async ($: Eng
 	expect(await call($, { action: "list" })).toBe("a 3\nb 1");
 });
 
-test("skip_specs with a malformed .openspec.yaml is reported",async ($: Engine, on: On) => {
+test("skip_specs with a malformed .openspec.yaml is reported", async ($: Engine, on: On) => {
 	memory(
 		on,
 		change({

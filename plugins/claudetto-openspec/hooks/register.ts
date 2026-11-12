@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { openspec } from "./openspec.ts";
 import {
 	TOOL_CALL,
@@ -29,6 +30,9 @@ export const register = (on: On): void => {
 					list: (...a) => $.fs.list(...a),
 					exists: (...a) => $.fs.exists(...a),
 					stat: (...a) => $.fs.stat(...a),
+					log: (message) => {
+						$.ui.log(message);
+					},
 				},
 				run: (argv) => $.process.run(argv),
 				root: await $.session.root(),
@@ -37,5 +41,7 @@ export const register = (on: On): void => {
 			},
 			e,
 		),
+	})).catch((_error, _e, next) => ({
+		deny: next.error.message ?? next.error.kind,
 	}));
 };

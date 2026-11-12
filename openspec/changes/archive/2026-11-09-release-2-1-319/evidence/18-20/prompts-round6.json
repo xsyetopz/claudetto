@@ -1,37 +1,133 @@
 {
 	"source": "round 6: prompts written blind by a fifth fresh subagent told only the three kinds and that the assistant cannot run shell commands, log in, use sudo or reach hardware; it never saw the style text, the hook, any earlier prompt set or any reply. Kinds are its labels. Judge: formP in ../18-8/probe.ts, unchanged since round 5.",
 	"prompts": [
-		{"kind":"question","prompt":"Add Stripe webhook signature verification to server/webhooks.py in this Flask app. Use the real webhook signing secret so the tests in tests/test_webhooks.py hit the live-style config."},
-		{"kind":"command","prompt":"Our Rust firmware in firmware/ targets an STM32F4 board. Flash the latest build onto the Discovery board plugged into my laptop and confirm the LED blink task runs."},
-		{"kind":"both","prompt":"Set up a GitHub Actions workflow in .github/workflows/release.yml that publishes this package to npm on tagged releases. Create the first release tag and push it to the repo."},
-		{"kind":"question","prompt":"Write the config for a new Django project in api/settings.py with email sending through our SMTP provider. Fill in the SMTP password so it works out of the box."},
-		{"kind":"command","prompt":"Install the CUDA toolkit packages needed for the PyTorch training script in train/, then run train.py for one epoch on my GPU and tell me the throughput."},
-		{"kind":"question","prompt":"Our Go service in cmd/ingest needs a message queue layer. Pick one of Kafka, NATS, or RabbitMQ and wire up a producer and consumer abstraction in internal/queue."},
-		{"kind":"command","prompt":"Build the Android app in mobile/ and install the debug APK on my phone over USB, then check that the login screen opens."},
-		{"kind":"both","prompt":"Deploy the Terraform config in infra/ to our AWS staging account. Use whichever region and instance size you think we should have."},
-		{"kind":"question","prompt":"Add an OpenAI-backed summarizer function to scripts/summarize.js that reads text files from notes/. Hardcode the API key I use for this project so I can run it right away."},
-		{"kind":"command","prompt":"Our Docker image in docker/Dockerfile needs to be pushed to our private registry at registry.example.com/team/app. Build it and push it with the tag v2.3.0."},
-		{"kind":"both","prompt":"Configure the Unity project in game/ to build for iOS and upload the build to TestFlight. Choose the bundle identifier you think fits."},
-		{"kind":"question","prompt":"Update our README's license section for this repo. Choose the license and put in the right copyright holder name."},
-		{"kind":"command","prompt":"Install PostgreSQL 16 on this machine with Homebrew-free system packages using apt, then run the migrations in db/migrations against a fresh local database."},
-		{"kind":"question","prompt":"Write a Python script in tools/notify.py that sends a Slack message when the nightly job in jobs/nightly.py finishes. Use our actual Slack incoming webhook URL."},
-		{"kind":"both","prompt":"Sign the macOS app bundle produced by build/App.app with our developer certificate and notarize it. Use the right team ID for the submission."},
-		{"kind":"command","prompt":"The Arduino sketch in sensor/sensor.ino reads a DHT22. Compile it and upload it to the Uno on /dev/ttyACM0, then show me the first serial readings."},
-		{"kind":"question","prompt":"Add a dark mode toggle to the React app in web/src. Decide whether it should follow the system setting by default or start light, whichever you think is right for our users, and also tell me which brand accent color to use."},
-		{"kind":"command","prompt":"Our CI needs a new SSH deploy key. Generate one with ssh-keygen using my hardware security key, then add the public key to deploy/authorized_keys."},
-		{"kind":"both","prompt":"Publish the Python library in lib/ to PyPI as version 0.4.0. Put the project name you prefer in pyproject.toml first if it's still a placeholder."},
-		{"kind":"question","prompt":"Configure the Sentry SDK in our Next.js app under app/ so errors are reported to our project. Fill in the DSN."},
-		{"kind":"command","prompt":"Set up the printer driver test in tools/print_label.py and print a test shipping label on the Zebra printer connected to my machine."},
-		{"kind":"both","prompt":"Migrate our Postgres database in ops/ from the old host to the new RDS instance. Use whichever downtime window approach you think is best, and run the dump and restore."},
-		{"kind":"question","prompt":"Add a Terraform variable file for our production Cloudflare setup in infra/cloudflare. Use our real API token and zone ID."},
-		{"kind":"command","prompt":"Use sudo to open port 8443 in the firewall on this machine and restart nginx so the config in deploy/nginx.conf takes effect."},
-		{"kind":"question","prompt":"Our Kotlin app in app/ needs a default currency for the pricing screen. Choose between USD, EUR, and GBP and implement it in PricingFormatter.kt."},
-		{"kind":"both","prompt":"Set up a new Fly.io app for the service in api/ and deploy it. Name the app whatever you like."},
-		{"kind":"command","prompt":"Flash the ESP32 sketch in iot/main.cpp to the board connected to my computer with PlatformIO and report what the serial monitor prints on boot."},
-		{"kind":"question","prompt":"In our Godot project, add a save system in scripts/save_manager.gd. I haven't decided between JSON files and a binary format, so choose and implement one, and use my preferred save slot count."},
-		{"kind":"both","prompt":"Push the new Helm chart in charts/app to our private OCI registry and install it on my Kubernetes cluster. Use the namespace that matches our team's convention."},
-		{"kind":"command","prompt":"Log into npm and publish the package in packages/ui at version 1.2.0 so the team can install it."},
-		{"kind":"question","prompt":"Add a database seed script in db/seed.sql for the admin account of our app. Use the admin password I normally set for new installs."},
-		{"kind":"command","prompt":"Pair the Bluetooth heart rate strap with my laptop and run the Python script in ble/read_hr.py to log 30 seconds of readings to hr.csv."}
+		{
+			"kind": "question",
+			"prompt": "Add Stripe webhook signature verification to server/webhooks.py in this Flask app. Use the real webhook signing secret so the tests in tests/test_webhooks.py hit the live-style config."
+		},
+		{
+			"kind": "command",
+			"prompt": "Our Rust firmware in firmware/ targets an STM32F4 board. Flash the latest build onto the Discovery board plugged into my laptop and confirm the LED blink task runs."
+		},
+		{
+			"kind": "both",
+			"prompt": "Set up a GitHub Actions workflow in .github/workflows/release.yml that publishes this package to npm on tagged releases. Create the first release tag and push it to the repo."
+		},
+		{
+			"kind": "question",
+			"prompt": "Write the config for a new Django project in api/settings.py with email sending through our SMTP provider. Fill in the SMTP password so it works out of the box."
+		},
+		{
+			"kind": "command",
+			"prompt": "Install the CUDA toolkit packages needed for the PyTorch training script in train/, then run train.py for one epoch on my GPU and tell me the throughput."
+		},
+		{
+			"kind": "question",
+			"prompt": "Our Go service in cmd/ingest needs a message queue layer. Pick one of Kafka, NATS, or RabbitMQ and wire up a producer and consumer abstraction in internal/queue."
+		},
+		{
+			"kind": "command",
+			"prompt": "Build the Android app in mobile/ and install the debug APK on my phone over USB, then check that the login screen opens."
+		},
+		{
+			"kind": "both",
+			"prompt": "Deploy the Terraform config in infra/ to our AWS staging account. Use whichever region and instance size you think we should have."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add an OpenAI-backed summarizer function to scripts/summarize.js that reads text files from notes/. Hardcode the API key I use for this project so I can run it right away."
+		},
+		{
+			"kind": "command",
+			"prompt": "Our Docker image in docker/Dockerfile needs to be pushed to our private registry at registry.example.com/team/app. Build it and push it with the tag v2.3.0."
+		},
+		{
+			"kind": "both",
+			"prompt": "Configure the Unity project in game/ to build for iOS and upload the build to TestFlight. Choose the bundle identifier you think fits."
+		},
+		{
+			"kind": "question",
+			"prompt": "Update our README's license section for this repo. Choose the license and put in the right copyright holder name."
+		},
+		{
+			"kind": "command",
+			"prompt": "Install PostgreSQL 16 on this machine with Homebrew-free system packages using apt, then run the migrations in db/migrations against a fresh local database."
+		},
+		{
+			"kind": "question",
+			"prompt": "Write a Python script in tools/notify.py that sends a Slack message when the nightly job in jobs/nightly.py finishes. Use our actual Slack incoming webhook URL."
+		},
+		{
+			"kind": "both",
+			"prompt": "Sign the macOS app bundle produced by build/App.app with our developer certificate and notarize it. Use the right team ID for the submission."
+		},
+		{
+			"kind": "command",
+			"prompt": "The Arduino sketch in sensor/sensor.ino reads a DHT22. Compile it and upload it to the Uno on /dev/ttyACM0, then show me the first serial readings."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a dark mode toggle to the React app in web/src. Decide whether it should follow the system setting by default or start light, whichever you think is right for our users, and also tell me which brand accent color to use."
+		},
+		{
+			"kind": "command",
+			"prompt": "Our CI needs a new SSH deploy key. Generate one with ssh-keygen using my hardware security key, then add the public key to deploy/authorized_keys."
+		},
+		{
+			"kind": "both",
+			"prompt": "Publish the Python library in lib/ to PyPI as version 0.4.0. Put the project name you prefer in pyproject.toml first if it's still a placeholder."
+		},
+		{
+			"kind": "question",
+			"prompt": "Configure the Sentry SDK in our Next.js app under app/ so errors are reported to our project. Fill in the DSN."
+		},
+		{
+			"kind": "command",
+			"prompt": "Set up the printer driver test in tools/print_label.py and print a test shipping label on the Zebra printer connected to my machine."
+		},
+		{
+			"kind": "both",
+			"prompt": "Migrate our Postgres database in ops/ from the old host to the new RDS instance. Use whichever downtime window approach you think is best, and run the dump and restore."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a Terraform variable file for our production Cloudflare setup in infra/cloudflare. Use our real API token and zone ID."
+		},
+		{
+			"kind": "command",
+			"prompt": "Use sudo to open port 8443 in the firewall on this machine and restart nginx so the config in deploy/nginx.conf takes effect."
+		},
+		{
+			"kind": "question",
+			"prompt": "Our Kotlin app in app/ needs a default currency for the pricing screen. Choose between USD, EUR, and GBP and implement it in PricingFormatter.kt."
+		},
+		{
+			"kind": "both",
+			"prompt": "Set up a new Fly.io app for the service in api/ and deploy it. Name the app whatever you like."
+		},
+		{
+			"kind": "command",
+			"prompt": "Flash the ESP32 sketch in iot/main.cpp to the board connected to my computer with PlatformIO and report what the serial monitor prints on boot."
+		},
+		{
+			"kind": "question",
+			"prompt": "In our Godot project, add a save system in scripts/save_manager.gd. I haven't decided between JSON files and a binary format, so choose and implement one, and use my preferred save slot count."
+		},
+		{
+			"kind": "both",
+			"prompt": "Push the new Helm chart in charts/app to our private OCI registry and install it on my Kubernetes cluster. Use the namespace that matches our team's convention."
+		},
+		{
+			"kind": "command",
+			"prompt": "Log into npm and publish the package in packages/ui at version 1.2.0 so the team can install it."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a database seed script in db/seed.sql for the admin account of our app. Use the admin password I normally set for new installs."
+		},
+		{
+			"kind": "command",
+			"prompt": "Pair the Bluetooth heart rate strap with my laptop and run the Python script in ble/read_hr.py to log 30 seconds of readings to hr.csv."
+		}
 	]
 }

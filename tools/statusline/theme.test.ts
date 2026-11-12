@@ -1,8 +1,9 @@
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { lineFilePath } from "../../plugins/claudetto/hooks/limits/heartbeat.ts";
+
+import { lineFilePath } from "../../plugins/claudetto/hooks/session.measure/useLineFile/heartbeat.ts";
 import {
 	statusOf,
 	statusWithFiles,
@@ -11,12 +12,15 @@ import {
 import { plain } from "../../plugins/claudetto/statusline/width.ts";
 import { NOW } from "./support.ts";
 
-const ESC = String.fromCharCode(27);
+const ESC = String.fromCodePoint(27);
 const ROOT = await mkdtemp(join(tmpdir(), "claudetto-theme-"));
 afterAll(() => rm(ROOT, { recursive: true, force: true }));
 
 const ON_1M = {
-	context_window: { total_input_tokens: 100_000, context_window_size: 1_000_000 },
+	context_window: {
+		total_input_tokens: 100_000,
+		context_window_size: 1_000_000,
+	},
 };
 const ADDED = { cost: { total_lines_added: 12, total_lines_removed: 3 } };
 const env = { COLUMNS: "120" };
@@ -78,38 +82,52 @@ describe("colours follow the Claude Code theme", () => {
 
 describe("the line file the mod writes", () => {
 	const project = join(ROOT, "project");
+	const rows = (id: string) =>
+		subagentsWithFiles(
+			JSON.stringify({
+				session_id: id,
+				cwd: project,
+				tasks: [
+					{ id: "t", name: "x", status: "running", startTime: NOW - 5000 },
+				],
+			}),
+			env,
+			NOW,
+		);
 	const session = "s/1";
 	const input = (fields: object) =>
-		JSON.stringify({ session_id: session, workspace: { project_dir: project }, ...fields });
+		JSON.stringify({
+			session_id: session,
+			workspace: { project_dir: project },
+			...fields,
+		});
 
-	test("the line reads the window and the theme from the session's file", async () => {
+	beforeAll(async () => {
 		const path = join(project, lineFilePath(session));
 		await mkdir(join(path, ".."), { recursive: true });
 		await writeFile(path, JSON.stringify({ window: 300_000, theme: "light" }));
+	});
+
+	test("the line reads the window and the theme from the session's file", async () => {
 		expect(await statusWithFiles(input(ON_1M), env, NOW)).toBe(
 			`${ESC}[2m◫ ctx${ESC}[0m ${ESC}[38;2;78;117;48m33%${ESC}[0m ${ESC}[2mof 300k${ESC}[0m`,
 		);
 	});
 
 	test("the subagent rows take their colour from the same file", async () => {
-		const rows = (id: string) =>
-			subagentsWithFiles(
-				JSON.stringify({
-					session_id: id,
-					cwd: project,
-					tasks: [{ id: "t", name: "x", status: "running", startTime: NOW - 5000 }],
-				}),
-				env,
-				NOW,
-			);
-		expect(await rows(session)).toContain("\\u001b[1mx\\u001b[0m");
-		expect(await rows("none")).not.toContain("\\u001b");
+		expect(await rows(session)).toContain(String.raw`\u001b[1mx\u001b[0m`);
+		expect(await rows("none")).not.toContain(String.raw`\u001b`);
 	});
 
 	test("a session with no file prints no context part and no colour", async () => {
 		expect(
 			await statusWithFiles(
-				JSON.stringify({ session_id: "none", workspace: { project_dir: project }, ...ON_1M, ...ADDED }),
+				JSON.stringify({
+					session_id: "none",
+					workspace: { project_dir: project },
+					...ON_1M,
+					...ADDED,
+				}),
 				env,
 				NOW,
 			),
@@ -121,7 +139,12 @@ describe("the line file the mod writes", () => {
 		await writeFile(path, JSON.stringify({ window: "300k", theme: 7 }));
 		expect(
 			await statusWithFiles(
-				JSON.stringify({ session_id: "bad", workspace: { project_dir: project }, ...ON_1M, ...ADDED }),
+				JSON.stringify({
+					session_id: "bad",
+					workspace: { project_dir: project },
+					...ON_1M,
+					...ADDED,
+				}),
 				env,
 				NOW,
 			),

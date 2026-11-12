@@ -1,0 +1,35 @@
+{
+	"add": [
+		{
+			"id": "claudetto:git-push-force-with-lease",
+			"decision": "ask",
+			"description": "`--force-with-lease` still overwrites the remote's history when the remote matches what you last fetched.",
+			"regex": "^git(?:\\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--super-prefix|--config-env)\\s+\\S+|\\s+-\\S+)*\\s+push\\s(?!.*\\s(?:-n|--dry-run)(?:\\s|$))(?:.*\\s)?--force-with-lease(?:=\\S*)?(?:\\s|$)"
+		},
+		{
+			"id": "claudetto:write-system-path",
+			"decision": "deny",
+			"description": "This writes to a system folder.",
+			"regex": "(?:^|\\s)(?:>>?\\|?|&>|tee(?:\\s+-\\S+)*)\\s*(?:\\S+\\s+)*?/(?:etc|usr|bin|sbin|boot|System|Library)(?:/|\\s|$)"
+		},
+		{
+			"id": "claudetto:rm-recursive-home-slash",
+			"decision": "deny",
+			"description": "A recursive delete of the home directory written as `~/`, which the upstream rule reads only as `~`.",
+			"regex": "^rm\\s(?:.*\\s)?(?:-\\S*[rR]\\S*|--recursive)\\s(?:.*\\s)?~/(?:\\s|$)"
+		},
+		{
+			"id": "claudetto:download-piped-to-shell",
+			"decision": "ask",
+			"feed": "raw",
+			"description": "Piping a download into a shell runs it unread; upstream names only bare `bash`, `sh`, `zsh` and `fish`.",
+			"regex": "(?:^|\\s)(?:curl|wget)\\s+.*\\|\\s*(?:sudo\\s+(?:-\\S+\\s+)*|env\\s+(?:-\\S+\\s+)*|exec\\s+)?(?:\\S*/)?(?:bash|sh|zsh|fish|dash|ksh|ash)(?:\\s|$)"
+		},
+		{
+			"id": "claudetto:lint-unsafe-fix",
+			"decision": "deny",
+			"description": "A linter's unsafe fixes can change what the code does, and one deleted working code. Run the safe `--fix`, read each remaining suggestion, and apply it with Edit.",
+			"regex": "(?:^|\\s)(?:(?:\\S*/)?(?:oxlint|biome|ruff)(?:@\\S*)?\\s(?:.*\\s)?|(?:bun|npm|pnpm|yarn)\\s+run\\s+\\S+\\s(?:.*\\s)?(?:\\./)?)(?:--fix-suggestions|--fix-dangerously|--unsafe|--unsafe-fixes)(?:=\\S*)?(?:\\s|$)"
+		}
+	]
+}

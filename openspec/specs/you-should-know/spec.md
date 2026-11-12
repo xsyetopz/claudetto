@@ -14,19 +14,33 @@ The observer MUST stay off unless the `sideCheckEnabled` option is exactly `true
 - **WHEN** the plugin is installed and no option is set
 - **THEN** no check runs and the store stays empty
 
-### Requirement: Check Cadence
+### Requirement: Check Before Each Action
 
-The observer SHALL consider a check on every sixth main-loop step of a turn, never on a subagent step, and only on the `terminal` or `desktop` surface. It MUST NOT start a check while a view is open, while a check is in flight, or in a turn that already got an offer.
+The observer SHALL consider a check before each main-loop tool call, only on the `terminal` or `desktop` surface. It SHALL skip a subagent's call, a question to the person (`AskUserQuestion`), and a call to a tool that changes nothing: `Read`, `Grep`, `Glob`, `ToolSearch`, `WebSearch`, `WebFetch`, and `ListAgents`. The call SHALL wait for the check, whose log ends with the call.
 
-#### Scenario: A Subagent Step
+#### Scenario: Nothing to Say
 
-- **WHEN** a subagent's step index is a multiple of six
-- **THEN** no check is considered
+- **WHEN** the check replies `learn: none`
+- **THEN** the call runs
 
-#### Scenario: A Check Already in Flight
+#### Scenario: A Subagent Call
 
-- **WHEN** the next sixth step arrives before the last check answered
-- **THEN** no second request is made
+- **WHEN** a subagent calls `Bash`
+- **THEN** no check runs
+
+### Requirement: A Note Stops the Call
+
+When the check shows an offer, the observer MUST deny the call with the offer's line and an instruction to bring the note to the person and wait for their answer. While this turn's offer is open, each further checked call MUST be denied with the same line and no new request. The observer MUST NOT start a check while another view is open or in a turn whose offer was closed. A call that arrives during a check SHALL share that check's result.
+
+#### Scenario: A Noted Push
+
+- **WHEN** the main loop calls `Bash` with `git push`, and the check replies with a line
+- **THEN** the push does not run, its deny carries the line, and the offer opens
+
+#### Scenario: Two Calls in One Response
+
+- **WHEN** two calls arrive before the check answered
+- **THEN** one request is made, and its offer denies both
 
 ### Requirement: Back-Off after Ignored Offers
 
@@ -44,12 +58,32 @@ When the person sends two prompts past an offer without answering it, the observ
 
 ### Requirement: One Bounded Request
 
-A check MUST make one `$.model.complete` request with the model and effort from the options and `maxTokens` 512, whose body is the lines already shown, the lines the person knows, and the last 8 log entries of at most 992 characters each, at most 8,000 characters in all.
+A check MUST make one `$.model.complete` request with the model and effort from the options, `maxTokens` 512, and `timeoutMs` 20,000, whose body is the lines already shown, the lines the person knows, the last 3 of the person's messages that left the log, of at most 400 characters each, and the last 8 log entries of at most 800 characters each, at most 8,000 characters in all. A request the model does not answer SHALL be logged with its reason and SHALL let the call run.
 
 #### Scenario: A Long Session
 
 - **WHEN** the log holds more than 8 entries
 - **THEN** the request carries only the last 8, each cut to its bound
+
+#### Scenario: A Request Before a Burst of Calls
+
+- **WHEN** the person sends a message and the assistant then makes 9 tool calls
+- **THEN** the next request still carries that message
+
+#### Scenario: An Action the Person Asked For
+
+- **WHEN** a message the person sent asks for the action a call takes
+- **THEN** the check notes nothing about that action, because the message asks for what it names
+
+#### Scenario: A Request With No Answer
+
+- **WHEN** the model returns no reply, with reason `aborted`
+- **THEN** the log holds `The side check was not answered (aborted)` and the call runs
+
+#### Scenario: A Request Bounded in Time
+
+- **WHEN** a check starts
+- **THEN** the request carries `timeoutMs` 20,000
 
 ### Requirement: Reply Parsing
 
@@ -62,7 +96,7 @@ The observer SHALL show an offer only for a reply whose first `learn:` line hold
 
 #### Scenario: A Late Reply
 
-- **WHEN** a reply arrives after the turn that asked for it ended
+- **WHEN** a reply arrives after the session that asked for it ended
 - **THEN** nothing is shown
 
 ### Requirement: The Offer and Its Views
@@ -101,3 +135,92 @@ The observer MUST cap its session rows at 32 and its shown and known lists at 50
 
 - **WHEN** a 33rd session row is stored
 - **THEN** a closed row is evicted first
+
+### Requirement: The Model and Effort Have Defaults
+
+The observer SHALL use `claude-haiku-5-5` when `sideCheckModel` is not a non-empty string, and effort `high` when `sideCheckEffortLevel` is not one of `low`, `medium`, `high`, `xhigh`, `max` (`register.ts:56-72`). It SHALL read both options once at registration.
+
+#### Scenario: No Options
+
+- **WHEN** `sideCheckEnabled` is `true` and no model or effort option is set
+- **THEN** a check asks `claude-haiku-5-5` at effort `high`
+
+#### Scenario: A Bad Effort
+
+- **WHEN** `sideCheckEffortLevel` is `"turbo"`
+- **THEN** the check runs at effort `high`
+
+### Requirement: The Reply Carries a Tag and Explanation Cards
+
+The parser (`note.ts:64-94`) SHALL read the first `learn:` line, the first `tag:` line, and everything from the first `explain:` line on, with the key in any case. The tag SHALL be `Heads up` when the value reads `heads up` or `heads-up`, and `You should know` otherwise. The explanation SHALL be split into at most 4 cards (`note.ts:166-173`): a `**title**` or `# title` line opens a card, text before a fenced block is the lead, the block is the sketch, and text after it is the caption.
+
+#### Scenario: Heads Up
+
+- **WHEN** the reply holds `learn: The push deletes the branch.` and `tag: Heads-up`
+- **THEN** the offer shows the tag `Heads up`
+
+#### Scenario: A Card With a Sketch
+
+- **WHEN** the explanation holds `**Title**`, a lead line, a fenced block of 3 lines, and a caption line
+- **THEN** one card has that title, lead, 3 sketch lines, and caption
+
+#### Scenario: Five Titles
+
+- **WHEN** the explanation holds five titled cards
+- **THEN** only the first four are kept
+
+### Requirement: Card Text Is Capped
+
+A card title SHALL be cut at 120 characters, a sketch SHALL hold at most 12 lines of at most 120 characters, and the lead and the caption SHALL each be cut at 4,000 characters at a word boundary (`note.ts:8-25`, `clipAtWord`). The offer line shown SHALL be cut at 240 characters.
+
+#### Scenario: A Long Sketch
+
+- **WHEN** a fenced block holds 20 lines
+- **THEN** the card keeps the first 12
+
+#### Scenario: A Long Lead
+
+- **WHEN** a lead holds 5,000 characters
+- **THEN** the card holds at most 4,000, ending at a word
+
+### Requirement: Each View Has Its Own Buttons
+
+The offer, asked, and explained views SHALL each show their own buttons (`view.ts:37-66`). Hotkeys SHALL be set only on the `terminal` surface (`view.ts:132`). `That was helpful`, `Understood`, and `Knew this already` SHALL add the line to the known list and close the view; `Not relevant` and `Couldn’t understand` SHALL only close it (`register.ts:261-306`).
+
+#### Scenario: Asked View
+
+- **WHEN** the person presses Dismiss on an offer
+- **THEN** the asked view shows "Dismissed." and the buttons `That was helpful`, `Not relevant`, `Couldn’t understand`, and `Dismiss`
+
+#### Scenario: Offer and Explained Views
+
+- **WHEN** an offer has a card, and then the person presses `Learn more`
+- **THEN** the offer shows `Learn more`, `Knew this already`, and `Dismiss`, and the explained view shows `Understood`, `Chat in main session`, and `Dismiss`
+
+#### Scenario: Not Relevant
+
+- **WHEN** the person presses `Not relevant` on the asked view
+- **THEN** the view closes and the line stays out of the known list
+
+#### Scenario: Desktop Surface
+
+- **WHEN** the surface is `desktop`
+- **THEN** the buttons carry no hotkey
+
+### Requirement: A Note States Only What the Digest Shows
+
+The fixed instructions of a check SHALL tell the model to say only what the digest shows, and that a password or secret inside a command, such as an `osascript` keystroke or a Terminal window it drives, was not typed into the chat unless a message from the person holds it.
+
+#### Scenario: An osascript Keystroke
+
+- **WHEN** the call is `osascript -e 'tell application "System Events" to keystroke "…"'`
+- **THEN** the request carries that rule in its cached instructions block
+
+### Requirement: A Note Speaks the Person's Language
+
+The fixed instructions of a check SHALL tell the model to write the line in the language of the person's messages.
+
+#### Scenario: The Instructions
+
+- **WHEN** a check starts
+- **THEN** its cached instructions block asks for the line in the language of the person's messages

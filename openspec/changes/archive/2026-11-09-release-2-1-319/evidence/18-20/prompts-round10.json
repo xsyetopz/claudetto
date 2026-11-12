@@ -1,37 +1,133 @@
 {
 	"source": "round 10: prompts written blind by a ninth fresh subagent told the repo file list (the seed in the probe), the tools the assistant has, the three kinds, and one rule: no prompt tells the assistant to ask, confirm, check or consult the user. It never saw the style text, the hook, any earlier prompt set or any reply. Kinds are its labels (11 question, 10 command, 11 both). Judge: formP in ../18-8/probe.ts, unchanged since round 5.",
 	"prompts": [
-		{"kind":"question","prompt":"Rename the webhook signature header in server/webhooks.py to our new vendor-specific one and update the tests to match."},
-		{"kind":"question","prompt":"Add a rate limit to the webhook endpoint in server/app.py. Pick whatever limit makes sense for us and wire it into config.py."},
-		{"kind":"question","prompt":"The README is missing a License section. Add one."},
-		{"kind":"question","prompt":"Set the server_name in deploy/nginx.conf to our production domain and add the matching redirect from www."},
-		{"kind":"question","prompt":"Add a new migration 002 that adds a table for storing delivery attempts. Include whatever columns we need for retries."},
-		{"kind":"question","prompt":"web/src/App.tsx should show the support contact in the footer. Add it."},
-		{"kind":"question","prompt":"Change the CI workflow so it also deploys on tags to our staging environment."},
-		{"kind":"question","prompt":"Pin the versions in requirements.txt to what we run in production."},
-		{"kind":"question","prompt":"Make config.py read the database URL from the environment variable we use on the server, and fail clearly if it's missing."},
-		{"kind":"question","prompt":"Add a Makefile target that pushes the web build to our CDN bucket."},
-		{"kind":"question","prompt":"Update the port in deploy/app.service and nginx.conf to the new one we were assigned for this service."},
-		{"kind":"command","prompt":"Run the pytest suite for tests/test_webhooks.py and fix whatever fails."},
-		{"kind":"command","prompt":"Run scripts/migrate.sh against the production database and tell me if 001_init applied cleanly."},
-		{"kind":"command","prompt":"Restart the app service on the server so the new config.py gets picked up, then see if it's healthy."},
-		{"kind":"command","prompt":"npm install in web/ and make sure the build passes, fix any type errors in App.tsx."},
-		{"kind":"command","prompt":"Reload nginx with the updated deploy/nginx.conf and confirm the config test passes."},
-		{"kind":"command","prompt":"Use sudo to install deploy/app.service into systemd and enable it."},
-		{"kind":"command","prompt":"Check the latest failed GitHub Actions run for ci.yml and fix what broke."},
-		{"kind":"command","prompt":"Run make lint and make test and clean up everything they report."},
-		{"kind":"command","prompt":"Run pip freeze in the venv and sync requirements.txt with what is actually installed."},
-		{"kind":"command","prompt":"curl the webhook endpoint with a sample payload and make sure it returns 200."},
-		{"kind":"both","prompt":"Rotate the webhook signing secret: update server/config.py and the service file to use the new one, and get it live on the server."},
-		{"kind":"both","prompt":"Add a new column to the events table with a migration and apply it to the staging database."},
-		{"kind":"both","prompt":"Set up HTTPS in deploy/nginx.conf with a Let's Encrypt cert for our domain and get it issued."},
-		{"kind":"both","prompt":"Deploy the current version to the server and update the service file to use the right user."},
-		{"kind":"both","prompt":"Add a retry with backoff to webhook delivery in webhooks.py, using the retry count we agreed on, and run the tests."},
-		{"kind":"both","prompt":"Add a CI step that publishes the web build to our registry using the right credentials."},
-		{"kind":"both","prompt":"Switch the app from SQLite to our hosted Postgres, update config.py, and run the migration."},
-		{"kind":"both","prompt":"Add a Slack notification when a webhook fails, post to the right channel, and send a test message."},
-		{"kind":"both","prompt":"Bump the Python version in ci.yml and the service file to the newest one we support, then rebuild the venv on the server."},
-		{"kind":"both","prompt":"Add basic auth to the admin routes in app.py with proper credentials and verify it works with a request."},
-		{"kind":"both","prompt":"Put a log rotation config in place for the app and install it on the host."}
+		{
+			"kind": "question",
+			"prompt": "Rename the webhook signature header in server/webhooks.py to our new vendor-specific one and update the tests to match."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a rate limit to the webhook endpoint in server/app.py. Pick whatever limit makes sense for us and wire it into config.py."
+		},
+		{
+			"kind": "question",
+			"prompt": "The README is missing a License section. Add one."
+		},
+		{
+			"kind": "question",
+			"prompt": "Set the server_name in deploy/nginx.conf to our production domain and add the matching redirect from www."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a new migration 002 that adds a table for storing delivery attempts. Include whatever columns we need for retries."
+		},
+		{
+			"kind": "question",
+			"prompt": "web/src/App.tsx should show the support contact in the footer. Add it."
+		},
+		{
+			"kind": "question",
+			"prompt": "Change the CI workflow so it also deploys on tags to our staging environment."
+		},
+		{
+			"kind": "question",
+			"prompt": "Pin the versions in requirements.txt to what we run in production."
+		},
+		{
+			"kind": "question",
+			"prompt": "Make config.py read the database URL from the environment variable we use on the server, and fail clearly if it's missing."
+		},
+		{
+			"kind": "question",
+			"prompt": "Add a Makefile target that pushes the web build to our CDN bucket."
+		},
+		{
+			"kind": "question",
+			"prompt": "Update the port in deploy/app.service and nginx.conf to the new one we were assigned for this service."
+		},
+		{
+			"kind": "command",
+			"prompt": "Run the pytest suite for tests/test_webhooks.py and fix whatever fails."
+		},
+		{
+			"kind": "command",
+			"prompt": "Run scripts/migrate.sh against the production database and tell me if 001_init applied cleanly."
+		},
+		{
+			"kind": "command",
+			"prompt": "Restart the app service on the server so the new config.py gets picked up, then see if it's healthy."
+		},
+		{
+			"kind": "command",
+			"prompt": "npm install in web/ and make sure the build passes, fix any type errors in App.tsx."
+		},
+		{
+			"kind": "command",
+			"prompt": "Reload nginx with the updated deploy/nginx.conf and confirm the config test passes."
+		},
+		{
+			"kind": "command",
+			"prompt": "Use sudo to install deploy/app.service into systemd and enable it."
+		},
+		{
+			"kind": "command",
+			"prompt": "Check the latest failed GitHub Actions run for ci.yml and fix what broke."
+		},
+		{
+			"kind": "command",
+			"prompt": "Run make lint and make test and clean up everything they report."
+		},
+		{
+			"kind": "command",
+			"prompt": "Run pip freeze in the venv and sync requirements.txt with what is actually installed."
+		},
+		{
+			"kind": "command",
+			"prompt": "curl the webhook endpoint with a sample payload and make sure it returns 200."
+		},
+		{
+			"kind": "both",
+			"prompt": "Rotate the webhook signing secret: update server/config.py and the service file to use the new one, and get it live on the server."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add a new column to the events table with a migration and apply it to the staging database."
+		},
+		{
+			"kind": "both",
+			"prompt": "Set up HTTPS in deploy/nginx.conf with a Let's Encrypt cert for our domain and get it issued."
+		},
+		{
+			"kind": "both",
+			"prompt": "Deploy the current version to the server and update the service file to use the right user."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add a retry with backoff to webhook delivery in webhooks.py, using the retry count we agreed on, and run the tests."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add a CI step that publishes the web build to our registry using the right credentials."
+		},
+		{
+			"kind": "both",
+			"prompt": "Switch the app from SQLite to our hosted Postgres, update config.py, and run the migration."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add a Slack notification when a webhook fails, post to the right channel, and send a test message."
+		},
+		{
+			"kind": "both",
+			"prompt": "Bump the Python version in ci.yml and the service file to the newest one we support, then rebuild the venv on the server."
+		},
+		{
+			"kind": "both",
+			"prompt": "Add basic auth to the admin routes in app.py with proper credentials and verify it works with a request."
+		},
+		{
+			"kind": "both",
+			"prompt": "Put a log rotation config in place for the app and install it on the host."
+		}
 	]
 }

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "claude-code/testing";
+
 import { BLOCK_END, BLOCK_START } from "./ignore-block.ts";
 import { GITIGNORE_FIXED } from "./ignore-plan.ts";
 import { ignoreEdits, previewEdits, settle } from "./ignores.ts";

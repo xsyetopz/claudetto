@@ -1,10 +1,16 @@
 import { readFileSync } from "node:fs";
+
 import { bootstrapMean, wilson } from "../../18-5/harness.ts";
 const [runs, jsonl] = [process.argv[2]!, process.argv[3]!];
-const rows = readFileSync(jsonl, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+const rows = readFileSync(jsonl, "utf8")
+	.trim()
+	.split("\n")
+	.map((l) => JSON.parse(l));
 const purpose = (cmd: string): string => {
 	const test = /\bbun test\b/.test(cmd);
-	const cat = /\b(cat|head|tail|sed -n)\s+[^|;&]*\.(ts|json|md)\b/.test(cmd.replace(/bun test[^;&]*/, ""));
+	const cat = /\b(cat|head|tail|sed -n)\s+[^|;&]*\.(ts|json|md)\b/.test(
+		cmd.replace(/bun test[^;&]*/, ""),
+	);
 	if (/git (commit|add)/.test(cmd)) return "git commit or add";
 	if (test && cat) return "tests plus a read";
 	if (test) return "tests only";
@@ -14,7 +20,21 @@ const purpose = (cmd: string): string => {
 };
 const acc: Record<string, any> = {};
 for (const r of rows) {
-	const a = (acc[r.arm] ??= { n: 0, out: [] as number[], fixed: 0, turns: 0, calls: 0, toolSearch: 0, denials: 0, stopBlocks: 0, shape: 0, usd: 0, largest: 0, purposes: {} as Record<string, number>, extra: 0 });
+	const a = (acc[r.arm] ??= {
+		n: 0,
+		out: [] as number[],
+		fixed: 0,
+		turns: 0,
+		calls: 0,
+		toolSearch: 0,
+		denials: 0,
+		stopBlocks: 0,
+		shape: 0,
+		usd: 0,
+		largest: 0,
+		purposes: {} as Record<string, number>,
+		extra: 0,
+	});
 	const text = readFileSync(`${runs}/${r.runId}/stdout.txt`, "utf8");
 	a.n++;
 	a.out.push(r.usage.output_tokens);
@@ -48,6 +68,13 @@ for (const r of rows) {
 for (const [arm, a] of Object.entries<any>(acc)) {
 	const [lo, hi] = bootstrapMean(a.out);
 	const [wl, wh] = wilson(a.fixed, a.n);
-	console.log(`${arm}: n=${a.n} output mean ${(a.out.reduce((s: number, v: number) => s + v, 0) / a.n).toFixed(1)} (bootstrap ${lo.toFixed(1)}-${hi.toFixed(1)}) turns/session ${(a.turns / a.n).toFixed(2)} tool calls/session ${(a.calls / a.n).toFixed(2)} ToolSearch ${(a.toolSearch / a.n).toFixed(2)} denials ${(a.denials / a.n).toFixed(2)} stopBlocks ${(a.stopBlocks / a.n).toFixed(2)} shapeErr sessions ${a.shape} fixed ${a.fixed}/${a.n} Wilson ${wl.toFixed(3)}-${wh.toFixed(3)} usd ${a.usd.toFixed(4)} largest ${a.largest}`);
-	console.log("   bash by purpose per session:", Object.entries(a.purposes).map(([k, v]) => `${k} ${(v as number)}`).join("; "));
+	console.log(
+		`${arm}: n=${a.n} output mean ${(a.out.reduce((s: number, v: number) => s + v, 0) / a.n).toFixed(1)} (bootstrap ${lo.toFixed(1)}-${hi.toFixed(1)}) turns/session ${(a.turns / a.n).toFixed(2)} tool calls/session ${(a.calls / a.n).toFixed(2)} ToolSearch ${(a.toolSearch / a.n).toFixed(2)} denials ${(a.denials / a.n).toFixed(2)} stopBlocks ${(a.stopBlocks / a.n).toFixed(2)} shapeErr sessions ${a.shape} fixed ${a.fixed}/${a.n} Wilson ${wl.toFixed(3)}-${wh.toFixed(3)} usd ${a.usd.toFixed(4)} largest ${a.largest}`,
+	);
+	console.log(
+		"   bash by purpose per session:",
+		Object.entries(a.purposes)
+			.map(([k, v]) => `${k} ${v as number}`)
+			.join("; "),
+	);
 }

@@ -1,0 +1,8 @@
+{
+	"oxc.enable.oxlint": true,
+	"oxc.enable.oxfmt": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.oxc": "explicit"
+	},
+	"js/ts.tsdk.path": "node_modules/typescript"
+}

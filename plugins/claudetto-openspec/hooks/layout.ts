@@ -3,8 +3,8 @@ import { archivedChanges } from "./status.ts";
 import { laidOut, notKebab, opened, SET_UP, taken } from "./texts.ts";
 import { changeDir } from "./validate.ts";
 
-const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const ARCHIVED = /^\d{4}-\d{2}-\d{2}-(.+)$/;
+const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+const ARCHIVED = /^\d{4}-\d{2}-\d{2}-(.+)$/u;
 const LAYOUT = [
 	["config.yaml", "schema: spec-driven\n"],
 	["specs/.gitkeep", ""],
@@ -19,8 +19,10 @@ export const init = async (fs: Fs, root: string) => {
 	const present = await Promise.all(
 		LAYOUT.map(([file]) => fs.exists(join(dir, file))),
 	);
-	const missing = LAYOUT.filter((_, i) => !present[i]);
-	await Promise.all(missing.map(([file, text]) => fs.write(join(dir, file), text)));
+	const missing = LAYOUT.filter((_, i) => present[i] !== true);
+	await Promise.all(
+		missing.map(([file, text]) => fs.write(join(dir, file), text)),
+	);
 	return laidOut(missing.map(([file]) => `openspec/${file}`));
 };
 
@@ -36,9 +38,8 @@ export const create = async (
 	if (await fs.exists(changeDir(root, name))) {
 		return taken(name, name);
 	}
-	const old = (await archivedChanges(fs, root)).find(
-		(f) => ARCHIVED.exec(f)?.[1] === name,
-	);
+	const awaited = await archivedChanges(fs, root);
+	const old = awaited.find((f) => ARCHIVED.exec(f)?.[1] === name);
 	if (old !== undefined) {
 		return taken(name, `archive/${old}`);
 	}

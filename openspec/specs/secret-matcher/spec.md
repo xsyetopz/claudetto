@@ -19,18 +19,9 @@ claudetto SHALL find secrets only with betterleaks, at the version `hooks/secret
 - **WHEN** a tool result holds no secret
 - **THEN** the result reaches the model unchanged
 
-### Requirement: Every Tool Result and Every Handoff Is Scanned
-
-The gate SHALL scan each tool's result before the model sees it, and an errored result that holds a secret SHALL reach the model redacted, as a deny. The handoff writer SHALL scan a handoff before it is written, and the read-back SHALL scan the next prompt before it is injected.
-
-#### Scenario: A Key in a Handoff Field
-
-- **WHEN** a handoff's next prompt holds a key
-- **THEN** neither the written file nor the injected prompt holds it
-
 ### Requirement: A Scan That Cannot Run Withholds the Text
 
-When betterleaks is missing or fails, the gate SHALL deny the call with an error naming `brew install betterleaks`, and the handoff SHALL NOT be written. An error raised beneath the gate SHALL reach the caller unchanged.
+When betterleaks is missing or fails, the gate SHALL deny the call with an error naming `brew install betterleaks`. An error raised beneath the gate SHALL reach the caller unchanged.
 
 #### Scenario: A Missing Scanner
 
@@ -45,3 +36,13 @@ Setup SHALL list betterleaks as a required tool. Its launch notice SHALL show at
 
 - **WHEN** the user answers No to installing betterleaks
 - **THEN** nothing runs, nothing is recorded, and the reply names `brew install betterleaks`
+
+### Requirement: Every Tool Result Is Scanned
+
+The gate SHALL scan each tool's result before the model sees it, and an errored result that holds a secret SHALL reach the model redacted, as a deny.
+
+#### Scenario: A Key in a Tool Result
+
+- **WHEN** a tool result holds a key the scanner finds
+- **THEN** the model sees `[REDACTED]` in its place
+- **AND** the lab tests are in `gate.test.ts`, among them "an errored result with a secret reaches the model redacted, as a deny"

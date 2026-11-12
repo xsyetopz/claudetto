@@ -1,8 +1,8 @@
 export const TOOL_NAME = "openspec";
-export const TOOL_CALL = /^mcp__claudetto-openspec__openspec$/;
+export const TOOL_CALL = /^mcp__claudetto-openspec__openspec$/u;
 
 export const TOOL_DESCRIPTION =
-	"OpenSpec changes in `openspec/`. `init` lays out `openspec/` in a new project. `new` opens the change named `change`. `status` lists the active changes and then the archived ones, or for one `change` marks each artifact done, ready, or blocked, with task progress and each unticked task as its `- [ ]` line with the line number. `list` names each main spec with its requirement count. `validate` (the default) runs the strict check on one change, or on every change and every main spec in `openspec/specs/` when `change` is absent. `archive` validates, refuses a change with an unticked task, merges its delta specs into `openspec/specs/`, and moves it to `openspec/changes/archive/`.";
+	"Works the OpenSpec changes in `openspec/`: `init`, `new`, `status`, `list`, `validate` (the default), and `archive`, which refuses a change with an unticked task. `change` names the change folder.";
 
 export const TOOL_INPUT_SCHEMA = {
 	type: "object",
@@ -10,18 +10,26 @@ export const TOOL_INPUT_SCHEMA = {
 		action: {
 			type: "string",
 			enum: ["init", "new", "status", "list", "validate", "archive"],
+			description:
+				"`init` sets up `openspec/`. `new` opens `change`. `status` lists changes, or one's artifacts and unticked tasks. `list` counts requirements per main spec. `archive` merges deltas into the specs.",
 		},
-		change: { type: "string", description: "The change folder name." },
+		change: {
+			type: "string",
+			description:
+				"The change folder name. `validate` without it checks every change and main spec.",
+		},
 	},
 	additionalProperties: false,
 };
 
 export const NO_OPENSPEC = "No openspec/changes folder in this project.";
-export const needsChange = (action: string) => `\`${action}\` needs \`change\`.`;
+export const needsChange = (action: string) =>
+	`\`${action}\` needs \`change\`.`;
 export const NO_CHANGES = "No active changes.";
 export const NOTHING = "No active changes and no main specs.";
 export const NO_SPECS = "No main specs in openspec/specs/.";
-export const SET_UP = "openspec/ is already set up: openspec/config.yaml exists.";
+export const SET_UP =
+	"openspec/ is already set up: openspec/config.yaml exists.";
 
 export const laidOut = (files: string[]) => `Wrote ${files.join(", ")}.`;
 
@@ -54,6 +62,9 @@ export const statusDetail = (
 export const specLine = (id: string, count: number) => `${id} ${count}`;
 
 export const requirementPath = (name: string) => `Requirement "${name}"`;
+
+export const cutNote = (lines: number) =>
+	`[claudetto: ${lines} more lines not shown]`;
 
 export const openLine = (line: number, text: string) =>
 	`tasks.md:${line} ${text}`;

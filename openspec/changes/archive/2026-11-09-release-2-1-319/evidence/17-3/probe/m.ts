@@ -4,11 +4,21 @@ export const register = (on: any): void => {
 		const out = await Promise.all(
 			prompts.map(async (p: any) => {
 				const t = Date.now();
-				const r = await $.model.complete({ model: "haiku", prompt: p.prompt, maxTokens: 300, timeoutMs: 15_000 }).catch((err: any) => ({ threw: String(err) }));
+				const r = await $.model
+					.complete({
+						model: "haiku",
+						prompt: p.prompt,
+						maxTokens: 300,
+						timeoutMs: 15_000,
+					})
+					.catch((err: any) => ({ threw: String(err) }));
 				return { id: p.id, ms: Date.now() - t, ...r };
 			}),
 		);
-		await $.fs.write("/tmp/probe-17-3/hook-log.json", JSON.stringify(out, null, 1));
+		await $.fs.write(
+			"/tmp/probe-17-3/hook-log.json",
+			JSON.stringify(out, null, 1),
+		);
 		return next(e);
 	});
 };

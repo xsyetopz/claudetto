@@ -1,27 +1,31 @@
 import { ELLIPSIS } from "./icons.ts";
 
-const ESC = String.fromCharCode(27);
-const BEL = String.fromCharCode(7);
+const ESC = String.fromCodePoint(27);
+const BEL = String.fromCodePoint(7);
 // A CSI sequence is `ESC [`, parameter bytes 0x30-0x3F, intermediate bytes 0x20-0x2F, and a final byte 0x40-0x7E (ECMA-48 5th ed., 5.4); an OSC string ends with `ESC \` (ECMA-48 8.3.89) or with `BEL` (XTerm Control Sequences, patch 411).
 const CSI = `${ESC}\\[[0-?]*[ -/]*[@-~]`;
 const OSC = `${ESC}\\][^${BEL}${ESC}]*(?:${BEL}|${ESC}\\\\)`;
-const ESCAPE = new RegExp(`${CSI}|${OSC}`, "g");
-const ESCAPE_SPLIT = new RegExp(`(${CSI}|${OSC})`);
+const ESCAPE = new RegExp(`${CSI}|${OSC}`, "gu");
+const ESCAPE_SPLIT = new RegExp(`(${CSI}|${OSC})`, "u");
 const BREAKS = /[\p{Cc}\p{Cs}\p{Zl}\p{Zp}]/gu;
 const INVISIBLE = /\p{Cf}/gu;
-const SPACES = /\s+/g;
+const SPACES = /\s+/gu;
 const RESET = `${ESC}[0m`;
 const LINK_END = `${ESC}]8;;${BEL}`;
-const LINK_OPEN = new RegExp(`^${ESC}\\]8;;.`);
+const LINK_OPEN = new RegExp(`^${ESC}\\]8;;.`, "u");
 const VS16 = "️";
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 
 /** `text` without escape sequences: colors and links take no column. */
-export const plain = (text: string): string => text.replace(ESCAPE, "");
+export const plain = (text: string): string => text.replaceAll(ESCAPE, "");
 
 /** A string from outside made safe to print: no control, format, or line-break character, so it cannot move the cursor, start an escape, or reorder the line; runs of space become one. */
 export const clean = (text: string): string =>
-	text.replace(INVISIBLE, "").replace(BREAKS, " ").replace(SPACES, " ").trim();
+	text
+		.replaceAll(INVISIBLE, "")
+		.replaceAll(BREAKS, " ")
+		.replaceAll(SPACES, " ")
+		.trim();
 
 const columnsOf = (cluster: string): number => {
 	// The wider of the two readings of an East Asian Ambiguous glyph (UAX #11), a choice: a terminal that draws it wide never overflows, and one that draws it narrow only leaves a column free.

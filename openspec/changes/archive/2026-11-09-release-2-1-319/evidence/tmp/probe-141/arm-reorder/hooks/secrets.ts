@@ -1,4 +1,5 @@
 import type { EngineInterface } from "claude-code";
+
 import { secretScanFailed } from "./texts.ts";
 
 export const SCANNER = "betterleaks";

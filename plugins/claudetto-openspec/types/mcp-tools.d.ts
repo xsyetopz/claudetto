@@ -1,5 +1,4 @@
 // The input of the tool this plugin registers, so `$.tool.call` accepts its name.
-export {};
 
 declare module "claude-code" {
 	interface McpToolInputs {

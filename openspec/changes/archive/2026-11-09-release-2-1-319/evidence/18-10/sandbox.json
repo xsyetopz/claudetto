@@ -1,1 +1,24 @@
-{"sandbox":{"enabled":true,"allowUnsandboxedCommands":false,"filesystem":{"allowWrite":["~/.cache","~/.bun","~/.npm","~/Library/Caches","/private/tmp"],"denyRead":["~/.aws","~/.azure","~/.config/gcloud","~/.netrc","~/.git-credentials"]},"network":{"allowedDomains":["*"]}},"permissions":{"allow":["Bash"]}}
+{
+	"sandbox": {
+		"enabled": true,
+		"allowUnsandboxedCommands": false,
+		"filesystem": {
+			"allowWrite": [
+				"~/.cache",
+				"~/.bun",
+				"~/.npm",
+				"~/Library/Caches",
+				"/private/tmp"
+			],
+			"denyRead": [
+				"~/.aws",
+				"~/.azure",
+				"~/.config/gcloud",
+				"~/.netrc",
+				"~/.git-credentials"
+			]
+		},
+		"network": { "allowedDomains": ["*"] }
+	},
+	"permissions": { "allow": ["Bash"] }
+}

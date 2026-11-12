@@ -119,7 +119,12 @@ Allow rules that setup writes SHALL be narrow, such as `Bash(npm test)`, and set
 
 ### Requirement: Let the Sandbox Settle Shell Commands
 
-Setup SHALL enable the built-in sandbox where the platform supports it, with the keys of the `sandbox` spec, so that `autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call. Setup SHALL set `allowUnsandboxedCommands` to `false`, add `denyRead` for cloud-credential files, and set `network.allowedDomains` to `["*"]` and `filesystem.allowWrite` to the temp folder and the tool caches.
+Setup SHALL enable the built-in sandbox where the platform supports it, with the keys of the `sandbox` spec, so that `autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call. Setup SHALL set `allowUnsandboxedCommands` to `true`, add `denyRead` for cloud-credential files, and set `network.allowedDomains` to `["*"]` and `filesystem.allowWrite` to the temp folder and the tool caches.
+
+#### Scenario: A Command the Sandbox Blocks
+
+- **WHEN** the sandbox blocks a command
+- **THEN** it retries outside the sandbox under the permission flow instead of going to the user, because `allowUnsandboxedCommands` is `true`
 
 #### Scenario: Least Friction
 
@@ -152,7 +157,12 @@ Auto mode pauses prompting after 3 denials in a row or 20 in total. Claudetto SH
 
 ### Requirement: Choose the Classifier Model by Measurement
 
-The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode: the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register no `tool.check` hook that judges a permission.
+The classifier route SHALL be chosen by measurement on the gate fixtures in auto mode. The cheaper route whose verdicts match at least as many fixtures SHALL ship, and the measurement SHALL record which model answered. The Mod SHALL register one `tool.check` hook, and it SHALL only tighten a verdict, or turn a bare `ask` on a read-only command into `allow`; it SHALL NOT ask a model, Jev or another, to judge a permission.
+
+#### Scenario: The Two Routes
+
+- **WHEN** the classifier route is measured
+- **THEN** the routes are the built-in classifier with the trimmed `autoMode` lists that setup writes, against a Mod `tool.check` route that asks Jev first and falls back to `claude-haiku-5-5`
 
 #### Scenario: Measured Route
 
@@ -164,6 +174,11 @@ The classifier route SHALL be chosen by measurement on the gate fixtures in auto
 
 - **WHEN** no measurement exists
 - **THEN** setup does not set `CLAUDE_CODE_AUTO_MODE_MODEL` and no Jev hook decides a permission
+
+#### Scenario: The Gate Hook
+
+- **WHEN** the Mod registers its hooks
+- **THEN** the one `tool.check` hook is the gate (`gate.ts:234`), and no request from it reaches a model (`decide.test.ts`, "A Gated Tool Call: Bash and Edit send nothing")
 
 ### Requirement: Fail Closed When the Classifier Is Down
 
@@ -185,12 +200,12 @@ Claudetto's `deny` rules and its `hard_deny` entries SHALL stay in every tier, b
 
 ### Requirement: A Decision of the Model Goes to a Registered Tool
 
-With the option `decide` set to `jev` and a key set, claudetto SHALL register the tool `mcp__claudetto__decide` at `session.start`, and the model SHALL call it for a decision that is the model's own. The reply SHALL name the pick and its confidence for each question Jev is sure about, and SHALL say so for each question it is not, because silence would read as a pick.
+When a `typesafeApiKey` is set, claudetto SHALL register the tool `mcp__claudetto__decide` at `session.start` (`register.ts:35-37`), and the model SHALL call it for a decision that is the model's own. No option named `decide` is read. The reply SHALL name the pick and its probability for each question Jev is sure about (`texts.ts:325-326`, "probability 0.NN"), and SHALL say so for each question it is not, because silence would read as a pick.
 
 #### Scenario: Decision of the Model
 
 - **WHEN** the model calls `mcp__claudetto__decide` with a question that has two or more options
-- **THEN** one request goes to the TypeSafe API, and the reply names the pick and its confidence, with no dialog
+- **THEN** one request goes to the TypeSafe API, and the reply names the pick and its probability, with no dialog
 
 #### Scenario: Jev Not Sure
 
@@ -199,7 +214,7 @@ With the option `decide` set to `jev` and a key set, claudetto SHALL register th
 
 #### Scenario: No Key
 
-- **WHEN** the option is `jev` and no key is set
+- **WHEN** no key is set
 - **THEN** no tool is registered, so the model never sees a tool it cannot call
 
 ### Requirement: The Dialog Reaches the User
@@ -228,3 +243,70 @@ Each `autoMode` list that setup writes SHALL replace the built-in list and name 
 
 - **WHEN** setup writes `autoMode`
 - **THEN** no list names `$defaults`, and `claude auto-mode config` says it replaces the defaults
+
+### Requirement: No Hook Changes a Call's Input in Auto Mode
+
+No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for `search` and `plan`) and name the form to send. No hook SHALL rewrite a `ToolSearch` query or result.
+
+#### Scenario: An Agent Call Off Its Form
+
+- **WHEN** the model calls `Agent` with `subagent_type` `Explore`, or with none
+- **THEN** the call is denied with the exact form to send and nothing runs, and the other calls of the response keep their review
+- **AND** the lab tests are `delegation.test.ts`, "a call typed ... is refused with its exact form, never rewritten"
+
+#### Scenario: A ToolSearch Query Naming AskUserQuestion
+
+- **WHEN** a `ToolSearch` query names `AskUserQuestion`
+- **THEN** the query reaches `ToolSearch` as written and the result lists `AskUserQuestion` as it came
+
+#### Scenario: A ToolSearch Query Naming Monitor
+
+- **WHEN** a `ToolSearch` query names `Monitor`
+- **THEN** the query reaches `ToolSearch` as written and the result lists `Monitor` as it came
+- **AND** the lab test is `delegation-tools.test.ts`, "a result that lists Monitor is returned as it came"
+
+### Requirement: An Unexplained Server Denial Is Out of Reach
+
+The server verdict `flagged` carries an optional `explanation`; when the server leaves it out, the client prints "judged this action dangerous (it gave no explanation)" and no setting changes that text. The client still names the rule when the verdict cites an `autoMode.soft_deny` entry, so setup's soft list SHALL leave no block without a rule to cite. claudetto SHALL keep reporting a call denied twice with neither a reason nor a rule with the `!` form.
+
+#### Scenario: A Block Without a Rule
+
+- **WHEN** setup writes its soft list
+- **THEN** no block is left without a rule to cite, per the setup requirement "The Auto Mode Group Carries Fixed Values"
+
+#### Scenario: Denied Twice with No Reason
+
+- **WHEN** auto mode denies the same `make deploy` call twice with "(it gave no explanation)"
+- **THEN** the gate denies a third send and names the command as `` `! make deploy` `` for the user (`hooks/tool.check/useBashRules/gate.test.ts`)
+
+### Requirement: A Watch Runs Through the Built-in Monitor
+
+The model SHALL watch a command or a WebSocket through the built-in `Monitor`, and claudetto SHALL register no monitor tool of its own, because the rebuild passed its inputs to the built-in tool and added no effect. Claudetto SHALL deny no `Monitor` call for being the built-in one; the gate and the memory hold judge its `command` as they judge a `Bash` command.
+
+#### Scenario: The Model Starts a Watch
+
+- **WHEN** the model calls `Monitor` with a command the gate allows
+- **THEN** the call reaches the engine as sent, and its start text comes back as the engine gave it
+- **AND** the lab test is `delegation-tools.test.ts`, "the model's own Monitor call reaches the engine as sent"
+
+### Requirement: A Question to the Person Goes Through the Built-in Dialog
+
+The model SHALL ask the person through the built-in `AskUserQuestion`, and claudetto SHALL register no ask tool of its own, because auto mode's classifier reads a popup answer only from that tool: it adds the answer to its transcript as `[User answered AskUserQuestion]: …` and drops every other tool's result. Claudetto SHALL replace the tool's description with `ASK_TEXT`, one sentence, and SHALL defer the tool when the session has `ToolSearch`. Setup's own questions SHALL go through `$.ui.ask`.
+
+#### Scenario: The Model Asks
+
+- **WHEN** the model calls `AskUserQuestion` and no `no-questions` constraint holds
+- **THEN** the call reaches the engine's dialog as sent, and its answer comes back as the engine gave it
+- **AND** the lab test is `delegation-tools.test.ts`, "the model's own AskUserQuestion call reaches the dialog as sent"
+
+#### Scenario: The Description
+
+- **WHEN** the engine describes `AskUserQuestion` in a session with `ToolSearch`
+- **THEN** the description is `ASK_TEXT` and the tool is deferred
+- **AND** in a session with no `ToolSearch` the description is `ASK_TEXT` and the tool stays in the list
+- **AND** the lab tests are `delegation-tools.test.ts`, "AskUserQuestion gets the one-sentence description and goes behind ToolSearch" and "AskUserQuestion stays in the list when the session has no ToolSearch"
+
+#### Scenario: Setup Asks
+
+- **WHEN** setup asks the person which option to take
+- **THEN** the question goes through `$.ui.ask`, and a dismissed dialog rejects

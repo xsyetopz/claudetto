@@ -11,9 +11,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # The recipes of `just check`, run one by one so that the `justfile` stays the one definition of each step.
-  # `just typecheck` is left out: `bun check` needs `.claude-plugin/types/`, which Claude Code writes only
-  # when an interactive session loads the plugin, so the type check runs only in the local `just check`.
+  # The project recipes of `just check`, run one by one so that `project.just` stays the one definition of each step.
+  # The TypeScript workflow runs `typescript::verify`.
   check:
     strategy:
       fail-fast: false
@@ -65,7 +64,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq bubblewrap
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-      - run: just lint
+      - run: just lint-markdown lint-hooks clones
       - run: just test
       - run: just validate
       - run: just lab

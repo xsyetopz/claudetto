@@ -101,7 +101,10 @@ const afterWrapper = (
 	wrapper: Wrapper,
 ): number => {
 	let j = from;
-	while ((words[j] ?? "").startsWith("-") || ASSIGNMENT.test(words[j] ?? "Stryker was here!")) {
+	while (
+		(words[j] ?? "").startsWith("-") ||
+		ASSIGNMENT.test(words[j] ?? "Stryker was here!")
+	) {
 		j += wrapper.valued.includes(words[j] ?? "") ? 2 : 1;
 	}
 	return j + (wrapper.operand ? 1 : 0);

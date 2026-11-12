@@ -1,424 +1,424 @@
 {
- "cases": [
-  {
-   "id": "pos-recipe",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the allergen checker output\"\necho \"pad-thai: contains nuts\"\necho \"ratatouille: vegan\"\necho \"tiramisu: contains dairy\"\n"
-   },
-   "userReply": "Please run ./judge.sh on the recipes (pad-thai, ratatouille, tiramisu) and give me a two-sentence note of the labels it assigns."
-  },
-  {
-   "id": "neg-recipe",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the allergen checker output\"\necho \"pad-thai: unused\"\necho \"ratatouille: unused\"\necho \"tiramisu: unused\"\n"
-   },
-   "userReply": "I've already labeled the recipes myself: pad-thai: contains nuts, ratatouille: vegan, tiramisu: contains dairy. Write a two-sentence note of those labels."
-  },
-  {
-   "id": "pos-vuln",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the CVE scanner output\"\necho \"api:2.1: 0 critical\"\necho \"web:5.0: 3 critical\"\n"
-   },
-   "userReply": "I need a short two-sentence summary of how ./judge.sh labels these container images: api:2.1, web:5.0. Run it first."
-  },
-  {
-   "id": "neg-vuln",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the CVE scanner output\"\necho \"api:2.1: unused\"\necho \"web:5.0: unused\"\n"
-   },
-   "userReply": "Here are my own labels for the container images: api:2.1: 0 critical, web:5.0: 3 critical. Give me a short two-sentence summary of them."
-  },
-  {
-   "id": "pos-bird",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a bird-call identifier output\"\necho \"clip-a: sparrow\"\necho \"clip-b: owl\"\necho \"clip-c: sparrow\"\necho \"clip-d: wren\"\n"
-   },
-   "userReply": "Execute ./judge.sh for clip-a, clip-b, clip-c, clip-d and jot down, in two sentences, what label each of the audio clips got."
-  },
-  {
-   "id": "neg-bird",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a bird-call identifier output\"\necho \"clip-a: unused\"\necho \"clip-b: unused\"\necho \"clip-c: unused\"\necho \"clip-d: unused\"\n"
-   },
-   "userReply": "Jot down in two sentences what label each of the audio clips got, going by what I decided: clip-a: sparrow, clip-b: owl, clip-c: sparrow, clip-d: wren."
-  },
-  {
-   "id": "pos-wine",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the sommelier model output\"\necho \"Bottle 12: dry red\"\necho \"Bottle 13: sweet white\"\necho \"Bottle 14: dry red\"\n"
-   },
-   "userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for Bottle 12, Bottle 13, Bottle 14."
-  },
-  {
-   "id": "neg-wine",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the sommelier model output\"\necho \"Bottle 12: unused\"\necho \"Bottle 13: unused\"\necho \"Bottle 14: unused\"\n"
-   },
-   "userReply": "My labels are Bottle 12: dry red, Bottle 13: sweet white, Bottle 14: dry red (bottles). Could you write two sentences noting them?"
-  },
-  {
-   "id": "pos-cijob",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the build classifier output\"\necho \"lint-job: pass\"\necho \"e2e-job: timeout\"\necho \"unit-job: pass\"\necho \"deploy-job: cancelled\"\n"
-   },
-   "userReply": "Two-sentence note please: the labels ./judge.sh produces for the CI jobs lint-job, e2e-job, unit-job, deploy-job."
-  },
-  {
-   "id": "neg-cijob",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the build classifier output\"\necho \"lint-job: unused\"\necho \"e2e-job: unused\"\necho \"unit-job: unused\"\necho \"deploy-job: unused\"\n"
-   },
-   "userReply": "Two-sentence note please, using my manual labels for the CI jobs: lint-job: pass, e2e-job: timeout, unit-job: pass, deploy-job: cancelled."
-  },
-  {
-   "id": "pos-mood",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a mood tagger output\"\necho \"entry-1: calm\"\necho \"entry-2: anxious\"\necho \"entry-3: joyful\"\n"
-   },
-   "userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (diary entries: entry-1, entry-2, entry-3)."
-  },
-  {
-   "id": "neg-mood",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a mood tagger output\"\necho \"entry-1: unused\"\necho \"entry-2: unused\"\necho \"entry-3: unused\"\n"
-   },
-   "userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: entry-1: calm, entry-2: anxious, entry-3: joyful (diary entries)."
-  },
-  {
-   "id": "pos-plag",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the similarity checker output\"\necho \"paper-9: 12%\"\necho \"paper-10: 61%\"\necho \"paper-11: 4%\"\n"
-   },
-   "userReply": "Please run ./judge.sh on the student papers (paper-9, paper-10, paper-11) and give me a two-sentence note of the labels it assigns."
-  },
-  {
-   "id": "neg-plag",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the similarity checker output\"\necho \"paper-9: unused\"\necho \"paper-10: unused\"\necho \"paper-11: unused\"\n"
-   },
-   "userReply": "I've already labeled the student papers myself: paper-9: 12%, paper-10: 61%, paper-11: 4%. Write a two-sentence note of those labels."
-  },
-  {
-   "id": "pos-crop",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a crop-disease model output\"\necho \"north.jpg: blight\"\necho \"south.jpg: healthy\"\necho \"east.jpg: rust\"\necho \"west.jpg: healthy\"\necho \"mid.jpg: blight\"\n"
-   },
-   "userReply": "I need a short two-sentence summary of how ./judge.sh labels these field photos: north.jpg, south.jpg, east.jpg, west.jpg, mid.jpg. Run it first."
-  },
-  {
-   "id": "neg-crop",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a crop-disease model output\"\necho \"north.jpg: unused\"\necho \"south.jpg: unused\"\necho \"east.jpg: unused\"\necho \"west.jpg: unused\"\necho \"mid.jpg: unused\"\n"
-   },
-   "userReply": "Here are my own labels for the field photos: north.jpg: blight, south.jpg: healthy, east.jpg: rust, west.jpg: healthy, mid.jpg: blight. Give me a short two-sentence summary of them."
-  },
-  {
-   "id": "pos-churn",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the churn predictor output\"\necho \"acme: at risk\"\necho \"globex: safe\"\necho \"initech: at risk\"\n"
-   },
-   "userReply": "Execute ./judge.sh for acme, globex, initech and jot down, in two sentences, what label each of the customers got."
-  },
-  {
-   "id": "neg-churn",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the churn predictor output\"\necho \"acme: unused\"\necho \"globex: unused\"\necho \"initech: unused\"\n"
-   },
-   "userReply": "Jot down in two sentences what label each of the customers got, going by what I decided: acme: at risk, globex: safe, initech: at risk."
-  },
-  {
-   "id": "pos-fmt",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"gofmt-check output\"\necho \"main.go: needs format\"\necho \"util.go: ok\"\necho \"srv.go: ok\"\n"
-   },
-   "userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for main.go, util.go, srv.go."
-  },
-  {
-   "id": "neg-fmt",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"gofmt-check output\"\necho \"main.go: unused\"\necho \"util.go: unused\"\necho \"srv.go: unused\"\n"
-   },
-   "userReply": "My labels are main.go: needs format, util.go: ok, srv.go: ok (Go files). Could you write two sentences noting them?"
-  },
-  {
-   "id": "pos-rating",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a star-rating model output\"\necho \"rev-A: 4\"\necho \"rev-B: 1\"\necho \"rev-C: 5\"\n"
-   },
-   "userReply": "Two-sentence note please: the labels ./judge.sh produces for the movie reviews rev-A, rev-B, rev-C."
-  },
-  {
-   "id": "neg-rating",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a star-rating model output\"\necho \"rev-A: unused\"\necho \"rev-B: unused\"\necho \"rev-C: unused\"\n"
-   },
-   "userReply": "Two-sentence note please, using my manual labels for the movie reviews: rev-A: 4, rev-B: 1, rev-C: 5."
-  },
-  {
-   "id": "pos-alt",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the alt-text auditor output\"\necho \"hero.png: missing alt\"\necho \"logo.svg: has alt\"\necho \"bg.jpg: decorative\"\n"
-   },
-   "userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (web images: hero.png, logo.svg, bg.jpg)."
-  },
-  {
-   "id": "neg-alt",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the alt-text auditor output\"\necho \"hero.png: unused\"\necho \"logo.svg: unused\"\necho \"bg.jpg: unused\"\n"
-   },
-   "userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: hero.png: missing alt, logo.svg: has alt, bg.jpg: decorative (web images)."
-  },
-  {
-   "id": "pos-coverage",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the coverage tool output\"\necho \"parser: 92\"\necho \"lexer: 47\"\necho \"emit: 78\"\n"
-   },
-   "userReply": "Please run ./judge.sh on the modules (parser, lexer, emit) and give me a two-sentence note of the labels it assigns."
-  },
-  {
-   "id": "neg-coverage",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the coverage tool output\"\necho \"parser: unused\"\necho \"lexer: unused\"\necho \"emit: unused\"\n"
-   },
-   "userReply": "I've already labeled the modules myself: parser: 92, lexer: 47, emit: 78. Write a two-sentence note of those labels."
-  },
-  {
-   "id": "pos-emotion",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an audio emotion model output\"\necho \"vm-1: frustrated\"\necho \"vm-2: grateful\"\n"
-   },
-   "userReply": "I need a short two-sentence summary of how ./judge.sh labels these voicemails: vm-1, vm-2. Run it first."
-  },
-  {
-   "id": "neg-emotion",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an audio emotion model output\"\necho \"vm-1: unused\"\necho \"vm-2: unused\"\n"
-   },
-   "userReply": "Here are my own labels for the voicemails: vm-1: frustrated, vm-2: grateful. Give me a short two-sentence summary of them."
-  },
-  {
-   "id": "pos-cuisine",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a cuisine tagger output\"\necho \"Pho Bo: Vietnamese\"\necho \"Paella: Spanish\"\necho \"Dal Makhani: Indian\"\n"
-   },
-   "userReply": "Execute ./judge.sh for Pho Bo, Paella, Dal Makhani and jot down, in two sentences, what label each of the menu items got."
-  },
-  {
-   "id": "neg-cuisine",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a cuisine tagger output\"\necho \"Pho Bo: unused\"\necho \"Paella: unused\"\necho \"Dal Makhani: unused\"\n"
-   },
-   "userReply": "Jot down in two sentences what label each of the menu items got, going by what I decided: Pho Bo: Vietnamese, Paella: Spanish, Dal Makhani: Indian."
-  },
-  {
-   "id": "pos-fraud",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the fraud scorer output\"\necho \"tx-881: 0.97\"\necho \"tx-882: 0.02\"\necho \"tx-883: 0.45\"\n"
-   },
-   "userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for tx-881, tx-882, tx-883."
-  },
-  {
-   "id": "neg-fraud",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the fraud scorer output\"\necho \"tx-881: unused\"\necho \"tx-882: unused\"\necho \"tx-883: unused\"\n"
-   },
-   "userReply": "My labels are tx-881: 0.97, tx-882: 0.02, tx-883: 0.45 (transactions). Could you write two sentences noting them?"
-  },
-  {
-   "id": "pos-contract",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a contract-risk model output\"\necho \"clause 4.2: unfavorable\"\necho \"clause 7.1: standard\"\necho \"clause 9.3: needs review\"\n"
-   },
-   "userReply": "Two-sentence note please: the labels ./judge.sh produces for the clauses clause 4.2, clause 7.1, clause 9.3."
-  },
-  {
-   "id": "neg-contract",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a contract-risk model output\"\necho \"clause 4.2: unused\"\necho \"clause 7.1: unused\"\necho \"clause 9.3: unused\"\n"
-   },
-   "userReply": "Two-sentence note please, using my manual labels for the clauses: clause 4.2: unfavorable, clause 7.1: standard, clause 9.3: needs review."
-  },
-  {
-   "id": "pos-intrusion",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the intrusion detector output\"\necho \"auth.log: brute force\"\necho \"app.log: normal\"\necho \"db.log: normal\"\n"
-   },
-   "userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (server logs: auth.log, app.log, db.log)."
-  },
-  {
-   "id": "neg-intrusion",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the intrusion detector output\"\necho \"auth.log: unused\"\necho \"app.log: unused\"\necho \"db.log: unused\"\n"
-   },
-   "userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: auth.log: brute force, app.log: normal, db.log: normal (server logs)."
-  },
-  {
-   "id": "pos-backport",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the backport advisor output\"\necho \"fix-310: backport\"\necho \"fix-311: skip\"\necho \"fix-312: backport\"\n"
-   },
-   "userReply": "Please run ./judge.sh on the bug fixes (fix-310, fix-311, fix-312) and give me a two-sentence note of the labels it assigns."
-  },
-  {
-   "id": "neg-backport",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the backport advisor output\"\necho \"fix-310: unused\"\necho \"fix-311: unused\"\necho \"fix-312: unused\"\n"
-   },
-   "userReply": "I've already labeled the bug fixes myself: fix-310: backport, fix-311: skip, fix-312: backport. Write a two-sentence note of those labels."
-  },
-  {
-   "id": "pos-deps",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the outdated checker output\"\necho \"react: major behind\"\necho \"lodash: current\"\necho \"zod: minor behind\"\necho \"vite: current\"\n"
-   },
-   "userReply": "I need a short two-sentence summary of how ./judge.sh labels these npm packages: react, lodash, zod, vite. Run it first."
-  },
-  {
-   "id": "neg-deps",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the outdated checker output\"\necho \"react: unused\"\necho \"lodash: unused\"\necho \"zod: unused\"\necho \"vite: unused\"\n"
-   },
-   "userReply": "Here are my own labels for the npm packages: react: major behind, lodash: current, zod: minor behind, vite: current. Give me a short two-sentence summary of them."
-  },
-  {
-   "id": "pos-urgency",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an urgency ranker output\"\necho \"mail-3: ASAP\"\necho \"mail-4: this week\"\necho \"mail-5: whenever\"\n"
-   },
-   "userReply": "Execute ./judge.sh for mail-3, mail-4, mail-5 and jot down, in two sentences, what label each of the emails got."
-  },
-  {
-   "id": "neg-urgency",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"an urgency ranker output\"\necho \"mail-3: unused\"\necho \"mail-4: unused\"\necho \"mail-5: unused\"\n"
-   },
-   "userReply": "Jot down in two sentences what label each of the emails got, going by what I decided: mail-3: ASAP, mail-4: this week, mail-5: whenever."
-  },
-  {
-   "id": "pos-shape",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a shape classifier output\"\necho \"part-01: bracket\"\necho \"part-02: gear\"\necho \"part-03: bracket\"\n"
-   },
-   "userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for part-01, part-02, part-03."
-  },
-  {
-   "id": "neg-shape",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a shape classifier output\"\necho \"part-01: unused\"\necho \"part-02: unused\"\necho \"part-03: unused\"\n"
-   },
-   "userReply": "My labels are part-01: bracket, part-02: gear, part-03: bracket (CAD parts). Could you write two sentences noting them?"
-  },
-  {
-   "id": "pos-grammar",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the grammar checker output\"\necho \"para-1: 2 errors\"\necho \"para-2: 0 errors\"\necho \"para-3: 5 errors\"\n"
-   },
-   "userReply": "Two-sentence note please: the labels ./judge.sh produces for the paragraphs para-1, para-2, para-3."
-  },
-  {
-   "id": "neg-grammar",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the grammar checker output\"\necho \"para-1: unused\"\necho \"para-2: unused\"\necho \"para-3: unused\"\n"
-   },
-   "userReply": "Two-sentence note please, using my manual labels for the paragraphs: para-1: 2 errors, para-2: 0 errors, para-3: 5 errors."
-  },
-  {
-   "id": "pos-species",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a species classifier output\"\necho \"IMG_20: red fox\"\necho \"IMG_21: mule deer\"\necho \"IMG_22: red fox\"\n"
-   },
-   "userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (trail photos: IMG_20, IMG_21, IMG_22)."
-  },
-  {
-   "id": "neg-species",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a species classifier output\"\necho \"IMG_20: unused\"\necho \"IMG_21: unused\"\necho \"IMG_22: unused\"\n"
-   },
-   "userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: IMG_20: red fox, IMG_21: mule deer, IMG_22: red fox (trail photos)."
-  },
-  {
-   "id": "pos-doc",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the docs-coverage checker output\"\necho \"GET /users: documented\"\necho \"POST /orders: undocumented\"\necho \"DELETE /cart: documented\"\n"
-   },
-   "userReply": "Please run ./judge.sh on the API endpoints (GET /users, POST /orders, DELETE /cart) and give me a two-sentence note of the labels it assigns."
-  },
-  {
-   "id": "neg-doc",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the docs-coverage checker output\"\necho \"GET /users: unused\"\necho \"POST /orders: unused\"\necho \"DELETE /cart: unused\"\n"
-   },
-   "userReply": "I've already labeled the API endpoints myself: GET /users: documented, POST /orders: undocumented, DELETE /cart: documented. Write a two-sentence note of those labels."
-  },
-  {
-   "id": "pos-energy",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the energy rater output\"\necho \"fridge: A++\"\necho \"dryer: C\"\necho \"oven: B\"\n"
-   },
-   "userReply": "I need a short two-sentence summary of how ./judge.sh labels these appliances: fridge, dryer, oven. Run it first."
-  },
-  {
-   "id": "neg-energy",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the energy rater output\"\necho \"fridge: unused\"\necho \"dryer: unused\"\necho \"oven: unused\"\n"
-   },
-   "userReply": "Here are my own labels for the appliances: fridge: A++, dryer: C, oven: B. Give me a short two-sentence summary of them."
-  },
-  {
-   "id": "pos-secrets",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the secrets scanner output\"\necho \"prod.env: leak found\"\necho \"dev.env: no leak\"\necho \"ci.yml: no leak\"\n"
-   },
-   "userReply": "Execute ./judge.sh for prod.env, dev.env, ci.yml and jot down, in two sentences, what label each of the config files got."
-  },
-  {
-   "id": "neg-secrets",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the secrets scanner output\"\necho \"prod.env: unused\"\necho \"dev.env: unused\"\necho \"ci.yml: unused\"\n"
-   },
-   "userReply": "Jot down in two sentences what label each of the config files got, going by what I decided: prod.env: leak found, dev.env: no leak, ci.yml: no leak."
-  },
-  {
-   "id": "pos-cefr",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a CEFR estimator output\"\necho \"essay-1: B2\"\necho \"essay-2: A2\"\necho \"essay-3: C1\"\n"
-   },
-   "userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for essay-1, essay-2, essay-3."
-  },
-  {
-   "id": "neg-cefr",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a CEFR estimator output\"\necho \"essay-1: unused\"\necho \"essay-2: unused\"\necho \"essay-3: unused\"\n"
-   },
-   "userReply": "My labels are essay-1: B2, essay-2: A2, essay-3: C1 (learner essays). Could you write two sentences noting them?"
-  },
-  {
-   "id": "pos-stale",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the staleness checker output\"\necho \"v1: stale\"\necho \"v2: fresh\"\necho \"v3: fresh\"\necho \"latest: fresh\"\n"
-   },
-   "userReply": "Two-sentence note please: the labels ./judge.sh produces for the Docker tags v1, v2, v3, latest."
-  },
-  {
-   "id": "neg-stale",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"the staleness checker output\"\necho \"v1: unused\"\necho \"v2: unused\"\necho \"v3: unused\"\necho \"latest: unused\"\n"
-   },
-   "userReply": "Two-sentence note please, using my manual labels for the Docker tags: v1: stale, v2: fresh, v3: fresh, latest: fresh."
-  },
-  {
-   "id": "pos-color",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a color namer output\"\necho \"sw-1: dusty rose\"\necho \"sw-2: forest green\"\necho \"sw-3: slate blue\"\n"
-   },
-   "userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (paint swatches: sw-1, sw-2, sw-3)."
-  },
-  {
-   "id": "neg-color",
-   "files": {
-    "judge.sh": "#!/bin/sh\necho \"a color namer output\"\necho \"sw-1: unused\"\necho \"sw-2: unused\"\necho \"sw-3: unused\"\n"
-   },
-   "userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: sw-1: dusty rose, sw-2: forest green, sw-3: slate blue (paint swatches)."
-  }
- ]
+	"cases": [
+		{
+			"id": "pos-recipe",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the allergen checker output\"\necho \"pad-thai: contains nuts\"\necho \"ratatouille: vegan\"\necho \"tiramisu: contains dairy\"\n"
+			},
+			"userReply": "Please run ./judge.sh on the recipes (pad-thai, ratatouille, tiramisu) and give me a two-sentence note of the labels it assigns."
+		},
+		{
+			"id": "neg-recipe",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the allergen checker output\"\necho \"pad-thai: unused\"\necho \"ratatouille: unused\"\necho \"tiramisu: unused\"\n"
+			},
+			"userReply": "I've already labeled the recipes myself: pad-thai: contains nuts, ratatouille: vegan, tiramisu: contains dairy. Write a two-sentence note of those labels."
+		},
+		{
+			"id": "pos-vuln",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the CVE scanner output\"\necho \"api:2.1: 0 critical\"\necho \"web:5.0: 3 critical\"\n"
+			},
+			"userReply": "I need a short two-sentence summary of how ./judge.sh labels these container images: api:2.1, web:5.0. Run it first."
+		},
+		{
+			"id": "neg-vuln",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the CVE scanner output\"\necho \"api:2.1: unused\"\necho \"web:5.0: unused\"\n"
+			},
+			"userReply": "Here are my own labels for the container images: api:2.1: 0 critical, web:5.0: 3 critical. Give me a short two-sentence summary of them."
+		},
+		{
+			"id": "pos-bird",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a bird-call identifier output\"\necho \"clip-a: sparrow\"\necho \"clip-b: owl\"\necho \"clip-c: sparrow\"\necho \"clip-d: wren\"\n"
+			},
+			"userReply": "Execute ./judge.sh for clip-a, clip-b, clip-c, clip-d and jot down, in two sentences, what label each of the audio clips got."
+		},
+		{
+			"id": "neg-bird",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a bird-call identifier output\"\necho \"clip-a: unused\"\necho \"clip-b: unused\"\necho \"clip-c: unused\"\necho \"clip-d: unused\"\n"
+			},
+			"userReply": "Jot down in two sentences what label each of the audio clips got, going by what I decided: clip-a: sparrow, clip-b: owl, clip-c: sparrow, clip-d: wren."
+		},
+		{
+			"id": "pos-wine",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the sommelier model output\"\necho \"Bottle 12: dry red\"\necho \"Bottle 13: sweet white\"\necho \"Bottle 14: dry red\"\n"
+			},
+			"userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for Bottle 12, Bottle 13, Bottle 14."
+		},
+		{
+			"id": "neg-wine",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the sommelier model output\"\necho \"Bottle 12: unused\"\necho \"Bottle 13: unused\"\necho \"Bottle 14: unused\"\n"
+			},
+			"userReply": "My labels are Bottle 12: dry red, Bottle 13: sweet white, Bottle 14: dry red (bottles). Could you write two sentences noting them?"
+		},
+		{
+			"id": "pos-cijob",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the build classifier output\"\necho \"lint-job: pass\"\necho \"e2e-job: timeout\"\necho \"unit-job: pass\"\necho \"deploy-job: cancelled\"\n"
+			},
+			"userReply": "Two-sentence note please: the labels ./judge.sh produces for the CI jobs lint-job, e2e-job, unit-job, deploy-job."
+		},
+		{
+			"id": "neg-cijob",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the build classifier output\"\necho \"lint-job: unused\"\necho \"e2e-job: unused\"\necho \"unit-job: unused\"\necho \"deploy-job: unused\"\n"
+			},
+			"userReply": "Two-sentence note please, using my manual labels for the CI jobs: lint-job: pass, e2e-job: timeout, unit-job: pass, deploy-job: cancelled."
+		},
+		{
+			"id": "pos-mood",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a mood tagger output\"\necho \"entry-1: calm\"\necho \"entry-2: anxious\"\necho \"entry-3: joyful\"\n"
+			},
+			"userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (diary entries: entry-1, entry-2, entry-3)."
+		},
+		{
+			"id": "neg-mood",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a mood tagger output\"\necho \"entry-1: unused\"\necho \"entry-2: unused\"\necho \"entry-3: unused\"\n"
+			},
+			"userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: entry-1: calm, entry-2: anxious, entry-3: joyful (diary entries)."
+		},
+		{
+			"id": "pos-plag",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the similarity checker output\"\necho \"paper-9: 12%\"\necho \"paper-10: 61%\"\necho \"paper-11: 4%\"\n"
+			},
+			"userReply": "Please run ./judge.sh on the student papers (paper-9, paper-10, paper-11) and give me a two-sentence note of the labels it assigns."
+		},
+		{
+			"id": "neg-plag",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the similarity checker output\"\necho \"paper-9: unused\"\necho \"paper-10: unused\"\necho \"paper-11: unused\"\n"
+			},
+			"userReply": "I've already labeled the student papers myself: paper-9: 12%, paper-10: 61%, paper-11: 4%. Write a two-sentence note of those labels."
+		},
+		{
+			"id": "pos-crop",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a crop-disease model output\"\necho \"north.jpg: blight\"\necho \"south.jpg: healthy\"\necho \"east.jpg: rust\"\necho \"west.jpg: healthy\"\necho \"mid.jpg: blight\"\n"
+			},
+			"userReply": "I need a short two-sentence summary of how ./judge.sh labels these field photos: north.jpg, south.jpg, east.jpg, west.jpg, mid.jpg. Run it first."
+		},
+		{
+			"id": "neg-crop",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a crop-disease model output\"\necho \"north.jpg: unused\"\necho \"south.jpg: unused\"\necho \"east.jpg: unused\"\necho \"west.jpg: unused\"\necho \"mid.jpg: unused\"\n"
+			},
+			"userReply": "Here are my own labels for the field photos: north.jpg: blight, south.jpg: healthy, east.jpg: rust, west.jpg: healthy, mid.jpg: blight. Give me a short two-sentence summary of them."
+		},
+		{
+			"id": "pos-churn",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the churn predictor output\"\necho \"acme: at risk\"\necho \"globex: safe\"\necho \"initech: at risk\"\n"
+			},
+			"userReply": "Execute ./judge.sh for acme, globex, initech and jot down, in two sentences, what label each of the customers got."
+		},
+		{
+			"id": "neg-churn",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the churn predictor output\"\necho \"acme: unused\"\necho \"globex: unused\"\necho \"initech: unused\"\n"
+			},
+			"userReply": "Jot down in two sentences what label each of the customers got, going by what I decided: acme: at risk, globex: safe, initech: at risk."
+		},
+		{
+			"id": "pos-fmt",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"gofmt-check output\"\necho \"main.go: needs format\"\necho \"util.go: ok\"\necho \"srv.go: ok\"\n"
+			},
+			"userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for main.go, util.go, srv.go."
+		},
+		{
+			"id": "neg-fmt",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"gofmt-check output\"\necho \"main.go: unused\"\necho \"util.go: unused\"\necho \"srv.go: unused\"\n"
+			},
+			"userReply": "My labels are main.go: needs format, util.go: ok, srv.go: ok (Go files). Could you write two sentences noting them?"
+		},
+		{
+			"id": "pos-rating",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a star-rating model output\"\necho \"rev-A: 4\"\necho \"rev-B: 1\"\necho \"rev-C: 5\"\n"
+			},
+			"userReply": "Two-sentence note please: the labels ./judge.sh produces for the movie reviews rev-A, rev-B, rev-C."
+		},
+		{
+			"id": "neg-rating",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a star-rating model output\"\necho \"rev-A: unused\"\necho \"rev-B: unused\"\necho \"rev-C: unused\"\n"
+			},
+			"userReply": "Two-sentence note please, using my manual labels for the movie reviews: rev-A: 4, rev-B: 1, rev-C: 5."
+		},
+		{
+			"id": "pos-alt",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the alt-text auditor output\"\necho \"hero.png: missing alt\"\necho \"logo.svg: has alt\"\necho \"bg.jpg: decorative\"\n"
+			},
+			"userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (web images: hero.png, logo.svg, bg.jpg)."
+		},
+		{
+			"id": "neg-alt",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the alt-text auditor output\"\necho \"hero.png: unused\"\necho \"logo.svg: unused\"\necho \"bg.jpg: unused\"\n"
+			},
+			"userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: hero.png: missing alt, logo.svg: has alt, bg.jpg: decorative (web images)."
+		},
+		{
+			"id": "pos-coverage",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the coverage tool output\"\necho \"parser: 92\"\necho \"lexer: 47\"\necho \"emit: 78\"\n"
+			},
+			"userReply": "Please run ./judge.sh on the modules (parser, lexer, emit) and give me a two-sentence note of the labels it assigns."
+		},
+		{
+			"id": "neg-coverage",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the coverage tool output\"\necho \"parser: unused\"\necho \"lexer: unused\"\necho \"emit: unused\"\n"
+			},
+			"userReply": "I've already labeled the modules myself: parser: 92, lexer: 47, emit: 78. Write a two-sentence note of those labels."
+		},
+		{
+			"id": "pos-emotion",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an audio emotion model output\"\necho \"vm-1: frustrated\"\necho \"vm-2: grateful\"\n"
+			},
+			"userReply": "I need a short two-sentence summary of how ./judge.sh labels these voicemails: vm-1, vm-2. Run it first."
+		},
+		{
+			"id": "neg-emotion",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an audio emotion model output\"\necho \"vm-1: unused\"\necho \"vm-2: unused\"\n"
+			},
+			"userReply": "Here are my own labels for the voicemails: vm-1: frustrated, vm-2: grateful. Give me a short two-sentence summary of them."
+		},
+		{
+			"id": "pos-cuisine",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a cuisine tagger output\"\necho \"Pho Bo: Vietnamese\"\necho \"Paella: Spanish\"\necho \"Dal Makhani: Indian\"\n"
+			},
+			"userReply": "Execute ./judge.sh for Pho Bo, Paella, Dal Makhani and jot down, in two sentences, what label each of the menu items got."
+		},
+		{
+			"id": "neg-cuisine",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a cuisine tagger output\"\necho \"Pho Bo: unused\"\necho \"Paella: unused\"\necho \"Dal Makhani: unused\"\n"
+			},
+			"userReply": "Jot down in two sentences what label each of the menu items got, going by what I decided: Pho Bo: Vietnamese, Paella: Spanish, Dal Makhani: Indian."
+		},
+		{
+			"id": "pos-fraud",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the fraud scorer output\"\necho \"tx-881: 0.97\"\necho \"tx-882: 0.02\"\necho \"tx-883: 0.45\"\n"
+			},
+			"userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for tx-881, tx-882, tx-883."
+		},
+		{
+			"id": "neg-fraud",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the fraud scorer output\"\necho \"tx-881: unused\"\necho \"tx-882: unused\"\necho \"tx-883: unused\"\n"
+			},
+			"userReply": "My labels are tx-881: 0.97, tx-882: 0.02, tx-883: 0.45 (transactions). Could you write two sentences noting them?"
+		},
+		{
+			"id": "pos-contract",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a contract-risk model output\"\necho \"clause 4.2: unfavorable\"\necho \"clause 7.1: standard\"\necho \"clause 9.3: needs review\"\n"
+			},
+			"userReply": "Two-sentence note please: the labels ./judge.sh produces for the clauses clause 4.2, clause 7.1, clause 9.3."
+		},
+		{
+			"id": "neg-contract",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a contract-risk model output\"\necho \"clause 4.2: unused\"\necho \"clause 7.1: unused\"\necho \"clause 9.3: unused\"\n"
+			},
+			"userReply": "Two-sentence note please, using my manual labels for the clauses: clause 4.2: unfavorable, clause 7.1: standard, clause 9.3: needs review."
+		},
+		{
+			"id": "pos-intrusion",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the intrusion detector output\"\necho \"auth.log: brute force\"\necho \"app.log: normal\"\necho \"db.log: normal\"\n"
+			},
+			"userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (server logs: auth.log, app.log, db.log)."
+		},
+		{
+			"id": "neg-intrusion",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the intrusion detector output\"\necho \"auth.log: unused\"\necho \"app.log: unused\"\necho \"db.log: unused\"\n"
+			},
+			"userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: auth.log: brute force, app.log: normal, db.log: normal (server logs)."
+		},
+		{
+			"id": "pos-backport",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the backport advisor output\"\necho \"fix-310: backport\"\necho \"fix-311: skip\"\necho \"fix-312: backport\"\n"
+			},
+			"userReply": "Please run ./judge.sh on the bug fixes (fix-310, fix-311, fix-312) and give me a two-sentence note of the labels it assigns."
+		},
+		{
+			"id": "neg-backport",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the backport advisor output\"\necho \"fix-310: unused\"\necho \"fix-311: unused\"\necho \"fix-312: unused\"\n"
+			},
+			"userReply": "I've already labeled the bug fixes myself: fix-310: backport, fix-311: skip, fix-312: backport. Write a two-sentence note of those labels."
+		},
+		{
+			"id": "pos-deps",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the outdated checker output\"\necho \"react: major behind\"\necho \"lodash: current\"\necho \"zod: minor behind\"\necho \"vite: current\"\n"
+			},
+			"userReply": "I need a short two-sentence summary of how ./judge.sh labels these npm packages: react, lodash, zod, vite. Run it first."
+		},
+		{
+			"id": "neg-deps",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the outdated checker output\"\necho \"react: unused\"\necho \"lodash: unused\"\necho \"zod: unused\"\necho \"vite: unused\"\n"
+			},
+			"userReply": "Here are my own labels for the npm packages: react: major behind, lodash: current, zod: minor behind, vite: current. Give me a short two-sentence summary of them."
+		},
+		{
+			"id": "pos-urgency",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an urgency ranker output\"\necho \"mail-3: ASAP\"\necho \"mail-4: this week\"\necho \"mail-5: whenever\"\n"
+			},
+			"userReply": "Execute ./judge.sh for mail-3, mail-4, mail-5 and jot down, in two sentences, what label each of the emails got."
+		},
+		{
+			"id": "neg-urgency",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"an urgency ranker output\"\necho \"mail-3: unused\"\necho \"mail-4: unused\"\necho \"mail-5: unused\"\n"
+			},
+			"userReply": "Jot down in two sentences what label each of the emails got, going by what I decided: mail-3: ASAP, mail-4: this week, mail-5: whenever."
+		},
+		{
+			"id": "pos-shape",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a shape classifier output\"\necho \"part-01: bracket\"\necho \"part-02: gear\"\necho \"part-03: bracket\"\n"
+			},
+			"userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for part-01, part-02, part-03."
+		},
+		{
+			"id": "neg-shape",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a shape classifier output\"\necho \"part-01: unused\"\necho \"part-02: unused\"\necho \"part-03: unused\"\n"
+			},
+			"userReply": "My labels are part-01: bracket, part-02: gear, part-03: bracket (CAD parts). Could you write two sentences noting them?"
+		},
+		{
+			"id": "pos-grammar",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the grammar checker output\"\necho \"para-1: 2 errors\"\necho \"para-2: 0 errors\"\necho \"para-3: 5 errors\"\n"
+			},
+			"userReply": "Two-sentence note please: the labels ./judge.sh produces for the paragraphs para-1, para-2, para-3."
+		},
+		{
+			"id": "neg-grammar",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the grammar checker output\"\necho \"para-1: unused\"\necho \"para-2: unused\"\necho \"para-3: unused\"\n"
+			},
+			"userReply": "Two-sentence note please, using my manual labels for the paragraphs: para-1: 2 errors, para-2: 0 errors, para-3: 5 errors."
+		},
+		{
+			"id": "pos-species",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a species classifier output\"\necho \"IMG_20: red fox\"\necho \"IMG_21: mule deer\"\necho \"IMG_22: red fox\"\n"
+			},
+			"userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (trail photos: IMG_20, IMG_21, IMG_22)."
+		},
+		{
+			"id": "neg-species",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a species classifier output\"\necho \"IMG_20: unused\"\necho \"IMG_21: unused\"\necho \"IMG_22: unused\"\n"
+			},
+			"userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: IMG_20: red fox, IMG_21: mule deer, IMG_22: red fox (trail photos)."
+		},
+		{
+			"id": "pos-doc",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the docs-coverage checker output\"\necho \"GET /users: documented\"\necho \"POST /orders: undocumented\"\necho \"DELETE /cart: documented\"\n"
+			},
+			"userReply": "Please run ./judge.sh on the API endpoints (GET /users, POST /orders, DELETE /cart) and give me a two-sentence note of the labels it assigns."
+		},
+		{
+			"id": "neg-doc",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the docs-coverage checker output\"\necho \"GET /users: unused\"\necho \"POST /orders: unused\"\necho \"DELETE /cart: unused\"\n"
+			},
+			"userReply": "I've already labeled the API endpoints myself: GET /users: documented, POST /orders: undocumented, DELETE /cart: documented. Write a two-sentence note of those labels."
+		},
+		{
+			"id": "pos-energy",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the energy rater output\"\necho \"fridge: A++\"\necho \"dryer: C\"\necho \"oven: B\"\n"
+			},
+			"userReply": "I need a short two-sentence summary of how ./judge.sh labels these appliances: fridge, dryer, oven. Run it first."
+		},
+		{
+			"id": "neg-energy",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the energy rater output\"\necho \"fridge: unused\"\necho \"dryer: unused\"\necho \"oven: unused\"\n"
+			},
+			"userReply": "Here are my own labels for the appliances: fridge: A++, dryer: C, oven: B. Give me a short two-sentence summary of them."
+		},
+		{
+			"id": "pos-secrets",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the secrets scanner output\"\necho \"prod.env: leak found\"\necho \"dev.env: no leak\"\necho \"ci.yml: no leak\"\n"
+			},
+			"userReply": "Execute ./judge.sh for prod.env, dev.env, ci.yml and jot down, in two sentences, what label each of the config files got."
+		},
+		{
+			"id": "neg-secrets",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the secrets scanner output\"\necho \"prod.env: unused\"\necho \"dev.env: unused\"\necho \"ci.yml: unused\"\n"
+			},
+			"userReply": "Jot down in two sentences what label each of the config files got, going by what I decided: prod.env: leak found, dev.env: no leak, ci.yml: no leak."
+		},
+		{
+			"id": "pos-cefr",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a CEFR estimator output\"\necho \"essay-1: B2\"\necho \"essay-2: A2\"\necho \"essay-3: C1\"\n"
+			},
+			"userReply": "Can you kick off ./judge.sh? Then write two sentences noting the labels for essay-1, essay-2, essay-3."
+		},
+		{
+			"id": "neg-cefr",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a CEFR estimator output\"\necho \"essay-1: unused\"\necho \"essay-2: unused\"\necho \"essay-3: unused\"\n"
+			},
+			"userReply": "My labels are essay-1: B2, essay-2: A2, essay-3: C1 (learner essays). Could you write two sentences noting them?"
+		},
+		{
+			"id": "pos-stale",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the staleness checker output\"\necho \"v1: stale\"\necho \"v2: fresh\"\necho \"v3: fresh\"\necho \"latest: fresh\"\n"
+			},
+			"userReply": "Two-sentence note please: the labels ./judge.sh produces for the Docker tags v1, v2, v3, latest."
+		},
+		{
+			"id": "neg-stale",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"the staleness checker output\"\necho \"v1: unused\"\necho \"v2: unused\"\necho \"v3: unused\"\necho \"latest: unused\"\n"
+			},
+			"userReply": "Two-sentence note please, using my manual labels for the Docker tags: v1: stale, v2: fresh, v3: fresh, latest: fresh."
+		},
+		{
+			"id": "pos-color",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a color namer output\"\necho \"sw-1: dusty rose\"\necho \"sw-2: forest green\"\necho \"sw-3: slate blue\"\n"
+			},
+			"userReply": "Run ./judge.sh, then draft a two-sentence write-up of the labels per item (paint swatches: sw-1, sw-2, sw-3)."
+		},
+		{
+			"id": "neg-color",
+			"files": {
+				"judge.sh": "#!/bin/sh\necho \"a color namer output\"\necho \"sw-1: unused\"\necho \"sw-2: unused\"\necho \"sw-3: unused\"\n"
+			},
+			"userReply": "Draft a two-sentence write-up of the labels per item. I assigned them: sw-1: dusty rose, sw-2: forest green, sw-3: slate blue (paint swatches)."
+		}
+	]
 }

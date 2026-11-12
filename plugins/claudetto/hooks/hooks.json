@@ -7,7 +7,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "n=$(getconf _NPROCESSORS_ONLN); j=$((n > 1 ? n - 1 : 1)); printf '%s\\n' 'renice 10 -p $$ >/dev/null 2>&1' \"export CARGO_BUILD_JOBS=\\${CARGO_BUILD_JOBS:-$j} GOMAXPROCS=\\${GOMAXPROCS:-$j}\" >> \"$CLAUDE_ENV_FILE\""
+						"command": "grep -qsF 'renice 10 -p $$' \"$CLAUDE_ENV_FILE\" && exit 0; n=$(getconf _NPROCESSORS_ONLN); j=$((n > 1 ? n - 1 : 1)); b=$(sysctl -n hw.memsize 2>/dev/null || echo $(($(getconf _PHYS_PAGES 2>/dev/null || echo 0) * $(getconf PAGESIZE)))); m=$((b / 4194304)); g=; [ \"$m\" -gt 0 ] && g=\"export GOMEMLIMIT=\\${GOMEMLIMIT:-${m}MiB}\"; printf '%s\\n' 'renice 10 -p $$ >/dev/null 2>&1' \"export CARGO_BUILD_JOBS=\\${CARGO_BUILD_JOBS:-$j} GOMAXPROCS=\\${GOMAXPROCS:-$j}\" \"$g\" >> \"$CLAUDE_ENV_FILE\""
 					}
 				]
 			}

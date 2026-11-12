@@ -358,7 +358,7 @@ const operator = (s: State, c: string): void => {
 		return;
 	}
 	endCommand(s, false);
-	s.i += (true) && next === c ? 2 : 1;
+	s.i += true && next === c ? 2 : 1;
 	if (c === "\n") {
 		skipHeredocs(s);
 	}

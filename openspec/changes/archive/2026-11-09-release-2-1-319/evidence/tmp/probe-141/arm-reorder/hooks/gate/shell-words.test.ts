@@ -1,4 +1,5 @@
 import { expect, test } from "claude-code/testing";
+
 import { parse, programOf } from "./shell-words.ts";
 
 const programs = (command: string) =>

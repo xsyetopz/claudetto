@@ -1,14 +1,22 @@
 import { join } from "node:path";
+
 import { launchArm } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/ab/session.ts";
 import type { Arm } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/arm/arm.ts";
 import { toolSizes } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/capture/capture.ts";
-import { mainRequests, readRequests } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/fake/fake.ts";
-import type { Plan, Step } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/fake/plan.ts";
+import {
+	mainRequests,
+	readRequests,
+} from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/fake/fake.ts";
+import type {
+	Plan,
+	Step,
+} from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/fake/plan.ts";
 import { DEFAULT_MODEL } from "/Users/krystian/CodeProjects/xsyetopz/claudetto/claudekit/src/shared/model.ts";
 
 // 5.17 and 5.23 lab: the model searches, calls the wrapper, calls the stock tool, and the report shows each result
 // the next request carried. Usage: bun monitor.ts monitor|ask|keyword
-const PLUGIN = "/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto";
+const PLUGIN =
+	"/Users/krystian/CodeProjects/xsyetopz/claudetto/plugins/claudetto";
 const mode = process.argv[2] ?? "monitor";
 
 const call = (name: string, input: Record<string, unknown>): Step => ({
@@ -35,10 +43,18 @@ const STEPS: Record<string, Step[]> = {
 	],
 	keyword: [call("ToolSearch", { query: "monitor", max_results: 5 })],
 	byname: [call("ToolSearch", { query: "select:Monitor", max_results: 5 })],
-	askname: [call("ToolSearch", { query: "select:AskUserQuestion", max_results: 5 })],
+	askname: [
+		call("ToolSearch", { query: "select:AskUserQuestion", max_results: 5 }),
+	],
 	other: [call("ToolSearch", { query: "select:WebFetch", max_results: 5 })],
 	workflow: [call("ToolSearch", { query: "select:Workflow", max_results: 5 })],
-	texts: [call("ToolSearch", { query: "select:Read,Write,Skill,EnterWorktree,ExitWorktree,SendMessage,TaskStop,WebFetch,WebSearch,NotebookEdit", max_results: 10 })],
+	texts: [
+		call("ToolSearch", {
+			query:
+				"select:Read,Write,Skill,EnterWorktree,ExitWorktree,SendMessage,TaskStop,WebFetch,WebSearch,NotebookEdit",
+			max_results: 10,
+		}),
+	],
 	ask: [
 		call("ToolSearch", { query: "select:AskUserQuestion", max_results: 5 }),
 		call("mcp__claudetto__ask-user-question", {

@@ -1,7 +1,8 @@
 import type { EngineInterface, On } from "claude-code";
+
 import {
-	DENIALS_PER_CALL_MAX,
 	type Denials,
+	DENIALS_PER_CALL_MAX,
 	repeatedText,
 	signature,
 	withDenial,

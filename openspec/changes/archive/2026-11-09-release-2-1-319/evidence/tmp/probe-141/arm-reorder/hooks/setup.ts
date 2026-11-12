@@ -1,30 +1,31 @@
 // The setup and `/statusline` commands and the session start check share these `$` helpers: the hook loader takes `$` into a helper only within the file that defines it.
 
 import type { EngineInterface, HookFor, On } from "claude-code";
+
 import {
 	applyChanges,
-	type Change,
 	capGroup,
+	type Change,
 	changesOf,
-	GROUPS,
 	type Group,
+	GROUPS,
 	type Json,
 	MINIMUM_VERSION,
 	parseSettings,
-	STATUS_LINE,
 	settingsText,
+	STATUS_LINE,
 	withCacheDirs,
 } from "./setup/settings.ts";
 import { linesOf } from "./setup/starter.ts";
-import { type Io, ignoresPart, starterPart, toolPart } from "./setup/steps.ts";
+import { ignoresPart, type Io, starterPart, toolPart } from "./setup/steps.ts";
 import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./setup/text.ts";
 import {
 	isBelowFloor,
 	isOnPath,
 	noticeKey,
 	noticeLine,
-	TOOLS,
 	type Tool,
+	TOOLS,
 } from "./setup/tools.ts";
 
 const TRAILING_SLASHES = /\/+$/;

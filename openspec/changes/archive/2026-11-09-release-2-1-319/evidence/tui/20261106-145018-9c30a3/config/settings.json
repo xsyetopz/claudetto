@@ -1,1 +1,5 @@
-{"pluginConfigs":{"claudetto@inline":{"options":{"handoverThresholdTokens":5000}}}}
+{
+	"pluginConfigs": {
+		"claudetto@inline": { "options": { "handoverThresholdTokens": 5000 } }
+	}
+}

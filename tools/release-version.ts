@@ -4,25 +4,31 @@ import { $, file, semver } from "bun";
 
 const ROOT = `${import.meta.dir}/..`;
 // The plugin manifests carry no version: Claude Code then versions each install by its commit, so every commit on `main` updates it.
-const MANIFESTS = ["package.json", ".claude-plugin/marketplace.json"];
-const VERSION = /^(\d+\.\d+\.\d+)(?:\+(\d+))?$/;
+const MANIFESTS = ["package.json"];
+const VERSION = /^(\d+\.\d+\.\d+)(?:\+(\d+))?$/u;
 
-const TAG = /^v(\d+\.\d+\.\d+)$/;
+const TAG = /^v(\d+\.\d+\.\d+)$/u;
 
-function latestBase(tags: string[]): string | undefined {
-	return tags
-		.map((tag) => TAG.exec(tag)?.[1])
-		.filter((base) => base !== undefined)
-		.sort(semver.order)
-		.at(-1);
-}
+const latestBase = (tags: string[]): string | undefined => {
+	let latest: string | undefined;
+	for (const tag of tags) {
+		const base = TAG.exec(tag)?.[1];
+		if (
+			base !== undefined &&
+			(latest === undefined || semver.order(base, latest) > 0)
+		) {
+			latest = base;
+		}
+	}
+	return latest;
+};
 
 /** Throws a plain error when `version` may not be released; returns when it may. */
-export function checkRelease(
+export const checkRelease = (
 	manifestVersions: string[],
 	upstreamTags: string[],
 	repoTags: string[],
-): void {
+): void => {
 	const version = manifestVersions[0];
 	if (version === undefined || manifestVersions.some((v) => v !== version)) {
 		throw new Error(
@@ -30,7 +36,7 @@ export function checkRelease(
 		);
 	}
 	const match = VERSION.exec(version);
-	if (!match?.[1]) {
+	if (match?.[1] === undefined || match[1] === "") {
 		throw new Error(`"${version}" is not X.Y.Z or X.Y.Z+N.`);
 	}
 	const base = match[1];
@@ -40,9 +46,9 @@ export function checkRelease(
 			`The base ${base} is not the latest anthropics/claude-code tag (v${latest}).`,
 		);
 	}
-	const escaped = base.replaceAll(".", "\\.");
+	const escaped = base.replaceAll(".", String.raw`\.`);
 	const last = repoTags
-		.map((tag) => new RegExp(`^v${escaped}(?:\\+(\\d+))?$`).exec(tag))
+		.map((tag) => new RegExp(`^v${escaped}(?:\\+(\\d+))?$`, "u").exec(tag))
 		.filter((m) => m !== null)
 		.map((m) => (m[1] === undefined ? 0 : Number(m[1])));
 	const expected = last.length === 0 ? 0 : Math.max(...last) + 1;
@@ -53,17 +59,32 @@ export function checkRelease(
 			`${version} does not follow this repo's tags: the next release on ${base} is ${want}.`,
 		);
 	}
-}
+};
 
-async function lines(command: Promise<{ text(): string }>): Promise<string[]> {
-	return (await command).text().split("\n").filter(Boolean);
-}
+const lines = async (
+	command: Promise<{ text: () => string }>,
+): Promise<string[]> => {
+	const awaited = await command;
+	return awaited.text().split("\n").filter(Boolean);
+};
+
+const manifestVersion = (json: unknown): string => {
+	if (
+		typeof json === "object" &&
+		json !== null &&
+		"version" in json &&
+		typeof json.version === "string"
+	) {
+		return json.version;
+	}
+	throw new Error("A manifest carries no version.");
+};
 
 if (import.meta.main) {
 	const manifestVersions = await Promise.all(
 		MANIFESTS.map(async (path) => {
-			const json = await file(`${ROOT}/${path}`).json();
-			return json.version ?? json.metadata.version;
+			const json: unknown = await file(`${ROOT}/${path}`).json();
+			return manifestVersion(json);
 		}),
 	);
 	const upstreamTags = await lines(
@@ -74,11 +95,11 @@ if (import.meta.main) {
 		checkRelease(manifestVersions, upstreamTags, repoTags);
 	} catch (error) {
 		process.stderr.write(
-			`release-version: ${error instanceof Error ? error.message : error}\n`,
+			`release-version: ${error instanceof Error ? error.message : String(error)}\n`,
 		);
 		process.exitCode = 1;
 	}
-	if (!process.exitCode) {
+	if (process.exitCode === undefined || process.exitCode === 0) {
 		process.stdout.write(
 			`release-version: ${manifestVersions[0]} may be released.\n`,
 		);

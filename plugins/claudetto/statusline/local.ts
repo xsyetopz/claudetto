@@ -1,6 +1,7 @@
 import { open, readdir, stat } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
-import { lineFilePath } from "../hooks/limits/heartbeat.ts";
+
+import { lineFilePath } from "../hooks/session.measure/useLineFile/heartbeat.ts";
 import { num, parse, str } from "./input.ts";
 
 /** One OpenSpec change folder and the boxes of its `tasks.md`. */
@@ -43,11 +44,11 @@ const MAX_PARENTS = 32;
 const MAX_CHANGES = 32;
 
 const REF_PREFIX = "ref: refs/heads/";
-const HASH = /^[0-9a-f]{40,64}$/;
-const GITDIR = /^gitdir:\s*(.+)$/m;
+const HASH = /^[0-9a-f]{40,64}$/u;
+const GITDIR = /^gitdir:\s*(.+)$/mu;
 /** The task line pattern of OpenSpec's `dist/utils/task-progress.js`, so the counts match `openspec list`. */
 const TASK_LINE =
-	/^\s*(?:[-*+]|\d{1,9}[.)])\s*\[(?:\s*([^\]\s]?)\s*\](?![([])|\s+\])\s*(.*)/;
+	/^\s*(?:[-*+]|\d{1,9}[.)])\s*\[(?:\s*([^\]\s]?)\s*\](?![([])|\s+\])\s*(.*)/u;
 
 const readCapped = async (path: string, cap: number): Promise<string> => {
 	await using handle = await open(path, "r");
@@ -57,10 +58,19 @@ const readCapped = async (path: string, cap: number): Promise<string> => {
 };
 
 export const NODE_FILES: Files = {
-	read: (path, cap) => readCapped(path, cap).catch(() => undefined),
+	read: async (path, cap) => {
+		let text: string | undefined;
+		try {
+			text = await readCapped(path, cap);
+		} catch {
+			text = undefined;
+		}
+		return text;
+	},
 	folders: async (path) => {
 		try {
-			return (await readdir(path, { withFileTypes: true }))
+			const awaited = await readdir(path, { withFileTypes: true });
+			return awaited
 				.filter((entry) => entry.isDirectory())
 				.map((entry) => entry.name);
 		} catch {
@@ -69,7 +79,8 @@ export const NODE_FILES: Files = {
 	},
 	mtime: async (path) => {
 		try {
-			return (await stat(path)).mtimeMs;
+			const awaited2 = await stat(path);
+			return awaited2.mtimeMs;
 		} catch {
 			return 0;
 		}
@@ -94,10 +105,9 @@ const headOf = async (
 	if (head !== undefined) {
 		return head;
 	}
-	const target = (await files.read(join(dir, ".git"), HEAD_CAP))
-		?.match(GITDIR)?.[1]
-		?.trim();
-	if (target) {
+	const awaited3 = await files.read(join(dir, ".git"), HEAD_CAP);
+	const target = awaited3?.match(GITDIR)?.[1]?.trim();
+	if (target !== undefined && target !== "") {
 		const gitDir = isAbsolute(target) ? target : resolve(dir, target);
 		return files.read(join(gitDir, "HEAD"), HEAD_CAP);
 	}
@@ -122,7 +132,8 @@ const countBoxes = (text: string): { done: number; total: number } => {
 
 const changesOf = async (dir: string, files: Files): Promise<Change[]> => {
 	const root = join(dir, "openspec", "changes");
-	const names = (await files.folders(root))
+	const awaited4 = await files.folders(root);
+	const names = awaited4
 		.filter((name) => name !== "archive")
 		.toSorted((a, b) => a.localeCompare(b))
 		.slice(0, MAX_CHANGES);

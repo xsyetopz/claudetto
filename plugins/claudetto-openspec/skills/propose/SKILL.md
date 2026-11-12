@@ -7,7 +7,7 @@ The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, lo
 
 1. Get a kebab-case name from the user's words. Ask what they want built only if you cannot name it. With no `openspec/` in the project, call `{action:"init"}` first.
 2. Call `{action:"new", change}`. It writes `.openspec.yaml`. If it names an existing change, ask for another name or point to the update skill.
-3. Read the code and `openspec/specs/` the change touches. Do not invent behavior.
+3. Read the code and `openspec/specs/` the change touches. State only behavior they show.
 4. Create these files under `openspec/changes/<name>/`:
    - `proposal.md`: `## Why`, `## What Changes`, `## Capabilities` (New and Modified, one capability per line), `## Impact`.
    - `design.md`: context, goals and non-goals, decisions with the reason for each, risks.

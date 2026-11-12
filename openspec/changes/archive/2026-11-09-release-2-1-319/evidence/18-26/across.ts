@@ -6,7 +6,16 @@ const first = (dir: string) => {
 	return b;
 };
 const [a, b] = [first(process.argv[2] ?? ""), first(process.argv[3] ?? "")];
-const drop = (v: unknown): unknown => (Array.isArray(v) ? v.map(drop) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).filter(([k]) => k !== "cache_control").map(([k, x]) => [k, drop(x)])) : v);
+const drop = (v: unknown): unknown =>
+	Array.isArray(v)
+		? v.map(drop)
+		: v && typeof v === "object"
+			? Object.fromEntries(
+					Object.entries(v)
+						.filter(([k]) => k !== "cache_control")
+						.map(([k, x]) => [k, drop(x)]),
+				)
+			: v;
 const at = (x: string, y: string) => {
 	let i = 0;
 	while (i < x.length && i < y.length && x[i] === y[i]) i++;
@@ -21,5 +30,10 @@ const parts: [string, unknown, unknown][] = [
 for (const [name, x, y] of parts) {
 	const [s, t] = [JSON.stringify(drop(x)), JSON.stringify(drop(y))];
 	const i = at(s, t);
-	console.log(name, s === t ? "identical" : `differs at byte ${i} of ${s.length}: ${s.slice(Math.max(0, i - 50), i + 90)} || ${t.slice(Math.max(0, i - 50), i + 90)}`);
+	console.log(
+		name,
+		s === t
+			? "identical"
+			: `differs at byte ${i} of ${s.length}: ${s.slice(Math.max(0, i - 50), i + 90)} || ${t.slice(Math.max(0, i - 50), i + 90)}`,
+	);
 }
