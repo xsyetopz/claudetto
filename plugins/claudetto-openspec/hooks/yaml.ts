@@ -1,7 +1,7 @@
 // The smallest YAML reader that serves `.openspec.yaml` and a project's `schema.yaml`: top-level
 // keys with scalar, flow, or block values. Nested content is skipped, not read.
 // Why not a library: a hooks module has no Bun or Node API and the engine loads only its own files.
-import type { Log } from "./fs.ts";
+import type { Log } from "./fs";
 
 const KEY =
 	/^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*'|[^\s"'#\-[\]{}][^:]*?|-[^\s:][^:]*?)[ \t]*:(?:[ \t]+(.*))?$/u;

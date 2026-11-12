@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { ruleScanner, scanner } from "../../secrets.mock.ts";
+import { ruleScanner, scanner } from "../../secrets.mock";
 import {
 	allowing,
 	bashOf,
@@ -12,7 +12,7 @@ import {
 	REASON,
 	repo,
 	scanning,
-} from "./gate.mock.ts";
+} from "./gate.mock";
 
 test("a shell command the gate refuses is denied over an allow, with the command in the reason", async ($: Engine, on: On) => {
 	repo(on);

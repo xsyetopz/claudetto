@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { LIMITS } from "./note.ts";
+import { LIMITS } from "./note";
 import {
 	act,
 	type Fixture,
@@ -13,8 +13,8 @@ import {
 	openRow,
 	PUSH,
 	step,
-} from "./register.mock.ts";
-import { linesOf, rowsOf } from "./store.ts";
+} from "./register.mock";
+import { linesOf, rowsOf } from "./store";
 
 for (const [name, text] of [
 	["a reply that fails parsing", "no label here"],

@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock.ts";
-import { set } from "./hold.mock.ts";
+import { scanned } from "../../secrets.mock";
+import { set } from "./hold.mock";
 
 const TOTAL_BYTES = 34_359_738_368;
 const KB_PER_GB = 1_048_576;

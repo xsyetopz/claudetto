@@ -1,12 +1,12 @@
 // The main spec as archive leaves it, and the refusal archive raises when it cannot.
-import { type Fs, join } from "./fs.ts";
-import { leftovers } from "./spec-audit.ts";
-import { type Block, fenceMask, fold, masked } from "./spec-lines.ts";
-import { merge } from "./spec-merge.ts";
-import { parsePlan } from "./spec-plan.ts";
-import { validateSpec } from "./spec-rules.ts";
-import { section } from "./spec.ts";
-import { baseBlocks } from "./validate-discover.ts";
+import { type Fs, join } from "./fs";
+import { section } from "./spec";
+import { leftovers } from "./spec-audit";
+import { type Block, fenceMask, fold, masked } from "./spec-lines";
+import { merge } from "./spec-merge";
+import { parsePlan } from "./spec-plan";
+import { validateSpec } from "./spec-rules";
+import { baseBlocks } from "./validate-discover";
 
 export class ArchiveBlocked extends Error {
 	readonly code:

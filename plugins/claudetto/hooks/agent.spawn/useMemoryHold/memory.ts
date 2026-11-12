@@ -7,13 +7,13 @@ import type {
 	CheckAnswer,
 	CheckEvent,
 	CheckNext,
-} from "../../chain.ts";
-import { numberOption } from "../../options.ts";
-import { MEMORY_SHORT, MEMORY_STOPPED } from "../../texts.ts";
-import { withNote } from "../../tool.call/useBudgetRun/result-note.ts";
-import { readOnly } from "../../tool.check/useBashRules/readonly.ts";
-import { parse, programOf } from "../../tool.check/useBashRules/shell-words.ts";
-import { deny, fieldOf } from "../../tool.check/useBashRules/verdict.ts";
+} from "../../chain";
+import { numberOption } from "../../options";
+import { MEMORY_SHORT, MEMORY_STOPPED } from "../../texts";
+import { withNote } from "../../tool.call/useBudgetRun/result-note";
+import { readOnly } from "../../tool.check/useBashRules/readonly";
+import { parse, programOf } from "../../tool.check/useBashRules/shell-words";
+import { deny, fieldOf } from "../../tool.check/useBashRules/verdict";
 
 const COMMAND_TOOLS: ReadonlySet<string> = new Set(["Bash", "Monitor"]);
 // These look at or stop what holds the memory, which is how the agent frees it.

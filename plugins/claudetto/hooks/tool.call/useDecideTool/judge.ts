@@ -1,13 +1,8 @@
 // Each question is keyed by its index, so two questions with the same text stay two decisions.
 
-import { THRESHOLDS } from "../../decider/questions.ts";
-import {
-	JEV_GIVE_BACK,
-	jevFailed,
-	jevSaid,
-	jevSilent,
-} from "../../texts-gate.ts";
-import { isRecord, probability } from "../../tools.ts";
+import { THRESHOLDS } from "../../decider/questions";
+import { JEV_GIVE_BACK, jevFailed, jevSaid, jevSilent } from "../../texts-gate";
+import { isRecord, probability } from "../../tools";
 
 const { pickMin, yesMin, noMax } = THRESHOLDS;
 /** A wrong "no" on the approval question would let Jev approve for the user. */

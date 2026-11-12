@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { quietDecider } from "../../decider/decider.mock.ts";
-import { scanner } from "../../secrets.mock.ts";
+import { quietDecider } from "../../decider/decider.mock";
+import { scanner } from "../../secrets.mock";
 
 const BLOCK = "The goal is not met: keep working.";
 

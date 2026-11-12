@@ -1,5 +1,5 @@
 // Audit of a whole spec file: which lines the title, Purpose, and requirement blocks account for.
-import { fenceMask, lineBreaks } from "./spec-lines.ts";
+import { fenceMask, lineBreaks } from "./spec-lines";
 
 const REQ_LINE = /^###\s*Requirement:.*$/imu;
 const ITEM = /^\s*(?:[-*+]|\d{1,9}[.)])\s+/u;

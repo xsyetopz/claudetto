@@ -2,8 +2,8 @@ import { expect, test } from "bun:test";
 import { mkdir, utimes, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { parseArgs } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/args.ts";
-import { sweep } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/sweep.ts";
+import { parseArgs } from "../../plugins/claudetto/hygiene/args.ts";
+import { sweep } from "../../plugins/claudetto/hygiene/sweep.ts";
 import { tempDir } from "../temp.mock.ts";
 import { DAY, host as hostOf, NOW, UID } from "./trash.mock.ts";
 

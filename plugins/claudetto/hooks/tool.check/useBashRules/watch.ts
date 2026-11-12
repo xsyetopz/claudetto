@@ -7,9 +7,9 @@ import type {
 	CheckAnswer,
 	CheckEvent,
 	CheckNext,
-} from "../../chain.ts";
-import { redactAll, redactWith, secretsIn, stringsIn } from "../../secrets.ts";
-import { GATE_READ_ONLY, gateRule } from "../../texts-gate.ts";
+} from "../../chain";
+import { redactAll, redactWith, secretsIn, stringsIn } from "../../secrets";
+import { GATE_READ_ONLY, gateRule } from "../../texts-gate";
 import {
 	type Denials,
 	DENIALS_PER_CALL_MAX,
@@ -17,11 +17,11 @@ import {
 	repeatedText,
 	signature,
 	withDenial,
-} from "./denials.ts";
-import { hostOf, ownVerdict, type Walls } from "./own.ts";
-import { readOnly } from "./readonly.ts";
-import { recreates, saw } from "./recreate.ts";
-import { deny, fieldOf, type Verdict } from "./verdict.ts";
+} from "./denials";
+import { hostOf, ownVerdict, type Walls } from "./own";
+import { readOnly } from "./readonly";
+import { recreates, saw } from "./recreate";
+import { deny, fieldOf, type Verdict } from "./verdict";
 
 const STRICTNESS = ["allow", "ask", "deny"];
 const PERSON = /^(?:composer|bridge)$/u;

@@ -1,6 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 
-import { numberOption, switchOption } from "../../options.ts";
+import { numberOption, switchOption } from "../../options";
 
 /** Ten minutes is the most `$.process.run` allows. */
 const SWEEP_TIMEOUT_MS = 600_000;

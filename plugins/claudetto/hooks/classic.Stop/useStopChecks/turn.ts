@@ -5,8 +5,8 @@ import type {
 	CheckAnswer,
 	CheckEvent,
 	CheckNext,
-} from "../../chain.ts";
-import { isWriter } from "../../tools.ts";
+} from "../../chain";
+import { isWriter } from "../../tools";
 
 /** How the CLI words a refused ask; a headless refusal repeats the ask's reason instead. */
 const REFUSED =

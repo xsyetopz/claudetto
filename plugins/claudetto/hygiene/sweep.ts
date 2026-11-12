@@ -1,7 +1,7 @@
 import { lstat, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-import type { Args } from "./args.ts";
+import type { Args } from "./args";
 import {
 	guardOf,
 	type Log,
@@ -9,14 +9,8 @@ import {
 	realOr,
 	refusal,
 	trashRoots,
-} from "./roots.ts";
-import {
-	batched,
-	type Candidate,
-	idleTemp,
-	MINUTE_MS,
-	namesIn,
-} from "./temp.ts";
+} from "./roots";
+import { batched, type Candidate, idleTemp, MINUTE_MS, namesIn } from "./temp";
 import {
 	checkoutOf,
 	type Held,
@@ -26,7 +20,7 @@ import {
 	output,
 	projectTrash,
 	type Trash,
-} from "./trash.ts";
+} from "./trash";
 
 interface Host {
 	readonly cwd: string;

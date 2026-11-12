@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock.ts";
+import { scanned } from "../../secrets.mock";
 
 export const FILE = "/home/u/.claude/settings.json";
 
@@ -189,7 +189,7 @@ export const lab = (
 		"Write",
 	git: (argv: readonly string[]) => string = () => "",
 	failWrites = false,
-	version = "2.1.318",
+	version = "2.1.323",
 ): Lab => {
 	const state = emptyLab(held);
 	serveFiles(on, state, failWrites);

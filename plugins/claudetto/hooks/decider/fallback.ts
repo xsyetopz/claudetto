@@ -1,11 +1,11 @@
-import { isRecord } from "../tools.ts";
+import { isRecord } from "../tools";
 import {
 	type Answers,
 	type Host,
 	type QuestionSet,
 	type State,
 	UNSETTLED,
-} from "./questions.ts";
+} from "./questions";
 
 const MODEL = "claude-haiku-5-5";
 const MAX_TOKENS = 2106;

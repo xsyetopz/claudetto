@@ -9,7 +9,14 @@ import {
 	lab,
 	run,
 	startup,
-} from "./setup.mock.ts";
+} from "./setup.mock";
+
+// Both test runners run on Bun, which sets `import.meta.dir`; `claude plugin validate` types this file without Bun's types.
+declare global {
+	interface ImportMeta {
+		readonly dir: string;
+	}
+}
 
 /** The plugin root the lab's hooks see: the folder above hooks/. */
 const ROOT = import.meta.dir.replace(/\/hooks\/.*$/u, "");

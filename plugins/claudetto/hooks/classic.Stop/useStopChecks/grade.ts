@@ -1,13 +1,13 @@
 import type { BackgroundTaskSummary, EngineInterface } from "claude-code";
 
-import { taskLines } from "../../cleanup.ts";
+import { taskLines } from "../../cleanup";
 import {
 	type GradeFault,
 	VERIFY_BLOCK,
 	VERIFY_GRADE,
 	VERIFY_UNREAD,
-} from "../../texts-grade.ts";
-import { claimTurn, parseFaults } from "../../verify.ts";
+} from "../../texts-grade";
+import { claimTurn, parseFaults } from "../../verify";
 
 /** The codes sonnet grades beside `unseen`: its answer on `fallback` is dropped; its `credited` vote is ORed with haiku's (on a replay, haiku alone missed 4 of 12, and sonnet missed 5 of 12 but flagged 0 of 30 clean replies). */
 export const UNSEEN_PEERS: GradeFault[] = ["credited", "fallback"];

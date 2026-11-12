@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 
-import { atRoot, lineFilePath } from "./heartbeat.ts";
+import { atRoot, lineFilePath } from "./heartbeat";
 
 /**
  * After each turn, the compaction window and the theme go to the line file: stdin's `context_window_size` is the

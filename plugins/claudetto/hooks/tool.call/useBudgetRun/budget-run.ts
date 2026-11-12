@@ -1,9 +1,9 @@
 import type { EngineInterface } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { parse, programOf } from "../../tool.check/useBashRules/shell-words.ts";
-import { budgetLine } from "./budget.ts";
-import { withNote } from "./result-note.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { parse, programOf } from "../../tool.check/useBashRules/shell-words";
+import { budgetLine } from "./budget";
+import { withNote } from "./result-note";
 
 const PRINT_FLAGS: ReadonlySet<string> = new Set(["-p", "--print"]);
 

@@ -1,7 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { redactedState } from "../../decider/redact.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { redactedState } from "../../decider/redact";
 import {
 	ADVISOR_BAD_FILES,
 	ADVISOR_CALL,
@@ -11,7 +11,7 @@ import {
 	ADVISOR_SYSTEM,
 	ADVISOR_TOO_BIG,
 	ADVISOR_UNREADABLE,
-} from "../../texts-gate.ts";
+} from "../../texts-gate";
 
 // Full IDs, because the lab rule on `$.model.complete` takes no alias. `fable` resolves to Mythos through the same variable.
 const MODELS = { fable: "claude-fable-5-2", mythos: "claude-mythos-5-2" };
@@ -45,13 +45,19 @@ async function filesOf(
 		return ADVISOR_DENIED(denied);
 	}
 	const read = await Promise.all(
-		absolute.map(async (path) => {
-			try {
-				return { path, text: await $.fs.read(path) };
-			} catch (error) {
-				return { path, why: messageOf(error) };
-			}
-		}),
+		absolute.map(
+			async (
+				path,
+			): Promise<
+				{ path: string; text: string } | { path: string; why: string }
+			> => {
+				try {
+					return { path, text: await $.fs.read(path) };
+				} catch (error) {
+					return { path, why: messageOf(error) };
+				}
+			},
+		),
 	);
 	const failed = read.find((r) => "why" in r);
 	if (failed !== undefined && "why" in failed) {

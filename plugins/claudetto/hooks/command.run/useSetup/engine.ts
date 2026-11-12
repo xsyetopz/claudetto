@@ -1,9 +1,9 @@
 import type { EngineInterface } from "claude-code";
 
-import { redact } from "../../secrets.ts";
-import { parseSettings } from "./changes.ts";
-import type { Json } from "./settings.ts";
-import { recommended, SETUP_ADVICE } from "./text.ts";
+import { redact } from "../../secrets";
+import { parseSettings } from "./changes";
+import type { Json } from "./settings";
+import { recommended, SETUP_ADVICE } from "./text";
 
 const TRAILING_SLASHES = /\/+$/u;
 const PROCESS_MS = 5000;

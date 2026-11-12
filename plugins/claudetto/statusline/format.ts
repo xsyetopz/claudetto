@@ -1,4 +1,4 @@
-import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits.ts";
+import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits";
 
 // Some ICU versions put a narrow no-break space (U+202F) before the meridiem, and others a plain space.
 const MERIDIAN_GAP = /[   ]([AP]M)/iu;

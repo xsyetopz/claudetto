@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { memory } from "./memory-fs.ts";
+import { memory } from "./memory-fs";
 
 const C = "/repo/openspec/changes";
 const base =

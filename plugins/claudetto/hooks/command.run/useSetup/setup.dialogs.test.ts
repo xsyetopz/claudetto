@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { valueAt } from "./settings.ts";
+import { valueAt } from "./settings";
 import {
 	asked,
 	choose,
@@ -14,8 +14,8 @@ import {
 	run,
 	saved,
 	writtenAt,
-} from "./setup.mock.ts";
-import { statuslineEdit } from "./text.ts";
+} from "./setup.mock";
+import { statuslineEdit } from "./text";
 
 test("session.start registers no setup tool", async ($: Engine, on: On) => {
 	lab(on);
@@ -91,7 +91,7 @@ test("a clean write holds each planned key, only in the settings file, and no su
 	await run($, "claudetto:setup");
 	const written = saved(state);
 
-	expect(valueAt(written, ["minimumVersion"])).toBe("2.1.318");
+	expect(valueAt(written, ["minimumVersion"])).toBe("2.1.323");
 	expect(valueAt(written, ["workflowSizeGuideline"])).toBe("unrestricted");
 	expect(valueAt(written, ["subagentPromptCacheTtl"])).toBe("1h");
 	for (const key of [

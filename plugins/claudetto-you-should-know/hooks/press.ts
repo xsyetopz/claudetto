@@ -5,10 +5,10 @@ import {
 	LIMITS,
 	type Row,
 	type View,
-} from "./note.ts";
-import { type Engine, learn, loadRow, saveBackoff, saveRow } from "./store.ts";
-import { TOAST_BOX_HAS_TEXT } from "./texts.ts";
-import { type ButtonKey, hasCards } from "./view.ts";
+} from "./note";
+import { type Engine, learn, loadRow, saveBackoff, saveRow } from "./store";
+import { TOAST_BOX_HAS_TEXT } from "./texts";
+import { type ButtonKey, hasCards } from "./view";
 
 async function expire($: Engine, id: string, shownAt: number): Promise<void> {
 	const row = await loadRow($, id);

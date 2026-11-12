@@ -1,7 +1,7 @@
 import type { On, SessionMessage } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { haikuText } from "../../decider/decider.mock.ts";
+import { haikuText } from "../../decider/decider.mock";
 
 /** The sentences the model reads as a limit, each with the rule it states. */
 type Limits = Readonly<Record<string, string>>;

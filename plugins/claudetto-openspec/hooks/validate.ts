@@ -1,18 +1,18 @@
 // Validation of one change: delta files against each other and against the main specs.
-import { type Fs, join, nonEmpty, statOf } from "./fs.ts";
-import { merge } from "./spec-merge.ts";
-import { parsePlan } from "./spec-plan.ts";
-import type { Plan } from "./spec-plan.ts";
-import { at, type Issue, type Report, report } from "./spec-rules.ts";
-import { type Doc, missingCheckboxes, numberingIssues } from "./tasks.ts";
+import { type Fs, join, nonEmpty, statOf } from "./fs";
+import { merge } from "./spec-merge";
+import { parsePlan } from "./spec-plan";
+import type { Plan } from "./spec-plan";
+import { at, type Issue, type Report, report } from "./spec-rules";
+import { type Doc, missingCheckboxes, numberingIssues } from "./tasks";
 import {
 	baseBlocks,
 	discoverDeltas,
 	type Found,
 	linkEscapes,
-} from "./validate-discover.ts";
-import { type Base, deltaIssues, type Loaded } from "./validate-issues.ts";
-import { type Meta, metadata } from "./validate-meta.ts";
+} from "./validate-discover";
+import { type Base, deltaIssues, type Loaded } from "./validate-issues";
+import { type Meta, metadata } from "./validate-meta";
 
 export const NO_DELTA = "Change must have at least one delta";
 

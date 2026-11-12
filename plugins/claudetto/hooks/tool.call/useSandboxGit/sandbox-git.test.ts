@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock.ts";
-import { GIT_CLOSED } from "../../texts-gate.ts";
+import { scanned } from "../../secrets.mock";
+import { GIT_CLOSED } from "../../texts-gate";
 
 /** A project at /repo whose `existing` paths are there; a Bash call whose command starts with `git init` makes `/repo/.git`. Answers each host command and each tool run in order. */
 const lab = (on: On, existing: string[] = ["/repo/.git"]): string[] => {

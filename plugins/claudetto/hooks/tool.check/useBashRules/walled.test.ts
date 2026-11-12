@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { namedPaths, spellsWall, unguarded, walledVerdict } from "./walled.ts";
+import { namedPaths, spellsWall, unguarded, walledVerdict } from "./walled";
 
 const WALLS = ["~/.claudetto-holdout"];
 const HOME = "/home/u";

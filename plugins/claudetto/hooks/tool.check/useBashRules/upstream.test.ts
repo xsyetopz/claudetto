@@ -1,9 +1,9 @@
 import { expect, test } from "claude-code/testing";
 
-import { GENERATED } from "./rules.generated.ts";
-import { judge } from "./rules.ts";
-import { parse } from "./shell-words.ts";
-import { parsedTexts, ruleHits } from "./upstream.ts";
+import { judge } from "./rules";
+import { GENERATED } from "./rules.generated";
+import { parse } from "./shell-words";
+import { parsedTexts, ruleHits } from "./upstream";
 
 const NONE = (_file: string) => false;
 

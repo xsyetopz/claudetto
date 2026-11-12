@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 
-import { ADVISOR_COMMAND, ADVISOR_USAGE } from "../../texts.ts";
-import { advise } from "../../tool.call/useAdvisorTool/advisor.ts";
+import { ADVISOR_COMMAND, ADVISOR_USAGE } from "../../texts";
+import { advise } from "../../tool.call/useAdvisorTool/advisor";
 
 const TRAILING = /[.,;:!?)]+$/u;
 const MENTION = /(?:^|\s)@(\S+)/gu;

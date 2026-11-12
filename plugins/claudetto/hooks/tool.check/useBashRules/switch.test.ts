@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { bash, scanned } from "../../secrets.mock.ts";
+import { bash, scanned } from "../../secrets.mock";
 
 const SKILLS = [1, 2, 3, 4, 5, 6, 7].map(
 	(i) => `.claude/skills/openspec-${i}/SKILL.md`,

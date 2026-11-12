@@ -1,6 +1,6 @@
-import { isRecord, probability } from "../tools.ts";
-import { fallback } from "./fallback.ts";
-import { JevStatusError, postJev } from "./jev.ts";
+import { isRecord, probability } from "../tools";
+import { fallback } from "./fallback";
+import { JevStatusError, postJev } from "./jev";
 import {
 	type Answers,
 	type Choice,
@@ -8,8 +8,8 @@ import {
 	type QuestionSet,
 	type State,
 	UNSETTLED,
-} from "./questions.ts";
-import { redactedState, STATE_MAX_CHARS } from "./redact.ts";
+} from "./questions";
+import { redactedState, STATE_MAX_CHARS } from "./redact";
 
 const JEV_MODEL = "jev-1.14.0";
 const REJECTED = new Set([400, 413, 415, 422]);

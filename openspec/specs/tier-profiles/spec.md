@@ -105,7 +105,7 @@ The system SHALL NOT state a saving as a share of plan limits without a measurem
 
 ### Requirement: The Snippet Holds the Planned Keys
 
-The groups SHALL hold `$schema`, `minimumVersion: "2.1.318"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, and `statusLine`, and setup SHALL write its settings keys only to `~/.claude/settings.json`. It SHALL NOT write `subagentStatusLine`, which the plugin's root `settings.json` ships.
+The groups SHALL hold `$schema`, `minimumVersion: "2.1.323"`, `workflowSizeGuideline: "unrestricted"`, `workflowKeywordTriggerEnabled: false`, `enableWorkflows: false`, `enableArtifact: false`, `remoteControlAtStartup: false`, and `statusLine`, and setup SHALL write its settings keys only to `~/.claude/settings.json`. It SHALL NOT write `subagentStatusLine`, which the plugin's root `settings.json` ships.
 
 #### Scenario: Clean Write
 

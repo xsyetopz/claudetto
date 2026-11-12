@@ -1,6 +1,6 @@
 import type { CatchHandler, HookFor, On, PluginOptions } from "claude-code";
 
-import { READERS } from "./calls.ts";
+import { READERS } from "./calls";
 import {
 	addToLog,
 	closed,
@@ -9,9 +9,9 @@ import {
 	logEntry,
 	parseReply,
 	remember,
-} from "./note.ts";
-import { press } from "./press.ts";
-import { type Settings, settingsOf } from "./settings.ts";
+} from "./note";
+import { press } from "./press";
+import { type Settings, settingsOf } from "./settings";
 import {
 	countIgnored,
 	type Engine,
@@ -21,9 +21,9 @@ import {
 	saveBackoff,
 	saveRow,
 	STORE,
-} from "./store.ts";
-import { CHECK_INSTRUCTIONS, checkBody, stopFor } from "./texts.ts";
-import { drawView } from "./view.ts";
+} from "./store";
+import { CHECK_INSTRUCTIONS, checkBody, stopFor } from "./texts";
+import { drawView } from "./view";
 
 interface Memory {
 	readonly typedPast: Map<string, number>;

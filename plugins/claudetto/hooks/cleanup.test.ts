@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { agentPath, ARMED, lab, MONITOR, SHELL, stop } from "./cleanup.mock.ts";
+import { agentPath, ARMED, lab, MONITOR, SHELL, stop } from "./cleanup.mock";
 
 /** The git calls that change the repo, without the calls that only read it. */
 const gitChanges = (runs: string[][]) =>

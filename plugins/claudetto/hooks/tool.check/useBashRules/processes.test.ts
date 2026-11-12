@@ -1,15 +1,15 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { bash } from "../../secrets.mock.ts";
+import { bash } from "../../secrets.mock";
 import {
 	GATE_BUSY_WAIT,
 	GATE_ENDLESS_WAIT,
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
 	gateKillPid,
-} from "../../texts-gate.ts";
-import { lab } from "./processes.mock.ts";
+} from "../../texts-gate";
+import { lab } from "./processes.mock";
 
 const RELEASE = "/Users/u/.local/share/claude/versions/2.1.319";
 

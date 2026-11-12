@@ -12,7 +12,7 @@ import {
 const ADVISOR_MODELS = ["claude-fable-5-2", "claude-mythos-5-2"];
 const ROOT = `${import.meta.dir}/..`;
 const SETTINGS_IMPORT =
-	/import \{[^}]*\bsettingsOf\b[^}]*\} from "\.\/settings\.ts"/u;
+	/import \{[^}]*\bsettingsOf\b[^}]*\} from "\.\/settings"/u;
 const CALL = /\$\.model\s*\.complete\s*\(\s*\{/gu;
 const OPENERS = "([{";
 const CLOSERS = ")]}";
@@ -150,7 +150,7 @@ const isShipped = (file: string): boolean =>
 const callsOf = async (file: string): Promise<Call[]> =>
 	callsIn(file, await Bun.file(`${ROOT}/${file}`).text());
 
-const SETTINGS_HEAD = 'import { settingsOf } from "./settings.ts";\n';
+const SETTINGS_HEAD = 'import { settingsOf } from "./settings";\n';
 
 const faultsAt = (body: string, head = ""): string[] =>
 	callsIn("x.ts", `${head}await $.model.complete({ ${body} });`).flatMap(

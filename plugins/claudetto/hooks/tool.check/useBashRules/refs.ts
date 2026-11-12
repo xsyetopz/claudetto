@@ -1,7 +1,7 @@
-import { GATE_REF_MOVE } from "../../texts-gate.ts";
-import { ownedMove, type Owns } from "./processes.ts";
-import { withoutGitOptions } from "./upstream.ts";
-import { ask, type Verdict } from "./verdict.ts";
+import { GATE_REF_MOVE } from "../../texts-gate";
+import { ownedMove, type Owns } from "./processes";
+import { withoutGitOptions } from "./upstream";
+import { ask, type Verdict } from "./verdict";
 
 const MODES = new Set(["--soft", "--mixed", "--keep", "--merge", "--hard"]);
 // A name a fetch, merge, or reset writes to `.git`, which resolves to one of several commits.

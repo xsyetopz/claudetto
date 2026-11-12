@@ -1,4 +1,4 @@
-import { checkReadings } from "./shell-words.reading.mock.ts";
+import { checkReadings } from "./shell-words.reading.mock";
 
 checkReadings([
 	[

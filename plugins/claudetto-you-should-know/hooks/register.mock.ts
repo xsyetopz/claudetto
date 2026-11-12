@@ -7,8 +7,8 @@ import type {
 } from "claude-code";
 import { type Engine, mock } from "claude-code/testing";
 
-import { blankRow, type Row } from "./note.ts";
-import { rowsOf } from "./store.ts";
+import { blankRow, type Row } from "./note";
+import { rowsOf } from "./store";
 
 const PLUGIN = "claudetto-you-should-know";
 export const ON = { options: { sideCheckEnabled: true } };
@@ -144,10 +144,13 @@ export const fixture = (on: On, ground: Ground = {}) => {
 			reply = text;
 		},
 		hold: (): (() => void) => {
-			const gate = Promise.withResolvers<boolean>();
-			held = gate.promise;
+			// `claude plugin validate` types this file against `es2023`, which lacks `Promise.withResolvers`; the executor runs before `new` returns.
+			let release!: (value: boolean) => void;
+			held = new Promise<boolean>((resolve) => {
+				release = resolve;
+			});
 			return () => {
-				gate.resolve(true);
+				release(true);
 			};
 		},
 		row: () => rowsOf(store.get("sessions"))[0],
@@ -170,15 +173,17 @@ export const step = async (
 	f: Fixture,
 	at: { turnId: string; index: number; agentId?: string },
 ): Promise<void> => {
-	await Array.fromAsync(
-		$.turn.step({
-			turnId: at.turnId,
-			index: at.index,
-			model: "m",
-			messageCount: 1,
-			...(at.agentId === undefined ? {} : { agentId: at.agentId }),
-		}),
-	);
+	const chunks = $.turn.step({
+		turnId: at.turnId,
+		index: at.index,
+		model: "m",
+		messageCount: 1,
+		...(at.agentId === undefined ? {} : { agentId: at.agentId }),
+	});
+	const drained: unknown[] = [];
+	for await (const chunk of chunks) {
+		drained.push(chunk);
+	}
 	await f.clock.settle();
 };
 

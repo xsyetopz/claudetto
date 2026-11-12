@@ -1,4 +1,4 @@
-import { judge } from "./rules.ts";
+import { judge } from "./rules";
 
 export const NONE = (_file: string) => false;
 

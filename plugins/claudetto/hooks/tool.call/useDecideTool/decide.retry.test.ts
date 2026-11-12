@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { JEV_GIVE_BACK } from "../../texts-gate.ts";
+import { JEV_GIVE_BACK } from "../../texts-gate";
 import {
 	ask,
 	choice,
@@ -12,8 +12,8 @@ import {
 	slowOverloads,
 	stub,
 	TWO,
-} from "./decide.mock.ts";
-import { replyOf } from "./judge.ts";
+} from "./decide.mock";
+import { replyOf } from "./judge";
 
 test("A Hung Server: one try of 5 s, then handed back", async ($: Engine, on: On) => {
 	const { fetches, clock } = stub(on, async (_n, c) => {

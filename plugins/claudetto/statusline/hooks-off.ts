@@ -1,8 +1,8 @@
 import { open } from "node:fs/promises";
 import { join } from "node:path";
 
-import { heartbeatPath } from "../hooks/session.measure/useLineFile/heartbeat.ts";
-import { num, type Rec, str, sub } from "./input.ts";
+import { heartbeatPath } from "../hooks/session.measure/useLineFile/heartbeat";
+import { num, type Rec, str, sub } from "./input";
 
 /**
  * A choice: the margin between the heartbeat and a newer reply before the line warns. The heartbeat is written at a

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { set, usage } from "./hold.mock.ts";
+import { set, usage } from "./hold.mock";
 
 const ERROR = "connect ECONNREFUSED 127.0.0.1:9";
 

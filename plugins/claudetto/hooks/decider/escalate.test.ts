@@ -8,9 +8,9 @@ import {
 	noul,
 	pick,
 	rig,
-} from "./decider.mock.ts";
-import type { QuestionSet } from "./questions.ts";
-import { settle } from "./settle.ts";
+} from "./decider.mock";
+import type { QuestionSet } from "./questions";
+import { settle } from "./settle";
 
 const STATE = { reply: "Tests pass. The build is green. It ships today." };
 

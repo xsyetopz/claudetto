@@ -1,12 +1,12 @@
 import type { On } from "claude-code";
 
-import { openspec } from "./openspec.ts";
+import { openspec } from "./openspec";
 import {
 	TOOL_CALL,
 	TOOL_DESCRIPTION,
 	TOOL_INPUT_SCHEMA,
 	TOOL_NAME,
-} from "./texts.ts";
+} from "./texts";
 
 export const register = (on: On): void => {
 	// The engine takes one unmatched `session.start` per module.

@@ -1,9 +1,9 @@
 import type { EngineInterface } from "claude-code";
 
-import { SHIPPED_REGISTER } from "../../decider/questions.ts";
-import { anyYes } from "../../decider/settle.ts";
-import { REGISTER_BLOCK } from "../../texts.ts";
-import { claimTurn } from "../../verify.ts";
+import { SHIPPED_REGISTER } from "../../decider/questions";
+import { anyYes } from "../../decider/settle";
+import { REGISTER_BLOCK } from "../../texts";
+import { claimTurn } from "../../verify";
 
 /** The block for a reply that one Decider call answers `yes` to for any shipped register question; a `no`, an `unsettled` answer, and a Decider that fails let the reply through. */
 export async function registerBlock(

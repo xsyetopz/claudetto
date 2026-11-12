@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { LIMITS } from "./note.ts";
-import { act, fixture, inOrder, logOf, ON, typed } from "./register.mock.ts";
+import { LIMITS } from "./note";
+import { act, fixture, inOrder, logOf, ON, typed } from "./register.mock";
 
 const fullList = (mark: string): readonly string[] =>
 	Array.from({ length: 50 }, (_, n) => `${mark}${n} ${"x".repeat(230)}`);

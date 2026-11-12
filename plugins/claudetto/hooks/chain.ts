@@ -1,6 +1,6 @@
 import type { HookFor } from "claude-code";
 
-import { GATE_CHECK_FAILED } from "./texts-gate.ts";
+import { GATE_CHECK_FAILED } from "./texts-gate";
 
 type Call = HookFor<"tool.call">;
 export type CallEvent = Parameters<Call>[1];

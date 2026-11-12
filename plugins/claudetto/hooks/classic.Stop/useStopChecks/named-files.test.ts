@@ -6,9 +6,9 @@ import {
 	type TestBody,
 } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
-import { refuseUnreached } from "../../tool.check/useBashRules/gate.mock.ts";
-import { namedPaths, userCommands } from "./named-files.ts";
+import { scanner } from "../../secrets.mock";
+import { refuseUnreached } from "../../tool.check/useBashRules/gate.mock";
+import { namedPaths, userCommands } from "./named-files";
 
 // This file tests the file check alone: the command-form check would block its bare `! <command>` replies first.
 const test = (name: string, run: TestBody) => {

@@ -1,11 +1,5 @@
 // Lean reader for upstream's spec layout: top sections, requirement blocks, and scenarios.
-import {
-	type Block,
-	fenceMask,
-	lineBreaks,
-	masked,
-	norm,
-} from "./spec-lines.ts";
+import { type Block, fenceMask, lineBreaks, masked, norm } from "./spec-lines";
 
 const SCENARIO_LABEL = /^Scenario:\s*/iu;
 const H3 = /^###\s+(.+?)\s*$/u;

@@ -1,5 +1,5 @@
-import { inOrder, isRecord } from "../../tools.ts";
-import type { Run } from "./worktrees.ts";
+import type { Run } from "../hooks/classic.SessionStart/useHygieneSweep/worktrees";
+import { inOrder, isRecord } from "../hooks/tools";
 
 const LINES = /\r?\n/u;
 

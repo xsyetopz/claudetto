@@ -7,9 +7,9 @@ import {
 	safeList,
 	statOf,
 	within,
-} from "./fs.ts";
-import { withoutFences } from "./spec-rules.ts";
-import { blocks, section } from "./spec.ts";
+} from "./fs";
+import { blocks, section } from "./spec";
+import { withoutFences } from "./spec-rules";
 
 const DELTA_SECTION = /^## (ADDED|MODIFIED|REMOVED|RENAMED) Requirements/imu;
 

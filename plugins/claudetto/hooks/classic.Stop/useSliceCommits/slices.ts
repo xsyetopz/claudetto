@@ -1,9 +1,9 @@
 import type { EngineInterface, On } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { PERSON, rootOf } from "../../prompt.submit/useConstraintPin/pin.ts";
-import { SLICE_COMMIT } from "../../texts.ts";
-import { didWrite } from "../useStopChecks/turn.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { PERSON, rootOf } from "../../prompt.submit/useConstraintPin/pin";
+import { SLICE_COMMIT } from "../../texts";
+import { didWrite } from "../useStopChecks/turn";
 
 const RENAMED = /^[RC]/u;
 

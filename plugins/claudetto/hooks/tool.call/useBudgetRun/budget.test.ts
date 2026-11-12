@@ -1,7 +1,7 @@
 import type { On, SessionUsage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { budgetBand, budgetLine } from "./budget.ts";
+import { budgetBand, budgetLine } from "./budget";
 
 type Reading = Pick<SessionUsage, "context" | "rateLimits">;
 

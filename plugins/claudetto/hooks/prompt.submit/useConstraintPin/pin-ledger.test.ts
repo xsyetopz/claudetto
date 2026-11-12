@@ -6,10 +6,10 @@ import {
 	jevAnswers,
 	noul,
 	rig,
-} from "../../decider/decider.mock.ts";
-import type { PinConstraint } from "../../texts-pin.ts";
-import { isRecord } from "../../tools.ts";
-import { readLedger } from "./pin-ledger.ts";
+} from "../../decider/decider.mock";
+import type { PinConstraint } from "../../texts-pin";
+import { isRecord } from "../../tools";
+import { readLedger } from "./pin-ledger";
 
 const numbers = (n: number) => Array.from({ length: n }, (_, i) => i + 1);
 

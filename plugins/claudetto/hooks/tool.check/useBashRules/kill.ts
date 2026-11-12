@@ -3,9 +3,9 @@ import {
 	GATE_KILL_BROAD,
 	GATE_RELEASE_RUN,
 	gateKillPid,
-} from "../../texts-gate.ts";
-import { type Command, programOf } from "./shell-words.ts";
-import { deny, fieldOf, type Verdict } from "./verdict.ts";
+} from "../../texts-gate";
+import { type Command, programOf } from "./shell-words";
+import { deny, fieldOf, type Verdict } from "./verdict";
 
 // Flags of `kill` that take the next word as their value.
 const VALUED = new Set(["-s", "-n", "-q"]);

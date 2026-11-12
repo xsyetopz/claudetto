@@ -1,8 +1,8 @@
 import { expect, test } from "claude-code/testing";
 
-import { GATE_HOOK_WRITE, GATE_WRITE_FILE } from "../../texts-gate.ts";
-import { decision, NONE } from "./rules.mock.ts";
-import { judge, systemPath } from "./rules.ts";
+import { GATE_HOOK_WRITE, GATE_WRITE_FILE } from "../../texts-gate";
+import { judge, systemPath } from "./rules";
+import { decision, NONE } from "./rules.mock";
 
 test("root and home are deleted by no spelling", () => {
 	for (const command of [

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { haikuFailed } from "../../decider/decider.mock.ts";
+import { haikuFailed } from "../../decider/decider.mock";
 import {
 	ask,
 	bodyKeys,
@@ -15,8 +15,8 @@ import {
 	sectionOf,
 	stub,
 	TWO,
-} from "./decide.mock.ts";
-import { replyOf } from "./judge.ts";
+} from "./decide.mock";
+import { replyOf } from "./judge";
 
 const YES_NO = { question: "Is the cache stale?" };
 const PICK_SQL = { kind: "pick", choice: "sql", p: 0.75 } as const;

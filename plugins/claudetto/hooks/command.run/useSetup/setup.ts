@@ -1,6 +1,6 @@
 import type { EngineInterface, HookFor, On, PluginOptions } from "claude-code";
 
-import { listOption } from "../../options.ts";
+import { listOption } from "../../options";
 import {
 	applyChanges,
 	capGroup,
@@ -9,7 +9,7 @@ import {
 	parseSettings,
 	settingsText,
 	wallGroup,
-} from "./changes.ts";
+} from "./changes";
 import {
 	ask,
 	configDir,
@@ -20,17 +20,17 @@ import {
 	userSettings,
 	WRITE,
 	writeFile,
-} from "./engine.ts";
-import { reportRule, RULES, rulesPart } from "./rules.ts";
+} from "./engine";
+import { reportRule, RULES, rulesPart } from "./rules";
 import {
 	type Group,
 	GROUPS,
 	type Json,
 	MINIMUM_VERSION,
 	STATUS_LINE,
-} from "./settings.ts";
-import { ignoresPart, purgePart, starterPart, toolPart } from "./steps.ts";
-import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./text.ts";
+} from "./settings";
+import { ignoresPart, purgePart, starterPart, toolPart } from "./steps";
+import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./text";
 import {
 	diskLine,
 	isBelowFloor,
@@ -39,7 +39,7 @@ import {
 	noticeLine,
 	type Tool,
 	TOOLS,
-} from "./tools.ts";
+} from "./tools";
 
 const SETUP = "claudetto:setup";
 const STATUSLINE = "statusline";

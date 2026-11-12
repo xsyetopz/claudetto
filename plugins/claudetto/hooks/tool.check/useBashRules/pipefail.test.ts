@@ -1,8 +1,8 @@
 import { expect, test } from "claude-code/testing";
 
-import { GATE_MASKED_EXIT, GATE_UNSTOPPED_COMMIT } from "../../texts-gate.ts";
-import { decision, NONE } from "./rules.mock.ts";
-import { judge } from "./rules.ts";
+import { GATE_MASKED_EXIT, GATE_UNSTOPPED_COMMIT } from "../../texts-gate";
+import { judge } from "./rules";
+import { decision, NONE } from "./rules.mock";
 
 const PIPED_PUSH =
 	"bun run check 2>&1 | tail -5 && git commit -m x && git push";

@@ -1,8 +1,8 @@
 // Pure code: the edits that put the block into `.gitignore` and `.ignore`, and the text a person sees before a yes.
 
-import { applyBlock, diffOf } from "./ignore-block.ts";
-import { ignoreLines } from "./ignore-plan.ts";
-import type { Listing } from "./starter.ts";
+import { applyBlock, diffOf } from "./ignore-block";
+import { ignoreLines } from "./ignore-plan";
+import type { Listing } from "./starter";
 
 export interface IgnoreEdit {
 	readonly path: ".gitignore" | ".ignore";

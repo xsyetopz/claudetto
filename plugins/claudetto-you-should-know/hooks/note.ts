@@ -3,7 +3,7 @@ import {
 	DRAFT_LEAD,
 	TOAST_DIALOG_OPEN,
 	TOAST_NOT_FILLED,
-} from "./texts.ts";
+} from "./texts";
 
 export const LIMITS = {
 	clearAfterPrompts: 2,

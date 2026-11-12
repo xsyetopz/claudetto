@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { SLICE_COMMIT } from "../../texts.ts";
-import { A, edit, fakeRepo, lab, stop } from "./slices.mock.ts";
+import { SLICE_COMMIT } from "../../texts";
+import { A, edit, fakeRepo, lab, stop } from "./slices.mock";
 
 test("a stop with an edited file git reports changed is blocked, and the block names it and keeps the answer in the last message", async ($: Engine, on: On) => {
 	const runs: string[][] = [];

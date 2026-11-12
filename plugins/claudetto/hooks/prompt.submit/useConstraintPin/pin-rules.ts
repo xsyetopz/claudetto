@@ -1,12 +1,12 @@
-import type { PinConstraint } from "../../texts-pin.ts";
-import { inPlaceTarget } from "../../tool.check/useBashRules/files.ts";
+import type { PinConstraint } from "../../texts-pin";
+import { inPlaceTarget } from "../../tool.check/useBashRules/files";
 import {
 	type Command,
 	parse,
 	programOf,
-} from "../../tool.check/useBashRules/shell-words.ts";
-import { fieldOf } from "../../tool.check/useBashRules/verdict.ts";
-import { isWriter } from "../../tools.ts";
+} from "../../tool.check/useBashRules/shell-words";
+import { fieldOf } from "../../tool.check/useBashRules/verdict";
+import { isWriter } from "../../tools";
 
 const WRITE_PROGRAMS = new Set([
 	"tee",

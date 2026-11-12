@@ -1,7 +1,7 @@
 import type { HookFor, On, PluginOptions } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { switchOption } from "../../options.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { switchOption } from "../../options";
 import {
 	BUN_FACT,
 	INTERVIEW_TEXT,
@@ -10,7 +10,7 @@ import {
 	REFUSAL,
 	ROOT_PROMPT,
 	TOOL_TEXTS,
-} from "../../texts.ts";
+} from "../../texts";
 
 // Skill is called by name, so the model needs no schema for it. Read and Write stay in full: deferred, they sent the model to `cat` through Bash, whose gate then denied the call. ListAgents stays loaded: 0 of 8 sessions reached a deferred ListAgents, against 8 of 8 with it sent. Workflow, ScheduleWakeup, and ReportFindings go uncalled in recorded transcripts; setup denies them, and a session without setup still sends them in full.
 export const DEFERRED_TOOLS: readonly string[] = [

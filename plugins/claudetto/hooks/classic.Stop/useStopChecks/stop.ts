@@ -5,8 +5,8 @@ import type {
 	PluginOptions,
 } from "claude-code";
 
-import { closed, taskLines } from "../../cleanup.ts";
-import { switchOption } from "../../options.ts";
+import { closed, taskLines } from "../../cleanup";
+import { switchOption } from "../../options";
 import {
 	AGREE_OPENER,
 	ASK_FORM,
@@ -14,13 +14,13 @@ import {
 	MISSING_FILES,
 	STALL_STOP,
 	STOP_TASKS,
-} from "../../texts.ts";
-import { budgetBand, budgetLine } from "../../tool.call/useBudgetRun/budget.ts";
-import { gradeBlock } from "./grade.ts";
-import { namedPaths } from "./named-files.ts";
-import { commandForm, openItems, turnOf } from "./open-items.ts";
-import { registerBlock } from "./register.ts";
-import type { StopState, Turn } from "./turn.ts";
+} from "../../texts";
+import { budgetBand, budgetLine } from "../../tool.call/useBudgetRun/budget";
+import { gradeBlock } from "./grade";
+import { namedPaths } from "./named-files";
+import { commandForm, openItems, turnOf } from "./open-items";
+import { registerBlock } from "./register";
+import type { StopState, Turn } from "./turn";
 
 const AGREES =
 	/^(?:you(?:['’]| a)re (?:right|correct)|(?:good|great|fair) (?:catch|point|call)|fair enough|agreed\b)/iu;

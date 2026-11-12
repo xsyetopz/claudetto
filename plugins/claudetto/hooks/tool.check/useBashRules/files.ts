@@ -1,7 +1,7 @@
-import { GATE_WHOLE_FORMAT } from "../../texts-gate.ts";
-import { baseName } from "./program-at.ts";
-import type { Command } from "./shell-words.ts";
-import { deny, type Verdict } from "./verdict.ts";
+import { GATE_WHOLE_FORMAT } from "../../texts-gate";
+import { baseName } from "./program-at";
+import type { Command } from "./shell-words";
+import { deny, type Verdict } from "./verdict";
 
 export const flagsOf = (args: string[]): string[] => {
 	const end = args.indexOf("--");

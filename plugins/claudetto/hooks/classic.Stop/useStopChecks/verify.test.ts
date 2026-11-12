@@ -1,13 +1,9 @@
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
-import {
-	GRADE_FAULTS,
-	VERIFY_BLOCK,
-	VERIFY_UNREAD,
-} from "../../texts-grade.ts";
-import { found, lab, stop, used, user } from "./verify.mock.ts";
+import { scanner } from "../../secrets.mock";
+import { GRADE_FAULTS, VERIFY_BLOCK, VERIFY_UNREAD } from "../../texts-grade";
+import { found, lab, stop, used, user } from "./verify.mock";
 
 test("a claim about the work with no tool this turn gets one block", async ($: Engine, on: On) => {
 	lab(on, [user("I fixed it. Write the commit message.")], found("unchecked"));

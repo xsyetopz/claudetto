@@ -3,7 +3,13 @@ import { expect, test } from "bun:test";
 import { Glob } from "bun";
 
 import { REPLY_REGISTER } from "../plugins/claudetto/hooks/decider/questions.ts";
-import { contentsOf, fieldOf, listOf, PLUGINS } from "./validator.ts";
+import {
+	contentsOf,
+	fieldOf,
+	listOf,
+	PLUGINS,
+	VALIDATE_MS,
+} from "./validator.ts";
 
 const ROOT = `${import.meta.dir}/..`;
 
@@ -36,15 +42,19 @@ const envReadsOf = async (plugin: string): Promise<string[]> => {
 		.map((name) => name.trim());
 };
 
-test("the validator lists the TypeSafe key among the reads of claudetto alone", async () => {
-	const reads = await Promise.all(PLUGINS.map((name) => envReadsOf(name)));
+test(
+	"the validator lists the TypeSafe key among the reads of claudetto alone",
+	async () => {
+		const reads = await Promise.all(PLUGINS.map((name) => envReadsOf(name)));
 
-	expect(reads.map((names) => names.includes("TYPESAFE_API_KEY"))).toEqual([
-		true,
-		false,
-		false,
-	]);
-});
+		expect(reads.map((names) => names.includes("TYPESAFE_API_KEY"))).toEqual([
+			true,
+			false,
+			false,
+		]);
+	},
+	VALIDATE_MS,
+);
 
 test("the reply-register questions are Nouls that each state what a yes and a no mean", () => {
 	const questions = Object.values(REPLY_REGISTER.questions);

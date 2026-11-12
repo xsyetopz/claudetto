@@ -1,15 +1,9 @@
 import { expect, test } from "claude-code/testing";
 
-import { AUTO_MODE } from "./auto-mode.ts";
-import { applyChanges, capGroup, changesOf, parseSettings } from "./changes.ts";
-import {
-	capOf,
-	everything,
-	groupNamed,
-	listOf,
-	login,
-} from "./settings.mock.ts";
-import { DENIED_TOOLS, GROUPS, STATUS_LINE, valueAt } from "./settings.ts";
+import { AUTO_MODE } from "./auto-mode";
+import { applyChanges, capGroup, changesOf, parseSettings } from "./changes";
+import { DENIED_TOOLS, GROUPS, STATUS_LINE, valueAt } from "./settings";
+import { capOf, everything, groupNamed, listOf, login } from "./settings.mock";
 
 const BUILTIN_KEY = /^cc-plugin-.+@builtin$/u;
 const SIGNING_KEYS = /\.ssh|\.gnupg/u;

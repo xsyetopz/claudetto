@@ -14,8 +14,19 @@ export const fieldOf = (value: unknown, key: string): unknown =>
 export const listOf = (value: unknown): unknown[] =>
 	Array.isArray(value) ? value : [];
 
-/** The `contents` of `claude plugin validate --strict --json` for one plugin; `--strict` exits 1 on the manifest's missing `version`, so the report is read whatever the exit code. */
-export const contentsOf = async (plugin: string): Promise<unknown[]> => {
+/** How long a test that reads a report may run: the validator type-checks each plugin, which takes seconds and more on a CI runner. */
+export const VALIDATE_MS = 60_000;
+
+const reports = new Map<string, Promise<unknown[]>>();
+
+/** The `contents` of `claude plugin validate --strict --json` for one plugin, run once per test process; `--strict` exits 1 on the manifest's missing `version`, so the report is read whatever the exit code. */
+export const contentsOf = (plugin: string): Promise<unknown[]> => {
+	const report = reports.get(plugin) ?? validate(plugin);
+	reports.set(plugin, report);
+	return report;
+};
+
+const validate = async (plugin: string): Promise<unknown[]> => {
 	const proc = spawn(
 		[
 			"claude",

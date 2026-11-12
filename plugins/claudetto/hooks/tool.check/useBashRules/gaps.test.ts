@@ -1,8 +1,8 @@
 import { expect, test } from "claude-code/testing";
 
-import { GATE_MASKED_EXIT, GATE_WHOLE_FORMAT } from "../../texts-gate.ts";
-import { decision, NONE } from "./rules.mock.ts";
-import { judge } from "./rules.ts";
+import { GATE_MASKED_EXIT, GATE_WHOLE_FORMAT } from "../../texts-gate";
+import { judge } from "./rules";
+import { decision, NONE } from "./rules.mock";
 
 const IN_PLACE = [
 	"sed --in-place 's/a/b/' src/a.ts",

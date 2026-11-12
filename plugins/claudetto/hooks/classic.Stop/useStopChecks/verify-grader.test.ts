@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { VERIFY_BLOCK } from "../../texts-grade.ts";
+import { VERIFY_BLOCK } from "../../texts-grade";
 import {
 	answered,
 	failedRun,
@@ -14,7 +14,7 @@ import {
 	UNSEEN_REPLY,
 	used,
 	user,
-} from "./verify.mock.ts";
+} from "./verify.mock";
 
 test("the grader sees the earlier person and assistant messages", async ($: Engine, on: On) => {
 	const seen: string[] = [];

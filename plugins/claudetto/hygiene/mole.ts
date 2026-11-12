@@ -1,6 +1,6 @@
 import { spawn, which } from "bun";
 
-import { MOLE } from "../../command.run/useSetup/tools.ts";
+import { MOLE } from "../hooks/command.run/useSetup/tools";
 
 /** Runs Mole's cache clean, whose own log `mo history` shows, and returns one report line. With no terminal on stdin, Mole cleans user caches without a prompt and skips the ones that need sudo. */
 export const cleanCaches = async (dryRun: boolean): Promise<string> => {

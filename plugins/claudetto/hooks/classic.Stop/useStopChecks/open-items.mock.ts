@@ -1,7 +1,7 @@
 import type { On, PluginOptions, SessionMessage } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
+import { scanner } from "../../secrets.mock";
 
 export const said = (
 	role: SessionMessage["role"],

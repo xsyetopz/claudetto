@@ -1,6 +1,6 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
-import type { CheckAnswer, CheckEvent, CheckNext } from "../../chain.ts";
+import type { CheckAnswer, CheckEvent, CheckNext } from "../../chain";
 import {
 	admitCall,
 	failedText,
@@ -8,8 +8,8 @@ import {
 	type Limits,
 	limitsOf,
 	withFailure,
-} from "./admit.ts";
-import { memoryLimitOf, memoryProcessMaxOf, memoryShort } from "./memory.ts";
+} from "./admit";
+import { memoryLimitOf, memoryProcessMaxOf, memoryShort } from "./memory";
 
 async function heavyTokens($: EngineInterface): Promise<number | undefined> {
 	try {

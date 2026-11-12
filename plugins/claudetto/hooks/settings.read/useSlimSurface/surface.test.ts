@@ -1,19 +1,19 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
+import { scanner } from "../../secrets.mock";
 import {
 	INTERVIEW_TEXT,
 	offCommandText,
 	ROOT_PROMPT,
 	TOOL_TEXTS,
-} from "../../texts.ts";
+} from "../../texts";
 import {
 	DEFERRED_TOOLS,
 	OFF_COMMANDS,
 	OFF_SKILLS,
 	skillOverridesFor,
-} from "./surface.ts";
+} from "./surface";
 
 const textOf = (tool: string): string => TOOL_TEXTS[tool] ?? "";
 

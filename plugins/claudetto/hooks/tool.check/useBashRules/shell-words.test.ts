@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { parse, programOf } from "./shell-words.ts";
+import { parse, programOf } from "./shell-words";
 
 const programs = (command: string): string[][] => {
 	const rows: string[][] = [];

@@ -9,9 +9,9 @@ import {
 	jevReply,
 	KEY,
 	noul,
-} from "../../decider/decider.mock.ts";
-import { scanner } from "../../secrets.mock.ts";
-import { ASK_FIX_DENIED } from "../../texts-gate.ts";
+} from "../../decider/decider.mock";
+import { scanner } from "../../secrets.mock";
+import { ASK_FIX_DENIED } from "../../texts-gate";
 
 const FIX = {
 	question: "The runner has a bug I introduced. Should I fix it?",

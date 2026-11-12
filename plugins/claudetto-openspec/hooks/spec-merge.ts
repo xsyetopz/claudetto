@@ -1,7 +1,7 @@
+import { scenarios } from "./spec";
 // The one merge that validate and archive both run: a delta plan applied to a main spec's blocks.
-import { type Block, fold, LINE_BREAK } from "./spec-lines.ts";
-import type { Plan } from "./spec-plan.ts";
-import { scenarios } from "./spec.ts";
+import { type Block, fold, LINE_BREAK } from "./spec-lines";
+import type { Plan } from "./spec-plan";
 
 const REQ_LINE = /^###\s*Requirement:.*$/imu;
 

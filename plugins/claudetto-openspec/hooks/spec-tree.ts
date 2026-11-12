@@ -1,5 +1,5 @@
 // The heading tree of a spec: each node owns the text up to the next heading of its level or higher.
-import { fenceMask, lineBreaks, masked } from "./spec-lines.ts";
+import { fenceMask, lineBreaks, masked } from "./spec-lines";
 
 const HEADING = /^(#{1,6})\s+(.+)$/u;
 const HEADING_START = /^(#{1,6})\s+/u;

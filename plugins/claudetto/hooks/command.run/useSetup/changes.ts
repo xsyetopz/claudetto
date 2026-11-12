@@ -1,6 +1,6 @@
-import { wallRule } from "../../tool.check/useBashRules/walled.ts";
-import { isRecord } from "../../tools.ts";
-import { type Group, type Json, leaves, setAt, valueAt } from "./settings.ts";
+import { wallRule } from "../../tool.check/useBashRules/walled";
+import { isRecord } from "../../tools";
+import { type Group, type Json, leaves, setAt, valueAt } from "./settings";
 
 export interface Change {
 	readonly path: string;

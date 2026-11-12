@@ -1,9 +1,9 @@
 import type { EngineInterface } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { runOf } from "../../cleanup.ts";
-import { GIT_CLOSED } from "../../texts-gate.ts";
-import { createdOf } from "../../tool.check/useBashRules/processes.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { runOf } from "../../cleanup";
+import { GIT_CLOSED } from "../../texts-gate";
+import { createdOf } from "../../tool.check/useBashRules/processes";
 
 /** Per project root: whether it held no `.git` at its first Bash call and the agent has not been told yet. */
 export type SandboxGitState = Map<string, boolean>;

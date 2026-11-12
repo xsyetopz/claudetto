@@ -1,8 +1,8 @@
-import { type Fs, join } from "./fs.ts";
-import { type Issue, type Report, validateSpec } from "./spec-rules.ts";
-import { blocks, section } from "./spec.ts";
-import { requirementPath } from "./texts.ts";
-import { discoverDeltas } from "./validate-discover.ts";
+import { type Fs, join } from "./fs";
+import { blocks, section } from "./spec";
+import { type Issue, type Report, validateSpec } from "./spec-rules";
+import { requirementPath } from "./texts";
+import { discoverDeltas } from "./validate-discover";
 
 // The rules number requirements by position; a main spec's report names them instead.
 const INDEX = /^requirements(?:\[(\d+)\]|\.(\d+))/u;

@@ -11,7 +11,7 @@ import {
 	ON,
 	openRow,
 	pressed,
-} from "./register.mock.ts";
+} from "./register.mock";
 
 type Band = Awaited<ReturnType<typeof mountBand>>;
 

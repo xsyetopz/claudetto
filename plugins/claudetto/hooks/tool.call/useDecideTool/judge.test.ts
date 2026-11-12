@@ -1,7 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
-import { JEV_GIVE_BACK } from "../../texts-gate.ts";
-import { questionsOfInput, replyOf, requestOf, verdictsOf } from "./judge.ts";
+import { JEV_GIVE_BACK } from "../../texts-gate";
+import { questionsOfInput, replyOf, requestOf, verdictsOf } from "./judge";
 
 const STORE = {
 	question: "Which store?",

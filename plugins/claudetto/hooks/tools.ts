@@ -11,6 +11,28 @@ const WRITER_NAMES: ReadonlySet<string> = new Set(WRITERS);
 
 export const isWriter = (tool: string): boolean => WRITER_NAMES.has(tool);
 
+/** `Promise.withResolvers` without `reject`, which `claude plugin validate` cannot type: it checks against the `es2023` library. */
+export const deferred = <T>(): {
+	promise: Promise<T>;
+	resolve: (value: T) => void;
+} => {
+	// A `Promise` runs its executor before the constructor returns, so `settle` is set by the `return`.
+	let settle!: (value: T) => void;
+	const promise = new Promise<T>((resolve) => {
+		settle = resolve;
+	});
+	return { promise, resolve: settle };
+};
+
+/** Reads a stream to its end, as `Array.fromAsync` does, for the same `es2023` reason. */
+export const collect = async <T>(stream: AsyncIterable<T>): Promise<T[]> => {
+	const items: T[] = [];
+	for await (const item of stream) {
+		items.push(item);
+	}
+	return items;
+};
+
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 

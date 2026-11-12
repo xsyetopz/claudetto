@@ -1,5 +1,5 @@
-import { BRANCH_GATE, type Host } from "../../decider/questions.ts";
-import { settle } from "../../decider/settle.ts";
+import { BRANCH_GATE, type Host } from "../../decider/questions";
+import { settle } from "../../decider/settle";
 
 /** Tells whether the person told the assistant to delete the branch. Only a `yes` counts: a `no`, an `unsettled` answer, and a Decider that fails all leave the gate asking the person. */
 export async function askedToDelete(

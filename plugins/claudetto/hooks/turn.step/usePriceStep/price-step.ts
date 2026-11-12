@@ -6,12 +6,13 @@ import type {
 	TurnUsage,
 } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
 import {
 	atRoot,
 	heartbeatPath,
-} from "../../session.measure/useLineFile/heartbeat.ts";
-import { WITHHELD } from "../../texts.ts";
+} from "../../session.measure/useLineFile/heartbeat";
+import { WITHHELD } from "../../texts";
+import { deferred } from "../../tools";
 
 const HAIKU_MODEL = "claude-haiku-5-5";
 
@@ -70,7 +71,7 @@ interface Step {
 }
 
 const newStep = (): Step => {
-	const { promise, resolve } = Promise.withResolvers<TurnUsage | null>();
+	const { promise, resolve } = deferred<TurnUsage | null>();
 	return { reading: promise, settle: resolve, passed: 0 };
 };
 

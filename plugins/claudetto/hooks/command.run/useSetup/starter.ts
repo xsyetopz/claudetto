@@ -5,7 +5,7 @@ import {
 	FAMILIES,
 	type Family,
 	type Kind,
-} from "./starter-families.ts";
+} from "./starter-families";
 
 /** A memory file costs about one character per character in every request, so the starter stays short. */
 const AGENTS_CAP = 600;

@@ -1,11 +1,11 @@
 import type { On, PluginOptions } from "claude-code";
 
-import { listOption } from "../../options.ts";
-import { walledUnguarded } from "../../texts-gate.ts";
-import { homeOf } from "./own.ts";
-import { newRecreation } from "./recreate.ts";
-import { unguarded } from "./walled.ts";
-import { type GateState, watchPermissionEvents } from "./watch.ts";
+import { listOption } from "../../options";
+import { walledUnguarded } from "../../texts-gate";
+import { homeOf } from "./own";
+import { newRecreation } from "./recreate";
+import { unguarded } from "./walled";
+import { type GateState, watchPermissionEvents } from "./watch";
 
 /** Builds the walls and the memory the gate guards share. */
 export const gateState = (options: PluginOptions): GateState => ({

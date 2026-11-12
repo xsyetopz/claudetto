@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock.ts";
-import { BUN_FACT, INTERVIEW_TEXT, planModeText } from "../../texts.ts";
+import { scanned } from "../../secrets.mock";
+import { BUN_FACT, INTERVIEW_TEXT, planModeText } from "../../texts";
 
 const ENGINE = { kind: "engine" } as const;
 const LONG_REMINDER = "stock plan mode text ".repeat(300);

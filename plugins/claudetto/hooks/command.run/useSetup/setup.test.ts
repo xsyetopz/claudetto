@@ -1,10 +1,10 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { unguarded } from "../../tool.check/useBashRules/walled.ts";
-import { valueAt } from "./settings.ts";
-import { FILE, type Lab, lab, run, saved } from "./setup.mock.ts";
-import { recommended } from "./text.ts";
+import { unguarded } from "../../tool.check/useBashRules/walled";
+import { valueAt } from "./settings";
+import { FILE, type Lab, lab, run, saved } from "./setup.mock";
+import { recommended } from "./text";
 
 test("setup on an empty file writes the telemetry env and the eight denies and no Agent deny", async ($: Engine, on: On) => {
 	const state = lab(on);

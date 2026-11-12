@@ -1,8 +1,8 @@
 import { expect, test } from "claude-code/testing";
 
-import { GATE_EDIT_FILE } from "../../texts-gate.ts";
-import { decision, NONE, withFiles } from "./rules.mock.ts";
-import { judge } from "./rules.ts";
+import { GATE_EDIT_FILE } from "../../texts-gate";
+import { judge } from "./rules";
+import { decision, NONE, withFiles } from "./rules.mock";
 
 const DENIED = [
 	"rm -rf /",

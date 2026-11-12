@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import { chmod, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { cleanCaches } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/mole.ts";
+import { cleanCaches } from "../../plugins/claudetto/hygiene/mole.ts";
 import { tempDir } from "../temp.mock.ts";
 
 const PATH = process.env.PATH;

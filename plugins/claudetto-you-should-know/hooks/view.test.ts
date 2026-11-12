@@ -1,7 +1,7 @@
 import type { On, RenderSurface } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { blankRow, type Row } from "./note.ts";
+import { blankRow, type Row } from "./note";
 
 const PLUGIN = "claudetto-you-should-know";
 const LINE = "Tests run in order.";

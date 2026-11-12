@@ -1,6 +1,6 @@
 // `fetch` and `sleep` come from the caller, so a test passes plain values.
 
-import { isRecord } from "../tools.ts";
+import { isRecord } from "../tools";
 
 // `POST /v1/systemone` and the model alias `jev-latest`: https://docs.typesafe.ai/api/system-one.md
 const JEV_API = "https://api.typesafe.ai/v1/systemone";

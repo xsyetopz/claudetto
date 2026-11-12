@@ -1,18 +1,8 @@
 import type { EngineInterface } from "claude-code";
 
-import { ask, lines, textOf } from "./engine.ts";
-import {
-	type IgnoreEdit,
-	ignoreEdits,
-	previewEdits,
-	settle,
-} from "./ignores.ts";
-import {
-	linesOf,
-	planStarter,
-	previewOf,
-	type StarterFile,
-} from "./starter.ts";
+import { ask, lines, textOf } from "./engine";
+import { type IgnoreEdit, ignoreEdits, previewEdits, settle } from "./ignores";
+import { linesOf, planStarter, previewOf, type StarterFile } from "./starter";
 import {
 	isOnPath,
 	listedPaths,
@@ -20,7 +10,7 @@ import {
 	noticeKey,
 	PURGE_PATHS,
 	type Tool,
-} from "./tools.ts";
+} from "./tools";
 
 const WRITE = "Write";
 const SKIP = "Skip";

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { act, fixture, logOf, ON } from "./register.mock.ts";
+import { act, fixture, logOf, ON } from "./register.mock";
 
 const KEYSTROKE = {
 	tool: "Bash",

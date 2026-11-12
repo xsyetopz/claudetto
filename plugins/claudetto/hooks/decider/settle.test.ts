@@ -1,5 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
+import { deferred } from "../tools";
 import {
 	bodyOf,
 	inOrder,
@@ -12,8 +13,8 @@ import {
 	SET,
 	SETTLED,
 	STATE,
-} from "./decider.mock.ts";
-import { settle } from "./settle.ts";
+} from "./decider.mock";
+import { settle } from "./settle";
 
 const UNSETTLED = { done: "unsettled", store: "unsettled" };
 const SETTLED_ANSWERS = { done: "yes", store: "sql" };
@@ -110,7 +111,7 @@ test("an answer missing for a question is no full set, so the fallback takes the
 
 test("a hung server gets one request and no second, then the fallback takes the call", async () => {
 	const { $, fetches } = rig({
-		jev: () => Promise.withResolvers<never>().promise,
+		jev: () => deferred<never>().promise,
 	});
 
 	expect(await settle($, SET, STATE)).toEqual(UNSETTLED);

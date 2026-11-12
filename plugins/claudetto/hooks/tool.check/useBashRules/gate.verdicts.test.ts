@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { dialog, FETCH, repo } from "./gate.mock.ts";
+import { dialog, FETCH, repo } from "./gate.mock";
 
 test("a WebFetch, an MCP tool, and a Skill request are passed on with no allow", async ($: Engine, on: On) => {
 	repo(on);

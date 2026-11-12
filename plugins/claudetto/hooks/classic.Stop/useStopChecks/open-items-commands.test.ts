@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { lab, stop } from "./open-items.mock.ts";
-import { commandForm, openItems } from "./open-items.ts";
+import { commandForm, openItems } from "./open-items";
+import { lab, stop } from "./open-items.mock";
 
 test("openItems of an empty or blank reply finds nothing", () => {
 	const turn = { asking: false };
