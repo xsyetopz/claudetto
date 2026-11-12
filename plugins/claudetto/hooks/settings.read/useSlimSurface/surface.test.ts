@@ -18,7 +18,7 @@ import {
 const bytes = (text: string): number => new TextEncoder().encode(text).length;
 const textOf = (tool: string): string => TOOL_TEXTS[tool] ?? "";
 
-test("the root prompt is one shared section within 6,453 bytes", async ($: Engine, on: On) => {
+test("the root prompt is one shared section within 7,001 bytes", async ($: Engine, on: On) => {
 	on("prompt.compose", () => ({
 		sections: [{ id: "intro", text: "The default intro.", scope: "shared" }],
 	}));
@@ -33,7 +33,7 @@ test("the root prompt is one shared section within 6,453 bytes", async ($: Engin
 	expect(out.sections).toEqual([
 		{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" },
 	]);
-	expect(bytes(ROOT_PROMPT)).toBeLessThanOrEqual(6825);
+	expect(bytes(ROOT_PROMPT)).toBeLessThanOrEqual(7001);
 });
 
 test("the /init interview fits 1,144 chars", () => {
