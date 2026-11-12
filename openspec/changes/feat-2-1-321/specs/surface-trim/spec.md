@@ -26,3 +26,18 @@ The built-in `/init` skill's prompt SHALL be replaced by `INTERVIEW_TEXT`, which
 - **WHEN** the engine describes `Monitor`, `ToolSearch`, `EnterPlanMode`, or `ExitPlanMode` with a longer stock description
 - **THEN** the answer holds our text and no `isDeferred` of ours
 - **AND** the lab tests are `surface.test.ts`, "tool.describe sends our Monitor text, deferred only for Skill among them" and its three siblings, and "Monitor, ToolSearch, and the plan-mode tools each carry a text of ours"
+
+### Requirement: The Agent Text Sends a Committing Agent to a Worktree of Its Own
+
+The `Agent` description SHALL tell the model to set `isolation: "worktree"` on an agent that commits, because agents that commit in one working tree block each other at the pre-commit hook. The hook SHALL pass a call that names `isolation` to the engine unchanged, and no agent definition SHALL set `isolation`, since a worktree holds the changes of an agent that does not commit.
+
+#### Scenario: The Description
+
+- **WHEN** the engine describes `Agent`
+- **THEN** the text names `isolation: "worktree"` for an agent that commits
+
+#### Scenario: A Call Naming Isolation
+
+- **WHEN** the model calls `Agent` with `isolation: "worktree"`
+- **THEN** the call reaches `next(e)` as `e` itself
+
