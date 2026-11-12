@@ -7,6 +7,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+## [2.1.323] - 2026-11-13
+
 ### Added
 
 - Hygiene deletes a local branch once no worktree has it and `git cherry` finds each of its commits in the default branch, and `claudetto-hygiene --remote` names, or with no `--dry-run` deletes, the `origin` branches whose pull request merged and that no open pull request names.
