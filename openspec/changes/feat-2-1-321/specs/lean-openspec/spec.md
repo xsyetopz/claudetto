@@ -13,3 +13,17 @@ The validator MUST warn on a MODIFIED requirement whose text holds more than 500
 
 - **WHEN** a change restates a requirement whose main-spec text holds 570 characters, and the MODIFIED text holds 560
 - **THEN** the validator gives no length warning for it, as upstream gives none
+
+### Requirement: The Tool Result Is Bounded
+
+The `openspec` tool MUST return at most 12,000 characters of result, because a `status` of a change with many open tasks reached about 11,400 tokens and Claude Code warns on an MCP result past 10,000 tokens. A longer result MUST keep whole lines up to the limit and end with a line that counts the lines not shown. A first line past the limit MUST be cut at the limit. A result within the limit MUST be returned whole.
+
+#### Scenario: Many Open Tasks
+
+- **WHEN** `status` names a change with 3,000 open tasks
+- **THEN** the result holds at most 12,000 characters of task lines and ends with the count of the lines not shown
+
+#### Scenario: A Short Result
+
+- **WHEN** a result holds fewer than 12,000 characters
+- **THEN** the tool returns it unchanged
