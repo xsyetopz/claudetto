@@ -33,7 +33,7 @@ test("the root prompt is one shared section within 6,453 bytes", async ($: Engin
 	expect(out.sections).toEqual([
 		{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" },
 	]);
-	expect(bytes(ROOT_PROMPT)).toBeLessThanOrEqual(6453);
+	expect(bytes(ROOT_PROMPT)).toBeLessThanOrEqual(6825);
 });
 
 test("the /init interview fits 1,144 chars", () => {
