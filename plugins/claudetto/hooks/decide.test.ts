@@ -16,6 +16,7 @@ import {
 	TWO,
 } from "./decide.mock.ts";
 import { replyOf } from "./decide/judge.ts";
+import { haikuFailed } from "./decider/decider.mock.ts";
 
 const YES_NO = { question: "Is the cache stale?" };
 const PICK_SQL = { kind: "pick", choice: "sql", p: 0.75 } as const;
@@ -134,15 +135,18 @@ test("A yes/no in the middle band is handed back", async ($: Engine, on: On) => 
 	expect(await ask($, [YES_NO])).toBe(replyOf([YES_NO], [undefined]));
 });
 
-test("An AskUserQuestion call reaches the user as sent and nothing goes to the API", async ($: Engine, on: On) => {
+test("An AskUserQuestion call is no decide call: its only request is the judgment of its question", async ($: Engine, on: On) => {
 	const { fetches } = stub(on, () => okay({}));
+	on("ui.log", () => ({ value: undefined }));
+	on("model.complete", () => ({ value: haikuFailed("aborted") }));
 
 	await $.tool.call({
 		tool: "AskUserQuestion",
 		questions: [{ ...TWO, header: "Store", multiSelect: false }],
 	});
 
-	expect(fetches).toEqual([]);
+	expect(fetches).toHaveLength(1);
+	expect(sectionKeys(fetches[0], "questions")).toEqual(["fixes_own_defect_1"]);
 });
 
 test("Many questions go in one request, each keyed by its index", async ($: Engine, on: On) => {

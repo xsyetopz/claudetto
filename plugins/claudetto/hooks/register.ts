@@ -1,5 +1,6 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
+import { askFixCall } from "./ask-fix.ts";
 import {
 	type CallAnswer,
 	type CallEvent,
@@ -106,6 +107,7 @@ const callGuards = (
 		(at, step) => boundOutputCall($, at, step, options),
 		(at, step) => surfaceCall(at, step, options),
 		(at, step) => pinCall(at, step, state.pinned),
+		(at, step) => askFixCall($, at, step),
 		(at, step) => delegationCall(at, step),
 		(at, step) => runsCall(at, step, state.ran),
 		(at, step) => decideCall($, at, step),

@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
-import { type Engine, expect, test } from "claude-code/testing";
+import { type Engine, expect, mock, test } from "claude-code/testing";
 
+import { haikuFailed } from "./decider/decider.mock.ts";
 import { scanner } from "./secrets.mock.ts";
 import { ASK_TEXT } from "./texts.ts";
 
@@ -22,6 +23,8 @@ const bind = async ($: Engine, on: On): Promise<void> => {
 // The stub stands for the engine's AskUserQuestion: it answers the first option.
 const stockAsk = (on: On): unknown[] => {
 	scanner(on);
+	mock.env(on, {});
+	on("model.complete", () => ({ value: haikuFailed("aborted") }));
 	const seen: unknown[] = [];
 	on("tool.call", { tool: "AskUserQuestion" }, (_$, e) => {
 		seen.push(e.questions);

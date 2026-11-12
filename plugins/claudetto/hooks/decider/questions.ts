@@ -112,6 +112,25 @@ export const ledgerQuestions = (
 	]),
 });
 
+/** One question per asked question, each judging whether it asks leave to fix a defect the assistant found or caused. */
+export const askFixQuestions = (n: number): QuestionSet => ({
+	...THRESHOLDS,
+	questions: Object.fromEntries(
+		Array.from({ length: n }, (_, i): [string, Noul] => [
+			`fixes_own_defect_${i + 1}`,
+			{
+				type: "noul",
+				instructions: `Does question ${i + 1} in \`questions\` ask the user for leave to fix a defect that the assistant found or caused itself?`,
+				criteria: {
+					true: "The question asks whether to fix, or to leave unfixed, a defect the assistant found or caused, such as a failing test, a bug in its own change, or a fault in the code it was working on.",
+					false:
+						"The question asks for a choice only the user can make: a design, a scope the user has not set, a cost, a risk, or a preference.",
+				},
+			},
+		]),
+	),
+});
+
 /** What the Decider uses of `$`, so a test passes plain functions. */
 export interface Host {
 	readonly env: Pick<EngineInterface["env"], "get">;
