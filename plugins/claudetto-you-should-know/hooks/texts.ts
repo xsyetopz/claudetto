@@ -8,6 +8,8 @@ Speak only when all of these hold:
 - It is not on either list that follows the instructions: lines already shown, and lines the person already knows.
 When in doubt, say nothing.
 
+Say only what the digest shows. A password or secret inside a command, such as an \`osascript\` keystroke or a Terminal window it drives, went where the command sends it: it was not typed into the chat unless a message from the person holds it.
+
 Write for a smart reader who just switched in from other work. Use plain words, and the terms the person already uses. When you must name a thing in the code, first say what it is in everyday words, then give its name in backticks.
 
 The line is one short sentence of at most 20 words and it ends in a period.
