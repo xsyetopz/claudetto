@@ -15,3 +15,13 @@ The root prompt (`texts.ts`) SHALL tell the model to weigh a disputed claim as a
 - **WHEN** a background task still runs at Stop and the user waits on it
 - **THEN** the Stop note sends the last reply nowhere again and tells the model to follow the task's output with `Monitor`, filtered to its step and error lines
 - **AND** the lab test is `limits/stop.test.ts`
+
+### Requirement: One Command at a Time
+
+A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs first, and the next SHALL come in a later reply after the person has run it, because the person's `!` runs and messages queue while the agent works (the person, 2026-11-09). A bullet is a command bullet only when its text starts with `! ` or `` `! ``; a finding that mentions a `! <command>` step is not one. `output-styles/Concise.md` SHALL say so.
+
+#### Scenario: Several Commands Only the Person Can Run
+
+- **WHEN** the work needs three commands only the person can run
+- **THEN** the reply lists the first as its one `- ! <command>` bullet, and the next reply, after the person's run, lists the second
+- **AND** a finding bullet that mentions a `! <command>` step beside that one bullet passes
