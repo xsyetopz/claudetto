@@ -18,7 +18,7 @@ Every token count the fake server returns is FAKE: it is `20,000 + 5,000 × huma
 bun --env-file=.env tools/handover-probe/probe.ts --paid
 ```
 
-Each run's `ANTHROPIC_BASE_URL` points at a relay on `127.0.0.1` (`relay.ts`), which forwards every request to the real API (or to the caller's `ANTHROPIC_BASE_URL`) and logs the usage the API returned. It needs `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`, because each run's config dir has no login; `bunfig.toml` sets `env = false`, so Bun reads the repo's `.env` only through `--env-file=.env`. A turn that ends in an error, such as a refused credential, stops the probe with that error and the run dir. The table scores recall: the last 10 turn results against `recall.ts`. The token counts are real, so an arm whose threshold the real context never reaches shows no event.
+Each run's `ANTHROPIC_BASE_URL` points at a relay on `127.0.0.1` (`relay.ts`), which forwards every request to the real API (or to the caller's `ANTHROPIC_BASE_URL`) and logs the usage the API returned. It needs `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`), because each run's config dir has no login, and it drops an Anthropic API key from each run's environment so the run bills the subscription; `bunfig.toml` sets `env = false`, so Bun reads the repo's `.env` only through `--env-file=.env`. A turn that ends in an error, such as a refused credential, stops the probe with that error and the run dir. The table scores recall: the last 10 turn results against `recall.ts`. The token counts are real, so an arm whose threshold the real context never reaches shows no event.
 
 ## Arms
 

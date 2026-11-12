@@ -1,3 +1,4 @@
+import { hasSubscriptionLogin } from "../subscription.ts";
 // bun tools/handover-probe/probe.ts [--paid] [arm...]
 // Runs each arm 3 times and prints one table per arm. Without --paid the API is a fake server on 127.0.0.1 and nothing is billed. With --paid a relay on 127.0.0.1 forwards each request to the real API and logs its usage, and the recall answers are scored.
 import { type Arm, ARMS } from "./arms.ts";
@@ -14,10 +15,6 @@ const arms =
 const print = (line: string): void => {
 	process.stdout.write(`${line}\n`);
 };
-
-const hasCredentials = (): boolean =>
-	(process.env.ANTHROPIC_API_KEY ?? "") !== "" ||
-	(process.env.CLAUDE_CODE_OAUTH_TOKEN ?? "") !== "";
 
 /** One arm's runs, one after another. */
 const runsOf = async (
@@ -45,7 +42,7 @@ const egress = (all: readonly RunResult[]): void => {
 	);
 	print(
 		paid
-			? "- key: the caller's; ANTHROPIC_BASE_URL: the relay, which forwards to the real API; CLAUDE_CONFIG_DIR: a temp dir per run"
+			? "- login: the subscription's CLAUDE_CODE_OAUTH_TOKEN; ANTHROPIC_BASE_URL: the relay, which forwards to the real API; CLAUDE_CONFIG_DIR: a temp dir per run"
 			: "- key: sk-ant-fake; ANTHROPIC_BASE_URL: the fake server; CLAUDE_CONFIG_DIR: a temp dir per run",
 	);
 	if (!paid) {
@@ -68,9 +65,9 @@ const main = async (): Promise<void> => {
 	egress(results.flatMap((r) => r.runs));
 };
 
-if (paid && !hasCredentials()) {
+if (paid && !hasSubscriptionLogin(process.env)) {
 	process.stderr.write(
-		"--paid needs ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in the environment: each run gets a fresh CLAUDE_CONFIG_DIR with no login. bunfig.toml turns off Bun's .env loading, so pass the repo's .env: `bun --env-file=.env tools/handover-probe/probe.ts --paid`.\n",
+		"--paid needs CLAUDE_CODE_OAUTH_TOKEN in the environment (`claude setup-token` makes it): each run gets a fresh CLAUDE_CONFIG_DIR with no login, and the run bills the subscription. bunfig.toml turns off Bun's .env loading, so pass the repo's .env: `bun --env-file=.env tools/handover-probe/probe.ts --paid`.\n",
 	);
 	process.exitCode = 1;
 } else {

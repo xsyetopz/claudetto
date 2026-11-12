@@ -11,6 +11,7 @@ import { build, env, file, spawn, write } from "bun";
 import { JEV_ORIGIN } from "./claim-check-plugin/hooks/client.ts";
 import type { Job, Kind } from "./claim-check-plugin/hooks/run.ts";
 import { fail, field, numberOf, pricesOf } from "./claim-check-prices.ts";
+import { subscriptionEnv } from "./subscription.ts";
 
 const PLUGIN_SOURCE = resolve(import.meta.dir, "claim-check-plugin");
 const BUNFIG = resolve(import.meta.dir, "../bunfig.toml");
@@ -115,7 +116,7 @@ const run = async (kind: Kind, script: string): Promise<number> => {
 		],
 		{
 			cwd: given.outDir,
-			env: { ...env, CLAIM_CHECK_JOB: jobPath },
+			env: { ...subscriptionEnv(env), CLAIM_CHECK_JOB: jobPath },
 			stdout: "ignore",
 			stderr: "inherit",
 		},

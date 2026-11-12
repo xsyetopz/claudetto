@@ -2,6 +2,7 @@ import { mkdir, mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
+import { subscriptionEnv } from "../subscription.ts";
 import { type Arm, OFF } from "./arms.ts";
 import { eventsOf } from "./events.ts";
 import { finished, readLog, resultsIn, settle, streamOf } from "./log-io.ts";
@@ -45,7 +46,7 @@ const settingsOf = (arm: Arm, phase: 1 | 2): string => {
 const envOf = (s: Setup, phase: 1 | 2): Record<string, string | undefined> => {
 	const compacting = s.arm.autoCompactPct !== undefined && phase === 1;
 	return {
-		...process.env,
+		...subscriptionEnv(process.env),
 		ANTHROPIC_BASE_URL: `http://127.0.0.1:${s.fakePort}`,
 		...(s.paid ? {} : { ANTHROPIC_API_KEY: "sk-ant-fake" }),
 		CLAUDE_CONFIG_DIR: join(s.dir, "config"),
