@@ -106,6 +106,14 @@ test("a stop another check blocked keeps that block", async ($: Engine, on: On) 
 	expect(awaited9.block).toBe("Other check.");
 });
 
+test("a file that a subagent wrote in its own worktree under the cwd is no slice of this session", async ($: Engine, on: On) => {
+	const nested = "/repo/.claude/worktrees/agent-1/src/a.ts";
+	lab(on, fakeRepo({ [nested]: " M" }));
+	await edit($, nested);
+	const awaited10 = await stop($);
+	expect(awaited10.block).toBeUndefined();
+});
+
 test("a file in another repo that an Edit wrote is blocked and named", async ($: Engine, on: On) => {
 	lab(on, fakeRepo({ "/other/z.ts": " M" }));
 	await edit($, "/other/z.ts");

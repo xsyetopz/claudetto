@@ -93,7 +93,13 @@ const changedOf = async (
 ): Promise<string[]> => {
 	const files = [...mine.keys()];
 	const now = await hashes($, files);
-	const own = files.filter((path, i) => now[i] === mine.get(path));
+	const cwd = await $.session.cwd();
+	// A subagent's edits land in its own worktree under the cwd; its stop commits them.
+	const own = files.filter(
+		(path, i) =>
+			now[i] === mine.get(path) &&
+			!path.startsWith(`${cwd}/.claude/worktrees/`),
+	);
 	const status = await Promise.all(
 		own.map((path) =>
 			git($, [

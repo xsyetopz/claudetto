@@ -69,6 +69,29 @@ While a `Bash` call runs, the system SHALL read the machine's processes every fi
 - **WHEN** every process of the call is under the cap, or `memoryProcessMaxPercent` is 0
 - **THEN** no process is stopped, and with 0 no process list is read
 
+### Requirement: A Task Item That Quotes a Command Step Is No Command for the Person
+
+The Stop check for commands outside a `- ! <command>` bullet SHALL treat a `- [ ]` item as a command for the person only when the item text opens with `! ` or `` `! ``. An item that mentions a `! <command>` step later in its text, such as a task line copied from `tasks.md`, SHALL NOT be listed as a stray command.
+
+#### Scenario: A Copied Task Line
+
+- **WHEN** the reply holds `- [ ] 9.22 no "Budget" line follows a `! ` command` and no other command
+- **THEN** the command check does not block the stop
+
+#### Scenario: A Command Item
+
+- **WHEN** the reply holds `- [ ] ! gh auth login`
+- **THEN** the stop is blocked and the item is listed, because the item is a command in a checkbox
+
+### Requirement: A Subagent's Worktree Is No Slice of the Session
+
+The uncommitted-changes check SHALL leave out a file under `.claude/worktrees/` of the session's working directory, because a subagent wrote it in a worktree that the subagent's own stop commits.
+
+#### Scenario: A Subagent's File
+
+- **WHEN** a subagent edited `.claude/worktrees/agent-1/src/a.ts`, git reports it modified, and the main session's turn ends
+- **THEN** the Stop is not blocked for that file
+
 ## MODIFIED Requirements
 
 ### Requirement: Limits Are Settings

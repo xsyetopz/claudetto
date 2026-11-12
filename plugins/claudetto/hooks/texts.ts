@@ -262,8 +262,5 @@ const count = (n: number): string => n.toLocaleString("en-US");
 export const WITHHELD = (v: { tokens: number; total: number }): string =>
 	`The result is about ${count(v.tokens)} tokens, and with it the next request would be about ${count(v.total)}, over the ${count(100_000)} above which Haiku 5.5 bills the whole request at five times. The call ran, so treat its change as done. Ask for a smaller part: a line range, a narrower search, or output cut with \`head\` or \`grep\`.`;
 
-export const WORDING_TEST = (phrase: string, file: string): string =>
-	`This test asserts on "${phrase}", wording that \`${file}\` ships. A test of wording breaks on each rewrite and catches no defect. Assert what a caller observes instead: a decision, a return value, a written file, or equality with the exported text.`;
-
 export const SILENT_TURN_REMINDER =
 	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.";

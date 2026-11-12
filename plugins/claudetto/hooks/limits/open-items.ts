@@ -42,12 +42,8 @@ export const openItems = (reply: string, turn: Turn): readonly string[] =>
 				return item === undefined ? [] : [item];
 			});
 
-const holdsCommand = (pattern: RegExp, line: string): boolean => {
-	const item = pattern.exec(line)?.[1];
-	return item !== undefined && COMMAND_STEP_WITHIN.test(item);
-};
-
-const inItem = (line: string): boolean => holdsCommand(BULLET, line);
+const inItem = (line: string): boolean =>
+	COMMAND_STEP_WITHIN.test(BULLET.exec(line)?.[1] ?? "");
 
 /** A bullet whose text opens with `! ` or `` `! ``: a finding that mentions a `! <command>` step is none. */
 const isCommandBullet = (line: string): boolean =>
@@ -69,7 +65,8 @@ export const commandForm = (
 		stray: lines
 			.filter(
 				(line) =>
-					(COMMAND_LINE.test(line) || holdsCommand(OPEN_ITEM, line)) &&
+					(COMMAND_LINE.test(line) ||
+						COMMAND_BULLET.test(OPEN_ITEM.exec(line)?.[1] ?? "")) &&
 					!inItem(line),
 			)
 			.map((line) => line.trim()),

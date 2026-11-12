@@ -36,7 +36,6 @@ import { slices, slicesCall, slicesState } from "./slices.ts";
 import { surface, surfaceCall } from "./surface.ts";
 import { DECIDE_SPEC } from "./texts-gate.ts";
 import { REPLY_SPEC } from "./texts.ts";
-import { wordingTestsCheck } from "./wording-tests.ts";
 
 const stateOf = (options: PluginOptions) => ({
 	written: slicesState(),
@@ -83,7 +82,6 @@ const checkGuards = (
 		(at, step) => holdCheck($, at, step, state.hold),
 		(at, step) => stopCheck(at, step, state.stop),
 		(at, step) => pinCheck(at, step, state.pinned),
-		(at, step) => wordingTestsCheck($, at, step),
 		(at, step) => gateCheck($, at, step, state.gate),
 	]);
 

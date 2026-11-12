@@ -231,3 +231,9 @@ A temp base is `/tmp`, `/tmp/claude`, or `/tmp/claude-<uid>`, each with or witho
 **Reason**: The rule denied the removal of the session's own scratch files and folders, about 350 times in three days.
 
 **Migration**: Remove a temp folder with a plain `rm`. The requirement "A Temp Base Itself Stays" keeps the base and a path with `..` denied.
+
+### Requirement: A Test of Shipped Wording Is Denied
+
+**Reason**: The check denied no test edit in the session logs of the last seven days, and the one denial text found there sits in a transcript that quotes it.
+
+**Migration**: Write a test that asserts what a caller observes, and a test of wording is no longer denied.

@@ -22,6 +22,15 @@ test("a backtick command the reply asks the user to run without ! is stray", () 
 	]);
 });
 
+test("a task item that quotes a ! <command> step in backticks is no command for the user", () => {
+	const task = '- [ ] 9.22 no "Budget" line follows a `! ` command.';
+
+	expect(commandForm(task).stray).toEqual([]);
+	expect(commandForm("- [ ] `! gh auth login`").stray).toEqual([
+		"- [ ] `! gh auth login`",
+	]);
+});
+
 test("a question item names AskUserQuestion, with no tool.list call", async ($: Engine, on: On) => {
 	const tools = lab(on);
 
