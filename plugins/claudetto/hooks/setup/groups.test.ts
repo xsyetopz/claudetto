@@ -146,6 +146,7 @@ test("the sandbox group lists what is dangerous: home-wide writes, denies for fi
 				denyRead: words(
 					"~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials",
 				),
+				allowRead: ["~/Library/Keychains/login.keychain-db"],
 			},
 			network: {
 				allowedDomains: ["*"],
