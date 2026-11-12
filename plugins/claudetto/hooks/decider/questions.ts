@@ -137,8 +137,8 @@ const replyFault = (instructions: string, yes: string, no: string): Noul => ({
 	criteria: { true: yes, false: no },
 });
 
-/** The reply register's faults, one Noul each; a `yes` is a fault. Scored on stored replies before it joins the Stop check. */
-export const REPLY_REGISTER: QuestionSet = {
+/** The reply register's faults that scored at least 80% precision and 80% recall on stored replies; a `yes` is a fault, and the Stop check blocks on it. */
+export const SHIPPED_REGISTER: QuestionSet = {
 	...THRESHOLDS,
 	questions: {
 		apologizes_or_agrees: replyFault(
@@ -161,6 +161,18 @@ export const REPLY_REGISTER: QuestionSet = {
 			"The reply calls an earlier act a mistake or an error and stops there, or dwells on it.",
 			"The reply gives the error, its cause, and the corrected result, or names no mistake.",
 		),
+		steps_listed_as_report: replyFault(
+			"Does the reply list steps not yet done as if they were its report?",
+			"The reply gives a numbered or planned list of what it will do, in place of what it did.",
+			"The reply reports done steps, and names an undone step once as the next step.",
+		),
+	},
+};
+
+/** The reply register's faults that scored below the bar; they stay in the scoring run and block nothing. */
+export const HELD_REGISTER: QuestionSet = {
+	...THRESHOLDS,
+	questions: {
 		claim_without_shown_check: replyFault(
 			"Does the reply state a result or a fact about the work that no call in `checks` and no text in the reply backs?",
 			"The reply says something works, passes, exists, or was changed, with no command, output, or `file:line` that shows it.",
@@ -176,16 +188,20 @@ export const REPLY_REGISTER: QuestionSet = {
 			"The reply asks the person to run, read, check, or decide something the assistant can do itself, or offers to do it if the person says so.",
 			"Each step left is one only the person can take: a login, a device, a paid run, or a choice of design.",
 		),
-		steps_listed_as_report: replyFault(
-			"Does the reply list steps not yet done as if they were its report?",
-			"The reply gives a numbered or planned list of what it will do, in place of what it did.",
-			"The reply reports done steps, and names an undone step once as the next step.",
-		),
 		choice_handed_to_person: replyFault(
 			"Does the reply hand the person a choice the assistant can make?",
 			"The reply says the choice stays with the person, or lists options for a decision the request and the repository settle.",
 			"The choice is one only the person can make, or the reply made it and says so.",
 		),
+	},
+};
+
+/** Every reply-register fault, for the scoring run. */
+export const REPLY_REGISTER: QuestionSet = {
+	...THRESHOLDS,
+	questions: {
+		...SHIPPED_REGISTER.questions,
+		...HELD_REGISTER.questions,
 	},
 };
 

@@ -3,8 +3,10 @@ import type {
 	ModelCompleteRequest,
 	ModelCompleteResult,
 	ModelTextBlock,
+	On,
 	ProcessRunResult,
 } from "claude-code";
+import { mock } from "claude-code/testing";
 
 import type { Host, QuestionSet } from "./questions.ts";
 
@@ -179,4 +181,11 @@ export const bodyOf = (
 	return typeof parsed === "object" && parsed !== null
 		? Object.fromEntries(Object.entries(parsed))
 		: {};
+};
+
+/** A lab with no Decider key whose fallback model gives no answer, so each question stays `unsettled` and the Stop check passes. */
+export const quietDecider = (on: On): void => {
+	mock.env(on, {});
+	on("ui.log", () => ({ value: undefined }));
+	on("model.complete", () => ({ value: haikuFailed("aborted") }));
 };

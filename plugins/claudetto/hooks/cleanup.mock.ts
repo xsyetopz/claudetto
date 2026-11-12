@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
+import { quietDecider } from "./decider/decider.mock.ts";
 import { scanned } from "./secrets.mock.ts";
 
 export interface Call {
@@ -79,6 +80,7 @@ const wireSession = (
 	past: Record<string, Call[]>,
 	existing: readonly string[],
 ): void => {
+	quietDecider(on);
 	on("classic.Stop", () => ({}));
 	on("classic.SubagentStop", () => ({}));
 	on("session.id", () => ({ value: "S1" }));

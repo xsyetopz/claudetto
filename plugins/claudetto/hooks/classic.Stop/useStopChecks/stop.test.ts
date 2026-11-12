@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
+import { quietDecider } from "../../decider/decider.mock.ts";
 import { scanner } from "../../secrets.mock.ts";
 
 const BLOCK = "The goal is not met: keep working.";
@@ -11,6 +12,7 @@ const blockOf = (block: string | null) => (block === null ? {} : { block });
 
 const lab = (on: On, block: string | null = BLOCK, writes: Writes = "ok") => {
 	scanner(on);
+	quietDecider(on);
 	on("classic.Stop", () => blockOf(block));
 	on("session.messages", () => ({ value: [] }));
 	on("tool.list", () => ({ value: [] }));
@@ -292,8 +294,6 @@ test("a Stop that nothing blocks starts the count again", async ($: Engine, on: 
 	await edit($);
 	await stop($);
 	block = BLOCK;
-
 	const out = await stop($);
-
 	expect(out.preventContinuation).toBe(true);
 });

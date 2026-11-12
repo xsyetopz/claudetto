@@ -19,6 +19,7 @@ import { budgetBand, budgetLine } from "../../tool.call/useBudgetRun/budget.ts";
 import { gradeBlock } from "./grade.ts";
 import { namedPaths } from "./named-files.ts";
 import { commandForm, openItems, turnOf } from "./open-items.ts";
+import { registerBlock } from "./register.ts";
 import type { StopState, Turn } from "./turn.ts";
 
 const AGREES =
@@ -111,7 +112,8 @@ const stopBlock = async (
 		: undefined) ??
 	(await filesBlock($, e)) ??
 	(isOpenItemsOn ? await openBlock($, e, turn.interactive) : undefined) ??
-	(await gradeBlock($, e, turn.denied, turn.interactive));
+	(await gradeBlock($, e, turn.denied, turn.interactive)) ??
+	(await registerBlock($, e, turn.denied));
 
 /**
  * Stop: the stall rule, then the named-files, open-items, and graded-reply checks, then the background-task list, then the cleanup of what the session created. The flag, the task key and

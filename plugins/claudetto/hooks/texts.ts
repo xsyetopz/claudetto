@@ -255,6 +255,8 @@ export const COMMAND_FORM = (v: {
 			: []),
 	].join("\n");
 
+export const REGISTER_BLOCK = `Your reply apologizes, agrees, states a feeling, repeats the user, names a mistake with no result, or lists steps as a report. Write what a status report holds: the fact, the corrected result, and the next step.\n${KEEP_ANSWER}`;
+
 export const AGREE_OPENER =
 	"The reply opens by agreeing with the user, which carries no fact. Delete the agreement and open with the fact your check decided.";
 
