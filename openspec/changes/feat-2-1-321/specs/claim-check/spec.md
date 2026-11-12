@@ -100,12 +100,21 @@ Each tool in `tools/` that starts a paid Claude Code run SHALL drop `ANTHROPIC_A
 
 ### Requirement: Register Faults Get One Block Through the Decider
 
-At `classic.Stop`, after the graded-reply check, when none of the earlier checks blocked, the mod SHALL ask the Decider one call over the final reply, the person's message, and the turn's tool results. The call SHALL carry the five questions that scored at least 80% precision and 80% recall on stored replies: `apologizes_or_agrees`, `states_feeling_or_praise`, `repeats_person`, `names_own_mistake_without_result`, and `steps_listed_as_report`. On a `yes` to any of them the mod SHALL block once with a text that asks for the fact, the corrected result, and the next step, and SHALL NOT block when `stop_hook_active` is set, when every answer is `no` or `unsettled`, or when the Decider fails. The questions `claim_without_shown_check`, `question_unanswered`, `doable_step_left`, and `choice_handed_to_person` scored below that bar and SHALL stay out of the Stop check, held in the question set the scoring tool reads.
+At `classic.Stop`, after the graded-reply check, when no earlier check blocked, the mod SHALL ask the Decider, in one call over the final reply, the person's message, and the turn's tool results, the register questions that scored at least 80% precision and recall on stored replies. On a `yes` to any of them the mod SHALL block once with a text that asks for the fact, the corrected result, and the next step.
 
 #### Scenario: A Yes Blocks Once
 
-- **WHEN** the Decider answers `yes` to one of the five questions for a reply
+- **WHEN** the Decider answers `yes` for a reply to one of the five shipped questions: `apologizes_or_agrees`, `states_feeling_or_praise`, `repeats_person`, `names_own_mistake_without_result`, or `steps_listed_as_report`
 - **THEN** the Stop is blocked once with the register text, and the next Stop with `stop_hook_active` set passes
+
+#### Scenario: No Yes Lets the Reply Through
+
+- **WHEN** every answer is `no` or `unsettled`, or the Decider fails
+- **THEN** the Stop is not blocked
+
+### Requirement: Register Questions Below the Bar Stay Held
+
+The questions `claim_without_shown_check`, `question_unanswered`, `doable_step_left`, and `choice_handed_to_person` scored below the bar and SHALL stay out of the Stop check, held in the question set the scoring tool reads.
 
 #### Scenario: A Held Question Does Not Block
 
