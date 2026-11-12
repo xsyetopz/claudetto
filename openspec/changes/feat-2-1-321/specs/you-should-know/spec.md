@@ -16,7 +16,7 @@ The observer SHALL consider a check before each main-loop tool call, only on the
 
 ### Requirement: One Bounded Request
 
-A check MUST make one `$.model.complete` request with the model and effort from the options, `maxTokens` 512, and `timeoutMs` 20,000, whose body is the lines already shown, the lines the person knows, the last 3 of the person's messages that left the log, of at most 400 characters each, and the last 8 log entries of at most 800 characters each, at most 8,000 characters in all. A message the person sent asks for what it names, so the check MUST NOT note an action the person asked for. A request the model does not answer SHALL be logged with its reason and SHALL let the call run.
+A check MUST make one `$.model.complete` request with the model and effort from the options, `maxTokens` 512, and `timeoutMs` 20,000, whose body is the lines already shown, the lines the person knows, the last 3 of the person's messages that left the log, of at most 400 characters each, and the last 8 log entries of at most 800 characters each, at most 8,000 characters in all. A request the model does not answer SHALL be logged with its reason and SHALL let the call run.
 
 #### Scenario: A Long Session
 
@@ -27,6 +27,11 @@ A check MUST make one `$.model.complete` request with the model and effort from 
 
 - **WHEN** the person sends a message and the assistant then makes 9 tool calls
 - **THEN** the next request still carries that message
+
+#### Scenario: An Action the Person Asked For
+
+- **WHEN** a message the person sent asks for the action a call takes
+- **THEN** the check notes nothing about that action, because the message asks for what it names
 
 #### Scenario: A Request With No Answer
 

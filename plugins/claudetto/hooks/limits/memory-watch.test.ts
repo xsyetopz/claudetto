@@ -46,19 +46,26 @@ const lab = (on: On, ps: string) => {
 	return { machine, clock };
 };
 
-const run = ($: Engine, command: string) =>
-	$.tool.call({ tool: "Bash", tool_use_id: "toolu_1", command });
+const watched = async ($: Engine, clock: ReturnType<typeof mock.clock>) => {
+	const pending = $.tool.call({
+		tool: "Bash",
+		tool_use_id: "toolu_1",
+		command: "bunx oxlint src",
+	});
+	await clock.settle();
+	await clock.advance(5000);
+	await clock.advance(60_000);
+	return pending;
+};
+
+const ran = (machine: Machine, program: string): boolean =>
+	machine.runs.some(([name]) => name === program);
 
 const GROWN = `  4242 00:09 ${9 * KB_PER_GB} tsgolint\n  77 02:10:00 ${12 * KB_PER_GB} claude\n  90 00:09 ${KB_PER_GB} node\n`;
 
 test("a command whose process passes the cap is stopped by its pid, and the result says so", async ($: Engine, on: On) => {
 	const { machine, clock } = lab(on, GROWN);
-	const pending = run($, "bunx oxlint src");
-
-	await clock.settle();
-	await clock.advance(5000);
-	await clock.advance(60_000);
-	const out = await pending;
+	const out = await watched($, clock);
 
 	expect(machine.runs).toContainEqual(["kill", "4242"]);
 	expect(machine.runs).not.toContainEqual(["kill", "77"]);
@@ -71,16 +78,9 @@ test("a process that began before the command is left alone", async ($: Engine, 
 		on,
 		`  77 02:10:00 ${12 * KB_PER_GB} claude\n`,
 	);
-	const pending = run($, "bunx oxlint src");
+	const out = await watched($, clock);
 
-	await clock.settle();
-	await clock.advance(5000);
-	await clock.advance(60_000);
-	const out = await pending;
-
-	expect(machine.runs.filter(([program]) => program === "kill")).toHaveLength(
-		0,
-	);
+	expect(ran(machine, "kill")).toBe(false);
 	expect(out.text).toBe("done");
 });
 
@@ -89,16 +89,9 @@ test("a process under the cap is left alone", async ($: Engine, on: On) => {
 		on,
 		`  4242 00:09 ${3 * KB_PER_GB} tsgolint\n`,
 	);
-	const pending = run($, "bunx oxlint src");
+	await watched($, clock);
 
-	await clock.settle();
-	await clock.advance(5000);
-	await clock.advance(60_000);
-	await pending;
-
-	expect(machine.runs.filter(([program]) => program === "kill")).toHaveLength(
-		0,
-	);
+	expect(ran(machine, "kill")).toBe(false);
 });
 
 test(
@@ -106,15 +99,8 @@ test(
 	set({ memoryProcessMaxPercent: 0 }),
 	async ($: Engine, on: On) => {
 		const { machine, clock } = lab(on, GROWN);
-		const pending = run($, "bunx oxlint src");
+		await watched($, clock);
 
-		await clock.settle();
-		await clock.advance(5000);
-		await clock.advance(60_000);
-		await pending;
-
-		expect(machine.runs.filter(([program]) => program === "ps")).toHaveLength(
-			0,
-		);
+		expect(ran(machine, "ps")).toBe(false);
 	},
 );

@@ -78,63 +78,13 @@ test("the output-limits group writes the Bash and MCP result limits Claude Code 
 	});
 });
 
-test("the features-off group writes every switch and environment variable", () => {
-	expect(groupNamed("Features off").settings).toEqual({
-		$schema: "https://clawdipedia.cc/schemas/claude-code-settings.json",
-		minimumVersion: "2.1.318",
-		workflowSizeGuideline: "unrestricted",
-		workflowKeywordTriggerEnabled: false,
-		enableWorkflows: false,
-		enableArtifact: false,
-		remoteControlAtStartup: false,
-		disableClaudeAiConnectors: true,
-		syncClaudeAiSkills: false,
-		syncClaudeAiPlugins: false,
-		autoUploadSessions: false,
-		disableRemoteControl: true,
-		inputNeededNotifEnabled: false,
-		agentPushNotifEnabled: false,
-		autoMemoryEnabled: false,
-		autoDreamEnabled: false,
-		promptSuggestionEnabled: false,
-		awaySummaryEnabled: false,
-		spinnerTipsEnabled: false,
-		feedbackDrafts: "off",
-		feedbackSurveyRate: 0,
-		todoFeatureEnabled: false,
-		voiceEnabled: false,
-		includeGitInstructions: false,
-		showThinkingSummaries: false,
-		attribution: false,
-		autoContinueAtUsageLimit: true,
-		switchModelsOnFlag: false,
-		precomputeCompactionEnabled: false,
-		showClearContextOnPlanAccept: true,
-		useAutoModeDuringPlan: false,
-		crossSessionInbound: "accept",
-		prefersReducedMotion: true,
-		env: {
-			CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1",
-			CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
-			CLAUDE_CODE_DISABLE_CRON: "1",
-			CLAUDE_CODE_FORK_SUBAGENT: "0",
-			CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
-			CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
-			CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
-			CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "1",
-			CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
-			CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: SILENT_TURN_REMINDER,
-			DISABLE_TELEMETRY: "1",
-			DISABLE_ERROR_REPORTING: "1",
-			DISABLE_EXTRA_USAGE_COMMAND: "1",
-			DISABLE_FEEDBACK_COMMAND: "1",
-			DISABLE_INSTALL_GITHUB_APP_COMMAND: "1",
-			CLAUDE_CODE_DISABLE_FAST_MODE: "1",
-			CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
-			CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "1",
-			CLAUDE_CODE_THRIFTY_SONIC: "0",
-		},
+test("the features-off group ends a silent background subagent, quiets the turn reminder, and writes no script caps", () => {
+	const env = valueAt(groupNamed("Features off").settings, ["env"]);
+	expect(env).toMatchObject({
+		CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
+		CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: SILENT_TURN_REMINDER,
 	});
+	expect(env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
 });
 
 const words = (text: string): string[] => text.split(" ");

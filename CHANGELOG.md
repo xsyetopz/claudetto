@@ -76,7 +76,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 - Hygiene removes the idle entries of Claude Code's temp folder even when another session removes one while the sweep searches; one vanished or unreadable entry no longer stops the whole batch of 500.
 
-- The Stop check no longer blocks a reply that copies a task line quoting a `! ` command in backticks, and no longer lists a subagent's files under `.claude/worktrees/` as the session's uncommitted edits.
+- The Stop check no longer blocks a reply that copies a task line quoting a `!` command in backticks, and no longer lists a subagent's files under `.claude/worktrees/` as the session's uncommitted edits.
 - The gate's denial of an `rm` of a temp base teaches a cleanup by literal path, because Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`, and no rule allows it.
 - The `Monitor` text now says to run the writer itself in the command, because a watch on `tail -F` never ends after its writer exits, so "unless the source ends first" in the start notice holds for a command that ends.
 - A "You should know" note no longer says a password or secret was typed into the chat when it only sat inside a command such as an `osascript` keystroke; the side check's instructions now say to state only what the digest shows.

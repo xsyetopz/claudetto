@@ -134,19 +134,7 @@ test("the Agent text picks a type from the agent list or leaves the work to the 
 	});
 
 	expect(out.description).toBe(AGENT_TEXT);
-});
-
-test("the Agent text sends an agent that commits to a worktree of its own", async ($: Engine, on: On) => {
-	on("tool.describe", (_$, e) => e);
-
-	const out = await $.tool.describe({
-		tool: "Agent",
-		description: "Launch a new agent (general-purpose by default)",
-		provider: { plugin: "engine", tier: "core" },
-	});
-
-	expect(out.description).toContain('isolation: "worktree"');
-	expect(out.description).toContain("commits");
+	expect(AGENT_TEXT).toContain('isolation: "worktree" if it commits');
 });
 
 test("a call that names isolation reaches the engine as it is", async ($: Engine, on: On) => {
