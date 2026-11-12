@@ -13,6 +13,7 @@ export const checkReadings = (
 			expect(
 				JSON.stringify({
 					...parsed,
+					commands: parsed.commands.map(({ ends: _ends, ...c }) => c),
 					programs: parsed.commands.map((c) => programOf(c)),
 				}),
 			).toBe(expected);

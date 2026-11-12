@@ -10,6 +10,8 @@ export interface Command {
 	redirects: Redirect[];
 	from: boolean;
 	into: boolean;
+	/** The operator that ends the command: `&&`, `||`, `|`, `&`, `;`, a newline, a parenthesis, or `""` at the end of the text. */
+	ends: string;
 }
 
 export interface State {

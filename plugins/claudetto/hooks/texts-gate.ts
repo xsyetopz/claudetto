@@ -75,6 +75,8 @@ export const GATE_WRITE_FILE =
 	"Use `Write` to write a whole file, not the shell.";
 export const GATE_MASKED_EXIT =
 	"A pipe returns its last command's exit code, so a failing check piped into `tail`, `head`, or `grep` reads as a pass and lets later steps run. Start the command with `set -o pipefail;`, or send the output to a file and print `$?`. The command did not run.";
+export const GATE_UNSTOPPED_COMMIT =
+	"A `git commit` after a check that `;`, a newline, `||`, or a loop leaves running commits after a failure. Tie the commit to the check with `&&`, start the script with `set -e`, or end the check with `|| exit 1`. The command did not run.";
 export const GATE_WHOLE_FORMAT =
 	"A formatter run over the whole repository rewrites files outside the task. Pass the files you changed, or use `--check`, `--staged`, or `--changed`. The command did not run.";
 export const GATE_SYSTEM_WRITE = "This call writes to a system folder.";

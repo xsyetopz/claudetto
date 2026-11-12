@@ -20,6 +20,12 @@ test("a pipeline, a list, and a subshell give one command each", () => {
 	]);
 });
 
+test("each command names the operator that ends it", () => {
+	expect(
+		parse("a | b && c || d; e & f\ng").commands.map((c) => c.ends),
+	).toEqual(["|", "&&", "||", ";", "&", "\n", ""]);
+});
+
 test("quotes join into one word and hide operators", () => {
 	expect(programs(`echo "a b; c" 'd | e' f\\ g`)).toEqual([
 		["echo", "a b; c", "d | e", "f g"],

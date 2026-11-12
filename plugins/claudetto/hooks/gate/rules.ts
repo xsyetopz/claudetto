@@ -15,7 +15,7 @@ import {
 } from "./files.ts";
 import { busyWaitVerdict, killVerdict, releaseVerdict } from "./kill.ts";
 import { packageVerdict } from "./packages.ts";
-import { maskedExitVerdict } from "./pipefail.ts";
+import { maskedExitVerdict, unstoppedCommitVerdict } from "./pipefail.ts";
 import { NOBODY, ownedRemoval, ownedVerdict, type Owns } from "./processes.ts";
 import { refVerdict } from "./refs.ts";
 import { type Command, parse, programOf, scriptOf } from "./shell-words.ts";
@@ -105,6 +105,7 @@ const judgeText = (
 			commandVerdicts(c, has, own, c.into ? parsed.commands[i + 1] : undefined),
 		),
 		maskedExitVerdict(parsed.commands),
+		unstoppedCommitVerdict(parsed.commands),
 		busyWaitVerdict(parsed.commands),
 	]);
 };

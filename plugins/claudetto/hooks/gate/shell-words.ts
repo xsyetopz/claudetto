@@ -72,7 +72,8 @@ const checkProgram = (s: State, c: Command): void => {
 	}
 };
 
-const endCommand = (s: State, piped: boolean): void => {
+const endCommand = (s: State, ends: string): void => {
+	const piped = ends === "|";
 	endWord(s);
 	if (s.words.length > 0 || s.redirects.length > 0) {
 		const c: Command = {
@@ -81,6 +82,7 @@ const endCommand = (s: State, piped: boolean): void => {
 			redirects: s.redirects,
 			from: s.from,
 			into: piped,
+			ends,
 		};
 		s.commands.push(c);
 		checkProgram(s, c);
@@ -175,12 +177,13 @@ const redirect = (s: State): void => {
 const operator = (s: State, c: string): void => {
 	const next = s.src[s.i + 1];
 	if (c === "|" && next !== "|") {
-		endCommand(s, true);
+		endCommand(s, "|");
 		s.i += next === "&" ? 2 : 1;
 		return;
 	}
-	endCommand(s, false);
-	s.i += (c === "&" || c === "|") && next === c ? 2 : 1;
+	const doubled = (c === "&" || c === "|") && next === c;
+	endCommand(s, doubled ? c + c : c);
+	s.i += doubled ? 2 : 1;
 	if (c === "\n") {
 		skipHeredocs(s);
 	}
@@ -228,7 +231,7 @@ const run = (s: State): Parsed => {
 	while (s.i < s.src.length) {
 		step(s);
 	}
-	endCommand(s, false);
+	endCommand(s, "");
 	return { commands: s.commands, unreadable: s.unreadable };
 };
 
