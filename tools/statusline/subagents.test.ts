@@ -34,7 +34,7 @@ describe("subagent rows", () => {
 				{
 					id: "a1",
 					name: "scout",
-					agentType: "claudetto:Artemis",
+					agentType: "claudetto:search",
 					status: "running",
 					model: "claude-haiku-4-5",
 					effort: "low",
@@ -46,7 +46,7 @@ describe("subagent rows", () => {
 		});
 		expect(row?.id).toBe("a1");
 		expect(row?.content).toBe(
-			"⏵ scout (Artemis) haiku-4-5 low · ◫ 12k/200k 6% · ◔ 1m",
+			"⏵ scout (search) haiku-4-5 low · ◫ 12k/200k 6% · ◔ 1m",
 		);
 	});
 

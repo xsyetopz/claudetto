@@ -41,6 +41,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- **Breaking:** the agents are named by job: `search`, `plan`, and `work` (`claudetto:search`, `claudetto:plan`, `claudetto:work`) replace `Artemis`, `Metis`, and `Heracles`. Their behavior does not change.
 - **Breaking:** claudetto reads the TypeSafe key only from `TYPESAFE_API_KEY`, in the shell that launches Claude Code or in the `env` block of the settings. The `typesafeApiKey` option is gone, so an install that set it must set the variable. A project `.env` file is not read.
 - **Breaking:** with a key, the constraint ledger and the branch gate send your messages to `api.typesafe.ai`, redacted by the secret scan first. Before, only the `decide` tool reached that host. Without a key, no request reaches it.
 - **Breaking:** the popup is Claude Code's own `AskUserQuestion` again, with its description cut to one sentence. Auto mode reads a popup answer only from that tool, so an action you approved in claudetto's popup, such as a merge, was judged as if nobody had asked for it. The tool `mcp__claudetto__ask-user-question` is gone.

@@ -1,5 +1,5 @@
 ---
-name: Artemis
+name: search
 description: Read-only search across many files; returns paths, lines, and short excerpts.
 model: claude-sonnet-5-5
 tools: Read, Grep, Glob

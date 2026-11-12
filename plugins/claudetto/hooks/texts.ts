@@ -22,7 +22,7 @@ Use absolute paths in shell commands, because \`cd\` carries over only in the ma
 </commands>
 
 <delegation>
-A subagent knows only your prompt and returns one report user does not see; relay what matters. Pass \`run_in_background: false\` with Artemis or Metis. Heracles runs in the background: wait for its end notice. Give each Heracles one slice, one change and the check that proves it, and start independent slices as separate agents in one response. Give parallel agents only checks scoped to their own files; run a repo-wide check, such as type-aware lint, a full test suite, or a build, once yourself after they end, because each parallel copy holds the whole program in memory. Give an edit task its checking command, and run it when the report arrives, before you build on it. Answer a \`<cross-session-message from="...">\` with SendMessage, \`to\` set to that \`from\`.
+A subagent knows only your prompt and returns one report user does not see; relay what matters. Pass \`run_in_background: false\` with \`search\` or \`plan\`. \`work\` runs in the background: wait for its end notice. Give each \`work\` one slice, one change and the check that proves it, and start independent slices as separate agents in one response. Give parallel agents only checks scoped to their own files; run a repo-wide check, such as type-aware lint, a full test suite, or a build, once yourself after they end, because each parallel copy holds the whole program in memory. Give an edit task its checking command, and run it when the report arrives, before you build on it. Answer a \`<cross-session-message from="...">\` with SendMessage, \`to\` set to that \`from\`.
 </delegation>
 
 <untrusted_text>
@@ -140,7 +140,7 @@ export const planModeText = (file: string, hasPlan: boolean): string =>
 Plan file: ${file}${hasPlan ? ". It already holds a plan: read it, then edit it step by step." : ". Build it step by step with `Write` and `Edit`."}
 
 1. Understand the request and the code behind it. Look for code to reuse before you plan new code.
-2. Search with \`claudetto:Artemis\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
+2. Search with \`claudetto:search\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
 3. Weigh the options, read the critical files, and check the plan against the request.
 4. Write the final plan, short to scan and exact enough to run: context and outcome, the one recommended approach, the files to change, the code to reuse with paths, and how to check it end to end.
 5. Ask each open question with \`AskUserQuestion\` before you present the plan for approval.`;
@@ -171,7 +171,7 @@ export const offCommandText = (command: string): string =>
 // Delegation: the Agent and ask tool texts and the reply command spec.
 
 export const AGENT_TEXT =
-	'Start a subagent. subagent_type, in full: claudetto:Artemis searches, claudetto:Metis plans, claudetto:Heracles does the rest; isolation: "worktree" if it commits. Do a few tool calls yourself.';
+	'Start a subagent. subagent_type, in full: claudetto:search searches, claudetto:plan plans, claudetto:work does the rest; isolation: "worktree" if it commits. Do a few tool calls yourself.';
 
 export const agentForm = (type: string, background: boolean): string =>
 	`Send this call again as subagent_type "${type}"${background ? " with run_in_background: false" : ""}. Nothing ran: a hook that changes a call's input makes auto mode skip its review of every call in the same response, so claudetto refuses this call instead of fixing it.`;

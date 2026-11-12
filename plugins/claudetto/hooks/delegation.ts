@@ -7,22 +7,22 @@ import { AGENT_TEXT, agentForm, ASK_TEXT } from "./texts.ts";
 const PREFIX = "claudetto:";
 
 const TYPES: ReadonlyMap<string, string> = new Map([
-	["Explore", "Artemis"],
-	["Plan", "Metis"],
-	["general-purpose", "Heracles"],
-	["claude", "Heracles"],
-	["Artemis", "Artemis"],
-	["Metis", "Metis"],
-	["Heracles", "Heracles"],
+	["Explore", "search"],
+	["Plan", "plan"],
+	["general-purpose", "work"],
+	["claude", "work"],
+	["search", "search"],
+	["plan", "plan"],
+	["work", "work"],
 ]);
 
-// Artemis and Metis return one report; a plugin agent otherwise runs in the background.
-const ONE_SHOT: ReadonlySet<string> = new Set(["Artemis", "Metis"]);
+// search and plan return one report; a plugin agent otherwise runs in the background.
+const ONE_SHOT: ReadonlySet<string> = new Set(["search", "plan"]);
 
 // The claudetto agent that serves a call's `subagent_type`; undefined for `fork` and for a type claudetto does not own.
 const agentFor = (type: string | undefined): string | undefined => {
 	if (type === undefined || type === "") {
-		return "Heracles";
+		return "work";
 	}
 	return TYPES.get(type.startsWith(PREFIX) ? type.slice(PREFIX.length) : type);
 };

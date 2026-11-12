@@ -9,6 +9,34 @@ The built-in `/init` skill's prompt SHALL be replaced by `INTERVIEW_TEXT`, which
 - **WHEN** the built-in `init` skill prompt is built
 - **THEN** the model gets the interview, and a user's skill named `init` keeps its text ("the built-in init skill reaches the model as the interview", "a user's own skill named init keeps its text")
 
+### Requirement: Built-in Agents Are Withheld and Mapped
+
+The system SHALL withhold each agent whose `source` is `built-in` with `agent.offer`, and SHALL map an `Agent` call by its `subagent_type`: `Explore` to `claudetto:search`, `Plan` to `claudetto:plan`, and `general-purpose`, `claude`, or a missing type to `claudetto:work`. A bare or `claudetto:`-prefixed name of the three SHALL map to itself, and `fork` SHALL pass through.
+
+#### Scenario: An Untyped Call
+
+- **WHEN** the model calls `Agent` with no `subagent_type`, or with `general-purpose` or `claude`
+- **THEN** `claudetto:work` runs
+
+#### Scenario: A Withheld Agent with No Mapping
+
+- **WHEN** the model calls `Agent` with `statusline-setup`
+- **THEN** the call fails as "not found", and the listing of the first request names only claudetto's agents
+
+### Requirement: A Mapped Agent Call Runs in the Foreground and Is Rewritten Only When It Must Be
+
+The call SHALL carry `run_in_background: false` for `search` and `plan` unless the caller set it, because a plugin agent runs in the background otherwise (`settings-review.txt`, L17 item 3). A call that needs no change SHALL reach `next(e)` as `e` itself, because in auto mode a rewritten call sends it and every later call of the same response to the local classifier (L17 item 10 (g)).
+
+#### Scenario: A Search Call with No Background Field
+
+- **WHEN** the model calls `Agent` with `Explore` and no `run_in_background`
+- **THEN** `claudetto:search` runs with `run_in_background: false`
+
+#### Scenario: A Call Written in Full
+
+- **WHEN** the model names `claudetto:search` with `run_in_background: false`
+- **THEN** the hook passes the call unchanged, and the `--debug-file` of an auto-mode run holds no "a hook rewrote" line for it
+
 ## ADDED Requirements
 
 ### Requirement: Monitor, ToolSearch, and the Plan-Mode Tools Carry a Text of Ours

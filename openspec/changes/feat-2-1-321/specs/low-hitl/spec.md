@@ -2,7 +2,7 @@
 
 ### Requirement: No Hook Changes a Call's Input in Auto Mode
 
-No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for Artemis and Metis) and name the form to send. No hook SHALL rewrite a `ToolSearch` query or result.
+No claudetto `tool.call` hook SHALL change the input of a call, because in 2.1.319 a changed input voids auto mode's server review of every call in the same response (`serverClassifierInputRewritten`), and each comes back with "gave no verdict". The `Agent` hook SHALL deny a call not in its exact form (`subagent_type` `claudetto:<Name>`, and an explicit `run_in_background` for `search` and `plan`) and name the form to send. No hook SHALL rewrite a `ToolSearch` query or result.
 
 #### Scenario: An Agent Call Off Its Form
 

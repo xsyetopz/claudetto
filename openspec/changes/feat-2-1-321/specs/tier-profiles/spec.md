@@ -44,3 +44,12 @@ A tool result SHALL be withheld when it would take the next request of a Haiku 5
 
 - **WHEN** the hook waits on the step's `usage`
 - **THEN** the wait ends at least 1 s before the call hook's 10 s budget, because a hook that runs past its budget twice unloads the plugin
+
+### Requirement: Agents Inherit the Tier
+
+Setup SHALL write `CLAUDE_CODE_SUBAGENT_MODEL` as `claude-sonnet-5-5` in the "Models and windows" group. An agent file that names no `model:` line, as `work` does, SHALL run on it. The order of choice is the per-call `model`, then the agent field, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main model (`clawdipedia` route `extend/subagents/frontmatter`, row `model`, checked 2026-10-27).
+
+#### Scenario: Subagent Model
+
+- **WHEN** a plugin agent with no `model:` line starts with no model passed in the call
+- **THEN** it runs on `claude-sonnet-5-5`

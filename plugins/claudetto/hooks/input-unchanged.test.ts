@@ -24,13 +24,13 @@ const CALLS = [
 		tool: "Agent",
 		description: "d",
 		prompt: "p",
-		subagent_type: "claudetto:Heracles",
+		subagent_type: "claudetto:work",
 	},
 	{
 		tool: "Agent",
 		description: "d",
 		prompt: "p",
-		subagent_type: "claudetto:Artemis",
+		subagent_type: "claudetto:search",
 		run_in_background: false,
 	},
 ] as const;

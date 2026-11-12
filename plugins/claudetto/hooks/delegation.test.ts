@@ -43,13 +43,13 @@ const refused: [string | undefined, boolean | undefined][] = [
 	["", undefined],
 	["general-purpose", undefined],
 	["claude", undefined],
-	["Heracles", undefined],
+	["work", undefined],
 	["Explore", false],
 	["Plan", false],
 	["Explore", undefined],
-	["Artemis", true],
-	["claudetto:Artemis", undefined],
-	["claudetto:Metis", undefined],
+	["search", true],
+	["claudetto:search", undefined],
+	["claudetto:plan", undefined],
 ];
 
 for (const [type, background] of refused) {
@@ -66,14 +66,14 @@ for (const [type, background] of refused) {
 test("a call in the exact form reaches the engine as it was", async ($: Engine, on: On) => {
 	const seen = lab(on);
 
-	await $.tool.call(call("claudetto:Artemis", true));
-	await $.tool.call(call("claudetto:Artemis", false));
-	await $.tool.call(call("claudetto:Heracles"));
+	await $.tool.call(call("claudetto:search", true));
+	await $.tool.call(call("claudetto:search", false));
+	await $.tool.call(call("claudetto:work"));
 
 	expect(seen).toEqual([
-		{ subagent_type: "claudetto:Artemis", run_in_background: true },
-		{ subagent_type: "claudetto:Artemis", run_in_background: false },
-		{ subagent_type: "claudetto:Heracles" },
+		{ subagent_type: "claudetto:search", run_in_background: true },
+		{ subagent_type: "claudetto:search", run_in_background: false },
+		{ subagent_type: "claudetto:work" },
 	]);
 });
 
@@ -87,20 +87,20 @@ for (const type of ["fork", "statusline-setup", "claude-code-guide"]) {
 	});
 }
 
-test("the result of an Artemis call reads as Explore", async ($: Engine, on: On) => {
+test("the result of a search call reads as Explore", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await $.tool.call(call("claudetto:Artemis", false));
+	const out = await $.tool.call(call("claudetto:search", false));
 
 	expect(out.result).toMatchObject({ agentType: "Explore" });
 });
 
-test("the result of a Heracles call keeps its agent type", async ($: Engine, on: On) => {
+test("the result of a work call keeps its agent type", async ($: Engine, on: On) => {
 	lab(on);
 
-	const out = await $.tool.call(call("claudetto:Heracles"));
+	const out = await $.tool.call(call("claudetto:work"));
 
-	expect(out.result).toMatchObject({ agentType: "claudetto:Heracles" });
+	expect(out.result).toMatchObject({ agentType: "claudetto:work" });
 });
 
 test("agent.offer withholds a built-in agent and offers a plugin one", async ($: Engine, on: On) => {
@@ -114,7 +114,7 @@ test("agent.offer withholds a built-in agent and offers a plugin one", async ($:
 		provider: origin,
 	});
 	const plugin = await $.agent.offer({
-		agent: "claudetto:Artemis",
+		agent: "claudetto:search",
 		description: "d",
 		source: "plugin",
 		provider: { plugin: "claudetto", tier: "user" },
@@ -140,15 +140,15 @@ test("the Agent text picks a type from the agent list or leaves the work to the 
 test("a call that names isolation reaches the engine as it is", async ($: Engine, on: On) => {
 	const seen = lab(on);
 
-	await $.tool.call({ ...call("claudetto:Heracles"), isolation: "worktree" });
+	await $.tool.call({ ...call("claudetto:work"), isolation: "worktree" });
 
-	expect(seen).toEqual([{ subagent_type: "claudetto:Heracles" }]);
+	expect(seen).toEqual([{ subagent_type: "claudetto:work" }]);
 });
 
 const LISTING = [
 	"Available agent types for the Agent tool:",
-	"- claudetto:Artemis: search",
-	"- claudetto:Heracles: default",
+	"- claudetto:search: search",
+	"- claudetto:work: default",
 	"",
 	"Use subagent_type.",
 ].join("\n");
@@ -163,7 +163,7 @@ test("the listing keeps only its agent lines", async ($: Engine, on: On) => {
 	});
 
 	expect(out.text).toBe(
-		"- claudetto:Artemis: search\n- claudetto:Heracles: default",
+		"- claudetto:search: search\n- claudetto:work: default",
 	);
 });
 

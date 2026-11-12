@@ -26,6 +26,25 @@ A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs fi
 - **THEN** the reply lists the first as its one `- ! <command>` bullet, and the next reply, after the person's run, lists the second
 - **AND** a finding bullet that mentions a `! <command>` step beside that one bullet passes
 
+### Requirement: Each Agent Has a Body and a Model
+
+The agents under `plugins/claudetto/agents/` SHALL each hold a plain body of two paragraphs. `search` and `plan` SHALL set `model: claude-sonnet-5-5` and `tools: Read, Grep, Glob`. `work` SHALL set no `model` and no `tools`.
+
+#### Scenario: Agent Reports
+
+- **WHEN** the three bodies are read
+- **THEN** `search` ends with one `path:line` and excerpt per finding, `plan` returns steps, files, risks, and the check command, and `work` ends with what it did, what it checked and the result, and what is left
+
+#### Scenario: Read-Only Agents
+
+- **WHEN** the frontmatter of `search` and `plan` is read
+- **THEN** each holds `tools: Read, Grep, Glob` and `model: claude-sonnet-5-5`
+
+#### Scenario: Heracles
+
+- **WHEN** the frontmatter of `work` is read
+- **THEN** it holds no `model` and no `tools`
+
 ## ADDED Requirements
 
 ### Requirement: The Code Rules Ask for Least Code and Trust-Boundary Guards
