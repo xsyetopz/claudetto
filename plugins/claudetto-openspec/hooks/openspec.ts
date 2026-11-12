@@ -9,6 +9,7 @@ import {
 	archived,
 	archivedLine,
 	badName,
+	cutNote,
 	issueLine,
 	needsChange,
 	NO_CHANGES,
@@ -126,7 +127,25 @@ const openNew = (d: Deps, change: unknown) => {
 	return create(d.fs, d.root, shown(change), d.date);
 };
 
-export const openspec = async (d: Deps, call: Call): Promise<string> => {
+// About 3,000 tokens: far under the 10,000-token warning of Claude Code, and room for a long task list.
+const MAX_CHARS = 12_000;
+
+// Keeps whole lines up to the limit; a first line past the limit is cut by characters and its rest counts as a line.
+const bounded = (text: string): string => {
+	if (text.length <= MAX_CHARS) {
+		return text;
+	}
+	const cut = text.slice(0, MAX_CHARS);
+	const end = cut.lastIndexOf("\n");
+	const kept = end > 0 ? cut.slice(0, end) : cut;
+	const rest = text.slice(kept.length).replace(/^\n/u, "").trimEnd();
+	return `${kept}\n${cutNote(rest.split("\n").length)}`;
+};
+
+export const openspec = async (d: Deps, call: Call): Promise<string> =>
+	bounded(await act(d, call));
+
+const act = async (d: Deps, call: Call): Promise<string> => {
 	const action = call["action"] ?? "validate";
 	if (action === "init") {
 		return init(d.fs, d.root);

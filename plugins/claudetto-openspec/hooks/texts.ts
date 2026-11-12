@@ -63,6 +63,9 @@ export const specLine = (id: string, count: number) => `${id} ${count}`;
 
 export const requirementPath = (name: string) => `Requirement "${name}"`;
 
+export const cutNote = (lines: number) =>
+	`[claudetto: ${lines} more lines not shown]`;
+
 export const openLine = (line: number, text: string) =>
 	`tasks.md:${line} ${text}`;
 
