@@ -55,7 +55,7 @@ test("the reply-register questions are Nouls that each state what a yes and a no
 	);
 	expect(
 		questions.map((question) =>
-			JSON.stringify(question).includes('"criteria":"'),
+			JSON.stringify(question).includes('"criteria":{"true":"'),
 		),
 	).toEqual(questions.map(() => true));
 });
