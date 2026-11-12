@@ -13,7 +13,10 @@ import { spawn } from "bun";
 
 import { parseArgs } from "../../plugins/claudetto/hooks/hygiene/args.ts";
 import { sweep } from "../../plugins/claudetto/hooks/hygiene/sweep.ts";
-import { PROJECT_TRASH } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+import {
+	outputOr,
+	PROJECT_TRASH,
+} from "../../plugins/claudetto/hooks/hygiene/trash.ts";
 import {
 	DAY,
 	git,
@@ -200,4 +203,21 @@ test("the sweep's own process in the project does not keep its build folders", a
 	});
 
 	expect(found).toEqual([["swiftpm", join(worktree, ".build")]]);
+});
+
+// Seen in a dry run: `git ls-remote` of a remote that waited for credentials held the branch report of every later project.
+test("a call that runs past its limit is stopped and logged, and answers nothing", async () => {
+	const lines: string[] = [];
+	const started = Date.now();
+
+	const answer = await outputOr((line) => lines.push(line), 200)(
+		["sleep", "5"],
+		"/",
+	);
+
+	expect(answer).toBeUndefined();
+	expect(Date.now() - started).toBeLessThan(2000);
+	expect(lines).toEqual([
+		"The sleep call in / failed (Error: it ran past 200 ms and was stopped)",
+	]);
 });

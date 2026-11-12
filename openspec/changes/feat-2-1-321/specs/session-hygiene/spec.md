@@ -111,6 +111,12 @@ Hygiene SHALL name each remote branch of `origin` that nothing needs only when `
 - **WHEN** the sweep runs without `--remote`
 - **THEN** no remote branch is named or deleted
 
+#### Scenario: A Remote That Does Not Answer
+
+- **WHEN** `git ls-remote` of one project waits for credentials past 60 seconds
+- **THEN** the call is stopped and logged, that project's remote branches stay, and the next project is judged
+- **AND** the lab test is `trash.test.ts`, "a call that runs past its limit is stopped and logged, and answers nothing"
+
 ### Requirement: Agent Worktrees Nothing Needs Go
 
 Hygiene SHALL remove a worktree that Claude Code made for an agent, with its branch, when git lists it without a lock, `git status` shows no change in it, and `git cherry` finds each of its commits in the current branch of the checkout. It SHALL do this in the session's project and in each project `.claude.json` lists, and SHALL name each unlocked agent worktree that stays, with its size and the reason.

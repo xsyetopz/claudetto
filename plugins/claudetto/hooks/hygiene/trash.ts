@@ -164,26 +164,33 @@ export const projectTrash = (
 export const tempRule = (trash: Trash, name: string): Rule | undefined =>
 	matchOf(trash, true, name);
 
-/** The stdout of a command that exited 0, or nothing. */
+/** The stdout of a command that exited 0, or nothing; past `limitMs` the command is stopped and the call throws. */
 export const output = async (
 	argv: readonly string[],
 	cwd: string,
+	limitMs?: number,
 ): Promise<string | undefined> => {
 	const child = spawn([...argv], {
 		cwd,
 		stdout: "pipe",
 		stderr: "ignore",
+		...(limitMs === undefined ? {} : { timeout: limitMs }),
 	});
 	const text = await new Response(child.stdout).text();
-	return (await child.exited) === 0 ? text : undefined;
+	const code = await child.exited;
+	// Bun sets `killed` on a normal exit too; only a stopped child has a signal.
+	if (limitMs !== undefined && child.signalCode !== null) {
+		throw new Error(`it ran past ${limitMs} ms and was stopped`);
+	}
+	return code === 0 ? text : undefined;
 };
 
-/** `output`, with a command that could not start logged and answered as nothing: the folder of a listed project may be gone. */
+/** `output` within `limitMs`, with a command that failed to start or ran past the limit logged and answered as nothing: a remote that waits for credentials would hold every later project. */
 export const outputOr =
-	(log: Log): Run =>
+	(log: Log, limitMs = 60_000): Run =>
 	(argv, cwd) =>
-		output(argv, cwd).catch(
-			logged(log, `The ${argv[0]} call in ${cwd} did not start`, void 0),
+		output(argv, cwd, limitMs).catch(
+			logged(log, `The ${argv[0]} call in ${cwd} failed`, void 0),
 		);
 
 export interface Held {
