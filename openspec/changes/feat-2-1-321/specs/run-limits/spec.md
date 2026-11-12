@@ -24,6 +24,16 @@ Before each `Bash` or `Monitor` call and each subagent start, the system SHALL r
 - **WHEN** the free share is at or above the limit, or `memoryFreeMinPercent` is 0, or the platform gives no share
 - **THEN** the call goes on
 
+### Requirement: A Word the Engine Refuses Names No Missing File
+
+When the engine refuses to read an operand of a `! <command>` step as a path, the named-file check SHALL leave that operand out and SHALL still check the step's other paths, because a check that throws loses every check of that stop.
+
+#### Scenario: A Search Pattern in a Step
+
+- **WHEN** a reply holds `! grep -v "/\.git/" /tmp/list.txt` and `/tmp/list.txt` does not exist
+- **THEN** the stop is blocked for `/tmp/list.txt`, and the block does not name the pattern
+- **AND** the lab test is `named-files.test.ts`, "a search pattern the engine refuses to read as a path is not called missing"
+
 ## MODIFIED Requirements
 
 ### Requirement: A Closing Stop Removes the Session's Leftovers

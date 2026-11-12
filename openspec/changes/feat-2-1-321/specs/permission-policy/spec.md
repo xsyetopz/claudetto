@@ -62,6 +62,22 @@ The gate SHALL deny a Bash command in which `sed`, `perl`, or `ruby` reads `-i` 
 - **WHEN** the agent runs `perl tool.pl -i in.txt`
 - **THEN** the call passes
 
+### Requirement: A Vanished File Is Not Recreated Unasked
+
+The gate SHALL ask when a call creates a file that this session saw (by `Read`, `Write`, `Edit`, a `Bash` operand that existed, an `ls` or `Glob` listing, or the transcript before a resume), that is gone now, and that no call of this session removed. A `Bash` operand the engine refuses to read as a path SHALL count as a file that is not there, and the gate SHALL NOT ask the person about it.
+
+#### Scenario: A Copy over a Vanished File
+
+- **WHEN** the session read `notes.md`, the person deleted it, and the agent runs `cp /tmp/notes.md notes.md`
+- **THEN** the gate asks, because the file was removed outside this session
+- **AND** the lab tests are `gate.vanish.test.ts`, "a copy to a file the session saw and that is gone now asks" and "recreating a file after the session's own rm passes"
+
+#### Scenario: A Search Pattern That Is No Path
+
+- **WHEN** the agent runs `grep -v "/\.git/" list.txt`, and the engine refuses `$.fs.exists` on the pattern as a network location
+- **THEN** the call passes with no question
+- **AND** the lab tests are `gate.vanish.test.ts`, "a `grep -v …` passes, since its pattern is no path the engine reaches", one per reported command
+
 ## ADDED Requirements
 
 ### Requirement: A Temp Base Itself Stays
