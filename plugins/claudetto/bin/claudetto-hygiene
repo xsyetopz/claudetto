@@ -9,7 +9,7 @@ import { parseArgs } from "../hooks/hygiene/args.ts";
 import { branchReport } from "../hooks/hygiene/branches.ts";
 import { cleanCaches } from "../hooks/hygiene/mole.ts";
 import { reportText, sweep } from "../hooks/hygiene/sweep.ts";
-import { type Log, logged } from "../hooks/hygiene/roots.ts";
+import { type Log, logged, presentProjects } from "../hooks/hygiene/roots.ts";
 import { outputOr } from "../hooks/hygiene/trash.ts";
 import { projectsOf, worktreeReport } from "../hooks/hygiene/worktrees.ts";
 
@@ -33,7 +33,8 @@ try {
 		"utf8",
 	)
 		.then(projectsOf)
-		.catch(logged(log, "The project list was not read", []));
+		.catch(logged(log, "The project list was not read", []))
+		.then(async (dirs) => presentProjects(dirs, log));
 	const report = await sweep(args, {
 		cwd: process.cwd(),
 		projects,

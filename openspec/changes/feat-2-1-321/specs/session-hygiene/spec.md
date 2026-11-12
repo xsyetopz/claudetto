@@ -143,7 +143,8 @@ Hygiene SHALL remove a worktree that Claude Code made for an agent, with its bra
 #### Scenario: A Listed Project That Is Gone
 
 - **WHEN** `.claude.json` lists a project whose folder no longer exists
-- **THEN** the sweep logs it and judges the next project
+- **THEN** the sweep logs it once, runs no git call in it, and judges the next project
+- **AND** the lab test is `worktrees.test.ts`, "a listed project whose folder is gone is logged once and left out, and the next project stays"
 
 #### Scenario: A Dry Run
 

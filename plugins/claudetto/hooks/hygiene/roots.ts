@@ -1,4 +1,4 @@
-import { readFile, realpath } from "node:fs/promises";
+import { exists, readFile, realpath } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 
 import { listedPaths, PURGE_PATHS } from "../setup/tools.ts";
@@ -63,4 +63,18 @@ export const trashRoots = async (
 		}),
 	);
 	return [...new Set([await realOr(cwd, log), ...allowed.flat()])];
+};
+
+/** The folders of `dirs` that exist; each gone one is logged once, because every git call in it would fail. */
+export const presentProjects = async (
+	dirs: readonly string[],
+	log: Log,
+): Promise<string[]> => {
+	const found = await Promise.all(dirs.map((dir) => exists(dir)));
+	return dirs.filter((dir, i) => {
+		if (found[i] !== true) {
+			log(`The project folder ${dir} is gone, so the sweep skips it.`);
+		}
+		return found[i] === true;
+	});
 };

@@ -2,16 +2,14 @@ import { expect, test } from "bun:test";
 import { exists, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import {
-	output,
-	outputOr,
-} from "../../plugins/claudetto/hooks/hygiene/trash.ts";
+import { presentProjects } from "../../plugins/claudetto/hooks/hygiene/roots.ts";
+import { output } from "../../plugins/claudetto/hooks/hygiene/trash.ts";
 import {
 	agentWorktrees,
 	projectsOf,
 	worktreeReport,
 } from "../../plugins/claudetto/hooks/hygiene/worktrees.ts";
-import { git, logged, repo } from "./trash.mock.ts";
+import { git, repo } from "./trash.mock.ts";
 
 const INTEGRATED = "agent-a0000000000000001";
 const AHEAD = "agent-a0000000000000002";
@@ -93,18 +91,18 @@ test("a dry run names the worktree and removes nothing, and a project listed twi
 });
 
 // Seen in a dry run: Claude Code's project list names folders under `/tmp` that are gone, and a command cannot start in one.
-test("a listed project whose folder is gone is logged and skipped, and the next project is still judged", async () => {
-	const { root, proj, integrated } = await fleet();
+// Seen in a dry run: each gone folder of the project list logged one failed git call per check, 808 lines in all.
+test("a listed project whose folder is gone is logged once and left out, and the next project stays", async () => {
+	const { root, proj } = await fleet();
 	const gone = join(root, "gone");
+	const lines: string[] = [];
 
-	const report = await worktreeReport(
-		outputOr((line) => logged.push(line)),
-		[gone, proj],
-		true,
-	);
+	const dirs = await presentProjects([gone, proj], (line) => lines.push(line));
 
-	expect(report).toContain(`agent-worktree  ${integrated}  `);
-	expect(logged.join("\n")).toContain(`The git call in ${gone} did not start`);
+	expect(dirs).toEqual([proj]);
+	expect(lines).toEqual([
+		`The project folder ${gone} is gone, so the sweep skips it.`,
+	]);
 });
 
 // Seen in a dry run: 7 records of one project named folders that were gone, and each was reported as a kept worktree of 0 B.
