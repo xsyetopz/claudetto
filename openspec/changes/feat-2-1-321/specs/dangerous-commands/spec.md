@@ -2,7 +2,7 @@
 
 ### Requirement: The Gate Keeps Only What the Rules Do Not Cover
 
-`hooks/tool.check/useBashRules/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`. `writesWhole` SHALL pass an `echo` of `$!`, `$$`, or `$?` alone, which records a value and no file content.
+`hooks/tool.check/useBashRules/rules.ts` SHALL hold only what the generated rules do not cover, and `commandVerdicts` SHALL judge each command by the verdicts that the scenario "The Command Verdicts" lists. The strictest verdict SHALL win, a `deny` before an `ask`. A write into a system folder through a redirect or `tee` SHALL be a patch rule, and each patch rule SHALL name its measured gap in `design.md`.
 
 #### Scenario: The System Path Check
 
@@ -26,8 +26,8 @@
 
 #### Scenario: A Pid Record
 
-- **WHEN** the command is `echo $! > "$TMPDIR/s.pid"`, or `bun run oxlint > "$TMPDIR/ox.log" 2>&1`
-- **THEN** the gate passes it, because it writes a value or a command's output; `printf 'a' > notes.txt` stays denied
+- **WHEN** the command is `echo $! > "$TMPDIR/s.pid"`, an `echo` of `$$` or `$?` alone into a file, or `bun run oxlint > "$TMPDIR/ox.log" 2>&1`
+- **THEN** `writesWhole` passes it, because it writes a value or a command's output and no file content; `printf 'a' > notes.txt` stays denied
 
 #### Scenario: One Command, Two Verdicts
 
