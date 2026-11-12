@@ -250,3 +250,30 @@ test("a turn whose last Bash call was denied is not offered the unfixed fault", 
 	expect(awaited23.block).toBeUndefined();
 	expect(seen.join("\n")).not.toContain("- unfixed:");
 });
+
+const OFFER_REPLIES = [
+	"If you want, I'll read both lists and add the chosen libraries to `design.md` and `tasks.md`.",
+	"Not checked: the 20 held-out branch cases were not rerun with the new wording.",
+	'If you want it settled, paste the case and I will check.\nReply "fix the runner" and I will make it.',
+];
+
+for (const reply of OFFER_REPLIES) {
+	test(`the deferred test names an offer and an unrun check, and "${reply.slice(0, 24)}" blocks once`, async ($: Engine, on: On) => {
+		const seen: string[] = [];
+		lab(on, [user("go on"), used("Read")], found("deferred", reply), seen);
+		const first = await stop($, false, reply);
+		expect(first.block).toBe(VERIFY_BLOCK(["deferred"]));
+		expect(seen[0]).toContain(reply);
+		expect(seen[0]).toContain(
+			"an offer to do work it can do now, made conditional on the user's reply",
+		);
+		expect(seen[0]).toContain(
+			"a check it lists as not run when its own tools could run it",
+		);
+		expect(seen[0]).toContain(
+			"an offer or an unrun check that needs something only the user holds",
+		);
+		const second = await stop($, true, reply);
+		expect(second.block).toBeUndefined();
+	});
+}
