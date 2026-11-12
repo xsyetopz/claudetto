@@ -145,3 +145,15 @@ export async function settle(
 		? { ...answers, ...(await fallback($, set, state, inBand)) }
 		: answers;
 }
+
+/** Whether `set` answers `yes` to any question over `state`. The fallback model reads the state as given, so it is redacted first; a scanner that fails answers `false`, which leaves the caller's own guard in place. */
+export async function anyYes(
+	$: Host,
+	set: QuestionSet,
+	state: State,
+): Promise<boolean> {
+	const safe = await redactedState($, state).catch(() => null);
+	return (
+		safe !== null && Object.values(await settle($, set, safe)).includes("yes")
+	);
+}

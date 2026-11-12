@@ -2,8 +2,7 @@ import type { EngineInterface } from "claude-code";
 
 import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
 import { askFixQuestions } from "../../decider/questions.ts";
-import { redactedState } from "../../decider/redact.ts";
-import { settle } from "../../decider/settle.ts";
+import { anyYes } from "../../decider/settle.ts";
 import { ASK_FIX_DENIED } from "../../texts-gate.ts";
 import { ASK_TOOL } from "../../verify.ts";
 
@@ -24,13 +23,7 @@ export async function askFixCall(
 			)
 			.join("\n"),
 	};
-	// The fallback model reads the state as given, and a setup question can show a secret, so it is redacted first; a scanner that fails leaves the call to its own secret guard.
-	const safe = await redactedState($, state).catch(() => null);
-	if (safe === null) {
-		return next(e);
-	}
-	const answers = await settle($, askFixQuestions(e.questions.length), safe);
-	return Object.values(answers).includes("yes")
+	return (await anyYes($, askFixQuestions(e.questions.length), state))
 		? { deny: ASK_FIX_DENIED }
 		: next(e);
 }

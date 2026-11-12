@@ -1,8 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
 import { SHIPPED_REGISTER } from "../../decider/questions.ts";
-import { redactedState } from "../../decider/redact.ts";
-import { settle } from "../../decider/settle.ts";
+import { anyYes } from "../../decider/settle.ts";
 import { REGISTER_BLOCK } from "../../texts.ts";
 import { claimTurn } from "../../verify.ts";
 
@@ -17,15 +16,10 @@ export async function registerBlock(
 		return undefined;
 	}
 	const turn = claimTurn(await $.session.messages(), denied);
-	// The fallback model reads the state as given, so it is redacted first; a scanner that fails leaves the reply unchecked.
-	const safe = await redactedState($, {
+	const faulty = await anyYes($, SHIPPED_REGISTER, {
 		person_message: turn.user,
 		reply,
 		checks: turn.results.join("\n") || "none",
-	}).catch(() => null);
-	if (safe === null) {
-		return undefined;
-	}
-	const answers = await settle($, SHIPPED_REGISTER, safe);
-	return Object.values(answers).includes("yes") ? REGISTER_BLOCK : undefined;
+	});
+	return faulty ? REGISTER_BLOCK : undefined;
 }
