@@ -174,3 +174,22 @@ Each question set SHALL carry its own thresholds beside its questions. A site SH
 
 - **WHEN** the Decider scores below the current code on the held-out cases of a site
 - **THEN** the site keeps its current code
+
+### Requirement: A Question That Asks Leave to Fix the Agent's Own Defect Is Refused
+
+The plugin SHALL judge, in one Decider call per `AskUserQuestion` call, whether each question asks the user for leave to fix a defect the agent found or caused, and SHALL deny the call when any answer is `yes`. The denial SHALL tell the agent to make the fix, run its check, and report it. A `no`, an `unsettled` answer, a Decider that fails, and a secret scanner that fails MUST let the call through. The question and option labels MUST pass the secret scanner before the Decider reads them.
+
+#### Scenario: A Question About the Agent's Own Bug
+
+- **WHEN** the agent asks whether it should fix a bug it introduced, and the Decider answers `yes`
+- **THEN** the call is denied and the dialog does not open
+
+#### Scenario: A Choice Only the User Can Make
+
+- **WHEN** the agent asks which store should hold a cache, and the Decider answers `no`
+- **THEN** the dialog opens with the question as sent
+
+#### Scenario: A Decider That Gives No Answer
+
+- **WHEN** Jev and the fallback give no answer, or the answer is `unsettled`
+- **THEN** the dialog opens, and one call at most went to the Decider
