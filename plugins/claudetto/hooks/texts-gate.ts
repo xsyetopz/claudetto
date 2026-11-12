@@ -144,3 +144,46 @@ export const gateRepeatedUnexplained = (
 	command: string,
 ): string =>
 	`Auto mode denied this same call ${times} times, and the classifier gave no reason, so there is no fact to act on. Give the user the exact command as \`! ${command}\`, which the user can run in the TUI. Do not send this call again, and do not look for another way to it. Go on with the rest of the work.`;
+
+// Advisor: the tool and command that put one question, with the files the asker names, to a stronger model.
+
+const ADVISOR_TOOL = "advisor";
+
+export const ADVISOR_CALL = "mcp__claudetto__advisor";
+
+export const ADVISOR_SYSTEM = `You advise another model that holds the rest of the work. You see the question and the files below, and nothing else of its session. Answer the question directly and name the file and line behind each claim. Say what you could not tell from the files.`;
+
+const ADVISOR_INPUT_SCHEMA: Record<string, unknown> = {
+	type: "object",
+	properties: {
+		question: {
+			type: "string",
+			description:
+				"The question, with each fact it needs: the advisor sees no session. Keep secrets out; the text is scanned and redacted before it goes.",
+		},
+		files: {
+			type: "array",
+			items: { type: "string" },
+			description: "Paths of the files to send with the question.",
+		},
+	},
+	required: ["question"],
+};
+
+export const ADVISOR_SPEC = {
+	name: ADVISOR_TOOL,
+	description:
+		"Asks Fable, a stronger model, one question about the files you name; it sees them and nothing else of this session. Use it for a hard design or review call.",
+	inputSchema: ADVISOR_INPUT_SCHEMA,
+};
+
+export const ADVISOR_NO_QUESTION = "Send a `question` as non-empty text.";
+export const ADVISOR_BAD_FILES = "Send `files` as a list of paths.";
+export const ADVISOR_DENIED = (path: string): string =>
+	`Nothing was sent: the read rules of this session deny \`${path}\`.`;
+export const ADVISOR_UNREADABLE = (path: string, why: string): string =>
+	`Nothing was sent: \`${path}\` could not be read (${why}).`;
+export const ADVISOR_TOO_BIG = (max: number): string =>
+	`Nothing was sent: the question and files hold more than ${max} characters. Name fewer or smaller files.`;
+export const ADVISOR_FAILED = (why: string): string =>
+	`The advisor gave no answer (${why}).`;

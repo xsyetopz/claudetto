@@ -8,6 +8,8 @@ import {
 	settingsOf,
 } from "../plugins/claudetto-you-should-know/hooks/settings.ts";
 
+// The advisor asks these two beside the side-check models.
+const ADVISOR_MODELS = ["claude-fable-5-2", "claude-mythos-5-2"];
 const ROOT = `${import.meta.dir}/..`;
 const SETTINGS_IMPORT =
 	/import \{[^}]*\bsettingsOf\b[^}]*\} from "\.\/settings\.ts"/u;
@@ -130,7 +132,7 @@ const faultsOf = (call: Call): string[] => {
 	const models = modelsOf(call);
 	if (
 		models.length === 0 ||
-		!models.every((m) => MODELS.some((id) => id === m))
+		!models.every((m) => [...MODELS, ...ADVISOR_MODELS].includes(m))
 	) {
 		faults.push(
 			`${at} model is ${call.fields.get("model") ?? "missing"}, which is not a full ID of ${MODELS.join(", ")}`,

@@ -36,6 +36,7 @@ import {
 	stopState,
 } from "./classic.Stop/useStopChecks/turn.ts";
 import { notify } from "./classic.StopFailure/useStopNotice/notify.ts";
+import { advisor } from "./command.run/useAdvisorCommand/advisor.ts";
 import { reply } from "./command.run/useReplyCommand/reply.ts";
 import { setup } from "./command.run/useSetup/setup.ts";
 import {
@@ -49,8 +50,9 @@ import {
 	surface,
 	surfaceCall,
 } from "./settings.read/useSlimSurface/surface.ts";
-import { DECIDE_SPEC } from "./texts-gate.ts";
-import { REPLY_SPEC } from "./texts.ts";
+import { ADVISOR_SPEC, DECIDE_SPEC } from "./texts-gate.ts";
+import { ADVISOR_COMMAND_SPEC, REPLY_SPEC } from "./texts.ts";
+import { advisorCall } from "./tool.call/useAdvisorTool/advisor.ts";
 import { askFixCall } from "./tool.call/useAskFix/ask-fix.ts";
 import { budgetRunCall } from "./tool.call/useBudgetRun/budget-run.ts";
 import {
@@ -102,6 +104,7 @@ const registerInner = (on: On, options: PluginOptions, state: State): void => {
 	notify(on, options);
 	gate(on, state.gate);
 	reply(on);
+	advisor(on);
 };
 
 const checkGuards = (
@@ -135,6 +138,7 @@ const callGuards = (
 		(at, step) => pinCall(at, step, state.pinned),
 		(at, step) => askFixCall($, at, step),
 		(at, step) => delegationCall(at, step),
+		(at, step) => advisorCall($, at, step),
 		(at, step) => decideCall($, at, step),
 		(at, step) => sandboxGitCall($, at, step, state.sandboxGit),
 		(at, step) => gateCall($, at, step, state.gate),
@@ -159,6 +163,8 @@ const registerTools = (on: On): void => {
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
 		await $.command.register(REPLY_SPEC);
+		await $.command.register(ADVISOR_COMMAND_SPEC);
+		await $.tool.register(ADVISOR_SPEC);
 		if ((await typesafeKey($)) !== "") {
 			await $.tool.register(DECIDE_SPEC);
 		}
