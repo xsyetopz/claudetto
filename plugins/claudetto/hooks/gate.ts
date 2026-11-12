@@ -12,6 +12,7 @@ export const gateState = (options: PluginOptions): GateState => ({
 	walls: {
 		paths: listOption(options, "protectedPaths"),
 		files: newRecreation(),
+		worktrees: new Set(),
 	},
 	memory: { denials: {} },
 });
@@ -29,6 +30,12 @@ export const gate = (on: On, { walls, memory }: GateState): void => {
 		if (open.length > 0) {
 			$.ui.log(walledUnguarded(open));
 		}
+		return next(e);
+	});
+
+	// Fires before the folder exists; `name` gives `.claude/worktrees/<name>` and the branch `worktree-<name>`, for an isolated agent and for `EnterWorktree`. Kept here, so compaction does not lose it.
+	on("classic.WorktreeCreate", (_$, e, next) => {
+		walls.worktrees.add(e.name);
 		return next(e);
 	});
 

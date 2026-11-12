@@ -154,6 +154,26 @@ The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take
 - **WHEN** the agent runs `cat f.ts`, `tail -n 5 f.ts`, or `sed -n '$p' f.ts`
 - **THEN** the denial names `f.ts` and gives no `offset`
 
+### Requirement: The Session Removes Only What It Made
+
+The gate SHALL deny `git worktree remove` of a path that Claude Code's `WorktreeCreate` event did not name in this session. The event's `name` gives the folder `.claude/worktrees/<name>` and the branch `worktree-<name>`, for an isolated agent (`agent-<agentId>`) and for `EnterWorktree` alike. The gate SHALL keep these names in memory, not read them from shell text or from the transcript, so compaction does not lose them. The denial SHALL tell the agent to leave it or ask the person.
+
+#### Scenario: A Worktree of Another Session
+
+- **WHEN** the agent runs `git worktree remove ../other` and no `WorktreeCreate` event of the session names it
+- **THEN** the call is denied as not owned
+- **AND** the lab test is `gate/worktrees.test.ts`
+
+#### Scenario: A Worktree Claude Code Made for an Agent
+
+- **WHEN** a `WorktreeCreate` event named `agent-a1b2c3` came, and the agent runs `git worktree remove .claude/worktrees/agent-a1b2c3` or `git branch -D worktree-agent-a1b2c3`
+- **THEN** the call passes as owned
+
+#### Scenario: A Compacted Transcript
+
+- **WHEN** the transcript no longer holds the call that made a worktree
+- **THEN** the worktree is still owned
+
 ## ADDED Requirements
 
 ### Requirement: A Loop That Polls With No Pause Is Denied

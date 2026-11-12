@@ -9,10 +9,11 @@ import { movesOf, protectedChanges } from "./switch.ts";
 import { deny, fieldOf, type Verdict } from "./verdict.ts";
 import { namedPaths, spellsWall, walledVerdict } from "./walled.ts";
 
-/** The protected paths and what the session saw of the files, which a verdict reads. */
+/** The protected paths, what the session saw of the files, and the names of the worktrees Claude Code made in it, which a verdict reads. */
 export interface Walls {
 	paths: readonly string[];
 	files: Recreation;
+	worktrees: Set<string>;
 }
 
 /** What the gate reads of the engine, built where `$` is in scope. */
@@ -117,7 +118,7 @@ export async function ownVerdict(
 		return moved;
 	}
 	if ((tool === "Bash" || tool === "Monitor") && command !== undefined) {
-		return commandVerdict($, command);
+		return commandVerdict($, command, walls.worktrees);
 	}
 	const path = fieldOf(input, "file_path") ?? fieldOf(input, "notebook_path");
 	if (!isWriter(tool) || path === undefined) {

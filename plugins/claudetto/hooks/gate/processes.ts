@@ -10,7 +10,8 @@ const TMP_BASE =
 	/^(?:(?:\/private)?\/tmp(?:\/claude(?:-[\d*?]+)?)?|\$\{?TMPDIR\}?)(?:\/[*?.]*)*$/u;
 const DOTDOT = /(?:^|\/)\.\.(?:\/|$)/u;
 const AGENT_ID = /\bagentId: (\w+)/u;
-const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/u;
+const WORKTREE_PATH = /(?:^|\/)\.claude\/worktrees\/([^/]+)\/?$/u;
+const WORKTREE_BRANCH = "worktree-";
 
 /** What this session owns: a started process, a created worktree path, a created branch. */
 export interface Owns {
@@ -100,20 +101,17 @@ export const createdOf = (past: Past[]) => {
 	};
 };
 
-/** What the non-error calls of this session made or started. The caller adds the branches the person asked to delete. */
-export const ownsOf = (past: Past[]): Owns => {
-	const { paths, branches, workers } = createdOf(past);
-	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
+/** What this session owns: the processes and branches its non-error calls made or started, and the worktrees `made` names, which Claude Code's `WorktreeCreate` events gave. The caller adds the branches the person asked to delete. */
+export const ownsOf = (past: Past[], made: ReadonlySet<string>): Owns => {
+	const { branches } = createdOf(past);
 	return {
 		pid: startedBy(past),
 		pids: () => startedPids(past),
-		path: (path) =>
-			paths.includes(path) ||
-			entered.some((t) => t.text?.includes(path) === true) ||
-			workers.some((id) => WORKER_PATH.exec(path)?.[1] === id),
+		path: (path) => made.has(WORKTREE_PATH.exec(path)?.[1] ?? ""),
 		branch: (name) =>
 			branches.includes(name) ||
-			workers.some((id) => name === `worktree-agent-${id}`),
+			(name.startsWith(WORKTREE_BRANCH) &&
+				made.has(name.slice(WORKTREE_BRANCH.length))),
 		asked: NOBODY.asked,
 	};
 };
@@ -136,7 +134,7 @@ export const forceDeleted = (c: Command): string[] | undefined => {
 		: undefined;
 };
 
-/** Denies `rm` of a temp base itself or of a path that leaves one through `..`, and `git worktree remove` of a path this session did not create. */
+/** Denies `rm` of a temp base itself or of a path that leaves one through `..`, and `git worktree remove` of a worktree no `WorktreeCreate` event of this session named. */
 export const ownedVerdict = (
 	name: string,
 	args: string[],

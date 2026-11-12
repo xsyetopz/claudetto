@@ -124,7 +124,7 @@ export const CLEANUP_LEFT = (left: readonly string[]): string =>
 export const STALE_TASKS = (lines: readonly string[]): string =>
 	`These background tasks of this agent still run, and once it stops nothing reads them; a monitor that outlives the reply wakes the session later with nothing to do:\n${lines.join("\n")}\nStop each with \`TaskStop\`. If your next step waits on one, name its id in your reply with what you wait for.`;
 export const gateWorktreeRemove = (path: string): string =>
-	`${path} is not a worktree this session created: no earlier successful \`git worktree add\` or EnterWorktree of this session names it. Leave it. Remove only a worktree this session added, or ask the user to remove this one.`;
+	`${path} is not a worktree this session created: Claude Code made no worktree of that name in this session, for an agent with isolation or for EnterWorktree. Leave it. Remove only a worktree Claude Code made in this session, or ask the user to remove this one.`;
 export const GIT_CLOSED =
 	'Sandbox set its rules for `.git` when this session started, and this folder held no repository then, so each git write here fails inside sandbox with "Operation not permitted" until Claude Code restarts. Tell user once to restart Claude Code in this folder with `claude --continue`. Until then, run each git write with `dangerouslyDisableSandbox: true`.';
 export const GATE_ENDLESS_WAIT =

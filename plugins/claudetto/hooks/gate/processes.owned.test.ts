@@ -22,45 +22,16 @@ denied("git worktree remove /w/old", gateWorktreeRemove("/w/old"));
 denied("git worktree remove /w/old", gateWorktreeRemove("/w/old"), [
 	{ command: "git worktree add /w/old", text: "", isError: true },
 ]);
-allowed("git worktree remove /w/new", [
-	{ command: "git worktree add -b feat /w/new", text: "" },
-]);
-// ISSUES 2026-11-09 item 20: the add named its path through a variable set earlier in the same call.
-allowed("git worktree remove --force $TMPDIR/m", [
-	{ command: "M=$TMPDIR/m && git worktree add -q -b x $M main", text: "" },
-]);
-allowed("git worktree remove /w/v", [
-	{ command: ['D="/w/v"; git worktree add "$', '{D}"'].join(""), text: "" },
-]);
 denied("git worktree remove $TMPDIR/n", gateWorktreeRemove("$TMPDIR/n"), [
 	{ command: "M=$TMPDIR/m && git worktree add $M", text: "" },
 ]);
-allowed("git worktree remove --force /w/ent", [
-	{ tool: "EnterWorktree", text: "Created worktree at /w/ent", command: "" },
-]);
-const WORKER = {
-	tool: "Agent",
-	text: "Async agent launched successfully.\nagentId: a1b2c3 (internal ID)",
-	command: "",
-};
-allowed("git worktree remove --force .claude/worktrees/agent-a1b2c3", [WORKER]);
-denied(
-	"git worktree remove .claude/worktrees/agent-zz9",
-	gateWorktreeRemove(".claude/worktrees/agent-zz9"),
-	[WORKER],
-);
-asks("git branch -D worktree-agent-zz9", [WORKER]);
-allowed("git branch -D worktree-agent-a1b2c3", [WORKER]);
 
 asks("git branch -D theirs");
 asks("git branch -d --force theirs", [
 	{ command: "git branch theirs", text: "", isError: true },
 ]);
 
-// Owned passes with no prompt; unowned twins and mixed targets keep their verdicts.
-allowed("git worktree remove --force /w/new", [
-	{ command: "git worktree add /w/new", text: "" },
-]);
+// Unowned twins and mixed targets keep their verdicts.
 denied("git worktree remove --force /w/old", gateWorktreeRemove("/w/old"));
 allowed("kill -9 4242", [{ command: "sleep 60 & echo $!", text: "4242" }]);
 asks("git branch -D mine theirs", [{ command: "git branch mine", text: "" }]);

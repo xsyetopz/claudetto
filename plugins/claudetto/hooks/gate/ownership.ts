@@ -23,9 +23,16 @@ const kept = async (
 };
 
 /** What this session owns, read from its transcript when `command` needs it, with the foreign branches the person asked to delete. */
-async function ownershipOf($: EngineInterface, command: string) {
+async function ownershipOf(
+	$: EngineInterface,
+	command: string,
+	worktrees: ReadonlySet<string>,
+) {
 	const messages = OWNED.test(command) ? await $.session.messages() : [];
-	const own = ownsOf(messages.flatMap((m) => m.toolUses));
+	const own = ownsOf(
+		messages.flatMap((m) => m.toolUses),
+		worktrees,
+	);
 	const said = messages
 		.filter((item) => isPersonMessage(item))
 		.map((m) => m.text);
@@ -52,12 +59,13 @@ async function presentFiles($: EngineInterface): Promise<Set<string>> {
 export async function commandVerdict(
 	$: EngineInterface,
 	command: string,
+	worktrees: ReadonlySet<string>,
 ): Promise<Verdict | undefined> {
 	const present = await presentFiles($);
 	const own = judge(
 		command,
 		(f) => present.has(f),
-		await ownershipOf($, command),
+		await ownershipOf($, command, worktrees),
 	);
 	return own === undefined
 		? undefined
