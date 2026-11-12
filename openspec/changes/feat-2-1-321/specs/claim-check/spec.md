@@ -74,3 +74,19 @@ The `credited` fault SHALL count each answer the person gave through `AskUserQue
 
 - **WHEN** neither a typed message nor a popup answer holds the choice the reply credits to the person
 - **THEN** `credited` blocks once, as before
+
+## ADDED Requirements
+
+### Requirement: A Paid Tool Runs on the Subscription Login
+
+Each tool in `tools/` that starts a paid Claude Code run SHALL drop `ANTHROPIC_API_KEY` from the run's environment, and the paid handover probe SHALL ask for `CLAUDE_CODE_OAUTH_TOKEN` only. No tool or plugin text SHALL tell the person to set `ANTHROPIC_API_KEY`.
+
+#### Scenario: Key in the Shell
+
+- **WHEN** the person's shell exports `ANTHROPIC_API_KEY` and a paid tool launches `claude`
+- **THEN** the child's environment holds no `ANTHROPIC_API_KEY`
+
+#### Scenario: Paid Probe with Only a Key
+
+- **WHEN** `--paid` runs with `ANTHROPIC_API_KEY` set and no `CLAUDE_CODE_OAUTH_TOKEN`
+- **THEN** the probe stops with an error that names `CLAUDE_CODE_OAUTH_TOKEN`
