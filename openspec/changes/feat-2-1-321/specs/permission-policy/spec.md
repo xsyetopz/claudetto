@@ -78,7 +78,39 @@ The gate SHALL ask when a call creates a file that this session saw (by `Read`, 
 - **THEN** the call passes with no question
 - **AND** the lab tests are `gate.vanish.test.ts`, "a `grep -v …` passes, since its pattern is no path the engine reaches", one per reported command
 
+### Requirement: An Unreadable Command Asks
+
+When the gate cannot parse a `Bash` command, it SHALL still apply the rules that read the whole text, and SHALL otherwise ask, with a text that says a person must approve the command. A command whose program is `[` or `[[` SHALL be read as the shell's test command, and the gate SHALL NOT ask about it for that word.
+
+#### Scenario: Unreadable
+
+- **WHEN** a command cannot be parsed and matches no rule that reads the whole text
+- **THEN** the gate asks
+- **AND** the lab test is `gate/rules.test.ts`, "an unreadable command asks"
+
+#### Scenario: A Bracket Test
+
+- **WHEN** the agent runs `[ -f x ] && echo y`, `[[ -f x ]] && echo y`, or `if [ -d node_modules ]; then echo y; fi`
+- **THEN** the gate has no objection
+- **AND** the lab tests are `gate/rules.test.ts`, "passes …", one per command
+
 ## ADDED Requirements
+
+### Requirement: A Loop That Polls With No Pause Is Denied
+
+The gate SHALL deny a `Bash` or `Monitor` command that holds a `while` or `until` loop whose body runs only `:` or `true` and whose condition runs no `sleep`, `read`, or `wait`, in the foreground and in the background. The denial SHALL tell the agent to put a `sleep` in the body and to give the loop a time limit. A `for` loop and a loop whose body runs any other program SHALL pass this rule.
+
+#### Scenario: A Body That Runs Nothing
+
+- **WHEN** the agent runs `until grep -q x f; do :; done`, with or without `run_in_background`
+- **THEN** the call is denied
+- **AND** the lab tests are `gate/processes.test.ts`, "a foreground loop whose body runs nothing is denied" and "a background loop whose body runs nothing is denied"
+
+#### Scenario: A Loop That Pauses or Ends by Itself
+
+- **WHEN** the agent runs `until grep -q x f; do sleep 1; done`, `until sleep 2 && grep -q x f; do :; done`, `while read -r line; do :; done < f`, or `for i in 1 2 3; do :; done`
+- **THEN** the call passes
+- **AND** the lab tests are `gate/processes.test.ts`, "… passes, since it pauses or ends by itself", one per command
 
 ### Requirement: A Temp Base Itself Stays
 
