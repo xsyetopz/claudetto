@@ -12,7 +12,7 @@ Tunes Claude Code for coding at the lowest token cost. It uses only Claude Code'
 - Checks each final reply before the turn ends, and sends back one that defers work without naming a blocker.
 - Cleans up at the end of a task: the agent's own worktrees and branches, and any background task nothing will read.
 - Sweeps idle entries of Claude Code's temp folder and unused build folders, and local branches that `git cherry` finds in the default branch, at each session start, resume, clear, and compaction, in the project and in each folder Mole's `purge_paths` lists, then runs `mo clean` for user caches; `hooks/classic.SessionStart/useHygieneSweep/trash.toml` lists the build folders, and `.claude/claudetto/trash.toml` overrides it per project. `claudetto-hygiene --remote --dry-run` names the `origin` branches whose pull request merged, and `--remote` without `--dry-run` deletes them; no hook passes `--remote`.
-- Ships the agents `search` (read-only search), `work` (default worker), and `plan` (planning), the `docs` skill, and the Concise output style.
+- Ships the agents `search` (read-only search), `work` (default worker), `plan` (planning), and `sweep` (read-only defect review on `fable`), the `docs` skill, and the Concise output style.
 
 ## Install
 

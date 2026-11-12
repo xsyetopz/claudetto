@@ -50,6 +50,8 @@ const refused: [string | undefined, boolean | undefined][] = [
 	["search", true],
 	["claudetto:search", undefined],
 	["claudetto:plan", undefined],
+	["claudetto:sweep", undefined],
+	["sweep", true],
 ];
 
 for (const [type, background] of refused) {

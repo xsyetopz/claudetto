@@ -13,11 +13,12 @@ const TYPES: ReadonlyMap<string, string> = new Map([
 	["claude", "work"],
 	["search", "search"],
 	["plan", "plan"],
+	["sweep", "sweep"],
 	["work", "work"],
 ]);
 
-// search and plan return one report; a plugin agent otherwise runs in the background.
-const ONE_SHOT: ReadonlySet<string> = new Set(["search", "plan"]);
+// search, plan, and sweep return one report; a plugin agent otherwise runs in the background.
+const ONE_SHOT: ReadonlySet<string> = new Set(["search", "plan", "sweep"]);
 
 // The claudetto agent that serves a call's `subagent_type`; undefined for `fork` and for a type claudetto does not own.
 const agentFor = (type: string | undefined): string | undefined => {

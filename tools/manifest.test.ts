@@ -49,7 +49,7 @@ test("the setup command file holds no text beyond its description", async () => 
 });
 
 // The `subagentPromptCacheTtl` setting outranks frontmatter `cacheTtl`, so setup's setting is the one place the TTL is set.
-for (const name of ["search", "plan", "work"]) {
+for (const name of ["search", "plan", "sweep", "work"]) {
 	test(`the ${name} agent sets no prompt cache TTL`, async () => {
 		const text = await file(
 			`${import.meta.dir}/../plugins/claudetto/agents/${name}.md`,
