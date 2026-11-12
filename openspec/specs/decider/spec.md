@@ -1,7 +1,7 @@
 # decider Specification
 
 ## Purpose
-TBD - created by archiving change feat-2-1-321. Update Purpose after archive.
+One module asks every typed question claudetto's checks need, with Jev first when a key is set and Haiku as the fallback, and the calling code decides from the thresholded answers.
 
 ## Requirements
 

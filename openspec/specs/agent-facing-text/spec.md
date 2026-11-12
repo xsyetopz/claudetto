@@ -1,7 +1,7 @@
 # agent-facing-text Specification
 
 ## Purpose
-TBD - created by archiving change feat-2-1-321. Update Purpose after archive.
+Every text claudetto puts in front of a model, such as a tool or agent description, a hook text, or a model call's prompt, stays short, names its model and budget, keeps fixed text ahead of session text, and states each action with its reason.
 
 ## Requirements
 

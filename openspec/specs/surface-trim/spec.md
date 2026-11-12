@@ -144,7 +144,7 @@ Setup SHALL write the 16 flags of D18 and `CLAUDE_CODE_THRIFTY_SONIC=0` (D14), a
 
 ### Requirement: Built-in Agents Are Withheld and Mapped
 
-The system SHALL withhold each agent whose `source` is `built-in` with `agent.offer`, and SHALL map an `Agent` call's `subagent_type` to a claudetto agent: `Explore` to `claudetto:search`, `Plan` to `claudetto:plan`, `general-purpose`, `claude`, or a missing type to `claudetto:work`, and a bare name of the four to its `claudetto:` form. A call whose type is not the mapped `claudetto:` name SHALL be denied with the exact form to send, never rewritten, because a rewritten input voids auto mode's review of every call in the response. A type claudetto does not map, such as `fork` or `statusline-setup`, SHALL pass through unchanged.
+The system SHALL withhold each `built-in` agent with `agent.offer` and SHALL map an `Agent` call's `subagent_type`: `Explore` to `claudetto:search`, `Plan` to `claudetto:plan`, `general-purpose`, `claude`, or none to `claudetto:work`, and a bare name of the four to its `claudetto:` form. A call that needs a mapping SHALL be denied with the exact form to send, never rewritten, since a rewrite voids auto mode's review of the whole response. An unmapped type, such as `fork`, SHALL pass through.
 
 #### Scenario: An Untyped Call
 
