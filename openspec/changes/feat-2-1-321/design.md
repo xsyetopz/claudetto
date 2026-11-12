@@ -835,6 +835,8 @@ Each row gives the hypothesis, the prediction, the command, and the result. Comm
 | P205 | 9.38: the event lists. Hypothesis: the docs and the type file agree. Prediction: 33 classic events in both. | Fetch `https://code.claude.com/docs/en/hooks` and read `plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts` (`EngineEventOf`); read each plugin's `on(` and `hooks/hooks.json`. | Confirmed for the 33 classic events; the type file holds 44 mod events and the docs add `settings.read` and `classic.*`. Registered events are in the table below. Whether an `$` op event such as `model.complete` is hookable is a hypothesis. |
 | P206 | 9.38: a hook use the plugins lack, in the twelve R53 repositories. Hypothesis: most repositories use the same few events. Prediction: `PreToolUse`, `PostToolUse`, and `Stop` lead. | `curl` of each `https://codeload.github.com/<repo>/tar.gz/HEAD` into its own empty folder, read by `events-in-repos.ts` (a regex for `"<Event>": [` in `json`, `md`, `yaml`, `toml`). Nothing extracted was run; no instruction in it was followed. | Confirmed: `PreToolUse` and `PostToolUse` lead. Five repositories hold no hook config the regex found (feiskyer, Pantheon, hesreallyhim, VoltAgent, karanb192), and ykdojo holds one `Stop` mention. Uses are in the repository table below. |
 | P207 | 9.38: the earliest event per cause. Hypothesis: for most of C1 to C53 an event before `Stop` sees the cause. Prediction: yes for about three in four. | Read of each cause against the event semantics in the docs; no run. | Hypothesis only, no run. The column is in the cause table below. |
+| P208 | 9.38: whether `MessageDisplay` can ask the model for a new reply. Hypothesis: it is display-only, as the type file says, so a `block` it returns changes nothing. Prediction: one request in the fake API's log, the hook's `displayContent` on screen, and a `Stop` hook that still runs. | A fake Messages API (`tools/fake-api/server.ts`) on a free port, `claude -p "say hi" --settings <file> --setting-sources "" --no-session-persistence` (2.1.322, `ANTHROPIC_BASE_URL` set, no model call paid) with a `MessageDisplay` command hook that returns `{"decision":"block","reason":...,"hookSpecificOutput":{"displayContent":"REWRITTEN"}}` and a `Stop` hook, both logging their event name. | Confirmed: the output was `REWRITTEN`, the hooks ran in the order `MessageDisplay`, `Stop`, and the fake API's log holds one request. `MessageDisplay` rewrites the screen and cannot make the model write again. |
+| P209 | 9.38: the Stop-time checks and the earliest event that can act. Hypothesis: a check of the final reply cannot move, since the only earlier event that reads reply text is display-only (P208). Prediction: no check moves. | Read of `plugins/claudetto/hooks/limits/stop.ts`, `grade.ts`, `slices.ts` and `texts-grade.ts` against the event types. | Hypothesis held by the read and P208; no lab ran for a moved check because none moved. The table is under the cause table. |
 | P180 | 9.37, C41: a rule file with `paths` frontmatter loads after the first read of a matching file, mid-turn, and a file with no `paths` loads at the start. Prediction: the first request holds the rule with no `paths` in message 0 and the others only in a later message. | `$TMPDIR/probe-321/p180-setup.ts` made a project with `.claude/rules/` files (`paths: ["**/*"]`, `paths: ["**/*.md"]`, none) and the same in the user config; `PROBE_SCRIPT` had the fake model `Read` `a.txt`, then `b.md`; `PROBE_EXTRA='["--setting-sources","user,project","--permission-mode","bypassPermissions"]' bun fake-run.ts p180`; `an.ts` printed where each marker sits in each request | Confirmed. Request 0 (2 messages): the two no-`paths` rules in message 0 (user). Request 1: the `**/*` rules (project and user) appear in message 3, the result of the `a.txt` read. Request 2: the `**/*.md` rule appears in message 5, the result of the `b.md` read. No `paths` rule is in request 0, and none reaches the system prompt. |
 | P181 | 9.37, C41: the stored sessions that held the rules show late arrival and which rules were broken. Prediction: most sessions got the rules after a tool result, and a rule about code habits was broken in some. | `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/*.jsonl`: `$TMPDIR/probe-321/sessions.ts` found the 22 of 57 sessions holding the text of `useLeastCode`, and per session the position of that text, the `Edit` and `Write` calls to code files, the added `//` line comments, the added `=== undefined` or `=== null` guards, and the replies that follow an edit and name "edge case" | Confirmed for arrival: in 17 of 22 sessions the rule text came right after a tool result, never at the start. Broken: `useEdgeCaseReport` (8 of 1,473 replies after an edit name an edge case) and `noNarratingComments` (218 added line comments in 1,610 code edits). Not decidable from the transcript: `noImpossibleStateGuards` (31 added null guards, whether each is at a trust boundary is a judgment), `noUnrequestedEdits`, and `useLeastCode`. The counts are heuristics over text, so a hypothesis about a rule's breach and a measure of its arrival. No hook decides either broken rule without a word list, so both are deleted. |
 | P182 | 9.35, C37: the engine's finish notice reaches the agent with the plugin on and off. Prediction: both arms get a `<task-notification>` after a background `Bash` ends. | `PROBE_SCRIPT` had the fake model run `Bash {command: "sleep 2; echo BGDONE_MARK", run_in_background: true}`, then `Bash "sleep 5; echo fg"`, then answer; `bun fake-run.ts p182-off` and `p182-on <worktree>/plugins/claudetto` with `PROBE_TURNS=6` and `bypassPermissions`; `an.ts` looked for the notice in each request | Confirmed for both arms: the request after the foreground wait holds a message "automated background-task event" with the task's finish notice, and the start result reads "You will be notified when it completes". With the plugin on there are 7 requests (4 main), and the notice is in 2 of them. No hook of the plugin drops or rewrites it, and the plugin has no `monitor` tool since 10.3. |
@@ -967,7 +969,7 @@ Registered by the plugins:
 
 Classic events no plugin registers: Setup, UserPromptExpansion, PreToolUse, PostToolUse, PostToolBatch, MessageDisplay, SubagentStart, TaskCreated, TaskCompleted, TeammateIdle, InstructionsLoaded, ConfigChange, CwdChanged, DirectoryAdded, FileChanged, WorktreeCreate, WorktreeRemove, PreCompact, PostCompact, PreModelSwitch, PostModelSwitch, Elicitation, ElicitationResult, SessionEnd (`session.end` is the mod form and only you-should-know uses it). `tool.check` fires after PreToolUse and before the permission prompt, so it stands where PreToolUse would. Mod events in the type file no plugin registers: prompt.fill, prompt.suggest, prompt.edit, prompt.change, prompt.autocomplete, prompt.mention, config.set, config.describe, telemetry.log, telemetry.mark, attribution.text, session.receive, session.append, session.send, session.attach, session.detach, plugin.register, engine.create, ui.resolve, ui.press, ui.input, ui.select, ui.message, ui.fault, ui.scroll, ui.focus.
 
-The earliest event that sees each cause. All rows are hypotheses from the event semantics (P207); none ran. "None" means no event sees the fault.
+The earliest event that sees each cause and can act on it. The rows are hypotheses from the event semantics (P207); the `MessageDisplay` rows were corrected by a run (P208), which showed that event cannot ask the model for a new reply. "None" means no event sees the fault.
 
 | Cause | Earliest event | Cause | Earliest event |
 |---|---|---|---|
@@ -976,12 +978,12 @@ The earliest event that sees each cause. All rows are hypotheses from the event 
 | C3 | none (the plugin's writers: ui.render) | C30 | tool.check |
 | C4 | prompt.compose | C31 | prompt.submit |
 | C5 | settings.read | C32 | tool.check on Write |
-| C6 | settings.read | C33 | MessageDisplay |
-| C7 | settings.read | C34 | MessageDisplay |
+| C6 | settings.read | C33 | classic.Stop (MessageDisplay sees the text and cannot act, P208) |
+| C7 | settings.read | C34 | classic.Stop (MessageDisplay sees the text and cannot act, P208) |
 | C8 | tool.check | C35 | tool.check |
 | C9 | tool.check | C36 | agent.spawn |
-| C10 | MessageDisplay | C37 | PostToolUse on Bash |
-| C11 | MessageDisplay | C38 | tool.check |
+| C10 | classic.Stop (MessageDisplay sees the text and cannot act, P208) | C37 | PostToolUse on Bash |
+| C11 | classic.Stop (MessageDisplay sees the text and cannot act, P208) | C38 | tool.check |
 | C12 | tool.check on AskUserQuestion | C39 | tool.check on run_in_background |
 | C13 | tool.check | C40 | prompt.submit |
 | C14 | tool.call (the side check's input) | C41 | InstructionsLoaded |
@@ -990,11 +992,11 @@ The earliest event that sees each cause. All rows are hypotheses from the event 
 | C17 | prompt.compose | C44 | SubagentStop, WorktreeRemove |
 | C18 | session.start | C45 | tool.check |
 | C19 | tool.check | C46 | none in the docs (a pull-request merge); SessionEnd for local branches |
-| C20 | tool.check | C47 | MessageDisplay |
+| C20 | tool.check | C47 | classic.Stop (MessageDisplay sees the text and cannot act, P208) |
 | C21 | tool.check | C48 | tool.describe |
 | C22 | agent.spawn | C49 | prompt.submit |
 | C23 | PostToolUse on Write | C50 | tool.check |
-| C24 | prompt.context | C51 | MessageDisplay |
+| C24 | prompt.context | C51 | classic.Stop (MessageDisplay sees the text and cannot act, P208) |
 | C25 | tool.check | C52 | tool.call (the side check) |
 | C26 | none for growth; tool.check at start | C53 | tool.check on Bash env |
 | C27 | PostToolUse | | |
@@ -1014,6 +1016,20 @@ The twelve R53 repositories, read as untrusted data. Each use below is one the p
 | Hook on session end and subagent start | SessionEnd, SubagentStart | https://github.com/Druthulu/ProjectArchitect/blob/HEAD/project-architect-3.0/settings/user.snippet.json |
 | Example hooks for PreToolUse, PostToolUse, session start and end, notification | PreToolUse, PostToolUse, SessionEnd | https://github.com/FlorianBruniaux/claude-code-ultimate-guide/blob/HEAD/examples/hooks/README.md |
 | Hook on a failed tool call | PostToolUseFailure | https://github.com/davila7/claude-code-templates/blob/HEAD/cli-tool/components/hooks/quality-gates/tdd-gate.json |
+
+The Stop-time checks, each with the earliest event that sees its fault and can act on it (P209). `classic.Stop` is where `stopHooks` and `slices` register; `SubagentStop` holds the named-files check.
+
+| Stop-time check | Fault | Earliest event that can act | Stays at Stop because |
+|---|---|---|---|
+| Stall rule (`stallStop`) | A stretch since the last Stop wrote no file and the block would continue it | `classic.Stop` | It needs the end of the stretch; no earlier event knows the stretch is over |
+| Agree opener (`AGREE_OPENER`) | The reply opens with "You're right" or the like | `MessageDisplay` sees the first line; `classic.Stop` acts | `MessageDisplay` only rewrites the screen (P208), so a reply the model must write again needs a block, and a block exists at `Stop` |
+| Named files (`MISSING_FILES`) | The reply names a path that is not on disk | `classic.Stop` | The reply text is final only at its last flush, and only a block makes the model correct it; the same check at `SubagentStop` bounds the lead's input |
+| Command form and open items (`COMMAND_FORM`, `ASK_FORM`) | A stray, headless, or doubled `! <command>` bullet; a question in text | `classic.Stop` | The same: a fault of the final reply that only a block corrects |
+| Graded reply (`gradeBlock`: `unchecked`, `credited`, `rules`, `fallback`, `unseen`, `unfixed`, `deferred`, `options`) | A claim, a credit, an offer, or a plain-text choice in the final reply | `classic.Stop` | Each code grades the final reply against the turn's tool results; `PostToolUseFailure` sees a failed call (`unfixed`) but the fault is the reply that does not rerun it, so a hint there would cost tokens on every failure and still leave the reply unchecked |
+| Slice commit (`SLICE_COMMIT`) | Files the agent wrote are still uncommitted at the end of the turn | `classic.Stop` | `PostToolUse` on a write cannot tell whether the slice is finished, and `TaskCompleted` fires only for a task list the agent may not keep |
+| Background-task list (`STOP_TASKS`) | A background task still runs when the turn ends | `classic.Stop` | The list is a fact of the turn's end |
+
+A `turn.step` hook can read a step's `answer` and call `next` again for a new response (type file, `TurnStepResult`), which would move a reply check one event earlier. Hypothesis, no run: the engine has already streamed the first text, so the screen would hold both copies, the fault C47 measured (P130), and the retry costs the same request a `Stop` block costs. No check moved on this ground.
 
 No repository tested holds a hook for a pull-request merge. The repositories feiskyer/claude-code-settings, Pantheon-Security/medusa, hesreallyhim/awesome-claude-code, VoltAgent/awesome-claude-code-subagents, and karanb192/awesome-claude-code-mods yielded no hook config by the regex; this is a limit of the regex (a hook written as code or in another format would not match), so it is not a finding of absence.
 
