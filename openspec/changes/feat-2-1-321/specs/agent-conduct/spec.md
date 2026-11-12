@@ -8,7 +8,7 @@ The root prompt (`texts.ts`) SHALL tell the model to weigh a disputed claim as a
 
 - **WHEN** the user disputes the last reply and the check shows the reply was wrong
 - **THEN** the reply opens with the corrected fact
-- **AND** the lab test is `manifest.test.ts`, which holds the byte cap of the root prompt
+- **AND** the lab test is `useSlimSurface/surface.test.ts`, which caps the root prompt at the character count of the stock lean prompt's body (https://clawdipedia.cc/prompts/defaults/default-lean), and the cap follows that page when its size changes
 
 #### Scenario: A Waited-On Task
 

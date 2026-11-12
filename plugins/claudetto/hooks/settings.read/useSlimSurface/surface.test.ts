@@ -15,10 +15,13 @@ import {
 	skillOverridesFor,
 } from "./surface.ts";
 
-const bytes = (text: string): number => new TextEncoder().encode(text).length;
 const textOf = (tool: string): string => TOOL_TEXTS[tool] ?? "";
 
-test("the root prompt is one shared section within 7,001 bytes", async ($: Engine, on: On) => {
+// The body of the stock lean prompt, `system[2]`, as https://clawdipedia.cc/prompts/defaults/default-lean
+// measures it for Claude Code 2.1.322 and Opus 5.5. When that page's size changes, this number follows it.
+const LEAN_BODY_CHARS = 5788;
+
+test("the root prompt is one shared section no longer than the stock lean body", async ($: Engine, on: On) => {
 	on("prompt.compose", () => ({
 		sections: [{ id: "intro", text: "The default intro.", scope: "shared" }],
 	}));
@@ -33,7 +36,7 @@ test("the root prompt is one shared section within 7,001 bytes", async ($: Engin
 	expect(out.sections).toEqual([
 		{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" },
 	]);
-	expect(bytes(ROOT_PROMPT)).toBeLessThanOrEqual(7001);
+	expect(ROOT_PROMPT.length).toBeLessThanOrEqual(LEAN_BODY_CHARS);
 });
 
 test("the /init interview fits 1,144 chars", () => {
