@@ -119,6 +119,41 @@ The gate SHALL deny a test, lint, type, or build check piped into `tail`, `head`
 - **WHEN** the agent runs `bun test && git commit -m x`, `set -e; bun test; git commit -m x`, or `for p in a b; do bun test $p || exit 1; done; git commit -m x`
 - **THEN** the command runs
 
+### Requirement: The Read Redirect Parses Only a File Operand
+
+The redirect that sends `cat`, `head`, `tail`, and `sed -n` to `Read` SHALL take as `file_path` only an operand that is no option or `sed` script, however the script flag is spelled, and SHALL apply to a read anywhere in a chain. For a `sed -n` line range or a `head` count it SHALL give the `Read` call with `offset` and `limit`. A read piped into a command that works on it SHALL run. A read piped into `cat`, `head`, `less`, `more`, `nl`, `tail`, or `sed -n`, which only show it, SHALL be denied.
+
+#### Scenario: A sed Range
+
+- **WHEN** the agent runs `sed -n 1,80p hooks/gate.ts; grep -n "X" -r hooks | head`
+- **THEN** the denial names `hooks/gate.ts`, never `1,80p`, with `offset` 1 and `limit` 80
+- **AND** the lab test is `gate/rules.test.ts`, "A sed Range: the denial holds the Read call with offset and limit"
+
+#### Scenario: A Compound Command
+
+- **WHEN** the agent runs `git log -1 && head -5 CHANGELOG.md`
+- **THEN** the gate denies it and names `Read` on `CHANGELOG.md`
+
+#### Scenario: A Piped Read
+
+- **WHEN** the agent runs `cat src/a.ts | wc -l`
+- **THEN** the command runs
+
+#### Scenario: A Read Piped Into a Viewer
+
+- **WHEN** the agent runs `cat src/a.ts | head -5`
+- **THEN** the gate denies it and names `Read` on `src/a.ts`
+
+#### Scenario: A sed Script Flag
+
+- **WHEN** the agent runs `sed --quiet 1,80p f.ts`, `sed -n --expression=1p f.ts`, or `sed -n -e1p f.ts`
+- **THEN** the gate denies it and names `f.ts`
+
+#### Scenario: A Read With No Fixed Range
+
+- **WHEN** the agent runs `cat f.ts`, `tail -n 5 f.ts`, or `sed -n '$p' f.ts`
+- **THEN** the denial names `f.ts` and gives no `offset`
+
 ## ADDED Requirements
 
 ### Requirement: A Loop That Polls With No Pause Is Denied
