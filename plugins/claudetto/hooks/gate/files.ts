@@ -25,6 +25,18 @@ export const operands = (args: string[]): string[] => {
 	];
 };
 
+const SHELL_VALUES = new Set(["$!", "$$", "$?"]);
+
+/** An `echo` of only `$!`, `$$`, or `$?`, which records a value, such as a launched command's pid, and no file content. */
+const echoesValue = (name: string, args: string[]): boolean => {
+	const words = operands(args);
+	return (
+		name === "echo" &&
+		words.length > 0 &&
+		words.every((w) => SHELL_VALUES.has(w))
+	);
+};
+
 export const writesWhole = (
 	name: string,
 	args: string[],
@@ -32,6 +44,7 @@ export const writesWhole = (
 ): boolean =>
 	(name === "tee" && !flagsOf(args).includes("-a")) ||
 	(redirected &&
+		!echoesValue(name, args) &&
 		(name === "printf" ||
 			name === "echo" ||
 			(name === "cat" && operands(args).length === 0)));

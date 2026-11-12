@@ -13,6 +13,9 @@ const DENIED = [
 	"tee notes.txt",
 	"printf 'a' > notes.txt",
 	"cat <<EOF > notes.txt\na\nEOF",
+	"echo $! x > notes.txt",
+	'echo "a $!" > notes.txt',
+	'echo "$(cat <<EOF\na\nEOF\n)" > notes.txt',
 	"cat src/a.ts",
 	"head -n 5 src/a.ts",
 	"tail src/a.ts",
@@ -43,6 +46,11 @@ const PASSES = [
 	"[ -f x ] && echo y",
 	"[[ -f x ]] && echo y",
 	"if [ -d node_modules ]; then echo y; fi",
+	'bun run oxlint > "$TMPDIR/ox.log" 2>&1; echo "exit $?"',
+	'(server & echo $! > "$TMPDIR/s.pid")',
+	"sleep 9 & echo $! > pid",
+	"echo -n $$ > pid",
+	"echo $? > code",
 ];
 
 for (const command of PASSES) {
