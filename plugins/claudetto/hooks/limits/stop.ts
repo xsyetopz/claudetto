@@ -87,7 +87,13 @@ const filesBlock = async (
 		: "";
 	const found = await Promise.all(
 		named.map(({ path }) =>
-			$.fs.exists(path.startsWith("~/") ? `${home}${path.slice(1)}` : path),
+			$.fs
+				.exists(path.startsWith("~/") ? `${home}${path.slice(1)}` : path)
+				// The engine refuses a word that is no path it reaches, such as a search pattern, and that word names no missing file.
+				.catch((error: unknown) => {
+					$.ui.log(`The path ${path} was not checked (${String(error)})`);
+					return true;
+				}),
 		),
 	);
 	const missing = named.filter((_, i) => found[i] !== true);

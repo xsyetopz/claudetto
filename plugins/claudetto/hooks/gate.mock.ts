@@ -85,13 +85,24 @@ const landedBy =
 			: `${aliases[from]}${path.slice(from.length)}`;
 	};
 
+/** Throws as the engine's `$.fs` does for a path it takes for a network location, such as one that starts with `/\`. */
+export const refuseUnreached = (path: string): void => {
+	if (path.startsWith("/\\")) {
+		throw new Error(
+			`${path} refused: a network location is not reached from here`,
+		);
+	}
+};
+
 const filesLab = (
 	on: On,
 	files: Set<string>,
 	landed: (path: string) => string,
 ) => {
-	const there = (path: string) =>
-		files.has(landed(path)) || !FILE_NAME.test(path);
+	const there = (path: string) => {
+		refuseUnreached(path);
+		return files.has(landed(path)) || !FILE_NAME.test(path);
+	};
 	on("fs.exists", (_$, e) => ({ value: there(e.path) }));
 	// `there` finds any path without a file extension, so a marker file reads as empty.
 	on("fs.read", () => ({ value: "" }));

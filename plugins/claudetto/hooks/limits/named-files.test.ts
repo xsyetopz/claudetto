@@ -6,6 +6,7 @@ import {
 	type TestBody,
 } from "claude-code/testing";
 
+import { refuseUnreached } from "../gate.mock.ts";
 import { scanner } from "../secrets.mock.ts";
 import { namedPaths, userCommands } from "./named-files.ts";
 
@@ -24,7 +25,10 @@ const lab = (on: On, present: readonly string[] = []) => {
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("env.get", () => ({ value: "/home/u" }));
-	on("fs.exists", (_$, e) => ({ value: present.includes(e.path) }));
+	on("fs.exists", (_$, e) => {
+		refuseUnreached(e.path);
+		return { value: present.includes(e.path) };
+	});
 };
 
 const stop = ($: Engine, reply: string) =>
@@ -81,6 +85,15 @@ test("a ~/ path is read under HOME", async ($: Engine, on: On) => {
 
 	expect(here.block).toBeUndefined();
 	expect(gone.block).toContain("~/b.ts");
+});
+
+test("a search pattern the engine refuses to read as a path is not called missing", async ($: Engine, on: On) => {
+	lab(on);
+
+	const out = await stop($, '`! grep -v "/\\.git/" /tmp/list.txt`');
+
+	expect(out.block).toContain("- `/tmp/list.txt` in");
+	expect(out.block).not.toContain("- `/\\.git/`");
 });
 
 test("a command not marked with `!` is not checked", async ($: Engine, on: On) => {

@@ -231,6 +231,21 @@ test("a Read that failed before a resume does not make the file seen", async ($:
 	expect(verdict.decision).toBe("allow");
 });
 
+for (const pattern of [
+	String.raw`'///\|Catalog/OrderedJSON'`,
+	String.raw`"/\.git/"`,
+]) {
+	test(`a \`grep -v ${pattern}\` passes, since its pattern is no path the engine reaches`, async ($: Engine, on: On) => {
+		vanishing(on, new Set());
+
+		const verdict = await run($, "Bash", {
+			command: `grep -v ${pattern} list.txt`,
+		});
+
+		expect(verdict.decision).toBe("allow");
+	});
+}
+
 test("a call of the transcript still in flight does not make its file seen", async ($: Engine, on: On) => {
 	vanishing(on, new Set(), {
 		history: [

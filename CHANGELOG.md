@@ -70,6 +70,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- A search pattern that starts with `/\`, as in `grep -v "/\.git/"`, no longer opens a "The gate failed" permission dialog, and the same pattern in a `! <command>` step no longer makes the Stop hook drop its checks.
 - The secret scan reads each string of a structured tool result as raw text, so a secret after a line break inside a result object is redacted.
 - The claim check counts a popup answer as the person's words.
 - Hygiene finds old build folders in other checkouts again: it walks each folder in Mole's `purge_paths` besides the project, and never enters `~/.claude/projects` or `~/.claude/plugins`. Before, it walked only the project, whose own checkout always stays, so it found nothing outside a nested checkout.

@@ -19,7 +19,12 @@ export interface Walls {
 export function hostOf($: EngineInterface): Host {
 	return {
 		cwd: () => $.session.cwd(),
-		exists: (path) => $.fs.exists(path),
+		// The engine refuses a word that is no path it reaches, such as a `grep` pattern that starts with `/\`, and nothing is there.
+		exists: (path) =>
+			$.fs.exists(path).catch((error: unknown) => {
+				$.ui.log(`The path ${path} was not checked (${String(error)})`);
+				return false;
+			}),
 		realPath: async (path) => {
 			const found = await $.fs
 				.stat(path, { resolve: true })
