@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { quietDecider } from "./decider/decider.mock.ts";
-import { scanned } from "./secrets.mock.ts";
+import { quietDecider } from "./decider/decider.mock";
+import { scanned } from "./secrets.mock";
 
 export interface Call {
 	command: string;

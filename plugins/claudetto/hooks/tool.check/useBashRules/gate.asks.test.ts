@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { asking, run, start, walledLab } from "./gate.mock.ts";
+import { asking, run, start, walledLab } from "./gate.mock";
 
 for (const command of [
 	"cd /tmp/p && ls -la 2>&1 | tail -50",

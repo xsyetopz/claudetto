@@ -8,7 +8,7 @@ import type {
 } from "claude-code";
 import { mock } from "claude-code/testing";
 
-import type { Host, QuestionSet } from "./questions.ts";
+import type { Host, QuestionSet } from "./questions";
 
 export const KEY = "typesafe-key-for-the-lab";
 
@@ -173,11 +173,10 @@ export const bodyOf = (
 	fetched: Fetched | undefined,
 ): Record<string, unknown> => {
 	const body = fetched?.init?.body ?? "{}";
-	const parsed: unknown = JSON.parse(
-		typeof body === "string"
-			? body
-			: Buffer.from(body.base64, "base64").toString(),
-	);
+	if (typeof body !== "string") {
+		throw new TypeError("a request to Jev carries JSON text, not bytes");
+	}
+	const parsed: unknown = JSON.parse(body);
 	return typeof parsed === "object" && parsed !== null
 		? Object.fromEntries(Object.entries(parsed))
 		: {};

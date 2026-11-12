@@ -9,7 +9,7 @@ import {
 	logged,
 	run,
 	startup,
-} from "./setup.mock.ts";
+} from "./setup.mock";
 
 const BREW = /brew/u;
 

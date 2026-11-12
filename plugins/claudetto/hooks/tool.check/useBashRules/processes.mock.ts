@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { bash, scanner } from "../../secrets.mock.ts";
+import { bash, scanner } from "../../secrets.mock";
 
 export interface Earlier {
 	command?: string;

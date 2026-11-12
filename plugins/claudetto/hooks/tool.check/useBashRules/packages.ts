@@ -1,5 +1,5 @@
-import { gatePackage } from "../../texts-gate.ts";
-import type { Verdict } from "./verdict.ts";
+import { gatePackage } from "../../texts-gate";
+import type { Verdict } from "./verdict";
 
 const BUN_FOR_NPM: Record<string, string> = {
 	install: "bun install",

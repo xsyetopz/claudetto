@@ -1,6 +1,6 @@
 import type { EngineInterface } from "claude-code";
 
-import { secretScanFailed } from "./texts-gate.ts";
+import { secretScanFailed } from "./texts-gate";
 
 export const SCANNER = "betterleaks";
 export const SCANNER_INSTALL = ["brew", "install", SCANNER] as const;

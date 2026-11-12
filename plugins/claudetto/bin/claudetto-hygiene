@@ -5,12 +5,12 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PluginOptions } from "claude-code";
 import { numberOption } from "../hooks/options.ts";
-import { parseArgs } from "../hooks/classic.SessionStart/useHygieneSweep/args.ts";
-import { branchReport } from "../hooks/classic.SessionStart/useHygieneSweep/branches.ts";
-import { cleanCaches } from "../hooks/classic.SessionStart/useHygieneSweep/mole.ts";
-import { reportText, sweep } from "../hooks/classic.SessionStart/useHygieneSweep/sweep.ts";
-import { type Log, logged, presentProjects } from "../hooks/classic.SessionStart/useHygieneSweep/roots.ts";
-import { outputOr } from "../hooks/classic.SessionStart/useHygieneSweep/trash.ts";
+import { parseArgs } from "../hygiene/args.ts";
+import { branchReport } from "../hygiene/branches.ts";
+import { cleanCaches } from "../hygiene/mole.ts";
+import { reportText, sweep } from "../hygiene/sweep.ts";
+import { type Log, logged, presentProjects } from "../hygiene/roots.ts";
+import { outputOr } from "../hygiene/trash.ts";
 import { projectsOf, worktreeReport } from "../hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
 
 const home = process.env["HOME"] || homedir();

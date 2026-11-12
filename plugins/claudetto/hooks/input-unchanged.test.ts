@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { repo } from "./tool.check/useBashRules/gate.mock.ts";
+import { repo } from "./tool.check/useBashRules/gate.mock";
 
 // Auto mode reviews each call of a response before the hooks run, and a call whose input a hook changed loses the review of every call beside it. The stub stands for the engine beneath the plugin: it records the call each hook hands it.
 const CALLS = [

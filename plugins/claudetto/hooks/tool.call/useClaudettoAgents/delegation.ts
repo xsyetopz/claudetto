@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { deferral } from "../../settings.read/useSlimSurface/surface.ts";
-import { AGENT_TEXT, agentForm, ASK_TEXT } from "../../texts.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { deferral } from "../../settings.read/useSlimSurface/surface";
+import { AGENT_TEXT, agentForm, ASK_TEXT } from "../../texts";
 
 const PREFIX = "claudetto:";
 

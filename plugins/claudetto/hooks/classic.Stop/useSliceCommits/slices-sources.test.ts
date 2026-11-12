@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { SLICE_COMMIT } from "../../texts.ts";
+import { SLICE_COMMIT } from "../../texts";
 import {
 	A,
 	bash,
@@ -11,7 +11,7 @@ import {
 	started,
 	stop,
 	submit,
-} from "./slices.mock.ts";
+} from "./slices.mock";
 
 test("a file changed through Bash, such as sed -i, is not the agent's and is asked for under its source", async ($: Engine, on: On) => {
 	const repo = await started($, on);

@@ -1,6 +1,6 @@
-import type { Rec } from "./input.ts";
-import { ITEM_GAP, MAX_ROWS } from "./limits.ts";
-import type { Local } from "./local.ts";
+import type { Rec } from "./input";
+import { ITEM_GAP, MAX_ROWS } from "./limits";
+import type { Local } from "./local";
 import {
 	branchText,
 	cacheText,
@@ -13,8 +13,8 @@ import {
 	modelText,
 	prText,
 	specText,
-} from "./segments.ts";
-import { truncate, width } from "./width.ts";
+} from "./segments";
+import { truncate, width } from "./width";
 
 /** The items in order: place, session, limits, cache. */
 const itemsOf = (ctx: Ctx): string[] =>

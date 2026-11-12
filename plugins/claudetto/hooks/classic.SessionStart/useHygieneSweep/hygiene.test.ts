@@ -1,6 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
+import { deferred } from "../../tools";
+
 const ok = {
 	exitCode: 0,
 	stdout: "",
@@ -73,7 +75,7 @@ test("an unset cleanupPeriodDays passes no --days", async ($: Engine, on: On) =>
 });
 
 test("the start returns while the sweep still runs", async ($: Engine, on: On) => {
-	const sweep = Promise.withResolvers<typeof ok>();
+	const sweep = deferred<typeof ok>();
 	const launched = lab(on, undefined, () => sweep.promise);
 
 	await start($, "startup");

@@ -1,12 +1,6 @@
+import { type Body, parseBlocks, REQ, TOP, topSections } from "./spec";
 // A delta spec read as a plan: the blocks to add or modify, the names to remove or rename, and the text a merge would drop.
-import {
-	type Block,
-	fenceMask,
-	lineBreaks,
-	masked,
-	norm,
-} from "./spec-lines.ts";
-import { type Body, parseBlocks, REQ, TOP, topSections } from "./spec.ts";
+import { type Block, fenceMask, lineBreaks, masked, norm } from "./spec-lines";
 
 export interface Plan {
 	added: Block[];

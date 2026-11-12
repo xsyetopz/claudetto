@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { LIMITS } from "./note.ts";
+import { LIMITS } from "./note";
 import {
 	act,
 	fixture,
@@ -12,7 +12,7 @@ import {
 	pressed,
 	step,
 	typed,
-} from "./register.mock.ts";
+} from "./register.mock";
 
 test(
 	"five ignored offers in a row leave four check chances without a request",

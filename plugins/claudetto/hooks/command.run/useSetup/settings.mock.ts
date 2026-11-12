@@ -1,5 +1,5 @@
-import { applyChanges, capGroup, changesOf } from "./changes.ts";
-import { type Group, GROUPS, type Json, valueAt } from "./settings.ts";
+import { applyChanges, capGroup, changesOf } from "./changes";
+import { type Group, GROUPS, type Json, valueAt } from "./settings";
 
 /** The settings after every group is applied with `replace`. */
 export const everything = (held: Json): Json => {

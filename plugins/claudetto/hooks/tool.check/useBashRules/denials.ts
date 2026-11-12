@@ -1,4 +1,4 @@
-import { gateRepeated, gateRepeatedUnexplained } from "../../texts-gate.ts";
+import { gateRepeated, gateRepeatedUnexplained } from "../../texts-gate";
 
 interface Denial {
 	count: number;

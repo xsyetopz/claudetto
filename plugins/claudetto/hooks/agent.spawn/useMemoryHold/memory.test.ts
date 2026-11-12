@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { set, SPAWN } from "./hold.mock.ts";
+import { set, SPAWN } from "./hold.mock";
 
 const MEMORY_PRESSURE = "/usr/bin/memory_pressure";
 const MEMINFO = "/proc/meminfo";

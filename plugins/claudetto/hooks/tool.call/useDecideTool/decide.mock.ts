@@ -1,8 +1,8 @@
 import type { HttpInit, On } from "claude-code";
 import { type Engine, mock } from "claude-code/testing";
 
-import { bodyOf } from "../../decider/decider.mock.ts";
-import { scanner } from "../../secrets.mock.ts";
+import { bodyOf } from "../../decider/decider.mock";
+import { scanner } from "../../secrets.mock";
 
 export const DECIDE = "mcp__claudetto__decide";
 export const KEY = "typesafe-key";

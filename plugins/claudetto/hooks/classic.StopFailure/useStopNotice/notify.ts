@@ -1,6 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 
-import { switchOption } from "../../options.ts";
+import { switchOption } from "../../options";
 
 /**
  * A stop that an API error ended has no one at the prompt to see it. The `permission_prompt`, `idle_prompt` and

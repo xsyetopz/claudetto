@@ -1,5 +1,5 @@
-import { redactWith, secretsIn } from "../secrets.ts";
-import type { Host, State } from "./questions.ts";
+import { redactWith, secretsIn } from "../secrets";
+import type { Host, State } from "./questions";
 
 /**
  * The most characters of state sent to Jev; a longer state goes to the fallback.

@@ -1,4 +1,4 @@
-import { ELLIPSIS } from "./icons.ts";
+import { ELLIPSIS } from "./icons";
 
 const ESC = String.fromCodePoint(27);
 const BEL = String.fromCodePoint(7);

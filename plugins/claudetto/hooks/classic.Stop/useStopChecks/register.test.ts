@@ -7,11 +7,11 @@ import {
 	jevAnswers,
 	KEY,
 	noul,
-} from "../../decider/decider.mock.ts";
-import { HELD_REGISTER, SHIPPED_REGISTER } from "../../decider/questions.ts";
-import { scanner } from "../../secrets.mock.ts";
-import { REGISTER_BLOCK } from "../../texts.ts";
-import { user } from "./verify.mock.ts";
+} from "../../decider/decider.mock";
+import { HELD_REGISTER, SHIPPED_REGISTER } from "../../decider/questions";
+import { scanner } from "../../secrets.mock";
+import { REGISTER_BLOCK } from "../../texts";
+import { user } from "./verify.mock";
 
 const SHIPPED = Object.keys(SHIPPED_REGISTER.questions);
 const HELD = Object.keys(HELD_REGISTER.questions);

@@ -1,6 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
-import { JevStatusError, postJev } from "./jev.ts";
+import { deferred } from "../tools";
+import { JevStatusError, postJev } from "./jev";
 
 const reply = (status: number, text = "{}") => ({
 	status,
@@ -70,7 +71,7 @@ test("a request that outlasts 5000 ms ends the try with no second request", asyn
 		{
 			fetch: () => {
 				tries += 1;
-				return Promise.withResolvers<never>().promise;
+				return deferred<never>().promise;
 			},
 			sleep: (ms) => {
 				waits.push(ms);

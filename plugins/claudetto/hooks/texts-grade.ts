@@ -1,4 +1,4 @@
-import { KEEP_ANSWER } from "./texts.ts";
+import { KEEP_ANSWER } from "./texts";
 
 /** One code per fault the Stop grader looks for, with the test the grader applies and the fix the block asks for. */
 export const GRADE_FAULTS = {

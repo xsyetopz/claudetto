@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { haikuFailed } from "../../decider/decider.mock.ts";
-import { advise, registeredNames, stub } from "./advisor.mock.ts";
+import { haikuFailed } from "../../decider/decider.mock";
+import { advise, registeredNames, stub } from "./advisor.mock";
 
 const FILES = {
 	"/repo/a.ts": "export const a = 1;",

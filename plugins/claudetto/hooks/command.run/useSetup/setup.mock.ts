@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock.ts";
+import { scanned } from "../../secrets.mock";
 
 export const FILE = "/home/u/.claude/settings.json";
 

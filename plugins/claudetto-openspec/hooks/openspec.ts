@@ -1,10 +1,10 @@
-import { ArchiveBlocked } from "./archive-merge.ts";
-import { archive, type Run } from "./archive.ts";
-import type { Fs } from "./fs.ts";
-import { create, init } from "./layout.ts";
-import { checkSpec, mainSpecs, requirementCount } from "./main-specs.ts";
-import type { Report } from "./spec-rules.ts";
-import { activeChanges, archivedChanges, progress } from "./status.ts";
+import { archive, type Run } from "./archive";
+import { ArchiveBlocked } from "./archive-merge";
+import type { Fs } from "./fs";
+import { create, init } from "./layout";
+import { checkSpec, mainSpecs, requirementCount } from "./main-specs";
+import type { Report } from "./spec-rules";
+import { activeChanges, archivedChanges, progress } from "./status";
 import {
 	archived,
 	archivedLine,
@@ -23,8 +23,8 @@ import {
 	statusDetail,
 	statusLine,
 	verdict,
-} from "./texts.ts";
-import { changeDir, validateChange } from "./validate.ts";
+} from "./texts";
+import { changeDir, validateChange } from "./validate";
 
 export type Call = Record<string, unknown>;
 export interface Deps {

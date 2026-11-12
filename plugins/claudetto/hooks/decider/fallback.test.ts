@@ -1,5 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
+import { deferred } from "../tools";
 import {
 	blocksOf,
 	haikuFailed,
@@ -9,8 +10,8 @@ import {
 	rig,
 	SET,
 	STATE,
-} from "./decider.mock.ts";
-import { settle } from "./settle.ts";
+} from "./decider.mock";
+import { settle } from "./settle";
 
 const answer = (reply: object) => haikuText(JSON.stringify(reply));
 
@@ -213,7 +214,7 @@ test("a request that throws and a hung server both hand the call to the fallback
 		haiku: () => answer(GOOD),
 	});
 	const hung = rig({
-		jev: () => Promise.withResolvers<never>().promise,
+		jev: () => deferred<never>().promise,
 		haiku: () => answer(GOOD),
 	});
 

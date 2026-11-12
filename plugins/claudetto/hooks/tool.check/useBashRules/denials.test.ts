@@ -1,7 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
-import { gateRepeated, gateRepeatedUnexplained } from "../../texts-gate.ts";
-import { repeatedText, signature, withDenial } from "./denials.ts";
+import { gateRepeated, gateRepeatedUnexplained } from "../../texts-gate";
+import { repeatedText, signature, withDenial } from "./denials";
 
 test("a call with no JSON form still has a signature", () => {
 	expect(signature("Bash")).toBe("Bash\0");

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock.ts";
+import { scanned } from "../../secrets.mock";
 
 /** A fake repo at /repo: `dirty` maps an absolute path to its two-letter status, `hash` to its content hash. */
 export const fakeRepo = (dirty: Record<string, string> = {}) => ({

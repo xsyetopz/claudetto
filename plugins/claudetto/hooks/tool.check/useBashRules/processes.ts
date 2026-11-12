@@ -1,8 +1,8 @@
-import { gateRmTmp, gateWorktreeRemove } from "../../texts-gate.ts";
-import { type Past, startedBy, startedPids } from "./kill.ts";
-import { type Command, parse, programOf } from "./shell-words.ts";
-import { withoutGitOptions } from "./upstream.ts";
-import { deny, fieldOf, type Verdict } from "./verdict.ts";
+import { gateRmTmp, gateWorktreeRemove } from "../../texts-gate";
+import { type Past, startedBy, startedPids } from "./kill";
+import { type Command, parse, programOf } from "./shell-words";
+import { withoutGitOptions } from "./upstream";
+import { deny, fieldOf, type Verdict } from "./verdict";
 
 const TMP_UNDER = /^(?:(?:\/private)?\/tmp|\$\{?TMPDIR\}?)(?:\/|$)/u;
 // The sandbox's TMPDIR, `/tmp/claude-<uid>`, is a base like `/tmp` itself, and a glob of every entry empties one.

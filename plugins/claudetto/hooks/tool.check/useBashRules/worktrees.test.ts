@@ -1,9 +1,9 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { bash } from "../../secrets.mock.ts";
-import { gateWorktreeRemove } from "../../texts-gate.ts";
-import { lab } from "./processes.mock.ts";
+import { bash } from "../../secrets.mock";
+import { gateWorktreeRemove } from "../../texts-gate";
+import { lab } from "./processes.mock";
 
 const created = ($: Engine, on: On, name: string) => {
 	on("classic.WorktreeCreate", () => ({}));

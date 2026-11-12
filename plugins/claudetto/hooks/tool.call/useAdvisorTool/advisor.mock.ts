@@ -1,8 +1,8 @@
 import type { ModelCompleteResult, On } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { haikuText } from "../../decider/decider.mock.ts";
-import { scanner } from "../../secrets.mock.ts";
+import { haikuText } from "../../decider/decider.mock";
+import { scanner } from "../../secrets.mock";
 
 declare module "claude-code" {
 	interface McpToolInputs {

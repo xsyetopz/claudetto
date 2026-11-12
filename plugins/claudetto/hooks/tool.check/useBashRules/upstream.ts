@@ -1,6 +1,6 @@
-import { GENERATED } from "./rules.generated.ts";
-import { type Command, programOf } from "./shell-words.ts";
-import { ask, deny, type Verdict } from "./verdict.ts";
+import { GENERATED } from "./rules.generated";
+import { type Command, programOf } from "./shell-words";
+import { ask, deny, type Verdict } from "./verdict";
 
 interface Filter {
 	type: string;

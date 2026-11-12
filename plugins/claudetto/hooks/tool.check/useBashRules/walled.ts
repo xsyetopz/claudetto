@@ -1,8 +1,8 @@
-import { gateWalled } from "../../texts-gate.ts";
-import { baseName } from "./program-at.ts";
-import { flatten } from "./recreate.ts";
-import { parse, programOf } from "./shell-words.ts";
-import { deny, fieldOf, type Verdict } from "./verdict.ts";
+import { gateWalled } from "../../texts-gate";
+import { baseName } from "./program-at";
+import { flatten } from "./recreate";
+import { parse, programOf } from "./shell-words";
+import { deny, fieldOf, type Verdict } from "./verdict";
 
 const HOME = /^(?:~|\$HOME|\$\{HOME\})(?=\/|$)/u;
 const DENY_READ = /^Read\((.+)\/\*\*\)$/u;

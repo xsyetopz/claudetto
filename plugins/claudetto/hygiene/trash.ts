@@ -3,8 +3,8 @@ import { dirname, join, relative, sep } from "node:path";
 
 import { spawn, TOML } from "bun";
 
-import { type Log, logged } from "./roots.ts";
-import type { Run } from "./worktrees.ts";
+import type { Run } from "../hooks/classic.SessionStart/useHygieneSweep/worktrees";
+import type { Log } from "./roots";
 
 export interface Rule {
 	readonly id: string;
@@ -188,10 +188,15 @@ export const output = async (
 /** `output` within `limitMs`, with a command that failed to start or ran past the limit logged and answered as nothing: a remote that waits for credentials would hold every later project. */
 export const outputOr =
 	(log: Log, limitMs = 60_000): Run =>
-	(argv, cwd) =>
-		output(argv, cwd, limitMs).catch(
-			logged(log, `The ${argv[0]} call in ${cwd} failed`, void 0),
-		);
+	async (argv, cwd) => {
+		let text: string | undefined;
+		try {
+			text = await output(argv, cwd, limitMs);
+		} catch (error) {
+			log(`The ${argv[0]} call in ${cwd} failed (${String(error)})`);
+		}
+		return text;
+	};
 
 export interface Held {
 	/** Working folders, which mark a whole checkout as in use. */

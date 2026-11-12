@@ -1,5 +1,5 @@
-import type { CallAnswer } from "../../chain.ts";
-import { isRecord } from "../../tools.ts";
+import type { CallAnswer } from "../../chain";
+import { isRecord } from "../../tools";
 
 type Answer = Awaited<CallAnswer>;
 

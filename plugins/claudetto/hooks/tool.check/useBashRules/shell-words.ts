@@ -1,4 +1,4 @@
-import { baseName, programAt } from "./program-at.ts";
+import { baseName, programAt } from "./program-at";
 import {
 	add,
 	balanced,
@@ -10,9 +10,9 @@ import {
 	single,
 	skipHeredocs,
 	type State,
-} from "./shell-state.ts";
+} from "./shell-state";
 
-export type { Command } from "./shell-state.ts";
+export type { Command } from "./shell-state";
 
 interface Parsed {
 	commands: Command[];

@@ -4,11 +4,11 @@ import {
 	holdCheck,
 	holdHooks,
 	holdState,
-} from "./agent.spawn/useMemoryHold/hold.ts";
+} from "./agent.spawn/useMemoryHold/hold";
 import {
 	memoryGuard,
 	memoryWatchCall,
-} from "./agent.spawn/useMemoryHold/memory.ts";
+} from "./agent.spawn/useMemoryHold/memory";
 import {
 	type CallAnswer,
 	type CallEvent,
@@ -18,59 +18,56 @@ import {
 	type CheckEvent,
 	checkFault,
 	type CheckNext,
-} from "./chain.ts";
-import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene.ts";
+} from "./chain";
+import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene";
 import {
 	slices,
 	slicesCall,
 	slicesState,
-} from "./classic.Stop/useSliceCommits/slices.ts";
+} from "./classic.Stop/useSliceCommits/slices";
 import {
 	budgetHooks,
 	stopHooks,
 	subagentStopHooks,
-} from "./classic.Stop/useStopChecks/stop.ts";
+} from "./classic.Stop/useStopChecks/stop";
 import {
 	stopCall,
 	stopCheck,
 	stopState,
-} from "./classic.Stop/useStopChecks/turn.ts";
-import { notify } from "./classic.StopFailure/useStopNotice/notify.ts";
-import { advisor } from "./command.run/useAdvisorCommand/advisor.ts";
-import { reply } from "./command.run/useReplyCommand/reply.ts";
-import { setup } from "./command.run/useSetup/setup.ts";
+} from "./classic.Stop/useStopChecks/turn";
+import { notify } from "./classic.StopFailure/useStopNotice/notify";
+import { advisor } from "./command.run/useAdvisorCommand/advisor";
+import { reply } from "./command.run/useReplyCommand/reply";
+import { setup } from "./command.run/useSetup/setup";
 import {
 	pin,
 	pinCall,
 	pinCheck,
 	pinState,
-} from "./prompt.submit/useConstraintPin/pin.ts";
-import { lineFileHooks } from "./session.measure/useLineFile/line-file.ts";
-import {
-	surface,
-	surfaceCall,
-} from "./settings.read/useSlimSurface/surface.ts";
-import { ADVISOR_SPEC, DECIDE_SPEC } from "./texts-gate.ts";
-import { ADVISOR_COMMAND_SPEC, REPLY_SPEC } from "./texts.ts";
-import { advisorCall } from "./tool.call/useAdvisorTool/advisor.ts";
-import { askFixCall } from "./tool.call/useAskFix/ask-fix.ts";
-import { budgetRunCall } from "./tool.call/useBudgetRun/budget-run.ts";
+} from "./prompt.submit/useConstraintPin/pin";
+import { lineFileHooks } from "./session.measure/useLineFile/line-file";
+import { surface, surfaceCall } from "./settings.read/useSlimSurface/surface";
+import { ADVISOR_COMMAND_SPEC, REPLY_SPEC } from "./texts";
+import { ADVISOR_SPEC, DECIDE_SPEC } from "./texts-gate";
+import { advisorCall } from "./tool.call/useAdvisorTool/advisor";
+import { askFixCall } from "./tool.call/useAskFix/ask-fix";
+import { budgetRunCall } from "./tool.call/useBudgetRun/budget-run";
 import {
 	delegation,
 	delegationCall,
-} from "./tool.call/useClaudettoAgents/delegation.ts";
-import { decideCall, typesafeKey } from "./tool.call/useDecideTool/decide.ts";
+} from "./tool.call/useClaudettoAgents/delegation";
+import { decideCall, typesafeKey } from "./tool.call/useDecideTool/decide";
 import {
 	sandboxGitCall,
 	sandboxGitState,
-} from "./tool.call/useSandboxGit/sandbox-git.ts";
-import { gate, gateState } from "./tool.check/useBashRules/gate.ts";
-import { gateCall, gateCheck } from "./tool.check/useBashRules/watch.ts";
+} from "./tool.call/useSandboxGit/sandbox-git";
+import { gate, gateState } from "./tool.check/useBashRules/gate";
+import { gateCall, gateCheck } from "./tool.check/useBashRules/watch";
 import {
 	priceStepCall,
 	priceStepHooks,
 	priceStepState,
-} from "./turn.step/usePriceStep/price-step.ts";
+} from "./turn.step/usePriceStep/price-step";
 
 const stateOf = (options: PluginOptions) => ({
 	written: slicesState(),

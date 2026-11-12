@@ -1,7 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
-import { parse, programOf } from "./shell-words.ts";
-import { withoutGitOptions } from "./upstream.ts";
+import { parse, programOf } from "./shell-words";
+import { withoutGitOptions } from "./upstream";
 
 // What Claude Code's sandbox denies writes to in a project folder, as its 2.1.319 build lists them (`chunk-fcp0yk24.js`); no engine call returns the list.
 const SANDBOX_DENIED = [

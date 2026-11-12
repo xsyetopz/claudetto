@@ -2,12 +2,12 @@ import { expect, test } from "bun:test";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import type { Run } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
 import {
 	branchReport,
 	freeBranches,
-} from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/branches.ts";
-import { output } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/trash.ts";
-import type { Run } from "../../plugins/claudetto/hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
+} from "../../plugins/claudetto/hygiene/branches.ts";
+import { output } from "../../plugins/claudetto/hygiene/trash.ts";
 import { DAY, git, repo } from "./trash.mock.ts";
 
 /** A branch of `proj` with one commit of its own, left with the default branch checked out. */

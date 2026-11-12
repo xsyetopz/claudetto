@@ -1,7 +1,7 @@
 import type { On, ToolCallResult } from "claude-code";
 import type { Engine } from "claude-code/testing";
 
-import { scanned, scanner } from "../../secrets.mock.ts";
+import { scanned, scanner } from "../../secrets.mock";
 
 declare module "claude-code" {
 	interface BuiltinToolInputs {

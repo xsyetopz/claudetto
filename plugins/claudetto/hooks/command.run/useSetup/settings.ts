@@ -1,6 +1,6 @@
-import { SILENT_TURN_REMINDER } from "../../texts.ts";
-import { isRecord } from "../../tools.ts";
-import { AUTO_MODE } from "./auto-mode.ts";
+import { SILENT_TURN_REMINDER } from "../../texts";
+import { isRecord } from "../../tools";
+import { AUTO_MODE } from "./auto-mode";
 
 const HAIKU = "claude-haiku-5-5";
 const SONNET = "claude-sonnet-5-5";

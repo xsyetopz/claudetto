@@ -1,19 +1,13 @@
-// Rules for one spec: its heading structure, purpose, and each requirement block. No file access.
-import {
-	type Block,
-	fenceMask,
-	lineBreaks,
-	masked,
-	norm,
-} from "./spec-lines.ts";
-import { find, type Node, tree } from "./spec-tree.ts";
 import {
 	blocks,
 	requirementText,
 	scenarioBodies,
 	scenarios,
 	section,
-} from "./spec.ts";
+} from "./spec";
+// Rules for one spec: its heading structure, purpose, and each requirement block. No file access.
+import { type Block, fenceMask, lineBreaks, masked, norm } from "./spec-lines";
+import { find, type Node, tree } from "./spec-tree";
 
 export interface Issue {
 	level: "ERROR" | "WARNING" | "INFO";

@@ -1,4 +1,4 @@
-import { clean } from "./width.ts";
+import { clean } from "./width";
 
 /** A JSON object of unknown fields; the status line trusts none of them. */
 export type Rec = Readonly<Record<string, unknown>>;

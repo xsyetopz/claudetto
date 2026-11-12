@@ -1,7 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
-import { GATE_REF_MOVE } from "../../texts-gate.ts";
-import { judge } from "./rules.ts";
+import { GATE_REF_MOVE } from "../../texts-gate";
+import { judge } from "./rules";
 
 const NONE = (_file: string) => false;
 

@@ -1,9 +1,9 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { haikuFailed } from "../../decider/decider.mock.ts";
-import { scanner } from "../../secrets.mock.ts";
-import { ASK_TEXT } from "../../texts.ts";
+import { haikuFailed } from "../../decider/decider.mock";
+import { scanner } from "../../secrets.mock";
+import { ASK_TEXT } from "../../texts";
 
 const bind = async ($: Engine, on: On): Promise<void> => {
 	on("session.start", () => ({ cwd: "/repo" }));

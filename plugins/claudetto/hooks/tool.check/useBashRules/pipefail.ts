@@ -1,7 +1,7 @@
-import { GATE_MASKED_EXIT, GATE_UNSTOPPED_COMMIT } from "../../texts-gate.ts";
-import { type Command, programOf } from "./shell-words.ts";
-import { withoutGitOptions } from "./upstream.ts";
-import { deny, type Verdict } from "./verdict.ts";
+import { GATE_MASKED_EXIT, GATE_UNSTOPPED_COMMIT } from "../../texts-gate";
+import { type Command, programOf } from "./shell-words";
+import { withoutGitOptions } from "./upstream";
+import { deny, type Verdict } from "./verdict";
 
 const PUBLISHES = new Set(["commit", "push"]);
 const TRIMMERS = new Set(["tail", "head", "grep", "rg"]);

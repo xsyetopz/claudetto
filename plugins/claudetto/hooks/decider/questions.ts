@@ -1,6 +1,6 @@
 import type { EngineInterface } from "claude-code";
 
-import type { PinConstraint } from "../texts-pin.ts";
+import type { PinConstraint } from "../texts-pin";
 
 /** One judgment about the state that has a yes or a no. */
 export interface Noul {

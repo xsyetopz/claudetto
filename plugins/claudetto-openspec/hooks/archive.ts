@@ -1,10 +1,10 @@
-import { mergeSpec, refuse } from "./archive-merge.ts";
-import { type Fs, join } from "./fs.ts";
-import { scanTasks } from "./tasks.ts";
-import { discoverDeltas, linkEscapes } from "./validate-discover.ts";
-import { metadata } from "./validate-meta.ts";
-import { nestedChanges } from "./validate-nested.ts";
-import { changeDir, NO_DELTA, validateChange } from "./validate.ts";
+import { mergeSpec, refuse } from "./archive-merge";
+import { type Fs, join } from "./fs";
+import { scanTasks } from "./tasks";
+import { changeDir, NO_DELTA, validateChange } from "./validate";
+import { discoverDeltas, linkEscapes } from "./validate-discover";
+import { metadata } from "./validate-meta";
+import { nestedChanges } from "./validate-nested";
 
 export type Run = (
 	argv: string[],

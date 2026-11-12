@@ -7,7 +7,7 @@ import {
 	skipsAfter,
 	type View,
 	withRow,
-} from "./note.ts";
+} from "./note";
 
 export type Engine = EngineInterface;
 

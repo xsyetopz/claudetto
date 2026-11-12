@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 
-import { REPLY_COMMAND } from "../../texts.ts";
+import { REPLY_COMMAND } from "../../texts";
 
 const LABEL = 60;
 

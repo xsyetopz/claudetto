@@ -1,13 +1,13 @@
 import type { EngineInterface } from "claude-code";
 
-import { GATE_ENDLESS_WAIT, gateProtectedMove } from "../../texts-gate.ts";
-import { isWriter } from "../../tools.ts";
-import { endlessWait } from "./kill.ts";
-import { commandVerdict, writeVerdict } from "./ownership.ts";
-import type { Host, Recreation } from "./recreate.ts";
-import { movesOf, protectedChanges } from "./switch.ts";
-import { deny, fieldOf, type Verdict } from "./verdict.ts";
-import { namedPaths, spellsWall, walledVerdict } from "./walled.ts";
+import { GATE_ENDLESS_WAIT, gateProtectedMove } from "../../texts-gate";
+import { isWriter } from "../../tools";
+import { endlessWait } from "./kill";
+import { commandVerdict, writeVerdict } from "./ownership";
+import type { Host, Recreation } from "./recreate";
+import { movesOf, protectedChanges } from "./switch";
+import { deny, fieldOf, type Verdict } from "./verdict";
+import { namedPaths, spellsWall, walledVerdict } from "./walled";
 
 /** The protected paths, what the session saw of the files, and the names of the worktrees Claude Code made in it, which a verdict reads. */
 export interface Walls {

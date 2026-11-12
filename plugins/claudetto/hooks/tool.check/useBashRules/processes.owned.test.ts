@@ -1,5 +1,5 @@
-import { gateRmTmp, gateWorktreeRemove } from "../../texts-gate.ts";
-import { allowed, asks, denied } from "./processes.mock.ts";
+import { gateRmTmp, gateWorktreeRemove } from "../../texts-gate";
+import { allowed, asks, denied } from "./processes.mock";
 
 // A temp base holds every session's files: the base, all of its entries, and a path that leaves it through `..` stay.
 denied("rm -rf /tmp", gateRmTmp("/tmp"));

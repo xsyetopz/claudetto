@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { GITIGNORE_FIXED, ignoreLines } from "./ignore-plan.ts";
-import { FAMILIES, type Family } from "./starter-families.ts";
+import { GITIGNORE_FIXED, ignoreLines } from "./ignore-plan";
+import { FAMILIES, type Family } from "./starter-families";
 
 const star = (name: string): string => name.replaceAll("*", "x");
 

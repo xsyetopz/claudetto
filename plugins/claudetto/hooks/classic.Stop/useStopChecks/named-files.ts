@@ -1,7 +1,4 @@
-import {
-	type Command,
-	parse,
-} from "../../tool.check/useBashRules/shell-words.ts";
+import { type Command, parse } from "../../tool.check/useBashRules/shell-words";
 
 const FENCE = /^\s*```/u;
 const SPAN = /`([^`\n]*)`/gu;

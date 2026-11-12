@@ -1,10 +1,10 @@
 import type { EngineInterface } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { askFixQuestions } from "../../decider/questions.ts";
-import { anyYes } from "../../decider/settle.ts";
-import { ASK_FIX_DENIED } from "../../texts-gate.ts";
-import { ASK_TOOL } from "../../verify.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { askFixQuestions } from "../../decider/questions";
+import { anyYes } from "../../decider/settle";
+import { ASK_FIX_DENIED } from "../../texts-gate";
+import { ASK_TOOL } from "../../verify";
 
 /** Denies an `AskUserQuestion` call when one Decider call answers `yes` for any of its questions. A `no`, an `unsettled` answer, and a Decider that fails let the call through. */
 export async function askFixCall(

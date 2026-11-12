@@ -1,8 +1,8 @@
-import { GATE_RECREATE } from "../../texts-gate.ts";
-import { inOrder } from "../../tools.ts";
-import { operands, writeTargets } from "./files.ts";
-import { type Command, parse, programOf } from "./shell-words.ts";
-import { ask, fieldOf, type Verdict } from "./verdict.ts";
+import { GATE_RECREATE } from "../../texts-gate";
+import { inOrder } from "../../tools";
+import { operands, writeTargets } from "./files";
+import { type Command, parse, programOf } from "./shell-words";
+import { ask, fieldOf, type Verdict } from "./verdict";
 
 const FILE_TOOLS = new Set(["Read", "Write", "Edit", "NotebookEdit"]);
 

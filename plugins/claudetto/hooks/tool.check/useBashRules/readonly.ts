@@ -1,4 +1,4 @@
-import { type Command, parse, programOf } from "./shell-words.ts";
+import { type Command, parse, programOf } from "./shell-words";
 
 const READS = new Set([
 	"cd",

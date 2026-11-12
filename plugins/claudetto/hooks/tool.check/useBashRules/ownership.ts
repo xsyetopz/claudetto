@@ -1,13 +1,13 @@
 import type { EngineInterface } from "claude-code";
 
-import { GATE_SYSTEM_WRITE } from "../../texts-gate.ts";
-import { isPersonMessage } from "../../verify.ts";
-import { askedToDelete } from "./asked.ts";
-import { POLICY_FILES } from "./packages.ts";
-import { forceDeleted, ownsOf } from "./processes.ts";
-import { judge, systemPath } from "./rules.ts";
-import { parse } from "./shell-words.ts";
-import { deny, type Verdict } from "./verdict.ts";
+import { GATE_SYSTEM_WRITE } from "../../texts-gate";
+import { isPersonMessage } from "../../verify";
+import { askedToDelete } from "./asked";
+import { POLICY_FILES } from "./packages";
+import { forceDeleted, ownsOf } from "./processes";
+import { judge, systemPath } from "./rules";
+import { parse } from "./shell-words";
+import { deny, type Verdict } from "./verdict";
 
 // Only a command that could need the transcript reads it.
 const OWNED = /\b(?:kill|worktree|branch|update-ref)\b/u;

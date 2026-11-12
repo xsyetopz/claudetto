@@ -1,6 +1,6 @@
-import { type Fs, join } from "./fs.ts";
-import { scanTasks } from "./tasks.ts";
-import { changeDir } from "./validate.ts";
+import { type Fs, join } from "./fs";
+import { scanTasks } from "./tasks";
+import { changeDir } from "./validate";
 
 // Each artifact turns ready once every one it needs is done.
 const ARTIFACTS = [

@@ -1,16 +1,9 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { PIN_COMPACT_KEEP, PIN_NO_QUESTIONS } from "../../texts-pin.ts";
-import {
-	added,
-	check,
-	lab,
-	RESULT_ROW,
-	RO,
-	spoken,
-	submit,
-} from "./pin.mock.ts";
+import { PIN_COMPACT_KEEP, PIN_NO_QUESTIONS } from "../../texts-pin";
+import { deferred } from "../../tools";
+import { added, check, lab, RESULT_ROW, RO, spoken, submit } from "./pin.mock";
 
 const listen = (on: On): (() => string | undefined) => {
 	let told: string | undefined;
@@ -162,7 +155,7 @@ for (const [scenario, row] of [
 }
 
 test("a prompt sent before the read of the one before it settles keeps both prompts' limits", async ($: Engine, on: On) => {
-	const first = Promise.withResolvers<boolean>();
+	const first = deferred<boolean>();
 	lab(
 		on,
 		{ "Do not push.": "no-push", "Do not commit.": "no-commit" },

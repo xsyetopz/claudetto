@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { applyBlock, BLOCK_END, BLOCK_START, diffOf } from "./ignore-block.ts";
+import { applyBlock, BLOCK_END, BLOCK_START, diffOf } from "./ignore-block";
 
 const block = (...lines: string[]): string =>
 	`${[BLOCK_START, ...lines, BLOCK_END].join("\n")}\n`;

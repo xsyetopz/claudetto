@@ -1,9 +1,9 @@
-import type { Paint } from "./color.ts";
-import { span, thousands, windowText } from "./format.ts";
-import { ICON } from "./icons.ts";
-import { num, type Rec, rec, str } from "./input.ts";
-import { DESCRIPTION_ROOM_MIN, ITEM_GAP, SUBAGENT_ROWS_MAX } from "./limits.ts";
-import { truncate, width } from "./width.ts";
+import type { Paint } from "./color";
+import { span, thousands, windowText } from "./format";
+import { ICON } from "./icons";
+import { num, type Rec, rec, str } from "./input";
+import { DESCRIPTION_ROOM_MIN, ITEM_GAP, SUBAGENT_ROWS_MAX } from "./limits";
+import { truncate, width } from "./width";
 
 const PLUGIN_PREFIX = /^[^:]+:/u;
 const CLAUDE_PREFIX = /^claude-/u;

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
+import { scanner } from "../../secrets.mock";
 
 const lab = (on: On) => {
 	scanner(on);

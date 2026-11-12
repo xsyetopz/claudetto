@@ -1,9 +1,9 @@
 import type { EngineInterface } from "claude-code";
 
-import type { CallAnswer, CallEvent, CallNext } from "../../chain.ts";
-import { postJev } from "../../decider/jev.ts";
-import { DECIDE_CALL } from "../../texts-gate.ts";
-import { questionsOfInput, replyOf, requestOf, verdictsOf } from "./judge.ts";
+import type { CallAnswer, CallEvent, CallNext } from "../../chain";
+import { postJev } from "../../decider/jev";
+import { DECIDE_CALL } from "../../texts-gate";
+import { questionsOfInput, replyOf, requestOf, verdictsOf } from "./judge";
 
 /** The key of TypeSafe, or an empty string when the environment holds none. */
 export async function typesafeKey($: EngineInterface): Promise<string> {

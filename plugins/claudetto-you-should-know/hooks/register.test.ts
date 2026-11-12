@@ -13,7 +13,7 @@ import {
 	PUSH,
 	step,
 	typed,
-} from "./register.mock.ts";
+} from "./register.mock";
 
 test("a new install with no option set makes no request and writes nothing", async ($: Engine, on: On) => {
 	const f = fixture(on, { store: { sessions: [openRow("offer")] } });

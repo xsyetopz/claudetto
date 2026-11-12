@@ -4,7 +4,7 @@ import { type Engine, expect, test } from "claude-code/testing";
 import {
 	registeredNames,
 	stub,
-} from "../../tool.call/useAdvisorTool/advisor.mock.ts";
+} from "../../tool.call/useAdvisorTool/advisor.mock";
 
 const advisor = ($: Engine, args: string) =>
 	$.command.run({

@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { parseYaml } from "./yaml.ts";
+import { parseYaml } from "./yaml";
 
 const logs: string[] = [];
 const log = (message: string) => {

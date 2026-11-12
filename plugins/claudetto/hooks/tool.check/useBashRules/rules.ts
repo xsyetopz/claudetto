@@ -4,7 +4,7 @@ import {
 	GATE_READ_FILE,
 	GATE_UNREADABLE,
 	GATE_WRITE_FILE,
-} from "../../texts-gate.ts";
+} from "../../texts-gate";
 import {
 	formatVerdict,
 	inPlaceTarget,
@@ -13,15 +13,15 @@ import {
 	printsFile,
 	writesWhole,
 	writeTargets,
-} from "./files.ts";
-import { busyWaitVerdict, killVerdict, releaseVerdict } from "./kill.ts";
-import { packageVerdict } from "./packages.ts";
-import { maskedExitVerdict, unstoppedCommitVerdict } from "./pipefail.ts";
-import { NOBODY, ownedRemoval, ownedVerdict, type Owns } from "./processes.ts";
-import { refVerdict } from "./refs.ts";
-import { type Command, parse, programOf, scriptOf } from "./shell-words.ts";
-import { upstreamVerdict } from "./upstream.ts";
-import { ask, deny, type Verdict } from "./verdict.ts";
+} from "./files";
+import { busyWaitVerdict, killVerdict, releaseVerdict } from "./kill";
+import { packageVerdict } from "./packages";
+import { maskedExitVerdict, unstoppedCommitVerdict } from "./pipefail";
+import { NOBODY, ownedRemoval, ownedVerdict, type Owns } from "./processes";
+import { refVerdict } from "./refs";
+import { type Command, parse, programOf, scriptOf } from "./shell-words";
+import { upstreamVerdict } from "./upstream";
+import { ask, deny, type Verdict } from "./verdict";
 
 const SYSTEM = [
 	"/etc",

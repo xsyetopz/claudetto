@@ -8,9 +8,9 @@ import {
 	rig,
 	SET,
 	SETTLED,
-} from "./decider.mock.ts";
-import { STATE_MAX_CHARS } from "./redact.ts";
-import { settle } from "./settle.ts";
+} from "./decider.mock";
+import { STATE_MAX_CHARS } from "./redact";
+import { settle } from "./settle";
 
 const LEAKY = {
 	reply: "I set the variable.\nexport API_TOKEN=hunter2hunter2hunter2\nDone.",

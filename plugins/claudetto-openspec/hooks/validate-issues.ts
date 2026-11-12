@@ -1,10 +1,10 @@
-import { type Block, fold, norm } from "./spec-lines.ts";
-import { missingScenarios } from "./spec-merge.ts";
-import type { Plan } from "./spec-plan.ts";
+import { requirementText } from "./spec";
+import { type Block, fold, norm } from "./spec-lines";
+import { missingScenarios } from "./spec-merge";
+import type { Plan } from "./spec-plan";
 // The issues of one delta file: notices, conflicts inside it, and scenarios a MODIFIED block would lose.
-import { at, blockIssues, type Issue, MAX_REQUIREMENT } from "./spec-rules.ts";
-import { requirementText } from "./spec.ts";
-import type { Found } from "./validate-discover.ts";
+import { at, blockIssues, type Issue, MAX_REQUIREMENT } from "./spec-rules";
+import type { Found } from "./validate-discover";
 
 const NAMELESS = /^requirement:?$/iu;
 

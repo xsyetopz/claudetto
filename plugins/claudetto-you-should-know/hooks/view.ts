@@ -9,8 +9,8 @@ import type {
 	TextProps,
 } from "claude-code";
 
-import { type Card, LIMITS, parseCards, type View } from "./note.ts";
-import { DISMISSED } from "./texts.ts";
+import { type Card, LIMITS, parseCards, type View } from "./note";
+import { DISMISSED } from "./texts";
 
 export type ButtonKey =
 	| "learn"

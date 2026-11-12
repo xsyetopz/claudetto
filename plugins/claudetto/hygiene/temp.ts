@@ -3,8 +3,8 @@ import { basename, join, sep } from "node:path";
 
 import { spawn } from "bun";
 
-import type { Log } from "./roots.ts";
-import { type Held, tempRule, type Trash } from "./trash.ts";
+import type { Log } from "./roots";
+import { type Held, tempRule, type Trash } from "./trash";
 
 export interface Candidate {
 	readonly kind: string;
@@ -16,11 +16,14 @@ export const MINUTE_MS = 60_000;
 // 500 paths of a temp folder stay far under the 1 MiB that macOS allows a command line.
 const BATCH = 500;
 
-export const namesIn = (dir: string) =>
-	readdir(dir, { withFileTypes: true }).then(
-		(entries) => entries.filter((entry) => !entry.isSymbolicLink()),
-		() => [],
-	);
+export const namesIn = async (dir: string) => {
+	try {
+		const entries = await readdir(dir, { withFileTypes: true });
+		return entries.filter((entry) => !entry.isSymbolicLink());
+	} catch {
+		return [];
+	}
+};
 
 /** `items` in runs short enough for one command line, so thousands of temp entries cost a few processes. */
 export const batched = <T>(items: readonly T[]): T[][] =>

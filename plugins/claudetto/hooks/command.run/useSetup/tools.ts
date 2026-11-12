@@ -1,4 +1,4 @@
-import { SCANNER, SCANNER_INSTALL } from "../../secrets.ts";
+import { SCANNER, SCANNER_INSTALL } from "../../secrets";
 
 export interface Tool {
 	readonly name: string;

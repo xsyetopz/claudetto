@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { gonePath, read, run, vanishing } from "./gate.mock.ts";
+import { gonePath, read, run, vanishing } from "./gate.mock";
 
 test("a copy to a file the session saw and that is gone now asks", async ($: Engine, on: On) => {
 	const files = new Set(["/p/GOAL-1.txt", "/tmp/src.txt"]);

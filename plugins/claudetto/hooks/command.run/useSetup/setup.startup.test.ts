@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { lab, logged, run, saved, startup } from "./setup.mock.ts";
+import { lab, logged, run, saved, startup } from "./setup.mock";
 
 const lowVersion = (on: On, version: string) =>
 	lab(on, undefined, undefined, undefined, false, version);

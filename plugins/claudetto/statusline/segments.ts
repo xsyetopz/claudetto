@@ -1,4 +1,4 @@
-import type { Paint } from "./color.ts";
+import type { Paint } from "./color";
 import {
 	baseName,
 	clock,
@@ -7,11 +7,11 @@ import {
 	span,
 	thousands,
 	windowText,
-} from "./format.ts";
-import { ICON } from "./icons.ts";
-import { num, type Rec, str, sub } from "./input.ts";
-import { FIVE_HOUR_S, SEVEN_DAY_S, SPEC_CHANGES_SHOWN } from "./limits.ts";
-import type { Local } from "./local.ts";
+} from "./format";
+import { ICON } from "./icons";
+import { num, type Rec, str, sub } from "./input";
+import { FIVE_HOUR_S, SEVEN_DAY_S, SPEC_CHANGES_SHOWN } from "./limits";
+import type { Local } from "./local";
 
 export interface Ctx {
 	input: Rec;

@@ -4,10 +4,10 @@ import {
 	agentWorktrees,
 	removeWorktrees,
 	type Run,
-} from "./classic.SessionStart/useHygieneSweep/worktrees.ts";
-import { CLEANUP_LEFT, STALE_TASKS } from "./texts-gate.ts";
-import { createdOf } from "./tool.check/useBashRules/processes.ts";
-import { inOrder } from "./tools.ts";
+} from "./classic.SessionStart/useHygieneSweep/worktrees";
+import { CLEANUP_LEFT, STALE_TASKS } from "./texts-gate";
+import { createdOf } from "./tool.check/useBashRules/processes";
+import { inOrder } from "./tools";
 
 type Past = Parameters<typeof createdOf>[0];
 

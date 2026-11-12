@@ -9,9 +9,9 @@ import {
 	jevReply,
 	KEY,
 	noul,
-} from "../../decider/decider.mock.ts";
-import { bash } from "../../secrets.mock.ts";
-import { type Earlier, lab } from "./processes.mock.ts";
+} from "../../decider/decider.mock";
+import { bash } from "../../secrets.mock";
+import { type Earlier, lab } from "./processes.mock";
 
 const DELETE = "git branch -D old-feature";
 const NOUL = "asks_delete_branch";

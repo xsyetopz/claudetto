@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { isWriter } from "./tools.ts";
+import { isWriter } from "./tools";
 
 test("the three file-writing tools are writers, and a reader or Bash is none", () => {
 	const names = ["Edit", "NotebookEdit", "Write", "Read", "Bash", "MultiEdit"];

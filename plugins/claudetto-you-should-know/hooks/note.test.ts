@@ -13,7 +13,7 @@ import {
 	skipsAfter,
 	type View,
 	withRow,
-} from "./note.ts";
+} from "./note";
 
 const viewed = (explanation: string, line = "Tests run in order."): View => ({
 	kind: "explained",

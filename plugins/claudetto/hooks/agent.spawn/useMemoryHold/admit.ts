@@ -1,8 +1,8 @@
 import type { PluginOptions } from "claude-code";
 
-import { numberOption } from "../../options.ts";
-import { DENY_CALLS, DENY_FAILED } from "../../texts.ts";
-import { signature } from "../../tool.check/useBashRules/denials.ts";
+import { numberOption } from "../../options";
+import { DENY_CALLS, DENY_FAILED } from "../../texts";
+import { signature } from "../../tool.check/useBashRules/denials";
 
 export interface Limits {
 	readonly windowMs: number;

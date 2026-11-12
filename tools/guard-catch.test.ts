@@ -1,6 +1,12 @@
 import { expect, test } from "bun:test";
 
-import { contentsOf, fieldOf, listOf, PLUGINS } from "./validator.ts";
+import {
+	contentsOf,
+	fieldOf,
+	listOf,
+	PLUGINS,
+	VALIDATE_MS,
+} from "./validator.ts";
 
 const EVENTS = ["tool.check", "tool.call"];
 
@@ -24,4 +30,5 @@ test.each(PLUGINS)(
 			).toBeLessThanOrEqual(1);
 		}
 	},
+	VALIDATE_MS,
 );

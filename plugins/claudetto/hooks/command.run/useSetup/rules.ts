@@ -1,6 +1,6 @@
 import type { EngineInterface } from "claude-code";
 
-import { ask, SKIP, textOf, WRITE, writeFile } from "./engine.ts";
+import { ask, SKIP, textOf, WRITE, writeFile } from "./engine";
 
 export const RULES = [
 	"useLeastCode",

@@ -7,18 +7,18 @@ import type {
 	CheckAnswer,
 	CheckEvent,
 	CheckNext,
-} from "../../chain.ts";
+} from "../../chain";
 import {
 	PIN_BLOCKED,
 	PIN_COMPACT,
 	PIN_NO_QUESTIONS,
 	PIN_NOTE,
 	type PinConstraint,
-} from "../../texts-pin.ts";
-import { deny } from "../../tool.check/useBashRules/verdict.ts";
-import { ASK_TOOL, isPersonMessage } from "../../verify.ts";
-import { readLedger } from "./pin-ledger.ts";
-import { breaks } from "./pin-rules.ts";
+} from "../../texts-pin";
+import { deny } from "../../tool.check/useBashRules/verdict";
+import { ASK_TOOL, isPersonMessage } from "../../verify";
+import { readLedger } from "./pin-ledger";
+import { breaks } from "./pin-rules";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/u;
 

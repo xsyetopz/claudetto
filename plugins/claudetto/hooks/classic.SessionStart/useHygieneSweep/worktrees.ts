@@ -1,4 +1,4 @@
-import { inOrder, isRecord } from "../../tools.ts";
+import { inOrder, isRecord } from "../../tools";
 
 /** Runs a command in `cwd` and answers its stdout when it exits 0. */
 export type Run = (

@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { isBelowFloor, isOnPath, noticeLine, TOOLS } from "./tools.ts";
+import { isBelowFloor, isOnPath, noticeLine, TOOLS } from "./tools";
 
 const holds =
 	(...files: string[]) =>

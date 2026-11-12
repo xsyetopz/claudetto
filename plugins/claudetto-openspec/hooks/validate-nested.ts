@@ -1,6 +1,6 @@
 // Upstream's namespace-folder rule: which folders under changes/ wrap further changes.
-import { type Fs, join, safeList } from "./fs.ts";
-import { discoverDeltas } from "./validate-discover.ts";
+import { type Fs, join, safeList } from "./fs";
+import { discoverDeltas } from "./validate-discover";
 
 const ROOT_MARKERS = [".openspec.yaml", "proposal.md", "tasks.md", "design.md"];
 const visible = async (fs: Fs, dir: string) => {

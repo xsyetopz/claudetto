@@ -1,7 +1,8 @@
 import type { On, TurnUsage } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
+import { scanner } from "../../secrets.mock";
+import { collect, deferred } from "../../tools";
 
 const HAIKU_MODEL = "claude-haiku-5-5";
 
@@ -32,8 +33,8 @@ const lab = (
 	on("session.cwd", () => ({ value: "/repo" }));
 	on("fs.exists", () => ({ value: false }));
 	const clock = mock.clock(on, { now });
-	const asked = Promise.withResolvers<boolean>();
-	const held = Promise.withResolvers<boolean>();
+	const asked = deferred<boolean>();
+	const held = deferred<boolean>();
 	on("turn.step", async function* (_$, e) {
 		for (const [index, id] of step.calls.entries()) {
 			yield { kind: "tool", index, id, name: "mcp__s__read" };
@@ -72,7 +73,7 @@ const run = async (
 	calls: readonly string[],
 	beforeStop?: () => void,
 ) => {
-	const drained = Array.fromAsync(
+	const drained = collect(
 		$.turn.step({ turnId: "t1", index: 0, model: "haiku", messageCount: 1 }),
 	);
 	await step.asked;
@@ -170,7 +171,7 @@ const callMidStep = async (
 	step: { asked: Promise<boolean> },
 	model: string,
 ) => {
-	const drained = Array.fromAsync(
+	const drained = collect(
 		$.turn.step({ turnId: "t1", index: 0, model, messageCount: 1 }),
 	);
 	await step.asked;

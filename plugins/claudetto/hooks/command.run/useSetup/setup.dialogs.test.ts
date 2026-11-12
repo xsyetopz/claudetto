@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { valueAt } from "./settings.ts";
+import { valueAt } from "./settings";
 import {
 	asked,
 	choose,
@@ -14,8 +14,8 @@ import {
 	run,
 	saved,
 	writtenAt,
-} from "./setup.mock.ts";
-import { statuslineEdit } from "./text.ts";
+} from "./setup.mock";
+import { statuslineEdit } from "./text";
 
 test("session.start registers no setup tool", async ($: Engine, on: On) => {
 	lab(on);

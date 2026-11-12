@@ -1,8 +1,8 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock.ts";
-import { AGENT_TEXT } from "../../texts.ts";
+import { scanner } from "../../secrets.mock";
+import { AGENT_TEXT } from "../../texts";
 
 interface Seen {
 	subagent_type?: string;

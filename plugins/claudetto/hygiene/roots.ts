@@ -1,7 +1,7 @@
 import { exists, readFile, realpath } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 
-import { listedPaths, PURGE_PATHS } from "../../command.run/useSetup/tools.ts";
+import { listedPaths, PURGE_PATHS } from "../hooks/command.run/useSetup/tools";
 
 const within = (path: string, parent: string): boolean =>
 	path === parent || path.startsWith(parent + sep);
@@ -16,10 +16,17 @@ export const logged =
 		return fallback;
 	};
 
-export const realOr = (path: string, log: Log): Promise<string> =>
-	realpath(path).catch(
-		logged(log, `The path ${path} was not resolved`, resolve(path)),
-	);
+export const realOr = async (path: string, log: Log): Promise<string> => {
+	try {
+		return await realpath(path);
+	} catch (error) {
+		return logged(
+			log,
+			`The path ${path} was not resolved`,
+			resolve(path),
+		)(error);
+	}
+};
 
 /** The `~/.claude` folder a real path is inside that hygiene never touches, or nothing. */
 export const guardOf = (real: string, realHome: string) =>

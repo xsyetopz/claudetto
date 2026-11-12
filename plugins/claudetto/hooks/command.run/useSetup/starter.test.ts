@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { FAMILIES } from "./starter-families.ts";
-import { detectFamilies, linesOf, planStarter, previewOf } from "./starter.ts";
+import { detectFamilies, linesOf, planStarter, previewOf } from "./starter";
+import { FAMILIES } from "./starter-families";
 
 const NONE = { agents: false, claude: false };
 

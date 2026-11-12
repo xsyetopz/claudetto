@@ -1,10 +1,10 @@
-import { colorOff, paintOf } from "./color.ts";
-import { hooksOff } from "./hooks-off.ts";
-import { num, parse, type Rec, str, sub } from "./input.ts";
-import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "./limits.ts";
-import { type Local, NO_LOCAL, readLine, readLocal } from "./local.ts";
-import { renderRows } from "./rows.ts";
-import { taskRows } from "./subagents.ts";
+import { colorOff, paintOf } from "./color";
+import { hooksOff } from "./hooks-off";
+import { num, parse, type Rec, str, sub } from "./input";
+import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "./limits";
+import { type Local, NO_LOCAL, readLine, readLocal } from "./local";
+import { renderRows } from "./rows";
+import { taskRows } from "./subagents";
 
 type Env = Readonly<Record<string, string | undefined>>;
 

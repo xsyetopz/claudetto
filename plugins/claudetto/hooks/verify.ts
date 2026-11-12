@@ -1,6 +1,6 @@
 import type { SessionMessage, ToolUseSummary } from "claude-code";
 
-import type { GradeFault } from "./texts-grade.ts";
+import type { GradeFault } from "./texts-grade";
 
 export const ASK_TOOL = "AskUserQuestion";
 

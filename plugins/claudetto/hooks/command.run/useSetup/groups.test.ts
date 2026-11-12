@@ -1,9 +1,9 @@
 import { expect, test } from "claude-code/testing";
 
-import { SILENT_TURN_REMINDER } from "../../texts.ts";
-import { AUTO_MODE } from "./auto-mode.ts";
-import { groupNamed } from "./settings.mock.ts";
-import { DENIED_TOOLS, GROUPS, STATUS_LINE, valueAt } from "./settings.ts";
+import { SILENT_TURN_REMINDER } from "../../texts";
+import { AUTO_MODE } from "./auto-mode";
+import { DENIED_TOOLS, GROUPS, STATUS_LINE, valueAt } from "./settings";
+import { groupNamed } from "./settings.mock";
 
 test("the groups are labelled in order", () => {
 	expect(GROUPS.map((g) => g.label)).toEqual([

@@ -2,7 +2,7 @@ import {
 	GRADIENT_AMBER_PERCENT,
 	GRADIENT_GREEN_PERCENT,
 	GRADIENT_RED_PERCENT,
-} from "./limits.ts";
+} from "./limits";
 
 type Style = (text: string) => string;
 type Rgb = readonly [number, number, number];
