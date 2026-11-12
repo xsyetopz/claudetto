@@ -22,6 +22,13 @@ At `classic.Stop`, after the named-files and open-items checks, when none of the
 - **THEN** `deferred` is offered in every session, and a finding of it blocks once with the fix that tells the agent to do that work and report what it shows
 - **AND** the lab tests are `limits/verify.test.ts`, "a headless turn is still offered the deferred fault" and "the deferred fault blocks once with its own fix"
 
+#### Scenario: Offer of Doable Work and a Doable Check Left Unrun
+
+- **WHEN** a reply offers work the agent can do now on the condition of the person's reply ("If you want, I'll …", "Reply … and I will"), or lists a check as "Not checked" that the agent's own tools could run
+- **THEN** the `deferred` test SHALL name both, a finding of it blocks once with the fix that tells the agent to do the offered work or run the check and report what it shows, and no word list or pattern decides it
+- **AND** an offer or an unrun check that needs something only the person holds (a login, a device, a choice between designs) SHALL stay outside the fault
+- **AND** the lab tests are `limits/verify-grader.test.ts`, "the deferred test names an offer and an unrun check" for the replies of R15, R29, and R30
+
 #### Scenario: No Padding Fault
 
 - **WHEN** the grader is offered its faults
