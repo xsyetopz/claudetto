@@ -102,6 +102,14 @@ const ENTER_PLAN_MODE =
 const EXIT_PLAN_MODE =
 	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It takes no plan text. Ask an open question with AskUserQuestion first.";
 
+const TASK_CREATE = `Adds a task to the session's task list, with status \`pending\`. Create tasks for work of 3 or more steps, for a list the user gives, and for follow-ups you find; skip it for one trivial step. \`subject\` is a brief imperative title; \`description\` says what to do; \`activeForm\` is the spinner text while it runs, such as "Fixing the login bug"; \`metadata\` is free-form. \`TaskList\` first, to avoid a duplicate; set dependencies afterward with \`TaskUpdate\`.`;
+
+const TASK_GET = `Returns one task by \`taskId\`: \`subject\`, \`description\`, \`status\` (\`pending\`, \`in_progress\`, or \`completed\`), \`blocks\`, and \`blockedBy\`. Call it before you start or update a task; begin only when \`blockedBy\` is empty.`;
+
+const TASK_LIST = `Lists every task as \`id\`, \`subject\`, \`status\`, \`owner\`, and open \`blockedBy\`. Call it to find the next task: \`pending\`, no \`owner\`, empty \`blockedBy\`; take the lowest id first. Call it after you complete a task. Use \`TaskGet\` for a task's full details.`;
+
+const TASK_UPDATE = `Changes a task by \`taskId\`. \`TaskGet\` it first, so you edit its latest state. Fields: \`status\` (\`pending\`, \`in_progress\`, \`completed\`, or \`deleted\`, which removes the task for good), \`subject\`, \`description\`, \`activeForm\`, \`owner\`, \`metadata\` (merged; null deletes a key), \`addBlocks\` (tasks that wait on this one), and \`addBlockedBy\` (tasks this one waits on). Set \`in_progress\` when you start. Set \`completed\` only when the work is done in full: with a failing test, partial work, or an unresolved error, keep \`in_progress\` and add a task for the blocker. Delete a task that is obsolete or was made in error. Mark each assigned task done when you finish, then call \`TaskList\`.`;
+
 export const TOOL_TEXTS: Readonly<Record<string, string>> = {
 	Bash: BASH,
 	Read: READ,
@@ -120,6 +128,10 @@ export const TOOL_TEXTS: Readonly<Record<string, string>> = {
 	ToolSearch: TOOL_SEARCH,
 	EnterPlanMode: ENTER_PLAN_MODE,
 	ExitPlanMode: EXIT_PLAN_MODE,
+	TaskCreate: TASK_CREATE,
+	TaskGet: TASK_GET,
+	TaskList: TASK_LIST,
+	TaskUpdate: TASK_UPDATE,
 };
 
 export const planModeText = (file: string, hasPlan: boolean): string =>

@@ -27,6 +27,16 @@ The built-in `/init` skill's prompt SHALL be replaced by `INTERVIEW_TEXT`, which
 - **THEN** the answer holds our text and no `isDeferred` of ours
 - **AND** the lab tests are `surface.test.ts`, "tool.describe sends our Monitor text, deferred only for Skill among them" and its three siblings, and "Monitor, ToolSearch, and the plan-mode tools each carry a text of ours"
 
+### Requirement: The Task Tools Carry a Shorter Text of Ours
+
+`TOOL_TEXTS` SHALL hold a text for `TaskCreate`, `TaskGet`, `TaskList`, and `TaskUpdate`, each shorter than its stock description of 2,146, 732, 998, and 2,243 characters, and no setting or schema of the tools changes.
+
+#### Scenario: The Four Task Texts
+
+- **WHEN** the engine describes `TaskCreate`, `TaskGet`, `TaskList`, or `TaskUpdate` with its stock description
+- **THEN** the answer holds our text, shorter than the stock one
+- **AND** the lab test is `surface.test.ts`, "TaskCreate gets our text, shorter than the stock one" and its three siblings
+
 ### Requirement: The Agent Text Sends a Committing Agent to a Worktree of Its Own
 
 The `Agent` description SHALL tell the model to set `isolation: "worktree"` on an agent that commits, because agents that commit in one working tree block each other at the pre-commit hook. The hook SHALL pass a call that names `isolation` to the engine unchanged, and no agent definition SHALL set `isolation`, since a worktree holds the changes of an agent that does not commit.

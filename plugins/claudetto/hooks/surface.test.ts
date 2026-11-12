@@ -60,6 +60,26 @@ for (const tool of Object.keys(TOOL_TEXTS)) {
 	});
 }
 
+// Stock description lengths of Claude Code 2.1.322, read from a fake Messages API request.
+const STOCK_TASK_LENGTHS: Record<string, number> = {
+	TaskCreate: 2146,
+	TaskGet: 732,
+	TaskList: 998,
+	TaskUpdate: 2243,
+};
+for (const [tool, stock] of Object.entries(STOCK_TASK_LENGTHS)) {
+	test(`${tool} gets our text, shorter than the stock one`, async ($: Engine, on: On) => {
+		on("tool.describe", (_$, e) => e);
+		const out = await $.tool.describe({
+			tool,
+			description: "x".repeat(stock),
+			provider: { plugin: "engine", tier: "core" },
+		});
+		expect(out.description).toBe(textOf(tool));
+		expect(textOf(tool).length).toBeLessThan(stock);
+	});
+}
+
 test("Monitor, ToolSearch, and the plan-mode tools each carry a text of ours", () => {
 	const named = ["Monitor", "ToolSearch", "EnterPlanMode", "ExitPlanMode"];
 	expect(named.filter((tool) => textOf(tool) === "")).toEqual([]);
