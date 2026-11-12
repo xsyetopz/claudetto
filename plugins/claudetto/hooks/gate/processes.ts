@@ -1,5 +1,5 @@
 import { gateRmTmp, gateWorktreeRemove } from "../texts-gate.ts";
-import { type Past, startedBy } from "./kill.ts";
+import { type Past, startedBy, startedPids } from "./kill.ts";
 import { type Command, parse, programOf } from "./shell-words.ts";
 import { withoutGitOptions } from "./upstream.ts";
 import { deny, fieldOf, type Verdict } from "./verdict.ts";
@@ -15,6 +15,8 @@ const WORKER_PATH = /(?:^|\/)\.claude\/worktrees\/agent-(\w+)\/?$/u;
 /** What this session owns: a started process, a created worktree path, a created branch. */
 export interface Owns {
 	pid: (pid: string) => boolean;
+	/** The pids this session's own commands started. */
+	pids: () => string[];
 	path: (path: string) => boolean;
 	branch: (name: string) => boolean;
 	/** A branch a message of the person asked to delete, by its name or as one of "the other branches". */
@@ -23,6 +25,7 @@ export interface Owns {
 
 export const NOBODY: Owns = {
 	pid: () => false,
+	pids: () => [],
 	path: () => false,
 	branch: () => false,
 	asked: () => false,
@@ -103,6 +106,7 @@ export const ownsOf = (past: Past[]): Owns => {
 	const entered = past.filter((t) => t.tool === "EnterWorktree" && !t.isError);
 	return {
 		pid: startedBy(past),
+		pids: () => startedPids(past),
 		path: (path) =>
 			paths.includes(path) ||
 			entered.some((t) => t.text?.includes(path) === true) ||

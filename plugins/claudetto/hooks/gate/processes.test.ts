@@ -39,6 +39,29 @@ test("kill of a pid a background command printed passes", async ($: Engine, on: 
 	expect(awaited.decision).toBe("allow");
 });
 
+test("a kill of a stranger names the pids this session's own commands started", async ($: Engine, on: On) => {
+	lab(on, [
+		{ command: "swift run & echo $!", text: "49166" },
+		{ command: "pgrep app", text: "777" },
+		{ command: "sleep 5 & echo $!", text: "555", isError: true },
+		{ command: "./dev & echo $!", text: "39648" },
+	]);
+	const v = await bash($, "kill 31337");
+	expect(v.decision).toBe("deny");
+	expect(v.reason).toContain(gateKillPid("31337", ["49166", "39648"]));
+	expect(v.reason).toContain("49166, 39648");
+	expect(v.reason).not.toContain("777");
+	expect(v.reason).not.toContain("555");
+});
+
+test("a kill of a stranger with no started pid says none was started", async ($: Engine, on: On) => {
+	lab(on, [{ command: "pgrep app", text: "777" }]);
+	const v = await bash($, "kill 777");
+	expect(v.decision).toBe("deny");
+	expect(v.reason).toContain(gateKillPid("777", []));
+	expect(v.reason).toContain("started no process yet");
+});
+
 test("a pid printed by a command that was not backgrounded is denied", async ($: Engine, on: On) => {
 	lab(on, [{ command: "pgrep node", text: "4242" }]);
 	const awaited2 = await bash($, "kill 4242");

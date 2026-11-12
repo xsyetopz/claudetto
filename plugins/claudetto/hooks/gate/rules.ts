@@ -67,7 +67,7 @@ const commandVerdicts = (
 		formatVerdict(name, args),
 		packageVerdict(name, args, has),
 		refVerdict(name, args, own),
-		killVerdict(name, args, own.pid),
+		killVerdict(name, args, own.pid, own.pids()),
 		ownedVerdict(name, args, own),
 		releaseVerdict(c),
 		writeTargets(c, name, args).some((p) => PLUGIN_HOOKS.test(p))

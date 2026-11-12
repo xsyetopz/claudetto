@@ -73,31 +73,42 @@ export const busyWaitVerdict = (commands: Command[]): Verdict | undefined => {
 	return spins ? deny(GATE_BUSY_WAIT) : undefined;
 };
 
-/** Tells whether an earlier call of this session started the process:a Bash call that ran something in the background and whose result printed the pid. */
-export const startedBy =
-	(past: Past[]) =>
-	(pid: string): boolean => {
-		const shown = new RegExp(`(?<![\\w.])${pid}(?![\\w.])`, "u");
-		return past.some(
-			(t) =>
-				t.tool === "Bash" &&
-				!t.isError &&
-				BACKGROUNDS.test(fieldOf(t.input, "command") ?? "") &&
-				shown.test(t.text ?? ""),
-		);
-	};
+const NUMBER = /(?<![\w.])\d+(?![\w.])/gu;
+// The pids a session shows at once; older ones are rarely still running.
+const LISTED = 8;
+
+/** The pids that the non-error Bash calls of this session which ran something in the background printed, oldest first. */
+export const startedPids = (past: Past[]): string[] => [
+	...new Set(
+		past
+			.filter(
+				(t) =>
+					t.tool === "Bash" &&
+					!t.isError &&
+					BACKGROUNDS.test(fieldOf(t.input, "command") ?? ""),
+			)
+			.flatMap((t) => t.text?.match(NUMBER) ?? []),
+	),
+];
+
+/** Tells whether an earlier call of this session started the process: a Bash call that ran something in the background and whose result printed the pid. */
+export const startedBy = (past: Past[]) => {
+	const pids = new Set(startedPids(past));
+	return (pid: string): boolean => pids.has(pid);
+};
 
 /** Denies `pkill`, `killall`, and a `kill` of a pid that no result of this session shows it started. A job (`%1`), `$!`, a signal check (`-0`), and `kill -l` pass. */
 export const killVerdict = (
 	name: string,
 	args: string[],
 	started: (pid: string) => boolean,
+	listed: readonly string[] = [],
 ): Verdict | undefined => {
 	if (name === "pkill" || name === "killall") {
 		return deny(GATE_KILL_BROAD);
 	}
 	if (name === "xargs" && args.includes("kill")) {
-		return deny(gateKillPid("each pid from the list"));
+		return deny(gateKillPid("each pid from the list", listed.slice(-LISTED)));
 	}
 	if (name !== "kill" || args.some((a) => PROBE.test(a))) {
 		return undefined;
@@ -105,7 +116,9 @@ export const killVerdict = (
 	const stranger = targetsOf(args).find(
 		(t) => !(t.startsWith("%") || t === "$!" || (PID.test(t) && started(t))),
 	);
-	return stranger === undefined ? undefined : deny(gateKillPid(stranger));
+	return stranger === undefined
+		? undefined
+		: deny(gateKillPid(stranger, listed.slice(-LISTED)));
 };
 
 /** Denies running a released Claude Code program, which `cc-inspect` reads. The installed `claude` command is no path under the versions folder, so `claude --help` passes. */

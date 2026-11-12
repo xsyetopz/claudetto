@@ -101,8 +101,15 @@ export const gateRule = (reason: string | undefined, rule: string): string =>
 	`${reason ?? "This call is denied."} The rule \`${rule}\` denies it.`;
 export const GATE_KILL_BROAD =
 	"`pkill` and `killall` stop every process with a matching name, and some of those were not started by this session. Stop a background task with `TaskStop`, or run `kill <pid>` on a pid that an earlier command of this session printed after it started the process in the background.";
-export const gateKillPid = (pid: string): string =>
-	`${pid} is not a process this session started: no earlier result of this session shows a background command that printed it. Leave it running. Stop only what this session started, with \`TaskStop\` or \`kill <pid>\` of a pid its own command printed.`;
+export const gateKillPid = (
+	pid: string,
+	started: readonly string[] = [],
+): string =>
+	`${pid} is not a process this session started: no earlier result of this session shows a background command that printed it. Leave it running. Stop only what this session started, with \`TaskStop\` or \`kill <pid>\` of a pid its own command printed. ${
+		started.length === 0
+			? "Your own commands have started no process yet."
+			: `Your own commands started these pids: ${started.join(", ")}.`
+	}`;
 export const gateWalled = (path: string, wall: string): string =>
 	`${path} is under \`${wall}\`, which the user walled off. Do not read, list, or search it by any tool, command, or other route. If a count or a fact about it is needed, ask the user to run their own \`! <command>\` and tell you the result.`;
 export const walledUnguarded = (walls: readonly string[]): string =>
