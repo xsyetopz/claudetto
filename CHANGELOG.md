@@ -22,7 +22,9 @@ Before 1.0.0, a release can change or remove behavior.
 - Each session caps Go's heap with `GOMEMLIMIT` at a quarter of memory, unless you set it yourself, so type-aware `oxlint` (tsgolint) no longer climbs to 16 GB.
 - The Stop grader flags a reply that leaves doable work to the user: a check on part of a set, an untested guess, or a run named as the next step.
 - `/reply` quotes your mouse selection, or paragraph N of the last reply (`/reply N`), into the prompt as a `Re:` block.
-- Each finished subagent run is logged to `.claude/claudetto/runs.jsonl`, with whether the root agent edited the same files within its next 3 turns.
+- An `advisor` tool and an `/advisor <question>` command send one question, with only the files it names (`@path` in the command), to `claude-fable-5-2` at `high` effort, or to `claude-mythos-5-2` when `ANTHROPIC_DEFAULT_FABLE_MODEL` names it. The question and files are redacted first, and a request over 400,000 characters is refused. `/claudetto:setup` sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, because the built-in advisor reads the whole context on each question.
+- A `sweep` agent (`claudetto:sweep`) reviews a change or a system for defects and slow paths on Fable at `high` effort, read-only.
+- Four general rules ship in `plugins/claudetto/rules/`: find facts by experiment, one obvious way per job, block language with the articles that do work, and look for a clone before writing a function.
 - The root agent gives each edit task the command that checks it, and runs that command when the report arrives, before it builds on it.
 - The injected rules say a removal deletes the feature's code, tests, and docs, adds no test that it stays gone, and keeps no compatibility path before 1.0.0.
 - The `openspec` tool validates the main specs with no change open, and adds `init`, `new`, `list`, and the status graph.
@@ -42,6 +44,11 @@ Before 1.0.0, a release can change or remove behavior.
 ### Changed
 
 - **Breaking:** the agents are named by job: `search`, `plan`, and `work` (`claudetto:search`, `claudetto:plan`, `claudetto:work`) replace `Artemis`, `Metis`, and `Heracles`. Their behavior does not change.
+- **Breaking:** the hooks that register on one engine event sit in a folder named for that event, such as `tool.check/`, `tool.call/`, `classic.Stop/`, and `command.run/`, and then in a folder named by rule key, such as `useBashRules` or `useAdvisorTool`. The top-level files `pin.ts`, `slices.ts`, `surface.ts`, `hygiene.ts`, `delegation.ts`, `sandbox-git.ts`, `reply.ts`, and `ask-fix.ts` moved there, as did the files of the `gate/`, `limits/`, and `setup/` folders; `decider/` stays as the one shared module.
+- The three cost numbers, measured with Claude Code 2.1.322 against a stand-in Messages API (no model call), on `1228c597` before the rebuild and on `85987b8e` after it:
+  - The first request that carries tools, with all three plugins, fell from 19,686 to 19,392 bytes; stock Claude Code sends 43,099. The system text grew from 6,756 to 7,139 characters, and the message text fell from 4,297 to 3,595.
+  - A plain turn whose reply passes the Stop grade makes 3 side model calls, up from 2: the ledger's Decider call, the Stop grade, and the new register check, each `claude-haiku-5-5` without a TypeSafe key. With a key, the two Decider calls go to Jev.
+  - Denial lines: 2,915 in three days of sessions before. The deleted rules gave 772 of them (temp marker 400, answer-first gate 316, agent past 15 minutes 40, `PATH` marker 16). No session has run this release yet, so the count after is not measured.
 - **Breaking:** claudetto reads the TypeSafe key only from `TYPESAFE_API_KEY`, in the shell that launches Claude Code or in the `env` block of the settings. The `typesafeApiKey` option is gone, so an install that set it must set the variable. A project `.env` file is not read.
 - **Breaking:** with a key, the constraint ledger and the branch gate send your messages to `api.typesafe.ai`, redacted by the secret scan first. Before, only the `decide` tool reached that host. Without a key, no request reaches it.
 - **Breaking:** the popup is Claude Code's own `AskUserQuestion` again, with its description cut to one sentence. Auto mode reads a popup answer only from that tool, so an action you approved in claudetto's popup, such as a merge, was judged as if nobody had asked for it. The tool `mcp__claudetto__ask-user-question` is gone.
@@ -68,7 +75,6 @@ Before 1.0.0, a release can change or remove behavior.
 - The status line measures context against the compaction window, paints with the Claude Code theme's colours, and flows its items into up to four rows.
 - The constraint ledger lifts a constraint when the person allows it.
 - Each question for the user goes through the popup only.
-- A handoff dates its git state, and the read-back checks it again.
 - The gate asks before it deletes a branch the session did not make, and allows one the person asked to delete.
 - The root prompt drops an act the user says nobody asked for, and finds a credential's name in the repo's `.env` files before it asks; the Concise style says only what to write: a correction opens with the corrected fact, and each sentence of a reply carries a fact, a result, or a step the person has not yet seen; the Stop note on background tasks says to follow a waited-on task with the monitor.
 - The plugins move to the `xsyetopz` marketplace, which lists every xsyetopz plugin: add it with `/plugin marketplace add xsyetopz/bedrock` and install `claudetto@xsyetopz`. This repo no longer ships its own `claudetto` marketplace; the status line finds claudetto under `plugins/cache/xsyetopz/`.
@@ -98,7 +104,6 @@ Before 1.0.0, a release can change or remove behavior.
 - Hygiene finds old build folders in other checkouts again: it walks each folder in Mole's `purge_paths` besides the project, and never enters `~/.claude/projects` or `~/.claude/plugins`. Before, it walked only the project, whose own checkout always stays, so it found nothing outside a nested checkout.
 - The `Bash` tool text names `cat`, `head`, `tail`, `sed`, `awk`, and `echo` as commands not to read or change a file with, as the stock text does, so the agent stops sending reads the gate refuses.
 - When the gate itself fails, it asks with the failure text and no longer runs the hooks beneath it.
-- The temp-folder gate treats the sandbox `TMPDIR`, `/tmp/claude-<uid>`, as a temp base, so a folder made there gets its marker, and it expands a variable set earlier in the command in the path it made.
 - The worktree gate lets an agent remove a worktree it added through a variable set earlier in the same command, such as `M=$TMPDIR/w && git worktree add $M`.
 - The run limits count only file-tool writes that ran.
 - The gate sends a file read to `Read` anywhere in a chain, such as `cd src && sed -n '1,5p' a.ts`; a read piped into another command still runs. It names the file in place of a `head -n` count or a `sed` script.
@@ -118,6 +123,11 @@ Before 1.0.0, a release can change or remove behavior.
 - The ledger's Haiku extraction prompt, its parser, and its quote check, which the Decider's per-sentence read replaces.
 - The Stop grader no longer blocks a reply for leaving a choice in prose, unexplained jargon, a remark on its own conduct, or ending on a promised step. It still grades unchecked claims, recited rules, misplaced credit, fallbacks, unseen tool output, and unfixed failed commands.
 - The `fold` hook is gone, so grouped tool results keep Claude Code's own fold.
+- **Breaking:** the handoff: the tool `mcp__claudetto__handoff`, the `/claudetto:handoff` command, the files under `.claude/claudetto/handoffs/`, their cleanup, and the options `handoverThresholdTokens` and `handoffCleanupPeriodDays`. Claude Code's own compaction replaces it: `/claudetto:setup` writes `autoCompactWindow`, and one compaction instruction keeps your corrections, refusals, and consents word for word. Keep durable state in `tasks.md` and git.
+- **Breaking:** the `.created-by-claudetto` temp marker and the denials it caused. A write or a delete under `$TMPDIR` passes, and a recursive delete outside the project and `$TMPDIR` goes to Claude Code's permission flow.
+- The run logs `.claude/claudetto/runs.jsonl` and `.claude/claudetto/gate-asks/*.jsonl`, which no code read.
+- **Breaking:** the output files under `.claude/claudetto/output/` and the `maxTestOutputChars` option. `/claudetto:setup` writes `bashOutputMaxChars` (8,000) and `MAX_MCP_OUTPUT_TOKENS` (10,000), and Claude Code writes its own overflow file.
+- **Breaking:** the subagent start, depth, and time caps and the `maxSubagentStarts` option. `/claudetto:setup` writes `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, and `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` in their place.
 
 ## [2.1.319] - 2026-11-07
 
