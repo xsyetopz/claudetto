@@ -18,14 +18,15 @@ const RULE_NAMES = [
 	"useLeastCode",
 	"noUnrequestedEdits",
 	"noImpossibleStateGuards",
-	"useEdgeCaseReport",
-	"noNarratingComments",
+	"findFactsByExperiment",
+	"useOneObviousWay",
+	"useBlockLanguage",
+	"lookForAClone",
 ];
 const COPY = /^Copy the /u;
 const shippedPath = (name: string) => `${ROOT}/rules/${name}.md`;
 const installedPath = (name: string) => `${CONFIG}/rules/claudetto/${name}.md`;
-const shippedText = (name: string) =>
-	`---\npaths:\n  - "**/*"\n---\n\nRule ${name}.`;
+const shippedText = (name: string) => `Rule ${name}.`;
 
 /** A lab whose plugin ships every rule, with `pick` answering the dialogs. */
 const rulesLab = (
@@ -57,6 +58,16 @@ test("each rule the user lacks is a dialog of its own", async ($: Engine, on: On
 			asked.filter((q) => q.startsWith(`Copy the ${name} rule`)),
 		).toHaveLength(1);
 	}
+});
+
+test("a rule dialog shows the whole rule and says it loads at session start", async ($: Engine, on: On) => {
+	const state = rulesLab(on, () => "Skip");
+
+	await run($, "claudetto:setup");
+
+	const [first] = ruleDialogs(state);
+	expect(first).toContain("loads it at its start");
+	expect(first).toContain("Rule useLeastCode.");
 });
 
 test("a rule the user already holds is not offered", async ($: Engine, on: On) => {

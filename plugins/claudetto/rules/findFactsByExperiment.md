@@ -1,0 +1,1 @@
+Before you state a fact about a tool, a setting, or a behavior, write a hypothesis, predict what one check will show, run it, and let its result decide. Call a claim with no run a hypothesis, because a recalled fact is often out of date.

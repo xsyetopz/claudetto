@@ -6,8 +6,10 @@ export const RULES = [
 	"useLeastCode",
 	"noUnrequestedEdits",
 	"noImpossibleStateGuards",
-	"useEdgeCaseReport",
-	"noNarratingComments",
+	"findFactsByExperiment",
+	"useOneObviousWay",
+	"useBlockLanguage",
+	"lookForAClone",
 ];
 
 const hashKey = (name: string) => `rules:${name}:hash`;
@@ -40,7 +42,7 @@ async function offerRule(
 	try {
 		const answer = await ask(
 			$,
-			`Copy the ${name} rule to ${path}? A session loads it after its first file read.\n\n${shipped.slice(shipped.indexOf("\n---\n") + 5).trim()}`,
+			`Copy the ${name} rule to ${path}? A session loads it at its start.\n\n${shipped.trim()}`,
 			[WRITE, SKIP],
 		);
 		if (answer.trim() !== WRITE) {

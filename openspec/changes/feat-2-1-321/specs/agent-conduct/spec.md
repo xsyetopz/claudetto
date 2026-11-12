@@ -28,6 +28,35 @@ A reply SHALL hold at most one `- ! <command>` bullet, the one the work needs fi
 
 ## ADDED Requirements
 
+### Requirement: The Code Rules Ask for Least Code and Trust-Boundary Guards
+
+The code rules, one file each under `plugins/claudetto/rules/`, SHALL tell the model to write the least code that does the whole task, in the style of the code around it. The model SHALL rely on what the types, structures, and validated boundaries already guarantee, and guard only where input crosses a trust boundary.
+
+#### Scenario: One File per Code Rule
+
+- **WHEN** a reader looks for the file that holds each code rule
+- **THEN** the least-code rule is `useLeastCode.md` and the guard rule is `noImpossibleStateGuards.md` (`tools/rules.test.ts`, "the shipped rules are the seven")
+
+#### Scenario: Impossible State
+
+- **WHEN** an eval case has a function whose type already rules out `null`
+- **THEN** the passing diff adds no `null` check, and a diff that adds one fails
+
+### Requirement: Each Rule File Loads at Session Start
+
+Each file under `plugins/claudetto/rules/` SHALL hold no frontmatter, so Claude Code loads it at the start of a session, and SHALL hold one to four lines that state the rule with its reason.
+
+#### Scenario: The Shipped Rules
+
+- **WHEN** a reader lists `plugins/claudetto/rules/`
+- **THEN** it holds `findFactsByExperiment.md`, `lookForAClone.md`, `noImpossibleStateGuards.md`, `noUnrequestedEdits.md`, `useBlockLanguage.md`, `useLeastCode.md`, and `useOneObviousWay.md`
+- **AND** the four general rules say to find a fact by experiment, to give each job one obvious way, to write agent-seen text in block language with the articles that do work, and to look for a clone before writing a function
+
+#### Scenario: A Rule File
+
+- **WHEN** any file under `plugins/claudetto/rules/` is read
+- **THEN** it starts with no `---`, holds at most four non-empty lines, and holds a reason with "because" (`tools/rules.test.ts`, "no rule file holds frontmatter, so each loads at session start", "each rule is a few lines and gives its reason")
+
 ### Requirement: A Needed Dependency Goes Into the Project
 
 The root prompt SHALL tell the model that a probe runs where undoing is free, and that a dependency the project needs is added to the project with its package manager, because a copy in a temp folder leaves the project without it (the person, R20).
@@ -92,3 +121,23 @@ The root prompt SHALL tell the model to look for a credential in the repository'
 
 - **WHEN** a lead sends `SendMessage` to a background agent
 - **THEN** the result text shows on screen from the tool result and is in no reply of the model, so no hook of ours writes it into a reply
+
+## REMOVED Requirements
+
+### Requirement: Comments State a Reason
+
+**Reason**: 218 of the 1,610 code edits in 22 stored sessions that held the rule added a line comment, and no hook decides which comment narrates, so the rule had no check behind it.
+
+**Migration**: Comment style follows the code around it, under the least-code rule.
+
+### Requirement: Code Rules Guard Only Trust Boundaries
+
+**Reason**: Its edge-case report rule and comment rule are deleted with `useEdgeCaseReport.md` and `noNarratingComments.md` (P181), and a MODIFIED block cannot drop the scenario "Comment That Restates the Code".
+
+**Migration**: "The Code Rules Ask for Least Code and Trust-Boundary Guards" keeps the least-code and guard rules with their scenarios.
+
+### Requirement: Each Rule File Applies to Every Path
+
+**Reason**: A rule file with `paths` reaches a session only after its first read of a matching file, in the middle of a turn (P180). A file with no frontmatter loads at the start.
+
+**Migration**: The requirement "Each Rule File Loads at Session Start" holds the shipped files and their form.
