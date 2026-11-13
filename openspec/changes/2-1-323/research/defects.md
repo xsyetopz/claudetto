@@ -213,7 +213,16 @@ Probe P-D9.5d (free):
 - Command: a Bun script that lists the transcript's `system` entries from `claudetto:` that hold a decider line, each with the time of the last person message before it.
 - Result: confirmed. Session `17435f50` holds one real failure (entry 6519, 13:49:40). The prompt arrived at 13:49:23, and the ledger noted "A message holds 43 sentences" at the same moment. No Jev line appears, and `TYPESAFE_API_KEY` is empty, so the ledger went straight to the fallback. That read had 41 sentences and 82 questions, so its shortest reply was at least 3,567 chars, plus 1 question per ledger entry. The reply took 16.8 s, under the 20 s timeout. `d8989f87` and `5709ef73` hold no real failure. Each other match of the message in the three transcripts is a quote of it in a message, or a path-spam line (D1) raised by a `grep` pattern that quotes it.
 
-Still unmeasured: the token count of a 41-sentence ledger reply at `effort: "high"`. The next check is a paid replay of the 13:49 ledger read, which logs `output_tokens`, the reply length, and its tail (task 10.3).
+Probe P-D9.5e (paid, approved by the user on 2026-11-13):
+
+- Hypothesis: the 13:49 ledger read ran out of output before its JSON closed.
+- Prediction: replayed on the same message, some replies end without a closing `}` and fail to parse.
+- Command: a `--plugin-dir` probe whose `session.start` hook calls a copy of `fallback()` three times with the 13:49 input, rebuilt from transcript entry 6513 by the shipped `sentencesOf`, the cap, and `ledgerQuestions(41, 0)`: 43 sentences cut to 41, 82 questions, 5,182 chars of state. The ledger's entries at 13:49 are not in the transcript, so the replay sends none. Run as `claude -p ok --model haiku --max-turns 1 --no-session-persistence`.
+- Result: reproduced, 1 of 3. Run 1 stopped mid-JSON at `"rule_31":` after 2,798 chars and 4,154 output tokens in 15.9 s, and it logged "The fallback model's reply did not parse as a JSON object." Runs 2 and 3 closed their JSON at 3,468 and 3,755 chars, with 3,875 and 3,086 output tokens.
+- Also observed: every run reported more `output_tokens` than the 2,106 `maxTokens` the call sets. The `ModelCompleteRequest` docs call `maxTokens` "the reply's token cap" and say nothing of thinking, so what the engine sends as the limit is still unmeasured.
+- Also observed: no `rule_<n>` answer settled in any run. Run 2 answered `null` for each, and run 3 answered `read-only` with empty evidence for each. `RULE_CRITERIA` has no option for a sentence that states no rule, so 41 of 82 answers are `unsettled` even when the reply parses.
+- Input tokens: 13,510 per call, with `cache_read_input_tokens` 0 again.
+- Cost: 40,530 input and 11,115 output tokens for the fallback calls, about $0.0096 at the `prices.json` Haiku 5.5 rates read as dollars per million tokens, plus a $0.0016 `ok` turn by the engine's debug line. The weekly share read 74% before and after.
 
 Structural fix: delete the decider fallback. A judgment that needs a model moves to a prompt-type classic hook, as task 6.3 does for the Stop faults. The engine sends that hook's prompt and reads its verdict, so no plugin parses model prose.
 
