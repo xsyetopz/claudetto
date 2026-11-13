@@ -233,7 +233,7 @@ Stub in `MODE=agent` answers the first request with an `Agent` tool call, so a r
   | Current (main is request 1) | Sonnet 21,067 B, Opus 20,540 B, Haiku 20,422 B | 8,232 | 8,726 / 8,207 / 8,032 | the prompt-type Stop hook, 11,639 B (tools 2, system 2,262, messages 8,844) |
 
 - Conclusion (observed): the prediction failed. The main request grew by 2.1 to 2.8 KB, all in the system part, and the extra request per turn grew from 2.0 KB to 11.6 KB. The tag's root prompt (5,779 chars) replaced the whole system prompt and dropped Claude Code's session sections. The current core is about 4,400 chars and keeps those sections (task 3.3): Memory 2,185, Environment 621, Context management 559, and Session guidance 164 chars, plus the pronoun and action-caution paragraphs. The tools part shrank by 44 bytes.
-- Each current run ends with a `stop-hook-error` notification. Inferred cause: the fake API answers the prompt-type Stop hook with `OK`, not the `{"ok":true}` JSON the hook asks for. A real model answers in JSON, so this comes from the probe setup and not from the plugin.
+- Each current run ends with a `stop-hook-error` notification. Hypothesis: the fake API answers the prompt-type Stop hook with `OK`, not the `{"ok":true}` JSON the hook asks for. Check: a copy of the plugin with the prompt entry removed from `hooks.json` `Stop`, same `cli` run. Result (observed): one request instead of two, and no `stop-hook-error` notification. The notice comes from the fake's reply to the judge; in live sessions the same hook returns its JSON verdict, as this session's Stop feedback shows.
 
 ## `tool.check` time on an MCP call (task 10.5)
 
