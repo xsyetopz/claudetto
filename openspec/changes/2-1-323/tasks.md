@@ -15,7 +15,7 @@
 - [x] 2.5 Probe `prompt.compose` on a subagent that uses the lean prompt path, `agent_id` in subagent hook input, and a call to a tool that `tool.list` removed.
 - [x] 2.6 Measure the largest prompt a `search` run sends with `autoCompactWindow: 100000`, to see whether compaction keeps it under 100,000 tokens.
 - [x] 2.7 Check with the fake Messages API whether `Write` to the session's `$TMPDIR` folder asks, and whether `permissions.additionalDirectories` holding that folder stops the ask (D10.31).
-- [ ] 2.8 Probe the 2.1.323 surfaces that `research/cc-2-1-323.md` marks unprobed: an `engines` range that excludes the running version, a `ui.render` hook on `AbovePrompt` with and without `plugin: "*"`, and the `ceiling` field of a `tool.check` event.
+- [x] 2.8 Probe the 2.1.323 surfaces that `research/cc-2-1-323.md` marks unprobed: an `engines` range that excludes the running version, a `ui.render` hook on `AbovePrompt` with and without `plugin: "*"`, and the `ceiling` field of a `tool.check` event. Done: `engines` in `research/probes.md` sections 3 and 14, `ceiling` in 13 (absent on every case run), `AbovePrompt` in 15 through a headless `ui_render` control request.
 
 ## 3. Per-Model System Prompts
 
