@@ -17,8 +17,11 @@ Tunes Claude Code for coding at the lowest token cost. It uses only Claude Code'
 ## Install
 
 ```sh
-claude plugin install claudetto --marketplace xsyetopz/bedrock
+claude plugin marketplace add xsyetopz/bedrock
+claude plugin install claudetto@xsyetopz
 ```
+
+The `xsyetopz` marketplace lives in the `xsyetopz/bedrock` repository.
 
 ## Setup
 
