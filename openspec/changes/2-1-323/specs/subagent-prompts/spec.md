@@ -74,6 +74,15 @@ The memory hold SHALL stay a mod, and its `agent.spawn` denial under memory pres
 - **WHEN** free memory is short and the model starts a subagent
 - **THEN** the spawn is denied, and the denial text holds a retry hint
 
+### Requirement: The Agent File Decides the Subagent Model
+
+An `agent.spawn` mod SHALL drop `model` from each spawn event, because a lead's `Agent` call that passes `model` wins over the agent file and put four `work` agents on Opus (`research/defects.md` D10.28). The root prompt SHALL name no model for a subagent.
+
+#### Scenario: A Lead Asks for Opus
+
+- **WHEN** the main loop calls `Agent` for `claudetto:work` with `model: "opus"`
+- **THEN** the subagent request goes to `claude-sonnet-5-5`, the model `agents/work.md` sets
+
 ## MODIFIED Requirements
 
 ### Requirement: No Rule Lost in the Restructure

@@ -69,6 +69,7 @@
 - [ ] 7.12 In the classic `SessionStart` hook of task 7.4, append `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash, and `**` stays recursive (D10.17). Test with the fake Messages API: `echo == x` and `grep --include=*.ts x /dev/null` succeed under `CLAUDE_CODE_SHELL=/bin/zsh`.
 - [ ] 7.13 In `usePriceStep/price-step.ts` `readingOf`, drop the `$.ui.log` from the sleep's `catch`, so a stop chunk that arrives in time logs nothing (D10.20). Write the failing test first: a Haiku step whose stop chunk arrives in time, with an `on("ui.log")` collector read after the sleep's rejection has landed, records no log.
 - [ ] 7.15 In `useSetup/rules.ts`, offer to delete each `.md` file in `~/.claude/rules/claudetto/` whose name is not in `RULES`, in one dialog that lists them, so a rule the plugin retired stops loading (D10.27). Write the failing test first: an installed `noNarratingComments.md` is listed and, on yes, removed.
+- [ ] 7.16 Add an `agent.spawn` mod that drops `model` from the event, so each subagent runs on its agent file's model and a lead's `model` argument cannot put it on Opus or Fable, and delete "or pass `model: opus`" from the `<delegation>` block in `texts.ts` (D10.28). Write the failing test first: a spawn event with `model: "opus"` reaches `next` with no `model`.
 
 ## 8. Texts
 
