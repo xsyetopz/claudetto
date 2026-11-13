@@ -110,7 +110,7 @@ Before each `Bash` or `Monitor` call and each subagent start, the system SHALL r
 
 ### Requirement: A Stop Loop with No Progress Ends the Turn
 
-**Reason**: The stall stop existed only because the grader and the slice check could block again and again; both go, so `stallStop` in `stop.ts` is deleted.
+**Reason**: The stall stop existed only because the grader and the slice check could block again and again; both go, so `stallStop` in `stop.ts` is deleted. It also turned a `/goal` block into `preventContinuation`, which paused the goal 8 times in 6 sessions.
 
 **Migration**: `/goal` covers continuation, and the person ends a goal with `/goal clear`.
 
