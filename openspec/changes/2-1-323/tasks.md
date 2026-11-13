@@ -58,7 +58,7 @@
 
 - [ ] 8.1 Rewrite `output-styles/Concise.md` from the original as `research/text-audit.md` records. Drop the `sudo` example, use the `- ! <command>` form, and keep the no-announcement and check-then-state rules.
 - [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text.
-- [ ] 8.3 Write the `naming.md` rule and add it to the rules setup offers.
+- [ ] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
 - [ ] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
 
 ## 9. Folders

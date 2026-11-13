@@ -2,12 +2,12 @@
 
 ### Requirement: Setup Offers the Naming Rule
 
-Setup SHALL offer a `naming.md` rule file beside the other code rule files, and SHALL write it only when the user accepts it.
+Setup SHALL offer a `useHeadlineseNames.md` rule file beside the other code rule files, and SHALL write it only when the user accepts it.
 
 #### Scenario: The User Accepts the Rule
 
-- **WHEN** the user accepts `naming.md` in setup
-- **THEN** setup writes it to `.claude/rules/` with the other accepted rule files
+- **WHEN** the user accepts `useHeadlineseNames.md` in setup
+- **THEN** setup writes it to `<config>/rules/claudetto/` with the other accepted rule files
 
 ### Requirement: Identifiers Are Headlinese
 

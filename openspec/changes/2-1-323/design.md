@@ -159,7 +159,7 @@ Reason: the Bun rules were hard-coded for one manager and enforced through denia
 
 ### 12. The Naming Rule
 
-Setup offers a `naming.md` rule:
+Setup offers a `useHeadlineseNames.md` rule, named like the other shipped rules:
 
 - Identifiers are headlinese: no articles, as in `testDeadPlayerTakesNothing`.
 - Comments keep their articles (the user's answer in this session).

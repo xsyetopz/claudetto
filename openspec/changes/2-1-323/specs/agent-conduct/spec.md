@@ -124,7 +124,7 @@ Each file under `plugins/claudetto/rules/` SHALL hold no frontmatter, so Claude 
 #### Scenario: The Shipped Rules
 
 - **WHEN** a reader lists `plugins/claudetto/rules/`
-- **THEN** it holds `findFactsByExperiment.md`, `lookForAClone.md`, `naming.md`, `noImpossibleStateGuards.md`, `noUnrequestedEdits.md`, `useBlockLanguage.md`, `useLeastCode.md`, and `useOneObviousWay.md`
+- **THEN** it holds `findFactsByExperiment.md`, `lookForAClone.md`, `noImpossibleStateGuards.md`, `noUnrequestedEdits.md`, `useBlockLanguage.md`, `useHeadlineseNames.md`, `useLeastCode.md`, and `useOneObviousWay.md`
 - **AND** the four general rules say to find a fact by experiment, to give each job one obvious way, to write agent-seen text in block language with the articles that do work, and to look for a clone before writing a function
 
 #### Scenario: A Rule File
