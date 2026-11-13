@@ -395,7 +395,7 @@ Sources (read): the root prompt's `<defects>` block, `plugins/claudetto/hooks/te
 
 ### D10.5 A Push Ran Before `just verify`
 
-Observed: session `cd2e74f0` committed at 22:48:53 and pushed `feat/2.1.321` at 22:48:58; its first `just verify` after that ran at 23:24:16. The user reports a GitHub release (versionlens v0.6.3) published before verify passed, and a force-pushed PR branch (`user-dossier.md`). The repo's `.githooks` holds only `commit-msg` and `pre-commit`.
+Observed: session `cd2e74f0` committed at 22:48:53 and pushed `feat/2.1.321` at 22:48:58; its first `just verify` after that ran at 23:24:16. www.clawdipedia.cc `a663e2b2` pushed `7171a909` on 2026-11-10 after a `just verify` that failed (D10.25). Side-agent notes also claimed that versionlens v0.6.3 was released before verify passed and that a PR branch was force-pushed. The leads' checks showed both claims wrong (D10.25), and `user-dossier.md` reports neither. Force-push and release are on the user's list of reserved actions (U3.1). The repo's `.githooks` holds only `commit-msg` and `pre-commit`.
 
 - P-D10.5. Hypothesis: a `pre-push` hook that fails stops the push. Command: a bare remote, a worktree with `.githooks/pre-push` exiting `$VERIFY_RC`, then `git push origin HEAD:main` with 1 and then 0. Result: rc 1 and no `main` on the remote; then rc 0 and `main` at the commit.
 
@@ -480,6 +480,26 @@ Mitigation here, at no cost: only the lead runs the lab, once, after the work ag
 
 Observed this session (2026-11-13): `git worktree add --detach $TMPDIR/…/probe-tsgolint 6cc3dce3` succeeded, and the next `git worktree remove --force` on the same path was denied: "is not a worktree this session created: Claude Code made no worktree of that name in this session, for an agent with isolation or for EnterWorktree." The guard counts only worktrees that Claude Code made, so the probe worktree stays until the user removes it. This adds a case to D9.3. Fix: task 7.8.
 
+P-D10.11, 2026-11-13:
+
+- **Hypothesis:** the live guard also denies a session's own isolated worker when the command names the path through a shell variable, and it denies a path from the session's own `git worktree add`, because `ownsOf` (`tool.check/useBashRules/processes.ts:105-116`) never reads the `paths` that `createdOf` returns.
+- **Prediction:** `ownedVerdict` passes a literal `.claude/worktrees/agent-abc` and denies the other three forms.
+- **Command:** `bun $TMPDIR/probe-wt/probe.ts`. It calls `parse` and `ownedVerdict` with an `Owns` that holds the worker `agent-abc` and the past call `git worktree add --detach /tmp/ojd-base HEAD`.
+- **Result:** confirmed. The probe printed `createdOf paths: [ "/tmp/ojd-base" ]`, then:
+  - `pass` for `git worktree remove .claude/worktrees/agent-abc`;
+  - `deny` for `W=/r/.claude/worktrees; git worktree remove $W/agent-abc`;
+  - `deny` for `for id in abc; do git worktree remove .claude/worktrees/agent-$id; done`;
+  - `deny` for `git worktree remove /tmp/ojd-base`.
+
+  The Stop cleanup reads those same `paths` as owned (`classic.Stop/…/cleanup.ts:52`), so the gate refuses what the cleanup counts as the session's own.
+
+The transcripts show the same denials. Over five days the guard denied 44 calls (36 from leads, 8 from subagents) in 22 sessions (`/tmp/claude-501/scan-remark.ts`). The 4 denials with the live text all fell on worktrees their own session had made:
+
+- OpenJoystickDriver `05884638` at 13:03:31 (`$W/agent-a3154b6e68160addc`), at 13:22:23 (`agent-$id` for `a8e055190b6587dfb` and `a4342ae1d234a5eb6`), and at 13:40:54 (`/tmp/ojd-base`, from that session's own `git worktree add`). All three workers have transcripts under `05884638/subagents/`.
+- this session at 15:00:06 (`probe-tsgolint`).
+
+Under the older text, which counted only a `git worktree add` in the transcript, the same guard denied claudetto `cd2e74f0` at 18:11:21 on 2026-11-12. That session's own workers had made the two worktrees at 11:52:18 (`cd2e74f0/subagents/agent-af99e8c0cb23b8587.jsonl` and `agent-a233e7d6eed9df42c.jsonl`). From 17:06:37 to 18:11:05 the Stop block named the uncommitted files in those worktrees as "files you changed" 8 times, and the gate then refused their removal. The user removed them by hand at 18:11:46. The current `changedOf` leaves out `.claude/worktrees/` (`classic.Stop/useSliceCommits/slices.ts:97-102`), and the last such block came at 2026-11-13T00:43:22 in OpenJoystickDriver `92c2d0ed`, before the 00:55 install. Task 7.8 deletes the guard, which covers every case above.
+
 ### D10.12 The Stop Notice Lists Subagents' Shells to the Lead
 
 Observed in OpenJoystickDriver `c86d66a7` (2026-11-11). From 23:26:24 the lead called `TaskStop` on shells that the Stop notice "Background tasks still running at Stop:" had listed, such as `b8a3b8sgr`, `blysngezw`, and `btixsofv2`. Each call failed: "No task found with ID: blysngezw. Running background agents: a73773d6b7ca1bd1f …". The `backgroundTaskId` of each shell appears only in a subagent transcript: `agent-a784b77fabfe926ad`, `agent-a86a5700180d5aefd`, and `agent-a1882b3d90e395d5d`. Line counts in the lead transcript: 144 lines hold the notice, 15 hold the failure.
@@ -543,7 +563,7 @@ Fix: task 7.12.
 
 Observed: Claude Code's built-in block "Blocked: sleep N followed by: …" ended 146 calls in the same window, all in lead sessions: 82 OpenJoystickDriver, 27 OpenSAD, 18 claudetto, 9 clawdipedia, 6 JagFx, 1 versionlens-redux. 106 were `cat` or `tail` of a `tasks/*.output` file of a background command whose end notice would have woken the lead. The block runs nothing, so each costs one request. After 13 blocks the lead took the block's advice and called `Monitor`, and 11 of those got claudetto's "Monitor is off here", the old-build text that D10 records; the last one is from 2026-11-12T18. Both installed builds and `plugins/` no longer hold that text. Recorded only: the built-in block already stops the wait, and no structural change of claudetto's removes the extra request.
 
-The 51 refused `SubagentHandback` calls (the subagent's final-report tool in 2.1.323) in the same window came from the remark gate (38) and the 15-minute cap (13), both recorded above and absent from `plugins/` and both installed builds. The side check skips every subagent call (`claudetto-you-should-know/hooks/register.ts:283`), so no gate left in the source can refuse a hand-back. The 254 refused `Write` calls under `/tmp` came from the `.created-by-claudetto` marker gate, which is likewise absent. Most of the 139 subagent "File has not been read yet" errors in the same window, all from `claudetto:Heracles` on `claude-sonnet-5-5`, followed one of those refused writes or a `sed -i` on the file.
+The 51 refused `SubagentHandback` calls (the subagent's final-report tool in 2.1.323) in the same window came from the remark gate (38) and the 15-minute cap (13), both recorded above. Neither is in `plugins/` or in the live build `cache/xsyetopz/claudetto/889af7348fcb-cd50c5e0`, which was installed at 2026-11-13T00:55Z (`installed_plugins.json`). The stale builds `cache/claudetto/claudetto/82b714c5ec41` and `2.1.319` still hold the remark text (`PIN_ANSWER_FIRST`), but no session loads them now. Over five days the remark gate denied 184 calls, 100 from leads and 84 from subagents. The last one came at 2026-11-12T23:56, before the live install. Its trigger was the latest "user" row: in a subagent, that row is an image result or a system reminder, not a person (`/tmp/claude-501/scan-remark.ts`). The side check skips every subagent call (`claudetto-you-should-know/hooks/register.ts:283`), so no gate left in the source can refuse a hand-back. The 254 refused `Write` calls under `/tmp` came from the `.created-by-claudetto` marker gate, which is likewise absent. Most of the 139 subagent "File has not been read yet" errors in the same window, all from `claudetto:Heracles` on `claude-sonnet-5-5`, followed one of those refused writes or a `sed -i` on the file.
 
 ### D10.19 The Bash Gate Logs Each Shell Word It Cannot Stat
 
@@ -603,8 +623,21 @@ Counted by `/tmp/claude-501/scan-kinds.ts` (row kinds and error heads with digit
 - `Agent` type `fork`: 9 calls on 2026-11-09 in two www.clawdipedia.cc Sonnet subagents. A subagent has no `fork` type. Recorded only.
 - `mcp__claudetto__handoff` "Tool call did not complete: the turn was ended to deliver the message that follows": 6 calls, 2026-11-09 to 11-12. No `handoff` tool is left in `plugins/claudetto/hooks`. Recorded only.
 - Model fallback: 3 `model_fallback` warnings on 2026-11-13, at 13:20:52 and 13:32:01 in OpenJoystickDriver `05884638` and 13:26:33 in www.clawdipedia.cc `6953aaa7`, each "Switched to Sonnet 5.5 due to high demand for Opus 5.5" with `trigger: server_error`. The user's eval settings set `CLAUDE_CODE_NO_MODEL_FALLBACK=1` (`research/user-dossier.md`). Whether an interactive lead should fall back is the user's choice. Recorded only.
-- Stall stop over a goal: 10 `hook_stopped_continuation` rows, "A Stop hook blocked and no file changed since the last stop, so the turn ends here", in OpenSAD (6), JagFx (2), OpenJoystickDriver `c86d66a7` (1), and www.clawdipedia.cc (1). In each sampled row the block came from the user's `/goal` check ("The goal is not satisfied", "Tasks 5.13, 7.3 and 7.4 remain unticked"), and claudetto's `STALL_STOP` (`classic.Stop/useStopChecks/stop.ts:31`) ended the turn the goal meant to continue. "No file changed" is no sign of a stall for a goal whose work writes no file, such as an analysis. Fix: task 6.1 deletes `stop.ts`.
+- Stall stop over a goal: 10 `hook_stopped_continuation` rows, "A Stop hook blocked and no file changed since the last stop, so the turn ends here", in OpenSAD (6), JagFx (2), OpenJoystickDriver `c86d66a7` (1), and www.clawdipedia.cc (1). In each sampled row the block came from the user's `/goal` check ("The goal is not satisfied", "Tasks 5.13, 7.3 and 7.4 remain unticked"), and claudetto's `STALL_STOP` (`classic.Stop/useStopChecks/stop.ts:31`) ended the turn the goal meant to continue. Claude Code logged "Goal paused · a hook ended the turn · send a message to continue" 8 times in the same window (`/tmp/claude-501/scan-notices.ts`). "No file changed" is no sign of a stall for a goal whose work writes no file, such as an analysis. Fix: task 6.1 deletes `stop.ts`.
 - Thinking drops: 524 `thinking_drop` rows, `reason: prefix_mismatch`. Hypothesis: a claudetto hook rewrites an earlier message. Prediction: the drops spread over the session. Command: `/tmp/claude-501/scan-drops.ts`. Result: 515 of 524 fall within 10 minutes after a `compact_boundary`, and 510 of all 524 report `firstChangedMessageIndex: 0`, the message compaction replaces (Claude Code computes the index in `chunk-2x9ma4k7.js`, `messagesHistoryChanged`). Refuted: compaction causes them. Recorded only.
 - Silent-turn reminder: 1,258 `silent_turn_reminder` rows, up to 155 in one session (`0afb43bf`). Claudetto sets only the text, through `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` (`command.run/useSetup/settings.ts:175`); Claude Code decides when it fires. `research/text-audit.md` keeps the text. Recorded only.
 - "File has been modified since read": 21 `Write` or `Edit` calls, all in Sonnet subagents, mostly in worktrees. No installed plugin hooks `Edit` or `Write` (D10.22). Recorded only.
+
+### D10.25 Side-Agent Notes and User Complaints, 2026-11-08 to 11-13
+
+`/tmp/claude-501/scan-notes.ts` lists each you-should-know note that a person forwarded to a lead ("Here is a note offered by a side agent:"), with the lead's next reply. It skips compaction summaries, which quote earlier notes; a first pass that counted them gave 22, and those repeats were not repeated offers. `showReply` already drops a line shown before (`claudetto-you-should-know/hooks/register.ts:80-84`).
+
+- Ten notes reached a lead. In three of them the lead's check showed the note was wrong:
+  - versionlens-redux `b3514a27` at 2026-11-10T14:34: "release v0.6.3 … its verify run never passed". The CI run `42831271159` for `b0286a2d` had passed.
+  - claudetto `cd2e74f0` at 2026-11-12T17:19:47: "The PR branch on origin was force-pushed". At 17:20:07 the lead ran `git merge-base --is-ancestor` over the last six pushes of `origin/feat/2.1.321`, and each was a fast-forward.
+  - claudetto `cd2e74f0` at 18:08:40: "A commit … reached origin when made, though no git push was run". `.githooks` holds only `commit-msg` and `pre-commit`, and neither pushes. The lead answered that the note "repeats my own unchecked guess from earlier", so the side check took the lead's guess as fact.
+
+  Two more were partly out of date: www.clawdipedia.cc `d9e65e3e` and claudetto `b8e1aaed`. Each wrong note cost the person a forward and the lead a checking turn. At 17:19:51 the old remark gate also denied the lead's first check of the note (D9.7). Recorded only: the design keeps `claudetto-you-should-know` as it is beyond the folder moves (`design.md:46`).
+- Desktop disturbance: the search agent's class of 2 held only one incident, OpenJoystickDriver `b429b5a4` (D10.23). The other, JagFx `f562bb33` at 2026-11-12T11:09:55, asked ahead of time for a `JAGFX_HIDDEN` flag, and nothing had raised a window before it.
+- Push before verify: www.clawdipedia.cc `a663e2b2` at 2026-11-10T10:36:44. The note was right, and the lead confirmed that `7171a909` "reached GitHub before the note arrived", after a `just verify` with 27 failures. Recorded as D10.5.
 
