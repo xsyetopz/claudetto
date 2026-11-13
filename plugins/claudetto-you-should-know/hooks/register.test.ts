@@ -135,6 +135,35 @@ test(
 );
 
 test(
+	"a popup the person answers while this turn's note is open closes the note, and the next call runs",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on);
+		f.answerWith(offerReply(LINE));
+		await act($, f, "t1");
+		await $.tool.call({
+			tool: "AskUserQuestion",
+			questions: [
+				{
+					question: "Push now?",
+					header: "Push",
+					options: [
+						{ label: "Yes", description: "Push it." },
+						{ label: "No", description: "Keep it local." },
+					],
+					multiSelect: false,
+				},
+			],
+		});
+		const out = await $.tool.call(PUSH);
+		expect(out.deny).toBeUndefined();
+		expect(f.ran).toEqual(["AskUserQuestion", "Bash"]);
+		expect(f.row()?.view).toBeNull();
+		expect(f.asked).toHaveLength(1);
+	},
+);
+
+test(
 	"no check runs on a surface that draws no band",
 	ON,
 	async ($: Engine, on: On) => {

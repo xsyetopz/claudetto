@@ -745,6 +745,7 @@ The guard that overruns is `pinCheck` (`prompt.submit/useConstraintPin/pin.ts:10
 - P-D10.32b. Hypothesis: `pinCheck`'s wait on the ledger read overruns. Prediction: with the side model delayed 15 s, the first tool call's `tool.check` is skipped at 10 s. Command: the stub with `SIDE_DELAY_MS=15000`, `claude -p "read the readme"`, the timed plugin copy. Result: confirmed. "claudetto: tool.check hook skipped: ran past its 10s budget"; `tool.check settled in 10010.9ms`; `pinCheck waited 14948ms` with `remainingMs: 0`.
 - P-D10.32c. Hypothesis: `prompt.submit`'s own wait for the first ledger read after a resume (`pin.ts:68-70`) overruns the same way. Prediction: it is skipped. Result: refuted. It settled in 15072.8 ms without a skip, because the model call is its own `$` call. The same run showed `classic.Stop settled in 45155.8ms`: three times the 15 s delay, so the Stop checks likely ran three side-model calls in sequence (inferred, not logged). That holds the end of each turn as long as the side model takes.
 - Fix: task 7.19, then task 7.20.
+- The user pasted one more such dialog on 2026-11-13 in `17435f50`. It was on a read-only Bash `grep` for the test kit's `mock.clock`, and it came after the user's message about agents handing work back to the user. That message started a ledger read, so this fits the cause above.
 
 ### D10.33 The Docs Tool Refuses an H3 It Lists
 
@@ -768,4 +769,13 @@ Each count below is over all of `~/.claude/projects/`: 841 transcripts, the firs
 - Those model changes are the five `model_fallback` rows ("Switched to Sonnet 5.5 due to high demand for Opus 5.5"), between 13:20 and 13:32 UTC on 2026-11-13. The cause is on the platform side.
 - Models: the main loop ran 4,634 requests on Mythos (425M tokens). D10.28 covers the subagents.
 - 125 interrupts. Only 2 rows written by the engine name a skipped hook, both on 2026-11-10, so the transcripts do not record a `tool.check` skip. The dialogs of D10.32 that the user pasted are therefore a lower bound.
+
+### D10.36 A Side-Agent Note Ignores the Person's Popup Answer and Hands the Edit to the User
+
+In OpenJoystickDriver `b429b5a4` on 2026-11-13, the agent asked through `AskUserQuestion` at 18:18:16Z whether to replace the 9.22 note in `tasks.md`. The user answered "Replace and commit" at 18:18:23Z. At 18:18:26Z the `you-should-know` hook denied the agent's `Edit`: "This edit replaces the open decision note … Put this note in your reply to the person, and wait for their answer". At 18:18:27Z it denied the same way a `Write` of a commit message to `/tmp`, which does not touch the note. The agent then wrote "The hook doesn't see your answer … I won't get around the hook with another tool" and gave the user a `! sed -i` command for an edit it could make itself.
+
+- Cause: once a note is offered in a turn, `startCheck` (`plugins/claudetto-you-should-know/hooks/register.ts`) returns it for every later call of that turn, and `tool.call` denies each of them. The `AskUserQuestion` branch logged the question and never read the answer. A popup answer does not end the turn, so the note kept blocking whatever the person said.
+- The deny tells the agent to wait for the person's answer, but the hook did not accept the answer. Together with the denial rule of the root prompt (D10.30), that left the hand-off as the agent's only route.
+- Failing test first: "a popup the person answers while this turn's note is open closes the note, and the next call runs" (`register.test.ts`). It failed with the deny text above, then passed after the fix (92 of 92, `claude plugin test plugins/claudetto-you-should-know`).
+- Fix: task 7.21.
 

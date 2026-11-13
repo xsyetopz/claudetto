@@ -10,7 +10,7 @@ import {
 	parseReply,
 	remember,
 } from "./note";
-import { press } from "./press";
+import { closeAnswered, press } from "./press";
 import { type Settings, settingsOf } from "./settings";
 import {
 	countIgnored,
@@ -278,7 +278,11 @@ export const register = (on: On, options: PluginOptions): void => {
 			for (const { question } of e.questions) {
 				addToLog(mem, logEntry("assistant", `asked the person: ${question}`));
 			}
-			return next(e);
+			const out = await next(e);
+			if (out.deny === undefined && out.isError === undefined) {
+				await closeAnswered($, mem.turns);
+			}
+			return out;
 		}
 		if (e.agentId !== undefined || READERS.has(e.tool)) {
 			return next(e);
