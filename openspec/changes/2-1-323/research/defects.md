@@ -504,7 +504,9 @@ Observed in this session (2026-11-13T15:23:01). The bedrock 0.1.4 hook denied a 
 
 P-D10.15. Hypothesis: the regex reads a `|` inside quotes as a pipe. Prediction: it matches the single-quoted argument and also `rg -n "npm |pnpm" docs`. Command: `FOREIGN.test` over four strings in `bun -e`. Result: the single-quoted argument `true`, the double-quoted `rg` `false`, `npm i` `true`, `FOO=1 npm test` `true`. Confirmed for single quotes. The same text gets two verdicts by quote style, because `"` is not in the regex's list of command starts.
 
-Fix, in the bedrock repo (outside this change, named only): delete `FOREIGN` and `blockForeign`, and have adopt write `permissions.deny` rules such as `Bash(npm *)` for a Bun repo. Claude Code matches a Bash rule against each parsed subcommand (clawdipedia `configure/permissions/modes`, `subcommandResults`), so a quoted word is never a command. Before the change, probe that a deny rule `Bash(npm *)` lets the quoted command above run (unchecked here: it needs a model call).
+Fix, in the bedrock repo (outside this change, named only): delete `FOREIGN` and `blockForeign`, and have adopt write `permissions.deny` rules such as `Bash(npm *)` for a Bun repo. Claude Code matches a Bash rule against each parsed subcommand (clawdipedia `configure/permissions/modes`, `subcommandResults`), so a quoted word is never a command.
+
+P-D10.15b. Hypothesis: a `permissions.deny` Bash rule matches a program word, never quoted text. Prediction: with `allow: ["Bash"]` and `deny: ["Bash(cowsay *)"]`, the two quoted commands run, and the bare, env-prefixed, chained, and piped forms are denied. Command: a fake Messages API that answers each first request with one `Bash` `tool_use`, then records the `tool_result`; Claude Code 2.1.323 `claude -p` in a temp `HOME` and `CLAUDE_CONFIG_DIR`, with `--setting-sources ""` and a fake key, so no request leaves the machine and no model is billed. The rule names `cowsay` because the bedrock hook in this repo blocked each probe command that held the word `npm`, even inside quotes passed to `bun` and `sed`, two more hits of this defect. Result: `rg -n 'cowsay |x' README.md` and `echo 'a|cowsay i|b'` ran; `cowsay hi`, `FOO=1 cowsay hi`, `echo hi && cowsay hi`, and `true | cowsay hi` each returned "Permission to use Bash with command … has been denied." Confirmed: the settings rule does the job without a regex.
 
 ### D10.16 The Side Check's Stop Covers Every Later Call in the Turn
 
@@ -514,9 +516,9 @@ Observed in this session (2026-11-13). you-should-know stopped seven calls:
 - 15:20:33: `rm -rf …/mine`, with "The next step deletes this session's probe scripts, which the committed findings were measured with".
 - 15:20:56, 15:21:07, and 15:21:09: a Bash `ls`/`sed`, a `Write` of `mine/cmds2.ts`, and a Bash `bun mine/cmds2.ts`. None deletes anything, and all three got the same deletion note.
 
-The ids are from this session's transcript: each `tool_result` starts with `<tool_use_error>you-should-know stopped this call before it ran`. Two rows at 15:32 that also hold the text are a `jq` query's output that quotes the earlier stops, not stops.
+The ids are from this session's transcript: each `tool_result` starts with `<tool_use_error>you-should-know stopped this call before it ran`. Two rows at 15:32 that also hold the text are a `jq` query's output that quotes the earlier stops, not stops. So are the rows at 14:36:40, a `Read` of a saved tool result, and 14:53:49, a `grep` whose output quotes other notes: neither `tool_result` starts with the stop text.
 
 Read: `startCheck` (`claudetto-you-should-know/hooks/register.ts:130-131`) returns the shown note for every call while `row.view` is an offer from the same turn, without checking the call. `checkBefore` (`register.ts:150-169`) hands calls that arrive while one check runs the result of that check. So one verdict, written for one call, stops each later call of the turn, whatever it does.
 
-Fix: task 7.11. The note's verdict holds for the call it judged: the hook keys the offer by that call's `tool_use` id and lets every other call through to its own check.
+Fix: task 7.11. The note's verdict holds for the call it judged: the hook keys the offer by that call's `tool_use` id and lets every other call through to its own check. The id is on each `tool.call` event: the engine types document `tool_use_id` as "the same at every event of the call" (`.claude-plugin/types/claude-code/index.d.ts:6403`), and `usePriceStep/price-step.ts:160` already keys calls by `e.tool_use_id`.
 
