@@ -701,3 +701,46 @@ The person's rule is that no subagent runs on Opus or Fable. Over all 840 transc
 - A mod that ran `Bun.write` failed with "ReferenceError: Bun is not defined": a mod runs in a hooks worker with no `Bun` global, and `$.fs` works there.
 - Fix: task 7.16.
 
+### D10.29 A Wide Tool Batch Moves the Cache Breakpoint Past the Lookback
+
+This explains the 82 rebuilds of P-D10.27b. Claude Code sends one moving message breakpoint, on the newest message, beside the cached system blocks. The Messages API looks back at most 20 blocks from a breakpoint for an earlier cache write: "If a growing conversation pushes your breakpoint 20 or more blocks past the last write, the lookback window misses it. Add a second breakpoint" (platform docs, `build-with-claude/prompt-caching`, cited). A step that adds 20 or more content blocks, such as 10 parallel tool calls and their 10 results, moves the breakpoint past that window. The read then falls back to the system prefix, and the whole conversation is written again.
+
+- P-D10.29a. Hypothesis: the rebuilds come from a change in `cacheControl` itself. Command: `bun /tmp/claude-501/scan-cc-norm.ts`, which masks the message breakpoint's index and compares consecutive main and agent requests over 5 days. Result: the masked layout stayed the same in 43,754 forward moves across all pairs. Of the 82 rebuilds, 67 had a masked change and 11 had none, and their breakpoints sat at `content,19` to `content,25`, at the end of wide parallel batches. Partly refuted: the layout changes, but only where the breakpoint lands deep in one message.
+- P-D10.29b. Hypothesis: the rebuilds come where the breakpoint moved 20 or more blocks. Prediction: rebuilds cluster at distances of 20 and up, and other moves are mostly under 20. Command: `bun /tmp/claude-501/scan-bp-distance.ts`, which rebuilds each request's message list from `keep`, `tail`, and the blob block counts, and measures the block distance between consecutive breakpoints. Result: of all moves, 53,465 were 0 to 19 blocks, 336 were 20 to 29, and 60 were 30 or more. Rebuilds: 9 at 0 to 19 blocks (739,854 cache-write tokens), 67 at 20 to 29 (4,696,435), and 6 at 30 or more (296,008). Confirmed: 73 of the 82 rebuilds and about 5.0M of 5.7M cache-write tokens follow a move of 20 or more blocks. The rule loads of D10.27 came alongside, because a wide batch of `Read` calls is where rules load.
+- A mod cannot add the second breakpoint: `TurnStepInput.messageCount` is pinned, and "the messages belong to the engine" (clawdipedia `extend/mod-api/types/turn-prompt/suggest-skill-turn`, cited).
+- P-D10.29c. Hypothesis: a `turn.step` hook that passes no more than 8 `tool` chunks per step keeps each step under 20 blocks, and the engine records only the calls it passed. Prediction: on the fake Messages API, after an answer of 12 parallel `Bash` calls, the next request holds 12 `tool_use` and 12 `tool_result` blocks without the cap and 8 and 8 with it. Command: `/tmp/claude-501/probe-batch-cap/stub.ts` and a probe plugin, `claude -p go --setting-sources "" --plugin-dir`, with a fake key, a temp `CLAUDE_CONFIG_DIR`, and the cap switched by a marker file. Result: confirmed; without the cap, 12 and 12, and with it, 8 and 8. The hook saw the chunks in order (`tool:i`, then `input:i`, with `engine` chunks between). The return value of `next` still counted 12 `toolUses`, but the engine recorded 8. A dropped call leaves no trace in history, so the model sees only the 8 it seems to have asked for and must ask for the rest in a later step. No paid call.
+- Unmeasured: how the cap changes a real session's turn count and cost. Each extra step reads the cache at the read price, while a rebuild writes the whole conversation at the write price.
+- Fix: task 7.17.
+
+### D10.30 The Kill Gate Takes Pids From Any Number and Made the Agent Hand the User Its Own Recipe
+
+`startedPids` (`plugins/claudetto/hooks/tool.check/useBashRules/kill.ts:81-91`) takes each number that `NUMBER` (`kill.ts:76`) matches in the result of any Bash call that put something in the background. `killVerdict` denies each other pid (`kill.ts:121`). The pid list is therefore a word regex over output, and the denial tells the agent to "Leave it running".
+
+- OpenJoystickDriver `b429b5a4`: at 14:25:11Z the agent ran `just install-fast-dev` itself. At 16:25:03Z a staging script ran `kill -TERM 37064`, the app the recipe had installed. At 16:25:11Z the gate denied it: "37064 is not a process this session started… Leave it running… Your own commands started these pids: 33, 18337393, 20, 67, 15757, 25, 501, 05884638." None of those eight is a process. At 16:25:16Z the agent wrote "I'm not allowed to stop the running app" and gave the user `! just install-fast-dev`; the user answered "you could've done that your[self]".
+- The same denial came in `1b56d9ba` (for `$p`, 2026-11-10), `f4b7e436` (39648, 11-11), and `c86d66a7` (45087, 11-12); `b429b5a4` holds it 11 times.
+- The root prompt's rule "A denial declines the action, not the tool: reach its effect through no other tool or agent unless the denial names one" (`plugins/claudetto/hooks/texts.ts:25`) then makes a wrong denial final.
+- Fix: tasks 5.3 and 7.8 delete `kill.ts`. Until they land, nothing should be added to it.
+
+### D10.31 Write Asks Before It Writes to Claude Code's Own Temp Folder
+
+The root prompt sends probes to `/tmp` (`texts.ts`, `<evidence>`), and the project's `CLAUDE.md` names `/tmp/probe-*`. The sandbox lets Bash write under `/private/tmp`, but in this session a `Write` to `/tmp/claude-501/scan-cc-norm.ts` opened a permission dialog that offered "always allow access to /tmp/claude-501, /private/tmp/claude-501". The user called the dialog a fault. Each probe step then costs the user a click, or the agent turns to the shell, which the gate refuses for whole-file writes.
+
+- Hypothesis, unchecked: the file tools allow only the working directories, and setup adds none of the session's temp folder. Task 2.7 probes it.
+- Fix: tasks 2.7 and 7.18.
+
+### D10.32 A Read-Only MCP Call Asked Because a Guard Timed Out
+
+On 2026-11-13 at 17:46 UTC, a call to the clawdipedia `read_page` tool opened a dialog: "Hook tool.check requires confirmation for this tool: The gate failed: timeout. A person must approve this call. [plugin:claudetto]". The installed claudetto (`~/.claude/plugins/cache/xsyetopz/claudetto/8ac3516a4a55-cd50c5e0`) still has the `tool.check` `.catch` that answers `ask` with `checkFault` (`register.ts:145-147`, `chain.ts:16-21` of that copy). Task 7.5 deleted both in the repository, but the installed copy predates it. The guard that timed out is unidentified: `memoryGuard` returns at once for a tool that is not a command tool, which leaves `holdCheck`, `stopCheck`, `pinCheck`, and `gateCheck`; no debug log was written, and the transcript names no hook.
+
+- Fix: task 7.19.
+
+### D10.33 The Docs Tool Refuses an H3 It Lists
+
+Outside this repository: the clawdipedia-docs `read_page` tool takes a `section_heading` that its description calls an H2. For the H3 headings that the same page lists, it answers "No H2 section". Reading by `offset` works. Owner: the clawdipedia-docs plugin; this change does not fix it.
+
+### D10.34 Reports From Other Users: Fewer Rules, Less Prompt
+
+Reported by the user from a Discord thread, not measured here. One user wrote that they removed over 80% of their rules, moved the rest to mechanical checks, and set goals and a bar instead; the output "ended up being way better, less churn and ended up reducing usage". A second user replied: "no point in having 100k of prompt per turn for 10 words added".
+
+- These match D10.24 and D10.30: most gate denials blocked correct work, and a gate's prose turned one wrong denial into a hand-off to the user. Hypothesis: fewer prompt rules and gates lower both the cost per turn and the churn. Task 10.2 measures the request size against the 2.1.322 baseline, and task 10.3's A/B run measures the outcome.
+

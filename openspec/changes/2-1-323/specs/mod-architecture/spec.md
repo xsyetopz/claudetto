@@ -47,7 +47,7 @@ The owner of a feature MUST be the first in this order that a recorded check sho
 
 ### Requirement: One Guard Hook per Event
 
-Each plugin SHALL register at most one `tool.check` hook and one `tool.call` hook. The `tool.call` hook SHALL carry one `.catch`, because a `tool.call` guard without one fails open after the tool may have run. The `tool.check` hook SHALL carry none, because Claude Code skips a `tool.check` guard that fails and keeps the verdict beneath it: its permission rules, mode, and sandbox. A guard SHALL be a named function that tests the tool's name itself and passes every other call on. The registration file SHALL list the guards of each event in the order they nest.
+Each plugin SHALL register at most one `tool.check` hook and one `tool.call` hook. The `tool.call` hook SHALL carry one `.catch`, because without one it fails open after the tool may have run. The `tool.check` hook SHALL carry none, because Claude Code skips a failed `tool.check` guard and keeps its own verdict. Each guard SHALL be a named function that passes every other tool's call on, and the registration file SHALL list each event's guards in nesting order.
 
 #### Scenario: The Validator Lists Each Guard Hook
 
@@ -66,7 +66,7 @@ Each plugin SHALL register at most one `tool.check` hook and one `tool.call` hoo
 
 ### Requirement: A Guard Refuses on a Fault, and No Fault Is Dropped
 
-A fault in a `tool.check` guard SHALL leave Claude Code's verdict beneath the plugin in place, with no ask of its own, because an ask on each slow or failed check stops a person for a call their rules already settle. A fault in a `tool.call` guard SHALL refuse with the failure's message, or its `kind` when there is none. The side check of `claudetto-you-should-know` SHALL instead log its fault and let the call go on. Every other caught fault SHALL be logged with its cause or rethrown. A `catch` MUST NOT turn a fault into a value that reads as a normal answer.
+A fault in a `tool.check` guard SHALL leave Claude Code's verdict in place, with no ask of its own, because such an ask stops a person for a call their rules already settle. A fault in a `tool.call` guard SHALL refuse with the failure's message, or its `kind`. The side check of `claudetto-you-should-know` SHALL log its fault and let the call go on. Every other caught fault SHALL be logged with its cause or rethrown, and a `catch` MUST NOT turn a fault into a normal answer.
 
 #### Scenario: A Gate That Throws
 
