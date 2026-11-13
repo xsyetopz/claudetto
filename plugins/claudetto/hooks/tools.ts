@@ -23,8 +23,10 @@ export function withinBudget<T>(
 				{ signal: AbortSignal.any([signal, done.signal]) },
 			);
 		} catch (error) {
-			// An aborted wait ends the same way as one that ran out.
-			$.ui.log(`The wait ended early (${String(error)})`);
+			// An aborted wait ends the same way as one that ran out. The race's own end aborts it too, which is no fault.
+			if (!done.signal.aborted) {
+				$.ui.log(`The wait ended early (${String(error)})`);
+			}
 		}
 		return null;
 	};
