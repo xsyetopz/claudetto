@@ -1,7 +1,7 @@
 // Pure code, no model call: which lines the block of `.gitignore` and of `.ignore` holds.
 
 import { detectFamilies, globOf, type Listing } from "./starter";
-import type { Family } from "./starter-families";
+import { FAMILIES, type Family } from "./starter-families";
 
 /** The paths `Grep` leaves out. `.ignore` has no fixed line: only a family adds to it. */
 export const GITIGNORE_FIXED: readonly string[] = [
@@ -32,18 +32,39 @@ const seen = (pattern: string, paths: readonly string[]): boolean => {
 
 const unique = (lines: readonly string[]): string[] => [...new Set(lines)];
 
+const DEPENDENCY_FOLDERS = new Set(
+	FAMILIES.flatMap((family) => family.deps ?? []),
+);
+
+/** The names, without a trailing slash, of the root folders git ignores that a worktree can link instead of rebuild. */
+export const dependencyFolders = (
+	ignoredDirectories: readonly string[],
+): string[] =>
+	ignoredDirectories
+		.filter((path) => DEPENDENCY_FOLDERS.has(path))
+		.map((path) => path.slice(0, -1));
+
 /**
  * A heavy path git tracks is searched but not worth listing, so it goes to `.ignore`; one git does not track goes to
  * `.gitignore`. A lock or minified file is tracked in practice, so it goes to `.ignore` when git sees one, and nowhere else.
+ * A linked folder goes by its bare name, because `dir/` matches a folder and a worktree holds a link to it.
  */
-export const ignoreLines = (listing: Listing): IgnoreLines => {
+export const ignoreLines = (
+	listing: Listing,
+	linked: readonly string[] = [],
+): IgnoreLines => {
 	const families: readonly Family[] = detectFamilies(listing.files);
 	const heavy = unique(families.flatMap((family) => family.heavy));
 	const bulky = unique(families.flatMap((family) => family.bulky ?? []));
 	return {
 		gitignore: unique([
 			...GITIGNORE_FIXED,
-			...heavy.filter((pattern) => !seen(pattern, listing.tracked)),
+			...linked,
+			...heavy.filter(
+				(pattern) =>
+					!seen(pattern, listing.tracked) &&
+					!linked.includes(pattern.slice(0, -1)),
+			),
 		]),
 		ignore: [
 			...heavy.filter((pattern) => seen(pattern, listing.tracked)),

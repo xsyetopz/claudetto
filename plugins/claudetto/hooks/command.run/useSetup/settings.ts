@@ -47,7 +47,18 @@ const BUILTIN_PLUGINS_OFF = [
 	"claude-test",
 ];
 
+// The agent types Claude Code ships; the claudetto agents are namespaced, so `Agent(Plan)` leaves `claudetto:plan` alone.
+const BUILTIN_AGENTS = [
+	"claude",
+	"Explore",
+	"general-purpose",
+	"Plan",
+	"statusline-setup",
+	"claude-code-guide",
+];
+
 export const DENIED_TOOLS = [
+	...BUILTIN_AGENTS.map((name) => `Agent(${name})`),
 	"Workflow",
 	"ScheduleWakeup",
 	"ReportFindings",
@@ -86,7 +97,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Models and windows",
-		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, and the context windows with the compaction trigger.`,
+		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, and the Haiku context window.`,
 		settings: {
 			model: OPUS,
 			effortLevel: "medium",
@@ -96,12 +107,9 @@ export const GROUPS: readonly Group[] = [
 				[SONNET]: { maxEffortLevel: "medium" },
 				[HAIKU]: { maxEffortLevel: "high", autoCompactWindow: 200_000 },
 			},
-			autoCompactWindow: 300_000,
 			idleCompaction: false,
 			subagentPromptCacheTtl: "1h",
 			env: {
-				// 140,000 tokens of the 300,000 window less its 20,000 output reserve.
-				CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: "50.0000",
 				CLAUDE_CODE_SUBAGENT_MODEL: SONNET,
 				ANTHROPIC_DEFAULT_MODEL: OPUS,
 				ANTHROPIC_DEFAULT_OPUS_MODEL: OPUS,

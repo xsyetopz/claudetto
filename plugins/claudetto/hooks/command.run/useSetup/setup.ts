@@ -6,8 +6,10 @@ import {
 	capGroup,
 	type Change,
 	changesOf,
+	linkGroup,
 	parseSettings,
 	settingsText,
+	tempGroup,
 	wallGroup,
 } from "./changes";
 import {
@@ -23,7 +25,13 @@ import {
 } from "./engine";
 import { reportRule, RULES, rulesPart } from "./rules";
 import { type Group, GROUPS, type Json, STATUS_LINE } from "./settings";
-import { ignoresPart, purgePart, starterPart, toolPart } from "./steps";
+import {
+	ignoresPart,
+	linkedFolders,
+	purgePart,
+	starterPart,
+	toolPart,
+} from "./steps";
 import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./text";
 import {
 	diskLine,
@@ -97,6 +105,15 @@ async function askGroups(
 	]);
 }
 
+const DIGITS = /^\d+$/u;
+
+/** The temp folder rules for the user's uid, or `undefined` when `id -u` prints no number. */
+async function tempGroupOf($: EngineInterface): Promise<Group | undefined> {
+	const printed = await lines($, ["id", "-u"]);
+	const uid = printed.trim();
+	return DIGITS.test(uid) ? tempGroup(uid) : undefined;
+}
+
 async function settingsPart(
 	$: EngineInterface,
 	walls: readonly string[],
@@ -112,6 +129,8 @@ async function settingsPart(
 			}),
 		),
 		wallGroup(walls),
+		linkGroup(await linkedFolders($)),
+		await tempGroupOf($),
 	].filter((group) => group !== undefined);
 	const result = await askGroups($, [...GROUPS, ...extra], held, []);
 	if (result === undefined) {

@@ -22,6 +22,8 @@ export interface Family {
 	readonly commands: readonly Command[];
 	/** Build, cache, and dependency paths: a `dir/` or a `*` glob on a file name. */
 	readonly heavy: readonly string[];
+	/** The dependency folders at the repo root that a worktree links, each a `dir/` out of `heavy`. */
+	readonly deps?: readonly string[];
 	/** Lock and minified files, which git tracks: a file name or a `*` glob. */
 	readonly bulky?: readonly string[];
 	/** Tools whose bounding flags no doc or `--help` confirmed. */
@@ -68,6 +70,7 @@ export const FAMILIES: readonly Family[] = [
 			},
 		],
 		heavy: ["node_modules/", "dist/", ".next/", "coverage/"],
+		deps: ["node_modules/"],
 		bulky: [
 			"bun.lock",
 			"bun.lockb",
@@ -115,6 +118,7 @@ export const FAMILIES: readonly Family[] = [
 			".pytest_cache/",
 			"*.egg-info/",
 		],
+		deps: [".venv/", "venv/"],
 		bulky: ["uv.lock", "poetry.lock", "Pipfile.lock"],
 		omitted: ["pip"],
 	},
@@ -203,6 +207,7 @@ export const FAMILIES: readonly Family[] = [
 			{ kind: "build", run: "swift build -q", when: ["Package.swift"] },
 		],
 		heavy: [".build/", "DerivedData/", "Pods/"],
+		deps: ["Pods/"],
 		omitted: ["xcodebuild", "xcbeautify"],
 	},
 	{

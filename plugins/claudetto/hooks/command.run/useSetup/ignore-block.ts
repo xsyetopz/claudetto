@@ -6,27 +6,25 @@ export const BLOCK_END = "# <<< claudetto";
 
 const LEADING_BANG = /^!/u;
 const LEADING_SLASH = /^\//u;
-const TRAILING_SLASH = /\/$/u;
 const TRAILING_NEWLINE = /\n$/u;
 
-/** The path a line names, with a negation, a leading slash, and a trailing slash removed; `undefined` for a comment or a blank. */
+/** The path a line names, with a negation and a leading slash removed; `undefined` for a comment or a blank. A trailing slash stays: `dir/` matches a folder only, and `dir` also matches a link to one. */
 const pathOf = (line: string): string | undefined => {
 	const text = line.trim();
 	if (text === "" || text.startsWith("#")) {
 		return undefined;
 	}
-	return text
-		.replace(LEADING_BANG, "")
-		.replace(LEADING_SLASH, "")
-		.replace(TRAILING_SLASH, "");
+	return text.replace(LEADING_BANG, "").replace(LEADING_SLASH, "");
 };
 
+/** A line `dir` also names `dir/`, so a block line `dir/` after it is redundant. */
 const namedBy = (lines: readonly string[]): Set<string> => {
 	const named = new Set<string>();
 	for (const line of lines) {
 		const path = pathOf(line);
 		if (path !== undefined) {
 			named.add(path);
+			named.add(`${path}/`);
 		}
 	}
 	return named;

@@ -93,6 +93,42 @@ describe("a repo with lines of its own", () => {
 	});
 });
 
+describe("a folder that a worktree links", () => {
+	const files = ["package.json"];
+
+	test("is ignored by its bare name, which also matches the link, and not by `dir/`", () => {
+		const edits = ignoreEdits({ files, tracked: files }, {}, ["node_modules"]);
+
+		const lines = heldText(edits, ".gitignore").split("\n");
+		expect(lines).toContain("node_modules");
+		expect(lines).not.toContain("node_modules/");
+	});
+
+	test("gets its bare line beside a `dir/` line that the file holds outside the block", () => {
+		const held = "node_modules/\n";
+
+		const edits = ignoreEdits({ files, tracked: files }, { gitignore: held }, [
+			"node_modules",
+		]);
+
+		const lines = heldText(edits, ".gitignore").split("\n");
+		expect(lines.filter((line) => line === "node_modules")).toHaveLength(1);
+		expect(lines.filter((line) => line === "node_modules/")).toHaveLength(1);
+	});
+
+	test("is not added twice when the file holds the bare line", () => {
+		const held = "node_modules\n";
+
+		const edits = ignoreEdits({ files, tracked: files }, { gitignore: held }, [
+			"node_modules",
+		]);
+
+		expect(
+			heldText(edits, ".gitignore").match(/^node_modules$/gmu),
+		).toHaveLength(1);
+	});
+});
+
 describe("a rerun", () => {
 	test("on the file it wrote changes nothing", () => {
 		const listing = { files: GO, tracked: GO };

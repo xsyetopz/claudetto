@@ -10,9 +10,12 @@ Before 1.0.0, a release can change or remove behavior.
 ### Added
 
 - `/claudetto:setup` lists each `.md` file in `~/.claude/rules/claudetto/` that claudetto no longer ships, and offers in one dialog to delete them, so a retired rule stops loading.
+- `/claudetto:setup` offers `worktree.symlinkDirectories` with the git-ignored dependency folders (`node_modules`, `.venv`, `venv`, `Pods`) found at the project root, and adds each linked folder to claudetto's `.gitignore` block by its bare name, because a `node_modules/` line misses the symlink that a worktree holds in its place.
+- `/claudetto:setup` allows `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)`, so an edit in your own temp folder runs with no prompt.
 
 ### Changed
 
+- `/claudetto:setup` denies each built-in agent type (`Agent(claude)`, `Agent(Explore)`, `Agent(general-purpose)`, `Agent(Plan)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`) beside `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, and claudetto's namespaced agents stay available.
 - Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
 - The hook code of each plugin passes the TypeScript check of `claude plugin validate` on Claude Code 2.1.323: imports name no `.ts` extension, and the hygiene sweep, a Bun program that the session-start hook runs, moved from `hooks/` to `hygiene/`, with its default `trash.toml`.
 - The status line paints with the `dark` palette until the session file names a theme, unless `NO_COLOR` is set.
@@ -23,6 +26,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 - The refusal of an `Agent` call that names a built-in or unprefixed `subagent_type`, or a foreground run of `search`, `plan`, or `sweep` without `run_in_background: false`. Setup's `Agent(<name>)` denies and each agent file's frontmatter take its place.
 - The `maxIdenticalFailures` option and the refusal of a repeated failing subagent start.
+- `/claudetto:setup` no longer writes `autoCompactWindow: 300000` or `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`; compaction keeps Claude Code's default window and trigger.
 - The subagent status line and the `subagentStatusLine` key of the plugin's `settings.json`: Claude Code 2.1.323 ignores the key and draws its default subagent rows.
 
 ### Fixed

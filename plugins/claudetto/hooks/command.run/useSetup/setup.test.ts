@@ -6,7 +6,37 @@ import { valueAt } from "./settings";
 import { FILE, type Lab, lab, run, saved } from "./setup.mock";
 import { recommended } from "./text";
 
-test("setup on an empty file writes the telemetry env and the eight denies and no Agent deny", async ($: Engine, on: On) => {
+const idAndIgnored =
+	(ignored: string) =>
+	(argv: readonly string[]): string => {
+		if (argv[0] === "id") {
+			return "501\n";
+		}
+		return argv.includes("--ignored") ? ignored : "";
+	};
+
+test("setup links the ignored dependency folders at the root and allows edits in the user's temp folder", async ($: Engine, on: On) => {
+	const state = lab(
+		on,
+		undefined,
+		() => "Write",
+		idAndIgnored("node_modules/\ndist/\n"),
+	);
+
+	await run($, "claudetto:setup");
+
+	expect(valueAt(saved(state), ["worktree", "symlinkDirectories"])).toEqual([
+		"node_modules",
+	]);
+	expect(valueAt(saved(state), ["permissions", "allow"])).toEqual(
+		expect.arrayContaining([
+			"Edit(//tmp/claude-501/**)",
+			"Edit(//private/tmp/claude-501/**)",
+		]),
+	);
+});
+
+test("setup on an empty file writes the telemetry env, the eight denies, and the built-in agent denies", async ($: Engine, on: On) => {
 	const state = lab(on);
 
 	await run($, "claudetto:setup");
@@ -15,7 +45,9 @@ test("setup on an empty file writes the telemetry env and the eight denies and n
 	expect(text).toContain('"DISABLE_TELEMETRY":"1"');
 	expect(text).not.toContain("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC");
 	expect(text).not.toContain("cc-plugin-telemetry");
-	expect(text).not.toContain("Agent(");
+	expect(text).toContain('"Agent(Explore)"');
+	expect(text).not.toContain("symlinkDirectories");
+	expect(text).not.toContain("Edit(//tmp");
 	expect(text).toContain('"baseRef":"head"');
 	for (const tool of [
 		"Workflow",

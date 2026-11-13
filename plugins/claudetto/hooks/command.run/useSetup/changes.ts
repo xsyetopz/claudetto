@@ -11,16 +11,18 @@ export interface Change {
 const same = (a: unknown, b: unknown): boolean =>
 	JSON.stringify(a) === JSON.stringify(b);
 
-const isPermissionList = (path: readonly string[]): boolean =>
-	path[0] === "permissions";
+const LINK_LIST = "worktree.symlinkDirectories";
 
-/** A permission list keeps every rule the user holds and adds ours. */
+const isMergedList = (path: readonly string[]): boolean =>
+	path[0] === "permissions" || path.join(".") === LINK_LIST;
+
+/** A permission list or the worktree link list keeps every entry the user holds and adds ours. */
 const wantedAt = (
 	path: readonly string[],
 	had: unknown,
 	value: unknown,
 ): unknown => {
-	if (isPermissionList(path) && Array.isArray(had) && Array.isArray(value)) {
+	if (isMergedList(path) && Array.isArray(had) && Array.isArray(value)) {
 		const held: unknown[] = had;
 		const added: unknown[] = value;
 		return [...held, ...added.filter((rule) => !held.includes(rule))];
@@ -46,7 +48,8 @@ export const applyChanges = (
 		if (
 			mode === "replace" ||
 			change.had === undefined ||
-			change.path.startsWith("permissions.")
+			change.path.startsWith("permissions.") ||
+			change.path === LINK_LIST
 		) {
 			settings = setAt(settings, change.path.split("."), change.wanted);
 		}
@@ -94,6 +97,30 @@ export const wallGroup = (walls: readonly string[]): Group | undefined =>
 					permissions: { deny: walls.map((item) => wallRule(item)) },
 				},
 			};
+
+/** `undefined` when the project root holds no ignored dependency folder. */
+export const linkGroup = (folders: readonly string[]): Group | undefined =>
+	folders.length === 0
+		? undefined
+		: {
+				label: "Worktree folders",
+				why: `Links ${folders.join(", ")} from the project root into each worktree, so a worktree agent has its dependencies without a new install.`,
+				settings: { worktree: { symlinkDirectories: folders } },
+			};
+
+/** Claude Code's temp folder is per user; macOS reaches it as `/tmp` and as `/private/tmp`. */
+export const tempGroup = (uid: string): Group => ({
+	label: "Temp folder edits",
+	why: `Allows Edit and Write under /tmp/claude-${uid}, Claude Code's temp folder, so a probe file there needs no approval.`,
+	settings: {
+		permissions: {
+			allow: [
+				`Edit(//tmp/claude-${uid}/**)`,
+				`Edit(//private/tmp/claude-${uid}/**)`,
+			],
+		},
+	},
+});
 
 export const settingsText = (settings: Json): string =>
 	`${JSON.stringify(settings, undefined, 2)}\n`;

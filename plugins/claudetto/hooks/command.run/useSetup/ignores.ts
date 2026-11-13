@@ -33,8 +33,9 @@ const editOf = (
 export const ignoreEdits = (
 	listing: Listing,
 	held: HeldIgnores,
+	linked: readonly string[] = [],
 ): IgnoreEdit[] => {
-	const lines = ignoreLines(listing);
+	const lines = ignoreLines(listing, linked);
 	return [
 		...editOf(".gitignore", held.gitignore, lines.gitignore),
 		...editOf(".ignore", held.ignore, lines.ignore),

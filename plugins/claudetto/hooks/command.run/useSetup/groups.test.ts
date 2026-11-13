@@ -57,11 +57,9 @@ test("the models group writes the models, ceilings, and windows", () => {
 				autoCompactWindow: 200_000,
 			},
 		},
-		autoCompactWindow: 300_000,
 		idleCompaction: false,
 		subagentPromptCacheTtl: "1h",
 		env: {
-			CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: "50.0000",
 			CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-5-5",
 			ANTHROPIC_DEFAULT_MODEL: "claude-opus-5-5",
 			ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-5-5",

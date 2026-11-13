@@ -1,6 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
 import { ask, lines, textOf } from "./engine";
+import { dependencyFolders } from "./ignore-plan";
 import { type IgnoreEdit, ignoreEdits, previewEdits, settle } from "./ignores";
 import { linesOf, planStarter, previewOf, type StarterFile } from "./starter";
 import {
@@ -33,6 +34,19 @@ async function repoFiles($: EngineInterface) {
 		files: await git($, FILES_ARGS),
 		tracked: await git($, ["ls-files"]),
 	};
+}
+
+/** The dependency folders at the project root that git ignores and a worktree can link. */
+export async function linkedFolders($: EngineInterface): Promise<string[]> {
+	return dependencyFolders(
+		await git($, [
+			"ls-files",
+			"--others",
+			"--ignored",
+			"--exclude-standard",
+			"--directory",
+		]),
+	);
 }
 
 async function cwdOf($: EngineInterface): Promise<string | undefined> {
@@ -129,10 +143,14 @@ export async function ignoresPart(
 	if (inside !== "true") {
 		return undefined;
 	}
-	const edits = ignoreEdits(await repoFiles($), {
-		gitignore: await textOf($, `${cwd}/.gitignore`),
-		ignore: await textOf($, `${cwd}/.ignore`),
-	});
+	const edits = ignoreEdits(
+		await repoFiles($),
+		{
+			gitignore: await textOf($, `${cwd}/.gitignore`),
+			ignore: await textOf($, `${cwd}/.ignore`),
+		},
+		await linkedFolders($),
+	);
 	if (edits.length === 0) {
 		return undefined;
 	}
