@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: dependency-into-project
-context:
-  scaffold_script: scaffold.sh

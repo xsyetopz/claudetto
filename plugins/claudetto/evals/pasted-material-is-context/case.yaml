@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: pasted-material-is-context
+context:
+  scaffold_script: scaffold.sh

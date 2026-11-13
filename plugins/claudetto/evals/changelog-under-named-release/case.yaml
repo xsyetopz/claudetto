@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: changelog-under-named-release
+context:
+  scaffold_script: scaffold.sh
