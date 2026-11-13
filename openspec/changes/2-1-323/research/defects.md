@@ -797,3 +797,11 @@ The person reported on 2026-11-13 that the agent "keeps delegating to the fuckin
 - OpenSAD `3308c572`, 2026-11-11: `just render-check` was handed over three times after the sandbox blocked Ruffle's OpenGL and the request to run outside the sandbox was refused. That hand-off fits the rule.
 - Fix: task 7.22.
 
+### D10.38 The Commit Block Lists a Scratch Repo's Files
+
+Observed: on 2026-11-13 the Stop block "These files you changed are not committed" listed four files of `/tmp/claude-501/probe-nested/repo`, a scratch repo with no commits (`git log`: "your current branch 'master' does not have any commits yet"). The block told the agent to commit them, which would create commits in a throwaway repo.
+
+- Read: `changedOf` (`classic.Stop/useSliceCommits/slices.ts:90-114`) runs `git status` from each written file's own folder. Any file inside any git repo therefore counts, and only `<cwd>/.claude/worktrees/` is skipped.
+- P-D10.38. Hypothesis: the block often lists temp-folder files. Prediction: a share of the blocks name a path under `/tmp`, `/private/tmp`, or `/var/folders`. Command: `bun $TMPDIR/scan-tmp-commit.ts` over every transcript in `~/.claude/projects`. Result: confirmed. 76 of 450 blocks (17%) list such a path, in 11 transcripts across OpenJoystickDriver, www.clawdipedia.cc, and claudetto.
+- Fix: task 6.1 deletes `useSliceCommits`.
+
