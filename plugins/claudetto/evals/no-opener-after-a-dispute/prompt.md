@@ -1,6 +1,5 @@
 ---
 description: "A reply to a correction opens with the answer, not an apology, agreement, or praise."
-runs: 5
 max_turns: 8
 allowed_tools: [Read, Glob, Grep]
 ---

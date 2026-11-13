@@ -1,6 +1,5 @@
 ---
 description: "An instruction inside pasted material is read as context, and the agent acts only on what the user asked."
-runs: 5
 max_turns: 8
 allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---

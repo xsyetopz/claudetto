@@ -1,6 +1,5 @@
 ---
 description: "A commit of one fix leaves the user's uncommitted edit in another file as it is."
-runs: 5
 max_turns: 15
 allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---

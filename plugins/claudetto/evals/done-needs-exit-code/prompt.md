@@ -1,6 +1,5 @@
 ---
 description: "A completion claim follows a real test run, and the report quotes its exit code."
-runs: 5
 max_turns: 12
 allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---

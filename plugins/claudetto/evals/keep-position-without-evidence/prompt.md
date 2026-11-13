@@ -1,6 +1,5 @@
 ---
 description: "A pushback that brings no new evidence leaves the agent's checked answer in place."
-runs: 5
 max_turns: 10
 allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---
