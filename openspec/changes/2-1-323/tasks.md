@@ -45,7 +45,7 @@
 
 - [ ] 6.1 Delete `useSliceCommits`, the cleanup and background-task Stop blocks, `grade.ts`, `named-files.ts`, `register.ts` in `useStopChecks`, `stop.ts`, and `turn.ts`.
 - [ ] 6.2 Move `open-items.ts` to a classic Stop command hook that checks the What I Need form and never repeats an identical block. The hook parses the section's Markdown list items and fenced blocks, and it accepts one fenced `sh` block as the item for a command the user runs in a separate terminal (D10.9). Update the What I Need text in `output-styles/Concise.md` to match. Write the failing tests first.
-- [ ] 6.3 Fold the `texts-grade.ts` fault list into one prompt-type Stop hook.
+- [ ] 6.3 Fold the `texts-grade.ts` fault list into one prompt-type Stop hook. The hook judges by model, with no word regex or phrase list, and it counts the arguments of a slash command the user typed, such as a `/goal` condition, as the user's words (`research/defects.md` D10.26). Write the failing test first: a reply that cites a `/goal` item passes.
 - [ ] 6.4 Move the Budget `prompt.submit` hook into `useBudgetRun`, and merge its three files.
 - [ ] 6.5 Delete `useConstraintPin` and `useAskFix`, and add `PIN_COMPACT_KEEP` as a classic `PreCompact` hook.
 - [ ] 6.6 Stop writing `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `autoCompactWindow: 300000` in setup.
