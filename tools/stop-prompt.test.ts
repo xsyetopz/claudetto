@@ -56,6 +56,22 @@ test("the arguments of a typed slash command count as the user's words", async (
 	expect(prompt).toContain("arguments of a slash command");
 });
 
+test("a session with no ask tool, such as `claude -p`, may ask in text", async () => {
+	const prompt = await gradePrompt();
+
+	expect(prompt).toContain(
+		"a session where a search for AskUserQuestion found nothing",
+	);
+});
+
+test("a change that rests on a user claim the workspace contradicts is never pushed", async () => {
+	const prompt = await gradePrompt();
+
+	expect(prompt).toContain(
+		"a change that rests on a user claim the workspace contradicts",
+	);
+});
+
 test("the Stop open-items check is a command hook under the plugin root", async () => {
 	const all = await stopHandlers();
 	const commands = all
