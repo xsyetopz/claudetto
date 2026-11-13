@@ -190,7 +190,16 @@ Probe P-D9.5:
 - Command: `get_schema name:types property:ModelCompleteRequest`.
 - Result: refuted. It holds `model`, `prompt`, `system`, `maxTokens`, `effort`, and `timeoutMs`, and nothing else, so the reply is free text.
 
-Hypothesis, not run: at `effort: "high"`, thinking spends part of the 2,106-token cap, and the JSON is cut off. The probe is a paid Haiku call that logs `usage` and the reply's tail. It waits for approval (task 10.3).
+Probe P-D9.5b (paid, approved by the user on 2026-11-13):
+
+- Hypothesis: at `effort: "high"`, thinking spends part of the 2,106-token cap, and the JSON is cut off.
+- Prediction: on a real reply, `output_tokens` reaches 2,106 and the text has no closing `}`.
+- Command: a `--plugin-dir` probe whose `session.start` hook calls a copy of `fallback()` three times with `SHIPPED_REGISTER`, over the last 4,000 chars of this session's replies. The hook logs `usage` and the reply's tail. Run as `claude -p ok --model haiku --max-turns 1 --no-session-persistence`.
+- Result: not reproduced. All 3 replies parsed, and each answered every question `no`. `input_tokens` was 2,534 each time, and `output_tokens` were 1,298, 1,124, and 1,293. The visible JSON was only 278 to 302 chars, so thinking used about 1,050 to 1,220 tokens, more than half the cap, on five questions. The truncation stays a likely cause of the logged failure on a longer state or a larger question set (`ledgerQuestions` grows with each sentence and entry), but this run did not show it.
+- Also observed: `cache_read_input_tokens` was 0 on all three calls, although `FIXED` is marked `cache: true`.
+- Cost: 7,602 input and 3,715 output tokens for the fallback calls, plus three `ok` turns of about $0.0015 each by the engine's debug line. The weekly share read 74% before and after.
+
+The fix stays the same: no plugin parses model prose.
 
 Structural fix: delete the decider fallback. A judgment that needs a model moves to a prompt-type classic hook, as task 6.3 does for the Stop faults. The engine sends that hook's prompt and reads its verdict, so no plugin parses model prose.
 
@@ -204,7 +213,28 @@ Faults:
 
 Cause: `hygiene/sweep.ts:173,182` trashes each top-level folder under the temp roots that no file changed in for `probeMinutes` (default 60), by `find -mmin` (`temp.ts:45-84`). Any session start runs it. An idle hour does not mean a session has ended: the folder of a live session that waits on the user, a build, or a test qualifies.
 
-Structural fix: decide by ownership, not by idle time. Sweep a folder only when the session that made it has ended. The session's own end event (classic `SessionEnd`, its payload to be probed) removes what that session made, and the start sweep removes nothing a live session holds open (`trash.ts:208` already lists open files through `lsof`). Hypothesis, to be probed: whether `$TMPDIR` (`/tmp/claude-501`) is cleaned by Claude Code itself, which would remove the need for the sweep there.
+Probe P-D9.6a:
+
+- Hypothesis: Claude Code cleans `$TMPDIR` itself, so the sweep has no job there.
+- Prediction: `/tmp/claude-501` holds nothing older than about a day.
+- Command: `stat -f '%Sm %N' /tmp/claude-501/* | sort | head -5`.
+- Result: refuted. Folders from Nov 11 11:23 are still there two days later, such as `-private-tmp-probe-p60-model`.
+
+Probe P-D9.6b:
+
+- Hypothesis: Claude Code already keys a temp folder to each session.
+- Prediction: `$TMPDIR/<project>/` holds one folder per session id.
+- Command: `ls /tmp/claude-501/-Users-krystian-CodeProjects-xsyetopz-claudetto/`.
+- Result: confirmed. It holds seven session-id folders, this session's `17435f50-…` with `images` and `tasks` among them. Ended sessions' folders stay.
+
+Probe P-D9.6c:
+
+- Hypothesis: the session end event names the session that ended.
+- Prediction: the `SessionEnd` input carries `session_id`.
+- Command: `search_docs "SessionEnd hook input fields reason"`.
+- Result: confirmed. `SessionEndHookInput` combines `reason` with `BaseHookInput`, and the Mod API has `session.end`, which "fires once when the session ends (exit, `/clear`, resume, logout, signal, a finished `-p` run)".
+
+Structural fix: decide by ownership, not by idle time. A session's probes go under the folder Claude Code already made for it, `$TMPDIR/<project>/<session_id>/`. `session.end` removes that folder. The sweep at session start drops its idle-time rule for temp folders, so it never removes a live session's files.
 
 ### D9.7 Guards Fixed in 2.1.321, Checked Again
 

@@ -55,7 +55,7 @@
 - [ ] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
 - [ ] 7.5 Delete the `tool.check` catch in `register.ts` and `checkFault` in `chain.ts`, so a guard fault leaves the engine's verdict in place. Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
 - [ ] 7.6 Delete the decider fallback (`decider/fallback.ts`) and move each judgment it makes to a prompt-type classic hook (D9.5).
-- [ ] 7.7 Make the hygiene sweep remove a temp folder only after the session that made it has ended, and never on idle time alone. Probe `SessionEnd`'s payload and whether Claude Code cleans `$TMPDIR` first (D9.6). Write the failing test first.
+- [ ] 7.7 Delete the hygiene sweep's idle-time rule for temp folders. Point probes at `$TMPDIR/<project>/<session_id>/`, and remove that folder on `session.end` (D9.6). Write the failing test first.
 - [ ] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).
 
 ## 8. Texts
