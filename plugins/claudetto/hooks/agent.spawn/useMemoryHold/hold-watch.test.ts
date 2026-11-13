@@ -26,7 +26,7 @@ type Call = () => Promise<{
 }>;
 
 interface Machine {
-	/** The `ps` rows: pid, elapsed time, resident size in kilobytes, name. */
+	/** The `ps` rows: pid, parent pid, elapsed time, resident size in kilobytes, name. */
 	ps: string;
 	/** The number of `ps` runs that fail before one answers. */
 	psFailures: number;
@@ -38,7 +38,20 @@ interface Machine {
 const watchLab = (on: On, ps: string, call: (clock: Clock) => Call) => {
 	const machine: Machine = { ps, psFailures: 0, runs: [], logs: [] };
 	const clock = mock.clock(on, { now: 0 });
-	mock.env(on, {});
+	mock.env(on, { HOME: "/h" });
+	on("session.id", () => ({ value: "s1" }));
+	on("fs.list", () => ({
+		value: [
+			{
+				name: "500.json",
+				kind: "file" as const,
+				size: 0,
+				mtimeMs: 0,
+				isLink: false,
+			},
+		],
+	}));
+	on("fs.read", () => ({ value: '{"pid":500,"sessionId":"s1"}' }));
 	on("session.cwd", () => ({ value: "/p" }));
 	on("session.root", () => ({ value: "/p" }));
 	on("fs.exists", () => ({ value: false }));
@@ -100,8 +113,8 @@ const ran = (machine: Machine, program: string): boolean =>
 const psRuns = (machine: Machine): number =>
 	machine.runs.filter(([name]) => name === "ps").length;
 
-const GROWN = `  4242 00:04 ${9 * KB_PER_GB} tsgolint\n  77 02:10:00 ${12 * KB_PER_GB} claude\n  90 00:04 ${KB_PER_GB} node\n`;
-const SMALL = `  4242 00:04 ${3 * KB_PER_GB} tsgolint\n`;
+const GROWN = `  4242 500 00:04 ${9 * KB_PER_GB} tsgolint\n  77 500 02:10:00 ${12 * KB_PER_GB} claude\n  90 4242 00:04 ${KB_PER_GB} node\n`;
+const SMALL = `  4242 500 00:04 ${3 * KB_PER_GB} tsgolint\n`;
 
 test("a command whose process passes the cap is stopped by its pid, and the result says so", async ($: Engine, on: On) => {
 	const { machine, clock } = watchLab(on, GROWN, slow);
@@ -111,6 +124,17 @@ test("a command whose process passes the cap is stopped by its pid, and the resu
 	expect(machine.runs).not.toContainEqual(["kill", "77"]);
 	expect(out.text).toContain("4242");
 	expect(out.text).toContain("tsgolint");
+});
+
+test("a process that is no descendant of the session is left alone, however big and new", async ($: Engine, on: On) => {
+	const { machine, clock } = watchLab(
+		on,
+		`  5151 1 00:04 ${12 * KB_PER_GB} bun\n  4242 500 00:04 ${KB_PER_GB} node\n`,
+		slow,
+	);
+	await watched($, clock);
+
+	expect(ran(machine, "kill")).toBe(false);
 });
 
 test("the machine's memory size is read by the absolute path of sysctl", async ($: Engine, on: On) => {
@@ -124,7 +148,7 @@ test("the machine's memory size is read by the absolute path of sysctl", async (
 test("a process that began before the command is left alone", async ($: Engine, on: On) => {
 	const { machine, clock } = watchLab(
 		on,
-		`  77 02:10:00 ${12 * KB_PER_GB} claude\n`,
+		`  77 500 02:10:00 ${12 * KB_PER_GB} claude\n`,
 		slow,
 	);
 	const out = await watched($, clock);
