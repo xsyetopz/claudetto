@@ -84,18 +84,18 @@ Reason: probe 1 showed a per-model swap with no default text left over. Anthropi
 
 ### 4. Subagents Are Agent Files
 
-Each of `search`, `plan`, `sweep`, and `work` sets `model`, `effort`, `tools`, and `maxTurns`. Its body is its whole prompt, written to its model's guidance.
+Each of `Artemis`, `Metis`, `Athena`, and `Heracles` sets `model`, `effort`, `tools`, and `maxTurns`. Its body is its whole prompt, written to its model's guidance.
 
 | Agent | Model | Effort | Tools |
 |---|---|---|---|
-| `search` | `claude-haiku-5-5` | high | Read, Grep, Glob |
-| `plan` | `claude-sonnet-5-5` | medium | Read, Grep, Glob |
-| `sweep` | `claude-sonnet-5-5` | medium | Read, Grep, Glob |
-| `work` | `claude-sonnet-5-5` | medium | all |
+| `Artemis` | `claude-haiku-5-5` | high | Read, Grep, Glob |
+| `Metis` | `claude-sonnet-5-5` | medium | Read, Grep, Glob |
+| `Athena` | `claude-sonnet-5-5` | medium | Read, Grep, Glob |
+| `Heracles` | `claude-sonnet-5-5` | medium | all |
 
 - No agent file sets Fable or Opus. A subagent is Sonnet 5.5 or Haiku 5.5, so Fable and Opus stay in the main loop, where the person chooses them. A lead's `Agent` call can pass `model`, which wins over the agent file, so an `agent.spawn` mod drops it and the agent file decides (`research/defects.md` D10.28). Fable runs as the opt-in `advisor` tool, on Fable 5.2 or on Mythos 5.2 where `ANTHROPIC_DEFAULT_FABLE_MODEL` names it, at `high` effort; `advisor.ts` already does this. The person set these rules on 2026-11-13, with Haiku at `high` or `xhigh` and Sonnet at `medium` as the commonly recommended levels.
-- Each Haiku agent sets `autoCompactWindow: 100000`, the lowest value the frontmatter accepts. Haiku 5.5 bills a prompt over 100,000 tokens at $0.50 per MTok of input, against $0.10 below it (`platform.claude.com/docs/en/models/haiku-5-5/overview`, read 2026-11-13). Haiku's top effort in setup is `high`, so `search` runs at `high`.
-- The bodies are written to Sonnet 5.5 and Haiku 5.5 guidance (`research/model-guidance.md`): the finish and scope paragraphs, no reviewer subagents of their own, and a short body for `search`.
+- Each Haiku agent sets `autoCompactWindow: 100000`, the lowest value the frontmatter accepts. Haiku 5.5 bills a prompt over 100,000 tokens at $0.50 per MTok of input, against $0.10 below it (`platform.claude.com/docs/en/models/haiku-5-5/overview`, read 2026-11-13). Haiku's top effort in setup is `high`, so `Artemis` runs at `high`.
+- The bodies are written to Sonnet 5.5 and Haiku 5.5 guidance (`research/model-guidance.md`): the finish and scope paragraphs, no reviewer subagents of their own, and a short body for `Artemis`.
 - Built-in agents are turned off through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` and `permissions.deny Agent(<name>)`. Spawn caps come from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, the two that setup writes today; no per-session cap has a measured value. The repeat-failure refusal in `admit.ts` goes, because its text appears in no session transcript.
 - The `delegation.ts` deny goes. It refused every non-`claudetto:` or foreground `Agent` call.
 - The memory hold stays as a mod. Its spawn denial gains a retry hint.

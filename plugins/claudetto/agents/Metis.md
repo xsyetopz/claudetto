@@ -1,5 +1,5 @@
 ---
-name: plan
+name: Metis
 description: "Plans an implementation: ordered steps, files to change, risks, checks. Read-only."
 model: claude-sonnet-5-5
 effort: medium

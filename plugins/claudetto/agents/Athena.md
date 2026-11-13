@@ -1,5 +1,5 @@
 ---
-name: sweep
+name: Athena
 description: "Broad review sweep of a change or system for defects and slow paths. Read-only."
 model: claude-sonnet-5-5
 effort: medium

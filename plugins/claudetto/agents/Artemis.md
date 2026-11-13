@@ -1,5 +1,5 @@
 ---
-name: search
+name: Artemis
 description: Read-only search across many files; returns paths, lines, and short excerpts.
 model: claude-haiku-5-5
 effort: high

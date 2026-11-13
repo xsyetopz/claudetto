@@ -49,7 +49,7 @@ test("the setup command file holds no text beyond its description", async () => 
 });
 
 // The `subagentPromptCacheTtl` setting outranks frontmatter `cacheTtl`, so setup's setting is the one place the TTL is set.
-for (const name of ["search", "plan", "sweep", "work"]) {
+for (const name of ["Artemis", "Metis", "Athena", "Heracles"]) {
 	test(`the ${name} agent sets no prompt cache TTL`, async () => {
 		const text = await file(
 			`${import.meta.dir}/../plugins/claudetto/agents/${name}.md`,
@@ -59,7 +59,7 @@ for (const name of ["search", "plan", "sweep", "work"]) {
 	});
 }
 
-// `classic.Stop/useStopChecks/open-items.ts` reads only `- [ ]` lines, so a request in any other form escapes the Stop check.
+// `open-items.ts` checks the request form the style asks for, so the style and the hook must name the same form.
 test("the output style asks for the open-item form the Stop check reads", async () => {
 	const style = await file(
 		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
@@ -72,6 +72,7 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	expect(requests).toContain(
 		"as a `- ! <command>` bullet under one `## What I Need From You` heading",
 	);
+	expect(requests).toContain("one fenced `sh` block");
 	expect(requests).toContain(
 		"Ask each question for the user once, through the popup (`AskUserQuestion`), and repeat it nowhere in the reply.",
 	);

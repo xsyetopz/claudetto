@@ -16,8 +16,8 @@ const types: [string | undefined, boolean | undefined][] = [
 	[undefined, undefined],
 	["general-purpose", undefined],
 	["Explore", false],
-	["work", undefined],
-	["claudetto:search", undefined],
+	["Heracles", undefined],
+	["claudetto:Artemis", undefined],
 	["fork", undefined],
 ];
 
@@ -49,7 +49,7 @@ test("agent.offer withholds a built-in agent and offers a plugin one", async ($:
 		provider: origin,
 	});
 	const plugin = await $.agent.offer({
-		agent: "claudetto:search",
+		agent: "claudetto:Artemis",
 		description: "d",
 		source: "plugin",
 		provider: { plugin: "claudetto", tier: "user" },

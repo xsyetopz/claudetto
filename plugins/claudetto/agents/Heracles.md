@@ -1,5 +1,5 @@
 ---
-name: work
+name: Heracles
 description: Default agent for a task that reads, runs commands, and edits files.
 model: claude-sonnet-5-5
 effort: medium

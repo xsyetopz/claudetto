@@ -70,21 +70,21 @@ The "What I Need From You" rule of `output-styles/Concise.md` SHALL list only co
 
 ### Requirement: Each Agent Has a Body and a Model
 
-The agents under `plugins/claudetto/agents/` SHALL be `search`, `plan`, `sweep`, and `work`, each with a plain body that is its whole prompt, and each SHALL set `model`, `effort`, `tools`, and `maxTurns` to the values of "Each Agent File Sets Its Model, Effort, Tools, and Turns" in `subagent-prompts`.
+The agents under `plugins/claudetto/agents/` SHALL be `Artemis`, `Metis`, `Athena`, and `Heracles`, each with a plain body that is its whole prompt, and each SHALL set `model`, `effort`, `tools`, and `maxTurns` to the values of "Each Agent File Sets Its Model, Effort, Tools, and Turns" in `subagent-prompts`.
 
 #### Scenario: Agent Reports
 
 - **WHEN** the bodies are read
-- **THEN** `search` ends with one `path:line` and excerpt per finding, `plan` returns steps, files, risks, and the check command, and `work` ends with what it did, what it checked and the result, and what is left
+- **THEN** `Artemis` ends with one `path:line` and excerpt per finding, `Metis` returns steps, files, risks, and the check command, and `Heracles` ends with what it did, what it checked and the result, and what is left
 
 #### Scenario: Read-Only Agents
 
-- **WHEN** the frontmatter of `search`, `plan`, and `sweep` is read
-- **THEN** each holds `tools: Read, Grep, Glob` and a `maxTurns` value, `search` holds `model: claude-haiku-5-5`, `effort: high`, and `autoCompactWindow: 100000`, and `plan` and `sweep` each hold `model: claude-sonnet-5-5` and `effort: medium`
+- **WHEN** the frontmatter of `Artemis`, `Metis`, and `Athena` is read
+- **THEN** each holds `tools: Read, Grep, Glob` and a `maxTurns` value, `Artemis` holds `model: claude-haiku-5-5`, `effort: high`, and `autoCompactWindow: 100000`, and `Metis` and `Athena` each hold `model: claude-sonnet-5-5` and `effort: medium`
 
 #### Scenario: Heracles
 
-- **WHEN** the frontmatter of `work` is read
+- **WHEN** the frontmatter of `Heracles` is read
 - **THEN** it holds `model: claude-sonnet-5-5`, `effort: medium`, a `maxTurns` value, and grants every tool
 
 ### Requirement: A Disputed Claim Is Weighed as a Third Party's

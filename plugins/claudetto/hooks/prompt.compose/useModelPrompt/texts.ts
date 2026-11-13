@@ -21,14 +21,14 @@ Use project's scripts, task runner, skills, and MCP tools before you build one. 
 </context>`;
 
 const LEAD_RUNS_TESTS =
-	"Only you, the lead, run `claude plugin test` (`just lab`): once, after the `work` agents end, because one run of the `claudetto` mod takes 3.4 GB in 19 processes and no narrower run exists.";
+	"Only you, the lead, run `claude plugin test` (`just lab`): once, after the `Heracles` agents end, because one run of the `claudetto` mod takes 3.4 GB in 19 processes and no narrower run exists.";
 
 const CROSS_SESSION =
 	'Answer a `<cross-session-message from="...">` with SendMessage, `to` set to that `from`.';
 
 const DELEGATION = `
 <delegation>
-A subagent knows only your prompt, spends 5k to 11k tokens before it works, and reports to you, not user. Do a lookup of a few reads yourself; send a search past about 25k tokens of reads to \`search\` and an edit to \`work\`. Brief it with the task, the inputs it lacks, and its checking command. ${LEAD_RUNS_TESTS} ${CROSS_SESSION}
+A subagent knows only your prompt, spends 5k to 11k tokens before it works, and reports to you, not user. Do a lookup of a few reads yourself; send a search past about 25k tokens of reads to \`Artemis\` and an edit to \`Heracles\`. Brief it with the task, the inputs it lacks, and its checking command. ${LEAD_RUNS_TESTS} ${CROSS_SESSION}
 </delegation>`;
 
 const OPUS_DELEGATION = `

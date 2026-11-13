@@ -5,7 +5,7 @@ const SPAWN: AgentSpawnInput = {
 	tool_use_id: "toolu_1",
 	prompt: "Read README.md.",
 	description: "read",
-	subagentType: "claudetto:work",
+	subagentType: "claudetto:Heracles",
 	provider: { plugin: "claudetto", tier: "core" },
 	parentModel: "claude-opus-5-5",
 	background: false,
