@@ -1,6 +1,6 @@
-import type { CatchHandler, HookFor, On, PluginOptions } from "claude-code";
+import type { On, PluginOptions } from "claude-code";
 
-import { READERS } from "./calls";
+import { READERS, sideCheckFault } from "./calls";
 import {
 	addToLog,
 	closed,
@@ -30,6 +30,7 @@ interface Memory {
 	readonly ended: Set<string>;
 	readonly inFlight: Map<string, Promise<string | undefined>>;
 	readonly turns: Map<string, string>;
+	readonly judged: Map<string, string>;
 	log: readonly string[];
 	earlier: readonly string[];
 }
@@ -37,6 +38,7 @@ interface Memory {
 interface Turn {
 	readonly id: string;
 	readonly turnId: string;
+	readonly callId: string;
 }
 
 const settleTyped = async (
@@ -90,6 +92,7 @@ const showReply = async (
 		offeredTurn: at.turnId,
 	});
 	mem.typedPast.delete(at.id);
+	mem.judged.set(at.id, at.callId);
 	$.ui.invalidate("ui.render");
 	return offer.line;
 };
@@ -214,6 +217,7 @@ const viewHooks = (on: On, mem: Memory): void => {
 		mem.typedPast.delete(e.sessionId);
 		mem.inFlight.delete(e.sessionId);
 		mem.turns.delete(e.sessionId);
+		mem.judged.delete(e.sessionId);
 		const row = await loadRow($, e.sessionId).catch((error: unknown) => {
 			$.ui.log(`The session row was not loaded (${String(error)})`);
 		});
@@ -246,18 +250,6 @@ const viewHooks = (on: On, mem: Memory): void => {
 	});
 };
 
-type CallCatch = CatchHandler<HookFor<"tool.call">>;
-
-// The engine hands a `.catch` handler `$` first, which the lint's catch-name rule takes for an error.
-function sideCheckFault(
-	$: Parameters<CallCatch>[0],
-	e: Parameters<CallCatch>[1],
-	next: Parameters<CallCatch>[2],
-): ReturnType<CallCatch> {
-	$.ui.log(`The side check failed (${next.error.message ?? next.error.kind})`);
-	return next(e);
-}
-
 export const register = (on: On, options: PluginOptions): void => {
 	if (options["sideCheckEnabled"] !== true) {
 		return;
@@ -268,6 +260,7 @@ export const register = (on: On, options: PluginOptions): void => {
 		ended: new Set(),
 		inFlight: new Map(),
 		turns: new Map(),
+		judged: new Map(),
 		log: [],
 		earlier: [],
 	};
@@ -292,7 +285,10 @@ export const register = (on: On, options: PluginOptions): void => {
 		const line = await checkBefore($, mem, settings, {
 			id,
 			turnId: mem.turns.get(id) ?? "",
+			callId: e.tool_use_id,
 		});
-		return line === undefined ? next(e) : { deny: stopFor(line) };
+		return line !== undefined && mem.judged.get(id) === e.tool_use_id
+			? { deny: stopFor(line) }
+			: next(e);
 	}).catch(sideCheckFault);
 };
