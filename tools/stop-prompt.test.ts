@@ -63,6 +63,6 @@ test("the Stop open-items check is a command hook under the plugin root", async 
 		.map((handler) => handler.command);
 
 	expect(commands).toContain(
-		`bun "\${CLAUDE_PLUGIN_ROOT}/hooks/open-items.ts"`,
+		`bun "\${CLAUDE_PLUGIN_ROOT}/scripts/open-items.ts"`,
 	);
 });

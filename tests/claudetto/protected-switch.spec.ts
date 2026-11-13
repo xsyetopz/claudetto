@@ -7,11 +7,11 @@ import {
 	at,
 	denyText,
 	movesOf,
-} from "../../plugins/claudetto/hooks/protected-switch";
+} from "../../plugins/claudetto/scripts/protected-switch";
 
 const SCRIPT = join(
 	import.meta.dir,
-	"../../plugins/claudetto/hooks/protected-switch.ts",
+	"../../plugins/claudetto/scripts/protected-switch.ts",
 );
 const SKILL = ".claude/skills/one/SKILL.md";
 

@@ -61,6 +61,7 @@ Before 1.0.0, a release can change or remove behavior.
 - A gate check that throws or runs out of time no longer opens a "The gate failed: timeout. A person must approve this call." dialog; Claude Code's own verdict (permission rules, mode, sandbox) decides the call.
 - A `tool.call` guard that throws after the tool ran no longer withholds the tool's output with a denial; the output of the command that already ran reaches the model. The secret scan is the exception: when `betterleaks` cannot run, the result stays withheld, because unscanned text may hold a secret.
 - The "Smaller prompt" setup group no longer writes `enabledPlugins` for `cc-plugin-claude-platform@builtin`, which Claude Code 2.1.325 no longer ships.
+- The plugin's command-hook scripts moved from `hooks/` to `scripts/`, because `claude plugin validate` in Claude Code 2.1.325 type-checks every file in `hooks/` against the hooks module's types, which hold no Bun or Node types.
 
 ## [2.1.323] - 2026-11-13
 

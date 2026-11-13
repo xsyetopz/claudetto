@@ -1,14 +1,14 @@
 import { expect, test } from "bun:test";
 
-import { PIN_COMPACT_KEEP } from "../plugins/claudetto/hooks/pre-compact.ts";
+import { PIN_COMPACT_KEEP } from "../plugins/claudetto/scripts/pre-compact.ts";
 import {
 	noticeCommand,
 	noticeOf,
-} from "../plugins/claudetto/hooks/stop-failure.ts";
+} from "../plugins/claudetto/scripts/stop-failure.ts";
 
 const run = async (script: string, env: Record<string, string> = {}) => {
 	const child = Bun.spawn(
-		["bun", `${import.meta.dir}/../plugins/claudetto/hooks/${script}`],
+		["bun", `${import.meta.dir}/../plugins/claudetto/scripts/${script}`],
 		{
 			stdin: new Blob(['{"error":"rate_limit"}']),
 			stdout: "pipe",

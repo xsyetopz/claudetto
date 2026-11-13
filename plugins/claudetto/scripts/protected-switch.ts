@@ -1,8 +1,8 @@
 import { homedir } from "node:os";
 
-import { withoutGitOptions } from "./shell/program-at";
-import { parse, programOf } from "./shell/shell-words";
-import { fieldOf } from "./shell/verdict";
+import { withoutGitOptions } from "../hooks/shell/program-at";
+import { parse, programOf } from "../hooks/shell/shell-words";
+import { fieldOf } from "../hooks/shell/verdict";
 
 // What Claude Code's sandbox denies writes to in a project folder on 2.1.323, found by writing to each path inside the sandbox; no call returns the list.
 const SANDBOX_DENIED = [

@@ -5,7 +5,7 @@ import {
 	formFault,
 	lastRuns,
 	untriedOrDone,
-} from "../plugins/claudetto/hooks/open-items.ts";
+} from "../plugins/claudetto/scripts/open-items.ts";
 
 const section = (body: string): string =>
 	`Done.\n\n## What I Need From You\n\n${body}\n`;

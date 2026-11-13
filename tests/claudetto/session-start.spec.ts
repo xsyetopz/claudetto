@@ -7,11 +7,11 @@ import {
 	contextOf,
 	detect,
 	ZSH_LINE,
-} from "../../plugins/claudetto/hooks/session-start";
+} from "../../plugins/claudetto/scripts/session-start";
 
 const SCRIPT = join(
 	import.meta.dir,
-	"../../plugins/claudetto/hooks/session-start.ts",
+	"../../plugins/claudetto/scripts/session-start.ts",
 );
 
 let dir = "";
