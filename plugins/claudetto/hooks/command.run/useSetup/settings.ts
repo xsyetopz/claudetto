@@ -93,7 +93,7 @@ export const GROUPS: readonly Group[] = [
 	COMMAND_RULES,
 	{
 		label: "Auto mode",
-		why: "Replaces the built-in autoMode rule lists with a shorter set, so the auto-mode classifier reads fewer rules.",
+		why: "Replaces the built-in autoMode rule lists, so the auto-mode classifier blocks only unrecoverable destruction and lets every other action through.",
 		settings: { autoMode: AUTO_MODE },
 	},
 	{
@@ -196,7 +196,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Sandbox",
-		why: "Turns on the built-in sandbox with least friction: Bash writes anywhere in your home folder, mounted volumes, and the temp folders, except the files that run later (shell startup files, git config, SSH, launch agents, the PATH folders in your home folder, and the xcrun tool cache). It reads no cloud credential and no keychain file but the login keychain, which gh and git push need for their login, and leaves your SSH and GPG keys readable so signed commits work, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and retries any other command the sandbox blocks outside it only after auto mode or you approve that retry.",
+		why: "Turns on the built-in sandbox with no limit of its own: Bash writes anywhere in your home folder, mounted volumes, and the temp folders, reads every file, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, and launchctl list outside the sandbox, and retries any other command the sandbox blocks outside it after auto mode or you approve that retry. The command rules and auto mode stop only unrecoverable destruction.",
 		settings: {
 			sandbox: {
 				enabled: true,
@@ -214,34 +214,6 @@ export const GROUPS: readonly Group[] = [
 						"/private/tmp",
 						"/private/var/folders",
 					],
-					denyWrite: [
-						"~/.zshrc",
-						"~/.zshenv",
-						"~/.zprofile",
-						"~/.bashrc",
-						"~/.bash_profile",
-						"~/.profile",
-						"~/.config/fish",
-						"~/.gitconfig",
-						"~/.config/git",
-						"~/.ssh",
-						"~/Library/LaunchAgents",
-						"~/.local/bin",
-						"~/.bun/bin",
-						"~/bin",
-						// `xcrun` reads from this file which binary `git` and each other developer tool is.
-						"/private/var/folders/*/*/T/xcrun_db*",
-					],
-					denyRead: [
-						"~/Library/Keychains",
-						"~/.aws",
-						"~/.azure",
-						"~/.config/gcloud",
-						"~/.netrc",
-						"~/.git-credentials",
-					],
-					// `gh` keeps its token in the login keychain, and git's helper for github.com is `gh auth git-credential`; without this file both fail sandboxed.
-					allowRead: ["~/Library/Keychains/login.keychain-db"],
 				},
 				// A test server or a fake API binds a localhost port.
 				network: {
