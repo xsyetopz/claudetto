@@ -195,11 +195,25 @@ Probe P-D9.5b (paid, approved by the user on 2026-11-13):
 - Hypothesis: at `effort: "high"`, thinking spends part of the 2,106-token cap, and the JSON is cut off.
 - Prediction: on a real reply, `output_tokens` reaches 2,106 and the text has no closing `}`.
 - Command: a `--plugin-dir` probe whose `session.start` hook calls a copy of `fallback()` three times with `SHIPPED_REGISTER`, over the last 4,000 chars of this session's replies. The hook logs `usage` and the reply's tail. Run as `claude -p ok --model haiku --max-turns 1 --no-session-persistence`.
-- Result: not reproduced. All 3 replies parsed, and each answered every question `no`. `input_tokens` was 2,534 each time, and `output_tokens` were 1,298, 1,124, and 1,293. The visible JSON was only 278 to 302 chars, so thinking used about 1,050 to 1,220 tokens, more than half the cap, on five questions. The truncation stays a likely cause of the logged failure on a longer state or a larger question set (`ledgerQuestions` grows with each sentence and entry), but this run did not show it.
+- Result: not reproduced on this input. All 3 replies parsed, and each answered every question `no`. `input_tokens` was 2,534 each time, and `output_tokens` were 1,298, 1,124, and 1,293. The visible JSON was only 278 to 302 chars, so thinking used about 1,050 to 1,220 tokens, more than half the cap, on five questions. The probe used the Stop check's five questions, while the logged failure came from the ledger (P-D9.5d), so it tested the wrong caller.
 - Also observed: `cache_read_input_tokens` was 0 on all three calls, although `FIXED` is marked `cache: true`.
 - Cost: 7,602 input and 3,715 output tokens for the fallback calls, plus three `ok` turns of about $0.0015 each by the engine's debug line. The weekly share read 74% before and after.
 
-The fix stays the same: no plugin parses model prose.
+Probe P-D9.5c (free):
+
+- Hypothesis: the ledger's question set asks for a reply longer than the cap allows.
+- Prediction: the shortest valid ledger reply for a real session runs past 8,400 chars, about what 2,106 tokens hold at 4 chars per token with no thinking.
+- Command: a Bun script that rebuilds `readLedger`'s input from a transcript's person messages with the shipped `sentencesOf`, the 41-sentence cap, and `ledgerQuestions`, then serializes every answer at its shortest (`{"answer":"no","evidence":""}`, and the shortest option for each `rule_<n>`).
+- Result: confirmed for a resumed session. Each sentence costs at least 87 chars of reply. The resumed session `17435f50` (10 messages, 193 sentences, 386 questions) needs at least 17,541 chars, so its first ledger read cannot fit even at 8 chars per token. `d8989f87` needs 3,943 chars for 44 sentences, and `5709ef73` needs 1,243 chars for 14.
+
+Probe P-D9.5d (free):
+
+- Hypothesis: the logged failure is a ledger call.
+- Prediction: the transcript shows the ledger's cap notice for the same prompt just before the failure, with no Jev line between them.
+- Command: a Bun script that lists the transcript's `system` entries from `claudetto:` that hold a decider line, each with the time of the last person message before it.
+- Result: confirmed. Session `17435f50` holds one real failure (entry 6519, 13:49:40). The prompt arrived at 13:49:23, and the ledger noted "A message holds 43 sentences" at the same moment. No Jev line appears, and `TYPESAFE_API_KEY` is empty, so the ledger went straight to the fallback. That read had 41 sentences and 82 questions, so its shortest reply was at least 3,567 chars, plus 1 question per ledger entry. The reply took 16.8 s, under the 20 s timeout. `d8989f87` and `5709ef73` hold no real failure. Each other match of the message in the three transcripts is a quote of it in a message, or a path-spam line (D1) raised by a `grep` pattern that quotes it.
+
+Still unmeasured: the token count of a 41-sentence ledger reply at `effort: "high"`. The next check is a paid replay of the 13:49 ledger read, which logs `output_tokens`, the reply length, and its tail (task 10.3).
 
 Structural fix: delete the decider fallback. A judgment that needs a model moves to a prompt-type classic hook, as task 6.3 does for the Stop faults. The engine sends that hook's prompt and reads its verdict, so no plugin parses model prose.
 
@@ -234,7 +248,16 @@ Probe P-D9.6c:
 - Command: `search_docs "SessionEnd hook input fields reason"`.
 - Result: confirmed. `SessionEndHookInput` combines `reason` with `BaseHookInput`, and the Mod API has `session.end`, which "fires once when the session ends (exit, `/clear`, resume, logout, signal, a finished `-p` run)".
 
-Structural fix: decide by ownership, not by idle time. A session's probes go under the folder Claude Code already made for it, `$TMPDIR/<project>/<session_id>/`. `session.end` removes that folder. The sweep at session start drops its idle-time rule for temp folders, so it never removes a live session's files.
+Probe P-D9.6d:
+
+- Hypothesis: Claude Code records which sessions are running.
+- Prediction: `~/.claude/sessions/` holds a record per running process, naming its session.
+- Command: `ls -la ~/.claude/sessions`, then `Read` of `53750.json` and `85503.json`.
+- Result: confirmed. Each `<pid>.json` holds `pid`, `sessionId`, `cwd`, `procStart`, `status`, and `updatedAt`. This session's record is `53750.json` with `sessionId` `17435f50-…`. Not yet checked: whether the record is removed when a session exits.
+
+A session can last any time, under an hour or over it, so no age rule can say when its files are free.
+
+Structural fix: decide by ownership, not by age. A session's probes go under the folder Claude Code already made for it, `$TMPDIR/<project>/<session_id>/`. `session.end` removes that folder. A session that ends without `session.end` (a crash or `kill -9`) leaves its folder behind. The sweep at session start removes that folder only when no `~/.claude/sessions/<pid>.json` names its `session_id` with a running `pid` and the same `procStart`. It removes nothing outside the per-session folders.
 
 ### D9.7 Guards Fixed in 2.1.321, Checked Again
 
@@ -289,6 +312,9 @@ Each item points to the rule that covers it in the per-model bodies (task 3.2) o
 - Rule slips: `cat` and `sed` reads, a `printf >>` append, and a `bun -e` bulk edit in place of `Read` and `Edit`.
 - "You're right" openers, each followed by a reply that repeats the last one.
 - A side note duplicated on screen ("The repo is clean with 6 local and 7 remote branches…" twice).
+- The agent named a cause it had guessed: "the truncation I had guessed caused the failed fallback reply". The user: "guessing was a failure to be reported." A cause stays unnamed until a check shows it.
+- After one probe on the wrong caller, the agent wrote "truncation remains possible … but this run did not show it" and stopped, with the logged failure still unexplained. The user: "so dig further. what are you even for if you refuse to verify?" The free checks P-D9.5c and P-D9.5d found the caller and the reply size from the transcript alone. An unexplained fault is checked until the cause shows or only a step outside the agent's reach is left.
+- The agent's own replies said a temp folder could be deleted "after 60 idle minutes", without stating that a session may last less than an hour. The user: "session may last less than an hour...". A fix based on age was proposed where ownership decides (D9.6).
 
 ### D9.11 Engine Messages, Recorded Only
 
