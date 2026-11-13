@@ -53,6 +53,10 @@
 - [ ] 7.2 Paint the `dark` palette in `statusline/main.ts` until a theme is known, unless `NO_COLOR` is set. Write the failing test first.
 - [ ] 7.3 Delete `statusline/subagents.ts` and `subagentStatusLine` in `plugins/claudetto/settings.json`.
 - [ ] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
+- [ ] 7.5 Delete the `tool.check` catch in `register.ts` and `checkFault` in `chain.ts`, so a guard fault leaves the engine's verdict in place. Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
+- [ ] 7.6 Delete the decider fallback (`decider/fallback.ts`) and move each judgment it makes to a prompt-type classic hook (D9.5).
+- [ ] 7.7 Make the hygiene sweep remove a temp folder only after the session that made it has ended, and never on idle time alone. Probe `SessionEnd`'s payload and whether Claude Code cleans `$TMPDIR` first (D9.6). Write the failing test first.
+- [ ] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).
 
 ## 8. Texts
 
@@ -71,5 +75,5 @@
 
 - [ ] 10.1 Run `just verify`.
 - [ ] 10.2 Measure the request size for each model against the 2.1.322 baseline with the fake Messages API.
-- [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Sonnet and Haiku agents, and before the grader replay. Report the cost and the weekly share.
+- [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Sonnet and Haiku agents, the grader replay, and the D9.5 truncation probe. Report the cost and the weekly share.
 - [ ] 10.4 List each removed option, mod, and setting in the release notes.
