@@ -97,6 +97,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The Stop grader flags a reply that leaves a step undone because a call was refused when the refusal named a change to the call, such as a command form or a flag. The agent changes the call as the reason says and sends it again. An action a denial declined stays declined.
 - The Stop grader flags a reply that ends on a list of open items the agent could still do, or on an action it says waits for your approval without asking for it in the popup. The agent does the item, or asks in the popup and then does it.
 - `claudetto-you-should-know` keeps your last 3 messages that a burst of tool calls pushed out of its 8-entry log, and no longer notes an action you asked for. Before, a run of tool calls dropped your request, and the side agent warned about the push you had asked for.
+- A test drives a real interactive `claude` session in a terminal against a fake Messages API: it waits for the plugin's `AskUserQuestion` popup, presses Enter, and checks that the chosen option reaches the model, with the plugin's tool description loaded through `ToolSearch`.
 - Hygiene runs `mo clean` at most once a day, with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`. A dry run (`claudetto-hygiene --dry-run`) runs `mo clean --dry-run` each time.
 
 ### Changed
