@@ -39,6 +39,7 @@
 - [ ] 5.2 Move `switch.ts` to a classic `PreToolUse` command hook.
 - [ ] 5.3 Delete `tool.check/useBashRules/`, the vendored rules, their fixtures, the licence, `gate.mock.ts`, and their tests and docs.
 - [ ] 5.4 Delete the gate texts in `texts-gate.ts`, and keep the advisor and decide specs.
+- [ ] 5.5 Delete the read guard: `surfaceCall` and `heavyFile` in `useSlimSurface/surface.ts`, `REFUSAL` in `texts.ts`, the `readGuardEnabled` option, and their tests and docs (D10.24).
 
 ## 6. Stop, Ledger, and Compaction
 
