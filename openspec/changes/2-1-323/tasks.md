@@ -29,7 +29,7 @@
 - [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
 - [ ] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
 - [ ] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
-- [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial. In the merge, catch a failed poll inside the memory watch's loop so the watch goes on, keep watching a `run_in_background` command until its process ends, and start `sysctl` by its absolute path (D10.6). Write the failing tests first.
+- [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial. In the merge, catch a failed poll inside the memory watch's loop so the watch goes on, keep watching a `run_in_background` command, and a call Claude Code moved to the background at its timeout, until its process ends (D10.10), and start `sysctl` by its absolute path (D10.6). Write the failing tests first.
 - [ ] 4.6 In the `work.md` body, state that a worktree-isolated agent runs each git command as its own Bash call from the worktree root, because the built-in isolation check refuses chained, `cd`-first, and `eval` forms (D10.3).
 - [ ] 4.7 In the `work.md` body and the root prompt's `<delegation>` block, state that only the lead runs `claude plugin test` (`just lab`), once, after the work agents end. Give the reason as the measured cost: one run of the `claudetto` mod takes 3.4 GB in 19 processes, and no narrower run exists (P-D10.10g).
 
@@ -62,6 +62,8 @@
 - [ ] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).
 - [ ] 7.9 Have setup offer `worktree.symlinkDirectories` with the git-ignored dependency folders it finds at the project root, so a worktree agent has them without building symlinks (D10.2). Probe the setting with one worktree first.
 - [ ] 7.10 In the bedrock repo, change `guard-base` to compare the resolved `core.hooksPath` with `<repo>/.githooks` (P-D10.1b), and add a `.githooks/pre-push` that runs `just verify` (P-D10.5). Adopt the result here (D10.1, D10.5).
+
+- [ ] 7.11 In `claudetto-you-should-know/hooks/register.ts`, store the `tool_use` id that a shown note judged, and deny only that call; any other call of the turn goes to its own check (D10.16). Write the failing test first: one note offered, then a second call with another id runs.
 
 ## 8. Texts
 

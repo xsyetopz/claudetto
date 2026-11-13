@@ -452,7 +452,27 @@ More probes (2026-11-13, outside the sandbox, sampled by `research/scripts/peak.
 - P-D10.10f. Hypothesis: a worktree with no `node_modules` (D10.2) type-checks unresolved packages and grows. Command: `bunx oxlint .` and one file in a `git archive` copy. Result: 51 MB and 6 MB; both exit 1 on the missing `typescript-bedrock/oxlintrc.json`. Refuted.
 - P-D10.10g. Hypothesis: `claude plugin test` costs more than the lint. Command: `claude plugin test plugins/claudetto`. Result: 3,389 MB, 19 processes, 59 s, 1,553 tests in 79 files. Confirmed. It starts one Claude Code child per file, `Math.min(files, availableParallelism())` at a time (`chunk-g7hwsczr.js:60019` in 2.1.323), and no flag or env var lowers that. A subfolder fails with "no hooks module to load", a file with "no such plugin folder", and `bun test` skips lab files (`bunfig.toml:29`), which import `claude-code/testing` from the binary. A hook change has no narrow check: each agent that tests it runs the whole lab.
 
-Between 22:55 and 23:13 on 2026-11-10, `5709ef73`'s agents ran one `claude plugin test` (23:00:31) and about ten `oxlint` runs. From P-D10.10a and P-D10.10g, that comes to about 8 GB (inferred), so the 120 GB report is still not explained by any measured input. Mitigation at no cost: only the lead runs the lab, once, after the work agents end (task 4.7), and the memory hold of task 4.5 refuses new runs under pressure.
+Between 22:55 and 23:13 on 2026-11-10, `5709ef73`'s agents ran one `claude plugin test` (23:00:31) and about ten `oxlint` runs. From P-D10.10a and P-D10.10g, that comes to about 8 GB (inferred).
+
+The 120 GB report, read from the logs and both repos (2026-11-13):
+
+- The machine is a MacBookPro18,2 with 32 GB of memory (`system_profiler`).
+- `HEAD` at 22:54Z was `0ed766c7`, not `6cc3dce3`; the reflog holds 18 commits after `fb1d9f8f` that evening.
+- At 22:54:06Z the lead started 7 Sonnet work agents on one shared tree. Their one-file `bun check` and `bunx oxlint` calls ran past their 100 to 130 s timeouts, some with `exit 124`, and Claude Code moved them to the background, where they kept running.
+- At 22:53:40Z the clawdipedia session `76585f31` ran `just verify`, which ends with `bun test` over 79 files. Its run at 22:36:18Z, with no claudetto agents running, finished in 4 min 10 s. The 22:53:40Z run passed its 600 s timeout, went to the background as `b811k3ixm`, and never finished. Its `git status --short` at 23:05:35Z took 57 s.
+- Unified log, local time UTC+2: `modelmanagerd` logged `CriticalMemoryPressure` at 00:56:28 (22:56:28Z). `dasd` logged its memory pressure policy at level 4 in every minute from 00:57 to 01:28, and in no minute from 20:00 to 00:45. `mobileassetd` logged `DISPATCH_MEMORYPRESSURE_CRITICAL` at 01:04:05.
+- At 01:26:59 local, `runningboardd` logged 60 processes "termination reported by launchd (1, 13, 9)", and 17 more at 01:28. XNU's `bsd/sys/reason.h` defines namespace 1 as `OS_REASON_JETSAM`, and `bsd/sys/kern_memorystatus.h` defines code 13 as `JETSAM_REASON_LOWSWAP`. So the kernel killed processes because swap ran out. The log kept no kernel line that names a killed `bun` or `claude`.
+- Both Claude Code sessions stopped between 23:27:28Z and 23:31:02Z with their background work still running. After the resume, each got "didn't finish before the previous session ended" for its shells and the 7 agents. The user's report came at 23:31:32Z.
+
+P-D10.10h. Hypothesis: the agents' own edits made the lint or type check grow. Command: `research/scripts/replay.ts` applied the agents' successful `Edit` and `Write` calls from 22:51:12 to 22:58:10Z to a `0ed766c7` copy; 3 edits made by Bash or Python missed. Result on the replayed tree: `oxlint delegation.ts` 207 MB, `stop.ts` 216 MB, and `.` 699 MB in 828 ms; whole-project `bun check` 120 MB; `claude plugin test plugins/claudetto-you-should-know` 1,410 MB with 15 processes. Refuted: no claudetto input grows past 1.5 GB.
+
+P-D10.10i. Hypothesis: the concurrent clawdipedia `just verify` is the large consumer. Command: `peak.ts` on each step in a `git archive` copy of clawdipedia `d213f0fb`, then on each test file alone. Result: `bun check` 254 MB; `typescript-bedrock lint` 978 MB; `bun test` 10,125 MB, 17 processes, 173 s. Per file: `tools/surface/snapshot.test.ts` 15,332 MB in 173 s, `inspect/mcp/test/surface/binary.test.ts` 8,209 MB, and `tools/surface/audit.test.ts` 8,038 MB; every other file stays under 860 MB. One parse of the Claude Code bundle (`program(version).bundle()`) costs 4,700 MB in 14.7 s. The test's own comment (`snapshot.test.ts:202`) states "each build peaks near 18 GB, and two at once swap on a 32 GB machine". Confirmed: that one test needs half the machine.
+
+Conclusion: clawdipedia's surface build, about 15 to 18 GB, ran beside 8 Claude Code processes and the agents' backgrounded checks on a 32 GB machine. That load ran swap out, and the kernel killed processes for `LOWSWAP` (observed). The 120 GB is the summed footprint of the processes, which on macOS counts compressed and swapped pages (inferred; no reading of the screen the user saw). No single claudetto run comes near it, but claudetto had no hold that waited for the system's memory, so 7 parallel agents kept starting checks under critical pressure.
+
+The surface build is clawdipedia's (outside this change, named only). Its fix is to move the three bundle-parsing tests out of the default `bun test` into a recipe that runs alone.
+
+Mitigation here, at no cost: only the lead runs the lab, once, after the work agents end (task 4.7). The memory hold of task 4.5 refuses new spawns while the system reports pressure, from any session. A Bash call that passes its timeout keeps running in the background. In 2.1.323 only `backgroundTasksDisabled` or `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` stops that move (`chunk-nkkw84j8.js:43-48`, read through `canAutoBackground` at `chunk-2x9ma4k7.js:272955-272995`), and that switch also turns off `run_in_background` and background agents. So the memory watch of task 4.5 also covers a call moved to the background at its timeout, and stops its largest process once that process holds more than the set share of memory (`agent.spawn/useMemoryHold/memory.ts:150-186`). The cap (`memoryProcessMaxPercent`, default 25, so 8 GB here) and the free-memory hold (`memoryFreeMinPercent`, default 20, which refuses new commands and subagents from any session's load) landed in `378782f3` on 2026-11-13, after the incident. Under the defaults, the cap stops clawdipedia's 15 GB surface build, which that suite needs, so a heavy suite needs the option raised for its repo (inferred from `stopGrown`; unprobed).
 
 ### D10.11 The Worktree Guard Refuses This Session's Own `git worktree add`
 
@@ -477,4 +497,26 @@ The stall stop ends exactly the turn that `/goal` exists to continue: a goal blo
 ### D10.14 A Timed-Out Gate Asks the Person
 
 Observed in this session (2026-11-13). A read-only `bun <script> <path> <dates>` call got the prompt "Hook tool.check requires confirmation for this command: The gate failed: timeout. A person must approve this call." `checkFault` (`chain.ts:16-21`) turns any error the engine passes to `next`, here the kind `timeout`, into `GATE_CHECK_FAILED` (`texts-gate.ts:99-100`), which asks the person. Which step ran out of time is unmeasured: the session has no debug file, and a permission prompt leaves no transcript record. Fix: task 7.5 deletes `checkFault`, so a fault leaves the engine's verdict in place.
+
+### D10.15 Bedrock's Package-Manager Pattern Matches Quoted Text
+
+Observed in this session (2026-11-13T15:23:01). The bedrock 0.1.4 hook denied a read-only `bun …/cmds.ts <dir> <from> <to> 'swift |xcodebuild|cargo |just |npm |pnpm |…'` with "this repo uses Bun. Run bun in place of `npm`". The deny comes from `FOREIGN` in `hooks/register.ts:15-16` of the installed bedrock plugin, a regex over the raw command text, which `blockForeign` (`register.ts:226-237`) applies when `bun.lock` exists.
+
+P-D10.15. Hypothesis: the regex reads a `|` inside quotes as a pipe. Prediction: it matches the single-quoted argument and also `rg -n "npm |pnpm" docs`. Command: `FOREIGN.test` over four strings in `bun -e`. Result: the single-quoted argument `true`, the double-quoted `rg` `false`, `npm i` `true`, `FOO=1 npm test` `true`. Confirmed for single quotes. The same text gets two verdicts by quote style, because `"` is not in the regex's list of command starts.
+
+Fix, in the bedrock repo (outside this change, named only): delete `FOREIGN` and `blockForeign`, and have adopt write `permissions.deny` rules such as `Bash(npm *)` for a Bun repo. Claude Code matches a Bash rule against each parsed subcommand (clawdipedia `configure/permissions/modes`, `subcommandResults`), so a quoted word is never a command. Before the change, probe that a deny rule `Bash(npm *)` lets the quoted command above run (unchecked here: it needs a model call).
+
+### D10.16 The Side Check's Stop Covers Every Later Call in the Turn
+
+Observed in this session (2026-11-13). you-should-know stopped seven calls:
+
+- 13:24:38: three `Edit` calls to `specs/subagent-prompts/spec.md`, sent in one response, with "Next edits move the plan and sweep agents from Fable to Sonnet, though you chose to keep Fable". The user's rule is that subagents are never Fable, so the note's premise was false.
+- 15:20:33: `rm -rf …/mine`, with "The next step deletes this session's probe scripts, which the committed findings were measured with".
+- 15:20:56, 15:21:07, and 15:21:09: a Bash `ls`/`sed`, a `Write` of `mine/cmds2.ts`, and a Bash `bun mine/cmds2.ts`. None deletes anything, and all three got the same deletion note.
+
+The ids are from this session's transcript: each `tool_result` starts with `<tool_use_error>you-should-know stopped this call before it ran`. Two rows at 15:32 that also hold the text are a `jq` query's output that quotes the earlier stops, not stops.
+
+Read: `startCheck` (`claudetto-you-should-know/hooks/register.ts:130-131`) returns the shown note for every call while `row.view` is an offer from the same turn, without checking the call. `checkBefore` (`register.ts:150-169`) hands calls that arrive while one check runs the result of that check. So one verdict, written for one call, stops each later call of the turn, whatever it does.
+
+Fix: task 7.11. The note's verdict holds for the call it judged: the hook keys the offer by that call's `tool_use` id and lets every other call through to its own check.
 

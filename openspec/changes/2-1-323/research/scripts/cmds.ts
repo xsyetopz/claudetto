@@ -1,7 +1,9 @@
 import { Glob } from "bun";
 
-const [dir = "", from = "", to = "z"] = Bun.argv.slice(2);
-const pattern = /claude plugin test|just (check|lab|verify)|oxlint|bun test/;
+const [dir = "", from = "", to = "z", match] = Bun.argv.slice(2);
+const pattern = new RegExp(
+	match ?? "claude plugin test|just (check|lab|verify)|oxlint|bun test",
+);
 const rows: string[] = [];
 for await (const path of new Glob("**/*.jsonl").scan(dir)) {
 	for (const line of (await Bun.file(`${dir}/${path}`).text()).split("\n")) {
