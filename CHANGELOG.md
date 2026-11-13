@@ -97,7 +97,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The Stop grader flags a reply that leaves a step undone because a call was refused when the refusal named a change to the call, such as a command form or a flag. The agent changes the call as the reason says and sends it again. An action a denial declined stays declined.
 - The Stop grader flags a reply that ends on a list of open items the agent could still do, or on an action it says waits for your approval without asking for it in the popup. The agent does the item, or asks in the popup and then does it.
 - `claudetto-you-should-know` keeps your last 3 messages that a burst of tool calls pushed out of its 8-entry log, and no longer notes an action you asked for. Before, a run of tool calls dropped your request, and the side agent warned about the push you had asked for.
-- Hygiene runs `mo clean` at each session start, with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`.
+- Hygiene starts `mo clean` at most once a day, detached from the session and with no terminal on stdin, so Mole clears user caches without a prompt and skips the caches that need `sudo`. A dry run (`claudetto-hygiene --dry-run`) waits for `mo clean --dry-run` and reports its exit.
 
 ### Changed
 
@@ -146,7 +146,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 - The memory cap stops only a process that descends from the session's Claude Code process. Before this fix, it could stop any new, large process on the machine.
 - Hygiene removes the idle entries of Claude Code's temp folder even when another session removes one while the sweep searches; one vanished or unreadable entry no longer stops the whole batch of 500.
-
+- A headless `claude -p` session with claudetto ends when its last turn does. Before, the session start kept `mo clean` running, which took about 75 s and 188 CPU-seconds, and Claude Code waited 60 s for it ("turn events still running after 60000ms") before it exited. A one-turn session took 61,368 ms with the plugin and 538 ms without it.
+- The claudetto tests run real `claude -p` sessions with the plugin against a fake Messages API that scripts the model's replies and tool calls. They cover the system prompt on Opus, Sonnet, and Haiku, the package-manager context, the protected-file branch gate, the secret scan, and the Stop hook, in place of the specs that fed hand-written hook input to a script. The fake API answers a prompt hook or a grader with `{"ok":true}`, so Claude Code no longer logs "Stop hook error" when it cannot parse the reply as a verdict.
 - The Stop check no longer blocks a reply that copies a task line quoting a `!` command in backticks, and no longer lists a subagent's files under `.claude/worktrees/` as the session's uncommitted edits.
 - The gate's denial of an `rm` of a temp base teaches a cleanup by literal path, because Claude Code's own check denies an `rm` whose target ends in `$dir/` or `$dir/*` or is a `$(...)`, and no rule allows it.
 - The `Monitor` text now says to run the writer itself in the command, because a watch on `tail -F` never ends after its writer exits, so "unless the source ends first" in the start notice holds for a command that ends.

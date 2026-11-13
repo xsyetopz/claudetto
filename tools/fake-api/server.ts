@@ -89,7 +89,7 @@ export const requestFacts = (raw: string) => {
 export interface Fake {
 	readonly port: number;
 	readonly stop: () => void;
-	/** Resolves when every log line handed to the server so far is on disk. */
+	/** Resolves when every log and body line handed to the server so far is on disk. */
 	readonly flushed: () => Promise<void>;
 }
 
@@ -113,10 +113,16 @@ export const logAppender = (path: string) => {
 	};
 };
 
-const replyFor = (kind: Kind): Reply =>
-	kind === "summarizer"
-		? { text: "<summary>FAKE summary of the conversation.</summary>" }
-		: { text: "FAKE reply." };
+// A side request is a prompt hook or a grader, which parses its reply as a verdict.
+const replyFor = (kind: Kind, script: Reply[]): Reply => {
+	if (kind === "summarizer") {
+		return { text: "<summary>FAKE summary of the conversation.</summary>" };
+	}
+	if (kind === "other") {
+		return { text: '{"ok":true}' };
+	}
+	return script.shift() ?? { text: "FAKE reply." };
+};
 
 const respond = (
 	body: Body,
@@ -159,6 +165,7 @@ interface FakeState {
 	readonly previous: Map<string, number>;
 	readonly log: ReturnType<typeof logAppender>;
 	readonly bodies: ReturnType<typeof logAppender> | undefined;
+	readonly script: Reply[];
 }
 
 const answer = async (
@@ -181,7 +188,7 @@ const answer = async (
 		output_tokens: 5,
 	};
 	state.previous.set(prefix, total);
-	const reply = replyFor(kind);
+	const reply = replyFor(kind, state.script);
 	const record: LogRecord = {
 		n: state.n,
 		path: url.pathname,
@@ -198,14 +205,18 @@ const answer = async (
 	return respond(body, requestId, reply, usage);
 };
 
-/** A fake Messages API: it answers a summarizer request with a fixed summary and any other with a fixed reply. Every usage number it returns is FAKE. */
-export const startFake = (opts: { readonly log: string }): Fake => {
-	const bodiesPath = process.env.PROBE_BODIES;
+/** A fake Messages API: it answers a summarizer request with a fixed summary, each main request with the next reply of `script` or a fixed reply, and a side request with `{"ok":true}`. With `bodies`, it appends each request body to that file as `{"raw": body}`. Every usage number it returns is FAKE. */
+export const startFake = (opts: {
+	readonly log: string;
+	readonly script?: readonly Reply[];
+	readonly bodies?: string;
+}): Fake => {
 	const state: FakeState = {
 		n: 0,
 		previous: new Map<string, number>(),
 		log: logAppender(opts.log),
-		bodies: bodiesPath === undefined ? undefined : logAppender(bodiesPath),
+		bodies: opts.bodies === undefined ? undefined : logAppender(opts.bodies),
+		script: [...(opts.script ?? [])],
 	};
 	const server = Bun.serve({
 		port: 0,
@@ -223,6 +234,9 @@ export const startFake = (opts: { readonly log: string }): Fake => {
 	return {
 		port: server.port ?? 0,
 		stop: () => void server.stop(true),
-		flushed: () => state.log.flushed(),
+		flushed: async () => {
+			await state.log.flushed();
+			await state.bodies?.flushed();
+		},
 	};
 };
