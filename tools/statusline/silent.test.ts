@@ -1,9 +1,6 @@
 import { expect, test } from "bun:test";
 
-import {
-	statusOf,
-	subagentsOf,
-} from "../../plugins/claudetto/statusline/main.ts";
+import { statusOf } from "../../plugins/claudetto/statusline/main.ts";
 import { NOW, NOW_S } from "./support.ts";
 
 test("a render that calls `fetch`, `Bun.spawn`, `Bun.file`, or `Bun.write` fails the test", () => {
@@ -41,17 +38,6 @@ test("a render that calls `fetch`, `Bun.spawn`, `Bun.file`, or `Bun.write` fails
 			},
 		});
 		expect(statusOf(input, { COLUMNS: "100" }, NOW).length).toBeGreaterThan(0);
-		expect(
-			subagentsOf(
-				JSON.stringify({
-					tasks: [
-						{ id: "t", name: "x", status: "running", startTime: NOW - 5000 },
-					],
-				}),
-				{ COLUMNS: "100" },
-				NOW,
-			),
-		).toContain('"id":"t"');
 	} finally {
 		Object.assign(globalThis, { fetch: savedFetch });
 		Object.assign(globalThis.Bun, saved);

@@ -9,8 +9,13 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
-- Claudetto needs Claude Code 2.1.323 or later: setup writes `minimumVersion: "2.1.323"`, and a session on an older version logs a line that names `claude update`.
+- Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
 - The hook code of each plugin passes the TypeScript check of `claude plugin validate` on Claude Code 2.1.323: imports name no `.ts` extension, and the hygiene sweep, a Bun program that the session-start hook runs, moved from `hooks/` to `hygiene/`, with its default `trash.toml`.
+- The status line paints with the `dark` palette until the session file names a theme, unless `NO_COLOR` is set.
+
+### Removed
+
+- The subagent status line and the `subagentStatusLine` key of the plugin's `settings.json`: Claude Code 2.1.323 ignores the key and draws its default subagent rows.
 
 ### Fixed
 

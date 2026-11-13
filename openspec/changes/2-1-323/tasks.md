@@ -55,8 +55,8 @@
 ## 7. Defects
 
 - [ ] 7.1 Treat ENOENT as absent with no log in `useSetup/rules.ts`, `surface.ts` `namesIn`, `claudetto-openspec/hooks/fs.ts`, and `hygiene/`. Write a failing test for each first.
-- [ ] 7.2 Paint the `dark` palette in `statusline/main.ts` until a theme is known, unless `NO_COLOR` is set. Write the failing test first.
-- [ ] 7.3 Delete `statusline/subagents.ts` and `subagentStatusLine` in `plugins/claudetto/settings.json`.
+- [x] 7.2 Paint the `dark` palette in `statusline/main.ts` until a theme is known, unless `NO_COLOR` is set. Write the failing test first.
+- [x] 7.3 Delete `statusline/subagents.ts` and `subagentStatusLine` in `plugins/claudetto/settings.json`.
 - [ ] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
 - [x] 7.5 Delete the `tool.check` catch in `register.ts` and `checkFault` in `chain.ts`, so a guard fault leaves the engine's verdict in place. Write the failing test first.
 - [ ] 7.14 Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
