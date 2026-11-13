@@ -8,12 +8,12 @@
 
 ## 2. Free Probes Before Deletes
 
-- [ ] 2.1 Replay the `rules.generated/fixtures-*.ts` commands against the planned `permissions`, `sandbox`, and `autoMode` settings in a `/tmp/probe-*` project, and record the uncovered fixtures in `research/probes.md`.
-- [ ] 2.2 Re-run the `sandbox-git.ts` and `switch.ts` scenarios on 2.1.323, and take the protected path list again from 2.1.323.
-- [ ] 2.3 Run `/init` in a scratch repo and compare its output with `starter-families.ts`.
-- [ ] 2.4 Check whether the built-in `/advisor` gate is on for this account.
-- [ ] 2.5 Probe `prompt.compose` on a subagent that uses the lean prompt path, `agent_id` in subagent hook input, and a call to a tool that `tool.list` removed.
-- [ ] 2.6 Measure the largest prompt a `search` run sends with `autoCompactWindow: 100000`, to see whether compaction keeps it under 100,000 tokens.
+- [x] 2.1 Replay the `rules.generated/fixtures-*.ts` commands against the planned `permissions`, `sandbox`, and `autoMode` settings in a `/tmp/probe-*` project, and record the uncovered fixtures in `research/probes.md`.
+- [x] 2.2 Re-run the `sandbox-git.ts` and `switch.ts` scenarios on 2.1.323, and take the protected path list again from 2.1.323.
+- [x] 2.3 Run `/init` in a scratch repo and compare its output with `starter-families.ts`.
+- [x] 2.4 Check whether the built-in `/advisor` gate is on for this account.
+- [x] 2.5 Probe `prompt.compose` on a subagent that uses the lean prompt path, `agent_id` in subagent hook input, and a call to a tool that `tool.list` removed.
+- [x] 2.6 Measure the largest prompt a `search` run sends with `autoCompactWindow: 100000`, to see whether compaction keeps it under 100,000 tokens.
 - [x] 2.7 Check with the fake Messages API whether `Write` to the session's `$TMPDIR` folder asks, and whether `permissions.additionalDirectories` holding that folder stops the ask (D10.31).
 - [ ] 2.8 Probe the 2.1.323 surfaces that `research/cc-2-1-323.md` marks unprobed: an `engines` range that excludes the running version, a `ui.render` hook on `AbovePrompt` with and without `plugin: "*"`, and the `ceiling` field of a `tool.check` event.
 
