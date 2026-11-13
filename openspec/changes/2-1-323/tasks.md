@@ -42,7 +42,7 @@
 ## 6. Stop, Ledger, and Compaction
 
 - [ ] 6.1 Delete `useSliceCommits`, the cleanup and background-task Stop blocks, `grade.ts`, `named-files.ts`, `register.ts` in `useStopChecks`, `stop.ts`, and `turn.ts`.
-- [ ] 6.2 Move `open-items.ts` to a classic Stop command hook that checks the What I Need form and never repeats an identical block.
+- [ ] 6.2 Move `open-items.ts` to a classic Stop command hook that checks the What I Need form and never repeats an identical block. The hook parses the section's Markdown list items and fenced blocks, and it accepts one fenced `sh` block as the item for a command the user runs in a separate terminal (D10.9). Update the What I Need text in `output-styles/Concise.md` to match. Write the failing tests first.
 - [ ] 6.3 Fold the `texts-grade.ts` fault list into one prompt-type Stop hook.
 - [ ] 6.4 Move the Budget `prompt.submit` hook into `useBudgetRun`, and merge its three files.
 - [ ] 6.5 Delete `useConstraintPin` and `useAskFix`, and add `PIN_COMPACT_KEEP` as a classic `PreCompact` hook.
@@ -65,7 +65,7 @@
 ## 8. Texts
 
 - [ ] 8.1 Rewrite `output-styles/Concise.md` from the original as `research/text-audit.md` records. Drop the `sudo` example, use the `- ! <command>` form, and keep the no-announcement and check-then-state rules.
-- [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text.
+- [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text. Base the reason for one repo-wide check after parallel agents on the measured cost, in place of "holds the whole program in memory" (P-D10.10a).
 - [ ] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
 - [ ] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
 - [ ] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).

@@ -16,12 +16,22 @@ One prompt-type Stop hook SHALL carry the fault list that `texts-grade.ts` held,
 
 ### Requirement: The What I Need Form Is Checked at Stop
 
-A classic Stop command hook SHALL read `last_assistant_message` and check only the What I Need form: under `## What I Need From You`, each item SHALL be one `- ! <command>` bullet with no checkbox, and the section SHALL hold at most one such bullet. When the form is broken, the hook SHALL block the stop and list each line that breaks it, and it SHALL NOT block with a text identical to its block before in the session. A `userConfig` switch MUST turn the check off.
+A classic Stop command hook SHALL check only the `## What I Need From You` section of `last_assistant_message`. The section SHALL hold at most one item: one `- ! <command>` bullet with no checkbox, or one fenced `sh` block for a separate terminal. A broken form SHALL block the stop with each line that breaks it, never with a text identical to an earlier block in the session. A `userConfig` switch MUST turn the check off.
 
 #### Scenario: One Command
 
 - **WHEN** the reply lists one `- ! <command>` bullet under `## What I Need From You`
 - **THEN** the stop passes
+
+#### Scenario: Prose That Mentions the Form
+
+- **WHEN** the reply's prose outside the section names a `` `! <command>` `` line
+- **THEN** the stop passes, because the hook reads only the section's Markdown list items and fenced blocks and matches no pattern over prose
+
+#### Scenario: A Command for a Separate Terminal
+
+- **WHEN** the section holds one fenced `sh` block with `GH_TOKEN=$(gh auth token) claude --continue`, and the reply's prose mentions a `` `! <command>` `` line
+- **THEN** the stop passes, because `!` would run the command in the session's own shell, where it cannot start a new Claude Code process with new environment (versionlens `6eb2e7bc`, 2026-11-10)
 
 #### Scenario: A Paid Run That Waits for the User
 
