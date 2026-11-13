@@ -12,7 +12,7 @@ Real-world runs (M) outrank benchmarks (B), at the person's word ("benchmarks !=
 Sources:
 
 - O1: `platform.claude.com/docs/en/build-with-claude/effort`
-- O2: `platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence`, first 100k of 216k chars
+- O2: `platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence`, all 216k chars, through `clawdipedia-docs`. "ref N" names the page's benchmark reference N.
 - O3: `claude.dev/blog/which-claude-model-should-you-build-with/`
 - O4: `claude.com/resources/articles/claude-model-and-effort-level-in-claude-code`
 - M1: `external/2026-10-14/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl`, by emarkosov
@@ -34,6 +34,27 @@ Sources:
 - **Model choice (O3):** "Keep small models on work where a mistake is cheap to spot, like finding files, running tests and reading logs. Keep code edits and judgment calls on the main model."
 - **Effort escalation (O2):** run at `low` or `medium` and re-run failures at `high`. On Opus this solved about 97% of tasks for $0.17 to $0.24, against 95.3% for $0.29 with every task at `high`. It needs a checker that fails bad work.
 - **Haiku's 100k line (O2):** "Past that, every token of the request costs 5 times as much, output included. Cache reads and writes count toward the 100,000."
+- **Haiku past 100k in practice (O2 ref 25):** on 79 Managed Agents tasks, about 5% of Haiku's requests ran over 100k tokens and carried 73% of its cost.
+- **Compaction overshoots its trigger (O2 ref 18):** on Haiku, API compaction ran at the first request that reached the trigger, and its summary prompt ran up to 7,269 tokens past it: a 90k trigger gave a largest prompt of 97,269. One session cost $0.272 at the 150k default trigger, $0.082 at 90k, $0.075 at 50k, and $0.729 with no compaction. This is the API's compaction, not Claude Code's `autoCompactWindow`, so task 2.6 still has to measure the Claude Code side.
+- **Defect search, larger than one context (O2 ref 8), mean F1 and cost per run:**
+
+  | Configuration | F1 | Cost |
+  |---|---|---|
+  | Haiku alone (`medium`) | 0.577 | $25 |
+  | Opus `high` with Haiku subagents | 0.677 | $47 |
+  | Sonnet alone (`high`) | 0.760 | $103 |
+  | Opus `high` with Sonnet subagents | 0.831 | $139 |
+  | Opus alone `medium` / `high` | 0.827 / 0.850 | $200 / $236 |
+  | Fable 5.2 alone `low` / `high` | 0.866 / 0.909 | $357 / $563 |
+
+  Haiku subagents lost 15 points of F1 against Sonnet subagents on judgment work. That backs Sonnet for `sweep`, and Haiku for file finding only.
+- **Coding with Haiku subagents (O2 ref 29):** Opus `medium` with Haiku `medium` subagents passed 68.8% at $3.35, against Opus alone 72.1% at $4.78 and Opus `low` 63.0% at $1.84. The page puts the subagent result on the straight line between `low` and `medium`: no gain over lowering effort.
+- **Sonnet `medium` against `high` on coding (O2 ref 11):** 62.7% at $0.16 against 77.8% at $0.33, 15 points lower for 48% of the cost. Opus on the same set: `low` 74.8%/$0.35, `medium` 86.6%/$0.84, `high` 88.4%/$1.38, `xhigh` 91.1%/$4.11. Fable 5.2: `low` 88.9%/$1.05, `high` 93.5%/$5.39. So `work` at Sonnet `medium` needs the re-run at `high` on a failed check.
+- **Escalation figures (O2 ref 3):** Opus `low` then `high` on failures solved 96.4% to 97.5% for about $0.17; `medium` first, 96.0% to 97.1% for $0.24; all at `high`, 94.8% to 95.8% for $0.29. The lever table puts the saving at about 40% against running everything at `high`.
+- **Advisor needs a reason to fire (O2 refs 3, 9, 13):** Sonnet 5.5 at `high` consulted an Opus advisor on 0 of 20 SWE-bench Pro problems, with or without the suggested prompt; at `xhigh`, on 3 and 4 of 20. On GPQA, with the tool added and no prompt asking for consults, neither Haiku nor Sonnet called it once. Opus `low` consulted on 1 of 300 charts. An opt-in advisor therefore needs a body line that says when to consult.
+- **Fable 5.2 on research (O2 ref 7):** on DeepResearch Bench II, Fable 5.2 `high` scored 1.9 points below Opus `medium` (0.9 in a later run), and 4.7 below Fable 5.1 `high`, at $4.82 against Opus $1.69 per task. Its `medium` beat `low` by 0.6 points, inside noise.
+- **Output cap (O2 ref 12):** raising `max_tokens` to 64,000 did not raise cost per solved task; Opus solved 57.6% at 16,384 and 75.6% at 64,000.
+- **Effort change and the cache (O2 ref 18):** a top-level effort change mid-conversation re-wrote 81k of a 101k cached prompt; a per-message effort change re-wrote nothing. Inferred, not run: a subagent starts its own conversation, so the Agent tool's `effort` parameter should break no cache of the main loop.
 
 ## Pasted Claims Checked
 
