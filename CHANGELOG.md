@@ -7,6 +7,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+## [2.1.325] - 2026-11-13
+
 ### Added
 
 - A session-start hook names the project's package manager once, from the `packageManager` field of `package.json` first and then from a lock file (Bun, pnpm, Yarn, npm, Deno, Cargo, uv, Poetry, and others). It also appends `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash.
