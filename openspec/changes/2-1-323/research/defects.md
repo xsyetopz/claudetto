@@ -163,6 +163,8 @@ Source, observed in this session's own sandbox instructions:
 
 Cause: the engine already limits sandboxed `kill` and `git worktree remove` to this session's own processes and worktrees. Our guards repeat that job with a transcript search ("no earlier result of this session shows…"). That search misses a worker's pid, a variable such as `$SP`, and a worktree from an earlier session. A run outside the sandbox still goes through the permission prompt or the auto-mode classifier.
 
+Seen again on 2026-11-13: the kill guard denied `bun fake.ts & FAKE=$!; …; kill $FAKE` with "$FAKE is not a process this session started", although the same command started it. The guard reads the command text, and `$!` gets its value only when the shell runs the command.
+
 Structural fix: delete `kill.ts`, the worktree branch of `own.ts`, and their texts (`texts-gate.ts:111,127`) with task 5.3. The sandbox and the permission mode own the job. Task 2.2 re-runs the worktree scenarios on 2.1.323 to confirm that the sandbox clause still holds.
 
 ### D9.4 Endless-Wait Guard
@@ -219,10 +221,17 @@ Probe P-D9.5e (paid, approved by the user on 2026-11-13):
 - Prediction: replayed on the same message, some replies end without a closing `}` and fail to parse.
 - Command: a `--plugin-dir` probe whose `session.start` hook calls a copy of `fallback()` three times with the 13:49 input, rebuilt from transcript entry 6513 by the shipped `sentencesOf`, the cap, and `ledgerQuestions(41, 0)`: 43 sentences cut to 41, 82 questions, 5,182 chars of state. The ledger's entries at 13:49 are not in the transcript, so the replay sends none. Run as `claude -p ok --model haiku --max-turns 1 --no-session-persistence`.
 - Result: reproduced, 1 of 3. Run 1 stopped mid-JSON at `"rule_31":` after 2,798 chars and 4,154 output tokens in 15.9 s, and it logged "The fallback model's reply did not parse as a JSON object." Runs 2 and 3 closed their JSON at 3,468 and 3,755 chars, with 3,875 and 3,086 output tokens.
-- Also observed: every run reported more `output_tokens` than the 2,106 `maxTokens` the call sets. The `ModelCompleteRequest` docs call `maxTokens` "the reply's token cap" and say nothing of thinking, so what the engine sends as the limit is still unmeasured.
+- Also observed: every run reported more `output_tokens` than the 2,106 `maxTokens` the call sets (P-D9.5f explains it).
 - Also observed: no `rule_<n>` answer settled in any run. Run 2 answered `null` for each, and run 3 answered `read-only` with empty evidence for each. `RULE_CRITERIA` has no option for a sentence that states no rule, so 41 of 82 answers are `unsettled` even when the reply parses.
 - Input tokens: 13,510 per call, with `cache_read_input_tokens` 0 again.
-- Cost: 40,530 input and 11,115 output tokens for the fallback calls, about $0.0096 at the `prices.json` Haiku 5.5 rates read as dollars per million tokens, plus a $0.0016 `ok` turn by the engine's debug line. The weekly share read 74% before and after.
+- Cost: 40,530 input and 11,115 output tokens for the fallback calls, about $0.0096 at the `prices.json` Haiku 5.5 rates in USD per million tokens (the unit `tools/claim-check-prices.ts:14` reads them in), plus a $0.0016 `ok` turn by the engine's debug line. The weekly share read 74% before and after.
+
+Probe P-D9.5f (free):
+
+- Hypothesis: the engine sends a larger `max_tokens` than `maxTokens` when it sets an effort.
+- Prediction: a captured `$.model.complete` request with `maxTokens: 2106` and `effort: "high"` carries `max_tokens` above 2,106.
+- Command: a Bun fake Messages API on `127.0.0.1` that saves each request body, and `claude -p ok --model haiku --max-turns 1 --no-session-persistence --plugin-dir <probe>` with `ANTHROPIC_BASE_URL` set to it, a fake API key, and an empty `CLAUDE_CONFIG_DIR`. The probe's `session.start` hook makes the same call as `fallback()`.
+- Result: confirmed. The request carried `max_tokens: 4154` and `output_config: {"effort":"high"}`, with no `thinking` field. That is 2,106 plus 2,048. Run 1 of P-D9.5e stopped at exactly 4,154 output tokens, so it hit this limit. Thinking and the reply share the 4,154 tokens, and the docs for `maxTokens` do not say so.
 
 Structural fix: delete the decider fallback. A judgment that needs a model moves to a prompt-type classic hook, as task 6.3 does for the Stop faults. The engine sends that hook's prompt and reads its verdict, so no plugin parses model prose.
 
@@ -262,7 +271,14 @@ Probe P-D9.6d:
 - Hypothesis: Claude Code records which sessions are running.
 - Prediction: `~/.claude/sessions/` holds a record per running process, naming its session.
 - Command: `ls -la ~/.claude/sessions`, then `Read` of `53750.json` and `85503.json`.
-- Result: confirmed. Each `<pid>.json` holds `pid`, `sessionId`, `cwd`, `procStart`, `status`, and `updatedAt`. This session's record is `53750.json` with `sessionId` `17435f50-…`. Not yet checked: whether the record is removed when a session exits.
+- Result: confirmed. Each `<pid>.json` holds `pid`, `sessionId`, `cwd`, `procStart`, `status`, and `updatedAt`. This session's record is `53750.json` with `sessionId` `17435f50-…`.
+
+Probe P-D9.6e (free):
+
+- Hypothesis: Claude Code removes a session's record when the session exits.
+- Prediction: under an empty `CLAUDE_CONFIG_DIR`, `sessions/` holds one record while a `-p` run waits in a 6 s `session.start` hook, and none after it exits.
+- Command: `claude -p ok … &`, then `ls $CLAUDE_CONFIG_DIR/sessions` after 3 s and again after `wait`, against the fake Messages API of P-D9.5f.
+- Result: confirmed. `53579.json` was there during the run and gone after a clean exit. A record left after a crash is still unchecked, so the sweep checks the `pid` and `procStart` too.
 
 A session can last any time, under an hour or over it, so no age rule can say when its files are free.
 
@@ -323,6 +339,7 @@ Each item points to the rule that covers it in the per-model bodies (task 3.2) o
 - A side note duplicated on screen ("The repo is clean with 6 local and 7 remote branches…" twice).
 - The agent named a cause it had guessed: "the truncation I had guessed caused the failed fallback reply". The user: "guessing was a failure to be reported." A cause stays unnamed until a check shows it.
 - After one probe on the wrong caller, the agent wrote "truncation remains possible … but this run did not show it" and stopped, with the logged failure still unexplained. The user: "so dig further. what are you even for if you refuse to verify?" The free checks P-D9.5c and P-D9.5d found the caller and the reply size from the transcript alone. An unexplained fault is checked until the cause shows or only a step outside the agent's reach is left.
+- An OpenJoystickDriver session ended with "I made no edits this session: every one of the 24 open tasks needs hardware, a reporter's capture, a decision from you, or a check in the running app". The tasks included work it could do: taking the 10.3 screenshots, installing the `ojd` command from the installed app, and researching the 2C's mode switches from outside sources (2.7). The user also named 2.1–2.3, 2.5, 2.6, 2.8, and 2.11 as doable there. It read "No 8BitDo pad is connected" as a blocker instead of asking the user to switch the pad on. It framed 4.8 and 4.9 around the maintainer, though they ask other owners to test. The user: "pretty much almost everything you have is on you." After the correction it opened with "You're right." and restated the points. The user: "sycophancy yet again". A question to that session about what steered it is pending.
 - The agent's own replies said a temp folder could be deleted "after 60 idle minutes", without stating that a session may last less than an hour. The user: "session may last less than an hour...". A fix based on age was proposed where ownership decides (D9.6).
 
 ### D9.11 Engine Messages, Recorded Only
