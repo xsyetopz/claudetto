@@ -175,7 +175,7 @@ const outcomeOf = (result: Record<string, unknown>): Outcome => {
 	return DENIED.some((denial) => denial.test(text)) ? "denied" : "failed";
 };
 
-/** The 7.22 rule: a command bullet that no Bash call tried, or whose last run succeeded, is a command the agent can run itself. */
+/** A command bullet that no Bash call tried, or whose last run succeeded, is a command the agent can run itself. */
 export const untriedOrDone = (
 	reply: string,
 	transcript: string,

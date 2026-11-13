@@ -70,15 +70,12 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	);
 
 	expect(requests).toContain(
-		"as a `- ! <command>` bullet under one `## What I Need From You` heading",
+		"as a `- ! <command>` bullet or a fenced `sh` block under one `## What I Need From You` heading",
 	);
-	expect(requests).toContain("one fenced `sh` block");
 	expect(requests).toContain(
 		"Ask each question for the user once, through the popup (`AskUserQuestion`), and repeat it nowhere in the reply.",
 	);
-	expect(requests).toContain(
-		"such a bullet holds that command and never a question.",
-	);
+	expect(requests).toContain("it holds that command and never a question.");
 	expect(requests).toContain(
 		"Ask through the popup only for what the user alone holds; settle the rest from the conversation and the repository, and state your reading.",
 	);

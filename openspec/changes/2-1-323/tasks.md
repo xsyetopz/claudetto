@@ -79,7 +79,7 @@
 
 ## 8. Texts
 
-- [ ] 8.1 Rewrite `output-styles/Concise.md` from the original as `research/text-audit.md` records. Drop the `sudo` example, use the `- ! <command>` form, and keep the no-announcement and check-then-state rules.
+- [x] 8.1 Rewrite `output-styles/Concise.md` from the original as `research/text-audit.md` records. Drop the `sudo` example, use the `- ! <command>` form, and keep the no-announcement and check-then-state rules.
 - [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text. Base the reason for one repo-wide check after parallel agents on the measured cost, in place of "holds the whole program in memory" (P-D10.10a).
 - [x] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
 - [x] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
