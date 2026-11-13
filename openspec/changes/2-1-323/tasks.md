@@ -2,9 +2,9 @@
 
 ## 1. Version Floor
 
-- [ ] 1.1 Set `engines["claude-code"]: ">=2.1.323"` in the `plugin.json` of `claudetto`, `claudetto-openspec`, and `claudetto-you-should-know`.
-- [ ] 1.2 Delete the runtime version warning and every other runtime version check, along with their tests and docs.
-- [ ] 1.3 Add `claude plugin validate` for each plugin to `project.just` so that `just check` runs it.
+- [x] 1.1 Set `engines["claude-code"]: ">=2.1.323"` in the `plugin.json` of `claudetto`, `claudetto-openspec`, and `claudetto-you-should-know`.
+- [x] 1.2 Delete the runtime version warning and every other runtime version check, along with their tests and docs.
+- [x] 1.3 Add `claude plugin validate` for each plugin to `project.just` so that `just check` runs it.
 
 ## 2. Free Probes Before Deletes
 

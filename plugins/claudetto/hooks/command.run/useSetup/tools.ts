@@ -76,12 +76,3 @@ export const noticeLine = (tool: Tool, hasBrew: boolean): string =>
 			? `Install: \`${tool.install.join(" ")}\`.`
 			: `Releases are at ${tool.releases}.`
 	} \`/claudetto:setup\` can do it.`;
-
-const parts = (release: string): readonly number[] =>
-	(release.split("-")[0] ?? "").split(".").map(Number);
-
-export const isBelowFloor = (release: string, floor: string): boolean => {
-	const [running, wanted] = [parts(release), parts(floor)];
-	const differs = wanted.findIndex((part, index) => part !== running[index]);
-	return differs !== -1 && (running[differs] ?? 0) < (wanted[differs] ?? 0);
-};

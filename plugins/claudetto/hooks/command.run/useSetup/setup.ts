@@ -22,18 +22,11 @@ import {
 	writeFile,
 } from "./engine";
 import { reportRule, RULES, rulesPart } from "./rules";
-import {
-	type Group,
-	GROUPS,
-	type Json,
-	MINIMUM_VERSION,
-	STATUS_LINE,
-} from "./settings";
+import { type Group, GROUPS, type Json, STATUS_LINE } from "./settings";
 import { ignoresPart, purgePart, starterPart, toolPart } from "./steps";
 import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./text";
 import {
 	diskLine,
-	isBelowFloor,
 	isOnPath,
 	noticeKey,
 	noticeLine,
@@ -242,14 +235,8 @@ async function toolNotice(
 	}
 }
 
-/** The version floor and the missing-tool notice only log, so neither reaches the model. */
+/** The missing-tool notice only logs, so it does not reach the model. */
 const onStartup: HookFor<"classic.SessionStart"> = async ($, e, next) => {
-	const { base } = await $.session.version();
-	if (base !== undefined && isBelowFloor(base, MINIMUM_VERSION)) {
-		$.ui.log(
-			`claudetto needs Claude Code ${MINIMUM_VERSION} or later, and this session runs ${base}. Run \`claude update\`.`,
-		);
-	}
 	const path = await $.env.get("PATH");
 	await Promise.all(TOOLS.map((tool) => toolNotice($, tool, path)));
 	const disk = diskLine(await lines($, ["df", "-Pk", "."]));
