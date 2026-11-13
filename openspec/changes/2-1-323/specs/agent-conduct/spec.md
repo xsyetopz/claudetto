@@ -9,6 +9,20 @@ The per-model body SHALL tell the model to start its first tool call with no tex
 - **WHEN** an eval case's turn opens with "I'll start by reading the config file." before its first `Read` call
 - **THEN** the case fails, and a turn that opens with the `Read` call passes
 
+### Requirement: A Handed-Over Command Failed for the Agent First
+
+The classic Stop hook SHALL block a reply whose `- ! <command>` bullet names a command that no earlier Bash call of the session ran, or whose last run succeeded. It SHALL read the session's calls and results from `transcript_path`, and the block SHALL name the command and tell the agent to run it.
+
+#### Scenario: An Untried Commit
+
+- **WHEN** a reply lists `- ! git commit -m x` and the session ran no `git commit`
+- **THEN** the Stop hook blocks the reply and names the command
+
+#### Scenario: A Denied Command
+
+- **WHEN** a reply lists a command whose Bash call the session ran and that call was denied
+- **THEN** the Stop hook lets the reply end
+
 ## MODIFIED Requirements
 
 ### Requirement: Truly Stuck Means Only the User Can Act
