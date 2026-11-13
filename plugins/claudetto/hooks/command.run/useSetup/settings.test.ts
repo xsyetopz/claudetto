@@ -116,12 +116,12 @@ test("a write to another repo and every other danger each have a soft rule to ci
 	expect(names.at(-1)).toBe("Any Other Danger");
 });
 
-test("eleven built-in plugins are off as cc-plugin-<name>@builtin", () => {
+test("ten built-in plugins are off as cc-plugin-<name>@builtin", () => {
 	const entries = Object.entries(
 		new Object(valueAt(everything({}), ["enabledPlugins"])),
 	);
 
-	expect(entries).toHaveLength(11);
+	expect(entries).toHaveLength(10);
 	for (const [key, value] of entries) {
 		expect(key).toMatch(BUILTIN_KEY);
 		expect(value).toBe(false);

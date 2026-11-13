@@ -44,7 +44,6 @@ const BUILTIN_PLUGINS_OFF = [
 	"diff",
 	"you-should-know",
 	"easel",
-	"claude-platform",
 	"claude-test",
 ];
 

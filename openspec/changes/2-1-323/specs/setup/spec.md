@@ -16,6 +16,15 @@ Setup SHALL offer a "Permission gates" group that writes the settings of the `pe
 
 ## MODIFIED Requirements
 
+### Requirement: The Smaller Prompt Group Turns Off Built-in Plugins
+
+The "Smaller prompt" group SHALL write `enabledPlugins` `false` for each of `cc-plugin-<name>@builtin` for `agents-md`, `plugin-authoring`, `mods-guide`, `tips`, `mermaid`, `responsive-mode`, `diff`, `you-should-know`, `easel`, `claude-test`, each a built-in plugin the installed Claude Code ships.
+
+#### Scenario: Plugins Written
+
+- **WHEN** setup writes "Smaller prompt"
+- **THEN** each of the ten plugins is `false`
+
 ### Requirement: The Shipped Code Rules Are Offered as Copies
 
 Setup SHALL offer each of the eight shipped rules as a copy to `<config>/rules/claudetto/<name>.md`, showing the whole rule text and saying that a session loads it at its start. It SHALL offer none that the user already holds byte for byte, SHALL store the SHA-256 of a copy it wrote, and SHALL stop the rest when a question is dismissed.

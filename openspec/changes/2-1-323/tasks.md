@@ -97,7 +97,7 @@
 
 ## 10. Check and Release
 
-- [ ] 10.1 Run `just verify`.
+- [x] 10.1 Run `just verify`. Done: exit 0 after setup stopped writing `cc-plugin-claude-platform@builtin`, which 2.1.325 no longer ships.
 - [x] 10.2 Measure the request size for each model against the 2.1.322 baseline with the fake Messages API. Done: `research/probes.md` section "Request size per model"; the main request grew 2.1 to 2.8 KB because the session sections stay (task 3.3), and the Stop hook adds an 11.6 KB request per turn.
 - [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Sonnet and Haiku agents, the grader replay, and the D9.5 truncation probe. Report the cost and the weekly share.
 - [x] 10.4 List each removed option, mod, and setting in the release notes.
