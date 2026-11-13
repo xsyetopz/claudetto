@@ -13,7 +13,7 @@
 - [ ] 2.3 Run `/init` in a scratch repo and compare its output with `starter-families.ts`.
 - [ ] 2.4 Check whether the built-in `/advisor` gate is on for this account.
 - [ ] 2.5 Probe `prompt.compose` on a subagent that uses the lean prompt path, `agent_id` in subagent hook input, and a call to a tool that `tool.list` removed.
-- [ ] 2.6 Probe that a plugin agent keeps `autoCompactWindow` (the docs list `permissionMode`, `mcpServers`, and `hooks` as ignored for plugin agents and are silent on this field), and measure the largest prompt a `search` run sends.
+- [ ] 2.6 Measure the largest prompt a `search` run sends with `autoCompactWindow: 100000`, to see whether compaction keeps it under 100,000 tokens.
 
 ## 3. Per-Model System Prompts
 
