@@ -25,10 +25,12 @@
 
 ## 4. Subagents
 
-- [ ] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4, and `autoCompactWindow: 100000` in `search.md`. Write each body to its model's guidance.- [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
+- [ ] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4, and `autoCompactWindow: 100000` in `search.md`. Write each body to its model's guidance.
+- [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
 - [ ] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
 - [ ] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
-- [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial.
+- [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial. In the merge, catch a failed poll inside the memory watch's loop so the watch goes on, keep watching a `run_in_background` command until its process ends, and start `sysctl` by its absolute path (D10.6). Write the failing tests first.
+- [ ] 4.6 In the `work.md` body, state that a worktree-isolated agent runs each git command as its own Bash call from the worktree root, because the built-in isolation check refuses chained, `cd`-first, and `eval` forms (D10.3).
 
 ## 5. Bash Gate to Settings
 
@@ -57,6 +59,8 @@
 - [ ] 7.6 Delete the decider fallback (`decider/fallback.ts`) and move each judgment it makes to a prompt-type classic hook (D9.5).
 - [ ] 7.7 Delete the hygiene sweep's idle-time rule for temp folders. Point probes at `$TMPDIR/<project>/<session_id>/`, and remove that folder on `session.end`. At session start, remove only the per-session folders that no running session's `~/.claude/sessions/<pid>.json` names and whose `pid` and `procStart` no longer match a running process (D9.6). Write the failing test first.
 - [ ] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).
+- [ ] 7.9 Have setup offer `worktree.symlinkDirectories` with the git-ignored dependency folders it finds at the project root, so a worktree agent has them without building symlinks (D10.2). Probe the setting with one worktree first.
+- [ ] 7.10 In the bedrock repo, change `guard-base` to compare the resolved `core.hooksPath` with `<repo>/.githooks` (P-D10.1b), and add a `.githooks/pre-push` that runs `just verify` (P-D10.5). Adopt the result here (D10.1, D10.5).
 
 ## 8. Texts
 
@@ -65,6 +69,7 @@
 - [ ] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
 - [ ] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
 - [ ] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).
+- [ ] 8.6 Rewrite the scope sentence in the root prompt's `<defects>` block (`texts.ts:29`) and `rules/noUnrequestedEdits.md`, so that scope follows the user's goal and not the task's files. The agent fixes each defect that stands between the goal and its done-check, in any file, and acts on no cause it has not checked (D10.4). Measure both texts with the task 10.3 A/B run.
 
 ## 9. Folders
 

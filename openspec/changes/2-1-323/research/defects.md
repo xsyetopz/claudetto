@@ -362,3 +362,58 @@ Recorded as claims (tag A in `model-effort.md`), unchecked:
 - A model that ignores a finished design and rebuilds it ("raise the baseline for the 400th time").
 - The RLHF and "pink elephant" account of "You're right" loops. It says a rule that quotes the phrase raises its odds, and recommends positive routing ("Acknowledge all corrections by saying only the word 'Understood'"). The repo's prompt guide already says to tell Claude what to do, not what to avoid. Task 6.3 checks the Stop hook's wording against this claim with an eval.
 
+## D10 Second Session Mining, 2026-11-13
+
+Source: every `~/.claude/projects/*/*.jsonl` and, new in this pass, every `*/*/subagents/*.jsonl` (746 subagent transcripts in 4 projects), tallied by a Bun script under the session's temp folder. Subagent tallies: 1,838 tool errors and 1,319 claudetto denials.
+
+### D10.1 Worktree Creation Rewrites the Shared Hooks Path
+
+Observed: reads of `core.hooksPath` in the transcripts returned `.githooks` 64 times and the absolute `<repo>/.githooks` 54 times, in claudetto, OpenSAD, OpenJoystickDriver, and JagFx. Bedrock's `guard-base` (`justfile:114` in each adopted repo) compares the value to the literal `.githooks`, so the absolute form prints "git hooks are off: run just setup". That line appears in 8 projects from 2026-11-09 to 2026-11-13, in main sessions and subagents. Agents then ran `git config core.hooksPath .githooks` or `git -c core.hooksPath=.githooks commit`, which the built-in worktree isolation refused 75 times ("sets core.hooksPath in the configuration the shared checkout reads", "passes -c core.hookspath").
+
+Cited: Claude Code's worktree setup, function `gbt` in `chunk-2x9ma4k7.js` at offset 4097788 (2.1.323), reads the main repo's `core.hooksPath`; when it is relative, it runs `git config core.hooksPath <absolute>` with the worktree as cwd and no `--worktree`.
+
+- P-D10.1a. Hypothesis: a plain `git config` in a worktree writes the shared `.git/config`. Prediction: the main checkout then reads the absolute path. Command: `git init main; git config core.hooksPath .githooks; git worktree add ../wt; cd ../wt; git config core.hooksPath $P/main/.githooks; git -C $P/main config core.hooksPath`. Result: main reads `…/probe-hooks/main/.githooks`. Confirmed: each worktree Claude Code creates flips the main repo's value, `just setup` flips it back, and the next worktree flips it again.
+- P-D10.1b. Hypothesis: comparing resolved paths accepts both forms and still catches a hooks path that is off. Command: a guard that resolves `core.hooksPath` from the common checkout root (`git rev-parse --git-common-dir`/..) with `pwd -P` and compares it with `<root>/.githooks`, run in the main checkout and in a worktree for five values. Result: `.githooks` and `<root>/.githooks` pass in both; unset, `/tmp/elsewhere`, and `.git/hooks` fail in both.
+
+Fix: task 7.10 changes `guard-base` in bedrock to the P-D10.1b compare. The file is bedrock's, so the change is made there and adopted here.
+
+### D10.2 Worktrees Lack the Ignored Dependency Folders
+
+Observed: about 20 worktree refusals came from agents building symlinks to `.haxelib`, `node_modules`, `.tools`, and `build` in a loop (`for d in …; do ln -s …; done; git …`), and `bun install` in a worktree failed on `typescript-bedrock@../bedrock/packages/typescript-bedrock` (3 times).
+
+Cited: `worktree.symlinkDirectories` symlinks the named folders from the main repo into each worktree, none by default (clawdipedia `configure/settings/core`); `gbt` reads it right after the hooks step (same offset as D10.1). Unprobed: no worktree was made with the setting. Fix: task 7.9.
+
+### D10.3 Chained Git Commands in Worktree Agents
+
+Observed: the built-in worktree isolation refused 261 commands in 152 subagents ("names git in a form too complex to verify"), 94 in 69 ("too complex to verify"), 18 in 17 (`cd` to a computed path), and 16 in 12 (`eval`). Typical forms: `git add … && git commit … 2>&1 | tail`, `cd P; git merge-base …`, and `git diff --name-only | xargs swift format lint`. Each refusal costs one call, and the refusal text already says to split the command. Fix: task 4.6 states the one-command form in `work.md`, with the reason.
+
+### D10.4 The Scope Rules Steer Deferral
+
+Observed in the user messages, 15 or more times: "fix it.", "Your job, not the user's job.", "So *check it*. Nobody told you to stop.", "resolve them.", "You need to handle all the "not done" parts yourself.", "User has nothing to review here. Your job.", "it is supposed to format them." (JagFx `bunfig.toml`, left alone as a shared bedrock file), "no gaps accepted". The opposite fault also appears: "you were not tasked to restore them, and you have no proof that adopt did it.", "you were not tasked to install biome."
+
+Sources (read): the root prompt's `<defects>` block, `plugins/claudetto/hooks/texts.ts:29`, "Fix defects in task's files; name one outside them with place and evidence, and change it only when asked"; `plugins/claudetto/rules/noUnrequestedEdits.md:1`, "Ask before any other code edit"; the bedrock-written `AGENTS.md:42`, "Keep the shared configs as they are". Each sets scope by file, so a defect in another file on the goal's path is named and left, while a guess inside the task's files is acted on. This change keeps both claudetto texts (`specs/agent-conduct/spec.md:127`, `specs/setup/spec.md:26`, `research/text-audit.md:222`). Fix: task 8.6 sets scope by the user's goal and its done-check, and bars acting on an unchecked cause.
+
+### D10.5 A Push Ran Before `just verify`
+
+Observed: session `cd2e74f0` committed at 22:48:53 and pushed `feat/2.1.321` at 22:48:58; its first `just verify` after that ran at 23:24:16. The user reports a GitHub release (versionlens v0.6.3) published before verify passed, and a force-pushed PR branch (`user-dossier.md`). The repo's `.githooks` holds only `commit-msg` and `pre-commit`.
+
+- P-D10.5. Hypothesis: a `pre-push` hook that fails stops the push. Command: a bare remote, a worktree with `.githooks/pre-push` exiting `$VERIFY_RC`, then `git push origin HEAD:main` with 1 and then 0. Result: rc 1 and no `main` on the remote; then rc 0 and `main` at the commit.
+
+Fix: task 7.10 adds a bedrock `pre-push` that runs `just verify`. A `gh release create` goes through the API, not `git push`, so the hook does not cover it.
+
+### D10.6 The Memory Watch Stops Early
+
+Observed: "The memory watch stopped (… $.process.run(ps) aborted: still running after 30000ms)" (3 times in 1 session) and "… $.process.run(sysctl) failed to start: ENOENT" (once). The RAM reports ("borked the system ram over 120+ gb", "choking user's RAM with tsgolints", sent 2026-11-10 and 2026-11-11) came before the watch shipped in `378782f3` (2026-11-13).
+
+Read: in `useMemoryHold/memory.ts`, the `.catch` at `:184` wraps the whole `poll` recursion, so one failed `ps`, most likely under memory pressure, ends the watch for the rest of the call. `done.abort()` at `:190` runs when `next(e)` returns, and a `run_in_background` Bash call returns at once, so a long background test run is not watched (inferred from the code, not run). `:146` starts `sysctl` by bare name, though `:22` gives `memory_pressure` its absolute path. Fix: task 4.5.
+
+### D10.7 Faults From the Installed Older Build
+
+Observed in subagents: "Monitor is off here: call mcp__claudetto__monitor." (76 in 73) and "The server-side auto mode classifier gave no verdict for Agent: a hook changed this call's input" (26 in 7). Both texts come from the installed build `82b714c5ec41` (`hooks/delegation.ts:166-170`). The source already refuses an off-form `Agent` call in place of rewriting it (`tool.call/useClaudettoAgents/delegation.ts:35-49`) and holds no Monitor block. Recorded only.
+
+### D10.8 Checked and Closed
+
+- Commit `c51d8452` reached `origin/feat/2.1.321` with no push in any transcript. The remote-tracking reflog says "update by push" at 17:13:44Z, 58 seconds after the commit. No `.githooks` file pushes, and claudetto's only push is `git push origin --delete` (`hygiene/branches.ts:175`). VS Code has `git.confirmSync: false`, so its sync button pushes with no prompt; that source is inferred. Not a claudetto defect. The fault was the agent naming a hook as the cause before any check.
+- The triple user record in `b8e1aaed` (22:09:03, :05, :08) is three typed submits: each has its own `promptId`, `promptSource: "typed"`, and API request, and only the third got a reply. Not a defect.
+- The `https://clawdipedia.cc/schemas/…` and `prompts/defaults/default-lean` URLs in `hooks.json`, `settings.ts:130`, and `surface.test.ts:20` answer HTTP 200. The invented URL is the OpenSAD one in D9.10.
+
