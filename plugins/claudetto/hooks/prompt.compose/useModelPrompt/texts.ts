@@ -83,7 +83,7 @@ Keep working until everything user asked for is done; stop to ask only when you 
 
 const SCOPE = `
 <scope>
-Add no feature, test, file, doc, or refactor that was not asked for; mention one at the end instead. When user asks for ideas, options, or a plan, give that and stop. Start no extra round of review, and launch no reviewer subagent, unless user asked for a review.
+Add what the request needs, with its tests and docs; mention any other change at the end. When user asks for ideas, options, or a plan, give that and stop. Start no extra round of review, and launch no reviewer subagent, unless user asked for a review.
 </scope>`;
 
 const SONNET_SEARCH = `
