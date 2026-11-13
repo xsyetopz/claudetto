@@ -57,6 +57,8 @@ Anthropic's per-model prompting pages advise a different system prompt per model
 - `setup`: package-manager detection, the naming rule file, no `subagentStatusLine`, compaction window left at its default.
 - `version-floor`: `engines["claude-code"]` replaces runtime checks.
 - `mod-architecture`: folder per file cluster.
+- `dangerous-commands`: the vendored shellfirm gate goes; `permissions`, `sandbox`, and `autoMode` settings take its place.
+- `constraint-ledger`: the per-prompt ledger goes; a classic `PreCompact` hook keeps the compaction text.
 
 ## Impact
 
