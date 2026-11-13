@@ -9,7 +9,7 @@ const DAY_MS = 86_400_000;
 
 /**
  * Runs Mole's cache clean, whose own log `mo history` shows, and returns one report line. With no terminal on stdin, Mole cleans user caches without a prompt and skips the ones that need sudo.
- * A clean takes minutes of CPU, so a real one starts detached, at most once a day by the mtime of `stamp`, and the session start never waits for it. A dry run waits, so its caller sees the exit.
+ * A clean takes minutes of CPU, so a real one runs at most once a day, by the mtime of `stamp`.
  */
 export const cleanCaches = async (
 	dryRun: boolean,
@@ -20,29 +20,23 @@ export const cleanCaches = async (
 	if (mo === null) {
 		return `${MOLE.name} is not on PATH, so no cache was cleaned: install it with \`${MOLE.install.join(" ")}\`.`;
 	}
-	if (dryRun) {
-		const code = await spawn([mo, "clean", "--dry-run"], {
-			stdin: "ignore",
-			stdout: "ignore",
-			stderr: "ignore",
-		}).exited;
-		return `${MOLE.name} clean --dry-run exited ${code}.`;
+	if (!dryRun) {
+		const last = await stat(stamp).then(
+			(s) => s.mtimeMs,
+			() => 0,
+		);
+		if (now - last < DAY_MS) {
+			return `${MOLE.name} clean ran in the last day, so it did not run.`;
+		}
+		await mkdir(dirname(stamp), { recursive: true });
+		await writeFile(stamp, "");
+		await utimes(stamp, now / 1000, now / 1000);
 	}
-	const last = await stat(stamp).then(
-		(s) => s.mtimeMs,
-		() => 0,
-	);
-	if (now - last < DAY_MS) {
-		return `${MOLE.name} clean ran in the last day, so it did not start.`;
-	}
-	await mkdir(dirname(stamp), { recursive: true });
-	await writeFile(stamp, "");
-	await utimes(stamp, now / 1000, now / 1000);
-	spawn([mo, "clean"], {
-		detached: true,
+	const args = dryRun ? ["clean", "--dry-run"] : ["clean"];
+	const code = await spawn([mo, ...args], {
 		stdin: "ignore",
 		stdout: "ignore",
 		stderr: "ignore",
-	}).unref();
-	return `${MOLE.name} clean started.`;
+	}).exited;
+	return `${MOLE.name} ${args.join(" ")} exited ${code}.`;
 };

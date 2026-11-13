@@ -12,47 +12,40 @@ afterEach(() => {
 
 const DAY_MS = 86_400_000;
 
-/** A `mo` that waits `seconds`, records its arguments and whether stdin is a terminal, then exits `code`. */
-const fakeMole = async (code: number, seconds = 0) => {
+/** A `mo` that records its arguments and whether stdin is a terminal, then exits `code`. */
+const fakeMole = async (code: number) => {
 	const dir = await tempDir("mole-");
 	const log = join(dir, "log");
 	await writeFile(
 		join(dir, "mo"),
-		`#!/bin/sh\nsleep ${seconds}\n{ echo "$@"; [ -t 0 ] && echo tty || echo no-tty; } > '${log}'\nexit ${code}\n`,
+		`#!/bin/sh\n{ echo "$@"; [ -t 0 ] && echo tty || echo no-tty; } > '${log}'\nexit ${code}\n`,
 	);
 	await chmod(join(dir, "mo"), 0o755);
 	process.env.PATH = `${dir}:/usr/bin:/bin`;
 	return { stamp: join(dir, "stamp"), log: () => readFile(log, "utf8") };
 };
 
-const settle = () => Bun.sleep(300);
+test("the sweep runs mo clean with no terminal on stdin and reports its exit code", async () => {
+	const mole = await fakeMole(0);
 
-test("the sweep starts mo clean with no terminal on stdin and does not wait for it", async () => {
-	const mole = await fakeMole(0, 1);
-	const started = Date.now();
-
-	expect(await cleanCaches(false, mole.stamp, started)).toBe(
-		"mo clean started.",
+	expect(await cleanCaches(false, mole.stamp, Date.now())).toBe(
+		"mo clean exited 0.",
 	);
-	expect(Date.now() - started).toBeLessThan(900);
-	await Bun.sleep(1300);
 	expect(await mole.log()).toBe("clean\nno-tty\n");
 });
 
-test("a second sweep within a day starts no mo clean, and one a day later does", async () => {
+test("a second sweep within a day runs no mo clean, and one a day later does", async () => {
 	const mole = await fakeMole(0);
 	const now = Date.now();
 	await cleanCaches(false, mole.stamp, now);
-	await settle();
 	await writeFile(join(mole.stamp, "..", "log"), "");
 
 	expect(await cleanCaches(false, mole.stamp, now + DAY_MS - 1)).toBe(
-		"mo clean ran in the last day, so it did not start.",
+		"mo clean ran in the last day, so it did not run.",
 	);
-	await settle();
 	expect(await mole.log()).toBe("");
 	expect(await cleanCaches(false, mole.stamp, now + DAY_MS)).toBe(
-		"mo clean started.",
+		"mo clean exited 0.",
 	);
 });
 

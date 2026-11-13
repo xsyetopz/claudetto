@@ -69,6 +69,12 @@ test("the core stays under 3,500 chars, and the deltas under their bounds", () =
 	).toBeLessThan(700);
 });
 
+test("each model's system prompt body fits 6,000 characters", () => {
+	for (const model of MODEL_SECTIONS.keys()) {
+		expect(body(model).length).toBeLessThanOrEqual(6000);
+	}
+});
+
 test("the Haiku body is the shortest and has no delegation, and the Opus body has no verification line", () => {
 	const lengths = [...MODEL_SECTIONS.keys()].map((m) => body(m).length);
 
