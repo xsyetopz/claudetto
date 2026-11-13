@@ -14,7 +14,7 @@
 - [ ] 2.4 Check whether the built-in `/advisor` gate is on for this account.
 - [ ] 2.5 Probe `prompt.compose` on a subagent that uses the lean prompt path, `agent_id` in subagent hook input, and a call to a tool that `tool.list` removed.
 - [ ] 2.6 Measure the largest prompt a `search` run sends with `autoCompactWindow: 100000`, to see whether compaction keeps it under 100,000 tokens.
-- [ ] 2.7 Check with the fake Messages API whether `Write` to the session's `$TMPDIR` folder asks, and whether `permissions.additionalDirectories` holding that folder stops the ask (D10.31).
+- [x] 2.7 Check with the fake Messages API whether `Write` to the session's `$TMPDIR` folder asks, and whether `permissions.additionalDirectories` holding that folder stops the ask (D10.31).
 - [ ] 2.8 Probe the 2.1.323 surfaces that `research/cc-2-1-323.md` marks unprobed: an `engines` range that excludes the running version, a `ui.render` hook on `AbovePrompt` with and without `plugin: "*"`, and the `ceiling` field of a `tool.check` event.
 
 ## 3. Per-Model System Prompts
@@ -72,8 +72,9 @@
 - [ ] 7.15 In `useSetup/rules.ts`, offer to delete each `.md` file in `~/.claude/rules/claudetto/` whose name is not in `RULES`, in one dialog that lists them, so a rule the plugin retired stops loading (D10.27). Write the failing test first: an installed `noNarratingComments.md` is listed and, on yes, removed.
 - [ ] 7.16 Add an `agent.spawn` mod that drops `model` from the event, so each subagent runs on its agent file's model and a lead's `model` argument cannot put it on Opus or Fable, and delete "or pass `model: opus`" from the `<delegation>` block in `texts.ts` (D10.28). Write the failing test first: a spawn event with `model: "opus"` reaches `next` with no `model`.
 - [ ] 7.17 Add a `turn.step` hook that passes at most 8 `tool` chunks per step and drops the `input` chunks of the calls it held back, so one step adds fewer than 20 blocks and the cache breakpoint stays in the lookback window (D10.29). Write the failing test first: a step of 12 tool chunks reaches the engine as 8. Then measure turn count and cache-write tokens on a recorded wide-batch task with the fake Messages API.
-- [ ] 7.18 After task 2.7, have setup add the session temp folder to `permissions.additionalDirectories` if the probe shows that it stops the ask, and point the root prompt's probe folder at `$TMPDIR` (D10.31).
+- [ ] 7.18 Have setup add `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)` to `permissions.allow`, with the user's uid, so a probe file in Claude Code's temp folder needs no approval; the user chose the whole folder (D10.31, P-D10.31). Write the failing test first, then check with the fake Messages API that a scripted `Write` there is written.
 - [ ] 7.19 Release the plugin with task 7.5, so that installed copies stop answering `ask` on a guard fault. Before that, time each `tool.check` guard on an MCP call with the fake Messages API and `--debug-file`, and make each guard that does not judge that tool return before its first `$` call (D10.32).
+- [ ] 7.20 Have `pinCheck` call `next(e)` at once for a tool that no pinned rule can break, that is anything other than `Bash` and the writers, and bound its wait for `state.pending` by `next.budget.remainingMs` less a margin, after which it judges with the ledger as it stands and logs that the read was still running. Have the `classic.Stop` checks run their Decider calls together, not one after another (D10.32, P-D10.32b, P-D10.32c). Write the failing tests first: a `Read` while a ledger read hangs settles at once, and a `Bash` call settles within the budget. Then rerun P-D10.32b and expect no "ran past its 10s budget" line.
 
 ## 8. Texts
 
