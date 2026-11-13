@@ -64,6 +64,7 @@
 - [ ] 7.10 In the bedrock repo, change `guard-base` to compare the resolved `core.hooksPath` with `<repo>/.githooks` (P-D10.1b), and add a `.githooks/pre-push` that runs `just verify` (P-D10.5). Adopt the result here (D10.1, D10.5).
 
 - [ ] 7.11 In `claudetto-you-should-know/hooks/register.ts`, store the `tool_use` id that a shown note judged, and deny only that call; any other call of the turn goes to its own check (D10.16). Write the failing test first: one note offered, then a second call with another id runs.
+- [ ] 7.12 In the classic `SessionStart` hook of task 7.4, append `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash, and `**` stays recursive (D10.17). Test with the fake Messages API: `echo == x` and `grep --include=*.ts x /dev/null` succeed under `CLAUDE_CODE_SHELL=/bin/zsh`.
 
 ## 8. Texts
 

@@ -522,3 +522,24 @@ Read: `startCheck` (`claudetto-you-should-know/hooks/register.ts:130-131`) retur
 
 Fix: task 7.11. The note's verdict holds for the call it judged: the hook keys the offer by that call's `tool_use` id and lets every other call through to its own check. The id is on each `tool.call` event: the engine types document `tool_use_id` as "the same at every event of the call" (`.claude-plugin/types/claude-code/index.d.ts:6403`), and `usePriceStep/price-step.ts:160` already keys calls by `e.tool_use_id`.
 
+### D10.17 zsh Aborts Bash-Style Commands
+
+Observed with `/tmp/claude-501/scan-err.ts` over the 807 transcripts changed in the 4 days before 2026-11-13: Bash results that start with `(eval):N:` held "no matches found" 123 times and "= not found" 36 times. The Bash tool runs the user's shell, zsh here, and two zsh options abort a whole command line that bash would run:
+
+- `NOMATCH`: an unmatched glob word aborts the line before any part runs. Of the 63 rejected words a script could classify, 30 were grep options such as `--include=*.ts` and 1 was a URL with `?`. bash passes both through as literal text.
+- `EQUALS`: a word that starts with `=` expands to a command path, so `echo ==` and `[ a == a ]` fail.
+
+P-D10.17a. Hypothesis: the two options cause the errors. Prediction: under `CLAUDE_CODE_SHELL=/bin/zsh`, `echo == x` and `[ a == a ]` fail with `= not found`, and under `/bin/bash` they print. Command: the fake Messages API probe of P-D10.15b, Claude Code 2.1.323, no billed call. Result: zsh `(eval):1: = not found` for both; bash `== x` and `same`. Confirmed.
+
+P-D10.17b. Hypothesis: switching the tool to bash costs nothing. Check: of 39,389 Bash commands in the same window, 104 used an unquoted `**`, and 70 of them ran without error. macOS `/bin/bash` is 3.2, where `**` matches one folder level, so those commands would match fewer files with no error. Refuted: `CLAUDE_CODE_SHELL=/bin/bash` trades loud failures for silent ones.
+
+P-D10.17c. Hypothesis: a `SessionStart` hook that appends `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE` turns the two options off in each Bash command and keeps `**` recursive. Prediction: `echo == x`, `grep --include=*.ts`, and `ls d/**/z.swift` all run, and `ls nothing*here` fails alone. Command: the same probe, with the hook in `--settings`, then with `CLAUDE_ENV_FILE` set by hand. Result: `== x`, `glob-ok`, `d/e/f/z.swift`, and `ls: nothing*here: No such file or directory` followed by the next command's output. Confirmed. Two routes failed: a `ZDOTDIR` that holds a `.zshrc` (Claude Code still read `$HOME/.zshrc`, and `=` failed), and editing the user's `.zshrc`, which works but changes the user's interactive shell. Unchecked: that a subagent's Bash commands load the same file; Claude Code runs them in the same process.
+
+Fix: task 7.12.
+
+### D10.18 The Lead Polls Background Output With `sleep`
+
+Observed: Claude Code's built-in block "Blocked: sleep N followed by: …" ended 146 calls in the same window, all in lead sessions: 82 OpenJoystickDriver, 27 OpenSAD, 18 claudetto, 9 clawdipedia, 6 JagFx, 1 versionlens-redux. 106 were `cat` or `tail` of a `tasks/*.output` file of a background command whose end notice would have woken the lead. The block runs nothing, so each costs one request. After 13 blocks the lead took the block's advice and called `Monitor`, and 11 of those got claudetto's "Monitor is off here", the old-build text that D10 records; the last one is from 2026-11-12T18. Both installed builds and `plugins/` no longer hold that text. Recorded only: the built-in block already stops the wait, and no structural change of claudetto's removes the extra request.
+
+The 51 refused `SubagentHandback` calls (the subagent's final-report tool in 2.1.323) in the same window came from the remark gate (38) and the 15-minute cap (13), both recorded above and absent from `plugins/` and both installed builds. The side check skips every subagent call (`claudetto-you-should-know/hooks/register.ts:283`), so no gate left in the source can refuse a hand-back.
+
