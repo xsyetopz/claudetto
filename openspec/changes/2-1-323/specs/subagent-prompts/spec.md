@@ -2,22 +2,27 @@
 
 ### Requirement: Each Agent File Sets Its Model, Effort, Tools, and Turns
 
-Each of the four agents `search`, `plan`, `sweep`, and `work` SHALL set `model`, `effort`, `tools`, and `maxTurns` in its frontmatter. The model choices SHALL count as a hypothesis until a paid A/B run measures them, and that run SHALL wait for the user's approval.
+Each of the four agents `search`, `plan`, `sweep`, and `work` SHALL set `model`, `effort`, `tools`, and `maxTurns` in its frontmatter, and no agent SHALL set a Fable or Opus model. Each Haiku agent SHALL set `autoCompactWindow: 100000`, because Haiku 5.5 bills a prompt over 100,000 tokens at five times the input rate. The choices SHALL count as a hypothesis until a paid A/B run measures them, and that run SHALL wait for the user's approval.
 
 #### Scenario: The Search Agent
 
 - **WHEN** a reader reads the frontmatter of `agents/search.md`
-- **THEN** it holds `model: claude-haiku-5-5`, `effort: low`, `tools: Read, Grep, Glob`, and a `maxTurns` value
+- **THEN** it holds `model: claude-haiku-5-5`, `effort: high`, `autoCompactWindow: 100000`, `tools: Read, Grep, Glob`, and a `maxTurns` value
 
-#### Scenario: The Fable Agents
+#### Scenario: Plan and Sweep
 
 - **WHEN** a reader reads the frontmatter of `agents/plan.md` and `agents/sweep.md`
-- **THEN** each holds `model: claude-fable-5-2`, `tools: Read, Grep, Glob`, and a `maxTurns` value, with `effort: medium` for `plan` and `effort: high` for `sweep`
+- **THEN** each holds `model: claude-sonnet-5-5`, `effort: medium`, `tools: Read, Grep, Glob`, and a `maxTurns` value
 
 #### Scenario: The Work Agent
 
 - **WHEN** a reader reads the frontmatter of `agents/work.md`
-- **THEN** it holds `model: claude-opus-5-5`, `effort: medium`, a `maxTurns` value, and a `tools` value that grants every tool
+- **THEN** it holds `model: claude-sonnet-5-5`, `effort: medium`, a `maxTurns` value, and a `tools` value that grants every tool
+
+#### Scenario: No Fable or Opus Subagent
+
+- **WHEN** a reader searches `plugins/claudetto/agents/` for `fable`, `mythos`, and `opus`
+- **THEN** no frontmatter holds any of them, and Fable and Mythos run only through the opt-in `advisor` tool
 
 ### Requirement: Each Agent Body Is Its Whole Prompt
 
@@ -28,14 +33,19 @@ Each agent body SHALL be the agent's whole prompt, written to the guidance of th
 - **WHEN** the main loop starts `claudetto:search`
 - **THEN** the subagent's `system[2]` is the `search` body followed by the engine's notes, with no text of a per-model main-loop body
 
-### Requirement: The Fable Bodies Follow Fable Guidance
+### Requirement: The Bodies Follow Sonnet and Haiku Guidance
 
-The `plan` and `sweep` bodies SHALL be written to the Fable 5.2 guidance: for a literal reader, with a report written for a reader who has not seen the tool calls, and with no absolute "never". Each remaining limit SHALL carry its scope and reason. The bodies SHALL hold no ownership line, because it adds 70–80% output tokens and unrequested changes.
+The `plan`, `sweep`, and `work` bodies SHALL follow the Sonnet 5.5 guidance, with a finish line, a scope line, and no reviewer subagents started unasked. The `search` body SHALL follow the Haiku 5.5 guidance and stay short, because Haiku stops early on a long prompt. Each limit SHALL carry its scope and reason, and no body SHALL hold an ownership line.
+
+#### Scenario: Reading the Search Body
+
+- **WHEN** a reader reads `agents/search.md`
+- **THEN** it holds a finish line and no ownership line, and its body is shorter than the `plan` body
 
 #### Scenario: Reading the Sweep Body
 
 - **WHEN** a reader reads `agents/sweep.md`
-- **THEN** it holds no ownership line and no "never"
+- **THEN** it holds a finish line, a scope line, and no ownership line
 
 ### Requirement: Built-in Agents Are Off Through Settings
 
@@ -44,7 +54,7 @@ Setup SHALL turn the built-in agents off with `env.CLAUDE_CODE_DISABLE_EXPLORE_P
 #### Scenario: Setup Writes the Keys
 
 - **WHEN** setup writes to an empty settings file
-- **THEN** `env` holds `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` as `1` and the three spawn caps, and `permissions.deny` holds an `Agent(<name>)` entry for each other built-in agent
+- **THEN** `env` holds `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` as `1` and the two spawn caps, and `permissions.deny` holds an `Agent(<name>)` entry for each other built-in agent
 
 ### Requirement: Claudetto Denies No Agent Call by Its Type
 

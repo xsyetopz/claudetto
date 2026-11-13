@@ -66,12 +66,12 @@ The agents under `plugins/claudetto/agents/` SHALL be `search`, `plan`, `sweep`,
 #### Scenario: Read-Only Agents
 
 - **WHEN** the frontmatter of `search`, `plan`, and `sweep` is read
-- **THEN** each holds `tools: Read, Grep, Glob` and a `maxTurns` value, `search` holds `model: claude-haiku-5-5` and `effort: low`, `plan` holds `model: claude-fable-5-2` and `effort: medium`, and `sweep` holds `model: claude-fable-5-2` and `effort: high`
+- **THEN** each holds `tools: Read, Grep, Glob` and a `maxTurns` value, `search` holds `model: claude-haiku-5-5`, `effort: high`, and `autoCompactWindow: 100000`, and `plan` and `sweep` each hold `model: claude-sonnet-5-5` and `effort: medium`
 
 #### Scenario: Heracles
 
 - **WHEN** the frontmatter of `work` is read
-- **THEN** it holds `model: claude-opus-5-5`, `effort: medium`, a `maxTurns` value, and grants every tool
+- **THEN** it holds `model: claude-sonnet-5-5`, `effort: medium`, a `maxTurns` value, and grants every tool
 
 ### Requirement: A Disputed Claim Is Weighed as a Third Party's
 

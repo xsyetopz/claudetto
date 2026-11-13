@@ -88,17 +88,19 @@ Each of `search`, `plan`, `sweep`, and `work` sets `model`, `effort`, `tools`, a
 
 | Agent | Model | Effort | Tools |
 |---|---|---|---|
-| `search` | `claude-haiku-5-5` | low | Read, Grep, Glob |
-| `plan` | `claude-fable-5-2` | medium | Read, Grep, Glob |
-| `sweep` | `claude-fable-5-2` | high | Read, Grep, Glob |
-| `work` | `claude-opus-5-5` | medium | all |
+| `search` | `claude-haiku-5-5` | high | Read, Grep, Glob |
+| `plan` | `claude-sonnet-5-5` | medium | Read, Grep, Glob |
+| `sweep` | `claude-sonnet-5-5` | medium | Read, Grep, Glob |
+| `work` | `claude-sonnet-5-5` | medium | all |
 
-- The `plan` and `sweep` bodies are written to Fable guidance: a literal reader, a report for a low-context reader, and no absolute "never". They leave out the ownership line, which adds 70–80% output tokens and unrequested changes (`research/text-audit.md` §9.5).
+- No agent file sets Fable or Opus. A subagent is Sonnet 5.5 or Haiku 5.5, so Fable and Opus stay in the main loop, where the person chooses them. Fable runs as the opt-in `advisor` tool, on Fable 5.2 or on Mythos 5.2 where `ANTHROPIC_DEFAULT_FABLE_MODEL` names it, at `high` effort; `advisor.ts` already does this. The person set these rules on 2026-11-13, with Haiku at `high` or `xhigh` and Sonnet at `medium` as the commonly recommended levels.
+- Each Haiku agent sets `autoCompactWindow: 100000`, the lowest value the frontmatter accepts. Haiku 5.5 bills a prompt over 100,000 tokens at $0.50 per MTok of input, against $0.10 below it (`platform.claude.com/docs/en/models/haiku-5-5/overview`, read 2026-11-13). Haiku's top effort in setup is `high`, so `search` runs at `high`.
+- The bodies are written to Sonnet 5.5 and Haiku 5.5 guidance (`research/model-guidance.md`): the finish and scope paragraphs, no reviewer subagents of their own, and a short body for `search`.
 - Built-in agents are turned off through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` and `permissions.deny Agent(<name>)`. Spawn caps come from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, the two that setup writes today; no per-session cap has a measured value. The repeat-failure refusal in `admit.ts` goes, because its text appears in no session transcript.
 - The `delegation.ts` deny goes. It refused every non-`claudetto:` or foreground `Agent` call.
 - The memory hold stays as a mod. Its spawn denial gains a retry hint.
 
-Reason: probe 5 showed that the body replaces the default subagent text. Probe 1 showed that `prompt.compose` does not reach subagents, so their prompts have to live in the agent files. The community consensus and the Discord data favour Fable for planning and review. The choice of models is a hypothesis until a paid A/B run, which waits for approval.
+Reason: probe 5 showed that the body replaces the default subagent text. Probe 1 showed that `prompt.compose` does not reach subagents, so their prompts have to live in the agent files. The person's rule puts subagents on Sonnet and Haiku. The threads agree on cost: Fable runs 1.5x to 3x Opus for equal accuracy on controlled runs and burns quota as a subagent (`research/fable-vs-opus.md`). The failure dossier supports small, bounded agents: use a single agent unless the task splits into parts that share little context, route search to a small model, and cap turns, since 10 subagents hit their turn limit with 116k–266k tokens and no report (`agent-failure-dossier/04-engineering-delegation-and-cost.md`, I11 and I12). The article on folding subagents into the main loop was read only as a fetched summary, so it backs no claim here. The split between Sonnet and Haiku is a hypothesis until a paid A/B run, which waits for approval.
 
 ### 5. The Bash Gate Becomes Settings
 
@@ -210,7 +212,8 @@ These stay as mods:
 - **Local installs skip the floor.** A local-folder or `--plugin-dir` install below 2.1.323 still loads, with a note. This is accepted, because only developers load claudetto that way.
 - **The settings may not cover the gate.** `permissions` and `autoMode` may let through what the vendored rules denied. The fixture replay (task 2.1) measures the gap before the delete.
 - **The grader replacement may miss more.** One prompt-type Stop hook may catch fewer faults than the two-model vote (`grade.ts` records that Haiku alone missed 4 of 12). Measuring it is a paid replay that waits for approval.
-- **The model choices are unmeasured.** Per-model prompts and the Fable agents rest on vendor guidance and community reports. An A/B run is paid and waits for approval.
+- **The model choices are unmeasured.** Per-model prompts and the Sonnet and Haiku agents rest on vendor guidance and community reports. An A/B run is paid and waits for approval.
+- **A subagent may resume on Fable.** One report has subagents resumed as Fable because no subagent model was set, which burned quota (`research/fable-vs-opus.md`). Each agent file pins its `model` to Sonnet 5.5 or Haiku 5.5. Whether a Fable `/advisor` draws no separate Fable allowance is one user's claim; the docs do not state it, so the design does not rely on it.
 - **A model switch rewrites the prompt.** Switching model mid-session swaps the body, so the prompt cache is rebuilt. Changing the model already invalidates the cache (`research/reddit-1.md`, Harness).
 - **A subagent type may still run the default prompt.** `prompt.compose` was not probed on a subagent that uses the lean prompt path, so such a type may keep the default body.
 - **Users lose options.** Removed `userConfig` options stop applying, and setup rewrites settings. The release notes list each removal.

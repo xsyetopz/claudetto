@@ -28,7 +28,7 @@ Anthropic's per-model prompting pages advise a different system prompt per model
 - **BREAKING**: every plugin requires Claude Code 2.1.323 through `engines["claude-code"]: ">=2.1.323"`. An older Claude Code does not load claudetto, and users update Claude Code first. Runtime version checks go.
 - **BREAKING**: claudetto drops each mod, gate, and setting that a 2.1.323 built-in does, and moves each remaining job to the cheapest surface that can do it. In order: a setting, a classic hook, a skill, an output style, a rule file, and a mod only where nothing else can do the job. The full list is in `research/surface-trim.md`.
 - **BREAKING**: one system prompt per model. A `prompt.compose` mod starts from the default lean body and applies a per-model text for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, each written to that model's official guidance. The shared `ROOT_PROMPT` goes.
-- **BREAKING**: subagents are redesigned. Each agent file sets `model`, `effort`, `tools`, and `maxTurns`, and its body is its whole prompt. Fable 5.2 takes the planner and reviewer roles. Built-in agents are turned off through settings rather than a mod.
+- **BREAKING**: subagents are redesigned. Each agent file sets `model`, `effort`, `tools`, and `maxTurns`, and its body is its whole prompt. Every subagent runs on Sonnet 5.5 or Haiku 5.5, and none on Fable or Opus. Built-in agents are turned off through settings rather than a mod.
 - Model-facing texts are rewritten from the originals: each line is kept, rewritten as a positive instruction with its reason, or dropped (`research/text-audit.md`).
 - "What I Need From You" carries only a command the agent cannot run, and never `sudo`, a slash command, a token prompt, or a repeat.
 - Stop checks cover only the session's own files, skip agent worktrees and the heartbeat file, and do not repeat an identical block.
@@ -49,7 +49,7 @@ Anthropic's per-model prompting pages advise a different system prompt per model
 ### Modified Capabilities
 
 - `surface-trim`: drop what 2.1.323 does, and choose the cheapest surface for the rest.
-- `subagent-prompts`: agent files with model, effort, tools, and turn limits; Fable for planning and review.
+- `subagent-prompts`: agent files with model, effort, tools, and turn limits; Sonnet and Haiku only.
 - `permission-policy`: no log for an absent path; only path operands are resolved; worktree and `/tmp` refusals narrowed.
 - `agent-conduct`: the "What I Need From You" form, and no "Not checked" or "Slips" sections.
 - `run-limits`: Stop checks scoped to own files, no identical repeat blocks.

@@ -13,6 +13,7 @@
 - [ ] 2.3 Run `/init` in a scratch repo and compare its output with `starter-families.ts`.
 - [ ] 2.4 Check whether the built-in `/advisor` gate is on for this account.
 - [ ] 2.5 Probe `prompt.compose` on a subagent that uses the lean prompt path, `agent_id` in subagent hook input, and a call to a tool that `tool.list` removed.
+- [ ] 2.6 Probe that a plugin agent keeps `autoCompactWindow` (the docs list `permissionMode`, `mcpServers`, and `hooks` as ignored for plugin agents and are silent on this field), and measure the largest prompt a `search` run sends.
 
 ## 3. Per-Model System Prompts
 
@@ -24,8 +25,7 @@
 
 ## 4. Subagents
 
-- [ ] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4. Write each body to its model's guidance.
-- [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
+- [ ] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4, and `autoCompactWindow: 100000` in `search.md`. Write each body to its model's guidance.- [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
 - [ ] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
 - [ ] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
 - [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial.
@@ -71,5 +71,5 @@
 
 - [ ] 10.1 Run `just verify`.
 - [ ] 10.2 Measure the request size for each model against the 2.1.322 baseline with the fake Messages API.
-- [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Fable agents, and before the grader replay. Report the cost and the weekly share.
+- [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Sonnet and Haiku agents, and before the grader replay. Report the cost and the weekly share.
 - [ ] 10.4 List each removed option, mod, and setting in the release notes.
