@@ -1,0 +1,32 @@
+name: pr-title
+# A squash merge writes the pull request title, with ` (#N)` appended, as the whole commit message
+# (the repository's squash setting is `PR_TITLE` with a blank body), so this lints that line before
+# it reaches `main`. It runs apart from `ci`, whose per-ref cancellation an `edited` event would
+# turn on its running checks.
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - env:
+          TITLE: ${{ github.event.pull_request.title }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: printf '%s (#%s)\n' "$TITLE" "$NUMBER" | bunx commitlint
