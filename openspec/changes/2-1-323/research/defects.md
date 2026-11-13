@@ -561,12 +561,22 @@ P-D10.20. Hypothesis: the notice fires on the normal path. Prediction: a test in
 
 Fix: task 7.13. The comment at `price-step.ts:111` already says an aborted wait ends like one that ran out, so the `catch` returns without a log.
 
-### D10.21 Tool Errors With No Plugin Cause
+### D10.21 The Commit and Cleanup Stop Blocks Cost a Turn Each
+
+Counted as "Stop hook feedback:" user rows, each of which sends the lead one more request:
+
+- "These files you changed are not committed": 337 rows from 2026-11-09 to 11-13, the most in OpenJoystickDriver `c86d66a7` (68), `f4b7e436` (54), and OpenSAD `3308c572` (51). 210 of them list files in an agent's worktree (`.claude/worktrees/agent-*`), which the lead does not own: the agent's own stop commits them. `changedOf` skips those paths since `378782f3` (2026-11-12T22:59 UTC, `classic.Stop/useSliceCommits/slices.ts:97-101`), and both installed builds hold that skip. The last three, in OpenJoystickDriver `92c2d0ed` at 2026-11-13T00:31 to 00:43, came from a build the transcript does not name.
+- "These files changed this session by a command, the user, or a tool, and are not committed": 41 rows, 2026-11-09 to 11-13.
+- "claudetto removed the folders, worktrees, and branches this agent created": 30 rows, 2026-11-09 to 11-12.
+
+Fix: task 6.1 deletes `useSliceCommits` and the cleanup Stop block.
+
+### D10.22 Tool Errors With No Plugin Cause
 
 Measured over transcripts changed in the last five days, to rule out a plugin cause. None of these gets a task.
 
 - `Edit` "String to replace not found": 132 of 14,683 `Edit` calls (0.9%). 17 repeat, word for word, an `Edit` that had just failed. 35 follow a successful `Edit` on the same file in the same response (30 Sonnet, 4 Opus, 1 with no model recorded). Hypothesis: a format-on-write hook changed the file after an `Edit`. Refuted: no installed plugin hooks `Edit` or `Write`; bedrock's only `tool.call` hook is `blockForeign` on `Bash` (`bedrock/0.2.2/hooks/register.ts:239`).
-- `grep` "exceeds complexity limits": 24 `Bash` calls. Claude Code shadows `grep` with its embedded `ugrep -G` through a function in the shell snapshot (clawdipedia `reference/tools/files`). P-D10.21. Prediction: the shadow fails on `.\{0,60\}`, and the system grep does not. Command: `source` of a script with six forms on one line of text. Result: the shadow exits 2 with "exceeds complexity limits" in BRE, in ERE (`-E '.{0,60}'`), and under `LC_ALL=C`. It passes with `.\{0,10\}`. `/usr/bin/grep` and `command grep` print the match. No documented setting turns the shadow off, and turning it off would also drop its `--ignore-files` and `.git` exclusions, so this stays a Claude Code limit.
+- `grep` "exceeds complexity limits": 24 `Bash` calls. Claude Code shadows `grep` with its embedded `ugrep -G` through a function in the shell snapshot (clawdipedia `reference/tools/files`). P-D10.22. Prediction: the shadow fails on `.\{0,60\}`, and the system grep does not. Command: `source` of a script with six forms on one line of text. Result: the shadow exits 2 with "exceeds complexity limits" in BRE, in ERE (`-E '.{0,60}'`), and under `LC_ALL=C`. It passes with `.\{0,10\}`. `/usr/bin/grep` and `command grep` print the match. No documented setting turns the shadow off, and turning it off would also drop its `--ignore-files` and `.git` exclusions, so this stays a Claude Code limit.
 - `Read` "File content (N tokens) exceeds maximum allowed tokens": 13 calls. The www.clawdipedia.cc session `6953aaa7` sent `limit: 5`, then `limit: 40`, on a one-line JSON file of 26,234 tokens. `limit` counts lines, so no line limit fits.
 - `Edit` "The server-side auto mode classifier gave no verdict (it skipped this action)": 10 calls, all in claudetto sessions `cc4fc018` (2026-11-09T19 and T21) and `d21b8a3c` (2026-11-10T14), on files inside the project, and none since. The cause is unmeasured: the sessions have no debug file. The server gives the verdict, so no plugin change reaches it.
 - "The user doesn't want to proceed": 14 rows, the user's own denials, five of them in OpenJoystickDriver `c86d66a7` at 2026-11-11T23:25, during the memory incident of D10.10.
