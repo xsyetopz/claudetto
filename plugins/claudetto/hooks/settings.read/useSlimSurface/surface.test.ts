@@ -1,7 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock";
 import { INTERVIEW_TEXT, offCommandText, TOOL_TEXTS } from "../../texts";
 import {
 	DEFERRED_TOOLS,
@@ -123,40 +122,6 @@ for (const name of OFF_COMMANDS) {
 	});
 }
 
-test("a whole Read of a lock file is denied, a Read with a limit goes on", async ($: Engine, on: On) => {
-	scanner(on);
-	on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-	on("clock.now", () => ({ value: 0 }));
-	const denied = await $.tool.call({
-		tool: "Read",
-		file_path: "/r/bun.lock",
-	});
-	expect(denied.deny).toBeDefined();
-	const kept = await $.tool.call({
-		tool: "Read",
-		file_path: "/r/bun.lock",
-		limit: 5,
-	});
-	expect(kept.result).toBe("read");
-});
-
-for (const path of [
-	"/r/Cargo.lock",
-	"/r/app.min.js",
-	"/r/a.js.map",
-	"/r/node_modules/x/index.js",
-]) {
-	test(`a whole Read of ${path} is denied`, async ($: Engine, on: On) => {
-		scanner(on);
-		on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-		on("clock.now", () => ({ value: 0 }));
-
-		const out = await $.tool.call({ tool: "Read", file_path: path });
-
-		expect(out.deny).toBeDefined();
-	});
-}
-
 test("Rule K: the 18 prompt commands go off, but not a name a user skill holds", () => {
 	const overrides = skillOverridesFor(new Set(["debug"]));
 	expect(Object.keys(overrides)).toEqual(
@@ -164,30 +129,6 @@ test("Rule K: the 18 prompt commands go off, but not a name a user skill holds",
 	);
 	expect(Object.values(overrides).every((v) => v === "off")).toBe(true);
 });
-
-test("a Read of a source file goes on", async ($: Engine, on: On) => {
-	scanner(on);
-	on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-	on("clock.now", () => ({ value: 0 }));
-
-	const out = await $.tool.call({ tool: "Read", file_path: "/r/main.ts" });
-
-	expect(out.result).toBe("read");
-});
-
-test(
-	"with readGuardEnabled off, a whole Read of a lock file goes on",
-	{ options: { readGuardEnabled: false } },
-	async ($: Engine, on: On) => {
-		scanner(on);
-		on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-		on("clock.now", () => ({ value: 0 }));
-
-		const out = await $.tool.call({ tool: "Read", file_path: "/r/bun.lock" });
-
-		expect(out.result).toBe("read");
-	},
-);
 
 test("a tool claudetto writes no text for is passed on unchanged", async ($: Engine, on: On) => {
 	on("tool.describe", (_$, e) => e);

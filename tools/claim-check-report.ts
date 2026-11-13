@@ -115,16 +115,6 @@ const largest = (calls: readonly Call[], label: string): string => {
 		: `- ${label}: largest \`output_tokens\` ${top.output} against ${top.limit} as the worst case, over ${mine.length} requests; ${mine.filter((call) => call.ms > call.limitMs).length} took longer than their \`timeoutMs\`.`;
 };
 
-const cacheLine = (calls: readonly Call[]): string => {
-	const later = calls
-		.filter((call) => call.label === "decider-fallback")
-		.slice(1)
-		.map((call) => call.cacheRead);
-	return later.length === 0
-		? "- No fallback request after the first."
-		: `- \`cache_read_input_tokens\` of each fallback request after the first: ${later.join(", ")}.`;
-};
-
 const tokenSection = (tokens: ReadonlyMap<string, Usage>): string[] => [
 	"## Tokens by Model",
 	"",
@@ -162,7 +152,6 @@ export const summary = (f: Findings): string =>
 		...tokenSection(f.tokens),
 		"## Usage",
 		"",
-		cacheLine(f.calls),
 		...[...new Set(f.calls.map((call) => call.label))].map((label) =>
 			largest(f.calls, label),
 		),

@@ -1,7 +1,13 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { repo } from "./tool.check/useBashRules/gate.mock";
+import { scanner } from "./secrets.mock";
+
+const repo = (on: On) => {
+	scanner(on);
+	on("session.cwd", () => ({ value: "/p" }));
+	on("fs.exists", () => ({ value: false }));
+};
 
 // Auto mode reviews each call of a response before the hooks run, and a call whose input a hook changed loses the review of every call beside it. The stub stands for the engine beneath the plugin: it records the call each hook hands it.
 const CALLS = [
@@ -24,13 +30,13 @@ const CALLS = [
 		tool: "Agent",
 		description: "d",
 		prompt: "p",
-		subagent_type: "claudetto:work",
+		subagent_type: "claudetto:Heracles",
 	},
 	{
 		tool: "Agent",
 		description: "d",
 		prompt: "p",
-		subagent_type: "claudetto:search",
+		subagent_type: "claudetto:Artemis",
 		run_in_background: false,
 	},
 ] as const;

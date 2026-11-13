@@ -1,14 +1,10 @@
-import type { HookFor, On, PluginOptions } from "claude-code";
+import type { HookFor, On } from "claude-code";
 
 import { isAbsent } from "../../absent";
-import type { CallAnswer, CallEvent, CallNext } from "../../chain";
-import { switchOption } from "../../options";
 import {
-	BUN_FACT,
 	INTERVIEW_TEXT,
 	offCommandText,
 	planModeText,
-	REFUSAL,
 	TOOL_TEXTS,
 } from "../../texts";
 
@@ -25,55 +21,6 @@ export const deferral = (
 	tools: readonly { readonly name: string }[],
 ): { isDeferred?: true } =>
 	tools.some((tool) => tool.name === "ToolSearch") ? { isDeferred: true } : {};
-
-const LOCK_FILES: ReadonlySet<string> = new Set([
-	"bun.lock",
-	"bun.lockb",
-	"package-lock.json",
-	"npm-shrinkwrap.json",
-	"pnpm-lock.yaml",
-	"yarn.lock",
-	"deno.lock",
-	"Cargo.lock",
-	"Gemfile.lock",
-	"poetry.lock",
-	"uv.lock",
-	"Pipfile.lock",
-	"composer.lock",
-	"Package.resolved",
-	"go.sum",
-	"packages.lock.json",
-	"conan.lock",
-	"gradle.lockfile",
-	"flake.lock",
-]);
-
-// `build/`, `dist/`, `target/`, `bin/`, and `obj/` are left out: projects name source folders so, and a false denial costs more than a whole read.
-const GENERATED_FOLDERS: ReadonlySet<string> = new Set([
-	"node_modules",
-	".next",
-	"DerivedData",
-	".build",
-	"__pycache__",
-	".venv",
-	".gradle",
-	".tox",
-	".mypy_cache",
-	".ruff_cache",
-	".pytest_cache",
-]);
-
-const GENERATED_SUFFIXES = [".min.js", ".min.css", ".map"];
-
-const heavyFile = (path: string): boolean => {
-	const segments = path.replaceAll("\\", "/").split("/");
-	const name = segments.at(-1) ?? "";
-	return (
-		LOCK_FILES.has(name) ||
-		GENERATED_SUFFIXES.some((suffix) => name.endsWith(suffix)) ||
-		segments.slice(0, -1).some((segment) => GENERATED_FOLDERS.has(segment))
-	);
-};
 
 export const OFF_COMMANDS: readonly string[] = [
 	"add-dir",
@@ -215,46 +162,7 @@ const textHooks = (on: On): void => {
 	);
 };
 
-const bunRuleHook = (on: On, options: PluginOptions): void => {
-	on(
-		"classic.SessionStart",
-		{ source: ["startup", "clear", "compact"] },
-		async ($, e, next) => {
-			const answer = await next(e);
-			if (!switchOption(options, "bunRuleEnabled") || e.cwd === undefined) {
-				return answer;
-			}
-			const [manifest, lock] = await Promise.all([
-				$.fs.exists(`${e.cwd}/package.json`),
-				$.fs.exists(`${e.cwd}/bun.lock`),
-			]);
-			return manifest && lock
-				? {
-						...answer,
-						additionalContext: [...(answer.additionalContext ?? []), BUN_FACT],
-					}
-				: answer;
-		},
-	);
-};
-
-/** Denies a whole-file `Read` of a lock file or generated folder. */
-export function surfaceCall(
-	e: CallEvent,
-	next: CallNext,
-	options: PluginOptions,
-): CallAnswer {
-	return e.tool === "Read" &&
-		switchOption(options, "readGuardEnabled") &&
-		e.limit === undefined &&
-		heavyFile(e.file_path)
-		? { deny: REFUSAL }
-		: next(e);
-}
-
-const guardHooks = (on: On, options: PluginOptions): void => {
-	bunRuleHook(on, options);
-
+const guardHooks = (on: On): void => {
 	on("settings.read", onSettingsRead);
 
 	// A command a plugin runs goes on.
@@ -268,7 +176,7 @@ const guardHooks = (on: On, options: PluginOptions): void => {
 	);
 };
 
-export const surface = (on: On, options: PluginOptions): void => {
+export const surface = (on: On): void => {
 	textHooks(on);
-	guardHooks(on, options);
+	guardHooks(on);
 };

@@ -1,5 +1,4 @@
 import { isRecord, probability } from "../tools";
-import { fallback } from "./fallback";
 import { JevStatusError, postJev } from "./jev";
 import {
 	type Answers,
@@ -118,7 +117,7 @@ async function askJev(
 	}
 }
 
-/** Answers each question of `set` over `state`: Jev first when `TYPESAFE_API_KEY` is set, the fallback when Jev gives no full set. */
+/** Answers each question of `set` over `state` through Jev; every question is `unsettled` when `TYPESAFE_API_KEY` is unset or refused, or Jev gives no full set. */
 export async function settle(
 	$: Host,
 	set: QuestionSet,
@@ -129,21 +128,13 @@ export async function settle(
 		key === "" || key === refusedKey
 			? undefined
 			: await askJev($, key, set, state);
-	if (answers === undefined) {
-		return fallback($, set, state);
-	}
-	const inBand = Object.entries(set.questions)
-		.filter(
-			([name, question]) =>
-				question.type === "noul" && answers[name] === UNSETTLED,
-		)
-		.map(([name]) => name);
-	return set.escalate === true && inBand.length > 0
-		? { ...answers, ...(await fallback($, set, state, inBand)) }
-		: answers;
+	return (
+		answers ??
+		Object.fromEntries(Object.keys(set.questions).map((n) => [n, UNSETTLED]))
+	);
 }
 
-/** Whether `set` answers `yes` to any question over `state`. The fallback model reads the state as given, so it is redacted first; a scanner that fails answers `false`, which leaves the caller's own guard in place. */
+/** Whether `set` answers `yes` to any question over `state`. The state is redacted first; a scanner that fails answers `false`, which leaves the caller's own guard in place. */
 export async function anyYes(
 	$: Host,
 	set: QuestionSet,

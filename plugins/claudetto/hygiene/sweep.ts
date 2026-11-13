@@ -10,7 +10,7 @@ import {
 	refusal,
 	trashRoots,
 } from "./roots";
-import { batched, type Candidate, idleTemp, MINUTE_MS, namesIn } from "./temp";
+import { batched, type Candidate, namesIn } from "./temp";
 import {
 	checkoutOf,
 	type Held,
@@ -35,6 +35,8 @@ interface Host {
 	readonly tempBases: readonly string[];
 	readonly configDir: string;
 	readonly log: Log;
+	/** What `ps -o lstart= -p <pid>` prints, or `undefined` when no such process runs. */
+	readonly procStart: (pid: number) => Promise<string | undefined>;
 }
 
 interface Removed {
@@ -66,18 +68,63 @@ const tempRoots = async (bases: readonly string[], uid: number, log: Log) => {
 	return [...new Set(found.filter((root) => root !== undefined))];
 };
 
-/** The text of `~/.claude/sessions`: a session id in it is alive. */
-const liveSessions = async (configDir: string, log: Log): Promise<string> => {
-	const dir = join(configDir, "sessions");
-	const files = await namesIn(dir);
-	const texts = await Promise.all(
-		files.map((file) =>
-			readFile(join(dir, file.name), "utf8").catch(
-				logged(log, `The session file ${file.name} was not read`, ""),
-			),
-		),
+interface SessionRecord {
+	readonly pid: number;
+	readonly sessionId: string;
+	readonly procStart: string;
+}
+
+const recordOf = (text: string): SessionRecord | undefined => {
+	try {
+		const value: unknown = JSON.parse(text);
+		return typeof value === "object" &&
+			value !== null &&
+			"pid" in value &&
+			typeof value.pid === "number" &&
+			"sessionId" in value &&
+			typeof value.sessionId === "string" &&
+			"procStart" in value &&
+			typeof value.procStart === "string"
+			? {
+					pid: value.pid,
+					sessionId: value.sessionId,
+					procStart: value.procStart,
+				}
+			: undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+// `ps` pads a day of the month below 10, and the record may not.
+const spaced = (start: string) => start.split(/\s+/u).join(" ").trim();
+
+/**
+ * The ids of the sessions that a running process holds: a record names one when its pid runs with the start the record holds, so a pid that another process took over names none. `undefined` when
+ * a record cannot be understood, because a folder must not go on a guess.
+ */
+const liveSessions = async (host: Host): Promise<Set<string> | undefined> => {
+	const dir = join(host.configDir, "sessions");
+	const listed = await namesIn(dir);
+	const files = listed.filter((file) => file.name.endsWith(".json"));
+	const ids = await Promise.all(
+		files.map(async (file) => {
+			const record = recordOf(
+				await readFile(join(dir, file.name), "utf8").catch(() => ""),
+			);
+			if (record === undefined) {
+				host.log(`The session file ${file.name} was not understood`);
+				return null;
+			}
+			const start = await host.procStart(record.pid);
+			return start !== undefined && spaced(start) === spaced(record.procStart)
+				? record.sessionId
+				: "";
+		}),
 	);
-	return texts.join("\n");
+	return ids.includes(null)
+		? undefined
+		: new Set(ids.filter((id) => id !== null));
 };
 
 const inFolder = async (
@@ -93,9 +140,13 @@ const inFolder = async (
 		.map((e) => ({ kind, path: join(dir, e.name), limitMs }));
 };
 
-const tempOf = async (root: string, live: string, args: Args, host: Host) => {
+const tempOf = async (
+	root: string,
+	live: ReadonlySet<string>,
+	args: Args,
+	host: Host,
+) => {
 	const sessionMs = (args.sessionDays ?? args.days ?? host.days) * DAY_MS;
-	const probeMs = (args.probeMinutes ?? 60) * MINUTE_MS;
 	// Claude Code names a project's temp folder for its path, with `-` for each `/`.
 	const projects = await inFolder(
 		"session-temp",
@@ -110,21 +161,12 @@ const tempOf = async (root: string, live: string, args: Args, host: Host) => {
 				"session-temp",
 				project.path,
 				sessionMs,
-				(n) => !live.includes(n),
+				(n) => !live.has(n),
 				true,
 			),
 		),
 	);
-	return [
-		...(await inFolder(
-			"probe",
-			root,
-			probeMs,
-			(n) => n.startsWith("fswatch-probe-"),
-			true,
-		)),
-		...sessions.flat(),
-	];
+	return sessions.flat();
 };
 
 /** Each folder a project rule names, under a root of `trashRoots`, that `keepReason` lets go. */
@@ -166,23 +208,25 @@ const builtTrash = async (
 
 const candidates = async (args: Args, host: Host): Promise<Candidate[]> => {
 	const claudetto = join(host.cwd, ".claude/claudetto");
-	const live = `${args.session ?? ""}\n${await liveSessions(host.configDir, host.log)}`;
+	const recorded = await liveSessions(host);
+	const live =
+		recorded === undefined
+			? undefined
+			: new Set([
+					...recorded,
+					...(args.session === undefined ? [] : [args.session]),
+				]);
 	const roots = await tempRoots(host.tempBases, host.uid, host.log);
 	const trash = await loadTrash(host.cwd);
 	const trashMs = (args.trashDays ?? TRASH_DAYS) * DAY_MS;
-	const probeMs = (args.probeMinutes ?? 60) * MINUTE_MS;
 	// Nothing a process could hold goes when the open files cannot be read.
-	const held =
-		trashMs > 0 || probeMs > 0 ? await heldPaths(host.uid) : undefined;
+	const held = trashMs > 0 ? await heldPaths(host.uid) : undefined;
 	const parts = await Promise.all([
-		held !== undefined && trashMs > 0
-			? builtTrash(trash, trashMs, held, host)
-			: [],
-		...(held !== undefined && probeMs > 0
-			? roots.map((root) => idleTemp(root, trash, probeMs, held, host.log))
-			: []),
+		held === undefined ? [] : builtTrash(trash, trashMs, held, host),
 		inFolder("heartbeat", join(claudetto, "heartbeat"), DAY_MS, () => true),
-		...roots.map((root) => tempOf(root, live, args, host)),
+		...(live === undefined
+			? []
+			: roots.map((root) => tempOf(root, live, args, host))),
 	]);
 	return parts.flat().filter((item) => item.limitMs > 0);
 };

@@ -9,7 +9,7 @@ const SPAWN: AgentSpawnInput = {
 	tool_use_id: "toolu_1",
 	prompt: "Read README.md.",
 	description: "read",
-	subagentType: "claudetto:work",
+	subagentType: "claudetto:Heracles",
 	provider: { plugin: "claudetto", tier: "core" },
 	parentModel: "opus",
 	background: false,
@@ -222,9 +222,7 @@ test("a kill or a look at the processes goes on while memory is short", async ($
 	const kill = await bash($, "kill 4242");
 	const look = await bash($, "ps -ax");
 
-	// The memory guard passes the kill on; the kill gate behind it judges whose pid it is.
 	expect(kill.reason).not.toContain("memoryFreeMinPercent");
-	expect(kill.reason).toContain("not a process this session started");
 	expect(look.decision).toBe("allow");
 });
 

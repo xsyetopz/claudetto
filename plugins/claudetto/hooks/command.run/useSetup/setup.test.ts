@@ -1,7 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { unguarded } from "../../tool.check/useBashRules/walled";
 import { valueAt } from "./settings";
 import { FILE, type Lab, lab, run, saved } from "./setup.mock";
 import { recommended } from "./text";
@@ -78,7 +77,7 @@ test("A Cache Folder Named by an Env Var: setup writes no entry for it, because 
 });
 
 test(
-	"each protected path gets a Read deny that silences the startup wall notice",
+	"each protected path gets a Read deny and a sandbox denyRead entry",
 	{
 		options: {
 			protectedPaths: ["~/.claudetto-holdout", "$HOME/b", "/srv/holdout/"],
@@ -88,8 +87,6 @@ test(
 		const state = lab(on);
 
 		await run($, "claudetto:setup");
-		const permissions = valueAt(saved(state), ["permissions"]);
-
 		expect(valueAt(saved(state), ["permissions", "deny"])).toEqual(
 			expect.arrayContaining([
 				"Read(~/.claudetto-holdout/**)",
@@ -98,12 +95,10 @@ test(
 			]),
 		);
 		expect(
-			unguarded(
-				["~/.claudetto-holdout", "$HOME/b", "/srv/holdout/"],
-				permissions,
-				"/home/u",
-			),
-		).toEqual([]);
+			valueAt(saved(state), ["sandbox", "filesystem", "denyRead"]),
+		).toEqual(
+			expect.arrayContaining(["~/.claudetto-holdout", "~/b", "/srv/holdout"]),
+		);
 	},
 );
 

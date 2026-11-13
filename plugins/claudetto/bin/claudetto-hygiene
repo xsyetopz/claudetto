@@ -10,7 +10,7 @@ import { branchReport } from "../hygiene/branches.ts";
 import { cleanCaches } from "../hygiene/mole.ts";
 import { reportText, sweep } from "../hygiene/sweep.ts";
 import { type Log, logged, presentProjects } from "../hygiene/roots.ts";
-import { outputOr } from "../hygiene/trash.ts";
+import { output, outputOr } from "../hygiene/trash.ts";
 import { projectsOf, worktreeReport } from "../hooks/classic.SessionStart/useHygieneSweep/worktrees.ts";
 
 const home = process.env["HOME"] || homedir();
@@ -47,6 +47,9 @@ try {
 		),
 		configDir,
 		log,
+		procStart: async (pid) =>
+			(await output(["ps", "-o", "lstart=", "-p", String(pid)], "/"))?.trim() ||
+			undefined,
 	});
 	console.log(reportText(report, args.dryRun));
 	console.log(

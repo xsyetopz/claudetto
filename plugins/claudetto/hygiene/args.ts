@@ -5,17 +5,12 @@ export interface Args {
 	readonly session?: string;
 	readonly days?: number;
 	readonly sessionDays?: number;
-	readonly probeMinutes?: number;
 	readonly trashDays?: number;
 }
 
-const NUMBER_FLAGS = new Map<
-	string,
-	"days" | "sessionDays" | "probeMinutes" | "trashDays"
->([
+const NUMBER_FLAGS = new Map<string, "days" | "sessionDays" | "trashDays">([
 	["--days", "days"],
 	["--session-days", "sessionDays"],
-	["--probe-minutes", "probeMinutes"],
 	["--trash-days", "trashDays"],
 ]);
 

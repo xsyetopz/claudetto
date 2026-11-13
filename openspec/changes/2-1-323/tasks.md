@@ -36,38 +36,38 @@
 
 ## 5. Bash Gate to Settings
 
-- [ ] 5.1 Add the `permissions`, `sandbox.filesystem`, and `autoMode` entries from design decision 5 to the setup groups, closing the gaps that task 2.1 found.
-- [ ] 5.2 Move `switch.ts` to a classic `PreToolUse` command hook.
-- [ ] 5.3 Delete `tool.check/useBashRules/`, the vendored rules, their fixtures, the licence, `gate.mock.ts`, and their tests and docs.
-- [ ] 5.4 Delete the gate texts in `texts-gate.ts`, and keep the advisor and decide specs.
-- [ ] 5.5 Delete the read guard: `surfaceCall` and `heavyFile` in `useSlimSurface/surface.ts`, `REFUSAL` in `texts.ts`, the `readGuardEnabled` option, and their tests and docs (D10.24).
+- [x] 5.1 Add the `permissions`, `sandbox.filesystem`, and `autoMode` entries from design decision 5 to the setup groups, closing the gaps that task 2.1 found.
+- [x] 5.2 Move `switch.ts` to a classic `PreToolUse` command hook.
+- [x] 5.3 Delete `tool.check/useBashRules/`, the vendored rules, their fixtures, the licence, `gate.mock.ts`, and their tests and docs.
+- [x] 5.4 Delete the gate texts in `texts-gate.ts`, and keep the advisor and decide specs.
+- [x] 5.5 Delete the read guard: `surfaceCall` and `heavyFile` in `useSlimSurface/surface.ts`, `REFUSAL` in `texts.ts`, the `readGuardEnabled` option, and their tests and docs (D10.24).
 
 ## 6. Stop, Ledger, and Compaction
 
-- [ ] 6.1 Delete `useSliceCommits`, the cleanup and background-task Stop blocks, `grade.ts`, `named-files.ts`, `register.ts` in `useStopChecks`, `stop.ts`, and `turn.ts`.
-- [ ] 6.2 Move `open-items.ts` to a classic Stop command hook that checks the What I Need form and never repeats an identical block. The hook parses the section's Markdown list items and fenced blocks, and it accepts one fenced `sh` block as the item for a command the user runs in a separate terminal (D10.9). Update the What I Need text in `output-styles/Concise.md` to match. Write the failing tests first.
-- [ ] 6.3 Fold the `texts-grade.ts` fault list into one prompt-type Stop hook. The hook judges by model, with no word regex or phrase list, and it counts the arguments of a slash command the user typed, such as a `/goal` condition, as the user's words (`research/defects.md` D10.26). Write the failing test first: a reply that cites a `/goal` item passes.
-- [ ] 6.4 Move the Budget `prompt.submit` hook into `useBudgetRun`, and merge its three files.
-- [ ] 6.5 Delete `useConstraintPin` and `useAskFix`, and add `PIN_COMPACT_KEEP` as a classic `PreCompact` hook.
+- [x] 6.1 Delete `useSliceCommits`, the cleanup and background-task Stop blocks, `grade.ts`, `named-files.ts`, `register.ts` in `useStopChecks`, `stop.ts`, and `turn.ts`.
+- [x] 6.2 Move `open-items.ts` to a classic Stop command hook that checks the What I Need form and never repeats an identical block. The hook parses the section's Markdown list items and fenced blocks, and it accepts one fenced `sh` block as the item for a command the user runs in a separate terminal (D10.9). Update the What I Need text in `output-styles/Concise.md` to match. Write the failing tests first.
+- [x] 6.3 Fold the `texts-grade.ts` fault list into one prompt-type Stop hook. The hook judges by model, with no word regex or phrase list, and it counts the arguments of a slash command the user typed, such as a `/goal` condition, as the user's words (`research/defects.md` D10.26). Write the failing test first: a reply that cites a `/goal` item passes.
+- [x] 6.4 Move the Budget `prompt.submit` hook into `useBudgetRun`, and merge its three files.
+- [x] 6.5 Delete `useConstraintPin` and `useAskFix`, and add `PIN_COMPACT_KEEP` as a classic `PreCompact` hook.
 - [x] 6.6 Stop writing `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `autoCompactWindow: 300000` in setup.
-- [ ] 6.7 Move the StopFailure notice to a classic hook.
+- [x] 6.7 Move the StopFailure notice to a classic hook.
 
 ## 7. Defects
 
 - [x] 7.1 Treat ENOENT as absent with no log in `useSetup/rules.ts`, `surface.ts` `namesIn`, `claudetto-openspec/hooks/fs.ts`, and `hygiene/`. Write a failing test for each first.
 - [x] 7.2 Paint the `dark` palette in `statusline/main.ts` until a theme is known, unless `NO_COLOR` is set. Write the failing test first.
 - [x] 7.3 Delete `statusline/subagents.ts` and `subagentStatusLine` in `plugins/claudetto/settings.json`.
-- [ ] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
+- [x] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
 - [x] 7.5 Delete the `tool.check` catch in `register.ts` and `checkFault` in `chain.ts`, so a guard fault leaves the engine's verdict in place. Write the failing test first.
-- [ ] 7.14 Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
-- [ ] 7.6 Delete the decider fallback (`decider/fallback.ts`) and move each judgment it makes to a prompt-type classic hook (D9.5).
-- [ ] 7.7 Delete the hygiene sweep's idle-time rule for temp folders. Point probes at `$TMPDIR/<project>/<session_id>/`, and remove that folder on `session.end`. At session start, remove only the per-session folders that no running session's `~/.claude/sessions/<pid>.json` names and whose `pid` and `procStart` no longer match a running process (D9.6). Write the failing test first.
-- [ ] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).
+- [x] 7.14 Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
+- [x] 7.6 Delete the decider fallback (`decider/fallback.ts`) and move each judgment it makes to a prompt-type classic hook (D9.5).
+- [x] 7.7 Delete the hygiene sweep's idle-time rule for temp folders. Point probes at `$TMPDIR/<project>/<session_id>/`, and remove that folder on `session.end`. At session start, remove only the per-session folders that no running session's `~/.claude/sessions/<pid>.json` names and whose `pid` and `procStart` no longer match a running process (D9.6). Write the failing test first.
+- [x] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).
 - [x] 7.9 Have setup offer `worktree.symlinkDirectories` with the git-ignored dependency folders it finds at the project root, so a worktree agent has them without building symlinks (D10.2, P-D10.2a). For each folder it links, add the name without a trailing slash, such as `node_modules`, to claudetto's own `.gitignore` block, because a `node_modules/` line misses the link and the worktree then shows it as an untracked change (P-D10.2b). Test first with a failing `ignores.test.ts` case, and check with `git check-ignore node_modules` in a worktree made with the setting.
 - [ ] 7.10 In the bedrock repo, change `guard-base` to compare the resolved `core.hooksPath` with `<repo>/.githooks` (P-D10.1b), and add a `.githooks/pre-push` that runs `just verify` (P-D10.5). Adopt the result here (D10.1, D10.5).
 
 - [x] 7.11 In `claudetto-you-should-know/hooks/register.ts`, store the `tool_use` id that a shown note judged, and deny only that call; any other call of the turn goes to its own check (D10.16). Write the failing test first: one note offered, then a second call with another id runs.
-- [ ] 7.12 In the classic `SessionStart` hook of task 7.4, append `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash, and `**` stays recursive (D10.17). Test with the fake Messages API: `echo == x` and `grep --include=*.ts x /dev/null` succeed under `CLAUDE_CODE_SHELL=/bin/zsh`.
+- [x] 7.12 In the classic `SessionStart` hook of task 7.4, append `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash, and `**` stays recursive (D10.17). Test with the fake Messages API: `echo == x` and `grep --include=*.ts x /dev/null` succeed under `CLAUDE_CODE_SHELL=/bin/zsh`.
 - [x] 7.13 In `usePriceStep/price-step.ts` `readingOf`, drop the `$.ui.log` from the sleep's `catch`, so a stop chunk that arrives in time logs nothing (D10.20). Write the failing test first: a Haiku step whose stop chunk arrives in time, with an `on("ui.log")` collector read after the sleep's rejection has landed, records no log.
 - [x] 7.15 In `useSetup/rules.ts`, offer to delete each `.md` file in `~/.claude/rules/claudetto/` whose name is not in `RULES`, in one dialog that lists them, so a rule the plugin retired stops loading (D10.27). Write the failing test first: an installed `noNarratingComments.md` is listed and, on yes, removed.
 - [x] 7.16 Add an `agent.spawn` mod that drops `model` from the event, so each subagent runs on its agent file's model and a lead's `model` argument cannot put it on Opus or Fable, and delete "or pass `model: opus`" from the `<delegation>` block in `texts.ts` (D10.28). Write the failing test first: a spawn event with `model: "opus"` reaches `next` with no `model`.
@@ -75,7 +75,7 @@
 - [x] 7.18 Have setup add `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)` to `permissions.allow`, with the user's uid, so a probe file in Claude Code's temp folder needs no approval; the user chose the whole folder (D10.31, P-D10.31). Write the failing test first, then check with the fake Messages API that a scripted `Write` there is written.
 - [x] 7.20 Have `pinCheck` call `next(e)` at once for a tool that no pinned rule can break, that is anything other than `Bash` and the writers, and bound its wait for `state.pending` by `next.budget.remainingMs` less a margin, after which it judges with the ledger as it stands and logs that the read was still running. Have the `classic.Stop` checks run their Decider calls together, not one after another (D10.32, P-D10.32b, P-D10.32c). Write the failing tests first: a `Read` while a ledger read hangs settles at once, and a `Bash` call settles within the budget. Then rerun P-D10.32b and expect no "ran past its 10s budget" line.
 - [x] 7.21 Have the `you-should-know` `tool.call` hook close this turn's open note once the person answers an `AskUserQuestion` call without a deny or error, through the same close as the "know" press, so the next call runs (D10.36). The failing test comes first.
-- [ ] 7.22 Have the task 6.2 Stop hook read `transcript_path` and block a `- ! <command>` bullet whose command no earlier Bash call of the session ran, or whose last run succeeded, so a bullet names only a command that failed for the agent (D10.37). The block names the command and tells the agent to run it. Write the failing tests first: an untried `git commit` bullet blocks, a bullet whose run was denied passes, and a bullet whose run succeeded blocks.
+- [x] 7.22 Have the task 6.2 Stop hook read `transcript_path` and block a `- ! <command>` bullet whose command no earlier Bash call of the session ran, or whose last run succeeded, so a bullet names only a command that failed for the agent (D10.37). The block names the command and tells the agent to run it. Write the failing tests first: an untried `git commit` bullet blocks, a bullet whose run was denied passes, and a bullet whose run succeeded blocks.
 
 ## 8. Texts
 
@@ -85,6 +85,9 @@
 - [x] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
 - [x] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).
 - [x] 8.6 Rewrite the scope sentence in the root prompt's `<defects>` block (`texts.ts:29`) and `rules/noUnrequestedEdits.md`, so that scope follows the user's goal and not the task's files. The agent fixes each defect that stands between the goal and its done-check, in any file, and acts on no cause it has not checked (D10.4). Measure both texts with the task 10.3 A/B run.
+- [x] 8.7 Ship `noNarratingComments.md` and `useEdgeCaseReport.md` again and offer them in setup. Commit 378782f3 deleted both without the user's consent; they are the user's rules R-C5 and R-F8 (`research/user-dossier.md`), and the setup stray dialog must not offer to delete them.
+- [x] 8.8 Name the subagents after Greek deities again, as the 2.1.319 design decided ("Agents keep their Greek names"): `search` back to `Artemis`, `plan` to `Metis`, `work` to `Heracles`, and `sweep` to `Athena`, the former reviewer. Commit 378782f3 renamed them without the user's consent. Update each reference in code, tests, texts, settings, docs, and this change's specs. Done: the four agent files and `name` fields, the Agent and plan texts, the root prompt, five test fixtures, both READMEs, `AGENTS.md`, and MODIFIED blocks in `decide`, `subagent-prompts`, and `tier-profiles` for the main requirements that named the old agents.
+- [x] 8.9 Keep the secret scan closed when `betterleaks` cannot run. After task 7.14 a thrown scan error let the unscanned result reach the model; `secretCall` now answers the scan failure with a deny, and `scan.test.ts` holds the failing-first case (a key in the result, the scanner throwing, the deny says "withheld" and holds no key).
 
 ## 9. Folders
 

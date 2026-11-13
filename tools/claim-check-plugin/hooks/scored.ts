@@ -37,7 +37,7 @@ export async function scoreDecider<T extends DeciderCase>(
 		}),
 		async ({ id, c }) => {
 			ctx.caseId = id;
-			ctx.label = "decider-fallback";
+			ctx.label = "decider";
 			ctx.sent = 0;
 			const found = await road.found(c);
 			if (!ctx.stopped) {

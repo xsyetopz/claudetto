@@ -2,7 +2,7 @@ import { redactWith, secretsIn } from "../secrets";
 import type { Host, State } from "./questions";
 
 /**
- * The most characters of state sent to Jev; a longer state goes to the fallback.
+ * The most characters of state sent to Jev; a longer state is not sent.
  * Jev takes 64,000 tokens per request. Session text measured about 2.8 characters per token, and a log or code runs denser,
  * so the bound counts 2 characters per token and leaves the rest for the questions.
  */

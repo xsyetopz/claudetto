@@ -1,4 +1,3 @@
-import { wallRule } from "../../tool.check/useBashRules/walled";
 import { isRecord } from "../../tools";
 import { type Group, type Json, leaves, setAt, valueAt } from "./settings";
 
@@ -12,11 +11,14 @@ const same = (a: unknown, b: unknown): boolean =>
 	JSON.stringify(a) === JSON.stringify(b);
 
 const LINK_LIST = "worktree.symlinkDirectories";
+const DENY_READ = "sandbox.filesystem.denyRead";
 
 const isMergedList = (path: readonly string[]): boolean =>
-	path[0] === "permissions" || path.join(".") === LINK_LIST;
+	path[0] === "permissions" ||
+	path.join(".") === LINK_LIST ||
+	path.join(".") === DENY_READ;
 
-/** A permission list or the worktree link list keeps every entry the user holds and adds ours. */
+/** A permission list, the worktree link list, or the sandbox read-deny list keeps every entry the user holds and adds ours. */
 const wantedAt = (
 	path: readonly string[],
 	had: unknown,
@@ -49,7 +51,8 @@ export const applyChanges = (
 			mode === "replace" ||
 			change.had === undefined ||
 			change.path.startsWith("permissions.") ||
-			change.path === LINK_LIST
+			change.path === LINK_LIST ||
+			change.path === DENY_READ
 		) {
 			settings = setAt(settings, change.path.split("."), change.wanted);
 		}
@@ -86,17 +89,31 @@ export const capGroup = (login?: Json): Group | undefined => {
 			};
 };
 
-/** The gate's wall vanishes with the plugin; a deny rule in the settings outlives it. */
-export const wallGroup = (walls: readonly string[]): Group | undefined =>
-	walls.length === 0
+const HOME = /^(?:~|\$HOME|\$\{HOME\})(?=\/|$)/u;
+
+const wallPath = (wall: string): string =>
+	wall
+		.replace(HOME, "~")
+		.replaceAll(/\/+/gu, "/")
+		.replace(/(?<=.)\/$/u, "");
+
+const wallRule = (path: string): string =>
+	`Read(${path.startsWith("/") ? `/${path}` : path}/**)`;
+
+/** A deny rule and a sandbox `denyRead` entry per protected path, so Claude Code blocks the read, and a command's, without the plugin. */
+export const wallGroup = (walls: readonly string[]): Group | undefined => {
+	const paths = walls.map((wall) => wallPath(wall));
+	return paths.length === 0
 		? undefined
 		: {
 				label: "Protected paths",
-				why: `Denies Read under ${walls.join(", ")}, the protectedPaths option, so Claude Code blocks the read even without the plugin and the startup notice stays silent.`,
+				why: `Denies Read and a sandboxed command's read under ${paths.join(", ")}, the protectedPaths option.`,
 				settings: {
-					permissions: { deny: walls.map((item) => wallRule(item)) },
+					permissions: { deny: paths.map((path) => wallRule(path)) },
+					sandbox: { filesystem: { denyRead: paths } },
 				},
 			};
+};
 
 /** `undefined` when the project root holds no ignored dependency folder. */
 export const linkGroup = (folders: readonly string[]): Group | undefined =>

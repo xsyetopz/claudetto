@@ -2,20 +2,6 @@
 
 const BASH = `Runs a command. \`run_in_background\` re-invokes you when it exits. Read a file with \`Read\`, never \`cat\`, \`head\`, \`tail\`, or \`sed -n\`. Commit each finished slice as its own commit. Push only when asked.`;
 
-// Ends each Stop block: the screen keeps the blocked reply, so a full resend shows one report twice.
-export const KEEP_ANSWER =
-	"Your last reply stays on screen. Write only what this block corrects or adds, and open with the corrected fact.";
-
-const listed = (files: readonly string[]): string =>
-	files.map((f) => `- \`${f}\`\n`).join("");
-
-/** The block for a Stop that leaves files the session changed uncommitted: the agent's own, then those of another source. */
-export const SLICE_COMMIT = (
-	own: readonly string[],
-	others: readonly string[],
-): string =>
-	`${own.length === 0 ? "" : `These files you changed are not committed:\n${listed(own)}Commit each finished slice that passes its check as its own commit, one revertable change per commit: \`git add\` its files, then \`git commit\`. Leave a slice that fails its check uncommitted and say why.\n`}${others.length === 0 ? "" : `These files changed this session by a command, the user, or a tool, and are not committed:\n${listed(others)}Commit them as their own commit, apart from your slices, with a message that names their likely source, such as the user, a formatter, or an install.\n`}${KEEP_ANSWER}`;
-
 const READ = `Reads a file by absolute \`file_path\`; pass \`offset\` and \`limit\` for a part. Shows images, notebooks, PDFs (\`pages\`). After \`Edit\` or \`Write\` succeeds the file holds the change: do not read it back.`;
 
 const EDIT = `Replaces an exact string in a file. \`Read\` the file first, or the call fails. \`old_string\` must be unique unless \`replace_all\` is true. Do not read the file back after it succeeds.`;
@@ -94,7 +80,7 @@ export const planModeText = (file: string, hasPlan: boolean): string =>
 Plan file: ${file}${hasPlan ? ". It already holds a plan: read it, then edit it step by step." : ". Build it step by step with `Write` and `Edit`."}
 
 1. Understand the request and the code behind it. Look for code to reuse before you plan new code.
-2. Search with \`claudetto:search\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
+2. Search with \`claudetto:Artemis\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
 3. Weigh the options, read the critical files, and check the plan against the request.
 4. Write the final plan, short to scan and exact enough to run: context and outcome, the one recommended approach, the files to change, the code to reuse with paths, and how to check it end to end.
 5. Ask each open question with \`AskUserQuestion\` before you present the plan for approval.`;
@@ -113,19 +99,13 @@ export const INTERVIEW_TEXT = `Write this project's memory files with the user, 
 
 Each line is read in every session and costs tokens there. Keep a line that changes what Claude does.`;
 
-export const REFUSAL =
-	"This is a lock, generated, or build file, and a whole read costs far more context than it gives. Pass `offset` and `limit` for the part you need, search it with `rg`, or ask the package command (`bun pm ls`, `cargo tree`).";
-
-export const BUN_FACT =
-	"This repo uses `bun`: package.json and bun.lock are present.";
-
 export const offCommandText = (command: string): string =>
 	`/${command} is off in claudetto.`;
 
 // Delegation: the Agent and ask tool texts and the reply command spec.
 
 export const AGENT_TEXT =
-	'Start a subagent. subagent_type, in full: claudetto:search finds, claudetto:plan plans, claudetto:sweep reviews, claudetto:work the rest; isolation: "worktree" if it commits. Do a few calls yourself.';
+	'Start a subagent. subagent_type: claudetto:Artemis finds, claudetto:Metis plans, claudetto:Athena reviews, claudetto:Heracles the rest; isolation: "worktree" if it commits. Do a few calls yourself.';
 
 export const REPLY_COMMAND = "reply";
 
@@ -176,55 +156,6 @@ export const MEMORY_STOPPED = (
 	percent: number,
 ): string =>
 	`claudetto stopped process ${pid} (${name}) of this command at ${size}, over the ${percent}% of the machine's memory that one process may hold, because it would have run the machine out of memory. Run a narrower part of it, such as one test file. \`memoryProcessMaxPercent\` sets the share.`;
-
-export const STOP_TASKS = (lines: readonly string[]): string =>
-	`Background tasks still running at Stop:\n${lines.join("\n")}\nYour last reply stands as sent. When the user waits on one of these tasks, follow its output with Monitor, filtered to its step and error lines, and report each result as it lands.`;
-
-export const STALL_STOP = (blocks: string): string =>
-	`A Stop hook blocked and no file changed since the last stop, so the turn ends here: ${blocks}. If a goal keeps the session going, \`/goal clear\` drops it.`;
-
-export const ASK_FORM = (items: readonly string[]): string =>
-	[
-		"The reply puts a question to the user as a checklist item.",
-		...items.map((item) => `- [ ] ${item}`),
-		`A checklist item is a question, whether it reads "Tell me where X is", "give me the ID", or "enable Bash". Ask each with AskUserQuestion and delete it from the reply.`,
-	].join("\n");
-
-export const COMMAND_FORM = (v: {
-	stray: readonly string[];
-	headless: boolean;
-	several: readonly string[];
-}): string =>
-	[
-		...(v.stray.length > 0 || v.headless
-			? [
-					"The reply names a command for the user outside a plain `- ! <command>` bullet under `## What I Need From You`.",
-					...v.stray.map((line) => `- ${line}`),
-					"Move each into a `- ! <command>` bullet, with no checkbox, under one `## What I Need From You` heading.",
-				]
-			: []),
-		...(v.several.length > 0
-			? [
-					"The reply lists more than one `- ! <command>` bullet:",
-					...v.several,
-					"Keep the one the work needs first, and ask for the next in a later reply, after the person has run it.",
-				]
-			: []),
-	].join("\n");
-
-export const REGISTER_BLOCK = `Your reply apologizes, agrees, states a feeling, repeats the user, names a mistake with no result, or lists steps as a report. Write what a status report holds: the fact, the corrected result, and the next step.\n${KEEP_ANSWER}`;
-
-export const AGREE_OPENER =
-	"The reply opens by agreeing with the user, which carries no fact. Delete the agreement and open with the fact your check decided.";
-
-export const MISSING_FILES = (
-	missing: readonly { path: string; command: string }[],
-): string =>
-	[
-		"The reply tells the user to run a `! <command>` that names a file that does not exist.",
-		...missing.map(({ path, command }) => `- \`${path}\` in \`! ${command}\``),
-		"Write the file, or correct the path, then check it exists before the reply names it.",
-	].join("\n");
 
 // Price step: the refusal of a result that would cross the Haiku price step.
 

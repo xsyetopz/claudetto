@@ -3,7 +3,4 @@
 // `tools/claim-check-launch.ts` holds the road every tuning run shares.
 import { launch } from "./claim-check-launch.ts";
 
-process.exitCode = await launch(
-	"reply-register",
-	"tools/decider-reply-check.ts",
-);
+process.exitCode = await launch("tools/decider-reply-check.ts");

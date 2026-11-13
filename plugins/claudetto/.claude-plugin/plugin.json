@@ -19,18 +19,6 @@
 			"description": "Use `false` to stop the notification claudetto raises when a turn stops on an API error.",
 			"default": true
 		},
-		"readGuardEnabled": {
-			"type": "boolean",
-			"title": "Guard whole reads of heavy files",
-			"description": "Use `false` to let `Read` take a lock, minified, map, or generated file whole. On by default: such a read without `limit` is denied with a hint, since it costs far more context than it gives.",
-			"default": true
-		},
-		"bunRuleEnabled": {
-			"type": "boolean",
-			"title": "Bun commands in a Bun repo",
-			"description": "Use `false` to stop adding a short note naming the `bun` commands when the folder holds `package.json` and `bun.lock`. On by default, since an untold model reaches for `npm`.",
-			"default": true
-		},
 		"limitPeriodSeconds": {
 			"type": "number",
 			"title": "Period in seconds",
@@ -73,13 +61,6 @@
 			"description": "The age in days from which hygiene removes the temp folder of a session that is not running. Use 0 to keep them all. Left unset, it follows `cleanupPeriodDays`.",
 			"min": 0
 		},
-		"probeCleanupPeriodMinutes": {
-			"type": "number",
-			"title": "Idle temp entry retention in minutes",
-			"description": "Minutes with no change after which hygiene removes an entry of Claude Code's temp folder that no process holds open. `0` keeps them all. Unset: 60.",
-			"default": 60,
-			"min": 0
-		},
 		"trashCleanupPeriodDays": {
 			"type": "number",
 			"title": "Build trash retention in days",
@@ -97,7 +78,7 @@
 		"openItemsCheckEnabled": {
 			"type": "boolean",
 			"title": "Open items at Stop",
-			"description": "Use `false` to skip the Stop check. On by default: a reply that defers work or ends on an offer is sent back once, unless each item names a blocker: a `! <command>`, a denial, or a question.",
+			"description": "Use `false` to skip the Stop check. On by default: a request that is no single `- ! <command>` bullet under `## What I Need From You`, or names a command that passed or never ran, is sent back once.",
 			"default": true
 		}
 	}

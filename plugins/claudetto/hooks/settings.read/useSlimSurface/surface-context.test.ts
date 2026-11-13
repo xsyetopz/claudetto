@@ -1,8 +1,7 @@
 import type { On } from "claude-code";
-import { type Engine, expect, mock, test } from "claude-code/testing";
+import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock";
-import { BUN_FACT, INTERVIEW_TEXT, planModeText } from "../../texts";
+import { INTERVIEW_TEXT, planModeText } from "../../texts";
 
 const ENGINE = { kind: "engine" } as const;
 const LONG_REMINDER = "stock plan mode text ".repeat(300);
@@ -101,70 +100,3 @@ test("a user's own skill named init keeps its text", async ($: Engine, on: On) =
 test("another built-in skill keeps its text", async ($: Engine, on: On) => {
 	expect(await skillText($, on, "review", "built-in")).toBe("stock text");
 });
-
-/** The stubs a SessionStart needs beneath the whole plugin. */
-const startLab = (on: On, files: readonly string[]) => {
-	mock.store(on, {});
-	on("classic.SessionStart", () => ({}));
-	on("session.version", () => ({
-		value: {
-			version: "2.1.318",
-			base: "2.1.318",
-			builtAt: "2026-10-30T00:00:00Z",
-		},
-	}));
-	on("env.get", () => ({ value: undefined }));
-	on("session.id", () => ({ value: "s-1" }));
-	on("session.root", () => ({ value: "/repo" }));
-	on("settings.read", () => ({ value: {} }));
-	on("fs.exists", (_$, e) => ({ value: files.includes(e.path) }));
-	on(
-		"process.run",
-		(_$, e) =>
-			scanned(e) ?? {
-				value: {
-					exitCode: 0,
-					stdout: "",
-					stderr: "",
-					isStdoutTruncated: false,
-					isStderrTruncated: false,
-				},
-			},
-	);
-};
-
-const bunContext = async (
-	$: Engine,
-	source: "startup" | "clear" | "compact",
-) => {
-	const out = await $.classic.SessionStart({ source, cwd: "/repo" });
-	return out.additionalContext ?? [];
-};
-
-const BUN_FILES = ["/repo/package.json", "/repo/bun.lock"];
-
-test("a folder with package.json and bun.lock adds the bun text, again after clear and compact", async ($: Engine, on: On) => {
-	startLab(on, BUN_FILES);
-
-	expect(await bunContext($, "startup")).toContain(BUN_FACT);
-	expect(await bunContext($, "clear")).toContain(BUN_FACT);
-	expect(await bunContext($, "compact")).toContain(BUN_FACT);
-});
-
-for (const files of [["/repo/package.json"], ["/repo/bun.lock"]]) {
-	test(`a folder with only ${files[0]?.slice(6)} adds nothing`, async ($: Engine, on: On) => {
-		startLab(on, files);
-
-		expect(await bunContext($, "startup")).not.toContain(BUN_FACT);
-	});
-}
-
-test(
-	"with bunRuleEnabled off, nothing is added",
-	{ options: { bunRuleEnabled: false } },
-	async ($: Engine, on: On) => {
-		startLab(on, BUN_FILES);
-
-		expect(await bunContext($, "startup")).not.toContain(BUN_FACT);
-	},
-);

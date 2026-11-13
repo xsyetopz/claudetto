@@ -8,6 +8,7 @@ import { groupNamed } from "./settings.mock";
 test("the groups are labelled in order", () => {
 	expect(GROUPS.map((g) => g.label)).toEqual([
 		"Smaller prompt",
+		"Command rules",
 		"Auto mode",
 		"Models and windows",
 		"Worktrees",

@@ -135,7 +135,7 @@ test("A yes/no in the middle band is handed back", async ($: Engine, on: On) => 
 	expect(await ask($, [YES_NO])).toBe(replyOf([YES_NO], [undefined]));
 });
 
-test("An AskUserQuestion call is no decide call: its only request is the judgment of its question", async ($: Engine, on: On) => {
+test("An AskUserQuestion call is no decide call: it sends no request", async ($: Engine, on: On) => {
 	const { fetches } = stub(on, () => okay({}));
 	on("ui.log", () => ({ value: undefined }));
 	on("model.complete", () => ({ value: haikuFailed("aborted") }));
@@ -145,8 +145,7 @@ test("An AskUserQuestion call is no decide call: its only request is the judgmen
 		questions: [{ ...TWO, header: "Store", multiSelect: false }],
 	});
 
-	expect(fetches).toHaveLength(1);
-	expect(sectionKeys(fetches[0], "questions")).toEqual(["fixes_own_defect_1"]);
+	expect(fetches).toHaveLength(0);
 });
 
 test("Many questions go in one request, each keyed by its index", async ($: Engine, on: On) => {

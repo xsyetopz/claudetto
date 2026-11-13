@@ -9,16 +9,16 @@ import type {
 	CheckNext,
 } from "../../chain";
 import { numberOption } from "../../options";
+import { readOnly } from "../../shell/readonly";
+import { parse, programOf } from "../../shell/shell-words";
+import { deny, fieldOf } from "../../shell/verdict";
 import {
 	DENY_CALLS,
 	MEMORY_SHORT,
 	MEMORY_SPAWN_RETRY,
 	MEMORY_STOPPED,
 } from "../../texts";
-import { withNote } from "../../tool.call/useBudgetRun/result-note";
-import { readOnly } from "../../tool.check/useBashRules/readonly";
-import { parse, programOf } from "../../tool.check/useBashRules/shell-words";
-import { deny, fieldOf } from "../../tool.check/useBashRules/verdict";
+import { withNote } from "../../tool.call/useBudgetRun/budget-run";
 import { isRecord } from "../../tools";
 
 // These look at or stop what holds the memory, which is how the agent frees it.

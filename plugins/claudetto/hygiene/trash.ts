@@ -9,7 +9,6 @@ import type { Log } from "./roots";
 export interface Rule {
 	readonly id: string;
 	readonly path: RegExp;
-	readonly temp: boolean;
 	readonly gcroot: boolean;
 	readonly keep: readonly RegExp[];
 }
@@ -69,7 +68,6 @@ const rulesOf = (file: string, raw: unknown): Rule[] =>
 		return {
 			id,
 			path: goRegex(path),
-			temp: Array.isArray(tags) && tags.includes("temp"),
 			gcroot: Array.isArray(tags) && tags.includes("gcroot"),
 			keep: pathsOf(rule["allowlists"]),
 		};
@@ -114,12 +112,11 @@ export const loadTrash = async (cwd: string): Promise<Trash> => {
 	};
 };
 
-const matchOf = (trash: Trash, temp: boolean, rel: string, gcroot = false) =>
+const matchOf = (trash: Trash, rel: string, gcroot = false) =>
 	trash.keep.some((re) => re.test(rel))
 		? undefined
 		: trash.rules.find(
 				(rule) =>
-					rule.temp === temp &&
 					rule.gcroot === gcroot &&
 					rule.path.test(rel) &&
 					!rule.keep.some((re) => re.test(rel)),
@@ -138,7 +135,7 @@ export const projectTrash = (
 				.filter((entry) => entry.isDirectory() && entry.name !== ".git")
 				.map((entry) => {
 					const path = join(dir, entry.name);
-					const rule = matchOf(trash, false, relative(root, path));
+					const rule = matchOf(trash, relative(root, path));
 					return rule ? Promise.resolve([{ id: rule.id, path }]) : walk(path);
 				}),
 		);
@@ -147,7 +144,7 @@ export const projectTrash = (
 				.filter((entry) => entry.isSymbolicLink())
 				.map(async (entry) => {
 					const path = join(dir, entry.name);
-					const rule = matchOf(trash, false, relative(root, path), true);
+					const rule = matchOf(trash, relative(root, path), true);
 					if (!rule) {
 						return [];
 					}
@@ -159,10 +156,6 @@ export const projectTrash = (
 	};
 	return walk(root);
 };
-
-/** The temp rule that names a top-level temp folder, or nothing. */
-export const tempRule = (trash: Trash, name: string): Rule | undefined =>
-	matchOf(trash, true, name);
 
 /** The stdout of a command that exited 0, or nothing; past `limitMs` the command is stopped and the call throws. */
 export const output = async (

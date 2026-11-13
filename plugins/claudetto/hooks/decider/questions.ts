@@ -1,7 +1,5 @@
 import type { EngineInterface } from "claude-code";
 
-import type { PinConstraint } from "../texts-pin";
-
 /** One judgment about the state that has a yes or a no. */
 export interface Noul {
 	readonly type: "noul";
@@ -25,8 +23,6 @@ export interface QuestionSet {
 	readonly noMax: number;
 	/** A Choice whose top option is below this is `unsettled`. */
 	readonly pickMin: number;
-	/** Send each Noul left between its thresholds to the fallback. */
-	readonly escalate?: boolean;
 	readonly questions: Readonly<Record<string, Noul | Choice>>;
 }
 
@@ -58,86 +54,13 @@ export const BRANCH_GATE: QuestionSet = {
 	},
 };
 
-/** The rules a sentence can state and the ledger enforces. */
-export const RULE_CRITERIA: Readonly<
-	Record<Exclude<PinConstraint["rule"], "none">, string>
-> = {
-	"read-only":
-		"The sentence forbids changing files, so the assistant may only read.",
-	"no-commit": "The sentence forbids making a git commit.",
-	"no-push": "The sentence forbids pushing to a remote.",
-	"only-files":
-		"The sentence limits edits to files it names by path; a sentence that names no path does not fit.",
-	"no-questions": "The sentence forbids asking the user questions.",
-};
-
-const perSentence = (n: number): [string, Noul | Choice][] =>
-	Array.from({ length: n }, (_, i): [string, Noul | Choice][] => [
-		[
-			`restricts_${i + 1}`,
-			{
-				type: "noul",
-				instructions: `Does sentence ${i + 1} in \`sentences\` limit what the assistant may do from now on?`,
-			},
-		],
-		[
-			`rule_${i + 1}`,
-			{
-				type: "choice",
-				instructions: `Which enforced rule does sentence ${i + 1} in \`sentences\` state?`,
-				criteria: RULE_CRITERIA,
-			},
-		],
-	]).flat();
-
-const perEntry = (n: number): [string, Noul][] =>
-	Array.from({ length: n }, (_, j): [string, Noul] => [
-		`lifts_${j + 1}`,
-		{
-			type: "noul",
-			instructions: `Does \`message\` allow what entry ${j + 1} in \`entries\` forbids?`,
-		},
-	]);
-
-/** The constraint ledger's judgments: a `restricts` and a `rule` question per sentence, and a `lifts` question per entry. */
-export const ledgerQuestions = (
-	sentences: number,
-	entries: number,
-): QuestionSet => ({
-	...THRESHOLDS,
-	escalate: true,
-	questions: Object.fromEntries([
-		...perSentence(sentences),
-		...perEntry(entries),
-	]),
-});
-
-/** One question per asked question, each judging whether it asks leave to fix a defect the assistant found or caused. */
-export const askFixQuestions = (n: number): QuestionSet => ({
-	...THRESHOLDS,
-	questions: Object.fromEntries(
-		Array.from({ length: n }, (_, i): [string, Noul] => [
-			`fixes_own_defect_${i + 1}`,
-			{
-				type: "noul",
-				instructions: `Does question ${i + 1} in \`questions\` ask the user for leave to fix a defect that the assistant found or caused itself?`,
-				criteria: {
-					true: "The question asks whether to fix, or to leave unfixed, a defect the assistant found or caused, such as a failing test, a bug in its own change, or a fault in the code it was working on.",
-					false:
-						"The question asks for a choice only the user can make: a design, a scope the user has not set, a cost, a risk, or a preference.",
-				},
-			},
-		]),
-	),
-});
-
 const replyFault = (instructions: string, yes: string, no: string): Noul => ({
 	type: "noul",
 	instructions: `\`reply\` is a coding assistant's reply to \`person_message\`; \`checks\` lists the calls it made this turn. ${instructions}`,
 	criteria: { true: yes, false: no },
 });
 
-/** The reply register's faults that scored at least 80% precision and 80% recall on stored replies; a `yes` is a fault, and the Stop check blocks on it. */
+/** The reply register's faults that scored at least 80% precision and 80% recall on stored replies; a `yes` is a fault. */
 export const SHIPPED_REGISTER: QuestionSet = {
 	...THRESHOLDS,
 	questions: {
@@ -211,6 +134,5 @@ export interface Host {
 	readonly http: Pick<EngineInterface["http"], "fetch">;
 	readonly process: Pick<EngineInterface["process"], "run">;
 	readonly clock: Pick<EngineInterface["clock"], "sleep">;
-	readonly model: Pick<EngineInterface["model"], "complete">;
 	readonly ui: Pick<EngineInterface["ui"], "log">;
 }

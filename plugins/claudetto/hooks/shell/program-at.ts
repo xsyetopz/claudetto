@@ -68,6 +68,26 @@ const afterWrapper = (
 	return j + (wrapper.operand === true ? 1 : 0);
 };
 
+// Options that go between `git` and its verb and take the next word as their value.
+const GIT_VALUED = new Set([
+	"-C",
+	"-c",
+	"--git-dir",
+	"--work-tree",
+	"--namespace",
+	"--super-prefix",
+	"--config-env",
+]);
+
+/** The words of a `git` command without the options before its verb, so `git -C dir reset --hard` reads as `git reset --hard`. */
+export const withoutGitOptions = (args: string[]): string[] => {
+	let i = 0;
+	while (i < args.length && (args[i] ?? "").startsWith("-")) {
+		i += GIT_VALUED.has(args[i] ?? "") ? 2 : 1;
+	}
+	return args.slice(i);
+};
+
 /** Where the program of a command starts, after assignments, reserved words, and wrappers such as `sudo` and `env`. */
 export const programAt = (words: string[], from = 0): number => {
 	const word = words[from] ?? "";

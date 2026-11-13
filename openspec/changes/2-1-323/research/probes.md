@@ -186,6 +186,22 @@ Stub in `MODE=agent` answers the first request with an `Agent` tool call, so a r
   - fs: `mke2fs` (1, `mkfs_format`), `chmod -R go-w /` (1), plus every class the task did not name: `lvm`, `zfs`, `cryptsetup`, `mount`, `blockdev`, `shred`, `truncate`, `wipefs`-adjacent `sgdisk`, `partprobe`, `diskutil`, `nvme`, `mdadm`, Windows deletes and formats, `> /dev/null`-style clobbers, `mv` of system files, `find` rooted at `~` or `/` with `-exec rm`.
 - Conclusion (observed, with the stated inference): 27 patterns lift rule cover of the expect-block set from 26 to about 380 of 696 and leave 316, none allowed; the pipe forms are covered through their `curl`/`wget` segment, so every `curl` and `wget` now asks, which is the over-ask cost. The remaining classes are the ones a command-prefix pattern cannot name: wrappers and substitutions (`$(curl ...)`, `eval`, `at`), flags that need a regex, and the families outside the task list.
 
+### Task 5.1: the push-delete pattern and the gaps that stay
+
+- Hypothesis: `git push * :*` missed `git push origin :branch` because a rule that ends in `:*` reads as the legacy prefix syntax, and `:**` avoids it.
+- Prediction: a `deny` rule `Bash(git push * :**)` denies `git push origin :branch`; `Bash(git push * :*\*)` and `Bash(git push * :*?)` do not.
+- Command: `probe-runs/e2-c0` to `e2-c6` through `probe-harness/run.sh`, one `deny` rule each in `flagSettings`: `git push :**`, `git push * :**`, `git push * :*\\*`, `git push * :*?`, `git push *:b*`, `git push * :b*`.
+- Result (observed): `e2-c2` (`git push * :**`) returned `Permission to use Bash with command git push origin :branch has been denied.`; `e2-c5` and `e2-c6` (a literal `b` after the colon) denied it too; `e2-c3` and `e2-c4` returned `This command requires approval`. `git push :**` for `git push :branch` follows the same wildcard rule and was not run on its own (inferred). Setup writes both as `ask`.
+- Left uncovered after task 5.1, because a command-prefix pattern cannot name them: `git rm .` and `git rm *`; `git restore *` with a literal glob and the `--source` forms; `{git reset --hard;}`; `git push --force` hidden in `echo '...' | sh`; `$(curl ...)` inside `python3 -c` or `node -e`; `at`; PowerShell, LOLBin, and `decode | sh` forms; process substitution; the fs classes `lvm`, `zfs`, `cryptsetup`, `mount`, `blockdev`, `shred`, `truncate`, `sgdisk`, `diskutil`, `nvme`, `mdadm`, and Windows deletes; `chmod -R`. The `Read` deny for `~/.aws` and the like moved to the sandbox's `denyRead` and a `Read(...)` deny, written from the `protectedPaths` option.
+
+### Task 5.2: what the sandbox denies writes to in a project folder on 2.1.323
+
+- Hypothesis: a write from inside the sandbox fails for the same paths that the 2.1.319 list of the old `switch.ts` named, and for no more.
+- Prediction: a write to each of those paths fails with `Operation not permitted`, and a write to a sibling path succeeds.
+- Command: a Bash call per path, run in the sandbox, that writes a file or creates one inside it.
+- Result (observed): denied are `.claude/settings.json`, `.claude/settings.local.json`, `.claude/skills`, `.claude/hooks`, `.claude/commands`, `.claude/agents`, `.claude/workflows`, `.claude/routines`, `.claude/output-styles`, `.claude/launch.json`, `.claude/scheduled_tasks.json`, `.claude/loop.md`, `.claude/.cc-writes` (new in this release), and `.mcp.json`. `.claude/rules`, `.claude/plugins`, and `.claude/projects` are writable. The paths under `.git` and the shell rc files were not probed.
+- Conclusion (observed): `hooks/protected-switch.ts` holds these 14 paths, plus each `sandbox.filesystem.denyWrite` entry of the user, project, and local settings that names a path inside the project.
+
 ## 17. `Agent(<name>)` deny against a plugin agent of the same name (task 4.2)
 
 - Hypothesis: `permissions.deny` `Agent(Plan)` denies only the built-in `Plan` type and leaves a plugin agent named `plan` (`pp:plan`) running.
@@ -193,6 +209,14 @@ Stub in `MODE=agent` answers the first request with an `Agent` tool call, so a r
 - Command: `/tmp/claude-501/probe-agentdeny`, a plugin `pp` with `agents/plan.md` (body `PP-PLAN-BODY reply ok.`, `model: claude-haiku-5-5`), settings `{"permissions":{"deny":["Agent(Plan)","Agent(Explore)","Agent(general-purpose)"]}}`, and `STEPS` holding both `Agent` calls in one batch, run through `probe-harness/run.sh` against the stub.
 - Result (observed): the `Plan` call returned `Agent type 'Plan' has been denied by permission rule 'Agent(Plan)' from flagSettings.` (`out/req-2.json` of run `agentdeny`); the `pp:plan` call ran, and its request carried `PP-PLAN-BODY`.
 - Conclusion (observed): an `Agent(<name>)` deny matches the bare built-in type only, so setup can deny `Agent(Plan)` and keep `claudetto:plan`.
+
+## zsh options through `CLAUDE_ENV_FILE` (task 7.12)
+
+- Hypothesis: a `SessionStart` command hook that appends `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE` makes zsh Bash commands with an unmatched glob or an `==` word run as under bash.
+- Prediction: with no hook, `echo == x` fails with `= not found` and `grep --include=*.ts x /dev/null` fails with `no matches found`. With the hook, the first prints `== x` and exits 0, and the second reaches `grep`, which exits 1 for no match, with no zsh error.
+- Command: `/tmp/claude-501/probe-p712`, `steps.json` holding both Bash calls (`echo == x; echo rc=$?` and `grep --include=*.ts x /dev/null; echo rc=$?`) in one batch, run twice through `probe-harness/run.sh` with `FAKESH=/bin/zsh`, `--dangerously-skip-permissions`, and `--settings` set to `{}` (run `p712-off`) or to a `SessionStart` command hook for `plugins/claudetto/hooks/session-start.ts` (run `p712-on`).
+- Result (observed): `p712-off` returned `Exit code 1 … (eval):1: = not found` and `Exit code 1 … (eval):1: no matches found: --include=*.ts`, both `is_error: true`. `p712-on` returned `== x` with `rc=0` and `rc=1` for the grep, with no zsh error and `is_error: false`.
+- Conclusion (observed): the appended line reaches the Bash tool's zsh. The `grep` call exits 1 because `/dev/null` holds no match, which is grep's own status and not a zsh error.
 
 ## Edge cases handled
 

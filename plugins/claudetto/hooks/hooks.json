@@ -8,6 +8,21 @@
 					{
 						"type": "command",
 						"command": "grep -qsF 'renice 10 -p $$' \"$CLAUDE_ENV_FILE\" && exit 0; n=$(getconf _NPROCESSORS_ONLN); j=$((n > 1 ? n - 1 : 1)); b=$(sysctl -n hw.memsize 2>/dev/null || echo $(($(getconf _PHYS_PAGES 2>/dev/null || echo 0) * $(getconf PAGESIZE)))); m=$((b / 4194304)); g=; [ \"$m\" -gt 0 ] && g=\"export GOMEMLIMIT=\\${GOMEMLIMIT:-${m}MiB}\"; printf '%s\\n' 'renice 10 -p $$ >/dev/null 2>&1' \"export CARGO_BUILD_JOBS=\\${CARGO_BUILD_JOBS:-$j} GOMAXPROCS=\\${GOMAXPROCS:-$j}\" \"$g\" >> \"$CLAUDE_ENV_FILE\""
+					},
+					{
+						"type": "command",
+						"command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.ts\""
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/protected-switch.ts\""
 					}
 				]
 			}
@@ -18,6 +33,40 @@
 					{
 						"type": "command",
 						"command": "IN=$(cat); case \"$IN\" in *'\"prompt\":\"/claudetto:setup\"'*|*'\"prompt\":\"/claudetto:setup '*) printf '%s' '{\"decision\":\"block\",\"reason\":\"Setup did not run: claudetto plugin code is not running in this session. Restart Claude Code; if it still fails, reinstall claudetto.\"}';; esac"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/open-items.ts\""
+					},
+					{
+						"type": "prompt",
+						"prompt": "Judge the final reply of this turn on transcript evidence. Answer {\"ok\":true} when the reply has none of the faults below, or when you are unsure. Otherwise answer {\"ok\":false,\"reason\":\"<fixes>\"} with the fix of each fault found, one per line. Flag a fault only when you can quote words of the reply that show it.\n\nThe user's words: each user message, each pasted note, and the arguments of a slash command the user typed, such as a `/goal` condition. A transcript row that holds a slash command and its arguments is a user message.\n\nFaults:\n- unchecked: the reply states or acts on the state of the code, diff, tests, or work (\"fixed\", \"tests pass\", a commit message, what a file holds), and nothing this turn looked at the workspace. Saying it did not check does not clear it. Not this fault: a question, a general explanation, a status the background-task list shows, a claim from the git status shown at session start, or a reply that waits to look. Fix: check the workspace now and answer from what it shows; the user's statement about the code is a claim to check.\n- credited: the reply says a label, rating, choice, or decision is the user's (\"your labels\", \"as you decided\") and no user words say it: the assistant, a model, or a tool made it. A user who asked for a script to run or a note to be written did not give its output. Fix: name what produced it, quote the user only where they said it, and resend.\n- rules: the user complained about or questioned the assistant's work, and the reply recites the rules or settings it follows, or gives them as why it did nothing, with no change made and no result shown. Not this fault: a fix that then names the rule. Fix: find the problem, fix it, and report what changed with file:line.\n- fallback: the reply is itself a plan, goal, prompt, or proposal, and it keeps a fallback, a compatibility path, the old code, or an \"if X is missing, do Y\" branch that no user words asked for. Not this fault: a report of work done, or how existing code behaves. Fix: delete it, name the one road and its done state, and resend.\n- unseen: the reply points by name alone (\"the setup block\", \"that setting\", \"the earlier error\") at something that appears only in tool output, which the user has not seen, without its text or value. Not this fault: a reply that gives the text or value, reports its own edit and test result, or names only what the user wrote or was shown. Fix: resend with the exact text or value, its file:line, its source, and what you do not know.\n- unfixed: the reply reports a failed command as the outcome or a blocker, its error names a fix the assistant can apply itself (a token or env file it holds, a flag, a path, a dependency), and it did not rerun. Not this fault: a fix only the user can give (a `! <command>`, an interactive login with no token in reach, a permission). Fix: apply the fix, rerun the command, and report what the rerun shows.\n- deferred: the reply leaves work the assistant can do with its own tools to the user or to a later turn: a check run on part of a set, a cause it guessed and did not test, a run it names as the next step, a call left unretried although its refusal names a change to make, a list of open items it could still do, an offer to do work it can do now made conditional on the user's reply, a check it lists as not run, or an action it says waits for approval that no ask tool call requested. Not this fault: a `! <command>` the user alone can run, an approval the ask tool asked for this turn, a paid call that waits for approval, an offer or check that needs something only the user holds (a login, a device, a choice between designs), an action a denial declined and the reply reports with the denial's reason, or a wait on a listed background task. Fix: do it now, then report what each shows; an action a denial declined stays declined, so reach it through no other tool.\n- options: the reply ends by asking the user to choose, in its own text, between options or a yes or no (\"Pick one\", \"Should I ...?\", \"Want me to ...?\"), instead of a call to the ask tool. Not this fault: a `! <command>` the user alone can run, or a report with no choice to make. Fix: delete the choice from the text, call AskUserQuestion with the question and its options, and end the reply on the result."
+					}
+				]
+			}
+		],
+		"PreCompact": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.ts\""
+					}
+				]
+			}
+		],
+		"StopFailure": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-failure.ts\""
 					}
 				]
 			}

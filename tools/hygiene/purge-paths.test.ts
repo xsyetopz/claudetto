@@ -50,6 +50,7 @@ const world = async (listed?: (root: string) => string) => {
 			tempBases: [],
 			configDir: join(home, ".claude"),
 			log: (line) => logged.push(line),
+			procStart: () => Promise.resolve(void 0),
 		});
 		return report.removed.map((item) => item.path);
 	};

@@ -1,6 +1,7 @@
 import { SILENT_TURN_REMINDER } from "../../texts";
 import { isRecord } from "../../tools";
 import { AUTO_MODE } from "./auto-mode";
+import { COMMAND_RULES } from "./command-rules";
 
 const HAIKU = "claude-haiku-5-5";
 const SONNET = "claude-sonnet-5-5";
@@ -47,7 +48,7 @@ const BUILTIN_PLUGINS_OFF = [
 	"claude-test",
 ];
 
-// The agent types Claude Code ships; the claudetto agents are namespaced, so `Agent(Plan)` leaves `claudetto:plan` alone.
+// The agent types Claude Code ships; the claudetto agents are namespaced, so `Agent(Plan)` leaves `claudetto:Metis` alone.
 const BUILTIN_AGENTS = [
 	"claude",
 	"Explore",
@@ -90,6 +91,7 @@ export const GROUPS: readonly Group[] = [
 			outputStyle: "claudetto:Concise",
 		},
 	},
+	COMMAND_RULES,
 	{
 		label: "Auto mode",
 		why: "Replaces the built-in autoMode rule lists with a shorter set, so the auto-mode classifier reads fewer rules.",

@@ -9,7 +9,7 @@ import { parseArgs } from "node:util";
 import { build, env, file, spawn, write } from "bun";
 
 import { JEV_ORIGIN } from "./claim-check-plugin/hooks/client.ts";
-import type { Job, Kind } from "./claim-check-plugin/hooks/run.ts";
+import type { Job } from "./claim-check-plugin/hooks/run.ts";
 import { fail, field, numberOf, pricesOf } from "./claim-check-prices.ts";
 import { subscriptionEnv } from "./subscription.ts";
 
@@ -28,7 +28,7 @@ const keyHint = async (script: string): Promise<string> =>
 		? `Run it as \`bun --env-file=.env ${script} ...\`, because bunfig.toml turns \`.env\` loading off.`
 		: "Set it in the shell or in a .env file Bun loads.";
 
-const job = async (kind: Kind, script: string): Promise<Job> => {
+const job = async (script: string): Promise<Job> => {
 	const { values, positionals } = parseArgs({
 		allowPositionals: true,
 		options: OPTIONS,
@@ -51,7 +51,6 @@ const job = async (kind: Kind, script: string): Promise<Job> => {
 		return fail(`TYPESAFE_API_KEY is not set. ${await keyHint(script)}`);
 	}
 	return {
-		kind,
 		cases: await file(casesPath).text(),
 		prices: pricesOf(await file(prices).json(), prices),
 		maxUsd,
@@ -97,8 +96,8 @@ export const bundlePlugin = async (outDir: string): Promise<string> => {
 	return dir;
 };
 
-const run = async (kind: Kind, script: string): Promise<number> => {
-	const given = await job(kind, script);
+const run = async (script: string): Promise<number> => {
+	const given = await job(script);
 	const jobPath = `${given.outDir}/job.json`;
 	await write(jobPath, JSON.stringify(given));
 	const proc = spawn(
@@ -133,10 +132,10 @@ const run = async (kind: Kind, script: string): Promise<number> => {
 	return numberOf(field(final, "code"));
 };
 
-/** Runs the tuning run `kind` from the command line `script` and returns its exit code. */
-export const launch = async (kind: Kind, script: string): Promise<number> => {
+/** Runs the tuning run from the command line `script` and returns its exit code. */
+export const launch = async (script: string): Promise<number> => {
 	try {
-		return await run(kind, script);
+		return await run(script);
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : String(error));
 		return 1;

@@ -1,6 +1,8 @@
 // The `Host` of a tuning run: the engine's own `$`, wrapped to keep the cost ledger, each request, and the Jev stats. The engine loads this module, so it uses no Bun or node API.
+import type { EngineInterface } from "claude-code";
+
 import {
-	type Host,
+	type Host as DeciderHost,
 	THRESHOLDS,
 } from "../../../plugins/claudetto/hooks/decider/questions.ts";
 import { isRecord } from "../../../plugins/claudetto/hooks/tools.ts";
@@ -12,6 +14,11 @@ import {
 	type Usage,
 } from "../../claim-check-prices.ts";
 import type { Call, JevStats } from "../../claim-check-report.ts";
+
+/** The Decider's `Host` with the model calls the grader makes, which the tuning run measures. */
+type Host = DeciderHost & {
+	readonly model: Pick<EngineInterface["model"], "complete">;
+};
 
 type Request = Parameters<Host["model"]["complete"]>[0];
 type Result = Awaited<ReturnType<Host["model"]["complete"]>>;
