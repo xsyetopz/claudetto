@@ -28,7 +28,7 @@ const refusal = async (proj: string): Promise<unknown> => {
 };
 
 const matchedBy = (rules: Rules, path: string) =>
-	rules.some((rule) => !rule.temp && !rule.gcroot && rule.path.test(path));
+	rules.some((rule) => !rule.gcroot && rule.path.test(path));
 
 test("a project file with useDefault drops disabled rules and adds its own", async () => {
 	const proj = await project();
@@ -138,5 +138,5 @@ test("the plugin's trash file passes the gitleaks config check of betterleaks", 
 		join(import.meta.dir, "../../plugins/claudetto/hygiene/trash.toml"),
 	]);
 
-	expect(await new Response(check.stdout).text()).toContain("OK: 37 rules");
+	expect(await new Response(check.stdout).text()).toContain("OK: 36 rules");
 });

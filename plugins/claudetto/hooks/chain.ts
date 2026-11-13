@@ -1,7 +1,5 @@
 import type { HookFor } from "claude-code";
 
-import { GATE_CHECK_FAILED } from "./texts-gate";
-
 type Call = HookFor<"tool.call">;
 export type CallEvent = Parameters<Call>[1];
 export type CallNext = Parameters<Call>[2];
@@ -11,14 +9,6 @@ type Check = HookFor<"tool.check">;
 export type CheckEvent = Parameters<Check>[1];
 export type CheckNext = Parameters<Check>[2];
 export type CheckAnswer = ReturnType<Check>;
-
-/** The reason a `tool.check` hook gives when a guard faulted, so a person decides. */
-export const checkFault = (next: {
-	readonly error: {
-		readonly message?: string | undefined;
-		readonly kind: string;
-	};
-}): string => GATE_CHECK_FAILED(next.error.message ?? next.error.kind);
 
 type Step<E, N, R> = (e: E, next: N) => R;
 

@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { isBelowFloor, isOnPath, noticeLine, TOOLS } from "./tools";
+import { isOnPath, noticeLine, TOOLS } from "./tools";
 
 const holds =
 	(...files: string[]) =>
@@ -18,12 +18,4 @@ test("the notice names brew's command when brew exists and the releases page oth
 		expect(noticeLine(tool, true)).toContain(tool.install.join(" "));
 		expect(noticeLine(tool, false)).toContain(tool.releases);
 	}
-});
-
-test("a release below the floor is below, an equal or later one and a prerelease of the floor are not", () => {
-	expect(isBelowFloor("2.1.311", "2.1.316")).toBe(true);
-	expect(isBelowFloor("2.1.316", "2.1.316")).toBe(false);
-	expect(isBelowFloor("2.1.318", "2.1.316")).toBe(false);
-	expect(isBelowFloor("2.10.0", "2.1.316")).toBe(false);
-	expect(isBelowFloor("2.1.311-dev", "2.1.316")).toBe(true);
 });

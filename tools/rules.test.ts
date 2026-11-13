@@ -6,14 +6,17 @@ const NAMES = [
 	"findFactsByExperiment",
 	"lookForAClone",
 	"noImpossibleStateGuards",
+	"noNarratingComments",
 	"noUnrequestedEdits",
 	"useBlockLanguage",
+	"useEdgeCaseReport",
+	"useHeadlineseNames",
 	"useLeastCode",
 	"useOneObviousWay",
 ];
 const MAX_LINES = 4;
 
-test("the shipped rules are the seven", async () => {
+test("the shipped rules are the ten", async () => {
 	const files = await readdir(RULES);
 
 	expect(files).toHaveLength(NAMES.length);

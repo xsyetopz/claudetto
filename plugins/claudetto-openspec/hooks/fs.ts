@@ -19,11 +19,16 @@ export const within = (root: string, file: string) =>
 export const nonEmpty = (value: string | undefined): value is string =>
 	value !== undefined && value !== "";
 
+/** Whether `error` says a path is absent, which is an answer and needs no log line. */
+export const isAbsent = (error: unknown) => String(error).includes("ENOENT");
+
 export const safeList = async (fs: Fs, dir: string) => {
 	try {
 		return await fs.list(dir);
 	} catch (error) {
-		fs.log(`The directory ${dir} was not listed (${String(error)})`);
+		if (!isAbsent(error)) {
+			fs.log(`The directory ${dir} was not listed (${String(error)})`);
+		}
 		return [];
 	}
 };
@@ -33,7 +38,9 @@ export const statOf = async (fs: Fs, path: string) => {
 	try {
 		info = await fs.stat(path);
 	} catch (error) {
-		fs.log(`The path ${path} was not read for its stat (${String(error)})`);
+		if (!isAbsent(error)) {
+			fs.log(`The path ${path} was not read for its stat (${String(error)})`);
+		}
 		info = undefined;
 	}
 	return info;

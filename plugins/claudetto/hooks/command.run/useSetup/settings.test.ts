@@ -31,8 +31,18 @@ test("the eight tools of the tool-trim are denied", () => {
 	}
 });
 
-test("no built-in agent and no tool that ToolSearch or Skill need is denied", () => {
-	expect(DENIED_TOOLS.filter((rule) => rule.startsWith("Agent("))).toEqual([]);
+test("each built-in agent type is denied, and no tool that ToolSearch or Skill need is", () => {
+	expect(DENIED_TOOLS.filter((rule) => rule.startsWith("Agent("))).toEqual([
+		"Agent(claude)",
+		"Agent(Explore)",
+		"Agent(general-purpose)",
+		"Agent(Plan)",
+		"Agent(statusline-setup)",
+		"Agent(claude-code-guide)",
+	]);
+	expect(
+		valueAt(everything({}), ["env", "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS"]),
+	).toBe("1");
 	for (const needed of ["ToolSearch", "Skill", "Bash"]) {
 		expect(DENIED_TOOLS).not.toContain(needed);
 	}
@@ -106,12 +116,12 @@ test("a write to another repo and every other danger each have a soft rule to ci
 	expect(names.at(-1)).toBe("Any Other Danger");
 });
 
-test("eleven built-in plugins are off as cc-plugin-<name>@builtin", () => {
+test("ten built-in plugins are off as cc-plugin-<name>@builtin", () => {
 	const entries = Object.entries(
 		new Object(valueAt(everything({}), ["enabledPlugins"])),
 	);
 
-	expect(entries).toHaveLength(11);
+	expect(entries).toHaveLength(10);
 	for (const [key, value] of entries) {
 		expect(key).toMatch(BUILTIN_KEY);
 		expect(value).toBe(false);
@@ -134,15 +144,15 @@ test("the models are the three of this release and nothing else", () => {
 	);
 });
 
-test("the bundled-skill switch and the compaction keys are written", () => {
+test("the bundled-skill switch is written, and the compaction window and trigger stay at Claude Code's default", () => {
 	const written = everything({});
 
 	expect(valueAt(written, ["disableBundledSkills"])).toBe(true);
-	expect(valueAt(written, ["autoCompactWindow"])).toBe(300_000);
 	expect(valueAt(written, ["idleCompaction"])).toBe(false);
-	expect(valueAt(written, ["env", "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"])).toBe(
-		"50.0000",
-	);
+	expect(valueAt(written, ["autoCompactWindow"])).toBeUndefined();
+	expect(
+		valueAt(written, ["env", "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"]),
+	).toBeUndefined();
 });
 
 test("the status line refreshes every 5 seconds, and fill keeps the user's own", () => {

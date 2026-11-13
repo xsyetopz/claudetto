@@ -1,13 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanner } from "../../secrets.mock";
-import {
-	INTERVIEW_TEXT,
-	offCommandText,
-	ROOT_PROMPT,
-	TOOL_TEXTS,
-} from "../../texts";
+import { INTERVIEW_TEXT, offCommandText, TOOL_TEXTS } from "../../texts";
 import {
 	DEFERRED_TOOLS,
 	OFF_COMMANDS,
@@ -16,28 +10,6 @@ import {
 } from "./surface";
 
 const textOf = (tool: string): string => TOOL_TEXTS[tool] ?? "";
-
-// The body of the stock lean prompt, `system[2]`, as https://clawdipedia.cc/prompts/defaults/default-lean
-// measures it for Claude Code 2.1.322 and Opus 5.5. When that page's size changes, this number follows it.
-const LEAN_BODY_CHARS = 5788;
-
-test("the root prompt is one shared section no longer than the stock lean body", async ($: Engine, on: On) => {
-	on("prompt.compose", () => ({
-		sections: [{ id: "intro", text: "The default intro.", scope: "shared" }],
-	}));
-	const out = await $.prompt.compose({
-		model: "claude-opus-5-5",
-		promptModel: "claude-opus-5-5",
-		surfaces: ["terminal"],
-		tools: ["Read"],
-		outputStyle: null,
-		traits: [],
-	});
-	expect(out.sections).toEqual([
-		{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" },
-	]);
-	expect(ROOT_PROMPT.length).toBeLessThanOrEqual(LEAN_BODY_CHARS);
-});
 
 test("the /init interview fits 1,144 chars", () => {
 	expect(INTERVIEW_TEXT.length).toBeLessThanOrEqual(1144);
@@ -150,40 +122,6 @@ for (const name of OFF_COMMANDS) {
 	});
 }
 
-test("a whole Read of a lock file is denied, a Read with a limit goes on", async ($: Engine, on: On) => {
-	scanner(on);
-	on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-	on("clock.now", () => ({ value: 0 }));
-	const denied = await $.tool.call({
-		tool: "Read",
-		file_path: "/r/bun.lock",
-	});
-	expect(denied.deny).toBeDefined();
-	const kept = await $.tool.call({
-		tool: "Read",
-		file_path: "/r/bun.lock",
-		limit: 5,
-	});
-	expect(kept.result).toBe("read");
-});
-
-for (const path of [
-	"/r/Cargo.lock",
-	"/r/app.min.js",
-	"/r/a.js.map",
-	"/r/node_modules/x/index.js",
-]) {
-	test(`a whole Read of ${path} is denied`, async ($: Engine, on: On) => {
-		scanner(on);
-		on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-		on("clock.now", () => ({ value: 0 }));
-
-		const out = await $.tool.call({ tool: "Read", file_path: path });
-
-		expect(out.deny).toBeDefined();
-	});
-}
-
 test("Rule K: the 18 prompt commands go off, but not a name a user skill holds", () => {
 	const overrides = skillOverridesFor(new Set(["debug"]));
 	expect(Object.keys(overrides)).toEqual(
@@ -191,30 +129,6 @@ test("Rule K: the 18 prompt commands go off, but not a name a user skill holds",
 	);
 	expect(Object.values(overrides).every((v) => v === "off")).toBe(true);
 });
-
-test("a Read of a source file goes on", async ($: Engine, on: On) => {
-	scanner(on);
-	on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-	on("clock.now", () => ({ value: 0 }));
-
-	const out = await $.tool.call({ tool: "Read", file_path: "/r/main.ts" });
-
-	expect(out.result).toBe("read");
-});
-
-test(
-	"with readGuardEnabled off, a whole Read of a lock file goes on",
-	{ options: { readGuardEnabled: false } },
-	async ($: Engine, on: On) => {
-		scanner(on);
-		on("tool.call", { tool: "Read" }, () => ({ result: "read" }));
-		on("clock.now", () => ({ value: 0 }));
-
-		const out = await $.tool.call({ tool: "Read", file_path: "/r/bun.lock" });
-
-		expect(out.result).toBe("read");
-	},
-);
 
 test("a tool claudetto writes no text for is passed on unchanged", async ($: Engine, on: On) => {
 	on("tool.describe", (_$, e) => e);

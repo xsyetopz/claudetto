@@ -112,7 +112,7 @@ const serveRuns = (
 	});
 };
 
-const serveSession = (on: On, state: Lab, version: string) => {
+const serveSession = (on: On, state: Lab) => {
 	on("model.complete", (_$, e) => {
 		state.prompts.push(e.prompt);
 		const usage = {
@@ -133,9 +133,6 @@ const serveSession = (on: On, state: Lab, version: string) => {
 		};
 	});
 	on("clock.now", () => ({ value: 0 }));
-	on("session.version", () => ({
-		value: { version, base: version, builtAt: "2026-10-30T00:00:00Z" },
-	}));
 	on("classic.SessionStart", () => ({}));
 	on("command.describe", (_$, e) => ({
 		description: e.description,
@@ -189,12 +186,11 @@ export const lab = (
 		"Write",
 	git: (argv: readonly string[]) => string = () => "",
 	failWrites = false,
-	version = "2.1.323",
 ): Lab => {
 	const state = emptyLab(held);
 	serveFiles(on, state, failWrites);
 	serveRuns(on, state, git);
-	serveSession(on, state, version);
+	serveSession(on, state);
 	serveDialogs(on, state, pick);
 	return state;
 };

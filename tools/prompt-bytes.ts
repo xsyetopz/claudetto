@@ -25,10 +25,13 @@ const SHA = "a".repeat(40);
 const TIP = "b".repeat(40);
 
 test("measure-NN", async ($: Engine, on: On) => {
-	try {
-		const out = await $.prompt.compose({ model: "claude-opus-5-5", promptModel: "claude-opus-5-5", surfaces: ["terminal"], tools: ["Read", "Edit"], outputStyle: null, traits: [] });
-		emit("root prompt", bytes(out.sections.map((s) => s.text).join("")));
-	} catch (e) { absent("root prompt", e); }
+	on("prompt.compose", () => ({ sections: [{ id: "lean_body", text: "", scope: "shared" }, { id: "heron_brook", text: "", scope: "session" }] }));
+	for (const model of ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]) {
+		try {
+			const out = await $.prompt.compose({ model, promptModel: model, surfaces: ["terminal"], tools: ["Read", "Edit"], outputStyle: null, traits: ["lean"] });
+			emit("system prompt " + model, bytes(out.sections.map((s) => s.text).join("")));
+		} catch (e) { absent("system prompt " + model, e); }
+	}
 });
 
 

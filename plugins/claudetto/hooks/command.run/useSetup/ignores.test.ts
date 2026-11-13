@@ -1,8 +1,13 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { BLOCK_END, BLOCK_START } from "./ignore-block";
-import { GITIGNORE_FIXED } from "./ignore-plan";
-import { ignoreEdits, previewEdits, settle } from "./ignores";
+import {
+	BLOCK_END,
+	BLOCK_START,
+	GITIGNORE_FIXED,
+	ignoreEdits,
+	previewEdits,
+	settle,
+} from "./ignore";
 
 const GO = ["go.mod", "main.go"];
 
@@ -90,6 +95,42 @@ describe("a repo with lines of its own", () => {
 		const text = heldText(edits, ".gitignore");
 		expect(text.slice(0, held.length)).toBe(held);
 		expect(text.slice(held.length).startsWith(`\n${BLOCK_START}\n`)).toBe(true);
+	});
+});
+
+describe("a folder that a worktree links", () => {
+	const files = ["package.json"];
+
+	test("is ignored by its bare name, which also matches the link, and not by `dir/`", () => {
+		const edits = ignoreEdits({ files, tracked: files }, {}, ["node_modules"]);
+
+		const lines = heldText(edits, ".gitignore").split("\n");
+		expect(lines).toContain("node_modules");
+		expect(lines).not.toContain("node_modules/");
+	});
+
+	test("gets its bare line beside a `dir/` line that the file holds outside the block", () => {
+		const held = "node_modules/\n";
+
+		const edits = ignoreEdits({ files, tracked: files }, { gitignore: held }, [
+			"node_modules",
+		]);
+
+		const lines = heldText(edits, ".gitignore").split("\n");
+		expect(lines.filter((line) => line === "node_modules")).toHaveLength(1);
+		expect(lines.filter((line) => line === "node_modules/")).toHaveLength(1);
+	});
+
+	test("is not added twice when the file holds the bare line", () => {
+		const held = "node_modules\n";
+
+		const edits = ignoreEdits({ files, tracked: files }, { gitignore: held }, [
+			"node_modules",
+		]);
+
+		expect(
+			heldText(edits, ".gitignore").match(/^node_modules$/gmu),
+		).toHaveLength(1);
 	});
 });
 

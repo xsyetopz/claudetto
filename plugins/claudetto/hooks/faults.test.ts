@@ -1,9 +1,9 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-const UNANSWERED_EXISTS = "no implementation for fs.exists";
+import { scanner } from "./secrets.mock";
+
 const UNANSWERED_CALL = "no implementation for tool.call";
-const UNANSWERED_RUN = "no implementation for process.run";
 
 /** The answers every guard of `tool.check` needs, so a call reaches `tool.call`. */
 const lab = (on: On) => {
@@ -31,7 +31,7 @@ const beneath = (on: On, answer: unknown) => {
 	return runs;
 };
 
-test("a check guard that throws asks with the failure text", async ($: Engine, on: On) => {
+test("a check guard that throws leaves the verdict beneath", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await $.tool.check({
@@ -40,35 +40,55 @@ test("a check guard that throws asks with the failure text", async ($: Engine, o
 		tool_use_id: "c1",
 	});
 
-	expect(out.decision).toBe("ask");
-	expect(out.reason).toContain(UNANSWERED_EXISTS);
+	expect(out.decision).toBe("allow");
 });
 
 test("a call guard that throws before the tool refuses, and the tool does not run", async ($: Engine, on: On) => {
 	lab(on);
 	const runs = beneath(on, "text");
 
-	// A path that is no string makes the read guard throw before it calls `next`; parsed JSON is the one way to send it past the types.
-	const malformed: unknown = JSON.parse('{"tool":"Read","tool_use_id":"c1"}');
-	const out: unknown = await Reflect.apply($.tool.call, $.tool, [malformed]);
-
-	expect(out).toMatchObject({ deny: expect.stringContaining("replaceAll") });
-	expect(runs.count).toBe(0);
-});
-
-test("a call guard that throws after the tool withholds the result with the failure text", async ($: Engine, on: On) => {
-	lab(on);
-	const runs = beneath(on, "some text the scan would read");
+	on("session.root", () => {
+		throw new Error("no root");
+	});
 
 	const out = await $.tool.call({
-		tool: "Read",
-		file_path: "/repo/a.ts",
+		tool: "Bash",
+		command: "git status",
 		tool_use_id: "c1",
 	});
 
+	expect(out).toMatchObject({ deny: expect.stringContaining("session.root") });
+	expect(runs.count).toBe(0);
+});
+
+test("a call guard that throws after the tool returns the tool's result", async ($: Engine, on: On) => {
+	lab(on);
+	scanner(on);
+	on("session.root", () => ({ value: "/repo" }));
+	// The sandbox git guard checks `.git` before and after the tool, so the second check throws after the tool ran.
+	let checks = 0;
+	let exists = (): { value: boolean } => {
+		exists = () => {
+			throw new Error("after the tool");
+		};
+		return { value: false };
+	};
+	on("fs.exists", () => {
+		checks++;
+		return exists();
+	});
+	const runs = beneath(on, "some text the scan would read");
+
+	const out = await $.tool.call({
+		tool: "Bash",
+		command: "true",
+		tool_use_id: "c1",
+	});
+
+	expect(checks).toBeGreaterThan(1);
 	expect(runs.count).toBe(1);
-	expect(out.deny).toContain(UNANSWERED_RUN);
-	expect(out.result).toBeUndefined();
+	expect(out.deny).toBeUndefined();
+	expect(out.result).toBe("some text the scan would read");
 });
 
 test("a tool that fails beneath the plugin reaches the caller as its own failure", async ($: Engine, on: On) => {

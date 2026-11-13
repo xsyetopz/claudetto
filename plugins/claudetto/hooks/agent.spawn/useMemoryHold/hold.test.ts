@@ -1,140 +1,58 @@
-import type { On } from "claude-code";
+import type { AgentSpawnInput, On, PluginOptions } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { set, usage } from "./hold.mock";
+const MEMORY_PRESSURE = "/usr/bin/memory_pressure";
+const MEMINFO = "/proc/meminfo";
+const PS = "  4242 00:30 9437184 tsgolint\n  77 01:00:00 1048576 claude\n";
 
-const ERROR = "connect ECONNREFUSED 127.0.0.1:9";
+const SPAWN: AgentSpawnInput = {
+	tool_use_id: "toolu_1",
+	prompt: "Read README.md.",
+	description: "read",
+	subagentType: "claudetto:Heracles",
+	provider: { plugin: "claudetto", tier: "core" },
+	parentModel: "opus",
+	background: false,
+	fork: false,
+};
 
-const SAME = { url: "https://example.com/a", prompt: "go" };
+const set = (options: PluginOptions): { options: PluginOptions } => ({
+	options,
+});
 
-const lab = (on: On, tokens = 100_000) => {
+const usage = (tokens: number) => ({
+	startedAt: 0,
+	context: { tokens, window: 1_000_000, percent: 0 },
+	rateLimits: [],
+});
+
+const ok = {
+	exitCode: 0,
+	stdout: "",
+	stderr: "",
+	isStdoutTruncated: false,
+	isStderrTruncated: false,
+};
+
+const capLab = (on: On, tokens = 100_000) => {
 	const clock = mock.clock(on, { now: 0 });
 	on("session.usage", () => ({ value: usage(tokens) }));
-	on("classic.PostToolUseFailure", () => ({}));
 	on("tool.check", () => ({ decision: "allow" }));
 	return clock;
 };
 
-const failed = (
-	$: Engine,
-	input: Record<string, unknown> = SAME,
-	error = ERROR,
-) =>
-	$.classic.PostToolUseFailure({
-		tool_name: "WebFetch",
-		tool_input: input,
-		tool_use_id: crypto.randomUUID(),
-		error,
-	});
-
-const check = ($: Engine, input: Record<string, unknown> = SAME) =>
+const webFetch = ($: Engine, input: Record<string, unknown>) =>
 	$.tool.check({ tool: "WebFetch", input, tool_use_id: crypto.randomUUID() });
-
-test(
-	"an identical call is refused after the failure limit, with the earlier error",
-	set({ maxIdenticalFailures: 2 }),
-	async ($: Engine, on: On) => {
-		lab(on);
-		await failed($);
-		await failed($);
-
-		const out = await check($);
-
-		expect(out.decision).toBe("deny");
-		expect(out.reason).toContain(ERROR);
-		expect(out.reason).toContain("maxIdenticalFailures");
-	},
-);
-
-test(
-	"two failures that arrive together are both counted",
-	set({ maxIdenticalFailures: 2 }),
-	async ($: Engine, on: On) => {
-		lab(on);
-		await Promise.all([failed($), failed($)]);
-
-		const out = await check($);
-
-		expect(out.decision).toBe("deny");
-	},
-);
-
-test(
-	"a call under the failure limit, or with other input, goes through",
-	set({ maxIdenticalFailures: 2 }),
-	async ($: Engine, on: On) => {
-		lab(on);
-		await failed($);
-		await failed($);
-
-		const other = await check($, {
-			url: "https://example.com/b",
-			prompt: "go",
-		});
-		await failed($, { url: "https://example.com/c", prompt: "go" });
-		const once = await check($, { url: "https://example.com/c", prompt: "go" });
-
-		expect(other.decision).toBe("allow");
-		expect(once.decision).toBe("allow");
-	},
-);
-
-test(
-	"a failure after the period passes",
-	set({ maxIdenticalFailures: 2, limitPeriodSeconds: 60 }),
-	async ($: Engine, on: On) => {
-		const clock = lab(on);
-		await failed($);
-		await failed($);
-		await clock.advance(61_000);
-
-		const out = await check($);
-
-		expect(out.decision).toBe("allow");
-	},
-);
-
-test(
-	"a user's interrupt is not counted as a failure",
-	set({ maxIdenticalFailures: 1 }),
-	async ($: Engine, on: On) => {
-		lab(on);
-		await $.classic.PostToolUseFailure({
-			tool_name: "WebFetch",
-			tool_input: SAME,
-			tool_use_id: "i1",
-			error: "interrupted",
-			is_interrupt: true,
-		});
-
-		const out = await check($);
-
-		expect(out.decision).toBe("allow");
-	},
-);
-
-test(
-	"a query without a tool_use_id is never held",
-	set({ maxIdenticalFailures: 1 }),
-	async ($: Engine, on: On) => {
-		lab(on);
-		await failed($);
-
-		const out = await $.tool.check({ tool: "WebFetch", input: SAME });
-
-		expect(out.decision).toBe("allow");
-	},
-);
 
 test(
 	"the call past the cap at heavy context is held with the cap named and one line that gives the count",
 	set({ maxHeavyToolCalls: 2 }),
 	async ($: Engine, on: On) => {
-		lab(on, 450_000);
-		await check($, { n: 1 });
-		await check($, { n: 2 });
+		capLab(on, 450_000);
+		await webFetch($, { n: 1 });
+		await webFetch($, { n: 2 });
 
-		const held = await check($, { n: 3 });
+		const held = await webFetch($, { n: 3 });
 
 		expect(held.decision).toBe("deny");
 		expect(held.reason).toContain("maxHeavyToolCalls");
@@ -144,53 +62,39 @@ test(
 );
 
 test(
-	"a light context is never capped",
+	"a query without a tool_use_id is never held",
 	set({ maxHeavyToolCalls: 1 }),
 	async ($: Engine, on: On) => {
-		lab(on, 100_000);
-		await check($, { n: 1 });
+		capLab(on, 450_000);
+		await webFetch($, { n: 1 });
 
-		const out = await check($, { n: 2 });
+		const out = await $.tool.check({ tool: "WebFetch", input: { n: 2 } });
 
 		expect(out.decision).toBe("allow");
 	},
 );
 
 test(
-	"failures with different errors do not add up",
-	set({ maxIdenticalFailures: 2 }),
+	"a light context is never capped",
+	set({ maxHeavyToolCalls: 1 }),
 	async ($: Engine, on: On) => {
-		lab(on);
-		await failed($, SAME, "first error");
-		await failed($, SAME, "second error");
+		capLab(on, 100_000);
+		await webFetch($, { n: 1 });
 
-		const out = await check($);
+		const out = await webFetch($, { n: 2 });
 
 		expect(out.decision).toBe("allow");
 	},
 );
-
-test("with no option the failure limit is 3", async ($: Engine, on: On) => {
-	lab(on);
-	await failed($);
-	await failed($);
-	const beforeThird = await check($);
-	await failed($);
-
-	const afterThird = await check($);
-
-	expect(beforeThird.decision).toBe("allow");
-	expect(afterThird.decision).toBe("deny");
-});
 
 test(
 	"the calls under the cap at heavy context go through",
 	set({ maxHeavyToolCalls: 2 }),
 	async ($: Engine, on: On) => {
-		lab(on, 450_000);
-		await check($, { n: 1 });
+		capLab(on, 450_000);
+		await webFetch($, { n: 1 });
 
-		const out = await check($, { n: 2 });
+		const out = await webFetch($, { n: 2 });
 
 		expect(out.decision).toBe("allow");
 	},
@@ -204,13 +108,13 @@ test(
 		mock.clock(on, { now: 0 });
 		on("session.usage", () => ({ value: usage(tokens) }));
 		on("tool.check", () => ({ decision: "allow" }));
-		await check($, { n: 1 });
-		await check($, { n: 2 });
+		await webFetch($, { n: 1 });
+		await webFetch($, { n: 2 });
 		tokens = 100_000;
-		await check($, { n: 3 });
+		await webFetch($, { n: 3 });
 		tokens = 450_000;
 
-		const out = await check($, { n: 4 });
+		const out = await webFetch($, { n: 4 });
 
 		expect(out.decision).toBe("allow");
 	},
@@ -220,12 +124,12 @@ test(
 	"a call after the period has passed is counted from zero",
 	set({ maxHeavyToolCalls: 2, limitPeriodSeconds: 60 }),
 	async ($: Engine, on: On) => {
-		const clock = lab(on, 450_000);
-		await check($, { n: 1 });
-		await check($, { n: 2 });
+		const clock = capLab(on, 450_000);
+		await webFetch($, { n: 1 });
+		await webFetch($, { n: 2 });
 		await clock.advance(61_000);
 
-		const out = await check($, { n: 3 });
+		const out = await webFetch($, { n: 3 });
 
 		expect(out.decision).toBe("allow");
 	},
@@ -235,10 +139,10 @@ test(
 	"a heavy-context threshold from the options replaces the default",
 	set({ maxHeavyToolCalls: 1, heavyContextTokens: 50_000 }),
 	async ($: Engine, on: On) => {
-		lab(on, 100_000);
-		await check($, { n: 1 });
+		capLab(on, 100_000);
+		await webFetch($, { n: 1 });
 
-		const out = await check($, { n: 2 });
+		const out = await webFetch($, { n: 2 });
 
 		expect(out.decision).toBe("deny");
 	},
@@ -252,12 +156,123 @@ test(
 		on("session.usage", () => {
 			throw new Error("no reading");
 		});
-		on("classic.PostToolUseFailure", () => ({}));
 		on("tool.check", () => ({ decision: "allow" }));
-		await check($, { n: 1 });
+		await webFetch($, { n: 1 });
 
-		const out = await check($, { n: 2 });
+		const out = await webFetch($, { n: 2 });
 
 		expect(out.decision).toBe("allow");
+	},
+);
+
+/** Each argv the guard ran; `free` is the share `memory_pressure` reports. */
+const lab = (on: On, free: number, present = MEMORY_PRESSURE) => {
+	const runs: string[][] = [];
+	mock.clock(on, { now: 0 });
+	mock.env(on, {});
+	on("session.cwd", () => ({ value: "/p" }));
+	on("session.root", () => ({ value: "/p" }));
+	on("session.id", () => ({ value: "S1" }));
+	on("session.messages", () => ({ value: [] }));
+	on("tool.check", () => ({ decision: "allow" }));
+	on("agent.list", () => ({ value: [] }));
+	on("agent.spawn", () => ({ model: "sonnet", agentId: "started" }));
+	on("fs.exists", (_$, e) => ({ value: e.path === present }));
+	on("fs.read", (_$, e) => {
+		if (e.path !== MEMINFO) {
+			throw new Error(`ENOENT: ${e.path}`);
+		}
+		return {
+			value: `MemTotal:       32000000 kB\nMemFree:          100000 kB\nMemAvailable:    ${free * 320_000} kB\n`,
+		};
+	});
+	on("process.run", (_$, e) => {
+		runs.push([...e.argv]);
+		const stdout =
+			e.argv[0] === "ps" ? PS : `System-wide memory free percentage: ${free}%`;
+		return { value: { ...ok, stdout } };
+	});
+	return runs;
+};
+
+const bash = ($: Engine, command: string) =>
+	$.tool.check({
+		tool: "Bash",
+		input: { command },
+		tool_use_id: crypto.randomUUID(),
+	});
+
+test("a new command on a machine short of memory is denied with the largest processes", async ($: Engine, on: On) => {
+	const runs = lab(on, 12);
+
+	const out = await bash($, "bunx oxlint src/a.ts");
+
+	expect(out.decision).toBe("deny");
+	expect(out.reason).toContain("12%");
+	expect(out.reason).toContain("4242 9.0 GB tsgolint");
+	expect(out.reason).toContain("memoryFreeMinPercent");
+	expect(runs.filter(([program]) => program === MEMORY_PRESSURE)).toHaveLength(
+		1,
+	);
+});
+
+test("a kill or a look at the processes goes on while memory is short", async ($: Engine, on: On) => {
+	lab(on, 12);
+
+	const kill = await bash($, "kill 4242");
+	const look = await bash($, "ps -ax");
+
+	expect(kill.reason).not.toContain("memoryFreeMinPercent");
+	expect(look.decision).toBe("allow");
+});
+
+test("a subagent start on a machine short of memory is denied, with a hint to retry", async ($: Engine, on: On) => {
+	lab(on, 12);
+
+	const out = await $.agent.spawn(SPAWN);
+
+	expect(out.deny).toContain("12%");
+	expect(out.deny).toContain("Retry this subagent start");
+});
+
+test("a command denial carries no subagent retry hint", async ($: Engine, on: On) => {
+	lab(on, 12);
+
+	const out = await bash($, "bunx oxlint src/a.ts");
+
+	expect(out.reason).not.toContain("Retry this subagent start");
+});
+
+test("the share comes from /proc/meminfo where it exists", async ($: Engine, on: On) => {
+	const runs = lab(on, 10, MEMINFO);
+
+	const out = await bash($, "bunx oxlint src/a.ts");
+
+	expect(out.decision).toBe("deny");
+	expect(out.reason).toContain("10%");
+	expect(runs.filter(([program]) => program === MEMORY_PRESSURE)).toHaveLength(
+		0,
+	);
+});
+
+test("a command goes on with enough memory", async ($: Engine, on: On) => {
+	lab(on, 60);
+
+	const out = await bash($, "bunx oxlint src/a.ts");
+
+	expect(out.decision).toBe("allow");
+});
+
+test(
+	"a command goes on with the limit off",
+	set({ memoryFreeMinPercent: 0 }),
+	async ($: Engine, on: On) => {
+		lab(on, 5);
+
+		const out = await bash($, "bunx oxlint src/a.ts");
+		const spawned = await $.agent.spawn(SPAWN);
+
+		expect(out.decision).toBe("allow");
+		expect(spawned.deny).toBeUndefined();
 	},
 );

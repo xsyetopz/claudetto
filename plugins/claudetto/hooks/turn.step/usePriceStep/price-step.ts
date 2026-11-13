@@ -1,6 +1,5 @@
 import type {
 	EngineInterface,
-	HookBudget,
 	On,
 	TurnStepChunk,
 	TurnUsage,
@@ -12,7 +11,7 @@ import {
 	heartbeatPath,
 } from "../../session.measure/useLineFile/heartbeat";
 import { WITHHELD } from "../../texts";
-import { deferred } from "../../tools";
+import { deferred, withinBudget } from "../../tools";
 
 const HAIKU_MODEL = "claude-haiku-5-5";
 
@@ -58,11 +57,6 @@ const boundOf = (
 		: { withhold: false, tokens };
 };
 
-const BUDGET_MS: HookBudget["ms"] = 10_000;
-
-/** Time left for the rest of the hook once the wait on the stop chunk ends. */
-const SPARE_MS = 1000;
-
 /** One request's reading, which its stop chunk settles, and the tokens of its results that went through. */
 interface Step {
 	readonly reading: Promise<TurnUsage | null>;
@@ -92,31 +86,6 @@ const beatOf = ($: EngineInterface) => async (): Promise<void> => {
 		$.ui.log(`The heartbeat was not written (${String(error)})`);
 	}
 };
-
-/** The reading of `step`, or `null` when the stop chunk has not come by the time the hook's own budget runs short. The wait is the hook's own time, and a step can stream long after its calls. */
-function readingOf(
-	$: EngineInterface,
-	step: Step,
-	remainingMs: number,
-	signal: AbortSignal,
-): Promise<TurnUsage | null> {
-	const done = new AbortController();
-	const late = async (): Promise<null> => {
-		try {
-			await $.clock.sleep(
-				Math.max(0, Math.min(remainingMs, BUDGET_MS) - SPARE_MS),
-				{ signal: AbortSignal.any([signal, done.signal]) },
-			);
-		} catch (error) {
-			// An aborted wait ends the same way as one that ran out.
-			$.ui.log(`The usage wait ended early (${String(error)})`);
-		}
-		return null;
-	};
-	return Promise.race([step.reading, late()]).finally(() => {
-		done.abort();
-	});
-}
 
 const stepHook = (on: On, byCall: Map<string, Step>): void => {
 	on("turn.step", async function* ($, e, next) {
@@ -163,7 +132,13 @@ export async function priceStepCall(
 	if (step === undefined || answer.deny !== undefined) {
 		return answer;
 	}
-	const usage = await readingOf($, step, next.budget.remainingMs, next.signal);
+	// A step can stream long after its calls, so the stop chunk may not come within the budget.
+	const usage = await withinBudget(
+		$,
+		step.reading,
+		next.budget.remainingMs,
+		next.signal,
+	);
 	// A result counts with its `context`, since both land in the next request.
 	const chars =
 		modelText(answer.result, answer.text).length +

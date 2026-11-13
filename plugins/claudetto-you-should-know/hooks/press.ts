@@ -89,6 +89,31 @@ async function answer(
 	}
 }
 
+async function closeOffer(
+	$: Engine,
+	turns: ReadonlyMap<string, string>,
+): Promise<void> {
+	const id = await $.session.id();
+	const row = await loadRow($, id);
+	if (row.view?.kind === "offer" && row.offeredTurn === turns.get(id)) {
+		await knowAndClose($, row, row.view);
+		$.ui.invalidate("ui.render");
+	}
+}
+
+/**
+ * Closes the note the session's current turn in `turns` offered, as one the person knows. A popup the person answered
+ * after the note is the answer its deny waits for. A fault is logged, not thrown, so the popup is not shown again.
+ */
+export function closeAnswered(
+	$: Engine,
+	turns: ReadonlyMap<string, string>,
+): Promise<void> {
+	return closeOffer($, turns).catch((error: unknown) => {
+		$.ui.log(`The answered note was not closed (${String(error)})`);
+	});
+}
+
 /** Applies the press of one button of the note in session `id`. */
 export async function press(
 	$: Engine,

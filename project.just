@@ -38,10 +38,6 @@ lab:
     claude plugin test plugins/claudetto-you-should-know
     claude plugin test plugins/claudetto-openspec
 
-# Regenerate the gate rules from the pinned shellfirm release and the patch.
-vendor-rules:
-    bun scripts/vendor-rules.ts
-
 # Needs `gh` and the network, so `check` does not run it.
 # Refuse a release version that does not follow the latest anthropics/claude-code tag and this repo's tags.
 release-version:

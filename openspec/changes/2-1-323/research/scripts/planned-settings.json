@@ -1,0 +1,123 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(git status *)",
+			"Bash(git diff *)",
+			"Bash(git log *)",
+			"Bash(git show *)",
+			"Bash(git branch --list *)",
+			"Bash(git branch --show-current)",
+			"Bash(git worktree list *)",
+			"Bash(git rev-parse *)",
+			"Bash(git ls-files *)",
+			"Bash(ls *)",
+			"Bash(cat *)",
+			"Bash(head *)",
+			"Bash(tail *)",
+			"Bash(wc *)",
+			"Bash(pwd)",
+			"Bash(echo *)",
+			"Bash(grep *)",
+			"Bash(rg *)",
+			"Bash(which *)"
+		],
+		"ask": [
+			"Bash(git switch *)",
+			"Bash(git checkout *)",
+			"Bash(git reset --hard *)",
+			"Bash(git rebase *)",
+			"Bash(git worktree remove *)",
+			"Bash(git branch -d *)",
+			"Bash(git branch -D *)",
+			"Bash(git branch --delete *)",
+			"Bash(git branch -m *)",
+			"Bash(git branch -M *)",
+			"Bash(git branch --move *)",
+			"Bash(git push * --delete *)",
+			"Bash(git push *--force*)",
+			"Bash(git push -f*)",
+			"Bash(git push * -f*)",
+			"Bash(git push *--mirror*)",
+			"Bash(git push *--prune*)",
+			"Bash(git push --delete *)",
+			"Bash(git push * :*)",
+			"Bash(git gc *--prune*)",
+			"Bash(git clean *)",
+			"Bash(git reset --hard)",
+			"Bash(git update-ref *)",
+			"Bash(git reflog *)",
+			"Bash(git tag -d *)",
+			"Bash(git tag --delete *)",
+			"Bash(curl *)",
+			"Bash(wget *)",
+			"Bash(dd *)",
+			"Bash(mkfs*)",
+			"Bash(fdisk *)",
+			"Bash(sfdisk *)",
+			"Bash(gdisk *)",
+			"Bash(parted *)",
+			"Bash(wipefs *)",
+			"Bash(chown -R*)",
+			"Bash(chown --recursive *)",
+			"Bash(rsync *--delete*)",
+			"Bash(find *-delete*)"
+		],
+		"deny": [
+			"Bash(pkill *)",
+			"Bash(killall *)",
+			"Read(~/.aws/**)",
+			"Read(~/.azure/**)",
+			"Read(~/.config/gcloud/**)",
+			"Read(~/.netrc)",
+			"Read(~/.git-credentials)",
+			"Read(~/Library/Keychains/**)"
+		]
+	},
+	"sandbox": {
+		"enabled": true,
+		"allowUnsandboxedCommands": true,
+		"filesystem": {
+			"allowWrite": ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"],
+			"denyWrite": [
+				"~/.zshrc",
+				"~/.zshenv",
+				"~/.zprofile",
+				"~/.bashrc",
+				"~/.bash_profile",
+				"~/.profile",
+				"~/.config/fish",
+				"~/.gitconfig",
+				"~/.config/git",
+				"~/.ssh",
+				"~/Library/LaunchAgents",
+				"~/.local/bin",
+				"~/.bun/bin",
+				"~/bin",
+				"/private/var/folders/*/*/T/xcrun_db*"
+			],
+			"denyRead": [
+				"~/Library/Keychains",
+				"~/.aws",
+				"~/.azure",
+				"~/.config/gcloud",
+				"~/.netrc",
+				"~/.git-credentials"
+			],
+			"allowRead": ["~/Library/Keychains/login.keychain-db"]
+		}
+	},
+	"autoMode": {
+		"allow": [
+			"Local Work: Reading, editing, building, testing, and formatting in the working tree and its temp output."
+		],
+		"soft_deny": [
+			"Destroy Work: Deleting or overwriting what the repo cannot restore: force-push, history rewrite, remote branches, tags, uncommitted work, or an unresolved target."
+		],
+		"hard_deny": [
+			"Data Exfiltration: Secrets landing outside the trusted repo, its remotes, and Environment hosts."
+		],
+		"environment": [
+			"**Trusted repo**: The git repository the agent started in and its configured remotes."
+		]
+	}
+}

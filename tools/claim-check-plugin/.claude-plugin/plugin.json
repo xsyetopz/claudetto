@@ -2,5 +2,5 @@
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claim-check",
 	"version": "0.0.0",
-	"description": "Runs the claim-check scoring inside Claude Code's engine, so each model call goes through `$.model.complete` under the subscription login."
+	"description": "Runs the claim-check scoring inside Claude Code's engine, so the Decider reads the engine's own `$`."
 }

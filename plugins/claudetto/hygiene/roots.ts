@@ -8,11 +8,17 @@ const within = (path: string, parent: string): boolean =>
 
 export type Log = (message: string) => void;
 
-/** A `catch` handler that logs `what` with the error and answers `fallback`. */
+/** A `catch` handler that logs `what` with the error and answers `fallback`; a path that is absent is an answer, so ENOENT logs nothing. */
 export const logged =
 	<T>(log: Log, what: string, fallback: T) =>
 	(error: unknown): T => {
-		log(`${what} (${String(error)})`);
+		if (!(
+			error instanceof Error &&
+			"code" in error &&
+			error.code === "ENOENT"
+		)) {
+			log(`${what} (${String(error)})`);
+		}
 		return fallback;
 	};
 

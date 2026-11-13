@@ -117,20 +117,53 @@ test("a subagent's call runs with no check", ON, async ($: Engine, on: On) => {
 });
 
 test(
-	"a call while this turn's note is open is stopped with the same note and no new request",
+	"a note stops the call it judged, and another call of the turn runs with no new request",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on);
+		f.answerWith(offerReply(LINE));
+		const judged = await act($, f, "t1", { ...PUSH, tool_use_id: "a" });
+		const other = await $.tool.call({
+			tool: "Write",
+			file_path: "a",
+			content: "",
+			tool_use_id: "b",
+		});
+		const retry = await $.tool.call({ ...PUSH, tool_use_id: "a" });
+		expect(f.asked).toHaveLength(1);
+		expect(judged.deny).toContain(LINE);
+		expect(other.deny).toBeUndefined();
+		expect(retry.deny).toContain(LINE);
+		expect(f.ran).toEqual(["Write"]);
+	},
+);
+
+test(
+	"a popup the person answers while this turn's note is open closes the note, and the next call runs",
 	ON,
 	async ($: Engine, on: On) => {
 		const f = fixture(on);
 		f.answerWith(offerReply(LINE));
 		await act($, f, "t1");
-		const out = await $.tool.call({
-			tool: "Write",
-			file_path: "a",
-			content: "",
+		await $.tool.call({
+			tool: "AskUserQuestion",
+			questions: [
+				{
+					question: "Push now?",
+					header: "Push",
+					options: [
+						{ label: "Yes", description: "Push it." },
+						{ label: "No", description: "Keep it local." },
+					],
+					multiSelect: false,
+				},
+			],
 		});
+		const out = await $.tool.call(PUSH);
+		expect(out.deny).toBeUndefined();
+		expect(f.ran).toEqual(["AskUserQuestion", "Bash"]);
+		expect(f.row()?.view).toBeNull();
 		expect(f.asked).toHaveLength(1);
-		expect(out.deny).toContain(LINE);
-		expect(f.ran).toEqual([]);
 	},
 );
 
@@ -173,19 +206,19 @@ test(
 );
 
 test(
-	"two calls in one response share one check, and its note stops both",
+	"two calls in one response share one check, and its note stops only the call it judged",
 	ON,
 	async ($: Engine, on: On) => {
 		const f = fixture(on);
 		f.answerWith(offerReply(LINE));
 		await step($, f, { turnId: "t1", index: 1 });
 		const outs = await Promise.all([
-			$.tool.call(PUSH),
-			$.tool.call({ tool: "Bash", command: "git tag v1" }),
+			$.tool.call({ ...PUSH, tool_use_id: "a" }),
+			$.tool.call({ tool: "Bash", command: "git tag v1", tool_use_id: "b" }),
 		]);
 		expect(f.asked).toHaveLength(1);
-		expect(outs.map((o) => o.deny?.includes(LINE))).toEqual([true, true]);
-		expect(f.ran).toEqual([]);
+		expect(outs.map((o) => o.deny?.includes(LINE))).toEqual([true, undefined]);
+		expect(f.ran).toEqual(["Bash"]);
 	},
 );
 

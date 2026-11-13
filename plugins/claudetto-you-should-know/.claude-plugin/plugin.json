@@ -8,6 +8,9 @@
 	"repository": "https://github.com/xsyetopz/claudetto",
 	"homepage": "https://github.com/xsyetopz/claudetto",
 	"license": "MIT",
+	"engines": {
+		"claude-code": ">=2.1.323"
+	},
 	"keywords": ["notes", "coding", "cost"],
 	"userConfig": {
 		"sideCheckEnabled": {

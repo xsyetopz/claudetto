@@ -7,7 +7,6 @@ import { lineFilePath } from "../../plugins/claudetto/hooks/session.measure/useL
 import {
 	statusOf,
 	statusWithFiles,
-	subagentsWithFiles,
 } from "../../plugins/claudetto/statusline/main.ts";
 import { plain } from "../../plugins/claudetto/statusline/width.ts";
 import { NOW } from "./support.ts";
@@ -24,6 +23,7 @@ const ON_1M = {
 };
 const ADDED = { cost: { total_lines_added: 12, total_lines_removed: 3 } };
 const env = { COLUMNS: "120" };
+const DARK_ADDED = `${ESC}[38;2;78;186;101m+12${ESC}[0m ${ESC}[38;2;255;107;128m-3${ESC}[0m`;
 
 const render = (fields: object, local: { window?: number; theme?: string }) =>
 	statusOf(JSON.stringify(fields), env, NOW, { changes: [], ...local });
@@ -34,7 +34,7 @@ describe("context is measured against the window in force", () => {
 	});
 
 	test("with no window file the context part is left out", () => {
-		expect(render({ ...ON_1M, ...ADDED }, {})).toBe("+12 -3");
+		expect(plain(render({ ...ON_1M, ...ADDED }, {}))).toBe("+12 -3");
 	});
 });
 
@@ -66,8 +66,8 @@ describe("colours follow the Claude Code theme", () => {
 		);
 	});
 
-	test("with no theme the line has no colour, as under `NO_COLOR`", () => {
-		expect(render(ADDED, {})).toBe("+12 -3");
+	test("with no theme the line paints with `dark`", () => {
+		expect(render(ADDED, {})).toBe(DARK_ADDED);
 	});
 
 	test("`NO_COLOR` wins over a theme", () => {
@@ -82,18 +82,6 @@ describe("colours follow the Claude Code theme", () => {
 
 describe("the line file the mod writes", () => {
 	const project = join(ROOT, "project");
-	const rows = (id: string) =>
-		subagentsWithFiles(
-			JSON.stringify({
-				session_id: id,
-				cwd: project,
-				tasks: [
-					{ id: "t", name: "x", status: "running", startTime: NOW - 5000 },
-				],
-			}),
-			env,
-			NOW,
-		);
 	const session = "s/1";
 	const input = (fields: object) =>
 		JSON.stringify({
@@ -114,12 +102,7 @@ describe("the line file the mod writes", () => {
 		);
 	});
 
-	test("the subagent rows take their colour from the same file", async () => {
-		expect(await rows(session)).toContain(String.raw`\u001b[1mx\u001b[0m`);
-		expect(await rows("none")).not.toContain(String.raw`\u001b`);
-	});
-
-	test("a session with no file prints no context part and no colour", async () => {
+	test("a session with no file prints no context part and paints with `dark`", async () => {
 		expect(
 			await statusWithFiles(
 				JSON.stringify({
@@ -131,7 +114,7 @@ describe("the line file the mod writes", () => {
 				env,
 				NOW,
 			),
-		).toBe("+12 -3");
+		).toBe(DARK_ADDED);
 	});
 
 	test("a file of the wrong shape is ignored", async () => {
@@ -148,6 +131,6 @@ describe("the line file the mod writes", () => {
 				env,
 				NOW,
 			),
-		).toBe("+12 -3");
+		).toBe(DARK_ADDED);
 	});
 });

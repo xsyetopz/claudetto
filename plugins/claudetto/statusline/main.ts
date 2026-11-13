@@ -1,10 +1,9 @@
 import { colorOff, paintOf } from "./color";
 import { hooksOff } from "./hooks-off";
-import { num, parse, type Rec, str, sub } from "./input";
+import { parse, type Rec, str, sub } from "./input";
 import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "./limits";
 import { type Local, NO_LOCAL, readLine, readLocal } from "./local";
 import { renderRows } from "./rows";
-import { taskRows } from "./subagents";
 
 type Env = Readonly<Record<string, string | undefined>>;
 
@@ -48,7 +47,7 @@ export const statusOf = (
 };
 
 const themeOf = (env: Env, theme: string | undefined): string | undefined =>
-	colorOff(env) ? undefined : theme;
+	colorOff(env) ? undefined : (theme ?? "dark");
 
 export const statusWithFiles = async (
 	raw: string,
@@ -72,39 +71,8 @@ export const statusWithFiles = async (
 	});
 };
 
-/** The JSON lines of the subagent status line, or `""` for no rows. The width is `columns` of the input, which the subagent input carries. */
-export const subagentsOf = (
-	raw: string,
-	env: Env,
-	now: number,
-	theme?: string,
-): string => {
-	const input = parse(raw);
-	if (!input) {
-		return "";
-	}
-	const columns = num(input["columns"]) ?? columnsOf(env);
-	const room = Math.max(1, columns - COLUMNS_MARGIN);
-	return taskRows(input, now, room, paintOf(themeOf(env, theme)))
-		.map((row) => JSON.stringify(row))
-		.join("\n");
-};
-
-/** The subagent input names no project folder, so the theme is read under its `cwd`. */
-export const subagentsWithFiles = async (
-	raw: string,
-	env: Env,
-	now: number,
-): Promise<string> => {
-	const input = parse(raw);
-	const dir = str(input?.["cwd"]);
-	const { theme } =
-		dir === undefined ? {} : await readLine(dir, str(input?.["session_id"]));
-	return subagentsOf(raw, env, now, theme);
-};
-
-/** Reads stdin and prints. It never throws and the exit code is always 0, as a choice: a non-zero exit of the subagent command is logged as an error and its rows are dropped. */
-export const main = async (args: readonly string[]): Promise<number> => {
+/** Reads stdin and prints. It never throws and the exit code is always 0. */
+export const main = async (): Promise<number> => {
 	let raw = "";
 	try {
 		raw = await globalThis.Bun.stdin.text();
@@ -115,12 +83,10 @@ export const main = async (args: readonly string[]): Promise<number> => {
 	const env = process.env;
 	let out: string;
 	try {
-		out = args.includes("--subagent")
-			? await subagentsWithFiles(raw, env, now)
-			: await statusWithFiles(raw, env, now);
+		out = await statusWithFiles(raw, env, now);
 	} catch {
-		out = args.includes("--subagent") ? "" : FALLBACK;
+		out = FALLBACK;
 	}
-	process.stdout.write(out === "" ? "" : `${out}\n`);
+	process.stdout.write(`${out}\n`);
 	return 0;
 };

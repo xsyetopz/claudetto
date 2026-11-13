@@ -7,10 +7,61 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+## [2.1.325] - 2026-11-13
+
+### Added
+
+- A session-start hook names the project's package manager once, from the `packageManager` field of `package.json` first and then from a lock file (Bun, pnpm, Yarn, npm, Deno, Cargo, uv, Poetry, and others). It also appends `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash.
+- `/claudetto:setup` lists each `.md` file in `~/.claude/rules/claudetto/` that claudetto no longer ships, and offers in one dialog to delete them, so a retired rule stops loading.
+- `/claudetto:setup` offers `worktree.symlinkDirectories` with the git-ignored dependency folders (`node_modules`, `.venv`, `venv`, `Pods`) found at the project root, and adds each linked folder to claudetto's `.gitignore` block by its bare name, because a `node_modules/` line misses the symlink that a worktree holds in its place.
+- `/claudetto:setup` allows `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)`, so an edit in your own temp folder runs with no prompt.
+- `/claudetto:setup` offers the `useHeadlineseNames` rule: identifiers in headlinese with no articles, comments with their articles, and Title Case where the platform asks for it.
+- `/claudetto:setup` offers the `noNarratingComments` and `useEdgeCaseReport` rules again, which 2.1.321 removed.
+- `/claudetto:setup` writes the command rules that the shell gate used to hold as permission rules: `ask` for a branch move, a worktree remove, a branch or tag delete, a force, mirror, prune, or ref-delete push, `git clean`, a hook-path change, `eval`, `curl`, `wget`, a disk tool, and a recursive delete or `chown`; `deny` for `pkill` and `killall`; and `allow` for read-only commands.
+- A `PreToolUse` command hook, `protected-switch`, denies a `git switch`, `checkout`, hard `reset`, or `rebase` that would rewrite files the sandbox denies you write to, before git stops partway and leaves the tree half moved.
+- The Stop check of a request to the user is a command hook. It accepts one `- ! <command>` bullet or one fenced `sh` block under `## What I Need From You`, blocks a bullet whose command no earlier Bash call of the session ran or whose last run succeeded, and never repeats an identical block.
+- One prompt-type Stop hook judges the reply faults by model, and counts the arguments of a slash command you typed, such as a `/goal` condition, as your words.
+- The compaction keeps your corrections, refusals, and consents word for word, through a `PreCompact` command hook, and the notice of a turn that an API error ended is a `StopFailure` command hook.
+
 ### Changed
 
-- Claudetto needs Claude Code 2.1.323 or later: setup writes `minimumVersion: "2.1.323"`, and a session on an older version logs a line that names `claude update`.
+- Claudetto writes one system prompt per model in place of the shared root prompt: a common core of about 3,100 characters for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, plus a finish-and-scope block for Sonnet and Haiku, and a line that asks Sonnet and Haiku to search before they state a fact that may have changed since their training. Haiku's core has no delegation block, and its own paragraphs give way to that block. Other models keep Claude Code's default prompt.
+- A subagent runs on the model its agent file names; a `model` that the lead passes to `Agent` is dropped.
+- `/claudetto:setup` denies each built-in agent type (`Agent(claude)`, `Agent(Explore)`, `Agent(general-purpose)`, `Agent(Plan)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`) beside `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, and claudetto's namespaced agents stay available.
+- Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
 - The hook code of each plugin passes the TypeScript check of `claude plugin validate` on Claude Code 2.1.323: imports name no `.ts` extension, and the hygiene sweep, a Bun program that the session-start hook runs, moved from `hooks/` to `hygiene/`, with its default `trash.toml`.
+- The Protected paths group of `/claudetto:setup` also writes each path to the sandbox's `denyRead`.
+- The status line paints with the `dark` palette until the session file names a theme, unless `NO_COLOR` is set.
+- Each claudetto agent file sets its own model, effort, and `maxTurns`: `Artemis` runs `claude-haiku-5-5` at `high` effort with `Read`, `Grep`, and `Glob`, 30 turns, and a 100000-token compaction window; `Metis` and `Athena` run `claude-sonnet-5-5` at `medium` with the same read-only tools, 40 and 60 turns; `Heracles` runs `claude-sonnet-5-5` at `medium` with every tool, 150 turns.
+- A subagent start held for low memory tells the agent to retry it once its running commands have ended.
+- The `noUnrequestedEdits` rule lets the user's goal set the scope: the agent fixes each defect between the goal and its done-check in any file, and names a defect off that path.
+- The OpenSpec apply skill works every task its tools can do before it stops, and asks for a physical step, such as connecting a device, as it asks for a command.
+- A session's temp folder, `<temp>/claude-<uid>/<project>/<session id>`, goes when the session ends. At session start the sweep removes a session folder only when no `~/.claude/sessions/<pid>.json` names its session with a running pid and the same process start; a record the sweep cannot read removes no session folder that run.
+- The OpenSpec skills name their tool without a ToolSearch line, and the system prompt leaves the experiment sentence to the `findFactsByExperiment` rule.
+- The agents carry their Greek names again, which 2.1.321 replaced: `claudetto:search` is `claudetto:Artemis`, `claudetto:plan` is `claudetto:Metis`, `claudetto:work` is `claudetto:Heracles`, and `claudetto:sweep` is `claudetto:Athena`. Update any `subagent_type` or `Agent(...)` rule that names an old one.
+
+### Removed
+
+- The refusal of an `Agent` call that names a built-in or unprefixed `subagent_type`, or a foreground run of `search`, `plan`, or `sweep` without `run_in_background: false`. Setup's `Agent(<name>)` denies and each agent file's frontmatter take its place.
+- The shell gate, its vendored rules and `vendor-rules` recipe, and its texts: Claude Code's permission rules and sandbox decide a Bash call. The secret scan of a tool result stays.
+- The read guard that refused a whole-file `Read` of a lock file or generated file, with the `readGuardEnabled` option.
+- The process-kill check, the worktree-ownership check, and the endless-wait check of Bash calls, and the branch-gate tuning run.
+- The `maxIdenticalFailures` option and the refusal of a repeated failing subagent start.
+- `/claudetto:setup` no longer writes `autoCompactWindow: 300000` or `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`; compaction keeps Claude Code's default window and trigger.
+- The subagent status line and the `subagentStatusLine` key of the plugin's `settings.json`: Claude Code 2.1.323 ignores the key and draws its default subagent rows.
+- The `bunRuleEnabled` option, the Bun line of the system prompt, and the Bun note at session start; the package-manager hook takes their place for any manager.
+- The Haiku fallback of the Decider. With no `TYPESAFE_API_KEY`, or when Jev fails or refuses the key, each question stays unsettled, and the branch-delete gate asks the person.
+- The commit-slice, cleanup, background-task, stall, and checklist Stop blocks, the constraint ledger and its Jev questions, and the ask-fix refusal of an `AskUserQuestion` call. One Stop hook, which a model runs, takes over the reply faults.
+- The `--prices` and `--max-usd` flags of the claim-check launcher, with its price table, spending cap, and the token and usage sections of its report.
+- The hygiene sweep's idle-time rule for Claude Code's temp folder, with the `probeCleanupPeriodMinutes` option, the `--probe-minutes` flag, and the `idle-temp` rule of `trash.toml`: the sweep no longer removes an entry of the temp folder because it sat idle.
+
+### Fixed
+
+- A missing rule file, agent or skill folder, spec, or hygiene root counts as absent and logs nothing; setup, the tool listing, the OpenSpec hooks, and hygiene used to log an ENOENT error for it.
+- A gate check that throws or runs out of time no longer opens a "The gate failed: timeout. A person must approve this call." dialog; Claude Code's own verdict (permission rules, mode, sandbox) decides the call.
+- A `tool.call` guard that throws after the tool ran no longer withholds the tool's output with a denial; the output of the command that already ran reaches the model. The secret scan is the exception: when `betterleaks` cannot run, the result stays withheld, because unscanned text may hold a secret.
+- The "Smaller prompt" setup group no longer writes `enabledPlugins` for `cc-plugin-claude-platform@builtin`, which Claude Code 2.1.325 no longer ships.
+- The plugin's command-hook scripts moved from `hooks/` to `scripts/`, because `claude plugin validate` in Claude Code 2.1.325 type-checks every file in `hooks/` against the hooks module's types, which hold no Bun or Node types.
 
 ## [2.1.323] - 2026-11-13
 

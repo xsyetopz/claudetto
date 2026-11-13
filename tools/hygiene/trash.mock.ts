@@ -42,6 +42,9 @@ export const host = (root: string, proj: string) => ({
 	tempBases: [join(root, "tmp")],
 	configDir: join(root, "home/.claude"),
 	log: (line: string) => logged.push(line),
+	/** No process runs, so no session record names a live session. */
+	procStart: (_pid: number): Promise<string | undefined> =>
+		Promise.resolve(void 0),
 });
 
 export const swept = async (

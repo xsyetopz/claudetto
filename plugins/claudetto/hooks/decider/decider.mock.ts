@@ -1,8 +1,6 @@
 import type {
 	HttpInit,
-	ModelCompleteRequest,
 	ModelCompleteResult,
-	ModelTextBlock,
 	On,
 	ProcessRunResult,
 } from "claude-code";
@@ -96,8 +94,6 @@ interface Rig {
 	readonly env?: Readonly<Record<string, string>>;
 	/** Jev's answer to its `n`th request; a throw is a failed request, and a promise that never settles is a hung server. */
 	readonly jev?: (n: number) => Reply | Promise<Reply>;
-	/** The model's answer to its `n`th request. */
-	readonly haiku?: (n: number) => ModelCompleteResult;
 	/** True: the secret scanner exits with an error. */
 	readonly scanFails?: boolean;
 }
@@ -122,11 +118,10 @@ interface Fetched {
 	readonly init?: HttpInit | undefined;
 }
 
-/** A stand-in for `$`: its key, Jev, the model and the clock, with each request and log line kept. */
-export const rig = ({ env, jev, haiku, scanFails = false }: Rig = {}) => {
+/** A stand-in for `$`: its key, Jev, the scanner and the clock, with each request and log line kept. */
+export const rig = ({ env, jev, scanFails = false }: Rig = {}) => {
 	const fetches: Fetched[] = [];
 	const scans: string[] = [];
-	const asked: ModelCompleteRequest[] = [];
 	const logs: string[] = [];
 	const vars = env ?? { TYPESAFE_API_KEY: KEY };
 	const $: Host = {
@@ -147,26 +142,14 @@ export const rig = ({ env, jev, haiku, scanFails = false }: Rig = {}) => {
 			},
 		},
 		clock: { sleep: () => Promise.resolve() },
-		model: {
-			complete: (request) => {
-				asked.push(request);
-				return Promise.resolve(haiku?.(asked.length) ?? haikuFailed("aborted"));
-			},
-		},
 		ui: {
 			log: (text) => {
 				logs.push(text);
 			},
 		},
 	};
-	return { $, fetches, asked, logs, scans };
+	return { $, fetches, logs, scans };
 };
-
-/** The text blocks of one model request's prompt. */
-export const blocksOf = (
-	request: ModelCompleteRequest | undefined,
-): readonly ModelTextBlock[] =>
-	typeof request?.prompt === "object" ? request.prompt : [];
 
 /** The JSON body of one request to Jev. */
 export const bodyOf = (
@@ -182,9 +165,8 @@ export const bodyOf = (
 		: {};
 };
 
-/** A lab with no Decider key whose fallback model gives no answer, so each question stays `unsettled` and the Stop check passes. */
+/** A lab with no Decider key, so each question stays `unsettled` and the Stop check passes. */
 export const quietDecider = (on: On): void => {
 	mock.env(on, {});
 	on("ui.log", () => ({ value: undefined }));
-	on("model.complete", () => ({ value: haikuFailed("aborted") }));
 };

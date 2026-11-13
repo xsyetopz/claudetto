@@ -19,13 +19,12 @@ import { settle } from "./settle";
 const UNSETTLED = { done: "unsettled", store: "unsettled" };
 const SETTLED_ANSWERS = { done: "yes", store: "sql" };
 
-test("Jev settles every question: the answers come back and no model call is made", async () => {
-	const { $, fetches, asked } = rig({ jev: () => jevAnswers(SETTLED) });
+test("Jev settles every question and the answers come back", async () => {
+	const { $, fetches } = rig({ jev: () => jevAnswers(SETTLED) });
 
 	expect(await settle($, SET, STATE)).toEqual(SETTLED_ANSWERS);
 
 	expect(fetches).toHaveLength(1);
-	expect(asked).toHaveLength(0);
 });
 
 test("the one request names the pinned model, holds every question, and carries the key", async () => {
@@ -46,8 +45,8 @@ test("the one request names the pinned model, holds every question, and carries 
 	});
 });
 
-test("a Noul between its thresholds is unsettled, and a set that does not escalate makes no model call", async () => {
-	const { $, asked } = rig({
+test("a Noul between its thresholds is unsettled", async () => {
+	const { $ } = rig({
 		jev: () => jevAnswers({ ...SETTLED, done: noul(0.5) }),
 	});
 
@@ -55,8 +54,6 @@ test("a Noul between its thresholds is unsettled, and a set that does not escala
 		done: "unsettled",
 		store: "sql",
 	});
-
-	expect(asked).toHaveLength(0);
 });
 
 test("a Noul at the upper threshold is yes", async () => {
@@ -101,7 +98,7 @@ test("with no key no request reaches Jev", async () => {
 	expect(fetches).toHaveLength(0);
 });
 
-test("an answer missing for a question is no full set, so the fallback takes the call", async () => {
+test("an answer missing for a question is no full set, so every question is unsettled", async () => {
 	const { $, logs } = rig({ jev: () => jevAnswers({ done: noul(0.9) }) });
 
 	expect(await settle($, SET, STATE)).toEqual(UNSETTLED);
@@ -109,7 +106,7 @@ test("an answer missing for a question is no full set, so the fallback takes the
 	expect(logs.join("\n")).toContain("every question");
 });
 
-test("a hung server gets one request and no second, then the fallback takes the call", async () => {
+test("a hung server gets one request and no second", async () => {
 	const { $, fetches } = rig({
 		jev: () => deferred<never>().promise,
 	});
@@ -133,7 +130,7 @@ for (const status of [429, 529, 500, 503]) {
 	});
 }
 
-test("a request that throws is caught, its text logged, and the fallback takes the call", async () => {
+test("a request that throws is caught, and its text logged", async () => {
 	const { $, logs } = rig({
 		jev: () => {
 			throw new Error("connection refused");

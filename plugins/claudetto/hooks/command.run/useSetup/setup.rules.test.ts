@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
-import { type Engine, expect, test } from "claude-code/testing";
+import { type Engine, expect, mock, test } from "claude-code/testing";
 
+import { scanned } from "../../secrets.mock";
 import {
 	choose,
 	dismissOn,
@@ -29,6 +30,9 @@ const RULE_NAMES = [
 	"useOneObviousWay",
 	"useBlockLanguage",
 	"lookForAClone",
+	"useHeadlineseNames",
+	"noNarratingComments",
+	"useEdgeCaseReport",
 ];
 const COPY = /^Copy the /u;
 const shippedPath = (name: string) => `${ROOT}/rules/${name}.md`;
@@ -182,4 +186,114 @@ test("the hooks runtime computes SHA-256 as the setup hash needs it", async () =
 			b.toString(16).padStart(2, "0"),
 		).join(""),
 	).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+});
+
+const RULES_DIR = `${CONFIG}/rules/claudetto`;
+const DELETE = /^Delete /u;
+const isDelete = (question: string) => question.startsWith("Delete ");
+const removals = (state: Lab) =>
+	state.runs.filter((argv) => argv[0] === "rm").map((argv) => argv.at(-1));
+
+/** A lab whose rules folder holds `names` besides every shipped rule, each shipped rule installed as shipped. */
+const strayLab = (
+	on: On,
+	names: readonly string[],
+	pick: (question: string) => string,
+): Lab => {
+	const state = rulesLab(on, pick);
+	for (const name of RULE_NAMES) {
+		state.files.set(installedPath(name), shippedText(name));
+	}
+	on("fs.list", () => ({
+		value: [...RULE_NAMES.map((n) => `${n}.md`), ...names].map((name) => ({
+			name,
+			kind: "file" as const,
+			size: 0,
+			mtimeMs: 0,
+			isLink: false,
+		})),
+	}));
+	return state;
+};
+
+test("an installed rule that is not shipped is listed in one dialog and removed on yes", async ($: Engine, on: On) => {
+	const state = strayLab(
+		on,
+		["retiredRule.md", "notes.txt"],
+		choose(DELETE, "Delete"),
+	);
+
+	await run($, "claudetto:setup");
+
+	const asked = state.shown.filter(isDelete);
+	expect(asked).toHaveLength(1);
+	expect(asked[0]).toContain("retiredRule.md");
+	expect(asked[0]).not.toContain("notes.txt");
+	expect(removals(state)).toEqual([`${RULES_DIR}/retiredRule.md`]);
+});
+
+test("an installed rule that is not shipped stays on skip", async ($: Engine, on: On) => {
+	const state = strayLab(on, ["retiredRule.md"], () => "Skip");
+
+	await run($, "claudetto:setup");
+
+	expect(state.shown.filter(isDelete)).toHaveLength(1);
+	expect(removals(state)).toEqual([]);
+});
+
+test("no dialog opens when every installed rule is shipped", async ($: Engine, on: On) => {
+	const state = strayLab(on, [], () => "Skip");
+
+	await run($, "claudetto:setup");
+
+	expect(state.shown.filter(isDelete)).toEqual([]);
+});
+
+/** The stubs of a startup where each rule file reads and then fails its stat with ENOENT; the lines logged fill the array returned. */
+const vanishingLab = (on: On): string[] => {
+	const logs: string[] = [];
+	mock.store(on, {});
+	on("classic.SessionStart", () => ({}));
+	on("session.version", () => ({
+		value: { version: "2.1.318", base: "2.1.318", builtAt: "" },
+	}));
+	on("env.get", (_$, e) => ({
+		value: e.name === "HOME" ? "/home/u" : undefined,
+	}));
+	on("session.id", () => ({ value: "s-1" }));
+	on("session.root", () => ({ value: "/repo" }));
+	on("settings.read", () => ({ value: {} }));
+	on("fs.exists", (_$, e) => ({ value: e.path.includes("/rules/") }));
+	on("fs.read", (_$, e) => ({
+		value: e.path.startsWith(ROOT) ? "new" : "old",
+	}));
+	on("fs.stat", () => {
+		throw new Error("ENOENT: no such file or directory");
+	});
+	on(
+		"process.run",
+		(_$, e) =>
+			scanned(e) ?? {
+				value: {
+					exitCode: 0,
+					stdout: "",
+					stderr: "",
+					isStdoutTruncated: false,
+					isStderrTruncated: false,
+				},
+			},
+	);
+	on("ui.log", (_$, e) => {
+		logs.push(e.text);
+		return { value: undefined };
+	});
+	return logs;
+};
+
+test("a rule file that vanished before its date was read logs nothing", async ($: Engine, on: On) => {
+	const logs = vanishingLab(on);
+
+	await startup($);
+
+	expect(logs.filter((l) => l.includes("ENOENT"))).toEqual([]);
 });
