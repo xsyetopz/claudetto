@@ -81,10 +81,10 @@
 
 - [ ] 8.1 Rewrite `output-styles/Concise.md` from the original as `research/text-audit.md` records. Drop the `sudo` example, use the `- ! <command>` form, and keep the no-announcement and check-then-state rules.
 - [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text. Base the reason for one repo-wide check after parallel agents on the measured cost, in place of "holds the whole program in memory" (P-D10.10a).
-- [ ] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
-- [ ] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
-- [ ] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).
-- [ ] 8.6 Rewrite the scope sentence in the root prompt's `<defects>` block (`texts.ts:29`) and `rules/noUnrequestedEdits.md`, so that scope follows the user's goal and not the task's files. The agent fixes each defect that stands between the goal and its done-check, in any file, and acts on no cause it has not checked (D10.4). Measure both texts with the task 10.3 A/B run.
+- [x] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
+- [x] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
+- [x] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).
+- [x] 8.6 Rewrite the scope sentence in the root prompt's `<defects>` block (`texts.ts:29`) and `rules/noUnrequestedEdits.md`, so that scope follows the user's goal and not the task's files. The agent fixes each defect that stands between the goal and its done-check, in any file, and acts on no cause it has not checked (D10.4). Measure both texts with the task 10.3 A/B run.
 
 ## 9. Folders
 

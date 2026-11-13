@@ -12,10 +12,11 @@ Before 1.0.0, a release can change or remove behavior.
 - `/claudetto:setup` lists each `.md` file in `~/.claude/rules/claudetto/` that claudetto no longer ships, and offers in one dialog to delete them, so a retired rule stops loading.
 - `/claudetto:setup` offers `worktree.symlinkDirectories` with the git-ignored dependency folders (`node_modules`, `.venv`, `venv`, `Pods`) found at the project root, and adds each linked folder to claudetto's `.gitignore` block by its bare name, because a `node_modules/` line misses the symlink that a worktree holds in its place.
 - `/claudetto:setup` allows `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)`, so an edit in your own temp folder runs with no prompt.
+- `/claudetto:setup` offers the `useHeadlineseNames` rule: identifiers in headlinese with no articles, comments with their articles, and Title Case where the platform asks for it.
 
 ### Changed
 
-- Claudetto writes one system prompt per model in place of the shared root prompt: a common core of about 3,300 characters for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, plus a finish-and-scope block for Sonnet and Haiku. Haiku's core has no delegation block, and its own paragraphs give way to that block. Other models keep Claude Code's default prompt.
+- Claudetto writes one system prompt per model in place of the shared root prompt: a common core of about 3,100 characters for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, plus a finish-and-scope block for Sonnet and Haiku. Haiku's core has no delegation block, and its own paragraphs give way to that block. Other models keep Claude Code's default prompt.
 - A subagent runs on the model its agent file names; a `model` that the lead passes to `Agent` is dropped.
 - `/claudetto:setup` denies each built-in agent type (`Agent(claude)`, `Agent(Explore)`, `Agent(general-purpose)`, `Agent(Plan)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`) beside `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, and claudetto's namespaced agents stay available.
 - Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
@@ -23,6 +24,9 @@ Before 1.0.0, a release can change or remove behavior.
 - The status line paints with the `dark` palette until the session file names a theme, unless `NO_COLOR` is set.
 - Each claudetto agent file sets its own model, effort, and `maxTurns`: `search` runs `claude-haiku-5-5` at `high` effort with `Read`, `Grep`, and `Glob`, 30 turns, and a 100000-token compaction window; `plan` and `sweep` run `claude-sonnet-5-5` at `medium` with the same read-only tools, 40 and 60 turns; `work` runs `claude-sonnet-5-5` at `medium` with every tool, 150 turns.
 - A subagent start held for low memory tells the agent to retry it once its running commands have ended.
+- The `noUnrequestedEdits` rule lets the user's goal set the scope: the agent fixes each defect between the goal and its done-check in any file, and names a defect off that path.
+- The OpenSpec apply skill works every task its tools can do before it stops, and asks for a physical step, such as connecting a device, as it asks for a command.
+- The OpenSpec skills name their tool without a ToolSearch line, and the system prompt leaves the experiment sentence to the `findFactsByExperiment` rule.
 
 ### Removed
 

@@ -11,6 +11,9 @@ export const RULES = [
 	"useOneObviousWay",
 	"useBlockLanguage",
 	"lookForAClone",
+	"useHeadlineseNames",
+	"noNarratingComments",
+	"useEdgeCaseReport",
 ];
 
 const hashKey = (name: string) => `rules:${name}:hash`;

@@ -30,6 +30,9 @@ const RULE_NAMES = [
 	"useOneObviousWay",
 	"useBlockLanguage",
 	"lookForAClone",
+	"useHeadlineseNames",
+	"noNarratingComments",
+	"useEdgeCaseReport",
 ];
 const COPY = /^Copy the /u;
 const shippedPath = (name: string) => `${ROOT}/rules/${name}.md`;
@@ -216,7 +219,7 @@ const strayLab = (
 test("an installed rule that is not shipped is listed in one dialog and removed on yes", async ($: Engine, on: On) => {
 	const state = strayLab(
 		on,
-		["noNarratingComments.md", "notes.txt"],
+		["retiredRule.md", "notes.txt"],
 		choose(DELETE, "Delete"),
 	);
 
@@ -224,13 +227,13 @@ test("an installed rule that is not shipped is listed in one dialog and removed 
 
 	const asked = state.shown.filter(isDelete);
 	expect(asked).toHaveLength(1);
-	expect(asked[0]).toContain("noNarratingComments.md");
+	expect(asked[0]).toContain("retiredRule.md");
 	expect(asked[0]).not.toContain("notes.txt");
-	expect(removals(state)).toEqual([`${RULES_DIR}/noNarratingComments.md`]);
+	expect(removals(state)).toEqual([`${RULES_DIR}/retiredRule.md`]);
 });
 
 test("an installed rule that is not shipped stays on skip", async ($: Engine, on: On) => {
-	const state = strayLab(on, ["noNarratingComments.md"], () => "Skip");
+	const state = strayLab(on, ["retiredRule.md"], () => "Skip");
 
 	await run($, "claudetto:setup");
 

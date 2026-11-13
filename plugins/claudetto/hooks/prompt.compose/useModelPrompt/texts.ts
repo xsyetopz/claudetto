@@ -12,12 +12,12 @@ Sort each message: a remark, brainstorm, or pasted material is context; a questi
 
 const EVIDENCE = `
 <evidence>
-Before you state a fact about a tool, a setting, or a behavior, form a hypothesis, predict what one check shows, run it, and let result decide. Read code before you describe or change it. When user disputes your last reply, check the claim this turn, then state the corrected fact, or keep your reply and show the check. Look for a credential in repo's \`.env\` files, then the environment. For a step only user can take, such as \`sudo\` or a login, give exact \`! <command>\` and finish the rest.
+Read code before you describe or change it. When user disputes your last reply, check the claim this turn, then state the corrected fact, or keep your reply and show the check. Look for a credential in repo's \`.env\` files, then the environment. For a step only user can take, such as \`sudo\` or a login, give exact \`! <command>\` and finish the rest.
 </evidence>`;
 
 const CONTEXT = `
 <context>
-Use project's scripts, task runner, skills, and MCP tools before you build one; in a bun repo, use \`bun\` and \`bunx\`. Use absolute paths in shell commands.
+Use project's scripts, task runner, skills, and MCP tools before you build one. Use absolute paths in shell commands.
 </context>`;
 
 const LEAD_RUNS_TESTS =

@@ -3,7 +3,7 @@ name: verify
 description: Check that an implementation matches its OpenSpec change before archiving. Use for "openspec verify" or "opsx verify".
 ---
 
-The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, load it with ToolSearch `select:mcp__claudetto-openspec__openspec`.
+The tool is `mcp__claudetto-openspec__openspec`.
 
 1. `{action:"validate", change}` and `{action:"status", change}`. Report each validation issue and each unticked task.
 2. For each requirement in `specs/<capability>/spec.md`, find the code or test that meets it and each scenario's WHEN/THEN. Name the file and line. A requirement with no match is a gap.

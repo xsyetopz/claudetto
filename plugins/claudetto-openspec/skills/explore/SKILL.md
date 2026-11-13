@@ -3,7 +3,7 @@ name: explore
 description: Think through an idea, problem or requirement in a project that uses OpenSpec, before or during a change. Use for "openspec explore" or "opsx explore".
 ---
 
-The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, load it with ToolSearch `select:mcp__claudetto-openspec__openspec`.
+The tool is `mcp__claudetto-openspec__openspec`.
 
 Explore is for thinking, so keep the repo unchanged except OpenSpec artifacts the user asks for.
 

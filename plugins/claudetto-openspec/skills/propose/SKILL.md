@@ -3,7 +3,7 @@ name: propose
 description: Propose a new OpenSpec change with proposal, design, specs and tasks in one pass. Use for "openspec propose" or "opsx propose".
 ---
 
-The tool is `mcp__claudetto-openspec__openspec`. If its schema is not loaded, load it with ToolSearch `select:mcp__claudetto-openspec__openspec`.
+The tool is `mcp__claudetto-openspec__openspec`.
 
 1. Get a kebab-case name from the user's words. Ask what they want built only if you cannot name it. With no `openspec/` in the project, call `{action:"init"}` first.
 2. Call `{action:"new", change}`. It writes `.openspec.yaml`. If it names an existing change, ask for another name or point to the update skill.
