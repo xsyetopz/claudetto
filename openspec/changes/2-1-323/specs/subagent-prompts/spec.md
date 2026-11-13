@@ -39,7 +39,7 @@ The `plan` and `sweep` bodies SHALL be written to the Fable 5.2 guidance: for a 
 
 ### Requirement: Built-in Agents Are Off Through Settings
 
-Setup SHALL turn the built-in agents off with `env.CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` and a `permissions.deny` entry `Agent(<name>)` for each other built-in agent. Setup SHALL cap spawning with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, and `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` in `env`.
+Setup SHALL turn the built-in agents off with `env.CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` and a `permissions.deny` entry `Agent(<name>)` for each other built-in agent. Setup SHALL cap spawning with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` in `env`.
 
 #### Scenario: Setup Writes the Keys
 

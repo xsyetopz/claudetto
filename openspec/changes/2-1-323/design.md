@@ -94,7 +94,7 @@ Each of `search`, `plan`, `sweep`, and `work` sets `model`, `effort`, `tools`, a
 | `work` | `claude-opus-5-5` | medium | all |
 
 - The `plan` and `sweep` bodies are written to Fable guidance: a literal reader, a report for a low-context reader, and no absolute "never". They leave out the ownership line, which adds 70–80% output tokens and unrequested changes (`research/text-audit.md` §9.5).
-- Built-in agents are turned off through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` and `permissions.deny Agent(<name>)`. Spawn caps come from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, and `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`.
+- Built-in agents are turned off through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` and `permissions.deny Agent(<name>)`. Spawn caps come from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, the two that setup writes today; no per-session cap has a measured value. The repeat-failure refusal in `admit.ts` goes, because its text appears in no session transcript.
 - The `delegation.ts` deny goes. It refused every non-`claudetto:` or foreground `Agent` call.
 - The memory hold stays as a mod. Its spawn denial gains a retry hint.
 

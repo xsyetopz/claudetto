@@ -162,13 +162,19 @@ Before each `Bash` or `Monitor` call and each subagent start, the system SHALL r
 
 **Reason**: The Stop check of commands outside a `- ! <command>` bullet is deleted, because the open-items hook checks only the What I Need form.
 
-**Migration**: The classic Stop command hook of "Open Items at Stop".
+**Migration**: The classic Stop command hook of "The What I Need Form Is Checked at Stop".
 
 ### Requirement: A Numbered Task Line Is No Question
 
 **Reason**: The Stop check of questions typed as checklist items is deleted, because the open-items hook checks only the What I Need form.
 
-**Migration**: The classic Stop command hook of "Open Items at Stop".
+**Migration**: The classic Stop command hook of "The What I Need Form Is Checked at Stop".
+
+### Requirement: Refuse Repeated Failures
+
+**Reason**: The refusal lived in `useMemoryHold/admit.ts`, and its text appears in no session transcript under `~/.claude/projects`, so it never fired.
+
+**Migration**: None; a failed call may be retried as Claude Code allows.
 
 ### Requirement: A Subagent's Worktree Is No Slice of the Session
 

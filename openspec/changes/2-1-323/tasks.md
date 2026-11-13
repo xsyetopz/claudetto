@@ -27,7 +27,7 @@
 - [ ] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4. Write each body to its model's guidance.
 - [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
 - [ ] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
-- [ ] 4.4 Write spawn caps through the three `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps in `admit.ts`.
+- [ ] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
 - [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial.
 
 ## 5. Bash Gate to Settings

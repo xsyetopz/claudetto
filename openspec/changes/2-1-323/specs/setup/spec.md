@@ -57,7 +57,7 @@ The "Models and windows" group SHALL write `model` Opus 5.5 at `effortLevel` `me
 
 ### Requirement: Setup Caps Subagent Nesting at One
 
-The setup env group SHALL write `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` as `"1"`, and its description SHALL name subagents that start subagents among what it turns off. Each spawn cap SHALL go through Claude Code's own env keys: `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, and `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`. No mod SHALL count spawns or deny an `Agent` call to enforce a cap.
+The setup env group SHALL write `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` as `"1"`, and its description SHALL name subagents that start subagents among what it turns off. Each spawn cap SHALL go through Claude Code's own env keys: `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. No mod SHALL count spawns or deny an `Agent` call to enforce a cap.
 
 #### Scenario: A Clean Write
 
