@@ -445,7 +445,7 @@ Probes (peak resident memory of the `oxlint` process tree, sampled with `ps` eve
 
 Not reproduced: a `tsgolint` above 602 MB. The 16 GB processes came from an input these probes do not hold, such as half-edited files that the stopped agents left behind. Unmeasured. The memory watch of task 4.5 (D10.6) is the defence that does not depend on the cause: it refuses a spawn under memory pressure. The root prompt's reason for one repo-wide check ("each parallel copy holds the whole program in memory", `texts.ts:21`) overstates the cost. P-D10.10a measures a one-file copy at 129 MB, so task 8.2 rewrites the reason from that number.
 
-More probes (2026-11-13, same sampler, outside the sandbox):
+More probes (2026-11-13, outside the sandbox, sampled by `research/scripts/peak.ts <cwd> <command…>`; `research/scripts/cmds.ts <dir> <from> <to>` lists the check commands in a window):
 
 - P-D10.10d. Hypothesis: `GOMEMLIMIT` caps `tsgolint`, a Go 1.26.10 binary. Prediction: `oxlint .` peaks far below 600 MB with `GOMEMLIMIT=150MiB`. Result: unset 604 and 654 MB in 1.7 to 2.0 s; `GOMEMLIMIT=150MiB` 486 and 535 MB in 3.7 to 3.9 s; `300MiB` 506 MB in 2.2 s; `GOGC=50` 572 MB. Weak: about 20% less memory for up to twice the time.
 - P-D10.10e. Hypothesis: `oxlint .` from the main checkout also lints the agent worktrees under `.claude/worktrees/`. Prediction: a copy of `plugins/` there doubles the peak. Result: 588 and 618 MB. Refuted: `.gitignore:22` keeps them out, and `tsconfig.json` includes only `plugins/**/*.ts`.
