@@ -1,6 +1,6 @@
+import { type Fs, join } from "../fs";
+import { scanTasks } from "../tasks";
 import { mergeSpec, refuse } from "./archive-merge";
-import { type Fs, join } from "./fs";
-import { scanTasks } from "./tasks";
 import { changeDir, NO_DELTA, validateChange } from "./validate";
 import { discoverDeltas, linkEscapes } from "./validate-discover";
 import { metadata } from "./validate-meta";

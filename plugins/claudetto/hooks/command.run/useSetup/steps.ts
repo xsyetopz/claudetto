@@ -1,8 +1,13 @@
 import type { EngineInterface } from "claude-code";
 
 import { ask, lines, textOf } from "./engine";
-import { dependencyFolders } from "./ignore-plan";
-import { type IgnoreEdit, ignoreEdits, previewEdits, settle } from "./ignores";
+import {
+	dependencyFolders,
+	type IgnoreEdit,
+	ignoreEdits,
+	previewEdits,
+	settle,
+} from "./ignore";
 import { linesOf, planStarter, previewOf, type StarterFile } from "./starter";
 import {
 	isOnPath,

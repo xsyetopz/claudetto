@@ -1,12 +1,12 @@
 // Replays recorded `archive.execute` calls and names where the plugin differs from upstream on purpose.
 import { spawn } from "bun";
 
-import { ArchiveBlocked } from "../../plugins/claudetto-openspec/hooks/archive-merge.ts";
-import { archive } from "../../plugins/claudetto-openspec/hooks/archive.ts";
 import { nonEmpty } from "../../plugins/claudetto-openspec/hooks/fs.ts";
 import { openspec } from "../../plugins/claudetto-openspec/hooks/openspec.ts";
 import { scanTasks } from "../../plugins/claudetto-openspec/hooks/tasks.ts";
 import { needsChange } from "../../plugins/claudetto-openspec/hooks/texts.ts";
+import { ArchiveBlocked } from "../../plugins/claudetto-openspec/hooks/validate/archive-merge.ts";
+import { archive } from "../../plugins/claudetto-openspec/hooks/validate/archive.ts";
 import {
 	type Entry,
 	materialize,

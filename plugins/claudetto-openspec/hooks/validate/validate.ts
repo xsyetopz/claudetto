@@ -1,10 +1,10 @@
 // Validation of one change: delta files against each other and against the main specs.
-import { type Fs, join, nonEmpty, statOf } from "./fs";
-import { merge } from "./spec-merge";
-import { parsePlan } from "./spec-plan";
-import type { Plan } from "./spec-plan";
-import { at, type Issue, type Report, report } from "./spec-rules";
-import { type Doc, missingCheckboxes, numberingIssues } from "./tasks";
+import { type Fs, join, nonEmpty, statOf } from "../fs";
+import { merge } from "../spec/spec-merge";
+import { parsePlan } from "../spec/spec-plan";
+import type { Plan } from "../spec/spec-plan";
+import { at, type Issue, type Report, report } from "../spec/spec-rules";
+import { type Doc, missingCheckboxes, numberingIssues } from "../tasks";
 import {
 	baseBlocks,
 	discoverDeltas,

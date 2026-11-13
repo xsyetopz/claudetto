@@ -1,8 +1,13 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { BLOCK_END, BLOCK_START } from "./ignore-block";
-import { GITIGNORE_FIXED } from "./ignore-plan";
-import { ignoreEdits, previewEdits, settle } from "./ignores";
+import {
+	BLOCK_END,
+	BLOCK_START,
+	GITIGNORE_FIXED,
+	ignoreEdits,
+	previewEdits,
+	settle,
+} from "./ignore";
 
 const GO = ["go.mod", "main.go"];
 

@@ -6,7 +6,7 @@ import {
 	safeList,
 	statOf,
 } from "../../plugins/claudetto-openspec/hooks/fs.ts";
-import { linkEscapes } from "../../plugins/claudetto-openspec/hooks/validate-discover.ts";
+import { linkEscapes } from "../../plugins/claudetto-openspec/hooks/validate/validate-discover.ts";
 import { nodeFs } from "../../tools/node-fs.ts";
 import { tempDir } from "../../tools/temp.mock.ts";
 

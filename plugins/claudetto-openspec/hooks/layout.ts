@@ -1,7 +1,7 @@
 import { type Fs, join } from "./fs";
 import { archivedChanges } from "./status";
 import { laidOut, notKebab, opened, SET_UP, taken } from "./texts";
-import { changeDir } from "./validate";
+import { changeDir } from "./validate/validate";
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const ARCHIVED = /^\d{4}-\d{2}-\d{2}-(.+)$/u;

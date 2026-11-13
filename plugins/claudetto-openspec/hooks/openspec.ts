@@ -1,9 +1,7 @@
-import { archive, type Run } from "./archive";
-import { ArchiveBlocked } from "./archive-merge";
 import type { Fs } from "./fs";
 import { create, init } from "./layout";
 import { checkSpec, mainSpecs, requirementCount } from "./main-specs";
-import type { Report } from "./spec-rules";
+import type { Report } from "./spec/spec-rules";
 import { activeChanges, archivedChanges, progress } from "./status";
 import {
 	archived,
@@ -24,7 +22,9 @@ import {
 	statusLine,
 	verdict,
 } from "./texts";
-import { changeDir, validateChange } from "./validate";
+import { archive, type Run } from "./validate/archive";
+import { ArchiveBlocked } from "./validate/archive-merge";
+import { changeDir, validateChange } from "./validate/validate";
 
 export type Call = Record<string, unknown>;
 export interface Deps {

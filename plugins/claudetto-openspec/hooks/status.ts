@@ -1,6 +1,6 @@
 import { type Fs, join } from "./fs";
 import { scanTasks } from "./tasks";
-import { changeDir } from "./validate";
+import { changeDir } from "./validate/validate";
 
 // Each artifact turns ready once every one it needs is done.
 const ARTIFACTS = [

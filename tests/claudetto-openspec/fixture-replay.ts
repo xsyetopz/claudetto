@@ -1,22 +1,22 @@
 // Replays one recorded upstream call (validation, discovery, task rules, spec merge) through the plugin's code.
 import { posix } from "node:path";
 
-import { mergeSpec } from "../../plugins/claudetto-openspec/hooks/archive-merge.ts";
 import { dirname, join } from "../../plugins/claudetto-openspec/hooks/fs.ts";
 import {
 	type Issue,
 	type Report,
 	validateSpec,
-} from "../../plugins/claudetto-openspec/hooks/spec-rules.ts";
+} from "../../plugins/claudetto-openspec/hooks/spec/spec-rules.ts";
 import {
 	missingCheckboxes,
 	numberingIssues,
 } from "../../plugins/claudetto-openspec/hooks/tasks.ts";
-import { discoverDeltas } from "../../plugins/claudetto-openspec/hooks/validate-discover.ts";
+import { mergeSpec } from "../../plugins/claudetto-openspec/hooks/validate/archive-merge.ts";
+import { discoverDeltas } from "../../plugins/claudetto-openspec/hooks/validate/validate-discover.ts";
 import {
 	issueKey,
 	validateDir,
-} from "../../plugins/claudetto-openspec/hooks/validate.ts";
+} from "../../plugins/claudetto-openspec/hooks/validate/validate.ts";
 import { materialize, nodeFs, type Rec } from "./fixture-kit.ts";
 import {
 	docs,

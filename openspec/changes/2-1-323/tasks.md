@@ -91,9 +91,9 @@
 
 ## 9. Folders
 
-- [ ] 9.1 Move `claudetto-openspec/hooks/spec*` into `spec/`, `validate*` into `validate/`, and `archive*` into one of them.
-- [ ] 9.2 Merge `useSetup/ignore*` into `ignore.ts`, and move `hooks/texts*` into `texts/` if three files remain.
-- [ ] 9.3 Update the load paths in `register.ts`, `bunfig.toml`, and `project.just`.
+- [x] 9.1 Move `claudetto-openspec/hooks/spec*` into `spec/`, `validate*` into `validate/`, and `archive*` into one of them.
+- [x] 9.2 Merge `useSetup/ignore*` into `ignore.ts`, and move `hooks/texts*` into `texts/` if three files remain. Done: two `texts*` files remain, so they stay.
+- [x] 9.3 Update the load paths in `register.ts`, `bunfig.toml`, and `project.just`.
 
 ## 10. Check and Release
 

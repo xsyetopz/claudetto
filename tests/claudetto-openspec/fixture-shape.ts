@@ -2,7 +2,7 @@
 import type {
 	Issue,
 	Report,
-} from "../../plugins/claudetto-openspec/hooks/spec-rules.ts";
+} from "../../plugins/claudetto-openspec/hooks/spec/spec-rules.ts";
 import type { Doc } from "../../plugins/claudetto-openspec/hooks/tasks.ts";
 
 export interface Update {

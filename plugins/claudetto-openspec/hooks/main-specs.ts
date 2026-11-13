@@ -1,8 +1,8 @@
 import { type Fs, join } from "./fs";
-import { blocks, section } from "./spec";
-import { type Issue, type Report, validateSpec } from "./spec-rules";
+import { blocks, section } from "./spec/spec";
+import { type Issue, type Report, validateSpec } from "./spec/spec-rules";
 import { requirementPath } from "./texts";
-import { discoverDeltas } from "./validate-discover";
+import { discoverDeltas } from "./validate/validate-discover";
 
 // The rules number requirements by position; a main spec's report names them instead.
 const INDEX = /^requirements(?:\[(\d+)\]|\.(\d+))/u;

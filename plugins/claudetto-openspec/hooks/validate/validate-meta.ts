@@ -1,6 +1,6 @@
 // A change's `.openspec.yaml`: the markers it sets and whether the file is valid enough to honor them.
-import { dirname, type Fs, join } from "./fs";
-import { parseYaml } from "./yaml";
+import { dirname, type Fs, join } from "../fs";
+import { parseYaml } from "../yaml";
 
 const SKIP_MENTION = /^\s*(['"]?)skip_specs\1\s*:/mu;
 const EXTENSION_KEY = /^x-\S+$/u;
