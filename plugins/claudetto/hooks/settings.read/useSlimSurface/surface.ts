@@ -9,7 +9,6 @@ import {
 	offCommandText,
 	planModeText,
 	REFUSAL,
-	ROOT_PROMPT,
 	TOOL_TEXTS,
 } from "../../texts";
 
@@ -193,10 +192,6 @@ const onDescribe: HookFor<"tool.describe"> = async ($, e, next) => {
 };
 
 const textHooks = (on: On): void => {
-	on("prompt.compose", () => ({
-		sections: [{ id: "claudetto:root", text: ROOT_PROMPT, scope: "shared" }],
-	}));
-
 	on(
 		"tool.describe",
 		{ tool: [...new Set([...Object.keys(TOOL_TEXTS), ...DEFERRED_TOOLS])] },

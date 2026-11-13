@@ -19,11 +19,11 @@
 
 ## 3. Per-Model System Prompts
 
-- [ ] 3.1 Write the shared core of under about 3,500 chars from `ROOT_PROMPT`, following `research/text-audit.md` §9.
-- [ ] 3.2 Write the Opus, Sonnet, and Haiku 5.5 bodies from `research/model-guidance.md`.
-- [ ] 3.3 Write the `prompt.compose` mod that changes `lean_body` per `e.model`, keeps the session sections, and leaves other models on the default.
-- [ ] 3.4 Delete `ROOT_PROMPT` and its shared-scope injection.
-- [ ] 3.5 Test the mod with the fake Messages API: assert the `system[2]` text for each model and the default for an unknown model.
+- [x] 3.1 Write the shared core of under about 3,500 chars from `ROOT_PROMPT`, following `research/text-audit.md` §9.
+- [x] 3.2 Write the Opus, Sonnet, and Haiku 5.5 bodies from `research/model-guidance.md`.
+- [x] 3.3 Write the `prompt.compose` mod that changes `lean_body` per `e.model`, keeps the session sections, and leaves other models on the default.
+- [x] 3.4 Delete `ROOT_PROMPT` and its shared-scope injection.
+- [x] 3.5 Test the mod with the fake Messages API: assert the `system[2]` text for each model and the default for an unknown model.
 
 ## 4. Subagents
 
@@ -32,7 +32,7 @@
 - [x] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
 - [x] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
 - [x] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial. In the merge, catch a failed poll inside the memory watch's loop so the watch goes on, keep watching a `run_in_background` command, and a call Claude Code moved to the background at its timeout, until its process ends (D10.10), and start `sysctl` by its absolute path (D10.6). Abort the watch in a `finally` around `next(e)`, so a cancelled call logs no "memory watch stopped" notice (D10.23). Write the failing tests first.
-- [ ] 4.7 In the `work.md` body and the root prompt's `<delegation>` block, state that only the lead runs `claude plugin test` (`just lab`), once, after the work agents end. Give the reason as the measured cost: one run of the `claudetto` mod takes 3.4 GB in 19 processes, and no narrower run exists (P-D10.10g).
+- [x] 4.7 In the `work.md` body and the root prompt's `<delegation>` block, state that only the lead runs `claude plugin test` (`just lab`), once, after the work agents end. Give the reason as the measured cost: one run of the `claudetto` mod takes 3.4 GB in 19 processes, and no narrower run exists (P-D10.10g).
 
 ## 5. Bash Gate to Settings
 
@@ -70,7 +70,7 @@
 - [ ] 7.12 In the classic `SessionStart` hook of task 7.4, append `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash, and `**` stays recursive (D10.17). Test with the fake Messages API: `echo == x` and `grep --include=*.ts x /dev/null` succeed under `CLAUDE_CODE_SHELL=/bin/zsh`.
 - [x] 7.13 In `usePriceStep/price-step.ts` `readingOf`, drop the `$.ui.log` from the sleep's `catch`, so a stop chunk that arrives in time logs nothing (D10.20). Write the failing test first: a Haiku step whose stop chunk arrives in time, with an `on("ui.log")` collector read after the sleep's rejection has landed, records no log.
 - [x] 7.15 In `useSetup/rules.ts`, offer to delete each `.md` file in `~/.claude/rules/claudetto/` whose name is not in `RULES`, in one dialog that lists them, so a rule the plugin retired stops loading (D10.27). Write the failing test first: an installed `noNarratingComments.md` is listed and, on yes, removed.
-- [ ] 7.16 Add an `agent.spawn` mod that drops `model` from the event, so each subagent runs on its agent file's model and a lead's `model` argument cannot put it on Opus or Fable, and delete "or pass `model: opus`" from the `<delegation>` block in `texts.ts` (D10.28). Write the failing test first: a spawn event with `model: "opus"` reaches `next` with no `model`.
+- [x] 7.16 Add an `agent.spawn` mod that drops `model` from the event, so each subagent runs on its agent file's model and a lead's `model` argument cannot put it on Opus or Fable, and delete "or pass `model: opus`" from the `<delegation>` block in `texts.ts` (D10.28). Write the failing test first: a spawn event with `model: "opus"` reaches `next` with no `model`.
 - [ ] 7.17 After task 7.15, check that no file of `~/.claude/rules/claudetto/` has a `paths:` key, so claudetto's rules load with the memory at session start and add no reminder block to a step (D10.29, P-D10.29d). Then rerun `scan-lookback4.ts` on the sessions after it and expect no claudetto rule in a step past 21 positions.
 - [x] 7.18 Have setup add `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)` to `permissions.allow`, with the user's uid, so a probe file in Claude Code's temp folder needs no approval; the user chose the whole folder (D10.31, P-D10.31). Write the failing test first, then check with the fake Messages API that a scripted `Write` there is written.
 - [x] 7.20 Have `pinCheck` call `next(e)` at once for a tool that no pinned rule can break, that is anything other than `Bash` and the writers, and bound its wait for `state.pending` by `next.budget.remainingMs` less a margin, after which it judges with the ledger as it stands and logs that the read was still running. Have the `classic.Stop` checks run their Decider calls together, not one after another (D10.32, P-D10.32b, P-D10.32c). Write the failing tests first: a `Read` while a ledger read hangs settles at once, and a `Bash` call settles within the budget. Then rerun P-D10.32b and expect no "ran past its 10s budget" line.

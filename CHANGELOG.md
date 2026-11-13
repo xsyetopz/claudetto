@@ -15,6 +15,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- Claudetto writes one system prompt per model in place of the shared root prompt: a common core of about 3,300 characters for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, plus a finish-and-scope block for Sonnet and Haiku. Haiku's core has no delegation block, and its own paragraphs give way to that block. Other models keep Claude Code's default prompt.
+- A subagent runs on the model its agent file names; a `model` that the lead passes to `Agent` is dropped.
 - `/claudetto:setup` denies each built-in agent type (`Agent(claude)`, `Agent(Explore)`, `Agent(general-purpose)`, `Agent(Plan)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`) beside `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, and claudetto's namespaced agents stay available.
 - Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
 - The hook code of each plugin passes the TypeScript check of `claude plugin validate` on Claude Code 2.1.323: imports name no `.ts` extension, and the hygiene sweep, a Bun program that the session-start hook runs, moved from `hooks/` to `hygiene/`, with its default `trash.toml`.

@@ -1,5 +1,6 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
+import { agentFileModel } from "./agent.spawn/useAgentFileModel/model";
 import {
 	holdCheck,
 	holdHooks,
@@ -36,6 +37,7 @@ import { notify } from "./classic.StopFailure/useStopNotice/notify";
 import { advisor } from "./command.run/useAdvisorCommand/advisor";
 import { reply } from "./command.run/useReplyCommand/reply";
 import { setup } from "./command.run/useSetup/setup";
+import { modelPrompt } from "./prompt.compose/useModelPrompt/compose";
 import {
 	pin,
 	pinCall,
@@ -80,6 +82,8 @@ const registerOuter = (on: On, options: PluginOptions, state: State): void => {
 	slices(on, state.written);
 	priceStepHooks(on, state.price);
 	holdHooks(on, state.hold);
+	agentFileModel(on);
+	modelPrompt(on);
 	stopHooks(on, options, state.stop);
 	subagentStopHooks(on);
 	budgetHooks(on);
