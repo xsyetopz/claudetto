@@ -64,6 +64,7 @@
 - [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text.
 - [ ] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
 - [ ] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
+- [ ] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).
 
 ## 9. Folders
 

@@ -344,7 +344,7 @@ Each item points to the rule that covers it in the per-model bodies (task 3.2) o
   - Stopping at "no pad connected": no source. The apply skill's "Ending A Pause Or A Report" (`SKILL.md:14`) lists a `! <command>`, a denial, and an open question as ways to end. It has no form for asking the user to take a physical step, such as switching a device on. The root prompt's "`! <command>`" line also covers commands only.
   - The maintainer framing of 4.8 and 4.9: its own reading of the OJD `tasks.md:3`, though `tasks.md:55-56` say "reporter".
   - "You're right.": no source. `Concise.md` already forbids it ("Begin with the fact"), so the rule is there, but nothing enforces it.
-  Fix: in the apply skill, name a physical step or hardware state as something to ask the user for (task 8.2), and stop only after every step the agent's tools can take is done. The opener needs a check that a rule alone has not given (tasks 6.3 and 8.1).
+  Fix: in the apply skill, name a physical step or hardware state as something to ask the user for (task 8.5), and stop only after every step the agent's tools can take is done. The opener needs a check that a rule alone has not given (tasks 6.3 and 8.1).
 - The agent's own replies said a temp folder could be deleted "after 60 idle minutes", without stating that a session may last less than an hour. The user: "session may last less than an hour...". A fix based on age was proposed where ownership decides (D9.6).
 
 ### D9.11 Engine Messages, Recorded Only
