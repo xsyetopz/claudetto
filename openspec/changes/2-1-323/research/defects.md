@@ -670,5 +670,5 @@ Counted by `/tmp/claude-501/scan-kinds.ts` (row kinds and error heads with digit
 
 - P-D10.27. Hypothesis: `nested_memory` rows repeat within one context. Prediction: many rows name a path already injected since the last `compact_boundary`. Command: a `bun -e` scan of 5 days of transcripts that sorts each row into first in the transcript, first after a compaction, or repeat in the same segment. Result: 11,097 rows; 6,226 first, 4,861 after a compaction, 10 repeats. Refuted: Claude Code injects each path once per context. In this session, all 44 rows are the two retired rules, one pair at the start and one after each of 21 compactions.
 - The five most-injected paths are claudetto rules (1,123 to 1,234 rows each): the two retired ones, and `useLeastCode`, `noUnrequestedEdits`, and `noImpossibleStateGuards`, which held the same frontmatter before 378782f3 (`git show 378782f3^:plugins/claudetto/rules/<name>.md`). The two retired files are 337 bytes together, about 85 tokens per context (estimated), and they keep two rules the plugin withdrew in force.
-- Fix: task 7.14.
+- Fix: task 7.15.
 
