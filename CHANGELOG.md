@@ -12,9 +12,13 @@ Before 1.0.0, a release can change or remove behavior.
 - Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
 - The hook code of each plugin passes the TypeScript check of `claude plugin validate` on Claude Code 2.1.323: imports name no `.ts` extension, and the hygiene sweep, a Bun program that the session-start hook runs, moved from `hooks/` to `hygiene/`, with its default `trash.toml`.
 - The status line paints with the `dark` palette until the session file names a theme, unless `NO_COLOR` is set.
+- Each claudetto agent file sets its own model, effort, and `maxTurns`: `search` runs `claude-haiku-5-5` at `high` effort with `Read`, `Grep`, and `Glob`, 30 turns, and a 100000-token compaction window; `plan` and `sweep` run `claude-sonnet-5-5` at `medium` with the same read-only tools, 40 and 60 turns; `work` runs `claude-sonnet-5-5` at `medium` with every tool, 150 turns.
+- A subagent start held for low memory tells the agent to retry it once its running commands have ended.
 
 ### Removed
 
+- The refusal of an `Agent` call that names a built-in or unprefixed `subagent_type`, or a foreground run of `search`, `plan`, or `sweep` without `run_in_background: false`. Setup's `Agent(<name>)` denies and each agent file's frontmatter take its place.
+- The `maxIdenticalFailures` option and the refusal of a repeated failing subagent start.
 - The subagent status line and the `subagentStatusLine` key of the plugin's `settings.json`: Claude Code 2.1.323 ignores the key and draws its default subagent rows.
 
 ### Fixed

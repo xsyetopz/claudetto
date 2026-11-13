@@ -34,7 +34,7 @@
 		"limitPeriodSeconds": {
 			"type": "number",
 			"title": "Period in seconds",
-			"description": "The length of the period that `maxHeavyToolCalls` and `maxIdenticalFailures` count in. Left unset, it is 600.",
+			"description": "The length of the period that `maxHeavyToolCalls` counts in. Left unset, it is 600.",
 			"min": 1
 		},
 		"maxHeavyToolCalls": {
@@ -60,12 +60,6 @@
 			"title": "Memory share one process of a command may hold",
 			"description": "A process that a running command started and that holds more than this share of the machine's memory is stopped. 0 turns it off. Left unset, it is 25.",
 			"min": 0
-		},
-		"maxIdenticalFailures": {
-			"type": "number",
-			"title": "Identical failures before a refusal",
-			"description": "How many times the same call fails with the same error before an identical retry is refused. Left unset, it is 3.",
-			"min": 1
 		},
 		"hygieneEnabled": {
 			"type": "boolean",

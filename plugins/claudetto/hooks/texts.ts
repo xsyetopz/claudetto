@@ -161,9 +161,6 @@ export const offCommandText = (command: string): string =>
 export const AGENT_TEXT =
 	'Start a subagent. subagent_type, in full: claudetto:search finds, claudetto:plan plans, claudetto:sweep reviews, claudetto:work the rest; isolation: "worktree" if it commits. Do a few calls yourself.';
 
-export const agentForm = (type: string, background: boolean): string =>
-	`Send this call again as subagent_type "${type}"${background ? " with run_in_background: false" : ""}. Nothing ran: a hook that changes a call's input makes auto mode skip its review of every call in the same response, so claudetto refuses this call instead of fixing it.`;
-
 export const REPLY_COMMAND = "reply";
 
 export const REPLY_SPEC = {
@@ -196,19 +193,15 @@ interface Rate {
 export const DENY_CALLS = (v: Rate & { calls: number }): string =>
 	`The context is heavy and ${v.calls} tool calls ran in ${v.seconds} seconds, past the cap of ${v.cap}. Compact or end the session, or ask the user to raise \`maxHeavyToolCalls\` or \`heavyContextTokens\`.`;
 
-export const DENY_FAILED = (v: {
-	count: number;
-	error: string;
-	limit: number;
-}): string =>
-	`This call failed ${v.count} times with the same error: ${v.error}\nReport the error to the user and change the call before another try, because this one fails the same way. The limit is \`maxIdenticalFailures\` (${v.limit}).`;
-
 export const MEMORY_SHORT = (
 	share: number,
 	limit: number,
 	largest: readonly string[],
 ): string =>
 	`The machine has ${share}% of its memory free, under the ${limit}% limit, so new commands and subagents are held. Stop your own runs that are no longer needed, with TaskStop or \`kill <pid>\`, and wait for the others to end before you start another. The largest processes (pid, size, name):\n${largest.join("\n")}\nThe limit is \`memoryFreeMinPercent\`.`;
+
+export const MEMORY_SPAWN_RETRY =
+	"Retry this subagent start after memory has freed: wait for your running commands to end, then start it again.";
 
 export const MEMORY_STOPPED = (
 	pid: string,

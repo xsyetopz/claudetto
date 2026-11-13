@@ -4,11 +4,9 @@ import {
 	holdCheck,
 	holdHooks,
 	holdState,
-} from "./agent.spawn/useMemoryHold/hold";
-import {
 	memoryGuard,
 	memoryWatchCall,
-} from "./agent.spawn/useMemoryHold/memory";
+} from "./agent.spawn/useMemoryHold/hold";
 import {
 	type CallAnswer,
 	type CallEvent,
@@ -51,10 +49,7 @@ import { ADVISOR_SPEC, DECIDE_SPEC } from "./texts-gate";
 import { advisorCall } from "./tool.call/useAdvisorTool/advisor";
 import { askFixCall } from "./tool.call/useAskFix/ask-fix";
 import { budgetRunCall } from "./tool.call/useBudgetRun/budget-run";
-import {
-	delegation,
-	delegationCall,
-} from "./tool.call/useClaudettoAgents/delegation";
+import { delegation } from "./tool.call/useClaudettoAgents/delegation";
 import { decideCall, typesafeKey } from "./tool.call/useDecideTool/decide";
 import {
 	sandboxGitCall,
@@ -133,7 +128,6 @@ const callGuards = (
 		(at, step) => surfaceCall(at, step, options),
 		(at, step) => pinCall($, at, step, state.pinned),
 		(at, step) => askFixCall($, at, step),
-		(at, step) => delegationCall(at, step),
 		(at, step) => advisorCall($, at, step),
 		(at, step) => decideCall($, at, step),
 		(at, step) => sandboxGitCall($, at, step, state.sandboxGit),

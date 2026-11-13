@@ -27,11 +27,11 @@
 
 ## 4. Subagents
 
-- [ ] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4, and `autoCompactWindow: 100000` in `search.md`. Write each body to its model's guidance.
+- [x] 4.1 Rewrite `agents/search.md`, `plan.md`, `sweep.md`, and `work.md` with the `model`, `effort`, `tools`, and `maxTurns` from design decision 4, and `autoCompactWindow: 100000` in `search.md`. Write each body to its model's guidance.
 - [ ] 4.2 Turn off built-in agents through `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` and `permissions.deny Agent(<name>)` in setup.
-- [ ] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
-- [ ] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
-- [ ] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial. In the merge, catch a failed poll inside the memory watch's loop so the watch goes on, keep watching a `run_in_background` command, and a call Claude Code moved to the background at its timeout, until its process ends (D10.10), and start `sysctl` by its absolute path (D10.6). Abort the watch in a `finally` around `next(e)`, so a cancelled call logs no "memory watch stopped" notice (D10.23). Write the failing tests first.
+- [x] 4.3 Delete the `delegation.ts` deny. Keep only the agent listing trim, if it still lowers the request.
+- [x] 4.4 Write spawn caps through the two `CLAUDE_CODE_MAX_*` env keys, and delete the spawn caps and the repeat-failure refusal (`DENY_FAILED`) in `admit.ts`.
+- [x] 4.5 Merge `useMemoryHold` into one file, and add a retry hint to its spawn denial. In the merge, catch a failed poll inside the memory watch's loop so the watch goes on, keep watching a `run_in_background` command, and a call Claude Code moved to the background at its timeout, until its process ends (D10.10), and start `sysctl` by its absolute path (D10.6). Abort the watch in a `finally` around `next(e)`, so a cancelled call logs no "memory watch stopped" notice (D10.23). Write the failing tests first.
 - [ ] 4.7 In the `work.md` body and the root prompt's `<delegation>` block, state that only the lead runs `claude plugin test` (`just lab`), once, after the work agents end. Give the reason as the measured cost: one run of the `claudetto` mod takes 3.4 GB in 19 processes, and no narrower run exists (P-D10.10g).
 
 ## 5. Bash Gate to Settings
