@@ -23,7 +23,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
-- Claudetto writes one system prompt per model in place of the shared root prompt: a common core of about 3,100 characters for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, plus a finish-and-scope block for Sonnet and Haiku. Haiku's core has no delegation block, and its own paragraphs give way to that block. Other models keep Claude Code's default prompt.
+- Claudetto writes one system prompt per model in place of the shared root prompt: a common core of about 3,100 characters for `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`, plus a finish-and-scope block for Sonnet and Haiku, and a line that asks Sonnet and Haiku to search before they state a fact that may have changed since their training. Haiku's core has no delegation block, and its own paragraphs give way to that block. Other models keep Claude Code's default prompt.
 - A subagent runs on the model its agent file names; a `model` that the lead passes to `Agent` is dropped.
 - `/claudetto:setup` denies each built-in agent type (`Agent(claude)`, `Agent(Explore)`, `Agent(general-purpose)`, `Agent(Plan)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`) beside `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, and claudetto's namespaced agents stay available.
 - Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
@@ -50,6 +50,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The `bunRuleEnabled` option, the Bun line of the system prompt, and the Bun note at session start; the package-manager hook takes their place for any manager.
 - The Haiku fallback of the Decider. With no `TYPESAFE_API_KEY`, or when Jev fails or refuses the key, each question stays unsettled, and the branch-delete gate asks the person.
 - The commit-slice, cleanup, background-task, stall, and checklist Stop blocks, the constraint ledger and its Jev questions, and the ask-fix refusal of an `AskUserQuestion` call. One Stop hook, which a model runs, takes over the reply faults.
+- The `--prices` and `--max-usd` flags of the claim-check launcher, with its price table, spending cap, and the token and usage sections of its report.
 - The hygiene sweep's idle-time rule for Claude Code's temp folder, with the `probeCleanupPeriodMinutes` option, the `--probe-minutes` flag, and the `idle-temp` rule of `trash.toml`: the sweep no longer removes an entry of the temp folder because it sat idle.
 
 ### Fixed

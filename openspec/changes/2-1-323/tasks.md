@@ -80,7 +80,7 @@
 ## 8. Texts
 
 - [x] 8.1 Rewrite `output-styles/Concise.md` from the original as `research/text-audit.md` records. Drop the `sudo` example, use the `- ! <command>` form, and keep the no-announcement and check-then-state rules.
-- [ ] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text. Base the reason for one repo-wide check after parallel agents on the measured cost, in place of "holds the whole program in memory" (P-D10.10a).
+- [x] 8.2 Rewrite the surviving tool texts. Keep a text only while it beats the stock text. Base the reason for one repo-wide check after parallel agents on the measured cost, in place of "holds the whole program in memory" (P-D10.10a). Done: Bash drops its `cat`/`head`/`tail`/`sed -n` list per the audit; the WebSearch nudge moved to the Sonnet delta, and a one-sentence Haiku nudge keeps the Haiku delta under 700; the lead-only lab rule already carries the measured 3.4 GB.
 - [x] 8.3 Write the `useHeadlineseNames.md` rule and add it to the rules setup offers.
 - [x] 8.4 Remove the six copies of the ToolSearch line from the OpenSpec skills, and the clones of the user's rule files.
 - [x] 8.5 Rewrite step 5 and "Ending A Pause Or A Report" in `claudetto-openspec/skills/apply/SKILL.md`. The skill stops only after every step the agent's tools can take is done, and asks the user for a physical step, such as connecting a device, as it asks for a command (`research/defects.md` D9.10).
@@ -100,5 +100,5 @@
 - [ ] 10.1 Run `just verify`.
 - [ ] 10.2 Measure the request size for each model against the 2.1.322 baseline with the fake Messages API.
 - [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Sonnet and Haiku agents, the grader replay, and the D9.5 truncation probe. Report the cost and the weekly share.
-- [ ] 10.4 List each removed option, mod, and setting in the release notes.
+- [x] 10.4 List each removed option, mod, and setting in the release notes.
 - [ ] 10.5 Last, after every other task: release the plugin with task 7.5, so that installed copies stop answering `ask` on a guard fault. Before that, time each `tool.check` guard on an MCP call with the fake Messages API and `--debug-file`, and make each guard that does not judge that tool return before its first `$` call (D10.32).

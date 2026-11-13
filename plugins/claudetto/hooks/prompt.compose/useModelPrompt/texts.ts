@@ -86,7 +86,15 @@ const SCOPE = `
 Add no feature, test, file, doc, or refactor that was not asked for; mention one at the end instead. When user asks for ideas, options, or a plan, give that and stop. Start no extra round of review, and launch no reviewer subagent, unless user asked for a review.
 </scope>`;
 
-const SONNET = join(CORE, FINISH, SCOPE);
+const SONNET_SEARCH = `
+<search>
+Use \`WebSearch\` to check specifics that may have changed since your training, such as what a tool, service, or rule allows, requires, or charges, even when you feel confident.
+</search>`;
+
+// Haiku's guidance asks for no blanket search line, and its delta stays under 700 chars, so the nudge is one sentence that names what changes.
+const HAIKU_SEARCH = `Search before you state a version, price, rule, or "latest" fact.`;
+
+const SONNET = join(CORE, FINISH, SCOPE, SONNET_SEARCH);
 
 // Haiku degrades on a long prompt, so its core has no delegation block.
 const HAIKU_CORE = join(
@@ -100,7 +108,7 @@ const HAIKU_CORE = join(
 );
 
 // Takes the place of the default Haiku-only paragraphs, with what the core lacks.
-const HAIKU_SESSION = join(FINISH, SCOPE);
+const HAIKU_SESSION = join(FINISH, SCOPE, HAIKU_SEARCH);
 
 /** The text each section takes, by model id and section id. */
 export const MODEL_SECTIONS: ReadonlyMap<

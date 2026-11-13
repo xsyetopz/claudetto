@@ -1,6 +1,6 @@
 // Surface: tool texts, plan mode, /init, and the read refusal.
 
-const BASH = `Runs a command. \`run_in_background\` re-invokes you when it exits. Read a file with \`Read\`, never \`cat\`, \`head\`, \`tail\`, or \`sed -n\`. Commit each finished slice as its own commit. Push only when asked.`;
+const BASH = `Runs a command. \`run_in_background\` re-invokes you when it exits. Read a file with \`Read\`. Commit each finished slice as its own commit. Push only when asked.`;
 
 const READ = `Reads a file by absolute \`file_path\`; pass \`offset\` and \`limit\` for a part. Shows images, notebooks, PDFs (\`pages\`). After \`Edit\` or \`Write\` succeeds the file holds the change: do not read it back.`;
 
