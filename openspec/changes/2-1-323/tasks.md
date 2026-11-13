@@ -54,7 +54,7 @@
 
 ## 7. Defects
 
-- [ ] 7.1 Treat ENOENT as absent with no log in `useSetup/rules.ts`, `surface.ts` `namesIn`, `claudetto-openspec/hooks/fs.ts`, and `hygiene/`. Write a failing test for each first.
+- [x] 7.1 Treat ENOENT as absent with no log in `useSetup/rules.ts`, `surface.ts` `namesIn`, `claudetto-openspec/hooks/fs.ts`, and `hygiene/`. Write a failing test for each first.
 - [x] 7.2 Paint the `dark` palette in `statusline/main.ts` until a theme is known, unless `NO_COLOR` is set. Write the failing test first.
 - [x] 7.3 Delete `statusline/subagents.ts` and `subagentStatusLine` in `plugins/claudetto/settings.json`.
 - [ ] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
@@ -69,7 +69,7 @@
 - [x] 7.11 In `claudetto-you-should-know/hooks/register.ts`, store the `tool_use` id that a shown note judged, and deny only that call; any other call of the turn goes to its own check (D10.16). Write the failing test first: one note offered, then a second call with another id runs.
 - [ ] 7.12 In the classic `SessionStart` hook of task 7.4, append `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `$CLAUDE_ENV_FILE`, so a Bash command with an unmatched glob or an `==` word runs under zsh as under bash, and `**` stays recursive (D10.17). Test with the fake Messages API: `echo == x` and `grep --include=*.ts x /dev/null` succeed under `CLAUDE_CODE_SHELL=/bin/zsh`.
 - [x] 7.13 In `usePriceStep/price-step.ts` `readingOf`, drop the `$.ui.log` from the sleep's `catch`, so a stop chunk that arrives in time logs nothing (D10.20). Write the failing test first: a Haiku step whose stop chunk arrives in time, with an `on("ui.log")` collector read after the sleep's rejection has landed, records no log.
-- [ ] 7.15 In `useSetup/rules.ts`, offer to delete each `.md` file in `~/.claude/rules/claudetto/` whose name is not in `RULES`, in one dialog that lists them, so a rule the plugin retired stops loading (D10.27). Write the failing test first: an installed `noNarratingComments.md` is listed and, on yes, removed.
+- [x] 7.15 In `useSetup/rules.ts`, offer to delete each `.md` file in `~/.claude/rules/claudetto/` whose name is not in `RULES`, in one dialog that lists them, so a rule the plugin retired stops loading (D10.27). Write the failing test first: an installed `noNarratingComments.md` is listed and, on yes, removed.
 - [ ] 7.16 Add an `agent.spawn` mod that drops `model` from the event, so each subagent runs on its agent file's model and a lead's `model` argument cannot put it on Opus or Fable, and delete "or pass `model: opus`" from the `<delegation>` block in `texts.ts` (D10.28). Write the failing test first: a spawn event with `model: "opus"` reaches `next` with no `model`.
 - [ ] 7.17 After task 7.15, check that no file of `~/.claude/rules/claudetto/` has a `paths:` key, so claudetto's rules load with the memory at session start and add no reminder block to a step (D10.29, P-D10.29d). Then rerun `scan-lookback4.ts` on the sessions after it and expect no claudetto rule in a step past 21 positions.
 - [ ] 7.18 Have setup add `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)` to `permissions.allow`, with the user's uid, so a probe file in Claude Code's temp folder needs no approval; the user chose the whole folder (D10.31, P-D10.31). Write the failing test first, then check with the fake Messages API that a scripted `Write` there is written.

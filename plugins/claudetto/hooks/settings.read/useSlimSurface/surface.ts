@@ -1,5 +1,6 @@
 import type { HookFor, On, PluginOptions } from "claude-code";
 
+import { isAbsent } from "../../absent";
 import type { CallAnswer, CallEvent, CallNext } from "../../chain";
 import { switchOption } from "../../options";
 import {
@@ -145,7 +146,9 @@ const namesIn = async ($: SettingsContext, dir: string): Promise<string[]> => {
 				: entry.name,
 		);
 	} catch (error) {
-		$.ui.log(`The directory ${dir} was not listed (${String(error)})`);
+		if (!isAbsent(error)) {
+			$.ui.log(`The directory ${dir} was not listed (${String(error)})`);
+		}
 		return [];
 	}
 };

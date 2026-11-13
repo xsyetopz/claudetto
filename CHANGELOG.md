@@ -7,6 +7,10 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+### Added
+
+- `/claudetto:setup` lists each `.md` file in `~/.claude/rules/claudetto/` that claudetto no longer ships, and offers in one dialog to delete them, so a retired rule stops loading.
+
 ### Changed
 
 - Claudetto needs Claude Code 2.1.323 or later: each `plugin.json` sets `engines["claude-code"]: ">=2.1.323"`, so an install from a marketplace refuses an older Claude Code, and setup writes `minimumVersion: "2.1.323"`. The startup log line on an older version is gone.
@@ -23,6 +27,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- A missing rule file, agent or skill folder, spec, or hygiene root counts as absent and logs nothing; setup, the tool listing, the OpenSpec hooks, and hygiene used to log an ENOENT error for it.
 - A gate check that throws or runs out of time no longer opens a "The gate failed: timeout. A person must approve this call." dialog; Claude Code's own verdict (permission rules, mode, sandbox) decides the call.
 
 ## [2.1.323] - 2026-11-13
