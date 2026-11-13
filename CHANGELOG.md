@@ -16,7 +16,7 @@ Before 1.0.0, a release can change or remove behavior.
 - `/claudetto:setup` offers `worktree.symlinkDirectories` with the git-ignored dependency folders (`node_modules`, `.venv`, `venv`, `Pods`) found at the project root, and adds each linked folder to claudetto's `.gitignore` block by its bare name, because a `node_modules/` line misses the symlink that a worktree holds in its place.
 - `/claudetto:setup` allows `Edit(//tmp/claude-<uid>/**)` and `Edit(//private/tmp/claude-<uid>/**)`, so an edit in your own temp folder runs with no prompt.
 - `/claudetto:setup` offers the `useHeadlineseNames` rule: identifiers in headlinese with no articles, comments with their articles, and Title Case where the platform asks for it.
-- `/claudetto:setup` offers the `noNarratingComments` and `useEdgeCaseReport` rules again, which 2.1.321 removed.
+- `/claudetto:setup` offers the `noNarratingComments` and `useEdgeCaseReport` rules again, which 2.1.323 removed.
 - `/claudetto:setup` writes the command rules that the shell gate used to hold as permission rules: `ask` for a branch move, a worktree remove, a branch or tag delete, a force, mirror, prune, or ref-delete push, `git clean`, a hook-path change, `eval`, `curl`, `wget`, a disk tool, and a recursive delete or `chown`; `deny` for `pkill` and `killall`; and `allow` for read-only commands.
 - A `PreToolUse` command hook, `protected-switch`, denies a `git switch`, `checkout`, hard `reset`, or `rebase` that would rewrite files the sandbox denies you write to, before git stops partway and leaves the tree half moved.
 - The Stop check of a request to the user is a command hook. It accepts one `- ! <command>` bullet or one fenced `sh` block under `## What I Need From You`, blocks a bullet whose command no earlier Bash call of the session ran or whose last run succeeded, and never repeats an identical block.
@@ -38,7 +38,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The OpenSpec apply skill works every task its tools can do before it stops, and asks for a physical step, such as connecting a device, as it asks for a command.
 - A session's temp folder, `<temp>/claude-<uid>/<project>/<session id>`, goes when the session ends. At session start the sweep removes a session folder only when no `~/.claude/sessions/<pid>.json` names its session with a running pid and the same process start; a record the sweep cannot read removes no session folder that run.
 - The OpenSpec skills name their tool without a ToolSearch line, and the system prompt leaves the experiment sentence to the `findFactsByExperiment` rule.
-- The agents carry their Greek names again, which 2.1.321 replaced: `claudetto:search` is `claudetto:Artemis`, `claudetto:plan` is `claudetto:Metis`, `claudetto:work` is `claudetto:Heracles`, and `claudetto:sweep` is `claudetto:Athena`. Update any `subagent_type` or `Agent(...)` rule that names an old one.
+- The agents carry their Greek names again, which 2.1.323 replaced: `claudetto:search` is `claudetto:Artemis`, `claudetto:plan` is `claudetto:Metis`, `claudetto:work` is `claudetto:Heracles`, and `claudetto:sweep` is `claudetto:Athena`. Update any `subagent_type` or `Agent(...)` rule that names an old one.
 
 ### Removed
 
