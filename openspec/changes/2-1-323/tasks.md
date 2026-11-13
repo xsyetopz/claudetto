@@ -56,7 +56,8 @@
 - [ ] 7.2 Paint the `dark` palette in `statusline/main.ts` until a theme is known, unless `NO_COLOR` is set. Write the failing test first.
 - [ ] 7.3 Delete `statusline/subagents.ts` and `subagentStatusLine` in `plugins/claudetto/settings.json`.
 - [ ] 7.4 Add the classic `SessionStart` package-manager detection. Delete the Bun prompt line, `BUN_FACT`, `bunRuleEnabled`, and the npm deny table.
-- [ ] 7.5 Delete the `tool.check` catch in `register.ts` and `checkFault` in `chain.ts`, so a guard fault leaves the engine's verdict in place. Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
+- [x] 7.5 Delete the `tool.check` catch in `register.ts` and `checkFault` in `chain.ts`, so a guard fault leaves the engine's verdict in place. Write the failing test first.
+- [ ] 7.14 Make the `tool.call` catch return the `next(e)` result once the tool has run (`research/defects.md` D9.2). Write the failing test first.
 - [ ] 7.6 Delete the decider fallback (`decider/fallback.ts`) and move each judgment it makes to a prompt-type classic hook (D9.5).
 - [ ] 7.7 Delete the hygiene sweep's idle-time rule for temp folders. Point probes at `$TMPDIR/<project>/<session_id>/`, and remove that folder on `session.end`. At session start, remove only the per-session folders that no running session's `~/.claude/sessions/<pid>.json` names and whose `pid` and `procStart` no longer match a running process (D9.6). Write the failing test first.
 - [ ] 7.8 Delete `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, and their texts with task 5.3, after task 2.2 confirms the sandbox's own process and worktree limits on 2.1.323 (D9.3, D9.4).

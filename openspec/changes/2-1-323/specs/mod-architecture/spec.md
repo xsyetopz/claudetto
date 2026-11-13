@@ -44,3 +44,62 @@ The owner of a feature MUST be the first in this order that a recorded check sho
 
 - **WHEN** a feature's deciding check has not run
 - **THEN** its fate stays marked proposed and the release does not ship a change to it
+
+### Requirement: One Guard Hook per Event
+
+Each plugin SHALL register at most one `tool.check` hook and one `tool.call` hook. The `tool.call` hook SHALL carry one `.catch`, because a `tool.call` guard without one fails open after the tool may have run. The `tool.check` hook SHALL carry none, because Claude Code skips a `tool.check` guard that fails and keeps the verdict beneath it: its permission rules, mode, and sandbox. A guard SHALL be a named function that tests the tool's name itself and passes every other call on. The registration file SHALL list the guards of each event in the order they nest.
+
+#### Scenario: The Validator Lists Each Guard Hook
+
+- **WHEN** `claude plugin validate --strict --json` runs on a plugin
+- **THEN** it lists at most one `tool.check` gating hook, with `hasCatch` false, and at most one `tool.call` gating hook, with `hasCatch` true, and a repository test fails otherwise
+
+#### Scenario: A Call of Another Tool
+
+- **WHEN** a guard for `Read` receives a `Bash` call
+- **THEN** it passes the call to `next` unchanged
+
+#### Scenario: The Guard Order Is Kept
+
+- **WHEN** the 22 guard registrations of `claudetto` become two guard lists
+- **THEN** the guards run in the order their registrations nested, and every lab test passes with its expected values unchanged, except the fault texts
+
+### Requirement: A Guard Refuses on a Fault, and No Fault Is Dropped
+
+A fault in a `tool.check` guard SHALL leave Claude Code's verdict beneath the plugin in place, with no ask of its own, because an ask on each slow or failed check stops a person for a call their rules already settle. A fault in a `tool.call` guard SHALL refuse with the failure's message, or its `kind` when there is none. The side check of `claudetto-you-should-know` SHALL instead log its fault and let the call go on. Every other caught fault SHALL be logged with its cause or rethrown. A `catch` MUST NOT turn a fault into a value that reads as a normal answer.
+
+#### Scenario: A Gate That Throws
+
+- **WHEN** a `tool.check` guard throws while it reads a command, and the verdict beneath is `allow`
+- **THEN** the verdict is `allow`, and no dialog opens
+- **AND** the lab test is `faults.test.ts`, "a check guard that throws leaves the verdict beneath"
+
+#### Scenario: A Call Guard That Throws Before the Tool
+
+- **WHEN** a `tool.call` guard throws before it calls `next`
+- **THEN** the call is refused with the failure text, and the tool does not run
+
+#### Scenario: A Call Guard That Throws After the Tool
+
+- **WHEN** a `tool.call` guard throws after `next` answered
+- **THEN** the tool has run once, and its result is withheld with the failure text
+
+#### Scenario: A Tool That Fails Beneath the Plugin
+
+- **WHEN** what is beneath the plugin throws while a `tool.call` guard waits on `next`
+- **THEN** that failure reaches the caller as its own, and no guard's refusal replaces it
+
+#### Scenario: A Hook That Overruns
+
+- **WHEN** the guards' own code runs past the hook time limit
+- **THEN** in `tool.check` the verdict beneath stands, and in `tool.call` the `.catch` answers as for a throw, with a text that names the kind `timeout`
+
+#### Scenario: A Side Check That Fails
+
+- **WHEN** the `tool.call` hook of `claudetto-you-should-know` throws
+- **THEN** the log holds the cause, and the call goes on as its spec requires
+
+#### Scenario: A Failed Side Read
+
+- **WHEN** a hook's read of its own store fails
+- **THEN** the log holds the cause, and the hook's answer does not report success

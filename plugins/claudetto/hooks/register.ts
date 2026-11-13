@@ -16,7 +16,6 @@ import {
 	chain,
 	type CheckAnswer,
 	type CheckEvent,
-	checkFault,
 	type CheckNext,
 } from "./chain";
 import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene";
@@ -142,9 +141,7 @@ const callGuards = (
 	]);
 
 const registerGuards = (on: On, options: PluginOptions, state: State): void => {
-	on("tool.check", ($, e, next) => checkGuards($, e, next, state)).catch(
-		(_error, _e, next) => ({ decision: "ask", reason: checkFault(next) }),
-	);
+	on("tool.check", ($, e, next) => checkGuards($, e, next, state));
 	on("tool.call", ($, e, next) => callGuards($, e, next, state, options)).catch(
 		async (_error, e, next) => {
 			if (next.called) {

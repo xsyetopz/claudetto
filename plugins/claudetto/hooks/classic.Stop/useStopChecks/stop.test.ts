@@ -10,14 +10,17 @@ type Writes = "ok" | "denied" | "failed";
 
 const blockOf = (block: string | null) => (block === null ? {} : { block });
 
+/** Answers what the Stop checks read; the setter it returns changes the block of later Stops. */
 const lab = (on: On, block: string | null = BLOCK, writes: Writes = "ok") => {
+	let current = block;
 	scanner(on);
 	quietDecider(on);
-	on("classic.Stop", () => blockOf(block));
+	on("classic.Stop", () => blockOf(current));
 	on("session.messages", () => ({ value: [] }));
 	on("tool.list", () => ({ value: [] }));
 	on("clock.now", () => ({ value: 0 }));
 	on("session.cwd", () => ({ value: "/repo" }));
+	on("tool.check", () => ({ decision: "allow" }));
 	on("tool.call", () => {
 		if (writes === "denied") {
 			return { deny: "no" };
@@ -26,6 +29,9 @@ const lab = (on: On, block: string | null = BLOCK, writes: Writes = "ok") => {
 			? { isError: true, result: "no such file", text: "no such file" }
 			: { result: {} };
 	});
+	return (next: string | null) => {
+		current = next;
+	};
 };
 
 const stop = ($: Engine, reply = "Done.") =>
@@ -285,15 +291,10 @@ test("a file written between the blocks starts the stretch again", async ($: Eng
 });
 
 test("a Stop that nothing blocks starts the count again", async ($: Engine, on: On) => {
-	let block: string | null = null;
-	on("classic.Stop", () => blockOf(block));
-	on("session.messages", () => ({ value: [] }));
-	on("clock.now", () => ({ value: 0 }));
-	on("session.cwd", () => ({ value: "/repo" }));
-	on("tool.call", () => ({ result: {} }));
+	const setBlock = lab(on, null);
 	await edit($);
 	await stop($);
-	block = BLOCK;
+	setBlock(BLOCK);
 	const out = await stop($);
 	expect(out.preventContinuation).toBe(true);
 });

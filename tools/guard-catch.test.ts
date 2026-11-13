@@ -9,7 +9,6 @@ import {
 } from "./validator.ts";
 
 const EVENTS = ["tool.check", "tool.call"];
-
 const guardsOf = async (plugin: string): Promise<unknown[]> => {
 	const contents = await contentsOf(plugin);
 	return contents
@@ -18,12 +17,17 @@ const guardsOf = async (plugin: string): Promise<unknown[]> => {
 };
 
 test.each(PLUGINS)(
-	"%s has at most one tool.check and one tool.call hook, each with a .catch",
+	"%s has at most one tool.check hook, with no .catch, and one tool.call hook, with a .catch",
 	async (plugin) => {
 		const guards = await guardsOf(plugin);
 
 		expect(guards.length).toBeGreaterThan(0);
-		expect(guards.filter((g) => fieldOf(g, "hasCatch") !== true)).toEqual([]);
+		expect(
+			guards.filter(
+				(g) =>
+					fieldOf(g, "hasCatch") !== (fieldOf(g, "pattern") === "tool.call"),
+			),
+		).toEqual([]);
 		for (const event of EVENTS) {
 			expect(
 				guards.filter((g) => fieldOf(g, "pattern") === event).length,

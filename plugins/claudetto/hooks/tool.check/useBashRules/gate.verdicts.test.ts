@@ -52,18 +52,6 @@ for (const tool of ["Write", "Edit", "NotebookEdit"]) {
 	});
 }
 
-test("a gate that fails holds the call for a person", async ($: Engine, on: On) => {
-	on("tool.check", () => ({ decision: "allow" }));
-	// No `session.cwd` answer: reading the repo's files throws inside the gate.
-
-	const verdict = await $.tool.check({
-		tool: "Bash",
-		input: { command: "ls" },
-	});
-
-	expect(verdict.decision).toBe("ask");
-});
-
 test("a push to a URL or a remote is left to the engine", async ($: Engine, on: On) => {
 	repo(on);
 	on("tool.check", () => ({ decision: "allow" }));

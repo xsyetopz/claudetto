@@ -1,7 +1,6 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-const UNANSWERED_EXISTS = "no implementation for fs.exists";
 const UNANSWERED_CALL = "no implementation for tool.call";
 const UNANSWERED_RUN = "no implementation for process.run";
 
@@ -31,7 +30,7 @@ const beneath = (on: On, answer: unknown) => {
 	return runs;
 };
 
-test("a check guard that throws asks with the failure text", async ($: Engine, on: On) => {
+test("a check guard that throws leaves the verdict beneath", async ($: Engine, on: On) => {
 	lab(on);
 
 	const out = await $.tool.check({
@@ -40,8 +39,7 @@ test("a check guard that throws asks with the failure text", async ($: Engine, o
 		tool_use_id: "c1",
 	});
 
-	expect(out.decision).toBe("ask");
-	expect(out.reason).toContain(UNANSWERED_EXISTS);
+	expect(out.decision).toBe("allow");
 });
 
 test("a call guard that throws before the tool refuses, and the tool does not run", async ($: Engine, on: On) => {

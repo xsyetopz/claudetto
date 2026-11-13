@@ -96,8 +96,6 @@ export const GATE_UNREADABLE =
 	"The gate cannot read this command, so a person must approve it.";
 export const GATE_RECREATE =
 	"This file existed earlier in this session and is gone now, and no call of this session removed it, so it was removed outside this session. Recreating it may undo the user's own deletion. Ask the user first.";
-export const GATE_CHECK_FAILED = (error: string): string =>
-	`The gate failed: ${error}. A person must approve this call.`;
 export const GATE_READ_ONLY =
 	"claudetto: a read-only command runs with no prompt.";
 export const gateRule = (reason: string | undefined, rule: string): string =>
