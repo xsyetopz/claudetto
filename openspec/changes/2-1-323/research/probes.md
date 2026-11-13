@@ -220,6 +220,21 @@ Stub in `MODE=agent` answers the first request with an `Agent` tool call, so a r
 - Result (observed): `p712-off` returned `Exit code 1 … (eval):1: = not found` and `Exit code 1 … (eval):1: no matches found: --include=*.ts`, both `is_error: true`. `p712-on` returned `== x` with `rc=0` and `rc=1` for the grep, with no zsh error and `is_error: false`.
 - Conclusion (observed): the appended line reaches the Bash tool's zsh. The `grep` call exits 1 because `/dev/null` holds no match, which is grep's own status and not a zsh error.
 
+## Request size per model against the tag baseline (task 10.2)
+
+- Hypothesis: the main request of the current tree is no larger than the one of tag `claudetto--v2.1.323`'s plugin for each model.
+- Prediction: on prompt `hi`, the current main request's bytes are at most the baseline's for Sonnet, Opus, and Haiku.
+- Command: cc-inspect `code` action `cli` on Claude Code 2.1.325 with the fake Messages API, prompt `hi`, `--model` for each of the three models, `--plugin-dir` set to a `git archive` extract of the tag (`/tmp/claude-501/size-base/plugins/claudetto`) or to `plugins/claudetto`, and `length:1` on the main request to read its byte split.
+- Result (observed):
+
+  | Run | Main request | Tools | System | Other request per turn |
+  |---|---|---|---|---|
+  | Tag (main is request 2; request 4 on a second turn: 18,654 B) | Sonnet 18,302 B, Opus 18,294 B, Haiku 18,351 B | 8,276 | 6,104 each | a 2,006-byte side call |
+  | Current (main is request 1) | Sonnet 21,067 B, Opus 20,540 B, Haiku 20,422 B | 8,232 | 8,726 / 8,207 / 8,032 | the prompt-type Stop hook, 11,639 B (tools 2, system 2,262, messages 8,844) |
+
+- Conclusion (observed): the prediction failed. The main request grew by 2.1 to 2.8 KB, all in the system part, and the extra request per turn grew from 2.0 KB to 11.6 KB. The tag's root prompt (5,779 chars) replaced the whole system prompt and dropped Claude Code's session sections. The current core is about 4,400 chars and keeps those sections (task 3.3): Memory 2,185, Environment 621, Context management 559, and Session guidance 164 chars, plus the pronoun and action-caution paragraphs. The tools part shrank by 44 bytes.
+- Each current run ends with a `stop-hook-error` notification. Inferred cause: the fake API answers the prompt-type Stop hook with `OK`, not the `{"ok":true}` JSON the hook asks for. A real model answers in JSON, so this comes from the probe setup and not from the plugin.
+
 ## Edge cases handled
 
 - Fresh config dir and no `CLAUDE.md` or memory, so sizes are a floor, and the memory path adds a few bytes that vary with the temp path.

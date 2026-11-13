@@ -98,7 +98,7 @@
 ## 10. Check and Release
 
 - [ ] 10.1 Run `just verify`.
-- [ ] 10.2 Measure the request size for each model against the 2.1.322 baseline with the fake Messages API.
+- [x] 10.2 Measure the request size for each model against the 2.1.322 baseline with the fake Messages API. Done: `research/probes.md` section "Request size per model"; the main request grew 2.1 to 2.8 KB because the session sections stay (task 3.3), and the Stop hook adds an 11.6 KB request per turn.
 - [ ] 10.3 Ask before the paid A/B run of the per-model prompts and the Sonnet and Haiku agents, the grader replay, and the D9.5 truncation probe. Report the cost and the weekly share.
 - [x] 10.4 List each removed option, mod, and setting in the release notes.
 - [ ] 10.5 Last, after every other task: release the plugin with task 7.5, so that installed copies stop answering `ask` on a guard fault. Before that, time each `tool.check` guard on an MCP call with the fake Messages API and `--debug-file`, and make each guard that does not judge that tool return before its first `$` call (D10.32).
