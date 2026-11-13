@@ -235,6 +235,14 @@ Stub in `MODE=agent` answers the first request with an `Agent` tool call, so a r
 - Conclusion (observed): the prediction failed. The main request grew by 2.1 to 2.8 KB, all in the system part, and the extra request per turn grew from 2.0 KB to 11.6 KB. The tag's root prompt (5,779 chars) replaced the whole system prompt and dropped Claude Code's session sections. The current core is about 4,400 chars and keeps those sections (task 3.3): Memory 2,185, Environment 621, Context management 559, and Session guidance 164 chars, plus the pronoun and action-caution paragraphs. The tools part shrank by 44 bytes.
 - Each current run ends with a `stop-hook-error` notification. Inferred cause: the fake API answers the prompt-type Stop hook with `OK`, not the `{"ok":true}` JSON the hook asks for. A real model answers in JSON, so this comes from the probe setup and not from the plugin.
 
+## `tool.check` time on an MCP call (task 10.5)
+
+- Hypothesis: with the `pinCheck` wait gone, claudetto's `tool.check` guards settle in milliseconds on an MCP call, and each guard that does not judge the tool returns before its first `$` call.
+- Prediction: on a stdio MCP tool, the guards' own time is under 5 ms; `memoryGuard` makes no `$` call for it.
+- Command: a copy of `plugins/claudetto` in `/tmp/claude-501/timed` whose `tool.check` hook records `performance.now()` at entry, at the call of the engine's `next` (own time), and after it (total), and writes the lines through `$.fs.write` after the measure. cc-inspect `cli` on 2.1.325 with the fake API, `--mcp-config` for a one-tool Bun stdio server (`mcp__probe__echo`, read-only), and the calls `ToolSearch`, `mcp__probe__echo` twice. A second run called `mcp__claudetto__advisor`, `Read`, and `Bash`.
+- Result (observed): `ToolSearch` own 1.1 ms, total 2.6 ms; `mcp__probe__echo` own 0.2 ms, total 1.0 ms and 0.8 ms. `Read` own 0.2 ms, total 6.7 ms; `Bash` own 0.4 ms, total 2.8 ms. The engine sent no `tool.check` for `mcp__claudetto__advisor`, the tool claudetto registers itself, in either `--dangerously-skip-permissions` or `--allowedTools` mode.
+- Conclusion (observed): the guards cost under 1.2 ms of the 10 s budget. `memoryGuard` (`hold.ts:114-120`) returns before any `$` call on a tool other than `Bash` and `Monitor`. `holdCheck` reads `$.session.usage()` on every call because its rate limit counts every tool, so it judges each tool and stays as it is. No code change.
+
 ## Edge cases handled
 
 - Fresh config dir and no `CLAUDE.md` or memory, so sizes are a floor, and the memory path adds a few bytes that vary with the temp path.
