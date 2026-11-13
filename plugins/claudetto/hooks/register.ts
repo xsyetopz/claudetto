@@ -113,7 +113,7 @@ const checkGuards = (
 		(at, step) => memoryGuard($, at, step, state.hold.memory),
 		(at, step) => holdCheck($, at, step, state.hold),
 		(at, step) => stopCheck(at, step, state.stop),
-		(at, step) => pinCheck(at, step, state.pinned),
+		(at, step) => pinCheck($, at, step, state.pinned),
 		(at, step) => gateCheck($, at, step, state.gate),
 	]);
 
@@ -131,7 +131,7 @@ const callGuards = (
 		(at, step) => memoryWatchCall($, at, step, state.hold.memoryProcessMax),
 		(at, step) => budgetRunCall($, at, step),
 		(at, step) => surfaceCall(at, step, options),
-		(at, step) => pinCall(at, step, state.pinned),
+		(at, step) => pinCall($, at, step, state.pinned),
 		(at, step) => askFixCall($, at, step),
 		(at, step) => delegationCall(at, step),
 		(at, step) => advisorCall($, at, step),

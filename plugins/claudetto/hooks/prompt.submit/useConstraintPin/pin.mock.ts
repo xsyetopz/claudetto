@@ -1,5 +1,5 @@
 import type { On, SessionMessage } from "claude-code";
-import type { Engine } from "claude-code/testing";
+import { type Engine, mock, type MockClock } from "claude-code/testing";
 
 import { haikuText } from "../../decider/decider.mock";
 
@@ -26,14 +26,15 @@ const replyTo = (prompt: string, limits: Limits): string => {
 	);
 };
 
-/** Stubs beneath the pin: no key is set, so the ledger's model answers. It reads each sentence in `limits` as a limit, records each prompt it is sent in `seen`, and answers about a message in `held` once that promise settles. */
+/** Stubs beneath the pin: no key is set, so the ledger's model answers. It reads each sentence in `limits` as a limit, records each prompt it is sent in `seen`, and answers about a message in `held` once that promise settles. Returns the clock the guards' budget waits run on. */
 export const lab = (
 	on: On,
 	limits: Limits,
 	messages: SessionMessage[] = [],
 	seen: string[] = [],
 	held: Readonly<Record<string, Promise<unknown>>> = {},
-): void => {
+): MockClock => {
+	const clock = mock.clock(on, { now: 0 });
 	on("prompt.submit", (_$, e) => e);
 	on("tool.check", () => ({ decision: "allow" }));
 	on("session.messages", () => ({ value: messages }));
@@ -45,6 +46,7 @@ export const lab = (
 		await held[MESSAGE.exec(e.prompt)?.[1] ?? ""];
 		return { value: haikuText(replyTo(e.prompt, limits)) };
 	});
+	return clock;
 };
 
 export const submit = (

@@ -11,6 +11,7 @@ import {
 import { HELD_REGISTER, SHIPPED_REGISTER } from "../../decider/questions";
 import { scanner } from "../../secrets.mock";
 import { REGISTER_BLOCK } from "../../texts";
+import { deferred } from "../../tools";
 import { user } from "./verify.mock";
 
 const SHIPPED = Object.keys(SHIPPED_REGISTER.questions);
@@ -57,6 +58,35 @@ const stop = ($: Engine, active = false) =>
 		last_assistant_message: "Sorry, the build failed.",
 		background_tasks: [],
 	});
+
+test("the Stop checks start every side-model call before any answers, so the turn's end waits for one call", async ($: Engine, on: On) => {
+	const clock = mock.clock(on);
+	const answer = deferred<boolean>();
+	let started = 0;
+	scanner(on);
+	mock.env(on, {});
+	on("classic.Stop", () => ({}));
+	on("ui.log", () => ({ value: undefined }));
+	on("session.messages", () => ({
+		value: [user("I fixed it. Write the commit message.")],
+	}));
+	on("model.complete", async () => {
+		started += 1;
+		await answer.promise;
+		return { value: haikuFailed("aborted") };
+	});
+	const ending = $.classic.Stop({
+		stop_hook_active: false,
+		last_assistant_message: "Fixed it. The cache never expires.",
+		background_tasks: [],
+	});
+	await clock.settle();
+	const together = started;
+	answer.resolve(true);
+	await ending;
+	expect(together).toBeGreaterThan(1);
+	expect(together).toBe(started);
+});
 
 test("the Stop check asks the five shipped questions and none of the four held", async ($: Engine, on: On) => {
 	const bodies = lab(on, []);

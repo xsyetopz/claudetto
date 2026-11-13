@@ -101,19 +101,37 @@ const filesBlock = async (
 	return missing.length > 0 ? MISSING_FILES(missing) : undefined;
 };
 
+// The checks run together, since each side-model call holds the end of the turn. They settle in this order, so a
+// block wins over a fault of a later check, as when each ran after the one before.
+const firstBlock = (
+	settled: readonly PromiseSettledResult<string | undefined>[],
+): string | undefined => {
+	const [head, ...rest] = settled;
+	if (head === undefined) {
+		return undefined;
+	}
+	if (head.status === "rejected") {
+		throw head.reason;
+	}
+	return head.value ?? firstBlock(rest);
+};
+
 const stopBlock = async (
 	$: EngineInterface,
 	e: Parameters<typeof gradeBlock>[1],
 	turn: Turn,
 	isOpenItemsOn: boolean,
 ): Promise<string | undefined> =>
-	(AGREES.test(e.last_assistant_message?.trim() ?? "")
+	AGREES.test(e.last_assistant_message?.trim() ?? "")
 		? AGREE_OPENER
-		: undefined) ??
-	(await filesBlock($, e)) ??
-	(isOpenItemsOn ? await openBlock($, e, turn.interactive) : undefined) ??
-	(await gradeBlock($, e, turn.denied, turn.interactive)) ??
-	(await registerBlock($, e, turn.denied));
+		: firstBlock(
+				await Promise.allSettled([
+					filesBlock($, e),
+					isOpenItemsOn ? openBlock($, e, turn.interactive) : undefined,
+					gradeBlock($, e, turn.denied, turn.interactive),
+					registerBlock($, e, turn.denied),
+				]),
+			);
 
 /**
  * Stop: the stall rule, then the named-files, open-items, and graded-reply checks, then the background-task list, then the cleanup of what the session created. The flag, the task key and

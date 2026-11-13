@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { type Engine, expect, test } from "claude-code/testing";
+import { type Engine, expect, type MockClock, test } from "claude-code/testing";
 
 import { PIN_COMPACT_KEEP, PIN_NO_QUESTIONS } from "../../texts-pin";
 import { deferred } from "../../tools";
@@ -31,7 +31,7 @@ test("a compaction names each stored constraint after the standing instruction",
 	lab(on, RO);
 	const told = listen(on);
 	await submit($);
-	await check($, "Read", { file_path: "/p/a.ts" });
+	await check($, "Bash", { command: "ls" });
 	await compact($);
 	expect(told()).toContain(PIN_COMPACT_KEEP);
 	expect(told()).toContain("- Nothing should change on disk.");
@@ -41,7 +41,7 @@ test("a constraint found on one prompt rides the next prompt as context, and the
 	lab(on, RO);
 	const awaited = await submit($);
 	expect(added(awaited)).toEqual([]);
-	await check($, "Read", { file_path: "/p/a.ts" });
+	await check($, "Bash", { command: "ls" });
 	const awaited2 = await submit($);
 	expect(awaited2.context?.join("\n")).toContain(
 		"Nothing should change on disk.",
@@ -66,7 +66,7 @@ test("the classifier sees the request that ends a long pasted message", async ($
 	const seen: string[] = [];
 	lab(on, {}, [], seen);
 	await submit($, `${"Log line from a build. ".repeat(40)}Rename the file.`);
-	await check($, "Read", { file_path: "/p/a.ts" });
+	await check($, "Bash", { command: "ls" });
 	expect(seen.join("\n")).toContain("Rename the file.");
 });
 
@@ -147,7 +147,7 @@ for (const [scenario, row] of [
 		const seen: string[] = [];
 		lab(on, { [row.text]: "read-only" }, [row], seen);
 		await submit($, "Commit the rest.");
-		await check($, "Read", { file_path: "/p/a.ts" });
+		await check($, "Bash", { command: "ls" });
 		const awaited17 = await submit($, "Go on.");
 		expect(seen.join("\n")).not.toContain(row.text);
 		expect(added(awaited17)).toEqual([]);
@@ -169,6 +169,33 @@ test("a prompt sent before the read of the one before it settles keeps both prom
 	const push = await check($, "Bash", { command: "git push" });
 	const commit = await check($, "Bash", { command: "git commit -m x" });
 	expect([push.decision, commit.decision]).toEqual(["deny", "deny"]);
+});
+
+const settlesWithin = (
+	answer: Promise<unknown>,
+	clock: MockClock,
+	ms: number,
+): Promise<boolean> =>
+	Promise.race([answer.then(() => true), clock.advance(ms).then(() => false)]);
+
+const HANGING = "Nothing should change on disk.";
+
+test("a Read while the ledger read hangs settles at once", async ($: Engine, on: On) => {
+	const clock = lab(on, RO, [], [], {
+		[HANGING]: deferred<boolean>().promise,
+	});
+	await submit($, HANGING);
+	const read = check($, "Read", { file_path: "/p/a.ts" });
+	expect(await settlesWithin(read, clock, 0)).toBe(true);
+});
+
+test("a Bash call while the ledger read hangs settles within the hook's budget", async ($: Engine, on: On) => {
+	const clock = lab(on, RO, [], [], {
+		[HANGING]: deferred<boolean>().promise,
+	});
+	await submit($, HANGING);
+	const bash = check($, "Bash", { command: "git push" });
+	expect(await settlesWithin(bash, clock, 9500)).toBe(true);
 });
 
 test("no-questions denies AskUserQuestion and nothing else", async ($: Engine, on: On) => {

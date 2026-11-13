@@ -16,9 +16,10 @@ import {
 	type PinConstraint,
 } from "../../texts-pin";
 import { deny } from "../../tool.check/useBashRules/verdict";
+import { withinBudget } from "../../tools";
 import { ASK_TOOL, isPersonMessage } from "../../verify";
 import { readLedger } from "./pin-ledger";
-import { breaks } from "./pin-rules";
+import { breaks, judged } from "./pin-rules";
 
 export const PERSON = /^(?:composer|bridge|sdk)$/u;
 
@@ -83,8 +84,29 @@ const ledgerHooks = (on: On, s: PinState): void => {
 	});
 };
 
+// The ledger read belongs to the prompt's dispatch, so a guard's wait for it spends the guard's own budget.
+async function ledgerOf(
+	$: EngineInterface,
+	state: PinState,
+	next: Pick<CheckNext, "budget" | "signal">,
+): Promise<readonly PinConstraint[]> {
+	const read = await withinBudget(
+		$,
+		state.pending.then(() => true),
+		next.budget.remainingMs,
+		next.signal,
+	);
+	if (read === null) {
+		$.ui.log(
+			"The constraint ledger read was still running, so the call was judged by the ledger as it stands",
+		);
+	}
+	return state.ledger;
+}
+
 /** Denies `AskUserQuestion` while a no-questions constraint stands. */
 export async function pinCall(
+	$: EngineInterface,
 	e: CallEvent,
 	next: CallNext,
 	state: PinState,
@@ -92,19 +114,23 @@ export async function pinCall(
 	if (e.tool !== ASK_TOOL) {
 		return next(e);
 	}
-	await state.pending;
-	const hit = state.ledger.find((c) => c.rule === "no-questions");
+	const ledger = await ledgerOf($, state, next);
+	const hit = ledger.find((c) => c.rule === "no-questions");
 	return hit === undefined ? next(e) : { deny: PIN_NO_QUESTIONS(hit.text) };
 }
 
 /** Denies a call that breaks a pinned constraint. */
 export async function pinCheck(
+	$: EngineInterface,
 	e: CheckEvent,
 	next: CheckNext,
 	state: PinState,
 ): Promise<Awaited<CheckAnswer>> {
-	await state.pending;
-	const hit = state.ledger.find((c) => breaks(c, e.tool, e.input));
+	if (!judged(e.tool)) {
+		return next(e);
+	}
+	const ledger = await ledgerOf($, state, next);
+	const hit = ledger.find((c) => breaks(c, e.tool, e.input));
 	return hit === undefined ? next(e) : deny(PIN_BLOCKED(hit.text));
 }
 

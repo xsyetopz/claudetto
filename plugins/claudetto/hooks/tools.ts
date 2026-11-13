@@ -1,4 +1,37 @@
-import type { BuiltinToolName } from "claude-code";
+import type { BuiltinToolName, EngineInterface, HookBudget } from "claude-code";
+
+const BUDGET_MS: HookBudget["ms"] = 10_000;
+
+/** Time left for the rest of the hook once a wait ends. */
+const SPARE_MS = 1000;
+
+/**
+ * What `work` settles to, or `null` once the hook's own budget runs short. A wait on work another dispatch started is
+ * the hook's own time, so an unbounded one gets the hook skipped.
+ */
+export function withinBudget<T>(
+	$: EngineInterface,
+	work: Promise<T>,
+	remainingMs: number,
+	signal: AbortSignal,
+): Promise<T | null> {
+	const done = new AbortController();
+	const late = async (): Promise<null> => {
+		try {
+			await $.clock.sleep(
+				Math.max(0, Math.min(remainingMs, BUDGET_MS) - SPARE_MS),
+				{ signal: AbortSignal.any([signal, done.signal]) },
+			);
+		} catch (error) {
+			// An aborted wait ends the same way as one that ran out.
+			$.ui.log(`The wait ended early (${String(error)})`);
+		}
+		return null;
+	};
+	return Promise.race([work, late()]).finally(() => {
+		done.abort();
+	});
+}
 
 /** The tools whose result is a file the session changed. */
 export const WRITERS = [

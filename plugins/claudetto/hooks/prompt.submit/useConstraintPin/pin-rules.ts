@@ -64,6 +64,10 @@ const bashWrites = (
 		return (anyWrite && writesFiles(c)) || (name === "git" && git.has(sub));
 	});
 
+/** Whether any constraint of the ledger can break a call of `tool`. */
+export const judged = (tool: string): boolean =>
+	tool === "Bash" || isWriter(tool);
+
 /** Whether a tool call breaks a constraint of the ledger. */
 export const breaks = (
 	c: PinConstraint,

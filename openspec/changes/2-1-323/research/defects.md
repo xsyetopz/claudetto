@@ -746,6 +746,11 @@ The guard that overruns is `pinCheck` (`prompt.submit/useConstraintPin/pin.ts:10
 - P-D10.32c. Hypothesis: `prompt.submit`'s own wait for the first ledger read after a resume (`pin.ts:68-70`) overruns the same way. Prediction: it is skipped. Result: refuted. It settled in 15072.8 ms without a skip, because the model call is its own `$` call. The same run showed `classic.Stop settled in 45155.8ms`: three times the 15 s delay, so the Stop checks likely ran three side-model calls in sequence (inferred, not logged). That holds the end of each turn as long as the side model takes.
 - Fix: task 7.19, then task 7.20.
 - The user pasted one more such dialog on 2026-11-13 in `17435f50`. It was on a read-only Bash `grep` for the test kit's `mock.clock`, and it came after the user's message about agents handing work back to the user. That message started a ledger read, so this fits the cause above.
+- Fixed by task 7.20, which holds until tasks 6.1 and 6.5 delete this code.
+  - `pinCheck` now passes any tool other than `Bash` and the writers at once.
+  - `pinCheck` and `pinCall` now wait for the ledger read only until `next.budget.remainingMs` less 1 s, through `withinBudget` (`hooks/tools.ts`), which `price-step.ts` also uses. After that they judge by the ledger as it stands.
+  - The `classic.Stop` checks now start their side-model calls together. They still settle in their old order, so a block still wins over a later check's fault.
+  - Tests: "a Read while the ledger read hangs settles at once" and "a Bash call while the ledger read hangs settles within the hook's budget" (`pin.test.ts`), and "the Stop checks start every side-model call before any answers…" (`useStopChecks/register.test.ts`). Each failed before the change; the Stop test got "Expected: > 1, Received: 1". After it, `claude plugin test plugins/claudetto` passed 1555 tests with 0 failures, and `just verify` exited 0.
 
 ### D10.33 The Docs Tool Refuses an H3 It Lists
 
