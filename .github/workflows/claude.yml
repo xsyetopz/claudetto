@@ -47,7 +47,7 @@ jobs:
           fetch-depth: 1
       # `additional_permissions` lets Claude read the workflow runs of the repository, such as a failed CI run.
       - if: steps.secret.outputs.present == 'true'
-        uses: anthropics/claude-code-action@4845bacbb38b3c4b15d948f035349786f678e068 # v1.0.267
+        uses: anthropics/claude-code-action@9eb012b6d0900c2b9eede65ee1758cec4d2973e9 # v1.0.270
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
