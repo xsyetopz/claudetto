@@ -411,6 +411,8 @@ Read: in `useMemoryHold/memory.ts`, the `.catch` at `:184` wraps the whole `poll
 
 Observed in subagents: "Monitor is off here: call mcp__claudetto__monitor." (76 in 73) and "The server-side auto mode classifier gave no verdict for Agent: a hook changed this call's input" (26 in 7). Both texts come from the installed build `82b714c5ec41` (`hooks/delegation.ts:166-170`). The source already refuses an off-form `Agent` call in place of rewriting it (`tool.call/useClaudettoAgents/delegation.ts:35-49`) and holds no Monitor block. Recorded only.
 
+"This agent has run past its 15-minute limit, so each further tool call is refused" (`DENY_OVERTIME`, option `agentMaxMinutes`) came back as a tool result 23 times, in four OpenSAD `005f897e` subagents between 2026-11-10T21:18 and 21:43. Counted with a script over every `~/.claude/projects` transcript that keeps tool results under 700 characters, so survey output that quotes the text is left out. Archived task 10.8 of `feat-2-1-321` replaced the time cap with `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`. `grep -rn 'minute limit'` finds the text neither in `plugins/` nor in `~/.claude/plugins/cache`. Recorded only.
+
 ### D10.8 Checked and Closed
 
 - Commit `c51d8452` reached `origin/feat/2.1.321` with no push in any transcript. The remote-tracking reflog says "update by push" at 17:13:44Z, 58 seconds after the commit. No `.githooks` file pushes, and claudetto's only push is `git push origin --delete` (`hygiene/branches.ts:175`). VS Code has `git.confirmSync: false`, so its sync button pushes with no prompt; that source is inferred. Not a claudetto defect. The fault was the agent naming a hook as the cause before any check.
@@ -444,4 +446,12 @@ Not reproduced: a `tsgolint` above 602 MB. The 16 GB processes came from an inpu
 ### D10.11 The Worktree Guard Refuses This Session's Own `git worktree add`
 
 Observed this session (2026-11-13): `git worktree add --detach $TMPDIR/…/probe-tsgolint 6cc3dce3` succeeded, and the next `git worktree remove --force` on the same path was denied: "is not a worktree this session created: Claude Code made no worktree of that name in this session, for an agent with isolation or for EnterWorktree." The guard counts only worktrees that Claude Code made, so the probe worktree stays until the user removes it. This adds a case to D9.3. Fix: task 7.8.
+
+### D10.12 The Stop Notice Lists Subagents' Shells to the Lead
+
+Observed in OpenJoystickDriver `c86d66a7` (2026-11-11). From 23:26:24 the lead called `TaskStop` on shells that the Stop notice "Background tasks still running at Stop:" had listed, such as `b8a3b8sgr`, `blysngezw`, and `btixsofv2`. Each call failed: "No task found with ID: blysngezw. Running background agents: a73773d6b7ca1bd1f …". The `backgroundTaskId` of each shell appears only in a subagent transcript: `agent-a784b77fabfe926ad`, `agent-a86a5700180d5aefd`, and `agent-a1882b3d90e395d5d`. Line counts in the lead transcript: 144 lines hold the notice, 15 hold the failure.
+
+Read: `classic.Stop/useStopChecks/stop.ts:148` passes `e.background_tasks` through `tasksNotice`, and `texts.ts:221` prints each entry with its ID and offers `Monitor`. Claude Code's Stop input holds the subagents' shells too, and the lead's `TaskStop` reaches only its own shells and the agents themselves. The notice gives the lead IDs it cannot act on.
+
+Fix: task 6.1 deletes `stop.ts` with its notice. The lead keeps the task list Claude Code already shows. Whether stopping an agent with `TaskStop` also ends its shells is unchecked.
 
