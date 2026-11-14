@@ -21,8 +21,12 @@ import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene";
 import { reply } from "./command.run/useReplyCommand/reply";
 import { setup } from "./command.run/useSetup/setup";
 import { modelPrompt } from "./prompt.compose/useModelPrompt/compose";
+import {
+	askForHandoff,
+	handoffHooks,
+} from "./session.compact/useHandoff/handoff";
 import { sessionTempCleanup } from "./session.end/useSessionTempCleanup/cleanup";
-import { lineFileHooks } from "./session.measure/useLineFile/line-file";
+import { writeLineFile } from "./session.measure/useLineFile/line-file";
 import { surface } from "./settings.read/useSlimSurface/surface";
 import { REPLY_SPEC } from "./texts";
 import { DECIDE_SPEC } from "./texts-gate";
@@ -58,7 +62,12 @@ const registerOuter = (on: On, options: PluginOptions, state: State): void => {
 	agentFileModel(on);
 	modelPrompt(on);
 	budgetHooks(on);
-	lineFileHooks(on);
+	on("session.measure", async ($, e, next) => {
+		await writeLineFile($);
+		await askForHandoff($, e.context.percent);
+		return next(e);
+	});
+	handoffHooks(on);
 	setup(on, options);
 	surface(on);
 	delegation(on);

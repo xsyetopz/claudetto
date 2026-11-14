@@ -150,6 +150,7 @@ test("the bundled-skill switch is written, and the compaction window and trigger
 
 	expect(valueAt(written, ["disableBundledSkills"])).toBe(true);
 	expect(valueAt(written, ["idleCompaction"])).toBe(false);
+	expect(valueAt(written, ["autoCompactEnabled"])).toBe(false);
 	expect(valueAt(written, ["autoCompactWindow"])).toBeUndefined();
 	expect(
 		valueAt(written, ["env", "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"]),

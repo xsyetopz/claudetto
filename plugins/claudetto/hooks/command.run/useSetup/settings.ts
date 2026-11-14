@@ -98,7 +98,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Models and windows",
-		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, and the Haiku context window.`,
+		why: `Writes ${OPUS} as the main model at medium effort, ${SONNET} for subagents and as the fallback, effort ceilings per model, a one hour prompt cache for subagents, the Haiku context window, and turns auto-compaction off, because the handoff hooks reset context before it fills.`,
 		settings: {
 			model: OPUS,
 			effortLevel: "medium",
@@ -108,6 +108,7 @@ export const GROUPS: readonly Group[] = [
 				[SONNET]: { maxEffortLevel: "medium" },
 				[HAIKU]: { maxEffortLevel: "high", autoCompactWindow: 200_000 },
 			},
+			autoCompactEnabled: false,
 			idleCompaction: false,
 			subagentPromptCacheTtl: "1h",
 			env: {

@@ -58,6 +58,7 @@ test("the models group writes the models, ceilings, and windows", () => {
 				autoCompactWindow: 200_000,
 			},
 		},
+		autoCompactEnabled: false,
 		idleCompaction: false,
 		subagentPromptCacheTtl: "1h",
 		env: {

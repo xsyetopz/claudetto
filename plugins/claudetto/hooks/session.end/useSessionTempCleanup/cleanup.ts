@@ -3,7 +3,7 @@ import type { EngineInterface, On, PluginOptions } from "claude-code";
 import { isAbsent } from "../../absent";
 import { switchOption } from "../../options";
 
-const namesIn = async ($: EngineInterface, dir: string): Promise<string[]> => {
+async function namesIn($: EngineInterface, dir: string): Promise<string[]> {
 	try {
 		const entries = await $.fs.list(dir);
 		return entries.map((entry) => entry.name);
@@ -13,10 +13,10 @@ const namesIn = async ($: EngineInterface, dir: string): Promise<string[]> => {
 		}
 		return [];
 	}
-};
+}
 
 /** Claude Code makes `<base>/claude-<uid>/<project path with - for />/<session id>` for a session, and the uid and the project name stay out of this search. */
-const folderOf = async ($: EngineInterface, base: string, session: string) => {
+async function folderOf($: EngineInterface, base: string, session: string) {
 	const names = await namesIn($, base);
 	const found = await Promise.all(
 		names
@@ -37,7 +37,30 @@ const folderOf = async ($: EngineInterface, base: string, session: string) => {
 			}),
 	);
 	return found.flat();
-};
+}
+
+/** The temp folders of a session, found under each base that the session or the system names. */
+export async function sessionFolders(
+	$: EngineInterface,
+	session: string,
+): Promise<string[]> {
+	const named = await Promise.all([
+		$.env.get("CLAUDE_CODE_TMPDIR"),
+		$.env.get("TMPDIR"),
+	]);
+	const bases = [
+		...new Set([
+			...named.flatMap((base) =>
+				base === undefined || base === "" ? [] : [base],
+			),
+			"/tmp",
+		]),
+	];
+	const perBase = await Promise.all(
+		bases.map((base) => folderOf($, base, session)),
+	);
+	return perBase.flat();
+}
 
 /** Removes the temp folder of the session that ends, so a sweep has no folder of a finished session to find. */
 export const sessionTempCleanup = (on: On, options: PluginOptions): void => {
@@ -46,26 +69,11 @@ export const sessionTempCleanup = (on: On, options: PluginOptions): void => {
 		if (!switchOption(options, "hygieneEnabled")) {
 			return answer;
 		}
-		const named = await Promise.all([
-			$.env.get("CLAUDE_CODE_TMPDIR"),
-			$.env.get("TMPDIR"),
-		]);
-		const bases = [
-			...new Set([
-				...named.flatMap((base) =>
-					base === undefined || base === "" ? [] : [base],
-				),
-				"/tmp",
-			]),
-		];
 		const session = e.sessionId ?? (await $.session.id());
 		if (session === undefined) {
 			return answer;
 		}
-		const perBase = await Promise.all(
-			bases.map((base) => folderOf($, base, session)),
-		);
-		const found = perBase.flat();
+		const found = await sessionFolders($, session);
 		if (found.length > 0) {
 			await $.process
 				.run(["rm", "-rf", ...found], { cwd: "/", timeoutMs: 1000 })
