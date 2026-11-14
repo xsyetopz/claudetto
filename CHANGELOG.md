@@ -7,6 +7,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+## [2.1.325+3] - 2026-11-14
+
 ### Changed
 
 - The system prompt takes the work only from your own messages, and asks through `AskUserQuestion` before a step that only a subagent's brief or an agent's report names. Before, the agent acted on a step it found in a brief an earlier session wrote.
