@@ -26,6 +26,14 @@ const lab = (on: On, answers: Record<string, Answer>): void => {
 				},
 			},
 	);
+	on("clock.now", () => ({ value: 0 }));
+	on("fs.exists", () => ({ value: false }));
+	on("session.cwd", () => ({ value: "/p" }));
+	on("session.root", () => ({ value: "/p" }));
+	on("session.id", () => ({ value: "S1" }));
+	on("session.messages", () => ({ value: [] }));
+	on("tool.list", () => ({ value: [] }));
+	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
 	on("tool.call", (_$, e) => {
 		const answer = answers[e.tool_use_id ?? ""] ?? { text: "" };
 		return { result: { stdout: answer.text, stderr: "" }, ...answer };
@@ -210,4 +218,19 @@ test("a change between repeats ends the run of misses", async ($: Engine, on: On
 	const after = await read($, "t5", "/p/a.ts");
 
 	expect(after.deny).not.toContain("in a row");
+});
+
+test("a rerun cut down to a part of a held output is withheld", async ($: Engine, on: On) => {
+	lab(on, {
+		t1: { text: FILE.join("\n") },
+		t2: { text: FILE.slice(7).join("\n") },
+	});
+	await $.tool.call({ tool: "Bash", tool_use_id: "t1", command: "bun test" });
+	const tail = await $.tool.call({
+		tool: "Bash",
+		tool_use_id: "t2",
+		command: "bun test 2>&1 | tail -5",
+	});
+
+	expect(tail.deny).toContain("`t1`");
 });
