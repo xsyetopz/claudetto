@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { HANDOFF_OPENING } from "../../texts";
+import { HANDOFF_OPENING, HANDOFF_SKIP } from "../../texts";
 
 const HANDOFF = "/tmp/claudetto-handoff-s-1.md";
 
@@ -14,15 +14,12 @@ const ok = {
 };
 
 /** `file` is the handoff text, or undefined while the model has not written it; the rest records what the hooks did. */
-const lab = (on: On, file: { text?: string }, rejects = false) => {
+const lab = (on: On, file: { text?: string }) => {
 	const notes: string[] = [];
 	const removed: (readonly string[])[] = [];
-	const logs: string[] = [];
-	const seen = { notes, removed, core: 0, logs };
+	const seen = { notes, removed, core: 0 };
 	mock.env(on, {});
 	on("session.id", () => ({ value: "s-1" }));
-	on("session.measure", (_$, e) => ({ changed: e.changed }));
-	on("turn.complete", (_$, e) => ({ text: e.answer }));
 	on("fs.read", (_$, e) =>
 		e.path === HANDOFF && file.text !== undefined
 			? { value: file.text }
@@ -33,85 +30,78 @@ const lab = (on: On, file: { text?: string }, rejects = false) => {
 		delete file.text;
 		return { value: ok };
 	});
-	on("session.append", (_$, e) => {
+	on("session.append", (_$, e, next) => {
 		const block = e.message.content[0];
 		seen.notes.push(String(block?.["text"]));
-		return { message: e.message, uuid: "u-1" };
+		return next(e);
 	});
 	on("session.compact", (_$, e) => {
-		if (rejects) {
-			throw new Error("not available in a headless session");
-		}
 		seen.core += 1;
 		return { messages: e.messages };
-	});
-	on("ui.log", (_$, e) => {
-		seen.logs.push(e.text);
-		return { value: undefined };
 	});
 	return seen;
 };
 
-const MANUAL = { trigger: "manual", messages: [] } as const;
-
-const measure = ($: Engine, percent: number) =>
-	$.session.measure({
-		context: { window: 1_000_000, percent },
-		rateLimits: [],
-		changed: ["context"],
+const compact = (
+	$: Engine,
+	trigger: "auto" | "manual" | "precompute",
+	agent: { agentId?: string } = {},
+) =>
+	$.session.compact({
+		trigger,
+		messages: [{ role: "user", text: "older work", toolUses: [] }],
+		...agent,
 	});
 
-const complete = ($: Engine) =>
-	$.turn.complete({
-		answer: "done",
-		durationMs: 1,
-		isAborted: false,
-		turnId: "t-1",
-		reason: "answer",
-	});
-
-test("past the soft threshold one notice names the handoff file, and a second measure adds none", async ($: Engine, on: On) => {
+test("the first auto-compaction with no handoff file is skipped, and one notice names the file", async ($: Engine, on: On) => {
 	const seen = lab(on, {});
-	await measure($, 59);
-	await measure($, 61);
-	await measure($, 70);
+	const answer = await compact($, "auto");
+	expect(answer.skip).toBe(HANDOFF_SKIP);
+	expect(seen.core).toBe(0);
 	expect(seen.notes).toHaveLength(1);
 	expect(seen.notes[0]).toContain(HANDOFF);
 });
 
-test("a turn that ends with the handoff file written compacts, and the hook answers with the file as the one message and removes it", async ($: Engine, on: On) => {
-	const file = { text: "goal: ship" };
-	const seen = lab(on, file);
-	await measure($, 61);
-	await complete($);
+test("an auto-compaction after the notice with still no file takes the built-in path", async ($: Engine, on: On) => {
+	const seen = lab(on, {});
+	await compact($, "auto");
+	await compact($, "auto");
 	expect(seen.core).toBe(1);
-	const answer = await $.session.compact(MANUAL);
+	expect(seen.notes).toHaveLength(1);
+});
+
+test("a compaction that finds the handoff file answers with it as the one message and removes it", async ($: Engine, on: On) => {
+	const file: { text?: string } = {};
+	const seen = lab(on, file);
+	await compact($, "auto");
+	file.text = "goal: ship";
+	const answer = await compact($, "auto");
 	expect(answer).toEqual({
 		messages: [
 			{ role: "user", text: HANDOFF_OPENING("goal: ship"), toolUses: [] },
 		],
 	});
-	expect(seen.removed.at(-1)).toEqual(["rm", HANDOFF]);
+	expect(seen.removed).toEqual([["rm", HANDOFF]]);
+	expect(seen.core).toBe(0);
 });
 
-test("a turn that ends before the file exists compacts nothing", async ($: Engine, on: On) => {
-	const seen = lab(on, {});
-	await measure($, 61);
-	await complete($);
-	expect(seen.core).toBe(0);
+test("a precompute leaves the handoff file for the compaction that installs", async ($: Engine, on: On) => {
+	const seen = lab(on, { text: "goal: ship" });
+	const answer = await compact($, "precompute");
+	expect(answer.skip).toBe(HANDOFF_SKIP);
 	expect(seen.removed).toEqual([]);
 });
 
 test("a /compact with no handoff file takes the built-in path", async ($: Engine, on: On) => {
 	const seen = lab(on, {});
-	await $.session.compact(MANUAL);
+	await compact($, "manual");
 	expect(seen.core).toBe(1);
+	expect(seen.notes).toEqual([]);
 });
 
-test("a rejected compaction call is logged and the turn still ends", async ($: Engine, on: On) => {
-	const seen = lab(on, { text: "goal: ship" }, true);
-	await measure($, 61);
-	const out = await complete($);
-	expect(out).toEqual({ text: "done" });
-	expect(seen.logs.some((line) => line.includes("headless"))).toBe(true);
+test("a subagent's compaction takes the built-in path though the file exists", async ($: Engine, on: On) => {
+	const seen = lab(on, { text: "goal: ship" });
+	await compact($, "auto", { agentId: "a-1" });
+	expect(seen.core).toBe(1);
+	expect(seen.removed).toEqual([]);
 });

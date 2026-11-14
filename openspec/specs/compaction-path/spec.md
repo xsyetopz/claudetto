@@ -7,25 +7,19 @@ The path that keeps context across a long session is chosen by measured cost and
 
 ### Requirement: Handoff Compaction
 
-The `session.measure` hook SHALL add one notice once context use reaches `HANDOFF_PERCENT` (60), asking for a handoff file at `<CLAUDE_CODE_TMPDIR|TMPDIR|/tmp>/claudetto-handoff-<session id>.md` with goal, done work, open tasks, decisions, the user's corrections word for word, and the next step, then an ended turn. On `turn.complete` of the main loop after the file exists, the plugin SHALL call `$.session.compact()` and catch its rejection. The `session.compact` hook SHALL answer a main-loop compaction that finds the file with that text as the one message (`toolUses: []`) and remove the file; with no file it SHALL call `next(e)`. Auto-compaction stays on, so a compaction at the threshold, in a headless session too, takes the file when it exists. The session folder of Claude Code is not the place for the file, because it exists only after a tool has run.
+The `session.compact` hook SHALL skip the first auto-compaction of the main loop that finds no handoff file, with one notice asking for a handoff file at `<CLAUDE_CODE_TMPDIR|TMPDIR|/tmp>/claudetto-handoff-<session id>.md` with goal, done work, open tasks, decisions, the user's corrections word for word, and the next step. It SHALL answer a main-loop compaction that finds the file with that text as the one message (`toolUses: []`) and remove the file. It SHALL call `next(e)` for an auto-compaction after the notice with still no file, for a manual compaction with no file, and for a subagent's compaction. It SHALL skip a precompute while the file exists or the notice is out, because a precompute installs nothing. Claude Code's own threshold sets the moment, because `$.session.usage({ breakdown })` reports an `autoCompactThreshold` that differs from the one Claude Code compacts at: on 2.1.325 with `claude-haiku-5-5` it reports 967,000 while compaction runs at 490,000 ("thresholdSource=model-default"). The session folder of Claude Code is not the place for the file, because it exists only after a tool has run.
 
-#### Scenario: The Notice Comes Once for Each Fill
+#### Scenario: The First Auto-Compaction Asks for the File
 
-- **WHEN** context use passes 60% and measures again
-- **THEN** one notice names the file, and a later measure past 60% adds none until use falls under 60% again
-- **AND** the lab test is `handoff.test.ts`, "past the soft threshold one notice names the handoff file, and a second measure adds none"
+- **WHEN** the main loop auto-compacts and no handoff file exists
+- **THEN** the compaction is skipped, one notice names the file, and the next auto-compaction with still no file takes the built-in path
+- **AND** the lab tests are `handoff.test.ts`, "the first auto-compaction with no handoff file is skipped, and one notice names the file" and "an auto-compaction after the notice with still no file takes the built-in path"
 
 #### Scenario: The File Is Written
 
-- **WHEN** a turn ends with the file present
-- **THEN** `$.session.compact()` runs, the hook answers with the file text as the one message, no summarizer request is made, and the file is removed
-- **AND** the evidence is a run of the real plugin on a fake Messages API: the request after the reset carries the file text and not the notice, and no request carries the summarizer prompt (`PostCompact` fired, `PreCompact` did not)
-
-#### Scenario: No File or a Headless Session
-
-- **WHEN** a turn ends before the file exists, or `$.session.compact()` rejects
-- **THEN** nothing compacts, the rejection is logged, and the turn ends
-- **AND** `$.session.compact()` rejects while a turn runs, so a `-p` session compacts only at the threshold; with `autoCompactEnabled: false` it answers "Prompt is too long" at overflow (measured), so the setting stays on
+- **WHEN** a compaction finds the file
+- **THEN** the hook answers with the file text as the one message, no summarizer request is made, and the file is removed
+- **AND** the evidence is a stream-json run of the real plugin on a fake Messages API at 500,000 input tokens: "session.compact (auto): skipped", the next request carries the notice, the model writes the file, "a hook's 1 messages stand … core never ran", and the next request opens with the file text
 
 #### Scenario: Cost on the Fake API
 
