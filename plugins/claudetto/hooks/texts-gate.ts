@@ -19,7 +19,7 @@ const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 					question: {
 						type: "string",
 						description:
-							"The decision, with each fact that settles it and its source: Jev reads no file or session. The text goes to the TypeSafe API, so keep secrets and personal data out.",
+							"The decision, with each fact that settles it and its source: Jev sees only this text. It goes to the TypeSafe API, so include only facts free of secrets and personal data.",
 					},
 					options: {
 						type: "array",
