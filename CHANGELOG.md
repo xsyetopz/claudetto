@@ -7,6 +7,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+## [2.1.325+1] - 2026-11-14
+
 ### Added
 
 - The repeat guard withholds a result the agent already holds and points to the call that gave it. This covers a read-only result or a `Bash` output held whole or as a part, timings aside, such as a reread of an unchanged file, a `cat` of lines `Read` showed, a narrower search, or a rerun of the same check, cut with `tail` or not. A `Write` or `Edit` updates what the agent holds, so a read back of its own change is withheld too. From the third repeat in a row with no change between, it asks the agent to act on what it holds or to report. It keys on the result, so a changed argument does not get past it. Each subagent holds its own results, and a loop forgets them after its compaction or a `/clear`. The results of `Edit` and `Write` themselves are never withheld. It is the bound on a runaway agent now that the agents set no `maxTurns`.
