@@ -6,7 +6,7 @@ description: Check that an implementation matches its OpenSpec change before arc
 The tool is `mcp__claudetto-openspec__openspec`.
 
 1. `{action:"validate", change}` and `{action:"status", change}`. Note each validation issue and each unticked task.
-2. For each requirement in `specs/<capability>/spec.md`, find the code or test that meets it and each scenario's WHEN/THEN. Name the file and line. A requirement with no match is a gap.
+2. For each requirement in `specs/<capability>/spec.md`, find the code or test that meets it and each scenario's WHEN/THEN. Name the file and line, and run the tests you find, because a found test shows intent and a passing run shows the result. A requirement with no match or a failing test is a gap.
 3. Read design.md and note each decision the code does not follow.
 4. Cover every requirement of every spec in this session. Send the Grep calls for many requirements in one message, and Read only the lines around each hit with `offset` and `limit`, because each call returns a turn of context. Search in this session, because a subagent rereads the change before it searches and costs more than the search it takes over.
 5. Close each gap and each decision not followed. The spec is the contract: change the code to meet it. Change the spec instead, through the update skill, only where it states a fact the repository disproves, such as a file count or a name. Ask the user to choose between two designs that the spec and design.md both allow.
