@@ -5,6 +5,8 @@ import { join } from "node:path";
 import type { Call, Run } from "./graders.builders.ts";
 import { fixtures } from "./graders.fixtures.ts";
 
+const EVALS = join(import.meta.dir, "../../../plugins/claudetto/evals");
+
 // Free replica of the `regex` and `tool_used` grader rules the eval harness documents: each grader must pass a known-good run and fail each known-bad run, and a bad run must fail exactly the graders listed for it.
 
 interface Grader {
@@ -60,12 +62,12 @@ const passes = (grader: Grader, run: Run): boolean => {
 	return match === "not_contains" ? !found : found;
 };
 
-const dirents = await readdir(import.meta.dir, { withFileTypes: true });
+const dirents = await readdir(EVALS, { withFileTypes: true });
 const caseNames = await Promise.all(
 	dirents
 		.filter((dirent) => dirent.isDirectory())
 		.map(async (dirent) =>
-			(await Bun.file(join(import.meta.dir, dirent.name, "prompt.md")).exists())
+			(await Bun.file(join(EVALS, dirent.name, "prompt.md")).exists())
 				? [dirent.name]
 				: [],
 		),
@@ -88,7 +90,7 @@ test("each case has a fixture and each fixture a case", () => {
 });
 
 const loaded = await Promise.all(
-	cases.map((name) => load(join(import.meta.dir, name, "graders"))),
+	cases.map((name) => load(join(EVALS, name, "graders"))),
 );
 
 for (const [at, name] of cases.entries()) {

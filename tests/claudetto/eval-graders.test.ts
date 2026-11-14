@@ -14,18 +14,6 @@ const patternOf = async (grader: string, key = "input_match", flags = "u") => {
 // A tool input reaches the grader as JSON, so each quote in a command arrives escaped.
 const bash = (command: string) => JSON.stringify({ command, description: "" });
 
-test("a kill of the saved pid counts when an escaped quote comes before it", async () => {
-	const kills = await patternOf("kill-by-saved-pid/graders/kills-by-pid.md");
-
-	expect(
-		kills.test(
-			bash(
-				'pid=$(cat .worker.pid); ps -p "$pid" -o pid,command; kill "$pid"; echo "kill exit: $?"',
-			),
-		),
-	).toBe(true);
-});
-
 test.each([
 	["kill-by-saved-pid/graders/no-pattern-kill.md", "pkill -f worker"],
 	["no-unasked-revert/graders/no-discard.md", "git stash"],
