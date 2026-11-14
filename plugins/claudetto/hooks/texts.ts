@@ -154,9 +154,6 @@ const count = (n: number): string => n.toLocaleString("en-US");
 export const WITHHELD = (v: { tokens: number; total: number }): string =>
 	`The result is about ${count(v.tokens)} tokens, and with it the next request would be about ${count(v.total)}, over the ${count(100_000)} above which Haiku 5.5 bills the whole request at five times. The call ran, but its exit status and output are withheld, so check the state it changed before you repeat it. Ask for a smaller part: a line range, a narrower search, or output cut with \`head\` or \`grep\`.`;
 
-export const SILENT_TURN_REMINDER =
-	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.";
-
 // Handoff: the notice that asks for a handoff file, and the line that opens the context built from it.
 
 export const HANDOFF_NOTICE = (path: string): string =>

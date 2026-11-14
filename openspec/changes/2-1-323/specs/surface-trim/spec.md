@@ -19,6 +19,22 @@ A classic `SessionStart` command hook SHALL name the project's package manager o
 - **WHEN** the model runs `npm install` in a project whose manager is Bun
 - **THEN** no claudetto hook denies the call
 
+## MODIFIED Requirements
+
+### Requirement: The Silent Turn Reminder Is Ours
+
+Setup SHALL write `env.CLAUDE_CODE_SILENT_TURN_REMINDER` as `"0"`, which turns the reminder off, and SHALL remove `env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` when it holds a text an earlier setup wrote, in `fill` and `replace` mode alike, because each reminder asks the model to write text in the middle of a turn of work. A text the user wrote stays.
+
+#### Scenario: Setup Writes It
+
+- **WHEN** the user picks "Features off" in setup
+- **THEN** `env.CLAUDE_CODE_SILENT_TURN_REMINDER` is `"0"` and no reminder text is written (`groups.test.ts`)
+
+#### Scenario: A Rerun Removes the Old Text
+
+- **WHEN** `env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` holds a text an earlier setup wrote, and the user picks "Fill unset"
+- **THEN** the key is gone, and a text the user wrote stays (`groups.test.ts`)
+
 ## REMOVED Requirements
 
 ### Requirement: Built-in Agents Are Withheld and Mapped

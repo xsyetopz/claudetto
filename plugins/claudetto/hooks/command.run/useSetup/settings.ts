@@ -1,4 +1,3 @@
-import { SILENT_TURN_REMINDER } from "../../texts";
 import { isRecord } from "../../tools";
 import { AUTO_MODE } from "./auto-mode";
 import { COMMAND_RULES } from "./command-rules";
@@ -13,7 +12,7 @@ export interface Group {
 	readonly label: string;
 	readonly why: string;
 	readonly settings: Json;
-	/** Lists whose entries an earlier setup wrote and this one removes; the user's other entries stay. */
+	/** Values an earlier setup wrote and this one removes: list entries, or the value of a key that holds one of them. The user's own values stay. */
 	readonly retired?: Json;
 }
 
@@ -136,7 +135,7 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Features off",
-		why: "Turns off workflows, artifacts, Remote Control, the claude.ai integrations, push notifications, auto memory, prompt suggestions, tips, voice, the to-do list, cron, fast mode, subagents that start subagents, a background subagent silent for 15 minutes, the advisor tool, telemetry, error reporting, git instructions, commit attribution, and the feedback prompts; sets the version floor.",
+		why: "Turns off workflows, artifacts, Remote Control, the claude.ai integrations, push notifications, auto memory, prompt suggestions, tips, voice, the to-do list, cron, fast mode, subagents that start subagents, a background subagent silent for 15 minutes, the silent-turn reminder, the advisor tool, telemetry, error reporting, git instructions, commit attribution, and the feedback prompts; sets the version floor.",
 		settings: {
 			$schema: "https://clawdipedia.cc/schemas/claude-code-settings.json",
 			minimumVersion: MINIMUM_VERSION,
@@ -182,8 +181,8 @@ export const GROUPS: readonly Group[] = [
 				CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
 				CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "1",
 				CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
-				// The server's text asks "say in a few words what you're doing", which draws a narration line.
-				CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: SILENT_TURN_REMINDER,
+				// The reminder asks for an update after a silent stretch, which draws text into a turn of work.
+				CLAUDE_CODE_SILENT_TURN_REMINDER: "0",
 				DISABLE_TELEMETRY: "1",
 				DISABLE_ERROR_REPORTING: "1",
 				DISABLE_EXTRA_USAGE_COMMAND: "1",
@@ -193,6 +192,14 @@ export const GROUPS: readonly Group[] = [
 				CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
 				CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "1",
 				CLAUDE_CODE_THRIFTY_SONIC: "0",
+			},
+		},
+		retired: {
+			env: {
+				CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: [
+					"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.",
+					"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.",
+				],
 			},
 		},
 	},

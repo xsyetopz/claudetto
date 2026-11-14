@@ -1,7 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
-import { SILENT_TURN_REMINDER } from "../../texts";
 import { AUTO_MODE } from "./auto-mode";
+import { applyChanges, changesOf } from "./changes";
 import { DENIED_TOOLS, GROUPS, STATUS_LINE, valueAt } from "./settings";
 import { groupNamed } from "./settings.mock";
 
@@ -77,14 +77,41 @@ test("the output-limits group writes the Bash and MCP result limits Claude Code 
 	});
 });
 
-test("the features-off group ends a silent background subagent, quiets the turn reminder, and writes no script caps", () => {
+test("the features-off group ends a silent background subagent, turns the silent-turn reminder off, and writes no script caps", () => {
 	const env = valueAt(groupNamed("Features off").settings, ["env"]);
 	expect(env).toMatchObject({
 		CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
 		CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
-		CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: SILENT_TURN_REMINDER,
+		CLAUDE_CODE_SILENT_TURN_REMINDER: "0",
 	});
+	expect(env).not.toHaveProperty("CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT");
 	expect(env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
+});
+
+const reminderTextAfterFill = (text: string): unknown => {
+	const group = groupNamed("Features off");
+	const held = { env: { CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: text } };
+	const written = applyChanges(held, changesOf(held, group), "fill");
+	return valueAt(written, ["env", "CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"]);
+};
+
+test("a rerun removes each reminder text an earlier setup wrote, in fill mode too", () => {
+	expect(
+		reminderTextAfterFill(
+			"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.",
+		),
+	).toBeUndefined();
+	expect(
+		reminderTextAfterFill(
+			"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.",
+		),
+	).toBeUndefined();
+});
+
+test("a rerun keeps a reminder text the user wrote", () => {
+	expect(reminderTextAfterFill("Say what you found.")).toBe(
+		"Say what you found.",
+	);
 });
 
 test("the sandbox group turns the sandbox off and sets nothing else", () => {
