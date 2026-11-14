@@ -14,7 +14,7 @@ const AFTER: Reading = {
 };
 
 const LINE =
-	"Budget: context 62% left, five-hour 23.5% used, seven-day 41% used";
+	"Budget: context 62% left, five-hour 23.5% used, seven-day 41% used. Report it after a paid run, and finish the task at any share.";
 
 const lab = (on: On, reading: Reading = AFTER) => {
 	scanner(on);

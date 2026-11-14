@@ -18,6 +18,9 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- The `claudetto-openspec` apply skill runs verify once each task is ticked, and closes each gap verify finds. Before, it named the verify skill and stopped.
+- The `claudetto-openspec` verify skill closes each gap in code, or in the spec where the repository disproves a fact it states. It covers every requirement in the session with batched Grep calls in place of subagents. Before, it reported and edited nothing, and a run could spread over five review agents.
+- The Budget line says what it is for: report it after a paid run, and finish the task at any share. A model had read the weekly share as a reason to skip a check.
 - A step for you can now be a slash command, written `- /<command>` under `## What I Need From You`. Before, the only accepted form was `- ! <command>`, which hands the line to the shell, so a slash command such as `/reload-plugins` got that form and could not run; the Stop hook then told the agent to run it with Bash. The hook now sends `- ! /<command>` back with the right form.
 - The session test checks that each model's whole claudetto prompt reaches the request, in place of one copied sentence that broke on any rewording.
 

@@ -10,6 +10,7 @@ The tool is `mcp__claudetto-openspec__openspec`.
 3. `{action:"status", change}`. Read the files it lists (proposal, design, specs, tasks.md) before the first edit.
 4. Work the unticked tasks in order. Keep each edit to what its task says. After a task is done, change its `- [ ]` to `- [x]` in tasks.md, in the same turn.
 5. Work every unticked task your tools can do before you stop, because a task left for the user waits a whole turn. When one task is blocked, go on with the next one it does not block. Stop only when each task left needs a decision from the user, hits a denial, or needs a step only the user can take: a command such as `sudo` or a login, or a physical step such as connecting a device. Then wait for the user's answer.
+6. When each task is ticked, run the verify skill on the change, because a ticked task is a claim and verify is its check. For each gap it finds, untick the task behind it, close the gap as verify says, tick it again, and run verify once more.
 
 ## Ending A Pause Or A Report
 
@@ -20,4 +21,4 @@ End every pause and every final report by copying each task you leave unticked a
 - the denial from this turn, quoted;
 - an open question to the user.
 
-A task your tools can still do is no blocker: do it before you end. Copy each task whole, so the user can match it to `tasks.md`. When none are left, say the change is done and name the verify skill.
+A task your tools can still do is no blocker: do it before you end. Copy each task whole, so the user can match it to `tasks.md`. When none are left and verify finds no gap, say the change is done.
