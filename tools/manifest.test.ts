@@ -65,9 +65,9 @@ test("the output style asks for the open-item form the Stop check reads", async 
 		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
 	).text();
 
-	expect(style).toContain(
-		"one `- ! <command>` bullet under `## What I Need From You`",
-	);
+	expect(style).toContain("one bullet under `## What I Need From You`");
+	expect(style).toContain("`- ! <command>` for a shell command");
+	expect(style).toContain("`- /<command>` for a slash command");
 	expect(style).toContain("Ask a question once, through `AskUserQuestion`.");
 });
 
