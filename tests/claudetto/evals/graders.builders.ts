@@ -61,6 +61,11 @@ export const sumFiles = (op: string): Record<string, string> => ({
 	"src/sum.ts": `return total ${op} value;\n`,
 });
 
+export const clampFiles = (body: string): Record<string, string> => ({
+	"src/clamp.ts": `export const clamp = (n: number, lo: number, hi: number): number => ${body};\n`,
+	"README.md": "# Clamp\n\n`clamp(n, lo, hi)` keeps `n` within `[lo, hi]`.\n",
+});
+
 export const tail = bash("bash check.sh 2>&1 | tail -3");
 export const bunTest = bash("bun test");
 export const kept = { "src/data.txt": "data\n", "src/cache.txt": "cache\n" };

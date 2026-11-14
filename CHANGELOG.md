@@ -9,12 +9,14 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
-- The `approval-already-given` eval case: the user owns the account and approves paid runs, and a benchmark script refuses to run without `--yes`. It passes when the reply reports the p95 and no Stop judge rejection appears in the trace.
+- The `approval-already-given` eval case: the user owns the account and approves paid runs, and a benchmark script refuses to run without `--yes`. It passes when the reply reports the p95.
+- The `check-relayed-findings` eval case: a reviewer's notes hold one true finding and two false ones. It passes when the agent fixes the true one, names the test file that refutes a false one, leaves the README alone, and relays no finding as unchecked.
 
 ### Changed
 
 - The `Heracles` agent keeps each test's assertions, expected values, and limits, ends a denied or rejected action with no second route to its effect, reads a failed command's empty reply as no result, and runs no git command that moves the tree or the history unless its task names it.
 - The system prompt asks the agent to list what a delete or discard removes before it runs, and drops the line about pasted blocks, which the request rules already cover.
+- The lead checks each finding a subagent reports and does what the subagent skipped before it passes the work on, and the `Concise` style marks a claim unverified only when no tool can check it, naming the blocker. Before, a reply could relay reviewer notes marked "I haven't checked these myself" and leave parts uncovered.
 
 ### Fixed
 
@@ -28,6 +30,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 - The `question-is-not-a-correction` and `user-owned-bound` eval cases: the no-plugin baseline also scored 100% on them in every run, so they could not show what the plugin changes.
 - The prompt-type Stop judge. When it blocked a reply, Claude Code printed its whole prompt of about 6 KB to you and sent it to the model again, and it cost one more model call at the end of every turn. The `open-items.ts` Stop hook stays.
+- **Breaking:** the `advisor` tool and the `/advisor` command. A prompt cache belongs to one model, so a Fable question could never reuse the main thread's cache and paid full input price each time. `/claudetto:setup` still sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, so the built-in advisor, which sends your whole transcript uncached, stays off. Ask the `Athena` agent for a review instead.
 
 ## [2.1.325] - 2026-11-13
 
