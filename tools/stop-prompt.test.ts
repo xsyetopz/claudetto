@@ -15,6 +15,8 @@ const FAULTS = [
 	"unfixed",
 	"deferred",
 	"options",
+	"forced",
+	"deference",
 ];
 
 interface HooksFile {
