@@ -48,6 +48,24 @@ The root prompt SHALL tell the model to write only the change, its check, and it
 - **WHEN** the model finds a step in scope it can take, such as a version bump before an install
 - **THEN** it takes the step and reports its result, with no offer
 
+### Requirement: Scope Comes from the User's Own Messages
+
+The root prompt SHALL tell the model that the user's own messages set the work, and to ask through `AskUserQuestion` before a step that only a brief or an agent's report names, because a lead acted on a step it found in an earlier lead's subagent brief, an allowlist edit the user never asked for.
+
+#### Scenario: A Step Found in a Brief
+
+- **WHEN** a subagent's brief or report names a step the user's messages do not
+- **THEN** the model asks through `AskUserQuestion` before it takes that step
+
+### Requirement: The Lead Works While an Agent Runs
+
+The root prompt SHALL tell the lead to do each step that does not wait on a running agent's result, because a lead ended its turn on "the agent is still running" while steps it could take alone were left.
+
+#### Scenario: A Running Agent
+
+- **WHEN** a background agent runs and steps remain that do not need its result
+- **THEN** the lead takes those steps in the same turn
+
 ## REMOVED Requirements
 
 ### Requirement: Report and Wait After a Bang Command or a Correction
