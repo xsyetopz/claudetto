@@ -19,7 +19,7 @@ const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 					question: {
 						type: "string",
 						description:
-							"The decision, with each fact that settles it and its source: Jev reads no file or session. The text goes to the TypeSafe API, so keep secrets and personal data out.",
+							"The decision, with each fact that settles it and its source: Jev sees only this text. It goes to the TypeSafe API, so include only facts free of secrets and personal data.",
 					},
 					options: {
 						type: "array",
@@ -40,7 +40,7 @@ const DECIDE_INPUT_SCHEMA: Record<string, unknown> = {
 	required: ["questions"],
 };
 
-const DECIDE_DESCRIPTION = `Asks Jev, a TypeSafe model, to settle a decision that is yours, not the user's, when no repository fact settles it and waiting would stop the work. A dialog for the user stays with the user.`;
+const DECIDE_DESCRIPTION = `Asks Jev, a TypeSafe model, to settle a decision that is yours to make, when no repository fact settles it and waiting would stop the work. A dialog for the user stays with the user.`;
 
 export const DECIDE_SPEC = {
 	name: DECIDE_TOOL,
@@ -67,45 +67,6 @@ export const secretScanFailed = (why: string): string =>
 export const GIT_CLOSED =
 	'Sandbox set its rules for `.git` when this session started, and this folder held no repository then, so each git write here fails inside sandbox with "Operation not permitted" until Claude Code restarts. Tell user once to restart Claude Code in this folder with `claude --continue`. Until then, run each git write with `dangerouslyDisableSandbox: true`.';
 
-// Advisor: the tool and command that put one question, with the files the asker names, to a stronger model.
-
-const ADVISOR_TOOL = "advisor";
-
-export const ADVISOR_CALL = "mcp__claudetto__advisor";
-
-export const ADVISOR_SYSTEM = `You advise another model that holds the rest of the work. You see the question and the files below, and nothing else of its session. Answer the question directly and name the file and line behind each claim. Say what you could not tell from the files.`;
-
-const ADVISOR_INPUT_SCHEMA: Record<string, unknown> = {
-	type: "object",
-	properties: {
-		question: {
-			type: "string",
-			description:
-				"The question, with each fact it needs: the advisor sees no session. Keep secrets out; the text is scanned and redacted before it goes.",
-		},
-		files: {
-			type: "array",
-			items: { type: "string" },
-			description: "Paths of the files to send with the question.",
-		},
-	},
-	required: ["question"],
-};
-
-export const ADVISOR_SPEC = {
-	name: ADVISOR_TOOL,
-	description:
-		"Asks Fable, a stronger model, one question about the files you name; it sees them and nothing else of this session. Use it for a hard design or review call.",
-	inputSchema: ADVISOR_INPUT_SCHEMA,
-};
-
-export const ADVISOR_NO_QUESTION = "Send a `question` as non-empty text.";
-export const ADVISOR_BAD_FILES = "Send `files` as a list of paths.";
-export const ADVISOR_DENIED = (path: string): string =>
-	`Nothing was sent: the read rules of this session deny \`${path}\`.`;
-export const ADVISOR_UNREADABLE = (path: string, why: string): string =>
-	`Nothing was sent: \`${path}\` could not be read (${why}).`;
-export const ADVISOR_TOO_BIG = (max: number): string =>
-	`Nothing was sent: the question and files hold more than ${max} characters. Name fewer or smaller files.`;
-export const ADVISOR_FAILED = (why: string): string =>
-	`The advisor gave no answer (${why}).`;
+// Repeats: the text that takes the place of a read-only result the agent already holds.
+export const repeatWithheld = (id: string, misses: number): string =>
+	`This result repeats what call \`${id}\` already gave you, unchanged, so it is withheld. Work from that result; for a new fact, query something else or change a file first.${misses >= 3 ? ` ${misses} calls in a row brought nothing new: act on what you hold, or report.` : ""}`;

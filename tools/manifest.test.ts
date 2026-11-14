@@ -59,18 +59,6 @@ for (const name of ["Artemis", "Metis", "Athena", "Heracles"]) {
 	});
 }
 
-// `open-items.ts` checks the request form the style asks for, so the style and the hook must name the same form.
-test("the output style asks for the open-item form the Stop check reads", async () => {
-	const style = await file(
-		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
-	).text();
-
-	expect(style).toContain(
-		"one `- ! <command>` bullet under `## What I Need From You`",
-	);
-	expect(style).toContain("Ask a question once, through `AskUserQuestion`.");
-});
-
 test("the output style fits 2,000 characters", async () => {
 	const style = await file(
 		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,

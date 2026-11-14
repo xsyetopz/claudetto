@@ -22,7 +22,7 @@ Each of the four agents `Artemis`, `Metis`, `Athena`, and `Heracles` SHALL set `
 #### Scenario: No Fable or Opus Subagent
 
 - **WHEN** a reader searches `plugins/claudetto/agents/` for `fable`, `mythos`, and `opus`
-- **THEN** no frontmatter holds any of them, and Fable and Mythos run only through the opt-in `advisor` tool
+- **THEN** no frontmatter holds any of them
 
 ### Requirement: Each Agent Body Is Its Whole Prompt
 

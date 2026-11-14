@@ -1,4 +1,4 @@
 schema_version: "1.1"
-name: question-is-not-a-correction
+name: check-relayed-findings
 context:
   scaffold_script: scaffold.sh

@@ -1,18 +1,56 @@
 # compaction-path Specification
 
 ## Purpose
-The path that keeps context across a long session is chosen by measured cost and quality, not by opinion. The default is the built-in path with the handoff as a safety net.
+The path that keeps context across a long session is chosen by measured cost and quality, not by opinion. The path is a handoff through a mod-driven compaction; the built-in summarizer runs only for a compaction that finds no handoff file.
 
 ## Requirements
 
+### Requirement: Handoff Compaction
+
+The `session.compact` hook SHALL skip the first main-loop auto-compaction that finds no handoff file, with one notice that asks for the file at `<CLAUDE_CODE_TMPDIR|TMPDIR|/tmp>/claudetto-handoff-<session id>.md`. It SHALL answer a main-loop compaction that finds the file with that text as the one message and remove the file. Every other compaction SHALL take the built-in path.
+
+#### Scenario: Why Claude Code's Threshold Sets the Moment
+
+- **WHEN** a plugin reads `autoCompactThreshold` from `$.session.usage({ breakdown })`
+- **THEN** the figure differs from the one Claude Code compacts at: on 2.1.325 with `claude-haiku-5-5` it reports 967,000 while compaction runs at 490,000 ("thresholdSource=model-default"), so no notice keyed on context use comes before the compaction
+
+#### Scenario: The Built-In Path
+
+- **WHEN** an auto-compaction follows the notice with still no file, a `/compact` finds no file, or a subagent compacts
+- **THEN** the hook calls `next(e)`
+- **AND** the lab tests are `handoff.test.ts`, "a /compact with no handoff file takes the built-in path" and "a subagent's compaction takes the built-in path though the file exists"
+
+#### Scenario: A Precompute
+
+- **WHEN** a precompute runs while the file exists or the notice is out
+- **THEN** it is skipped and the file stays, because a precompute installs nothing
+- **AND** the lab test is `handoff.test.ts`, "a precompute leaves the handoff file for the compaction that installs"
+
+#### Scenario: The First Auto-Compaction Asks for the File
+
+- **WHEN** the main loop auto-compacts and no handoff file exists
+- **THEN** the compaction is skipped, one notice names the file, and the next auto-compaction with still no file takes the built-in path
+- **AND** the lab tests are `handoff.test.ts`, "the first auto-compaction with no handoff file is skipped, and one notice names the file" and "an auto-compaction after the notice with still no file takes the built-in path"
+
+#### Scenario: The File Is Written
+
+- **WHEN** a compaction finds the file
+- **THEN** the hook answers with the file text as the one message, no summarizer request is made, and the file is removed
+- **AND** the evidence is a stream-json run of the real plugin on a fake Messages API at 500,000 input tokens: "session.compact (auto): skipped", the next request carries the notice, the model writes the file, "a hook's 1 messages stand … core never ran", and the next request opens with the file text
+
+#### Scenario: Cost on the Fake API
+
+- **WHEN** the handoff and the built-in call are compared on one conversation
+- **THEN** the handoff adds a 376-byte notice and one continuation request (23588 bytes) and the built-in call adds one request of +6535 bytes over a normal turn; both carry `cache_control`, and no dollar cost or summary quality was measured
+
 ### Requirement: Default Path
 
-The system SHALL use the built-in compaction for every compaction.
+The system SHALL use the built-in compaction where no handoff file exists.
 
-#### Scenario: No Probe Yet
+#### Scenario: A Manual Compaction With No File
 
-- **WHEN** a compaction starts
-- **THEN** the compaction path is the built-in one
+- **WHEN** a main-loop compaction starts and no handoff file exists
+- **THEN** the compaction path is the built-in one, and the `PreCompact` hook of the plugin runs on it
 
 #### Scenario: No Option Offers the Path
 

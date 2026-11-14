@@ -4,6 +4,7 @@ import { mkdir, mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import { MODEL_SECTIONS } from "../../plugins/claudetto/hooks/prompt.compose/useModelPrompt/texts";
 import { isRecord } from "../../plugins/claudetto/hooks/tools";
 import { denyText } from "../../plugins/claudetto/scripts/protected-switch";
 import { contextOf } from "../../plugins/claudetto/scripts/session-start";
@@ -70,7 +71,10 @@ for (const model of [
 			});
 
 			expect(systemText(run)).toContain(
-				"You are a junior software engineer in user's repository.",
+				JSON.stringify(MODEL_SECTIONS.get(model)?.get("lean_body")).slice(
+					1,
+					-1,
+				),
 			);
 			expect(claudettoErrors(run)).toEqual([]);
 			expect(run.debug).not.toContain("was not resolved");
@@ -212,24 +216,6 @@ test(
 
 		expect(run.toolResults[0]).toContain("[REDACTED]");
 		expect(JSON.stringify(run.requests)).not.toContain(key);
-	},
-	TIMEOUT,
-);
-
-test(
-	"the Stop hook sends an unbulleted command back to the model",
-	async () => {
-		const run = await claudeRun({
-			cwd: await folder("claude-session-stop"),
-			script: [
-				{ text: "Built.\n\n## What I Need From You\n\n! just deploy" },
-				{ text: "Done." },
-			],
-		});
-
-		const last = JSON.stringify(run.requests.at(-1)?.["messages"]);
-		expect(last).toContain("`! just deploy` is no bullet.");
-		expect(run.events.at(-1)?.["result"]).toBe("Done.");
 	},
 	TIMEOUT,
 );

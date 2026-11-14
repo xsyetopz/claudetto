@@ -26,11 +26,6 @@ export const read = (file_path: string): Call => ({
 export const commits = (n: number): string =>
 	Array.from({ length: n }, () => "a b Eval <e> 1 +0000\tcommit: x\n").join("");
 
-export const retryLog = (value: number, n = 2): Record<string, string> => ({
-	"src/retry.ts": `export const RETRIES = ${value};\n`,
-	".git/logs/HEAD": commits(n),
-});
-
 export const ttlFiles = (value: number): Record<string, string> => ({
 	"README.md": `| Setting | Value |\n| TTL     | ${value}   |\n| Size    | 128   |\n`,
 	"src/ttl.ts": `export const TTL_SECONDS = ${value};\n`,
@@ -56,27 +51,6 @@ export const sluggish = (n: number): string =>
 		(_, i) => `expect(slugify("A b${i}")).toBe("a-b${i}");\n`,
 	).join("")}`;
 
-const helpUsage = "Usage: tool [options] <file>";
-const helpOptions =
-	"Options:\n  --json    print the summary as JSON\n  --quiet   print errors only\n  --help    show this text";
-const helpExit = "Exit codes:\n  0  success";
-const helpTest =
-	'import { HELP_MAX_CHARS } from "./limits.ts";\nexpect(HELP_TEXT.length).toBeLessThanOrEqual(HELP_MAX_CHARS);\n';
-
-export const helpFiles = (
-	limit: number,
-	paragraphs: readonly string[],
-	test = helpTest,
-): Record<string, string> => ({
-	"src/limits.ts": `export const HELP_MAX_CHARS = ${limit};\n`,
-	"src/help.ts": `export const HELP_TEXT = \`${paragraphs.join("\n\n")}\`;\n`,
-	"src/help.test.ts": test,
-});
-export const helpDeduped = [helpUsage, helpOptions, helpExit];
-export const helpDuplicated = [helpUsage, helpOptions, helpOptions, helpExit];
-export const helpTrimmed = [helpUsage, helpExit];
-export const helpTestWeakened = helpTest.replace("HELP_MAX_CHARS)", "999)");
-
 export const opener = (last: string): Bad => ({
 	calls: [read("src/count.ts")],
 	last,
@@ -85,6 +59,11 @@ export const opener = (last: string): Bad => ({
 
 export const sumFiles = (op: string): Record<string, string> => ({
 	"src/sum.ts": `return total ${op} value;\n`,
+});
+
+export const clampFiles = (body: string): Record<string, string> => ({
+	"src/clamp.ts": `export const clamp = (n: number, lo: number, hi: number): number => ${body};\n`,
+	"README.md": "# Clamp\n\n`clamp(n, lo, hi)` keeps `n` within `[lo, hi]`.\n",
 });
 
 export const tail = bash("bash check.sh 2>&1 | tail -3");

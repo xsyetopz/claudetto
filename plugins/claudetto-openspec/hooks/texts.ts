@@ -2,7 +2,7 @@ export const TOOL_NAME = "openspec";
 export const TOOL_CALL = /^mcp__claudetto-openspec__openspec$/u;
 
 export const TOOL_DESCRIPTION =
-	"Works the OpenSpec changes in `openspec/`: `init`, `new`, `status`, `list`, `validate` (the default), and `archive`, which refuses a change with an unticked task. `change` names the change folder.";
+	"Works the OpenSpec changes in `openspec/`: `init`, `new`, `status`, `list`, `validate` (the default), and `archive`, which needs each task of the change ticked. `change` names the change folder.";
 
 export const TOOL_INPUT_SCHEMA = {
 	type: "object",

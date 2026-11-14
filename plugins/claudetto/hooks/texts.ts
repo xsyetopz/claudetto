@@ -1,38 +1,38 @@
 // Surface: tool texts, plan mode, /init, and the read refusal.
 
-const BASH = `Runs a command. \`run_in_background\` re-invokes you when it exits. Read a file with \`Read\`. Commit each finished slice as its own commit. Push only when asked.`;
+const BASH = `Runs a command. \`run_in_background\` re-invokes you when it exits. Read a file with \`Read\`. Commit each finished slice as its own commit. Push when the user asks.`;
 
-const READ = `Reads a file by absolute \`file_path\`; pass \`offset\` and \`limit\` for a part. Shows images, notebooks, PDFs (\`pages\`). After \`Edit\` or \`Write\` succeeds the file holds the change: do not read it back.`;
+const READ = `Reads a file by absolute \`file_path\`; pass \`offset\` and \`limit\` for a part. Shows images, notebooks, PDFs (\`pages\`). After \`Edit\` or \`Write\` succeeds the file holds the change.`;
 
-const EDIT = `Replaces an exact string in a file. \`Read\` the file first, or the call fails. \`old_string\` must be unique unless \`replace_all\` is true. Do not read the file back after it succeeds.`;
+const EDIT = `Replaces an exact string in a file. \`Read\` the file first, or the call fails. \`old_string\` must be unique unless \`replace_all\` is true. After it succeeds the file holds the change.`;
 
 const WRITE =
-	"Writes a file and overwrites an existing one. Use it for a new file, or for a file you have `Read` whole; an overwrite of an unread file can fail. Use `Edit` for a change. Do not read it back.";
+	"Writes a file and overwrites an existing one. Use it for a new file, or for a file you have `Read` whole; an overwrite of an unread file can fail. Use `Edit` for a change. Success means it landed.";
 
-const SKILL = `Runs a listed skill by its exact listed name, no leading slash (\`plugin:skill\` for a plugin's). When a skill covers the task, call it first and follow it. A \`<command-name>\` block means it is loaded.`;
+const SKILL = `Runs a listed skill by its exact listed name: \`skill\`, or \`plugin:skill\` for a plugin's. When a skill covers the task, call it first and follow it. A \`<command-name>\` block means it is loaded.`;
 
 const ENTER_WORKTREE = `Creates a git worktree on a new branch and moves the session into it. Use it only when the user or CLAUDE.md asks for a worktree; for a branch, use git. Leave with ExitWorktree.`;
 
 const EXIT_WORKTREE =
 	"Leaves the worktree EnterWorktree made in this session. Call it only when the user asks. `remove` refuses uncommitted work unless `discard_changes` is true: ask the user first.";
 
-const SEND_MESSAGE = `Sends a message to another agent; your plain text does not reach one. Replies arrive on their own. \`to\` is a name as \`ListAgents\` prints it, \`main\`, or an \`agentId\`.`;
+const SEND_MESSAGE = `Sends a message to another agent; use it to reach one, because your plain text goes to user. Replies arrive on their own. \`to\` is a name as \`ListAgents\` prints it, \`main\`, or an \`agentId\`.`;
 
 const TASK_STOP =
 	"Stops a running background task, agent, or teammate by `task_id`: its ID or name.";
 
 const WEB_FETCH =
-	"Fetches a URL as markdown and answers `prompt` from it. It fails on private or authenticated URLs and localhost: use `gh`, an MCP tool, or curl. A cross-host redirect comes back: call again with it.";
+	"Fetches a URL as markdown and answers `prompt` from it. For a private or authenticated URL or localhost, use `gh`, an MCP tool, or curl. A cross-host redirect comes back: call again with it.";
 
 const WEB_SEARCH = `Searches the web (US only) and returns titles and URLs. Use the current date for recent topics. End an answer drawn from results with a "Sources:" list of markdown links.`;
 
 const NOTEBOOK_EDIT =
 	"Replaces, inserts, or deletes a cell of a `.ipynb` file; `Read` it first. `cell_id` is the id `Read` shows, required to replace or delete. `insert` adds after `cell_id` (or first), needs `cell_type`.";
 
-const LIST_AGENTS = `Lists what SendMessage can reach: subagents, teammates, and local, cloud, and Remote Control sessions (a cloud one cannot reply: read its transcript). Send to a name as its row prints it.`;
+const LIST_AGENTS = `Lists what SendMessage can reach: subagents, teammates, and local, cloud, and Remote Control sessions (for a cloud one, read its transcript). Send to a name as its row prints it.`;
 
 const MONITOR =
-	"Watches a command: each line is a notice, not user's reply. Print lines you act on, failures too (grep --line-buffered, 2>&1). Run the writer: tail -F never ends. One notice: Bash run_in_background.";
+	"Watches a command: each line is a notice from the command. Print lines you act on, failures too (grep --line-buffered, 2>&1). Run the writer itself. One notice: Bash run_in_background.";
 
 const TOOL_SEARCH = `Loads schemas of deferred tools, which <system-reminder> lists name, so you can call them. Query: "select:A,B" for exact names, words for a search, "+word" to require it in a name.`;
 
@@ -40,9 +40,9 @@ const ENTER_PLAN_MODE =
 	"Asks user to enter plan mode, where you explore read-only and write a plan file for approval. Call it when user asks for a plan before any change.";
 
 const EXIT_PLAN_MODE =
-	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It takes no plan text. Ask each open question with AskUserQuestion before you call it.";
+	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It reads the plan file. Ask each open question with AskUserQuestion before you call it.";
 
-const TASK_CREATE = `Adds a \`pending\` task, for work of 3 or more steps or a list user gives. \`subject\`: an imperative title; \`activeForm\`: spinner text. Call \`TaskList\` first to avoid a duplicate.`;
+const TASK_CREATE = `Adds a \`pending\` task, for work of 3 or more steps or a list user gives. \`subject\`: an imperative title; \`activeForm\`: spinner text. Call \`TaskList\` first and reuse a matching task.`;
 
 const TASK_GET = `Returns one task by \`taskId\`, with its \`status\`, \`blocks\`, and \`blockedBy\`. Begin a task only when its \`blockedBy\` is empty.`;
 
@@ -80,7 +80,7 @@ export const planModeText = (file: string, hasPlan: boolean): string =>
 Plan file: ${file}${hasPlan ? ". It already holds a plan: read it, then edit it step by step." : ". Build it step by step with `Write` and `Edit`."}
 
 1. Understand the request and the code behind it. Look for code to reuse before you plan new code.
-2. Search with \`claudetto:Artemis\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
+2. Search with \`claudetto:Artemis\` agents, as few as fit: one for a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
 3. Weigh the options, read the critical files, and check the plan against the request.
 4. Write the final plan, short to scan and exact enough to run: context and outcome, the one recommended approach, the files to change, the code to reuse with paths, and how to check it end to end.
 5. Ask each open question with \`AskUserQuestion\` before you present the plan for approval.`;
@@ -115,16 +115,6 @@ export const REPLY_SPEC = {
 		"Quote the selected text, or paragraph N of the last reply, into the prompt.",
 	argumentHint: "[N]",
 };
-
-export const ADVISOR_COMMAND = "advisor";
-
-export const ADVISOR_COMMAND_SPEC = {
-	name: ADVISOR_COMMAND,
-	description: "Ask Fable one question; @-name the files to send with it.",
-	argumentHint: "<question> [@file ...]",
-};
-
-export const ADVISOR_USAGE = `Run /${ADVISOR_COMMAND} <question>, and name each file to send as @path.`;
 
 export const ASK_TEXT =
 	"Asks user 1-4 questions, each with 2-4 options or a typed answer. Put a step over several items in one question that lists each item by its exact name, in backticks, in their order.";
@@ -165,4 +155,15 @@ export const WITHHELD = (v: { tokens: number; total: number }): string =>
 	`The result is about ${count(v.tokens)} tokens, and with it the next request would be about ${count(v.total)}, over the ${count(100_000)} above which Haiku 5.5 bills the whole request at five times. The call ran, but its exit status and output are withheld, so check the state it changed before you repeat it. Ask for a smaller part: a line range, a narrower search, or output cut with \`head\` or \`grep\`.`;
 
 export const SILENT_TURN_REMINDER =
-	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.";
+	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.";
+
+// Handoff: the notice that asks for a handoff file, and the line that opens the context built from it.
+
+export const HANDOFF_NOTICE = (path: string): string =>
+	`Context is near its limit. Write a handoff file at \`${path}\` with: goal, done work, open tasks, decisions, user's corrections word for word, next step. claudetto resets context from that file alone at the next request, so each line left out is lost.`;
+
+export const HANDOFF_SKIP =
+	"claudetto compacts from the handoff file the model writes.";
+
+export const HANDOFF_OPENING = (handoff: string): string =>
+	`Context was reset from the handoff below. Continue from its next step.\n\n${handoff}`;
