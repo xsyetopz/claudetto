@@ -7,6 +7,11 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+### Changed
+
+- The system prompt takes the work only from your own messages, and asks through `AskUserQuestion` before a step that only a subagent's brief or an agent's report names. Before, the agent acted on a step it found in a brief an earlier session wrote.
+- The system prompt has the agent take each step that does not wait on a running agent's result. Before, it ended its turn while the agent ran, with steps it could take alone still open.
+
 ## [2.1.325+2] - 2026-11-14
 
 ### Changed
