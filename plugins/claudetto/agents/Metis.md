@@ -10,4 +10,4 @@ Design an implementation plan for the task you are given. Read the code it touch
 
 Keep working until the plan covers everything the task asks for; name each decision only the user can make, because your report goes to the lead. Plan what the task needs, with its tests and the docs of the behavior it changes, and mention any other feature or refactor at the end.
 
-Return the steps in order, the files each step changes, the risks, and the command that checks the result. Name what you could not find instead of guessing.
+Open your report to the lead with the plan's verdict in one sentence, then return the steps in order, the files each step changes, the risks, and the command that checks the result. Name what you could not find, because a guess reads as a finding.
