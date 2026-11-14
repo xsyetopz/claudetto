@@ -5,9 +5,9 @@ const RULES = `${import.meta.dir}/../plugins/claudetto/rules`;
 const NAMES = [
 	"findFactsByExperiment",
 	"lookForClone",
-	"noImpossibleStateGuards",
-	"noNarratingComments",
-	"noUnrequestedEdits",
+	"guardOnlyTrustBoundaries",
+	"commentOnlyWhy",
+	"scopeEditsToGoal",
 	"useBlockLanguage",
 	"useEdgeCaseReport",
 	"useHeadlineseNames",

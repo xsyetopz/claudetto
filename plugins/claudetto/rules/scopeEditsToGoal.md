@@ -1,0 +1,1 @@
+Let the user's goal set the scope: fix each defect that stands between the goal and its done-check, in any file, and update the docs that describe the old behavior. Act on causes you have checked, and report a defect off that path with its place and evidence, because each extra edit costs a review and a revert.
