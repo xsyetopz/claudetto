@@ -48,7 +48,7 @@ test("one prompt-type Stop hook grades the reply by model", async () => {
 	const prompt = await gradePrompt();
 
 	for (const fault of FAULTS) {
-		expect(prompt).toContain(`- ${fault}:`);
+		expect(prompt).toMatch(new RegExp(`- ${fault}( \\(.*?\\))?:`, "u"));
 	}
 });
 
@@ -59,11 +59,22 @@ test("the arguments of a typed slash command count as the user's words", async (
 	expect(prompt).toContain("arguments of a slash command");
 });
 
+test("a reply that fits a fault's exemption is never flagged for that fault", async () => {
+	const prompt = await gradePrompt();
+
+	expect(prompt).toContain(
+		'A reply that fits a fault\'s "Not this fault" case has no fault of that kind: leave it out of the reason, and answer {"ok":true} when no other fault is left.',
+	);
+	expect(prompt).toContain(
+		"a change that rests on a user claim the workspace contradicts, such as a value the user names that differs from the file",
+	);
+});
+
 test("a session with no ask tool, such as `claude -p`, may ask in text", async () => {
 	const prompt = await gradePrompt();
 
 	expect(prompt).toContain(
-		"a session where a search for AskUserQuestion found nothing",
+		'- options (skip this fault in a session where a search for AskUserQuestion returned "No matching deferred tools found"',
 	);
 });
 
