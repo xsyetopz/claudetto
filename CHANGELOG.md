@@ -7,6 +7,8 @@ Before 1.0.0, a release can change or remove behavior.
 
 ## [Unreleased]
 
+## [2.1.325+2] - 2026-11-14
+
 ### Changed
 
 - `/claudetto:setup` writes no `permissions.ask` rules, and a rerun removes the ones an earlier setup wrote, leaving the ask rules you added. An ask rule overrides auto mode, so `rm -r` of a temp folder or `git rm -r --cached` prompted you. Auto mode now passes deletes of temp folders, scratch copies, worktrees, and build output, and still blocks what nothing can restore.
