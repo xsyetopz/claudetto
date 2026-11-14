@@ -32,11 +32,18 @@ interface Machine {
 	psFailures: number;
 	readonly runs: string[][];
 	readonly logs: string[];
+	readonly psTimeouts: (number | undefined)[];
 }
 
 /** A machine whose `ps` lists `ps`; `call` is what the `Bash` call does. */
 const watchLab = (on: On, ps: string, call: (clock: Clock) => Call) => {
-	const machine: Machine = { ps, psFailures: 0, runs: [], logs: [] };
+	const machine: Machine = {
+		ps,
+		psFailures: 0,
+		runs: [],
+		logs: [],
+		psTimeouts: [],
+	};
 	const clock = mock.clock(on, { now: 0 });
 	mock.env(on, { HOME: "/h" });
 	on("session.id", () => ({ value: "s1" }));
@@ -65,6 +72,9 @@ const watchLab = (on: On, ps: string, call: (clock: Clock) => Call) => {
 			return found;
 		}
 		machine.runs.push([...e.argv]);
+		if (e.argv[0] === "ps") {
+			machine.psTimeouts.push(e.init?.timeoutMs);
+		}
 		if (e.argv[0] === "ps" && machine.psFailures > 0) {
 			machine.psFailures -= 1;
 			throw new Error("ps failed to start");
@@ -181,6 +191,24 @@ test("a failed poll does not end the watch", async ($: Engine, on: On) => {
 	await watched($, clock);
 
 	expect(machine.runs).toContainEqual(["kill", "4242"]);
+	expect(machine.logs.join("\n")).not.toContain("memory watch");
+});
+
+test("a run of failed polls is noted once", async ($: Engine, on: On) => {
+	const { machine, clock } = watchLab(on, SMALL, slow);
+	machine.psFailures = 5;
+	await watched($, clock);
+
+	expect(
+		machine.logs.filter((log) => log.includes("memory watch")),
+	).toHaveLength(1);
+});
+
+test("a poll gives `ps` no more time than the gap between polls", async ($: Engine, on: On) => {
+	const { machine, clock } = watchLab(on, SMALL, slow);
+	await watched($, clock);
+
+	expect(new Set(machine.psTimeouts)).toEqual(new Set([5000]));
 });
 
 test("a call that is cancelled leaves no watch and no notice", async ($: Engine, on: On) => {

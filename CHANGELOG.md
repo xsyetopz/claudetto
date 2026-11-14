@@ -28,6 +28,7 @@ Before 1.0.0, a release can change or remove behavior.
 - The `claudetto-openspec` verify skill closes each gap in code, or in the spec where the repository disproves a fact it states. It covers every requirement in the session with batched Grep calls in place of subagents. Before, it reported and edited nothing, and a run could spread over five review agents.
 - The Budget line says what it is for: report it after a paid run, and finish the task at any share. A model had read the weekly share as a reason to skip a check.
 - The session test checks that each model's whole claudetto prompt reaches the request, in place of one copied sentence that broke on any rewording.
+- The memory watch gives each `ps` poll 5 seconds, the gap between polls, and notes a failure only after 3 polls in a row miss. Before, one `ps` stalled on a loaded machine waited 30 seconds and logged a hook error on the next `Bash` call.
 
 ### Removed
 
