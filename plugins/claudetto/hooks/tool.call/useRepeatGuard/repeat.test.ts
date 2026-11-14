@@ -1,44 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-import { scanned } from "../../secrets.mock";
-
-const FILE = Array.from({ length: 12 }, (_, i) => `line ${i + 1} of the file`);
-const NUMBERED = FILE.map((line, i) => `     ${i + 1}\t${line}`).join("\n");
-
-interface Answer {
-	readonly text: string;
-	readonly isReadOnly?: true;
-}
-
-/** Each `tool.call` answers what `answers` holds for its `tool_use_id`. */
-const lab = (on: On, answers: Record<string, Answer>): void => {
-	on(
-		"process.run",
-		(_$, e) =>
-			scanned(e) ?? {
-				value: {
-					exitCode: 0,
-					stdout: "",
-					stderr: "",
-					isStdoutTruncated: false,
-					isStderrTruncated: false,
-				},
-			},
-	);
-	on("clock.now", () => ({ value: 0 }));
-	on("fs.exists", () => ({ value: false }));
-	on("session.cwd", () => ({ value: "/p" }));
-	on("session.root", () => ({ value: "/p" }));
-	on("session.id", () => ({ value: "S1" }));
-	on("session.messages", () => ({ value: [] }));
-	on("tool.list", () => ({ value: [] }));
-	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
-	on("tool.call", (_$, e) => {
-		const answer = answers[e.tool_use_id ?? ""] ?? { text: "" };
-		return { result: { stdout: answer.text, stderr: "" }, ...answer };
-	});
-};
+import { FILE, lab, NUMBERED } from "./repeat.mock";
 
 const read = ($: Engine, id: string, path: string) =>
 	$.tool.call({ tool: "Read", tool_use_id: id, file_path: path });
