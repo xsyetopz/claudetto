@@ -6,7 +6,6 @@ export interface Run {
 	readonly files?: Record<string, string>;
 	readonly last?: string;
 	readonly calls?: readonly Call[];
-	readonly feedback?: readonly string[];
 }
 export interface Bad extends Run {
 	readonly fails: readonly string[];
@@ -60,6 +59,11 @@ export const opener = (last: string): Bad => ({
 
 export const sumFiles = (op: string): Record<string, string> => ({
 	"src/sum.ts": `return total ${op} value;\n`,
+});
+
+export const clampFiles = (body: string): Record<string, string> => ({
+	"src/clamp.ts": `export const clamp = (n: number, lo: number, hi: number): number => ${body};\n`,
+	"README.md": "# Clamp\n\n`clamp(n, lo, hi)` keeps `n` within `[lo, hi]`.\n",
 });
 
 export const tail = bash("bash check.sh 2>&1 | tail -3");

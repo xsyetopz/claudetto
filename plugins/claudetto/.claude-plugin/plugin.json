@@ -74,12 +74,6 @@
 			"title": "Walled-off paths",
 			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. Default: the held-out eval set.",
 			"default": ["~/.claudetto-holdout"]
-		},
-		"openItemsCheckEnabled": {
-			"type": "boolean",
-			"title": "Open items at Stop",
-			"description": "Use `false` to skip the Stop check. On by default: a request that is no single `- ! <command>` bullet under `## What I Need From You`, or names a command that passed or never ran, is sent back once.",
-			"default": true
 		}
 	}
 }

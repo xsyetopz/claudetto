@@ -116,16 +116,6 @@ export const REPLY_SPEC = {
 	argumentHint: "[N]",
 };
 
-export const ADVISOR_COMMAND = "advisor";
-
-export const ADVISOR_COMMAND_SPEC = {
-	name: ADVISOR_COMMAND,
-	description: "Ask Fable one question; @-name the files to send with it.",
-	argumentHint: "<question> [@file ...]",
-};
-
-export const ADVISOR_USAGE = `Run /${ADVISOR_COMMAND} <question>, and name each file to send as @path.`;
-
 export const ASK_TEXT =
 	"Asks user 1-4 questions, each with 2-4 options or a typed answer. Put a step over several items in one question that lists each item by its exact name, in backticks, in their order.";
 

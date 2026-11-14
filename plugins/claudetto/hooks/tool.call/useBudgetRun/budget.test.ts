@@ -49,7 +49,7 @@ test("a prompt carries one line naming the three readings", async ($: Engine, on
 	const out = await $.prompt.submit(PROMPT);
 
 	expect(out.context).toEqual([
-		"Budget: context 62% left, five-hour 23.5% used, seven-day 41% used",
+		"Budget: context 62% left, five-hour 23.5% used, seven-day 41% used. Report it after a paid run, and finish the task at any share.",
 	]);
 });
 
@@ -58,7 +58,9 @@ test("a login with no rate-limit windows gets the context alone", async ($: Engi
 
 	const out = await $.prompt.submit(PROMPT);
 
-	expect(out.context).toEqual(["Budget: context 62% left"]);
+	expect(out.context).toEqual([
+		"Budget: context 62% left. Report it after a paid run, and finish the task at any share.",
+	]);
 });
 
 test("an unchanged band adds nothing to the next prompt, and a changed band adds the line again", async ($: Engine, on: On) => {
@@ -83,7 +85,9 @@ test("a reading the login does not supply is left out and not zeroed", () => {
 		rateLimits: [{ kind: "seven_day", percentUsed: 0 }],
 	});
 
-	expect(line).toBe("Budget: seven-day 0% used");
+	expect(line).toBe(
+		"Budget: seven-day 0% used. Report it after a paid run, and finish the task at any share.",
+	);
 });
 
 test("no reading at all adds no line", async ($: Engine, on: On) => {
@@ -104,7 +108,7 @@ test("the line stays one short line however many windows the engine reports", ()
 	expect(line).not.toContain("spend");
 });
 
-test("the widest line is 69 characters", () => {
+test("the widest line is 132 characters", () => {
 	const line = budgetLine({
 		context: { window: 200_000, percent: 0 },
 		rateLimits: [
@@ -113,7 +117,7 @@ test("the widest line is 69 characters", () => {
 		],
 	});
 
-	expect(line?.length).toBe(69);
+	expect(line?.length).toBe(132);
 });
 
 test("a reading that moved inside its own band is the same band", () => {
@@ -148,7 +152,9 @@ test("a seven-day share of 90% or more adds the share as a fact and no instructi
 
 	const out = await $.prompt.submit(PROMPT);
 
-	expect(out.context).toEqual(["Budget: context 62% left, seven-day 92% used"]);
+	expect(out.context).toEqual([
+		"Budget: context 62% left, seven-day 92% used. Report it after a paid run, and finish the task at any share.",
+	]);
 });
 
 test("a seven-day share that rose inside its band of ten stays silent, and one that crossed the band speaks again", async ($: Engine, on: On) => {
