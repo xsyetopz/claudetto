@@ -237,3 +237,36 @@ test(
 	},
 	TIMEOUT,
 );
+
+test(
+	"the Stop hook sends a slash command behind `!` back to the model",
+	async () => {
+		const run = await claudeRun({
+			cwd: await folder("claude-session-stop-slash"),
+			script: [
+				{ text: "Built.\n\n## What I Need From You\n\n- ! /reload-plugins" },
+				{ text: "Done." },
+			],
+		});
+
+		const last = JSON.stringify(run.requests.at(-1)?.["messages"]);
+		expect(last).toContain("Write it as `- /reload-plugins`");
+		expect(run.events.at(-1)?.["result"]).toBe("Done.");
+	},
+	TIMEOUT,
+);
+
+test(
+	"the Stop hook lets a slash command bullet end the turn",
+	async () => {
+		const reply = "Built.\n\n## What I Need From You\n\n- /reload-plugins";
+		const run = await claudeRun({
+			cwd: await folder("claude-session-stop-slash-ok"),
+			script: [{ text: reply }],
+		});
+
+		expect(run.requests).toHaveLength(1);
+		expect(run.events.at(-1)?.["result"]).toBe(reply);
+	},
+	TIMEOUT,
+);

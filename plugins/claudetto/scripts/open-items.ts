@@ -5,6 +5,7 @@ const FENCE = /^\s*(`{3,}|~{3,})\s*([\w-]*)/u;
 const LIST_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+(.*\S)\s*$/u;
 const CHECKBOX = /^\[ \]\s+(.*)$/u;
 const COMMAND_ITEM = /^`?!\s+(.*?)`?$/u;
+const SLASH_ITEM = /^`?(\/[\w:-]+(?:\s.*?)?)`?$/u;
 const BARE_COMMAND = /^\s*!\s+\S/u;
 const SHELL_LANGS = new Set(["sh", "bash", "shell", "zsh"]);
 
@@ -20,7 +21,7 @@ const DENIED = [
 type Outcome = "succeeded" | "failed" | "denied";
 
 interface Item {
-	readonly kind: "command" | "shell" | "checkbox" | "bare";
+	readonly kind: "command" | "slash" | "shell" | "checkbox" | "bare";
 	readonly text: string;
 	readonly inSection: boolean;
 }
@@ -50,9 +51,13 @@ const itemOf = (line: string, inSection: boolean): Item | undefined => {
 		return { kind: "checkbox", text: unticked, inSection };
 	}
 	const command = COMMAND_ITEM.exec(text)?.[1];
-	return command === undefined
+	if (command !== undefined) {
+		return { kind: "command", text: command, inSection };
+	}
+	const slash = SLASH_ITEM.exec(text)?.[1];
+	return slash === undefined
 		? undefined
-		: { kind: "command", text: command, inSection };
+		: { kind: "slash", text: slash, inSection };
 };
 
 interface Fence {
@@ -110,6 +115,12 @@ export const formFault = (reply: string): string | undefined => {
 	const bare = items.find((item) => item.kind === "bare");
 	if (bare !== undefined) {
 		return `\`${bare.text}\` is no bullet. Write a command only the user can run as \`- ! <command>\` under \`## What I Need From You\`.`;
+	}
+	const shelled = items.find(
+		(item) => item.kind === "command" && item.text.startsWith("/"),
+	);
+	if (shelled !== undefined) {
+		return `\`- ! ${shelled.text}\` hands a slash command to the shell, which cannot run it. Write it as \`- ${shelled.text}\`.`;
 	}
 	const loose = items.find(
 		(item) => item.kind === "command" && !item.inSection,
