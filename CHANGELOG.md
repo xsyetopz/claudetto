@@ -23,13 +23,13 @@ Before 1.0.0, a release can change or remove behavior.
 - The `claudetto-openspec` apply skill runs verify once each task is ticked, and closes each gap verify finds. Before, it named the verify skill and stopped.
 - The `claudetto-openspec` verify skill closes each gap in code, or in the spec where the repository disproves a fact it states. It covers every requirement in the session with batched Grep calls in place of subagents. Before, it reported and edited nothing, and a run could spread over five review agents.
 - The Budget line says what it is for: report it after a paid run, and finish the task at any share. A model had read the weekly share as a reason to skip a check.
-- A step for you can now be a slash command, written `- /<command>` under `## What I Need From You`. Before, the only accepted form was `- ! <command>`, which hands the line to the shell, so a slash command such as `/reload-plugins` got that form and could not run; the Stop hook then told the agent to run it with Bash. The hook now sends `- ! /<command>` back with the right form.
 - The session test checks that each model's whole claudetto prompt reaches the request, in place of one copied sentence that broke on any rewording.
 
 ### Removed
 
 - The `question-is-not-a-correction` and `user-owned-bound` eval cases: the no-plugin baseline also scored 100% on them in every run, so they could not show what the plugin changes.
-- The prompt-type Stop judge. When it blocked a reply, Claude Code printed its whole prompt of about 6 KB to you and sent it to the model again, and it cost one more model call at the end of every turn. The `open-items.ts` Stop hook stays.
+- The prompt-type Stop judge. When it blocked a reply, Claude Code printed its whole prompt of about 6 KB to you and sent it to the model again, and it cost one more model call at the end of every turn.
+- The Stop hook that checked the `## What I Need From You` list, its option, and the tests that matched prompt wording.
 - **Breaking:** the `advisor` tool and the `/advisor` command. A prompt cache belongs to one model, so a Fable question could never reuse the main thread's cache and paid full input price each time. `/claudetto:setup` still sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, so the built-in advisor, which sends your whole transcript uncached, stays off. Ask the `Athena` agent for a review instead.
 
 ## [2.1.325] - 2026-11-13
