@@ -27,6 +27,16 @@ export const scanner = (on: On, secrets: readonly string[] = []): void => {
 	on("process.run", (_$, e, next) => scanned(e, secrets) ?? next(e));
 };
 
+/** A scanner that throws, as a missing `betterleaks` does. */
+export const brokenScanner = (on: On): void => {
+	on("process.run", (_$, e, next) => {
+		if (e.argv[0] === SCANNER) {
+			throw new Error("no scanner");
+		}
+		return next(e);
+	});
+};
+
 /** A scanner that finds the first group of each match of `rule`, so a rule anchored at a line start matches as the real one does. */
 export const ruleScanner = (on: On, rule: RegExp): void => {
 	on("process.run", (_$, e, next) => {

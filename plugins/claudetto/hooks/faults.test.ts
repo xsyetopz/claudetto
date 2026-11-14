@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { scanner } from "./secrets.mock";
+import { brokenScanner } from "./secrets.mock";
 
 const UNANSWERED_CALL = "no implementation for tool.call";
 
@@ -62,19 +62,13 @@ test("a call guard that throws before the tool refuses, and the tool does not ru
 
 test("a call guard that throws after the tool returns the tool's result", async ($: Engine, on: On) => {
 	lab(on);
-	scanner(on);
-	// A paid run reads the usage after the tool, and a failed read logs, so a throwing log throws after the tool ran.
-	on("session.usage", () => {
-		throw new Error("no usage");
-	});
-	on("ui.log", () => {
-		throw new Error("no log");
-	});
+	// The secret scan reads the tool's output, so a scanner that throws fails only after the tool ran.
+	brokenScanner(on);
 	const runs = beneath(on, "some text the scan would read");
 
 	const out = await $.tool.call({
 		tool: "Bash",
-		command: "claude -p hi",
+		command: "true",
 		tool_use_id: "c1",
 	});
 
