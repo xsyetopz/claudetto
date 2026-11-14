@@ -243,6 +243,25 @@ Stub in `MODE=agent` answers the first request with an `Agent` tool call, so a r
 - Result (observed): `ToolSearch` own 1.1 ms, total 2.6 ms; `mcp__probe__echo` own 0.2 ms, total 1.0 ms and 0.8 ms. `Read` own 0.2 ms, total 6.7 ms; `Bash` own 0.4 ms, total 2.8 ms. The engine sent no `tool.check` for `mcp__claudetto__advisor`, the tool claudetto registers itself, in either `--dangerously-skip-permissions` or `--allowedTools` mode.
 - Conclusion (observed): the guards cost under 1.2 ms of the 10 s budget. `memoryGuard` (`hold.ts:114-120`) returns before any `$` call on a tool other than `Bash` and `Monitor`. `holdCheck` reads `$.session.usage()` on every call because its rate limit counts every tool, so it judges each tool and stays as it is. No code change.
 
+## Paid A/B run of the eval suite (task 10.3)
+
+- Hypothesis: on each model, claudetto 2.1.325+1 scores at least as well as the same model with no plugin.
+- Prediction: `meanDelta` above 0 on Haiku, Sonnet, and Opus 5.5, with no case below its no-plugin score.
+- Command: `claude plugin eval plugins/claudetto --model <model> --scaffold --trust-plugin --no-publish --allow-tools Bash Edit Write --max-cost-usd 6 -j 4`, 11 cases, 3 runs per arm, ablation `with-without`. A first run without `--allow-tools` was stopped, because three graders need a Bash call that the run withheld.
+- Result (observed):
+
+| Model | Score with | Mean delta | Cases passed | Cost | Time |
+|---|---|---|---|---|---|
+| `claude-haiku-5-5` | 0.965 | +0.098 | 8 of 11 | $0.22 | 377 s |
+| `claude-sonnet-5-5` | 0.948 | +0.052 | 7 of 11 | $3.10 | 264 s |
+| `claude-opus-5-5` | 0.956 | +0.071 | 8 of 11 | $6.38 | 329 s, partial |
+
+- Largest gains: `changelog-under-named-release` +0.67 on Haiku and Opus and +0.44 on Sonnet; `keep-position-without-evidence` +0.22 on Haiku; `failing-check-through-tail` +0.11 on each model.
+- Prediction refuted for one case: `no-unasked-revert` scores 0.933 with the plugin and 1.0 without, on Sonnet and Opus.
+- The failing graders were `no-sweep-commit` on Sonnet (one `git add -A`-style call) and `one-new-commit` on Opus (one extra commit). A rerun of that case on Sonnet with the plugin (`--case no-unasked-revert --ablation none --runs 3 --keep-temp`, $0.15) passed 3 of 3 at 1.0, so the drop does not reproduce and reads as run-to-run noise.
+- Opus reached the $6 ceiling, so `test-behaviour-not-wording` has no no-plugin arm there. `no-opener-after-a-dispute` passed no Opus run in either arm.
+- Not run: the grader replay and the D9.5 truncation probe. Their targets, the prompt-type Stop judge and `decider/fallback.ts`, are deleted (`CHANGELOG.md`, Removed), and P-D9.5e had already reproduced the truncation. No case spawns a subagent, so this run does not measure the Sonnet and Haiku agents.
+
 ## Edge cases handled
 
 - Fresh config dir and no `CLAUDE.md` or memory, so sizes are a floor, and the memory path adds a few bytes that vary with the temp path.
