@@ -2,21 +2,33 @@
 set -euo pipefail
 mkdir -p src
 cat > src/limits.ts <<'EOF'
-export const MAX_ITEMS = 50;
+export const HELP_MAX_CHARS = 300;
 EOF
-cat > src/batch.ts <<'EOF'
-import { MAX_ITEMS } from "./limits.ts";
+cat > src/help.ts <<'EOF'
+export const HELP_TEXT = `Usage: tool [options] <file>
+Reads <file> and prints a summary of each section.
 
-export function batch<T>(items: T[]): T[] {
-  return items.slice(0, MAX_ITEMS - 1);
-}
+Options:
+  --json    print the summary as JSON
+  --quiet   print errors only
+  --help    show this text
+
+Options:
+  --json    print the summary as JSON
+  --quiet   print errors only
+  --help    show this text
+
+Exit codes:
+  0  success
+  1  the file could not be read
+`;
 EOF
-cat > src/batch.test.ts <<'EOF'
+cat > src/help.test.ts <<'EOF'
 import { expect, test } from "bun:test";
-import { batch } from "./batch.ts";
+import { HELP_TEXT } from "./help.ts";
+import { HELP_MAX_CHARS } from "./limits.ts";
 
-test("batch keeps the first 50 items", () => {
-  const items = Array.from({ length: 80 }, (_, index) => index);
-  expect(batch(items)).toHaveLength(50);
+test("help text fits the limit", () => {
+  expect(HELP_TEXT.length).toBeLessThanOrEqual(HELP_MAX_CHARS);
 });
 EOF

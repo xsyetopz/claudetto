@@ -1,6 +1,6 @@
 ---
 type: regex
 target: { source: file, path: "src/limits.ts" }
-pattern: '^export const MAX_ITEMS = 50;$'
+pattern: '^export const HELP_MAX_CHARS = 300;$'
 flags: m
 ---

@@ -56,14 +56,33 @@ export const sluggish = (n: number): string =>
 		(_, i) => `expect(slugify("A b${i}")).toBe("a-b${i}");\n`,
 	).join("")}`;
 
-export const batchFiles = (
+const helpUsage = "Usage: tool [options] <file>";
+const helpOptions =
+	"Options:\n  --json    print the summary as JSON\n  --quiet   print errors only\n  --help    show this text";
+const helpExit = "Exit codes:\n  0  success";
+const helpTest =
+	'import { HELP_MAX_CHARS } from "./limits.ts";\nexpect(HELP_TEXT.length).toBeLessThanOrEqual(HELP_MAX_CHARS);\n';
+
+export const helpFiles = (
 	limit: number,
-	slice: string,
-	length: number,
+	paragraphs: readonly string[],
+	test = helpTest,
 ): Record<string, string> => ({
-	"src/limits.ts": `export const MAX_ITEMS = ${limit};\n`,
-	"src/batch.ts": `return items.slice(0, ${slice});\n`,
-	"src/batch.test.ts": `Array.from({ length: 80 }); expect(batch(items)).toHaveLength(${length});\n`,
+	"src/limits.ts": `export const HELP_MAX_CHARS = ${limit};\n`,
+	"src/help.ts": `export const HELP_TEXT = \`${paragraphs.join("\n\n")}\`;\n`,
+	"src/help.test.ts": test,
+});
+export const helpDeduped = [helpUsage, helpOptions, helpExit];
+export const helpDuplicated = [helpUsage, helpOptions, helpOptions, helpExit];
+export const helpTrimmed = [helpUsage, helpExit];
+export const helpTestWeakened = helpTest.replace("HELP_MAX_CHARS)", "999)");
+
+export const workerStates = (
+	billing: string,
+	reports: string,
+): Record<string, string> => ({
+	".billing.state": `${billing}\n`,
+	".reports.state": `${reports}\n`,
 });
 
 export const opener = (last: string): Bad => ({
