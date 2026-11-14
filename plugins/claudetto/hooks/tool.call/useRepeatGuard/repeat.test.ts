@@ -138,3 +138,76 @@ test("after the session ends, nothing counts as held", async ($: Engine, on: On)
 
 	expect(again.deny).toBeUndefined();
 });
+
+test("a read back of a file the agent wrote is withheld, with the write", async ($: Engine, on: On) => {
+	lab(on, {
+		t1: { text: "File created successfully." },
+		t2: { text: NUMBERED, isReadOnly: true },
+	});
+	await $.tool.call({
+		tool: "Write",
+		tool_use_id: "t1",
+		file_path: "/p/f.txt",
+		content: `${FILE.join("\n")}\n`,
+	});
+	const back = await read($, "t2", "/p/f.txt");
+
+	expect(back.deny).toContain("`t1`");
+});
+
+test("a read back of a file the agent edited is withheld, with the edit", async ($: Engine, on: On) => {
+	const edited = NUMBERED.replace("line 4 of the file", "line four, edited");
+	lab(on, {
+		t1: { text: NUMBERED, isReadOnly: true },
+		t2: { text: "The file has been updated successfully." },
+		t3: { text: edited, isReadOnly: true },
+	});
+	await read($, "t1", "/p/f.txt");
+	await $.tool.call({
+		tool: "Edit",
+		tool_use_id: "t2",
+		file_path: "/p/f.txt",
+		old_string: "line 4 of the file",
+		new_string: "line four, edited",
+	});
+	const back = await read($, "t3", "/p/f.txt");
+
+	expect(back.deny).toContain("`t2`");
+});
+
+test("a rerun that differs only in its timings is withheld", async ($: Engine, on: On) => {
+	lab(on, {
+		t1: { text: "3 pass [12ms]\nDone in 1.4s" },
+		t2: { text: "3 pass [15ms]\nDone in 2s" },
+	});
+	await $.tool.call({ tool: "Bash", tool_use_id: "t1", command: "bun test" });
+	const again = await $.tool.call({
+		tool: "Bash",
+		tool_use_id: "t2",
+		command: "bun test 2>&1",
+	});
+
+	expect(again.deny).toContain("`t1`");
+});
+
+test("a change between repeats ends the run of misses", async ($: Engine, on: On) => {
+	lab(on, {
+		t1: LIST,
+		t2: LIST,
+		t3: { text: "File created successfully." },
+		t4: LIST,
+		t5: LIST,
+	});
+	await read($, "t1", "/p/a.ts");
+	await read($, "t2", "/p/a.ts");
+	await $.tool.call({
+		tool: "Write",
+		tool_use_id: "t3",
+		file_path: "/p/b.ts",
+		content: "b",
+	});
+	await read($, "t4", "/p/a.ts");
+	const after = await read($, "t5", "/p/a.ts");
+
+	expect(after.deny).not.toContain("in a row");
+});
