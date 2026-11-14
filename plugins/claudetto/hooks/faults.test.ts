@@ -60,9 +60,8 @@ test("a call guard that throws before the tool refuses, and the tool does not ru
 	expect(runs.count).toBe(0);
 });
 
-test("a call guard that throws after the tool returns the tool's result", async ($: Engine, on: On) => {
+test("a secret scan that fails after the tool ran withholds the result", async ($: Engine, on: On) => {
 	lab(on);
-	// The secret scan reads the tool's output, so a scanner that throws fails only after the tool ran.
 	brokenScanner(on);
 	const runs = beneath(on, "some text the scan would read");
 
@@ -73,8 +72,8 @@ test("a call guard that throws after the tool returns the tool's result", async 
 	});
 
 	expect(runs.count).toBe(1);
-	expect(out.deny).toBeUndefined();
-	expect(out.result).toBe("some text the scan would read");
+	expect(out.result).toBeUndefined();
+	expect(out.deny).toContain("withheld");
 });
 
 test("a tool that fails beneath the plugin reaches the caller as its own failure", async ($: Engine, on: On) => {
