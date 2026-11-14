@@ -13,6 +13,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 - The system prompt takes the work only from your own messages, and asks through `AskUserQuestion` before a step that only a subagent's brief or an agent's report names. Before, the agent acted on a step it found in a brief an earlier session wrote.
 - The system prompt has the agent take each step that does not wait on a running agent's result. Before, it ended its turn while the agent ran, with steps it could take alone still open.
+- The handoff notice has the agent write the handoff file and go on with the next step in the same turn, and list as yours only a step you alone can take, such as plugging in a device. Before, the agent wrote the file, ended its turn on a summary, and listed a PR and branches it could handle as waiting on you.
 
 ## [2.1.325+2] - 2026-11-14
 

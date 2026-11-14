@@ -62,6 +62,13 @@ test("the first auto-compaction with no handoff file is skipped, and one notice 
 	expect(seen.notes[0]).toContain(HANDOFF);
 });
 
+test("the notice keeps the turn on the work: the model goes on after the file, and the file names only steps user alone can take", async ($: Engine, on: On) => {
+	const seen = lab(on, {});
+	await compact($, "auto");
+	expect(seen.notes[0]).toContain("then go on with the next step in this turn");
+	expect(seen.notes[0]).toContain("only a step user alone can take");
+});
+
 test("an auto-compaction after the notice with still no file takes the built-in path", async ($: Engine, on: On) => {
 	const seen = lab(on, {});
 	await compact($, "auto");
