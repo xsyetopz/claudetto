@@ -6,12 +6,8 @@ import {
 	TOOL_DESCRIPTION,
 	TOOL_INPUT_SCHEMA,
 } from "../plugins/claudetto-openspec/hooks/texts.ts";
+import { DECIDE_SPEC } from "../plugins/claudetto/hooks/texts-gate.ts";
 import {
-	ADVISOR_SPEC,
-	DECIDE_SPEC,
-} from "../plugins/claudetto/hooks/texts-gate.ts";
-import {
-	ADVISOR_COMMAND_SPEC,
 	AGENT_TEXT,
 	ASK_TEXT,
 	REPLY_SPEC,
@@ -68,9 +64,7 @@ const frontmatters = async (): Promise<Described[]> => {
 
 const SPECS = {
 	reply: REPLY_SPEC,
-	advisorCommand: ADVISOR_COMMAND_SPEC,
 	decide: DECIDE_SPEC,
-	advisor: ADVISOR_SPEC,
 	openspec: {
 		name: "openspec",
 		description: TOOL_DESCRIPTION,
@@ -106,9 +100,7 @@ test("the specs above cover each $.tool.register call of a plugin", async () => 
 		sources.map((path) => registerArguments(path)),
 	);
 	// `{` is the openspec tool's inline spec.
-	expect(new Set(found.flat())).toEqual(
-		new Set(["DECIDE_SPEC", "ADVISOR_SPEC", "{"]),
-	);
+	expect(new Set(found.flat())).toEqual(new Set(["DECIDE_SPEC", "{"]));
 });
 
 test(`no description the model sees is over ${LIMIT} characters`, async () => {

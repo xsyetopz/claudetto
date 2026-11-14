@@ -18,16 +18,14 @@ import {
 	type CheckNext,
 } from "./chain";
 import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene";
-import { advisor } from "./command.run/useAdvisorCommand/advisor";
 import { reply } from "./command.run/useReplyCommand/reply";
 import { setup } from "./command.run/useSetup/setup";
 import { modelPrompt } from "./prompt.compose/useModelPrompt/compose";
 import { sessionTempCleanup } from "./session.end/useSessionTempCleanup/cleanup";
 import { lineFileHooks } from "./session.measure/useLineFile/line-file";
 import { surface } from "./settings.read/useSlimSurface/surface";
-import { ADVISOR_COMMAND_SPEC, REPLY_SPEC } from "./texts";
-import { ADVISOR_SPEC, DECIDE_SPEC } from "./texts-gate";
-import { advisorCall } from "./tool.call/useAdvisorTool/advisor";
+import { REPLY_SPEC } from "./texts";
+import { DECIDE_SPEC } from "./texts-gate";
 import {
 	budgetHooks,
 	budgetRunCall,
@@ -70,7 +68,6 @@ const registerInner = (on: On, options: PluginOptions): void => {
 	hygiene(on, options);
 	sessionTempCleanup(on, options);
 	reply(on);
-	advisor(on);
 };
 
 const checkGuards = (
@@ -94,7 +91,6 @@ const callGuards = (
 		(at, step) => priceStepCall($, at, step, state.price),
 		(at, step) => memoryWatchCall($, at, step, state.hold.memoryProcessMax),
 		(at, step) => budgetRunCall($, at, step),
-		(at, step) => advisorCall($, at, step),
 		(at, step) => decideCall($, at, step),
 		(at, step) => sandboxGitCall($, at, step, state.sandboxGit),
 		(at, step) => secretCall($, at, step),
@@ -113,8 +109,6 @@ const registerTools = (on: On): void => {
 	on("session.start", async ($, e, next) => {
 		const out = await next(e);
 		await $.command.register(REPLY_SPEC);
-		await $.command.register(ADVISOR_COMMAND_SPEC);
-		await $.tool.register(ADVISOR_SPEC);
 		if ((await typesafeKey($)) !== "") {
 			await $.tool.register(DECIDE_SPEC);
 		}
