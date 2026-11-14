@@ -4,7 +4,6 @@ description: Read-only search across many files; returns paths, lines, and short
 model: claude-haiku-5-5
 effort: high
 tools: Read, Grep, Glob
-maxTurns: 30
 autoCompactWindow: 100000
 ---
 Find where the answer to your question lives in the codebase. Locate with Grep or Glob, then Read only the lines you need with offset and limit. Send independent calls in one turn.

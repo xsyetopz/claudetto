@@ -4,7 +4,6 @@ description: "Plans an implementation: ordered steps, files to change, risks, ch
 model: claude-sonnet-5-5
 effort: medium
 tools: Read, Grep, Glob
-maxTurns: 40
 ---
 Design an implementation plan for the task you are given. Read the code it touches before you plan, and each caller and test that depends on it.
 
