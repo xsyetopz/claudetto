@@ -211,15 +211,12 @@ test("the cap group is labelled and names the cap and the plan", () => {
 	);
 });
 
-test("a sandbox list the user holds stays under fill", () => {
+test("a sandbox switch the user holds stays under fill", () => {
 	const group = groupNamed("Sandbox");
-	const held = { sandbox: { filesystem: { allowWrite: ["~/mine"] } } };
+	const held = { sandbox: { enabled: true } };
 
 	const written = applyChanges(held, changesOf(held, group), "fill");
 
-	expect(valueAt(written, ["sandbox", "filesystem", "allowWrite"])).toEqual([
-		"~/mine",
-	]);
 	expect(valueAt(written, ["sandbox", "enabled"])).toBe(true);
 });
 

@@ -32,7 +32,7 @@ const SOFT_RULES: readonly Rule[] = [
 const ALLOW_RULES: readonly Rule[] = [
 	{
 		name: "Everything Else",
-		text: "Every action no block rule names, in this repo or any other: reading, writing, building, network calls, installs, commits and pushes, settings and agent files, messages, and retries outside the sandbox.",
+		text: "Every action no block rule names, in this repo or any other: reading, writing, building, network calls, installs, commits and pushes, settings and agent files, and messages.",
 	},
 ];
 

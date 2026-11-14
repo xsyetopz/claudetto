@@ -63,10 +63,6 @@ export const jevFailed = (why: string): string => `Jev gives no answer: ${why}`;
 export const secretScanFailed = (why: string): string =>
 	`The secret scanner \`betterleaks\` failed, so this text was withheld (${why}). Install it with \`brew install betterleaks\`, or run \`/claudetto:setup\`.`;
 
-// Sandbox git: the notice after a repository appears in a folder that held none.
-export const GIT_CLOSED =
-	'Sandbox set its rules for `.git` when this session started, and this folder held no repository then, so each git write here fails inside sandbox with "Operation not permitted" until Claude Code restarts. Tell user once to restart Claude Code in this folder with `claude --continue`. Until then, run each git write with `dangerouslyDisableSandbox: true`.';
-
 // Repeats: the text that takes the place of a read-only result the agent already holds.
 export const repeatWithheld = (id: string, misses: number): string =>
 	`This result repeats what call \`${id}\` already gave you, unchanged, so it is withheld. Work from that result; for a new fact, query something else or change a file first.${misses >= 3 ? ` ${misses} calls in a row brought nothing new: act on what you hold, or report.` : ""}`;

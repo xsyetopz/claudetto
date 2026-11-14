@@ -38,10 +38,6 @@ import {
 	repeatHooks,
 	repeatState,
 } from "./tool.call/useRepeatGuard/repeat";
-import {
-	sandboxGitCall,
-	sandboxGitState,
-} from "./tool.call/useSandboxGit/sandbox-git";
 import { secretCall } from "./tool.call/useSecretScan/scan";
 import {
 	priceStepCall,
@@ -52,7 +48,6 @@ import {
 const stateOf = (options: PluginOptions) => ({
 	price: priceStepState(),
 	hold: holdState(options),
-	sandboxGit: sandboxGitState(),
 	repeat: repeatState(),
 });
 
@@ -105,7 +100,6 @@ const callGuards = (
 		(at, step) => memoryWatchCall($, at, step, state.hold.memoryProcessMax),
 		(at, step) => budgetRunCall($, at, step),
 		(at, step) => decideCall($, at, step),
-		(at, step) => sandboxGitCall($, at, step, state.sandboxGit),
 		(at, step) => secretCall($, at, step),
 	]);
 

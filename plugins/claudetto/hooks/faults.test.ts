@@ -47,45 +47,37 @@ test("a call guard that throws before the tool refuses, and the tool does not ru
 	lab(on);
 	const runs = beneath(on, "text");
 
-	on("session.root", () => {
-		throw new Error("no root");
+	on("env.get", () => {
+		throw new Error("no env");
 	});
 
 	const out = await $.tool.call({
-		tool: "Bash",
-		command: "git status",
+		tool: "mcp__claudetto__decide",
 		tool_use_id: "c1",
 	});
 
-	expect(out).toMatchObject({ deny: expect.stringContaining("session.root") });
+	expect(out).toMatchObject({ deny: expect.stringContaining("env.get") });
 	expect(runs.count).toBe(0);
 });
 
 test("a call guard that throws after the tool returns the tool's result", async ($: Engine, on: On) => {
 	lab(on);
 	scanner(on);
-	on("session.root", () => ({ value: "/repo" }));
-	// The sandbox git guard checks `.git` before and after the tool, so the second check throws after the tool ran.
-	let checks = 0;
-	let exists = (): { value: boolean } => {
-		exists = () => {
-			throw new Error("after the tool");
-		};
-		return { value: false };
-	};
-	on("fs.exists", () => {
-		checks++;
-		return exists();
+	// A paid run reads the usage after the tool, and a failed read logs, so a throwing log throws after the tool ran.
+	on("session.usage", () => {
+		throw new Error("no usage");
+	});
+	on("ui.log", () => {
+		throw new Error("no log");
 	});
 	const runs = beneath(on, "some text the scan would read");
 
 	const out = await $.tool.call({
 		tool: "Bash",
-		command: "true",
+		command: "claude -p hi",
 		tool_use_id: "c1",
 	});
 
-	expect(checks).toBeGreaterThan(1);
 	expect(runs.count).toBe(1);
 	expect(out.deny).toBeUndefined();
 	expect(out.result).toBe("some text the scan would read");

@@ -9,6 +9,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- `/claudetto:setup` turns the sandbox off (`sandbox.enabled: false`) and no longer writes the other sandbox keys or the `denyRead` entries of the protected paths, which keep their `Read` deny rule. The sandbox cannot cover only dangerous commands, because `excludedCommands` matches a call only when every command in it matches; the command rules and auto mode already stop unrecoverable destruction. The `useSandboxGit` hook, which told the agent to restart after a repository appeared in a sandboxed folder, is deleted with it.
 - `/claudetto:setup` asks Haiku once, for all its questions, before the first dialog. Before, each dialog waited on its own Haiku call of up to 20 seconds, one after another.
 
 ### Fixed

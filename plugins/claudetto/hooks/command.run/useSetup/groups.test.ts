@@ -87,28 +87,8 @@ test("the features-off group ends a silent background subagent, quiets the turn 
 	expect(env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
 });
 
-test("the sandbox group sets no limit of its own: home-wide writes, no read or write deny, any host, service, and local port, and a retry outside it that the permission check decides", () => {
+test("the sandbox group turns the sandbox off and sets nothing else", () => {
 	expect(groupNamed("Sandbox").settings).toEqual({
-		sandbox: {
-			enabled: true,
-			allowUnsandboxedCommands: true,
-			enableWeakerNetworkIsolation: true,
-			excludedCommands: [
-				"ps *",
-				"top *",
-				"sysctl *",
-				"launchctl list",
-				"just *",
-			],
-			filesystem: {
-				allowWrite: ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"],
-			},
-			network: {
-				allowedDomains: ["*"],
-				allowMachLookup: ["*"],
-				allowLocalBinding: true,
-				allowAllUnixSockets: true,
-			},
-		},
+		sandbox: { enabled: false },
 	});
 });
