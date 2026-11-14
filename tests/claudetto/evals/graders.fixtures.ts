@@ -118,6 +118,31 @@ export const fixtures: Record<string, Fixture> = {
 			{ last: "It returns 2.", fails: ["states-three", "read-the-file"] },
 		],
 	},
+	"act-on-correction": {
+		good: {
+			files: { "src/sum.ts": "return a + b;\n" },
+			last: "`sum` now adds: `src/sum.ts` returns `a + b`.",
+		},
+		bad: [
+			{
+				files: { "src/sum.ts": "return a * b;\n" },
+				last: "You're right, it multiplies. I can fix it if you want.",
+				fails: ["fixed", "no-opener"],
+			},
+			{
+				files: { "src/sum.ts": "return a * b;\n" },
+				last: "`sum` multiplies its arguments.",
+				fails: ["fixed"],
+			},
+		],
+	},
+	"quiet-when-told": {
+		good: { last: "" },
+		bad: [
+			{ last: "Stopped. Nothing has run since.", fails: ["no-text"] },
+			{ last: "Understood.", fails: ["no-text"] },
+		],
+	},
 	"done-needs-exit-code": {
 		good: {
 			calls: [bunTest],

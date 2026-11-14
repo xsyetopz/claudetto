@@ -12,6 +12,14 @@ Before 1.0.0, a release can change or remove behavior.
 - `/claudetto:setup` writes no `permissions.ask` rules, and a rerun removes the ones an earlier setup wrote, leaving the ask rules you added. An ask rule overrides auto mode, so `rm -r` of a temp folder or `git rm -r --cached` prompted you. Auto mode now passes deletes of temp folders, scratch copies, worktrees, and build output, and still blocks what nothing can restore.
 - `/claudetto:setup` turns the sandbox off (`sandbox.enabled: false`) and no longer writes the other sandbox keys or the `denyRead` entries of the protected paths, which keep their `Read` deny rule. The sandbox cannot cover only dangerous commands, because `excludedCommands` matches a call only when every command in it matches; the command rules and auto mode already stop unrecoverable destruction. The `useSandboxGit` hook, which told the agent to restart after a repository appeared in a sandboxed folder, is deleted with it.
 - `/claudetto:setup` asks Haiku once, for all its questions, before the first dialog. Before, each dialog waited on its own Haiku call of up to 20 seconds, one after another.
+- `/claudetto:setup` turns Claude Code's silent-turn reminder off (`CLAUDE_CODE_SILENT_TURN_REMINDER: "0"`), and a rerun removes the reminder text an earlier setup wrote, leaving a text you wrote. The reminder asked the agent to write an update in the middle of its work.
+- The system prompt asks the agent to fix a correction in the same turn; only a `! <command>` is followed by a report and a wait. When you tell it to stop or be quiet, it ends the turn with no text. Its replies hold the change, the check, and the result, and meet anger or praise with the fix alone. It probes a claim before it reports it, and it takes each step it would have offered. Before, a correction drew "You're right" and a list of unrun checks, and replies offered work "if you want".
+- The system prompt and the `Heracles` agent make a branch in another repo inside a worktree under that repo's `.claude/worktrees/`. Before, a `Heracles` agent switched the branch of a checkout where another session was working. The prompt also takes a site's 403 as its answer: before, the agent retried a blocked page with a browser's user agent.
+- The `Concise` style answers anger, praise, or a correction with the fix and its check, and has the agent take each step it would offer.
+
+### Added
+
+- The `act-on-correction` and `quiet-when-told` eval cases.
 
 ### Fixed
 

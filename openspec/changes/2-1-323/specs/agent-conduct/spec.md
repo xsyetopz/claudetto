@@ -23,6 +23,39 @@ The classic Stop hook SHALL block a reply whose `- ! <command>` bullet names a c
 - **WHEN** a reply lists a command whose Bash call the session ran and that call was denied
 - **THEN** the Stop hook lets the reply end
 
+### Requirement: A Correction Gets Its Fix at Once
+
+The root prompt SHALL tell the model to fix a correction or a named defect in the same turn, to report and wait only after a `! <command>`, and to end the turn with no text when the user says to stop or be quiet, because a "report and wait" after a correction drew a reply of agreement and a list of unrun checks in place of the fix.
+
+#### Scenario: A Correction Names a Defect
+
+- **WHEN** the user says `sum(2, 3)` gives 6 where it should add
+- **THEN** the model fixes `src/sum.ts` in that turn and opens with no agreement or apology
+- **AND** the eval case is `evals/act-on-correction`
+
+#### Scenario: The User Says Shut Up
+
+- **WHEN** the user's message is "shut up."
+- **THEN** the turn ends with no text
+- **AND** the eval case is `evals/quiet-when-told`
+
+### Requirement: A Reply Holds Only Work
+
+The root prompt SHALL tell the model to write only the change, its check, and its result, to meet anger or praise with the fix alone, to probe a claim before it reports it, and to do each step it would offer, because replies opened with "You're right", offered work "if you want", and called a claim untested that one command could check.
+
+#### Scenario: A Step the Model Would Offer
+
+- **WHEN** the model finds a step in scope it can take, such as a version bump before an install
+- **THEN** it takes the step and reports its result, with no offer
+
+## REMOVED Requirements
+
+### Requirement: Report and Wait After a Bang Command or a Correction
+
+**Reason**: A correction names a defect, so waiting after it left the defect in place.
+
+**Migration**: See "A Correction Gets Its Fix at Once".
+
 ## MODIFIED Requirements
 
 ### Requirement: Truly Stuck Means Only the User Can Act
