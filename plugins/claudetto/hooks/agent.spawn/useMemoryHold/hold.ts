@@ -20,13 +20,18 @@ import {
 } from "../../texts";
 import { withNote } from "../../tool.call/useBudgetRun/budget-run";
 import { isRecord } from "../../tools";
-import { descendants, type Row, sessionPid } from "./session-tree";
+import {
+	descendants,
+	type Row,
+	rowsOf,
+	sessionPid,
+	WATCH_MS,
+} from "./session-tree";
 
 // These look at or stop what holds the memory, which is how the agent frees it.
 const FREEING: ReadonlySet<string> = new Set(["kill", "ps"]);
 const MEMINFO = "/proc/meminfo";
-const WATCH_MS = 5000;
-const PS = ["ps", "-axo", "pid=,ppid=,etime=,rss=,comm="];
+const MISSES_BLIND = 3;
 const SYSCTL = ["/usr/sbin/sysctl", "-n", "hw.memsize"];
 
 const kbOf = (text: string, key: string): number =>
@@ -42,35 +47,6 @@ async function readShare($: EngineInterface): Promise<number> {
 		return Number(/(\d+)%/u.exec(stdout)?.[1]);
 	}
 	return Number.NaN;
-}
-
-// `ps` prints its elapsed time as `[[dd-]hh:]mm:ss`.
-const secondsOf = (etime: string): number =>
-	etime
-		.split(/[-:]/u)
-		.toReversed()
-		.reduce(
-			(sum, part, i) => sum + Number(part) * ([1, 60, 3600, 86_400][i] ?? 0),
-			0,
-		);
-
-async function rowsOf($: EngineInterface): Promise<Row[]> {
-	const { stdout } = await $.process.run(PS);
-	return stdout
-		.trim()
-		.split("\n")
-		.map((line) => {
-			const [pid = "", ppid = "", etime = "0", rss = "0", ...name] = line
-				.trim()
-				.split(/\s+/u);
-			return {
-				pid,
-				ppid,
-				seconds: secondsOf(etime),
-				kb: Number(rss),
-				name: name.join(" "),
-			};
-		});
 }
 
 const gb = (kb: number): string => `${(kb / 1_048_576).toFixed(1)} GB`;
@@ -156,11 +132,12 @@ async function watchProcesses(
 		return undefined;
 	}
 	let tracked: Set<string> | undefined;
-	let failed = false;
+	let misses = 0;
 	const once = async () => {
 		// Of the session's descendants, a process the call started shows an age within a second or two of the call's own.
 		const age = ((await $.clock.now()) - startedAt) / 1000 + 2;
 		const rows = descendants(await rowsOf($), root);
+		misses = 0;
 		const born = rows.filter((row) => row.seconds <= age);
 		const note = await stopGrown($, born, percent);
 		if (note !== undefined || !call.backgrounded) {
@@ -172,10 +149,13 @@ async function watchProcesses(
 	};
 	const poll = async (): Promise<string | undefined> => {
 		await $.clock.sleep(WATCH_MS, { signal });
+		// A loaded machine can stall one `ps`; the next poll takes a fresh sample, so only a run of misses leaves the watch blind.
 		const outcome = await once().catch((error: unknown) => {
-			if (!failed) {
-				failed = true;
-				$.ui.log(`A memory watch poll failed (${String(error)})`);
+			misses += 1;
+			if (misses === MISSES_BLIND) {
+				$.ui.log(
+					`The memory watch missed ${MISSES_BLIND} polls (${String(error)})`,
+				);
 			}
 			return null;
 		});
