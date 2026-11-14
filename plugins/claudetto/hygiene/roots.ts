@@ -1,6 +1,7 @@
 import { exists, readFile, realpath } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 
+import { isAbsent } from "../hooks/absent";
 import { listedPaths, PURGE_PATHS } from "../hooks/command.run/useSetup/tools";
 
 const within = (path: string, parent: string): boolean =>
@@ -12,11 +13,7 @@ export type Log = (message: string) => void;
 export const logged =
 	<T>(log: Log, what: string, fallback: T) =>
 	(error: unknown): T => {
-		if (!(
-			error instanceof Error &&
-			"code" in error &&
-			error.code === "ENOENT"
-		)) {
+		if (!isAbsent(error)) {
 			log(`${what} (${String(error)})`);
 		}
 		return fallback;

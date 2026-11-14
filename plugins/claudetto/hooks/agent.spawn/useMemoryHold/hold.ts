@@ -20,12 +20,13 @@ import {
 } from "../../texts";
 import { withNote } from "../../tool.call/useBudgetRun/budget-run";
 import { isRecord } from "../../tools";
+import { descendants, type Row, sessionPid } from "./session-tree";
 
 // These look at or stop what holds the memory, which is how the agent frees it.
 const FREEING: ReadonlySet<string> = new Set(["kill", "ps"]);
 const MEMINFO = "/proc/meminfo";
 const WATCH_MS = 5000;
-const PS = ["ps", "-axo", "pid=,etime=,rss=,comm="];
+const PS = ["ps", "-axo", "pid=,ppid=,etime=,rss=,comm="];
 const SYSCTL = ["/usr/sbin/sysctl", "-n", "hw.memsize"];
 
 const kbOf = (text: string, key: string): number =>
@@ -41,13 +42,6 @@ async function readShare($: EngineInterface): Promise<number> {
 		return Number(/(\d+)%/u.exec(stdout)?.[1]);
 	}
 	return Number.NaN;
-}
-
-interface Row {
-	readonly pid: string;
-	readonly seconds: number;
-	readonly kb: number;
-	readonly name: string;
 }
 
 // `ps` prints its elapsed time as `[[dd-]hh:]mm:ss`.
@@ -66,11 +60,12 @@ async function rowsOf($: EngineInterface): Promise<Row[]> {
 		.trim()
 		.split("\n")
 		.map((line) => {
-			const [pid = "", etime = "0", rss = "0", ...name] = line
+			const [pid = "", ppid = "", etime = "0", rss = "0", ...name] = line
 				.trim()
 				.split(/\s+/u);
 			return {
 				pid,
+				ppid,
 				seconds: secondsOf(etime),
 				kb: Number(rss),
 				name: name.join(" "),
@@ -155,12 +150,17 @@ async function watchProcesses(
 	signal: AbortSignal,
 ): Promise<string | undefined> {
 	const startedAt = await $.clock.now();
+	const root = await sessionPid($);
+	if (root === undefined) {
+		$.ui.log("The memory watch found no record of this session");
+		return undefined;
+	}
 	let tracked: Set<string> | undefined;
 	let failed = false;
 	const once = async () => {
-		// A process the call started shows an age within a second or two of the call's own.
+		// Of the session's descendants, a process the call started shows an age within a second or two of the call's own.
 		const age = ((await $.clock.now()) - startedAt) / 1000 + 2;
-		const rows = await rowsOf($);
+		const rows = descendants(await rowsOf($), root);
 		const born = rows.filter((row) => row.seconds <= age);
 		const note = await stopGrown($, born, percent);
 		if (note !== undefined || !call.backgrounded) {

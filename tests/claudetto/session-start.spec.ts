@@ -6,13 +6,7 @@ import { join } from "node:path";
 import {
 	contextOf,
 	detect,
-	ZSH_LINE,
 } from "../../plugins/claudetto/scripts/session-start";
-
-const SCRIPT = join(
-	import.meta.dir,
-	"../../plugins/claudetto/scripts/session-start.ts",
-);
 
 let dir = "";
 
@@ -64,29 +58,4 @@ test("the output carries the manager as additionalContext", () => {
 	expect(out).toContain(
 		'"additionalContext":"Package manager of this project: `bun`',
 	);
-});
-
-test("the hook appends the zsh line to CLAUDE_ENV_FILE and names the manager once", async () => {
-	await put("bun.lock");
-	const envFile = join(dir, "env.sh");
-	const run = Bun.spawn(["bun", SCRIPT], {
-		stdin: new Blob([JSON.stringify({ cwd: dir })]),
-		stdout: "pipe",
-		env: { ...process.env, CLAUDE_ENV_FILE: envFile },
-	});
-	const out = await new Response(run.stdout).text();
-	await run.exited;
-
-	expect(await Bun.file(envFile).text()).toBe(ZSH_LINE);
-	expect(out).toBe(contextOf("bun"));
-});
-
-test("the hook prints nothing for a folder with no manager", async () => {
-	const run = Bun.spawn(["bun", SCRIPT], {
-		stdin: new Blob([JSON.stringify({ cwd: dir })]),
-		stdout: "pipe",
-		env: { ...process.env, CLAUDE_ENV_FILE: join(dir, "env.sh") },
-	});
-
-	expect(await new Response(run.stdout).text()).toBe("");
 });

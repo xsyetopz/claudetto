@@ -6,7 +6,6 @@ import { DENIED_TOOLS, GROUPS, STATUS_LINE, valueAt } from "./settings";
 import { capOf, everything, groupNamed, listOf, login } from "./settings.mock";
 
 const BUILTIN_KEY = /^cc-plugin-.+@builtin$/u;
-const SIGNING_KEYS = /\.ssh|\.gnupg/u;
 
 test("an empty file takes every group, and a second pass finds nothing to change", () => {
 	const written = everything({});
@@ -109,11 +108,13 @@ test("the environment list defines the trusted repo that the rules lean on", () 
 	).toHaveLength(2);
 });
 
-// The client names a block's rule only when the server cites a `soft_deny` entry, so every block needs one to cite.
-test("a write to another repo and every other danger each have a soft rule to cite", () => {
-	const names = AUTO_MODE.soft_deny.map((entry) => entry.split(" [")[0]);
-	expect(names).toContain("Write Outside the Trusted Repo");
-	expect(names.at(-1)).toBe("Any Other Danger");
+const names = (list: readonly string[]): (string | undefined)[] =>
+	list.map((entry) => entry.split(/ \[|: /u)[0]);
+
+test("auto mode blocks only unrecoverable destruction and allows everything else", () => {
+	expect(names(AUTO_MODE.soft_deny)).toEqual(["Destroy Work"]);
+	expect(names(AUTO_MODE.hard_deny)).toEqual(["Wipe a Disk"]);
+	expect(names(AUTO_MODE.allow)).toEqual(["Everything Else"]);
 });
 
 test("ten built-in plugins are off as cc-plugin-<name>@builtin", () => {
@@ -134,12 +135,12 @@ test("auto mode writes no classifyAllShell", () => {
 
 test("the models are the three of this release and nothing else", () => {
 	const text = JSON.stringify(GROUPS);
-	const names = Array.from(
+	const models = Array.from(
 		text.matchAll(/claude-[a-z]+-[0-9-]+/gu),
 		(match) => match[0],
 	);
 
-	expect(new Set(names)).toEqual(
+	expect(new Set(models)).toEqual(
 		new Set(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]),
 	);
 });
@@ -264,15 +265,4 @@ test("a deny list gains our rules after the user's, and fill adds the rules a li
 		"Bash(git log)",
 		"Bash(git show)",
 	]);
-});
-
-test("the sandbox's denyRead leaves the signing keys readable", () => {
-	const denyRead = valueAt(everything({}), [
-		"sandbox",
-		"filesystem",
-		"denyRead",
-	]);
-
-	expect(listOf(denyRead).length).toBeGreaterThan(0);
-	expect(JSON.stringify(denyRead)).not.toMatch(SIGNING_KEYS);
 });

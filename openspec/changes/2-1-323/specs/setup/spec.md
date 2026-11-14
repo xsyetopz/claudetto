@@ -32,7 +32,7 @@ Setup SHALL offer each of the eight shipped rules as a copy to `<config>/rules/c
 #### Scenario: Each Missing Rule
 
 - **WHEN** the user holds none of the rules
-- **THEN** setup offers `useLeastCode`, `noUnrequestedEdits`, `noImpossibleStateGuards`, `findFactsByExperiment`, `useOneObviousWay`, `useBlockLanguage`, `lookForAClone`, and `useHeadlineseNames`
+- **THEN** setup offers `useLeastCode`, `noUnrequestedEdits`, `noImpossibleStateGuards`, `findFactsByExperiment`, `useOneObviousWay`, `useBlockLanguage`, `lookForClone`, and `useHeadlineseNames`
 - **AND** each is a dialog of its own, and a Write puts the shipped text under `rules/claudetto` and writes no settings key (`hooks/command.run/useSetup/setup.rules.test.ts`, "each rule the user lacks is a dialog of its own", "Write puts the shipped text under rules/claudetto and writes no settings key")
 
 #### Scenario: The Naming Rule

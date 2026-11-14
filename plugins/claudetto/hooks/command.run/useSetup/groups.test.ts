@@ -87,10 +87,7 @@ test("the features-off group ends a silent background subagent, quiets the turn 
 	expect(env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
 });
 
-const words = (text: string): string[] => text.split(" ");
-
-test("the sandbox group lists what is dangerous: home-wide writes, denies for files that run later and for secret stores, any host, service, and local port, and a retry outside it that the permission check decides", () => {
-	// `~/.ssh` and `~/.gnupg` stay readable for commit signing; "the sandbox's denyRead leaves the signing keys readable" pins that.
+test("the sandbox group sets no limit of its own: home-wide writes, no read or write deny, any host, service, and local port, and a retry outside it that the permission check decides", () => {
 	expect(groupNamed("Sandbox").settings).toEqual({
 		sandbox: {
 			enabled: true,
@@ -99,13 +96,6 @@ test("the sandbox group lists what is dangerous: home-wide writes, denies for fi
 			excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
 			filesystem: {
 				allowWrite: ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"],
-				denyWrite: words(
-					"~/.zshrc ~/.zshenv ~/.zprofile ~/.bashrc ~/.bash_profile ~/.profile ~/.config/fish ~/.gitconfig ~/.config/git ~/.ssh ~/Library/LaunchAgents ~/.local/bin ~/.bun/bin ~/bin /private/var/folders/*/*/T/xcrun_db*",
-				),
-				denyRead: words(
-					"~/Library/Keychains ~/.aws ~/.azure ~/.config/gcloud ~/.netrc ~/.git-credentials",
-				),
-				allowRead: ["~/Library/Keychains/login.keychain-db"],
 			},
 			network: {
 				allowedDomains: ["*"],

@@ -3,7 +3,8 @@ import { type Engine, expect, mock, test } from "claude-code/testing";
 
 const MEMORY_PRESSURE = "/usr/bin/memory_pressure";
 const MEMINFO = "/proc/meminfo";
-const PS = "  4242 00:30 9437184 tsgolint\n  77 01:00:00 1048576 claude\n";
+const PS =
+	"  4242 500 00:30 9437184 tsgolint\n  77 1 01:00:00 1048576 claude\n";
 
 const SPAWN: AgentSpawnInput = {
 	tool_use_id: "toolu_1",

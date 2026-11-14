@@ -29,7 +29,7 @@ const RULE_NAMES = [
 	"findFactsByExperiment",
 	"useOneObviousWay",
 	"useBlockLanguage",
-	"lookForAClone",
+	"lookForClone",
 	"useHeadlineseNames",
 	"noNarratingComments",
 	"useEdgeCaseReport",

@@ -64,59 +64,19 @@ test("the output style asks for the open-item form the Stop check reads", async 
 	const style = await file(
 		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
 	).text();
-	const requests = style.slice(
-		style.indexOf("<requests_to_the_user>"),
-		style.indexOf("</requests_to_the_user>"),
-	);
 
-	expect(requests).toContain(
-		"as a `- ! <command>` bullet or a fenced `sh` block under one `## What I Need From You` heading",
+	expect(style).toContain(
+		"one `- ! <command>` bullet under `## What I Need From You`",
 	);
-	expect(requests).toContain(
-		"Ask each question for the user once, through the popup (`AskUserQuestion`), and repeat it nowhere in the reply.",
-	);
-	expect(requests).toContain("it holds that command and never a question.");
-	expect(requests).toContain(
-		"Ask through the popup only for what the user alone holds; settle the rest from the conversation and the repository, and state your reading.",
-	);
+	expect(style).toContain("Ask a question once, through `AskUserQuestion`.");
 });
 
-test("the output style states the register as what to write, and a later reply as what is new", async () => {
+test("the output style fits 2,000 characters", async () => {
 	const style = await file(
 		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
 	).text();
-	const register = style.slice(
-		style.indexOf("<register>"),
-		style.indexOf("</register>"),
-	);
 
-	expect(register).toContain(
-		"the fact, the corrected result when a result was wrong, and the next step you take",
-	);
-	expect(register).toContain(
-		"A reply that follows a remark or a notice, and any reply after one already on screen, holds only what is new.",
-	);
-});
-
-// 18.24: the two reader rules sit in the style's `<sentence_style>`, outside `<requests_to_the_user>`.
-test("the output style says what an agent message and a user reply hold", async () => {
-	const style = await file(
-		`${import.meta.dir}/../plugins/claudetto/output-styles/Concise.md`,
-	).text();
-	const rules = style.slice(
-		style.indexOf("<sentence_style>"),
-		style.indexOf("</sentence_style>"),
-	);
-
-	expect(rules).toContain(
-		"holds only the task, the inputs it lacks, and the done-check;",
-	);
-	expect(rules).toContain(
-		"send one per agent, and a follow-up only when its report leaves the task undone",
-	);
-	expect(rules).toContain(
-		"each sentence carries a fact, a result, or a step the person has not yet seen",
-	);
+	expect(style.split("\n---\n")[1]?.length).toBeLessThanOrEqual(2000);
 });
 
 // 18.28: with the hooks module not running, the setup command would reach Claude as bare tags, so a plain hook blocks it; the module's `command.run` serves it first when it runs.

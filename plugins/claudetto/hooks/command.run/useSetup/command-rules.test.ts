@@ -3,12 +3,12 @@ import { expect, test } from "claude-code/testing";
 import { valueAt } from "./settings";
 import { everything, listOf } from "./settings.mock";
 
-test("the command rules ask for a branch move, a worktree remove, a branch delete, and a push that deletes a ref", () => {
+test("the command rules ask only before a command that destroys what cannot be restored", () => {
 	const ask = valueAt(everything({}), ["permissions", "ask"]);
 
 	for (const rule of [
-		"Bash(git switch *)",
 		"Bash(git checkout *)",
+		"Bash(git reset --hard *)",
 		"Bash(git worktree remove *)",
 		"Bash(git branch -D *)",
 		"Bash(git push * --delete *)",
@@ -16,8 +16,19 @@ test("the command rules ask for a branch move, a worktree remove, a branch delet
 		"Bash(git push :**)",
 		"Bash(git push *--force*)",
 		"Bash(git clean *)",
+		"Bash(rm -*r*)",
+		"Bash(dd *)",
 	]) {
 		expect(ask).toContain(rule);
+	}
+	for (const rule of [
+		"Bash(git switch *)",
+		"Bash(git rebase *)",
+		"Bash(git branch -d *)",
+		"Bash(curl *)",
+		"Bash(eval *)",
+	]) {
+		expect(ask).not.toContain(rule);
 	}
 });
 

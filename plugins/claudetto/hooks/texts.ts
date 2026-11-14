@@ -40,7 +40,7 @@ const ENTER_PLAN_MODE =
 	"Asks user to enter plan mode, where you explore read-only and write a plan file for approval. Call it when user asks for a plan before any change.";
 
 const EXIT_PLAN_MODE =
-	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It takes no plan text. Ask an open question with AskUserQuestion first.";
+	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It takes no plan text. Ask each open question with AskUserQuestion before you call it.";
 
 const TASK_CREATE = `Adds a \`pending\` task, for work of 3 or more steps or a list user gives. \`subject\`: an imperative title; \`activeForm\`: spinner text. Call \`TaskList\` first to avoid a duplicate.`;
 
@@ -127,7 +127,7 @@ export const ADVISOR_COMMAND_SPEC = {
 export const ADVISOR_USAGE = `Run /${ADVISOR_COMMAND} <question>, and name each file to send as @path.`;
 
 export const ASK_TEXT =
-	"Asks user 1-4 questions, each with 2-4 options or a typed answer, and returns the answers.";
+	"Asks user 1-4 questions, each with 2-4 options or a typed answer. Put a step over several items in one question that lists each item by its exact name, in backticks, in their order.";
 
 // Limits: refusals and blocks of the run limits and the stall rule.
 
@@ -155,14 +155,14 @@ export const MEMORY_STOPPED = (
 	size: string,
 	percent: number,
 ): string =>
-	`claudetto stopped process ${pid} (${name}) of this command at ${size}, over the ${percent}% of the machine's memory that one process may hold, because it would have run the machine out of memory. Run a narrower part of it, such as one test file. \`memoryProcessMaxPercent\` sets the share.`;
+	`claudetto stopped process ${pid} (${name}) of this command at ${size}, over the ${percent}% of the machine's memory that one process may hold, because one process past that share can run the machine out of memory. Run a narrower part of it, such as one test file. \`memoryProcessMaxPercent\` sets the share.`;
 
 // Price step: the refusal of a result that would cross the Haiku price step.
 
 const count = (n: number): string => n.toLocaleString("en-US");
 
 export const WITHHELD = (v: { tokens: number; total: number }): string =>
-	`The result is about ${count(v.tokens)} tokens, and with it the next request would be about ${count(v.total)}, over the ${count(100_000)} above which Haiku 5.5 bills the whole request at five times. The call ran, so treat its change as done. Ask for a smaller part: a line range, a narrower search, or output cut with \`head\` or \`grep\`.`;
+	`The result is about ${count(v.tokens)} tokens, and with it the next request would be about ${count(v.total)}, over the ${count(100_000)} above which Haiku 5.5 bills the whole request at five times. The call ran, but its exit status and output are withheld, so check the state it changed before you repeat it. Ask for a smaller part: a line range, a narrower search, or output cut with \`head\` or \`grep\`.`;
 
 export const SILENT_TURN_REMINDER =
 	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.";

@@ -67,7 +67,13 @@ try {
 			limitMs: (args.trashDays ?? 7) * 86_400_000,
 		}),
 	);
-	console.log(await cleanCaches(args.dryRun));
+	console.log(
+		await cleanCaches(
+			args.dryRun,
+			join(configDir, "claudetto", "mole-clean"),
+			Date.now(),
+		),
+	);
 } catch (error) {
 	console.error(String(error));
 	process.exitCode = 1;

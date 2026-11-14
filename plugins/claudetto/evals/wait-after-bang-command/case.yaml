@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: wait-after-bang-command
-context:
-  scaffold_script: scaffold.sh

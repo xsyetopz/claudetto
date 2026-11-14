@@ -10,7 +10,7 @@ export const RULES = [
 	"findFactsByExperiment",
 	"useOneObviousWay",
 	"useBlockLanguage",
-	"lookForAClone",
+	"lookForClone",
 	"useHeadlineseNames",
 	"noNarratingComments",
 	"useEdgeCaseReport",
