@@ -33,6 +33,11 @@ import {
 import { delegation } from "./tool.call/useClaudettoAgents/delegation";
 import { decideCall, typesafeKey } from "./tool.call/useDecideTool/decide";
 import {
+	repeatCall,
+	repeatHooks,
+	repeatState,
+} from "./tool.call/useRepeatGuard/repeat";
+import {
 	sandboxGitCall,
 	sandboxGitState,
 } from "./tool.call/useSandboxGit/sandbox-git";
@@ -47,6 +52,7 @@ const stateOf = (options: PluginOptions) => ({
 	price: priceStepState(),
 	hold: holdState(options),
 	sandboxGit: sandboxGitState(),
+	repeat: repeatState(),
 });
 
 type State = ReturnType<typeof stateOf>;
@@ -55,6 +61,7 @@ type State = ReturnType<typeof stateOf>;
 const registerOuter = (on: On, options: PluginOptions, state: State): void => {
 	priceStepHooks(on, state.price);
 	holdHooks(on, state.hold);
+	repeatHooks(on, state.repeat);
 	agentFileModel(on);
 	modelPrompt(on);
 	budgetHooks(on);
@@ -89,6 +96,7 @@ const callGuards = (
 ): CallAnswer =>
 	chain(e, next, [
 		(at, step) => priceStepCall($, at, step, state.price),
+		(at, step) => repeatCall(at, step, state.repeat),
 		(at, step) => memoryWatchCall($, at, step, state.hold.memoryProcessMax),
 		(at, step) => budgetRunCall($, at, step),
 		(at, step) => decideCall($, at, step),

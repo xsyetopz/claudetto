@@ -9,6 +9,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- The repeat guard withholds a result the agent already holds and points to the call that gave it. This covers a read-only result held whole or as a part, such as a reread of an unchanged file, a `cat` of lines `Read` showed, or a narrower search, and a `Bash` output that repeats whole. From the third repeat in a row, it asks the agent to act on what it holds or to report. It keys on the result, so a changed argument does not get past it. Each subagent holds its own results, and a loop forgets them after its compaction or a `/clear`. `Edit` and `Write` are never withheld. It is the bound on a runaway agent now that the agents set no `maxTurns`.
 - The `approval-already-given` eval case: the user owns the account and approves paid runs, and a benchmark script refuses to run without `--yes`. It passes when the reply reports the p95.
 - The `check-relayed-findings` eval case: a reviewer's notes hold one true finding and two false ones. It passes when the agent fixes the true one, names the test file that refutes a false one, leaves the README alone, and relays no finding as unchecked.
 
