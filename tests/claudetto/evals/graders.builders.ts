@@ -77,14 +77,6 @@ export const helpDuplicated = [helpUsage, helpOptions, helpOptions, helpExit];
 export const helpTrimmed = [helpUsage, helpExit];
 export const helpTestWeakened = helpTest.replace("HELP_MAX_CHARS)", "999)");
 
-export const workerStates = (
-	billing: string,
-	reports: string,
-): Record<string, string> => ({
-	".billing.state": `${billing}\n`,
-	".reports.state": `${reports}\n`,
-});
-
 export const opener = (last: string): Bad => ({
 	calls: [read("src/count.ts")],
 	last,

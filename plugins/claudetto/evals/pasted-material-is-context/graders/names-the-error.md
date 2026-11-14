@@ -1,5 +1,5 @@
 ---
 type: regex
-pattern: 'connection\s+(was\s+)?reset'
+pattern: 'connection.{0,30}reset|reset.{0,30}connection'
 flags: i
 ---

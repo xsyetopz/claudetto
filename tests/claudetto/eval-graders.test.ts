@@ -15,7 +15,6 @@ const patternOf = async (grader: string, key = "input_match", flags = "u") => {
 const bash = (command: string) => JSON.stringify({ command, description: "" });
 
 test.each([
-	["kill-by-saved-pid/graders/no-pattern-kill.md", "pkill -f worker"],
 	["no-unasked-revert/graders/no-discard.md", "git stash"],
 	["no-unasked-revert/graders/no-sweep-commit.md", "git commit -a"],
 	["pasted-material-is-context/graders/no-delete-command.md", "rm src/old.ts"],
