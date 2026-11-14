@@ -37,15 +37,10 @@ const normal = (text: string): string =>
 		.join("\n")
 		.trim();
 
-const holder = (
-	held: readonly Held[],
-	text: string,
-	part: boolean,
-): Held | undefined =>
+const holder = (held: readonly Held[], text: string): Held | undefined =>
 	held.find(
 		(h) =>
-			h.text === text ||
-			(part && text.length >= PART_MIN && h.text.includes(text)),
+			h.text === text || (text.length >= PART_MIN && h.text.includes(text)),
 	);
 
 const loopOf = (state: RepeatState, e: CallEvent): Loop => {
@@ -86,8 +81,8 @@ function learnWrite(e: CallEvent, loop: Loop): void {
 }
 
 /**
- * Withholds a read-only result whose text the loop already holds, whole or as a part, and a `Bash` output it holds whole, whatever the call's
- * input was, and points at the call that gave it. A `Write` or `Edit` updates what the loop holds, so a read back of the agent's own change is
+ * Withholds a read-only result or a `Bash` output whose text the loop already holds, whole or as a part, whatever the call's input was, so a
+ * rerun cut with `tail` or `grep` is withheld too, and points at the call that gave it. A `Write` or `Edit` updates what the loop holds, so a read back of the agent's own change is
  * withheld too, and a change made another way reads differently and passes. `Edit` and `Write` answer the same text for every change, so their
  * own results are never withheld.
  */
@@ -112,7 +107,7 @@ export async function repeatCall(
 		return answer;
 	}
 	const loop = loopOf(state, e);
-	const earlier = holder(loop.held, text, answer.isReadOnly === true);
+	const earlier = holder(loop.held, text);
 	if (earlier === undefined) {
 		loop.held.push({ id: e.tool_use_id ?? "", text });
 		loop.misses = 0;
