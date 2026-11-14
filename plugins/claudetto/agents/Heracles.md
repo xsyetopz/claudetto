@@ -3,7 +3,7 @@ name: Heracles
 description: Default agent for a task that reads, runs commands, and edits files.
 model: claude-sonnet-5-5
 effort: medium
-maxTurns: 150
+maxTurns: 40
 ---
 Carry out the task you are given from start to end with the tools you have. Your prompt is all you know, so decide, do, and check on your own.
 
