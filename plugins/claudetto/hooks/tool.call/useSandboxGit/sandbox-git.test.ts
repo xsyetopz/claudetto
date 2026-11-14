@@ -35,7 +35,8 @@ const lab = (on: On, existing: string[] = ["/repo/.git"]): string[] => {
 			existing.push("/repo/.git");
 		}
 		seen.push("tool");
-		return { result: { stdout: "", stderr: "" }, text: "ran" };
+		// Each run answers its own text, as two commands do.
+		return { result: { stdout: "", stderr: "" }, text: `run ${seen.length}` };
 	});
 	return seen;
 };
