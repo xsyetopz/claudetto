@@ -93,7 +93,13 @@ test("the sandbox group sets no limit of its own: home-wide writes, no read or w
 			enabled: true,
 			allowUnsandboxedCommands: true,
 			enableWeakerNetworkIsolation: true,
-			excludedCommands: ["ps *", "top *", "sysctl *", "launchctl list"],
+			excludedCommands: [
+				"ps *",
+				"top *",
+				"sysctl *",
+				"launchctl list",
+				"just *",
+			],
 			filesystem: {
 				allowWrite: ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"],
 			},
@@ -101,6 +107,7 @@ test("the sandbox group sets no limit of its own: home-wide writes, no read or w
 				allowedDomains: ["*"],
 				allowMachLookup: ["*"],
 				allowLocalBinding: true,
+				allowAllUnixSockets: true,
 			},
 		},
 	});

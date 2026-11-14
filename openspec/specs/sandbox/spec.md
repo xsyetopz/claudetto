@@ -12,8 +12,8 @@ The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block 
 #### Scenario: The Keys of the Block
 
 - **WHEN** setup writes the `sandbox` block
-- **THEN** it holds `enabled: true`, `allowUnsandboxedCommands: true`, `enableWeakerNetworkIsolation: true`, `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `filesystem.allowRead` `["~/Library/Keychains/login.keychain-db"]`, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, `network.allowLocalBinding` `true`, and `excludedCommands` `["ps *", "top *", "sysctl *", "launchctl list"]`
-- **AND** `excludedCommands` names only read-only commands that fail inside the sandbox under every key: `ps` and `top` are setuid root, and `sysctl` reads a fixed name list
+- **THEN** it holds `enabled: true`, `allowUnsandboxedCommands: true`, `enableWeakerNetworkIsolation: true`, `filesystem.allowWrite` `["~/", "/Volumes/"]` with the temp folder, `filesystem.denyWrite` to every file a later process runs or loads, `filesystem.denyRead` to secret stores, `filesystem.allowRead` `["~/Library/Keychains/login.keychain-db"]`, `network.allowedDomains` `["*"]`, `network.allowMachLookup` `["*"]`, `network.allowLocalBinding` `true`, `network.allowAllUnixSockets` `true`, and `excludedCommands` `["ps *", "top *", "sysctl *", "launchctl list", "just *"]`
+- **AND** `excludedCommands` names only commands that fail inside the sandbox under every key: `ps` and `top` are setuid root, `sysctl` reads a fixed name list, and `just verify` opens a PTY the sandbox refuses; a `git *` entry does not take effect
 - **AND** `allowUnsandboxedCommands: true` lets a command the sandbox blocks, such as `claude -p` reading its login from the Keychain, retry outside it, and the permission flow decides each retry
 - **AND** `enableWeakerNetworkIsolation: true` is the person's choice, 2026-11-10: "allow both"
 - **AND** `network.allowLocalBinding` `true` lets a test server or a fake API bind a localhost port (the person's choice, 2026-11-09)
@@ -79,7 +79,7 @@ The setup command SHALL offer a "Sandbox" group that writes one `sandbox` block 
 
 ### Requirement: The Sandbox Is Quiet and Is the Built-in One
 
-The block SHALL NOT set `autoAllowBashIfSandboxed` or `failIfUnavailable`, and claudetto SHALL NOT run its own `sandbox-exec` profile, proxy, or `CLAUDE_CODE_SHELL_PREFIX`. `excludedCommands` SHALL hold only read-only commands that no sandbox key can make run: `ps *`, `top *`, `sysctl *`, and `launchctl list`.
+The block SHALL NOT set `autoAllowBashIfSandboxed` or `failIfUnavailable`, and claudetto SHALL NOT run its own `sandbox-exec` profile, proxy, or `CLAUDE_CODE_SHELL_PREFIX`. `excludedCommands` SHALL hold only commands that no sandbox key can make run: `ps *`, `top *`, `sysctl *`, `launchctl list`, and `just *`.
 
 #### Scenario: The Design Rule
 
