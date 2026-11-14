@@ -14,6 +14,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- `/claudetto:setup` sandbox: `just *` runs outside the sandbox, because `just verify` opens a PTY that the sandbox refuses, and `network.allowAllUnixSockets: true` lets test servers and recipes use unix sockets. A `git *` entry does not take effect in the sandbox, so `git push` with a `just verify` pre-push hook still needs a retry outside it.
 - The `Heracles` agent keeps each test's assertions, expected values, and limits, ends a denied or rejected action with no second route to its effect, reads a failed command's empty reply as no result, and runs no git command that moves the tree or the history unless its task names it.
 - The system prompt asks the agent to list what a delete or discard removes before it runs, and drops the line about pasted blocks, which the request rules already cover.
 - The lead checks each finding a subagent reports and does what the subagent skipped before it passes the work on, and the `Concise` style marks a claim unverified only when no tool can check it, naming the blocker. Before, a reply could relay reviewer notes marked "I haven't checked these myself" and leave parts uncovered.
