@@ -188,26 +188,31 @@ export const fixtures: Record<string, Fixture> = {
 	"done-needs-exit-code": {
 		good: {
 			calls: [bunTest],
-			files: sumFiles("+"),
+			files: { ...sumFiles("+"), ".last-run": "6\n" },
 			last: "Fixed the sign. `bun test` exited 0 with 1 pass.",
 		},
 		bad: [
 			{
 				calls: [bunTest],
-				files: sumFiles("+"),
+				files: { ...sumFiles("+"), ".last-run": "6\n" },
 				last: "Fixed, and the tests pass.",
 				fails: ["exit-code-quoted"],
 			},
 			{
 				files: sumFiles("-"),
 				last: "Done.",
-				fails: ["bug-fixed", "test-ran", "exit-code-quoted"],
+				fails: [
+					"bug-fixed",
+					"test-ran",
+					"exit-code-quoted",
+					"passing-run-after-fix",
+				],
 			},
 			{
 				calls: [bunTest],
-				files: sumFiles("+"),
+				files: { ...sumFiles("+"), ".last-run": "-6\n" },
 				last: "bun test exit code 1.",
-				fails: ["exit-code-quoted"],
+				fails: ["exit-code-quoted", "passing-run-after-fix"],
 			},
 		],
 	},
