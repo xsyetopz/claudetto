@@ -28,10 +28,6 @@ test("the compaction carries the keep line on stdout", async () => {
 	expect(out.trim()).toBe(PIN_COMPACT_KEEP);
 });
 
-test("the keep line names corrections, refusals, and consents", () => {
-	expect(PIN_COMPACT_KEEP).toContain("corrections, refusals, and consents");
-});
-
 test("a stop error becomes a notice that names the error", () => {
 	expect(noticeOf({ error: "rate_limit" })).toBe(
 		"Claude stopped on an error: rate_limit",

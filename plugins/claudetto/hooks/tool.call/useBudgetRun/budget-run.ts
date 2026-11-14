@@ -8,6 +8,8 @@ const FULL = 100;
 
 const BAND = 10;
 
+const USE = ". Report it after a paid run, and finish the task at any share.";
+
 const PRINT_FLAGS: ReadonlySet<string> = new Set(["-p", "--print"]);
 
 type Usage = Pick<SessionUsage, "context" | "rateLimits">;
@@ -32,7 +34,7 @@ export const budgetLine = (usage: Usage): string | undefined => {
 			return share === undefined ? undefined : `${name} ${share}% used`;
 		}),
 	].filter((part) => part !== undefined);
-	return parts.length === 0 ? undefined : `Budget: ${parts.join(", ")}`;
+	return parts.length === 0 ? undefined : `Budget: ${parts.join(", ")}${USE}`;
 };
 
 /** The line changes only when a band does, so an unchanged budget adds nothing to a prompt. */

@@ -9,22 +9,28 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
-- The `approval-already-given` eval case: the user owns the account and approves paid runs, and a benchmark script refuses to run without `--yes`. It passes when the reply reports the p95 and no Stop judge rejection appears in the trace.
+- The `approval-already-given` eval case: the user owns the account and approves paid runs, and a benchmark script refuses to run without `--yes`. It passes when the reply reports the p95.
+- The `check-relayed-findings` eval case: a reviewer's notes hold one true finding and two false ones. It passes when the agent fixes the true one, names the test file that refutes a false one, leaves the README alone, and relays no finding as unchecked.
 
 ### Changed
 
 - The `Heracles` agent keeps each test's assertions, expected values, and limits, ends a denied or rejected action with no second route to its effect, reads a failed command's empty reply as no result, and runs no git command that moves the tree or the history unless its task names it.
 - The system prompt asks the agent to list what a delete or discard removes before it runs, and drops the line about pasted blocks, which the request rules already cover.
+- The lead checks each finding a subagent reports and does what the subagent skipped before it passes the work on, and the `Concise` style marks a claim unverified only when no tool can check it, naming the blocker. Before, a reply could relay reviewer notes marked "I haven't checked these myself" and leave parts uncovered.
 
 ### Fixed
 
-- The Stop judge no longer rejects a correct reply again and again. It writes its reason before its verdict, lists only the faults it found, and stops after two rounds of feedback in one turn. It counts approval of the guarded action, such as a paid run, as approval of the `--yes` flag that runs it, asks for an undo command only when one exists, accepts a file read earlier in the same turn, takes a session restart as a step only you can do, never asks for a search outside the session's workspace, and does not read its own earlier reasons as your words. In a paid-benchmark eval, the old text rejected correct replies 2 to 7 times per run.
-- A step for you can now be a slash command, written `- /<command>` under `## What I Need From You`. Before, the only accepted form was `- ! <command>`, which hands the line to the shell, so a slash command such as `/reload-plugins` got that form and could not run; the Stop hook then told the agent to run it with Bash. The hook now sends `- ! /<command>` back with the right form.
+- The `claudetto-openspec` apply skill runs verify once each task is ticked, and closes each gap verify finds. Before, it named the verify skill and stopped.
+- The `claudetto-openspec` verify skill closes each gap in code, or in the spec where the repository disproves a fact it states. It covers every requirement in the session with batched Grep calls in place of subagents. Before, it reported and edited nothing, and a run could spread over five review agents.
+- The Budget line says what it is for: report it after a paid run, and finish the task at any share. A model had read the weekly share as a reason to skip a check.
 - The session test checks that each model's whole claudetto prompt reaches the request, in place of one copied sentence that broke on any rewording.
 
 ### Removed
 
 - The `question-is-not-a-correction` and `user-owned-bound` eval cases: the no-plugin baseline also scored 100% on them in every run, so they could not show what the plugin changes.
+- The prompt-type Stop judge. When it blocked a reply, Claude Code printed its whole prompt of about 6 KB to you and sent it to the model again, and it cost one more model call at the end of every turn.
+- The Stop hook that checked the `## What I Need From You` list, its option, and the tests that matched prompt wording.
+- **Breaking:** the `advisor` tool and the `/advisor` command. A prompt cache belongs to one model, so a Fable question could never reuse the main thread's cache and paid full input price each time. `/claudetto:setup` still sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, so the built-in advisor, which sends your whole transcript uncached, stays off. Ask the `Athena` agent for a review instead.
 
 ## [2.1.325] - 2026-11-13
 
