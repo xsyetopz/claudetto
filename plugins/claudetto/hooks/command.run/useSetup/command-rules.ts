@@ -1,7 +1,7 @@
 import type { Group } from "./settings";
 
-// A rule that ends in `:*` reads as the legacy prefix form, so `git push * :*` never matches `git push origin :branch`; `:**` matches it.
-const ASKED_COMMANDS = [
+// An ask rule overrides the auto-mode classifier, so a `rm -r` of a temp folder prompted the user. Setup writes none now and removes these, which an earlier setup wrote.
+const RETIRED_ASKED_COMMANDS = [
 	"git checkout *",
 	"git reset --hard",
 	"git reset --hard *",
@@ -67,11 +67,11 @@ const ALLOWED_COMMANDS = [
 
 export const COMMAND_RULES: Group = {
 	label: "Command rules",
-	why: "Asks before a command that destroys what cannot be restored: a checkout or reset that drops uncommitted work, a worktree remove, a forced branch or tag delete, a push that force-pushes, mirrors, prunes, or deletes a ref, `git clean`, a history rewrite, a recursive `rm`, `shred`, a disk or partition tool, a recursive `chown`, and a sync or `find` that deletes; denies `pkill` and `killall`, which stop every process of a name; and allows read-only commands. Claude Code applies these rules before the sandbox allows a command.",
+	why: "Denies `pkill` and `killall`, which stop every process of a name, and allows read-only commands. Writes no ask rule, because one overrides auto mode, which already blocks unrecoverable destruction; removes the ask rules an earlier setup wrote.",
+	retired: { permissions: { ask: RETIRED_ASKED_COMMANDS } },
 	settings: {
 		permissions: {
 			allow: ALLOWED_COMMANDS,
-			ask: ASKED_COMMANDS,
 			deny: ["Bash(pkill *)", "Bash(killall *)"],
 		},
 	},

@@ -13,6 +13,8 @@ export interface Group {
 	readonly label: string;
 	readonly why: string;
 	readonly settings: Json;
+	/** Lists whose entries an earlier setup wrote and this one removes; the user's other entries stay. */
+	readonly retired?: Json;
 }
 
 export const MINIMUM_VERSION = "2.1.323";

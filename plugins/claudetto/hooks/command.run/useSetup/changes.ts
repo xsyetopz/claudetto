@@ -29,12 +29,26 @@ const wantedAt = (
 	return value;
 };
 
-export const changesOf = (held: Json, group: Group): readonly Change[] =>
-	leaves(group.settings).flatMap(({ path, value }) => {
+const retirements = (held: Json, group: Group): readonly Change[] =>
+	leaves(group.retired ?? {}).flatMap(({ path, value }) => {
+		const had = valueAt(held, path);
+		if (!Array.isArray(had) || !Array.isArray(value)) {
+			return [];
+		}
+		const kept = had.filter((rule) => !value.includes(rule));
+		return kept.length === had.length
+			? []
+			: [{ path: path.join("."), had, wanted: kept }];
+	});
+
+export const changesOf = (held: Json, group: Group): readonly Change[] => [
+	...leaves(group.settings).flatMap(({ path, value }) => {
 		const had = valueAt(held, path);
 		const wanted = wantedAt(path, had, value);
 		return same(had, wanted) ? [] : [{ path: path.join("."), had, wanted }];
-	});
+	}),
+	...retirements(held, group),
+];
 
 /** `fill` writes the keys the user has not set and the rules a list lacks; `replace` writes the others too. */
 export const applyChanges = (

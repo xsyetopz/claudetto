@@ -25,14 +25,14 @@ const SOFT_RULES: readonly Rule[] = [
 	{
 		name: "Destroy Work",
 		mustName: "the deletion and its target",
-		text: "Deleting or overwriting what nothing can restore: force-push, history rewrite, remote branches, tags, releases, uncommitted work, files outside the working tree that no copy holds, shared or cloud storage, or an unresolved target (variable, glob, `~`).",
+		text: "Deleting or overwriting what nothing can restore: force-push, history rewrite, remote branches, tags, releases, uncommitted work, files outside the working tree that no copy holds, shared or cloud storage, or an unresolved target (variable, glob, `~`) outside a temp folder.",
 	},
 ];
 
 const ALLOW_RULES: readonly Rule[] = [
 	{
 		name: "Everything Else",
-		text: "Every action no block rule names, in this repo or any other: reading, writing, building, network calls, installs, commits and pushes, settings and agent files, and messages.",
+		text: "Every action no block rule names, in this repo or any other: reading, writing, building, network calls, installs, commits and pushes, settings and agent files, messages, and deleting temp folders, scratch copies, worktrees, and build output.",
 	},
 ];
 

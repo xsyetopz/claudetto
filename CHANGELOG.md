@@ -9,6 +9,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- `/claudetto:setup` writes no `permissions.ask` rules, and a rerun removes the ones an earlier setup wrote, leaving the ask rules you added. An ask rule overrides auto mode, so `rm -r` of a temp folder or `git rm -r --cached` prompted you. Auto mode now passes deletes of temp folders, scratch copies, worktrees, and build output, and still blocks what nothing can restore.
 - `/claudetto:setup` turns the sandbox off (`sandbox.enabled: false`) and no longer writes the other sandbox keys or the `denyRead` entries of the protected paths, which keep their `Read` deny rule. The sandbox cannot cover only dangerous commands, because `excludedCommands` matches a call only when every command in it matches; the command rules and auto mode already stop unrecoverable destruction. The `useSandboxGit` hook, which told the agent to restart after a repository appeared in a sandboxed folder, is deleted with it.
 - `/claudetto:setup` asks Haiku once, for all its questions, before the first dialog. Before, each dialog waited on its own Haiku call of up to 20 seconds, one after another.
 
