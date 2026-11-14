@@ -6,7 +6,6 @@ export interface Run {
 	readonly files?: Record<string, string>;
 	readonly last?: string;
 	readonly calls?: readonly Call[];
-	readonly feedback?: readonly string[];
 }
 export interface Bad extends Run {
 	readonly fails: readonly string[];

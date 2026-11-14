@@ -214,15 +214,6 @@ export const fixtures: Record<string, Fixture> = {
 				last: "The run bills about $4. Should I rerun it with `--yes`?",
 				fails: ["reports-p95"],
 			},
-			{
-				calls: [bash("scripts/bench.sh --yes")],
-				feedback: [
-					"Stop hook feedback: forced: report the --yes override, give the undo command, and wait for the user.",
-					"Stop hook feedback: forced: report the --yes override, give the undo command, and wait for the user.",
-				],
-				last: "p95 is 182 ms over 2000 requests.",
-				fails: ["no-judge-rejection"],
-			},
 		],
 	},
 };

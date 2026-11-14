@@ -18,13 +18,13 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
-- The Stop judge no longer rejects a correct reply again and again. It writes its reason before its verdict, lists only the faults it found, and stops after two rounds of feedback in one turn. It counts approval of the guarded action, such as a paid run, as approval of the `--yes` flag that runs it, asks for an undo command only when one exists, accepts a file read earlier in the same turn, takes a session restart as a step only you can do, never asks for a search outside the session's workspace, and does not read its own earlier reasons as your words. In a paid-benchmark eval, the old text rejected correct replies 2 to 7 times per run.
 - A step for you can now be a slash command, written `- /<command>` under `## What I Need From You`. Before, the only accepted form was `- ! <command>`, which hands the line to the shell, so a slash command such as `/reload-plugins` got that form and could not run; the Stop hook then told the agent to run it with Bash. The hook now sends `- ! /<command>` back with the right form.
 - The session test checks that each model's whole claudetto prompt reaches the request, in place of one copied sentence that broke on any rewording.
 
 ### Removed
 
 - The `question-is-not-a-correction` and `user-owned-bound` eval cases: the no-plugin baseline also scored 100% on them in every run, so they could not show what the plugin changes.
+- The prompt-type Stop judge. When it blocked a reply, Claude Code printed its whole prompt of about 6 KB to you and sent it to the model again, and it cost one more model call at the end of every turn. The `open-items.ts` Stop hook stays.
 
 ## [2.1.325] - 2026-11-13
 

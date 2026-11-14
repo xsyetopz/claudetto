@@ -32,10 +32,7 @@ const textOf = (grader: Grader, run: Run): string | undefined => {
 		return run.files?.[target.path];
 	}
 	if (target === "trace") {
-		return [
-			...(run.calls ?? []).map((call) => JSON.stringify(call)),
-			...(run.feedback ?? []),
-		].join("\n");
+		return (run.calls ?? []).map((call) => JSON.stringify(call)).join("\n");
 	}
 	return run.last ?? "";
 };
