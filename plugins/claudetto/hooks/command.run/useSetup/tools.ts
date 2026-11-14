@@ -1,4 +1,7 @@
+import type { EngineInterface } from "claude-code";
+
 import { SCANNER, SCANNER_INSTALL } from "../../secrets";
+import { type Advice, ask, dismissed, type Question } from "./engine";
 
 export interface Tool {
 	readonly name: string;
@@ -76,3 +79,65 @@ export const noticeLine = (tool: Tool, hasBrew: boolean): string =>
 			? `Install: \`${tool.install.join(" ")}\`.`
 			: `Releases are at ${tool.releases}.`
 	} \`/claudetto:setup\` can do it.`;
+
+const YES = "Yes";
+const NO = "No";
+const INSTALL_MS = 600_000;
+
+/** The install offer for a missing tool, its report line when no package manager can install it, or `undefined` when it is installed. */
+export async function toolOffer(
+	$: EngineInterface,
+	tool: Tool,
+): Promise<{ question: Question } | { line: string } | undefined> {
+	const exists = (file: string) => $.fs.exists(file);
+	const path = await $.env.get("PATH");
+	if (await isOnPath(tool.name, path, exists)) {
+		return undefined;
+	}
+	if (!(await isOnPath("brew", path, exists))) {
+		return {
+			line: `\`${tool.name}\` has no package manager here, so nothing was run. Releases are at ${tool.releases}.`,
+		};
+	}
+	return {
+		question: {
+			text: `\`${tool.name}\` is not installed. Run \`${tool.install.join(" ")}\`?`,
+			options: [YES, NO],
+		},
+	};
+}
+
+/** A missing tool: its install command shown and run after a yes. A declined optional tool is recorded, so the launch notice stays quiet. */
+export async function toolPart(
+	$: EngineInterface,
+	tool: Tool,
+	advice: Advice,
+): Promise<string | undefined> {
+	const offer = await toolOffer($, tool);
+	if (offer === undefined || "line" in offer) {
+		return offer?.line;
+	}
+	const shown = tool.install.join(" ");
+	let answer: string;
+	try {
+		answer = await ask($, offer.question, advice);
+	} catch (error) {
+		$.ui.log(`The install question was not answered (${String(error)})`);
+		return dismissed("install");
+	}
+	if (answer.trim() !== YES) {
+		if (tool.required) {
+			return `Did not install \`${tool.name}\`: ${tool.why}. Run \`${shown}\` to fix it.`;
+		}
+		await $.store.set(noticeKey(tool), true);
+		return `Did not install \`${tool.name}\`. The launch notice stays quiet.`;
+	}
+	try {
+		const result = await $.process.run(tool.install, { timeoutMs: INSTALL_MS });
+		return result.exitCode === 0
+			? `Ran \`${shown}\`.`
+			: `\`${shown}\` failed with exit code ${result.exitCode}: ${result.stderr.trim()}`;
+	} catch (error) {
+		return `Could not run \`${shown}\` (${String(error)}).`;
+	}
+}

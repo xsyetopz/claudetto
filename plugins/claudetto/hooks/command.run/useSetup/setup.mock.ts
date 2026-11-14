@@ -19,7 +19,7 @@ export interface Lab {
 	readonly offered: (readonly string[])[];
 	/** Each prompt Haiku got. */
 	readonly prompts: string[];
-	/** Haiku's answer text; unset, Haiku does not answer. */
+	/** Haiku's pick for each question, as `{"pick","why"}` JSON; unset, Haiku does not answer. */
 	advice: string | undefined;
 	/** The values the betterleaks stub flags. */
 	secrets: string[];
@@ -112,6 +112,8 @@ const serveRuns = (
 	});
 };
 
+const QUESTION_HEAD = /^Question \d+:$/gmu;
+
 const serveSession = (on: On, state: Lab) => {
 	on("model.complete", (_$, e) => {
 		state.prompts.push(e.prompt);
@@ -129,7 +131,11 @@ const serveSession = (on: On, state: Lab) => {
 							reason: "empty-reply" as const,
 							usage,
 						}
-					: { isAnswered: true as const, text: state.advice, usage },
+					: {
+							isAnswered: true as const,
+							text: `[${Array.from(e.prompt.matchAll(QUESTION_HEAD), () => state.advice).join(",")}]`,
+							usage,
+						},
 		};
 	});
 	on("clock.now", () => ({ value: 0 }));

@@ -15,6 +15,8 @@ const DURATION = /\b\d+(?:\.\d+)?\s?(?:ns|µs|us|ms|s|m)\b/gu;
 interface Held {
 	readonly id: string;
 	readonly text: string;
+	/** A command's output, which a change can make stale, unlike a file's text, which `learnWrite` keeps current. */
+	readonly isOutput?: true;
 }
 
 interface Loop {
@@ -37,6 +39,19 @@ const normal = (text: string): string =>
 		.join("\n")
 		.trim();
 
+/** A `Bash` run with no output: what the agent reads is the same notice for every such run, which tells it nothing it already held. */
+const isSilent = (answer: Awaited<CallAnswer>): boolean => {
+	const result: unknown = answer.result;
+	return (
+		typeof result === "object" &&
+		result !== null &&
+		"stdout" in result &&
+		"stderr" in result &&
+		String(result.stdout).trim() === "" &&
+		String(result.stderr).trim() === ""
+	);
+};
+
 const holder = (held: readonly Held[], text: string): Held | undefined =>
 	held.find(
 		(h) =>
@@ -50,13 +65,19 @@ const loopOf = (state: RepeatState, e: CallEvent): Loop => {
 	return loop;
 };
 
-// The agent wrote this text itself, so a later read of it brings nothing new; a change is progress, so it also ends a run of misses.
+// A change is progress, so it ends a run of misses, and a check run after it brings a new fact even when it prints what it printed before.
+function learnChange(loop: Loop): void {
+	loop.misses = 0;
+	loop.held = loop.held.filter((h) => h.isOutput !== true);
+}
+
+// The agent wrote this text itself, so a later read of it brings nothing new.
 function learnWrite(e: CallEvent, loop: Loop): void {
 	const id = e.tool_use_id ?? "";
 	const content = fieldOf(e, "content");
 	if (e.tool === "Write" && content !== undefined) {
+		learnChange(loop);
 		loop.held.push({ id, text: normal(content) });
-		loop.misses = 0;
 		return;
 	}
 	const before = normal(fieldOf(e, "old_string") ?? "");
@@ -64,7 +85,7 @@ function learnWrite(e: CallEvent, loop: Loop): void {
 	if (e.tool !== "Edit" || before === "") {
 		return;
 	}
-	loop.misses = 0;
+	learnChange(loop);
 	const all = Object.entries(e).some(
 		([k, v]) => k === "replace_all" && v === true,
 	);
@@ -82,7 +103,8 @@ function learnWrite(e: CallEvent, loop: Loop): void {
 
 /**
  * Withholds a read-only result or a `Bash` output whose text the loop already holds, whole or as a part, whatever the call's input was, so a
- * rerun cut with `tail` or `grep` is withheld too, and points at the call that gave it. A `Write` or `Edit` updates what the loop holds, so a read back of the agent's own change is
+ * rerun cut with `tail` or `grep` is withheld too, and points at the call that gave it. A change, as an `Edit`, a `Write`, or a `Bash` run that
+ * is not read-only and prints nothing, forgets the held command outputs, so a check rerun after it passes. A `Write` or `Edit` updates what the loop holds, so a read back of the agent's own change is
  * withheld too, and a change made another way reads differently and passes. `Edit` and `Write` answer the same text for every change, so their
  * own results are never withheld.
  */
@@ -102,14 +124,24 @@ export async function repeatCall(
 	) {
 		return answer;
 	}
-	const text = normal(answer.text);
-	if (text === "") {
+	const loop = loopOf(state, e);
+	const isOutput = answer.isReadOnly !== true;
+	// A command that writes prints nothing, as `sed -i` or `git commit -q` do.
+	if (isOutput && isSilent(answer)) {
+		learnChange(loop);
 		return answer;
 	}
-	const loop = loopOf(state, e);
+	const text = normal(answer.text);
+	if (text === "" || isSilent(answer)) {
+		return answer;
+	}
 	const earlier = holder(loop.held, text);
 	if (earlier === undefined) {
-		loop.held.push({ id: e.tool_use_id ?? "", text });
+		loop.held.push({
+			id: e.tool_use_id ?? "",
+			text,
+			...(isOutput ? { isOutput } : {}),
+		});
 		loop.misses = 0;
 		return answer;
 	}
