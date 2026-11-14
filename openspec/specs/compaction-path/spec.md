@@ -1,18 +1,45 @@
 # compaction-path Specification
 
 ## Purpose
-The path that keeps context across a long session is chosen by measured cost and quality, not by opinion. The default is the built-in path with the handoff as a safety net.
+The path that keeps context across a long session is chosen by measured cost and quality, not by opinion. The path is a handoff through a mod-driven compaction; the built-in compaction stays for a `/compact` that finds no handoff file and for a headless session.
 
 ## Requirements
 
+### Requirement: Handoff Compaction
+
+The `session.measure` hook SHALL add one notice once context use reaches `HANDOFF_PERCENT` (60), asking for a handoff file at `<CLAUDE_CODE_TMPDIR|TMPDIR|/tmp>/claudetto-handoff-<session id>.md` with goal, done work, open tasks, decisions, the user's corrections word for word, and the next step, then an ended turn. On `turn.complete` of the main loop after the file exists, the plugin SHALL call `$.session.compact()` and catch its rejection. The `session.compact` hook SHALL answer a main-loop compaction that finds the file with that text as the one message (`toolUses: []`) and remove the file; with no file it SHALL call `next(e)`. `/claudetto:setup` SHALL write `autoCompactEnabled: false`. The session folder of Claude Code is not the place for the file, because it exists only after a tool has run.
+
+#### Scenario: The Notice Comes Once for Each Fill
+
+- **WHEN** context use passes 60% and measures again
+- **THEN** one notice names the file, and a later measure past 60% adds none until use falls under 60% again
+- **AND** the lab test is `handoff.test.ts`, "past the soft threshold one notice names the handoff file, and a second measure adds none"
+
+#### Scenario: The File Is Written
+
+- **WHEN** a turn ends with the file present
+- **THEN** `$.session.compact()` runs, the hook answers with the file text as the one message, no summarizer request is made, and the file is removed
+- **AND** the evidence is a run of the real plugin on a fake Messages API: the request after the reset carries the file text and not the notice, and no request carries the summarizer prompt (`PostCompact` fired, `PreCompact` did not)
+
+#### Scenario: No File or a Headless Session
+
+- **WHEN** a turn ends before the file exists, or `$.session.compact()` rejects
+- **THEN** nothing compacts, the rejection is logged, and the turn ends
+- **AND** with `autoCompactEnabled: false` a `-p` session at overflow answers "Prompt is too long" and starts no compaction (measured), so a headless session has no handoff compaction
+
+#### Scenario: Cost on the Fake API
+
+- **WHEN** the handoff and the built-in call are compared on one conversation
+- **THEN** the handoff adds a 376-byte notice and one continuation request (23588 bytes) and the built-in call adds one request of +6535 bytes over a normal turn; both carry `cache_control`, and no dollar cost or summary quality was measured
+
 ### Requirement: Default Path
 
-The system SHALL use the built-in compaction for every compaction.
+The system SHALL use the built-in compaction where no handoff file exists.
 
-#### Scenario: No Probe Yet
+#### Scenario: A Manual Compaction With No File
 
-- **WHEN** a compaction starts
-- **THEN** the compaction path is the built-in one
+- **WHEN** a main-loop compaction starts and no handoff file exists
+- **THEN** the compaction path is the built-in one, and the `PreCompact` hook of the plugin runs on it
 
 #### Scenario: No Option Offers the Path
 

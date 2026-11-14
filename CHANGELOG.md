@@ -9,6 +9,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Added
 
+- Handoff compaction: at 60% context use the model is asked for a handoff file (goal, done work, open tasks, decisions, the user's corrections word for word, next step); after its turn ends, claudetto compacts with that file as the whole new context and no summarizer request. A headless session or a `/compact` with no file keeps the built-in path. `/claudetto:setup` writes `autoCompactEnabled: false`.
 - The `approval-already-given` eval case: the user owns the account and approves paid runs, and a benchmark script refuses to run without `--yes`. It passes when the reply reports the p95.
 - The `check-relayed-findings` eval case: a reviewer's notes hold one true finding and two false ones. It passes when the agent fixes the true one, names the test file that refutes a false one, leaves the README alone, and relays no finding as unchecked.
 

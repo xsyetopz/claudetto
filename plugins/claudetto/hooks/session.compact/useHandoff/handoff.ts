@@ -1,17 +1,18 @@
 import type { EngineInterface, On } from "claude-code";
 
 import { isAbsent } from "../../absent";
-import { sessionFolders } from "../../session.end/useSessionTempCleanup/cleanup";
 import { HANDOFF_NOTICE, HANDOFF_OPENING } from "../../texts";
 
 /** Context use, in percent of the window, from which the model is asked for a handoff: it leaves room for the handoff turn and sits well under the level where Claude Code compacts. */
 export const HANDOFF_PERCENT = 60;
 
-const HANDOFF_FILE = "handoff.md";
-
-async function handoffPath($: EngineInterface): Promise<string | undefined> {
-	const [folder] = await sessionFolders($, await $.session.id());
-	return folder === undefined ? undefined : `${folder}/${HANDOFF_FILE}`;
+/** Claude Code makes its session folder only once a tool has run, so the file sits in the base that folder lives under. */
+async function handoffPath($: EngineInterface): Promise<string> {
+	const base =
+		(await $.env.get("CLAUDE_CODE_TMPDIR")) ??
+		(await $.env.get("TMPDIR")) ??
+		"/tmp";
+	return `${base.replace(/\/$/u, "")}/claudetto-handoff-${await $.session.id()}.md`;
 }
 
 async function handoffText(
@@ -39,13 +40,12 @@ export async function askForHandoff(
 		asked = false;
 		return;
 	}
-	const path = asked ? undefined : await handoffPath($);
-	if (path !== undefined) {
+	if (!asked) {
 		asked = true;
 		await $.session.append({
 			message: {
 				type: "user",
-				content: [{ type: "text", text: HANDOFF_NOTICE(path) }],
+				content: [{ type: "text", text: HANDOFF_NOTICE(await handoffPath($)) }],
 			},
 		});
 	}
@@ -57,21 +57,23 @@ export async function askForHandoff(
  */
 export const handoffHooks = (on: On): void => {
 	on("turn.complete", async ($, e, next) => {
-		if (asked && e.agentId === undefined) {
-			const path = await handoffPath($);
-			if (path !== undefined && (await handoffText($, path)) !== undefined) {
-				// A headless session rejects the call, and its next turn tries again.
-				await $.session.compact().catch((error: unknown) => {
-					$.ui.log(`The handoff compaction did not run (${String(error)})`);
-				});
-			}
+		if (
+			asked &&
+			e.agentId === undefined &&
+			(await handoffText($, await handoffPath($))) !== undefined
+		) {
+			// A headless session rejects the call, and its next turn tries again.
+			await $.session.compact().catch((error: unknown) => {
+				$.ui.log(`The handoff compaction did not run (${String(error)})`);
+			});
 		}
 		return next(e);
 	});
 	on("session.compact", async ($, e, next) => {
-		const path = e.agentId === undefined ? await handoffPath($) : undefined;
-		const handoff = path === undefined ? undefined : await handoffText($, path);
-		if (path === undefined || handoff === undefined) {
+		const path = await handoffPath($);
+		const handoff =
+			e.agentId === undefined ? await handoffText($, path) : undefined;
+		if (handoff === undefined) {
 			return next(e);
 		}
 		await $.process.run(["rm", path], { cwd: "/", timeoutMs: 1000 });

@@ -3,15 +3,7 @@ import { type Engine, expect, mock, test } from "claude-code/testing";
 
 import { HANDOFF_OPENING } from "../../texts";
 
-const HANDOFF = "/tmp/claude-501/-proj/s-1/handoff.md";
-
-const dir = (name: string) => ({
-	name,
-	kind: "dir" as const,
-	size: 0,
-	mtimeMs: 0,
-	isLink: false,
-});
+const HANDOFF = "/tmp/claudetto-handoff-s-1.md";
 
 const ok = {
 	exitCode: 0,
@@ -31,17 +23,6 @@ const lab = (on: On, file: { text?: string }, rejects = false) => {
 	on("session.id", () => ({ value: "s-1" }));
 	on("session.measure", (_$, e) => ({ changed: e.changed }));
 	on("turn.complete", (_$, e) => ({ text: e.answer }));
-	on("fs.list", (_$, e) => {
-		const tree: Record<string, string[]> = {
-			"/tmp": ["claude-501"],
-			"/tmp/claude-501": ["-proj"],
-			"/tmp/claude-501/-proj": ["s-1"],
-		};
-		const names = tree[e.path];
-		return names === undefined
-			? { deny: `ENOENT: ${e.path}` }
-			: { value: names.map((name) => dir(name)) };
-	});
 	on("fs.read", (_$, e) =>
 		e.path === HANDOFF && file.text !== undefined
 			? { value: file.text }
