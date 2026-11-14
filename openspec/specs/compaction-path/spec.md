@@ -7,7 +7,24 @@ The path that keeps context across a long session is chosen by measured cost and
 
 ### Requirement: Handoff Compaction
 
-The `session.compact` hook SHALL skip the first auto-compaction of the main loop that finds no handoff file, with one notice asking for a handoff file at `<CLAUDE_CODE_TMPDIR|TMPDIR|/tmp>/claudetto-handoff-<session id>.md` with goal, done work, open tasks, decisions, the user's corrections word for word, and the next step. It SHALL answer a main-loop compaction that finds the file with that text as the one message (`toolUses: []`) and remove the file. It SHALL call `next(e)` for an auto-compaction after the notice with still no file, for a manual compaction with no file, and for a subagent's compaction. It SHALL skip a precompute while the file exists or the notice is out, because a precompute installs nothing. Claude Code's own threshold sets the moment, because `$.session.usage({ breakdown })` reports an `autoCompactThreshold` that differs from the one Claude Code compacts at: on 2.1.325 with `claude-haiku-5-5` it reports 967,000 while compaction runs at 490,000 ("thresholdSource=model-default"). The session folder of Claude Code is not the place for the file, because it exists only after a tool has run.
+The `session.compact` hook SHALL skip the first main-loop auto-compaction that finds no handoff file, with one notice that asks for the file at `<CLAUDE_CODE_TMPDIR|TMPDIR|/tmp>/claudetto-handoff-<session id>.md`. It SHALL answer a main-loop compaction that finds the file with that text as the one message and remove the file. Every other compaction SHALL take the built-in path.
+
+#### Scenario: Why Claude Code's Threshold Sets the Moment
+
+- **WHEN** a plugin reads `autoCompactThreshold` from `$.session.usage({ breakdown })`
+- **THEN** the figure differs from the one Claude Code compacts at: on 2.1.325 with `claude-haiku-5-5` it reports 967,000 while compaction runs at 490,000 ("thresholdSource=model-default"), so no notice keyed on context use comes before the compaction
+
+#### Scenario: The Built-In Path
+
+- **WHEN** an auto-compaction follows the notice with still no file, a `/compact` finds no file, or a subagent compacts
+- **THEN** the hook calls `next(e)`
+- **AND** the lab tests are `handoff.test.ts`, "a /compact with no handoff file takes the built-in path" and "a subagent's compaction takes the built-in path though the file exists"
+
+#### Scenario: A Precompute
+
+- **WHEN** a precompute runs while the file exists or the notice is out
+- **THEN** it is skipped and the file stays, because a precompute installs nothing
+- **AND** the lab test is `handoff.test.ts`, "a precompute leaves the handoff file for the compaction that installs"
 
 #### Scenario: The First Auto-Compaction Asks for the File
 
