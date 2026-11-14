@@ -147,6 +147,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Fixed
 
+- An agent now reruns a command the sandbox refused, such as `git config core.hooksPath .githooks`, outside the sandbox, instead of handing it to the user as a `!` command. The system prompt's line "Keep each security control on (… sandbox …)" read as a ban on that rerun; it now names security settings. The `Concise` style hands over a sandbox refusal only after the rerun.
 - The memory cap stops only a process that descends from the session's Claude Code process. Before this fix, it could stop any new, large process on the machine.
 - Hygiene removes the idle entries of Claude Code's temp folder even when another session removes one while the sweep searches; one vanished or unreadable entry no longer stops the whole batch of 500.
 - A headless `claude -p` session with claudetto ends when its last turn does, except on the one session a day whose start runs `mo clean`. Before, every session start ran `mo clean`, which took about 75 s and 188 CPU-seconds, and Claude Code waited 60 s for it ("turn events still running after 60000ms") before it exited. A one-turn session took 61,368 ms with the plugin and 538 ms without it.
