@@ -1,10 +1,7 @@
 import type { EngineInterface, On } from "claude-code";
 
 import { isAbsent } from "../../absent";
-import { HANDOFF_NOTICE, HANDOFF_OPENING } from "../../texts";
-
-/** Context use, in percent of the window, from which the model is asked for a handoff: it leaves room for the handoff turn and sits well under the level where Claude Code compacts. */
-export const HANDOFF_PERCENT = 60;
+import { HANDOFF_NOTICE, HANDOFF_OPENING, HANDOFF_SKIP } from "../../texts";
 
 /** Claude Code makes its session folder only once a tool has run, so the file sits in the base that folder lives under. */
 async function handoffPath($: EngineInterface): Promise<string> {
@@ -29,58 +26,44 @@ async function handoffText(
 	}
 }
 
-let asked = false;
-
-/** Called from the one `session.measure` hook, which an engine takes once per module: past `HANDOFF_PERCENT` it appends the notice, once for each fill. */
-export async function askForHandoff(
-	$: EngineInterface,
-	percent: number | undefined,
-): Promise<void> {
-	if ((percent ?? 0) < HANDOFF_PERCENT) {
-		asked = false;
-		return;
-	}
-	if (!asked) {
+/**
+ * Compaction by handoff. The first auto-compaction of the main loop with no handoff file is skipped, and the model is asked for the file instead;
+ * the next compaction takes the file as the whole new context, and no summarizer request runs. Claude Code's own threshold sets the moment,
+ * because `$.session.usage` reports a threshold that differs from the one it compacts at. A model that writes no file gets the built-in summary
+ * on the compaction after the notice, as does a `/compact` with no file.
+ */
+export const handoffHooks = (on: On): void => {
+	let asked = false;
+	on("session.compact", async ($, e, next) => {
+		if (e.agentId !== undefined) {
+			return next(e);
+		}
+		const path = await handoffPath($);
+		const handoff = await handoffText($, path);
+		// A precompute installs nothing, so the file stays for the compaction that installs, and the summary it would buy goes unused.
+		if (e.trigger === "precompute") {
+			return handoff === undefined && !asked ? next(e) : { skip: HANDOFF_SKIP };
+		}
+		if (handoff !== undefined) {
+			asked = false;
+			await $.process.run(["rm", path], { cwd: "/", timeoutMs: 1000 });
+			return {
+				messages: [
+					{ role: "user", text: HANDOFF_OPENING(handoff), toolUses: [] },
+				],
+			};
+		}
+		if (e.trigger !== "auto" || asked) {
+			asked = false;
+			return next(e);
+		}
 		asked = true;
 		await $.session.append({
 			message: {
 				type: "user",
-				content: [{ type: "text", text: HANDOFF_NOTICE(await handoffPath($)) }],
+				content: [{ type: "text", text: HANDOFF_NOTICE(path) }],
 			},
 		});
-	}
-}
-
-/**
- * Compaction by handoff: the turn that ends after the model wrote its handoff file compacts with that file as the whole new context, and no summarizer request runs.
- * A `/compact` with no handoff file takes the built-in path.
- */
-export const handoffHooks = (on: On): void => {
-	on("turn.complete", async ($, e, next) => {
-		if (
-			asked &&
-			e.agentId === undefined &&
-			(await handoffText($, await handoffPath($))) !== undefined
-		) {
-			// The call rejects while a turn runs, as through all of a headless run; the compaction at the threshold then takes the file.
-			await $.session.compact().catch((error: unknown) => {
-				$.ui.log(`The handoff compaction did not run (${String(error)})`);
-			});
-		}
-		return next(e);
-	});
-	on("session.compact", async ($, e, next) => {
-		const path = await handoffPath($);
-		const handoff =
-			e.agentId === undefined ? await handoffText($, path) : undefined;
-		if (handoff === undefined) {
-			return next(e);
-		}
-		await $.process.run(["rm", path], { cwd: "/", timeoutMs: 1000 });
-		return {
-			messages: [
-				{ role: "user", text: HANDOFF_OPENING(handoff), toolUses: [] },
-			],
-		};
+		return { skip: HANDOFF_SKIP };
 	});
 };

@@ -160,7 +160,10 @@ export const SILENT_TURN_REMINDER =
 // Handoff: the notice that asks for a handoff file, and the line that opens the context built from it.
 
 export const HANDOFF_NOTICE = (path: string): string =>
-	`Context is near its limit. Write a handoff file at \`${path}\` with: goal, done work, open tasks, decisions, user's corrections word for word, next step. Then end your turn: claudetto resets context from that file alone, so each line left out is lost.`;
+	`Context is near its limit. Write a handoff file at \`${path}\` with: goal, done work, open tasks, decisions, user's corrections word for word, next step. claudetto resets context from that file alone at the next request, so each line left out is lost.`;
+
+export const HANDOFF_SKIP =
+	"claudetto compacts from the handoff file the model writes.";
 
 export const HANDOFF_OPENING = (handoff: string): string =>
 	`Context was reset from the handoff below. Continue from its next step.\n\n${handoff}`;

@@ -21,10 +21,7 @@ import { hygiene } from "./classic.SessionStart/useHygieneSweep/hygiene";
 import { reply } from "./command.run/useReplyCommand/reply";
 import { setup } from "./command.run/useSetup/setup";
 import { modelPrompt } from "./prompt.compose/useModelPrompt/compose";
-import {
-	askForHandoff,
-	handoffHooks,
-} from "./session.compact/useHandoff/handoff";
+import { handoffHooks } from "./session.compact/useHandoff/handoff";
 import { sessionTempCleanup } from "./session.end/useSessionTempCleanup/cleanup";
 import { writeLineFile } from "./session.measure/useLineFile/line-file";
 import { surface } from "./settings.read/useSlimSurface/surface";
@@ -71,7 +68,6 @@ const registerOuter = (on: On, options: PluginOptions, state: State): void => {
 	budgetHooks(on);
 	on("session.measure", async ($, e, next) => {
 		await writeLineFile($);
-		await askForHandoff($, e.context.percent);
 		return next(e);
 	});
 	handoffHooks(on);
