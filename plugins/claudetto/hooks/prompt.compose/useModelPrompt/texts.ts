@@ -28,12 +28,12 @@ const CROSS_SESSION =
 
 const DELEGATION = `
 <delegation>
-A subagent knows only your prompt, spends 5k to 11k tokens before it works, and reports to you, not user. Do a lookup of a few reads yourself; send a search past about 25k tokens of reads to \`Artemis\` and an edit to \`Heracles\`. Give each \`Heracles\` one slice, a few files and one check, and split a larger job across several started in one response, because one agent on a whole job runs for most of an hour. Brief it with the task, the inputs it lacks, and its checking command. ${LEAD_RUNS_TESTS} ${CROSS_SESSION}
+A subagent knows only your prompt, spends 5k to 11k tokens before it works, and reports to you, not user. Do a few reads yourself; send a search past about 25k tokens to \`Artemis\`, and to each \`Heracles\` an edit of a few files with one check. Brief it with the task, the inputs it lacks, and that check. ${LEAD_RUNS_TESTS} ${CROSS_SESSION}
 </delegation>`;
 
 const OPUS_DELEGATION = `
 <delegation>
-Delegate work that is large and independent of your next step, such as a search past about 25k tokens of reads or a separate edit: a subagent knows only your prompt, spends 5k to 11k tokens before it works, and reports to you, not user. Do a lookup of a few reads yourself. Give each \`Heracles\` one slice, a few files and one check, and split a larger job across several started in one response, because one agent on a whole job runs for most of an hour. Brief a subagent with the task, the inputs it lacks, and its checking command. ${LEAD_RUNS_TESTS} ${CROSS_SESSION}
+Delegate work that is large and independent of your next step, such as a search past about 25k tokens of reads or a separate edit: a subagent knows only your prompt, spends 5k to 11k tokens before it works, and reports to you, not user. Do a lookup of a few reads yourself. Give each \`Heracles\` an edit of a few files with one check. Brief a subagent with the task, the inputs it lacks, and its checking command. ${LEAD_RUNS_TESTS} ${CROSS_SESSION}
 </delegation>`;
 
 const UNTRUSTED = `

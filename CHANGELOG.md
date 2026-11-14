@@ -102,7 +102,7 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
-- `Heracles` stops after 40 turns, down from 150, and the root prompt gives each `Heracles` one slice, a few files and one check, splitting a larger job across several agents started in one response. One agent given a whole job had run for 20 to 50 minutes.
+- `Heracles` stops after 40 turns, down from 150, and the root prompt gives each `Heracles` an edit of a few files with one check. One agent given a whole job had run for 20 to 50 minutes.
 - The repo adopts `typescript-bedrock` 0.1.14. A `.githooks/pre-push` hook runs `just verify` before each push, and `guard-base` compares resolved paths, so a worktree whose hooks path Claude Code rewrote as absolute still passes.
 - The rule `lookForAClone` is now `lookForClone`, because the shipped `useHeadlineseNames` rule bars "a" in a name. `/claudetto:setup` offers the new file and offers to delete the old one.
 - `/claudetto:setup` stops only unrecoverable destruction. The command rules ask before a checkout or hard reset, a worktree remove, a forced branch or tag delete, a force, mirror, prune, or ref-delete push, `git clean`, a history rewrite, a recursive `rm`, `shred`, a disk or partition tool, a recursive `chown`, and a sync or `find` that deletes. They no longer ask for a branch switch, a rebase, a plain branch delete or move, a hook-path change, `eval`, `curl`, or `wget`. The auto-mode lists hold one hard rule (wiping a disk or a system folder), one soft rule (destroying what nothing can restore), and one allow rule for everything else. The sandbox group writes no `denyWrite`, `denyRead`, or `allowRead`.
