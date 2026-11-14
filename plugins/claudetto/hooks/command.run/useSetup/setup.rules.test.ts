@@ -24,14 +24,14 @@ const ROOT = import.meta.dir.replace(/\/hooks\/.*$/u, "");
 const CONFIG = "/home/u/.claude";
 const RULE_NAMES = [
 	"useLeastCode",
-	"noUnrequestedEdits",
-	"noImpossibleStateGuards",
+	"scopeEditsToGoal",
+	"guardOnlyTrustBoundaries",
 	"findFactsByExperiment",
 	"useOneObviousWay",
 	"useBlockLanguage",
 	"lookForClone",
 	"useHeadlineseNames",
-	"noNarratingComments",
+	"commentOnlyWhy",
 	"useEdgeCaseReport",
 ];
 const COPY = /^Copy the /u;
@@ -108,15 +108,16 @@ test("Write puts the shipped text under rules/claudetto and writes no settings k
 test("a dismissed rule dialog stops the rest and says so", async ($: Engine, on: On) => {
 	const state = rulesLab(
 		on,
-		dismissOn(/^Copy the noUnrequestedEdits/u, choose(COPY, "Write")),
+		dismissOn(/^Copy the scopeEditsToGoal/u, choose(COPY, "Write")),
 	);
 
 	const out = await run($, "claudetto:setup");
 
 	expect(ruleDialogs(state)).toHaveLength(2);
 	expect(state.files.has(installedPath("useLeastCode"))).toBe(true);
-	expect(state.files.has(installedPath("noUnrequestedEdits"))).toBe(false);
-	expect(state.files.has(installedPath("noImpossibleStateGuards"))).toBe(false);
+	expect(
+		RULE_NAMES.slice(1, 3).some((n) => state.files.has(installedPath(n))),
+	).toBe(false);
 	expect(out.text).toBeDefined();
 });
 

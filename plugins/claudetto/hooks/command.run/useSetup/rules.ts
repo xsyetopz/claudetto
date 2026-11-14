@@ -5,14 +5,14 @@ import { ask, SKIP, textOf, WRITE, writeFile } from "./engine";
 
 export const RULES = [
 	"useLeastCode",
-	"noUnrequestedEdits",
-	"noImpossibleStateGuards",
+	"scopeEditsToGoal",
+	"guardOnlyTrustBoundaries",
 	"findFactsByExperiment",
 	"useOneObviousWay",
 	"useBlockLanguage",
 	"lookForClone",
 	"useHeadlineseNames",
-	"noNarratingComments",
+	"commentOnlyWhy",
 	"useEdgeCaseReport",
 ];
 

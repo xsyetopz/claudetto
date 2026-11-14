@@ -1,1 +1,0 @@
-Let the user's goal set the scope: fix each defect that stands between the goal and its done-check, in any file, and update the docs that describe the old behavior. Act on no cause you have not checked, and name a defect off that path with its place and evidence instead of editing it, because unrequested work costs a review and a revert.
