@@ -30,10 +30,15 @@ const wantedAt = (
 };
 
 const retirements = (held: Json, group: Group): readonly Change[] =>
-	leaves(group.retired ?? {}).flatMap(({ path, value }) => {
+	leaves(group.retired ?? {}).flatMap(({ path, value }): Change[] => {
 		const had = valueAt(held, path);
-		if (!Array.isArray(had) || !Array.isArray(value)) {
+		if (!Array.isArray(value)) {
 			return [];
+		}
+		if (!Array.isArray(had)) {
+			return value.includes(had)
+				? [{ path: path.join("."), had, wanted: undefined }]
+				: [];
 		}
 		const kept = had.filter((rule) => !value.includes(rule));
 		return kept.length === had.length
@@ -50,7 +55,7 @@ export const changesOf = (held: Json, group: Group): readonly Change[] => [
 	...retirements(held, group),
 ];
 
-/** `fill` writes the keys the user has not set and the rules a list lacks; `replace` writes the others too. */
+/** `fill` writes the keys the user has not set and the rules a list lacks, and removes what an earlier setup wrote; `replace` writes the others too. */
 export const applyChanges = (
 	held: Json,
 	changes: readonly Change[],
@@ -61,6 +66,7 @@ export const applyChanges = (
 		if (
 			mode === "replace" ||
 			change.had === undefined ||
+			change.wanted === undefined ||
 			change.path.startsWith("permissions.") ||
 			change.path === LINK_LIST
 		) {
