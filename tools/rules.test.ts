@@ -4,7 +4,7 @@ import { readdir } from "node:fs/promises";
 const RULES = `${import.meta.dir}/../plugins/claudetto/rules`;
 const NAMES = [
 	"findFactsByExperiment",
-	"lookForAClone",
+	"lookForClone",
 	"noImpossibleStateGuards",
 	"noNarratingComments",
 	"noUnrequestedEdits",
