@@ -1,7 +1,15 @@
 import type { EngineInterface } from "claude-code";
 
 import { isAbsent } from "../../absent";
-import { ask, SKIP, textOf, WRITE, writeFile } from "./engine";
+import {
+	type Advice,
+	ask,
+	type Question,
+	SKIP,
+	textOf,
+	WRITE,
+	writeFile,
+} from "./engine";
 
 export const RULES = [
 	"useLeastCode",
@@ -32,23 +40,41 @@ const sha256 = async (text: string): Promise<string> =>
 
 const DISMISSED = "Wrote no further rules: the question was dismissed.";
 
-/** The line for one rule, or `undefined` when the user holds it as shipped. */
-async function offerRule(
+/** The copy offer for one rule, or `undefined` when the user holds it as shipped. */
+async function ruleOffer(
 	$: EngineInterface,
 	dir: string,
 	name: string,
-): Promise<string | undefined> {
+): Promise<{ question: Question; path: string; shipped: string } | undefined> {
 	const shipped = await textOf($, `${$.plugin.root}/rules/${name}.md`);
 	const path = `${dir}/rules/claudetto/${name}.md`;
 	if (shipped === undefined || shipped === (await textOf($, path))) {
 		return undefined;
 	}
+	return {
+		question: {
+			text: `Copy the ${name} rule to ${path}? A session loads it at its start.\n\n${shipped.trim()}`,
+			options: [WRITE, SKIP],
+		},
+		path,
+		shipped,
+	};
+}
+
+/** The line for one rule, or `undefined` when the user holds it as shipped. */
+async function offerRule(
+	$: EngineInterface,
+	dir: string,
+	name: string,
+	advice: Advice,
+): Promise<string | undefined> {
+	const offer = await ruleOffer($, dir, name);
+	if (offer === undefined) {
+		return undefined;
+	}
+	const { question, path, shipped } = offer;
 	try {
-		const answer = await ask(
-			$,
-			`Copy the ${name} rule to ${path}? A session loads it at its start.\n\n${shipped.trim()}`,
-			[WRITE, SKIP],
-		);
+		const answer = await ask($, question, advice);
 		if (answer.trim() !== WRITE) {
 			return `Skipped the ${name} rule.`;
 		}
@@ -65,6 +91,7 @@ async function offerRule(
 
 async function offerFrom(
 	$: EngineInterface,
+	advice: Advice,
 	dir: string,
 	index: number,
 	done: string[],
@@ -73,9 +100,10 @@ async function offerFrom(
 	if (name === undefined || done.at(-1) === DISMISSED) {
 		return done;
 	}
-	const line = await offerRule($, dir, name);
+	const line = await offerRule($, dir, name, advice);
 	return offerFrom(
 		$,
+		advice,
 		dir,
 		index + 1,
 		line === undefined ? done : [...done, line],
@@ -107,10 +135,16 @@ async function strayRules(
 	}
 }
 
+const strayQuestion = (folder: string, names: readonly string[]): Question => ({
+	text: `Delete these rules from ${folder}? Claudetto no longer ships them.\n\n${names.map((name) => `- ${name}`).join("\n")}`,
+	options: [DELETE, SKIP],
+});
+
 /** One dialog that lists each installed rule claudetto no longer ships, and removes them on yes. */
 async function offerStray(
 	$: EngineInterface,
 	dir: string,
+	advice: Advice,
 ): Promise<string | undefined> {
 	const folder = `${dir}/rules/claudetto`;
 	const names = await strayRules($, folder);
@@ -118,11 +152,7 @@ async function offerStray(
 		return undefined;
 	}
 	try {
-		const answer = await ask(
-			$,
-			`Delete these rules from ${folder}? Claudetto no longer ships them.\n\n${names.map((name) => `- ${name}`).join("\n")}`,
-			[DELETE, SKIP],
-		);
+		const answer = await ask($, strayQuestion(folder, names), advice);
 		if (answer.trim() !== DELETE) {
 			return "Kept the rules that claudetto no longer ships.";
 		}
@@ -140,14 +170,31 @@ async function offerStray(
 	}
 }
 
+/** The rule and stray-rule questions a setup run can ask. */
+export async function ruleQuestions(
+	$: EngineInterface,
+	dir: string,
+): Promise<Question[]> {
+	const folder = `${dir}/rules/claudetto`;
+	const names = await strayRules($, folder);
+	const offers = await Promise.all(
+		RULES.map((name) => ruleOffer($, dir, name)),
+	);
+	return [
+		...offers.flatMap((offer) => (offer === undefined ? [] : [offer.question])),
+		...(names.length === 0 ? [] : [strayQuestion(folder, names)]),
+	];
+}
+
 /** One dialog per rule the user lacks or holds in another form, then one for the rules claudetto no longer ships; a dismissed one ends the rest, as nobody is there to answer. */
 export async function rulesPart(
 	$: EngineInterface,
 	dir: string,
+	advice: Advice,
 ): Promise<string> {
-	const offered = await offerFrom($, dir, 0, []);
+	const offered = await offerFrom($, advice, dir, 0, []);
 	const stray =
-		offered.at(-1) === DISMISSED ? undefined : await offerStray($, dir);
+		offered.at(-1) === DISMISSED ? undefined : await offerStray($, dir, advice);
 	const report = stray === undefined ? offered : [...offered, stray];
 	return report.length === 0
 		? "The code rules are up to date."

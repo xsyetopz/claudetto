@@ -75,53 +75,76 @@ export async function writeFile(
 	}
 }
 
-/** Haiku's pick and reason, or undefined when the scan, the call, or the answer fails; the question goes as it was then, so setup never waits on advice. */
-async function adviceOf(
+/** The report line for a question that was dismissed. */
+export const dismissed = (what: string): string =>
+	`Wrote no ${what}: the question was dismissed, or this session has no one to answer.`;
+
+export interface Question {
+	readonly text: string;
+	readonly options: readonly string[];
+}
+
+interface Pick {
+	readonly pick: string;
+	readonly why: string;
+}
+
+/** Haiku's pick and reason for each question of a setup run, keyed by question text. */
+export type Advice = ReadonlyMap<string, Pick>;
+
+const isPick = (value: unknown): value is Pick =>
+	typeof value === "object" &&
+	value !== null &&
+	"pick" in value &&
+	"why" in value &&
+	typeof value.pick === "string" &&
+	typeof value.why === "string";
+
+/** One Haiku call for every question of a setup run; a failed scan, call, or answer leaves the questions plain, so setup never waits on advice. */
+export async function advise(
 	$: EngineInterface,
-	question: string,
-	options: readonly string[],
-): Promise<{ pick: string; why: string } | undefined> {
+	questions: readonly Question[],
+): Promise<Advice> {
+	if (questions.length === 0) {
+		return new Map();
+	}
 	try {
-		const shown = await redact(
-			(argv, init) => $.process.run(argv, init),
-			question,
-		);
 		const r = await $.model.complete({
 			model: "claude-haiku-5-5",
 			effort: "low",
-			prompt: SETUP_ADVICE(shown, options),
-			maxTokens: 200,
+			prompt: await redact(
+				(argv, init) => $.process.run(argv, init),
+				SETUP_ADVICE(questions),
+			),
+			maxTokens: 120 * questions.length,
 			timeoutMs: ADVICE_MS,
 		});
 		const parsed: unknown = JSON.parse(r.isAnswered ? r.text : "");
-		if (
-			typeof parsed === "object" &&
-			parsed !== null &&
-			"pick" in parsed &&
-			"why" in parsed &&
-			typeof parsed.pick === "string" &&
-			typeof parsed.why === "string" &&
-			options.includes(parsed.pick)
-		) {
-			return { pick: parsed.pick, why: parsed.why };
-		}
-		return undefined;
+		const picks = Array.isArray(parsed) ? parsed : [];
+		return new Map(
+			questions.flatMap((q, i) => {
+				const pick: unknown = picks[i];
+				return isPick(pick) && q.options.includes(pick.pick)
+					? [[q.text, pick] as const]
+					: [];
+			}),
+		);
 	} catch (error) {
 		$.ui.log(`The setup advice was not read (${String(error)})`);
-		return undefined;
+		return new Map();
 	}
 }
 
 /** Asks the person in the engine's dialog, with the advised option first; it rejects when the dialog is dismissed. */
-export async function ask(
+export function ask(
 	$: EngineInterface,
-	question: string,
-	options: readonly string[],
+	{ text, options }: Question,
+	advised: Advice,
 ): Promise<string> {
-	const advice = await adviceOf($, question, options);
+	const advice = advised.get(text);
 	return advice === undefined
-		? $.ui.ask(question, [...options])
-		: $.ui.ask(question + recommended(advice.pick, advice.why), [
+		? $.ui.ask(text, [...options])
+		: $.ui.ask(text + recommended(advice.pick, advice.why), [
 				advice.pick,
 				...options.filter((o) => o !== advice.pick),
 			]);

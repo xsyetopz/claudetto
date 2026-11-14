@@ -13,24 +13,29 @@ import {
 	wallGroup,
 } from "./changes";
 import {
+	type Advice,
+	advise,
 	ask,
 	configDir,
 	lines,
 	loginFile,
+	type Question,
 	SKIP,
 	textOf,
 	userSettings,
 	WRITE,
 	writeFile,
 } from "./engine";
-import { reportRule, RULES, rulesPart } from "./rules";
+import { keyPart, keyQuestion, lacksKey } from "./key";
+import { reportRule, ruleQuestions, RULES, rulesPart } from "./rules";
 import { type Group, GROUPS, type Json, STATUS_LINE } from "./settings";
 import {
+	ignoresOffer,
 	ignoresPart,
 	linkedFolders,
 	purgePart,
+	starterOffer,
 	starterPart,
-	toolPart,
 } from "./steps";
 import { STATUSLINE_DESCRIPTION, statuslineEdit } from "./text";
 import {
@@ -39,6 +44,8 @@ import {
 	noticeKey,
 	noticeLine,
 	type Tool,
+	toolOffer,
+	toolPart,
 	TOOLS,
 } from "./tools";
 
@@ -55,19 +62,22 @@ const shown = (value: unknown): string => {
 const changeLine = (change: Change): string =>
 	`- ${change.path}: ${change.had === undefined ? "unset" : `yours ${shown(change.had)}`}, claudetto ${shown(change.wanted)}`;
 
+const groupQuestion = (group: Group, changes: readonly Change[]): Question => ({
+	text: [group.why, ...changes.map((item) => changeLine(item))].join("\n"),
+	options: changes.some((change) => change.had !== undefined)
+		? [FILL, REPLACE, SKIP]
+		: [WRITE, SKIP],
+});
+
 /** The group's answer, or `undefined` when the question is dismissed. */
 async function askGroup(
 	$: EngineInterface,
+	advice: Advice,
 	group: Group,
 	changes: readonly Change[],
 ): Promise<"fill" | "replace" | "skip" | undefined> {
-	const mine = changes.some((change) => change.had !== undefined);
 	try {
-		const answer = await ask(
-			$,
-			[group.why, ...changes.map((item) => changeLine(item))].join("\n"),
-			mine ? [FILL, REPLACE, SKIP] : [WRITE, SKIP],
-		);
+		const answer = await ask($, groupQuestion(group, changes), advice);
 		if (answer.trim() === SKIP) {
 			return "skip";
 		}
@@ -80,6 +90,7 @@ async function askGroup(
 
 async function askGroups(
 	$: EngineInterface,
+	advice: Advice,
 	groups: readonly Group[],
 	held: Json,
 	done: readonly string[],
@@ -90,16 +101,16 @@ async function askGroups(
 	}
 	const changes = changesOf(held, group);
 	if (changes.length === 0) {
-		return askGroups($, rest, held, done);
+		return askGroups($, advice, rest, held, done);
 	}
-	const mode = await askGroup($, group, changes);
+	const mode = await askGroup($, advice, group, changes);
 	if (mode === undefined) {
 		return undefined;
 	}
 	if (mode === "skip") {
-		return askGroups($, rest, held, done);
+		return askGroups($, advice, rest, held, done);
 	}
-	return askGroups($, rest, applyChanges(held, changes, mode), [
+	return askGroups($, advice, rest, applyChanges(held, changes, mode), [
 		...done,
 		group.label,
 	]);
@@ -114,14 +125,10 @@ async function tempGroupOf($: EngineInterface): Promise<Group | undefined> {
 	return DIGITS.test(uid) ? tempGroup(uid) : undefined;
 }
 
-async function settingsPart(
+async function groupsOf(
 	$: EngineInterface,
 	walls: readonly string[],
-): Promise<string> {
-	const { dir, file, held } = await userSettings($);
-	if (held === undefined) {
-		return `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP} again.`;
-	}
+): Promise<Group[]> {
 	const extra = [
 		capGroup(
 			parseSettings(await textOf($, await loginFile($)), (message) => {
@@ -132,7 +139,19 @@ async function settingsPart(
 		linkGroup(await linkedFolders($)),
 		await tempGroupOf($),
 	].filter((group) => group !== undefined);
-	const result = await askGroups($, [...GROUPS, ...extra], held, []);
+	return [...GROUPS, ...extra];
+}
+
+async function settingsPart(
+	$: EngineInterface,
+	walls: readonly string[],
+	advice: Advice,
+): Promise<string> {
+	const { dir, file, held } = await userSettings($);
+	if (held === undefined) {
+		return `${file} could not be read as a JSON object, so nothing was written. Fix the file and run /${SETUP} again.`;
+	}
+	const result = await askGroups($, advice, await groupsOf($, walls), held, []);
 	if (result === undefined) {
 		return `Nothing was written: a question was dismissed, or this session has no one to answer. ${file} was not changed.`;
 	}
@@ -145,60 +164,51 @@ async function settingsPart(
 		(result.written.length === 0
 			? `${file} was not changed.`
 			: `Wrote ${result.written.join(", ")} to ${file}. Restart Claude Code: the keys are read when it starts.`);
-	return [report, await rulesPart($, dir)].join("\n");
+	return [report, await rulesPart($, dir, advice)].join("\n");
 }
 
-const KEY_NAME = "CONTEXT7_API_KEY";
-const NO_KEY = "I have no key";
-
-const keyGroup = (key: string): Group => ({
-	label: KEY_NAME,
-	why: "",
-	settings: { env: { [KEY_NAME]: key } },
-});
-
-/** The key is typed under the dialog's own-answer entry and goes only into settings `env`, which the session's `Bash` inherits; the report never repeats it. */
-async function keyPart($: EngineInterface): Promise<string | undefined> {
-	const { file, held } = await userSettings($);
-	if (
-		held === undefined ||
-		changesOf(held, keyGroup("")).some((change) => change.had !== undefined)
-	) {
-		return undefined;
-	}
-	let answer: string;
-	try {
-		const awaited2 = await ask(
-			$,
-			`Context7 API key for \`bunx ctx7\`: type it as your own answer, or skip. It is written to ${file} under env.${KEY_NAME}.`,
-			[SKIP, NO_KEY],
-		);
-		answer = awaited2.trim();
-	} catch (error) {
-		$.ui.log(`The Context7 key question was not answered (${String(error)})`);
-		return undefined;
-	}
-	if (answer === "" || answer === SKIP || answer === NO_KEY) {
-		return undefined;
-	}
-	const failed = await writeFile(
-		$,
-		file,
-		settingsText(applyChanges(held, changesOf(held, keyGroup(answer)), "fill")),
-	);
-	return failed ?? `Wrote env.${KEY_NAME} to ${file}. Restart Claude Code.`;
+/** Every question a setup run can ask, as the settings stand before it, so Haiku advises them all in one call. */
+async function questionsOf(
+	$: EngineInterface,
+	walls: readonly string[],
+): Promise<Question[]> {
+	const { dir, file, held } = await userSettings($);
+	const groups = held === undefined ? [] : await groupsOf($, walls);
+	const asked = groups.flatMap((group) => {
+		const changes = held === undefined ? [] : changesOf(held, group);
+		return changes.length === 0 ? [] : [groupQuestion(group, changes)];
+	});
+	const [starter, ignores, tools] = [
+		await starterOffer($),
+		await ignoresOffer($),
+		await Promise.all(TOOLS.map((tool) => toolOffer($, tool))),
+	];
+	const offers = [
+		lacksKey(held) ? keyQuestion(file) : undefined,
+		starter?.question,
+		ignores?.question,
+		...tools.map((offer) =>
+			offer !== undefined && "question" in offer ? offer.question : undefined,
+		),
+	];
+	return [
+		...asked,
+		...(await ruleQuestions($, dir)),
+		...offers.filter((question) => question !== undefined),
+	];
 }
 
 async function onSetup(
 	$: EngineInterface,
 	walls: readonly string[],
 ): Promise<{ text: string }> {
+	const advice = await advise($, await questionsOf($, walls));
 	const parts = [
-		await settingsPart($, walls),
-		await keyPart($),
-		await starterPart($),
-		await ignoresPart($),
-		...(await Promise.all(TOOLS.map((tool) => toolPart($, tool)))),
+		await settingsPart($, walls, advice),
+		await keyPart($, advice),
+		await starterPart($, advice),
+		await ignoresPart($, advice),
+		...(await Promise.all(TOOLS.map((tool) => toolPart($, tool, advice)))),
 		await purgePart($),
 	].filter((part) => part !== undefined);
 	return { text: parts.join("\n") };

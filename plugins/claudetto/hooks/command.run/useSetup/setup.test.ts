@@ -183,6 +183,16 @@ test("each setup question ends with Haiku's recommendation, and that option come
 	}
 });
 
+test("setup asks Haiku once, for all its questions", async ($: Engine, on: On) => {
+	const state = lab(on, "{}", () => "Skip");
+	state.advice = JSON.stringify({ pick: "Skip", why: "-" });
+
+	await run($, "claudetto:setup");
+
+	expect(state.shown.length).toBeGreaterThan(1);
+	expect(state.prompts).toHaveLength(1);
+});
+
 test("a recommendation that names no option leaves the question as it was", async ($: Engine, on: On) => {
 	const plain = lab(on, "{}", () => "Skip");
 	await run($, "claudetto:setup");

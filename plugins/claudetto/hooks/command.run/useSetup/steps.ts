@@ -1,6 +1,13 @@
 import type { EngineInterface } from "claude-code";
 
-import { ask, lines, textOf } from "./engine";
+import {
+	type Advice,
+	ask,
+	dismissed,
+	lines,
+	type Question,
+	textOf,
+} from "./engine";
 import {
 	dependencyFolders,
 	type IgnoreEdit,
@@ -9,20 +16,10 @@ import {
 	settle,
 } from "./ignore";
 import { linesOf, planStarter, previewOf, type StarterFile } from "./starter";
-import {
-	isOnPath,
-	listedPaths,
-	MOLE,
-	noticeKey,
-	PURGE_PATHS,
-	type Tool,
-} from "./tools";
+import { isOnPath, listedPaths, MOLE, PURGE_PATHS } from "./tools";
 
 const WRITE = "Write";
 const SKIP = "Skip";
-const YES = "Yes";
-const NO = "No";
-const INSTALL_MS = 600_000;
 
 const FILES_ARGS = ["ls-files", "--cached", "--others", "--exclude-standard"];
 
@@ -63,9 +60,6 @@ async function cwdOf($: EngineInterface): Promise<string | undefined> {
 	}
 }
 
-const dismissed = (what: string): string =>
-	`Wrote no ${what}: the question was dismissed, or this session has no one to answer.`;
-
 async function writeNew(
 	$: EngineInterface,
 	cwd: string,
@@ -83,10 +77,12 @@ async function writeNew(
 	}
 }
 
-/** The starter files for a repo with no memory file, shown in a dialog and written only on a yes. */
-export async function starterPart(
+/** The starter files offer for a repo with no memory file. */
+export async function starterOffer(
 	$: EngineInterface,
-): Promise<string | undefined> {
+): Promise<
+	{ question: Question; cwd: string; files: readonly StarterFile[] } | undefined
+> {
 	const cwd = await cwdOf($);
 	if (cwd === undefined) {
 		return undefined;
@@ -98,13 +94,29 @@ export async function starterPart(
 	if (files.length === 0) {
 		return undefined;
 	}
+	return {
+		question: {
+			text: `${previewOf(files)}\nWrite these files? A file that exists is never replaced.`,
+			options: [WRITE, SKIP],
+		},
+		cwd,
+		files,
+	};
+}
+
+/** The starter files for a repo with no memory file, shown in a dialog and written only on a yes. */
+export async function starterPart(
+	$: EngineInterface,
+	advice: Advice,
+): Promise<string | undefined> {
+	const offer = await starterOffer($);
+	if (offer === undefined) {
+		return undefined;
+	}
+	const { question, cwd, files } = offer;
 	let answer: string;
 	try {
-		answer = await ask(
-			$,
-			`${previewOf(files)}\nWrite these files? A file that exists is never replaced.`,
-			[WRITE, SKIP],
-		);
+		answer = await ask($, question, advice);
 	} catch (error) {
 		$.ui.log(`The starter file question was not answered (${String(error)})`);
 		return dismissed("starter file");
@@ -136,10 +148,12 @@ async function writeEdit(
 	}
 }
 
-/** The marked block of `.gitignore` and `.ignore`, shown as a diff in a dialog and written only on a yes. */
-export async function ignoresPart(
+/** The offer of the marked block of `.gitignore` and `.ignore`, for a git repo whose block differs. */
+export async function ignoresOffer(
 	$: EngineInterface,
-): Promise<string | undefined> {
+): Promise<
+	{ question: Question; cwd: string; edits: readonly IgnoreEdit[] } | undefined
+> {
 	const cwd = await cwdOf($);
 	if (cwd === undefined) {
 		return undefined;
@@ -159,13 +173,29 @@ export async function ignoresPart(
 	if (edits.length === 0) {
 		return undefined;
 	}
+	return {
+		question: {
+			text: `${previewEdits(edits)}\nWrite the ignore file block? Lines outside the marked block are never changed. The block narrows \`Grep\` (a call with no \`glob\`) and not \`Glob\`, which still lists ignored files.`,
+			options: [WRITE, SKIP],
+		},
+		cwd,
+		edits,
+	};
+}
+
+/** The marked block of `.gitignore` and `.ignore`, shown as a diff in a dialog and written only on a yes. */
+export async function ignoresPart(
+	$: EngineInterface,
+	advice: Advice,
+): Promise<string | undefined> {
+	const offer = await ignoresOffer($);
+	if (offer === undefined) {
+		return undefined;
+	}
+	const { question, cwd, edits } = offer;
 	let answer: string;
 	try {
-		answer = await ask(
-			$,
-			`${previewEdits(edits)}\nWrite the ignore file block? Lines outside the marked block are never changed. The block narrows \`Grep\` (a call with no \`glob\`) and not \`Glob\`, which still lists ignored files.`,
-			[WRITE, SKIP],
-		);
+		answer = await ask($, question, advice);
 	} catch (error) {
 		$.ui.log(`The ignore file question was not answered (${String(error)})`);
 		return dismissed("ignore file");
@@ -177,48 +207,6 @@ export async function ignoresPart(
 		edits.map((edit) => writeEdit($, cwd, edit)),
 	);
 	return written.join("\n");
-}
-
-/** A missing tool: its install command shown and run after a yes. A declined optional tool is recorded, so the launch notice stays quiet. */
-export async function toolPart(
-	$: EngineInterface,
-	tool: Tool,
-): Promise<string | undefined> {
-	const exists = (file: string) => $.fs.exists(file);
-	const path = await $.env.get("PATH");
-	if (await isOnPath(tool.name, path, exists)) {
-		return undefined;
-	}
-	if (!(await isOnPath("brew", path, exists))) {
-		return `\`${tool.name}\` has no package manager here, so nothing was run. Releases are at ${tool.releases}.`;
-	}
-	const shown = tool.install.join(" ");
-	let answer: string;
-	try {
-		answer = await ask(
-			$,
-			`\`${tool.name}\` is not installed. Run \`${shown}\`?`,
-			[YES, NO],
-		);
-	} catch (error) {
-		$.ui.log(`The install question was not answered (${String(error)})`);
-		return dismissed("install");
-	}
-	if (answer.trim() !== YES) {
-		if (tool.required) {
-			return `Did not install \`${tool.name}\`: ${tool.why}. Run \`${shown}\` to fix it.`;
-		}
-		await $.store.set(noticeKey(tool), true);
-		return `Did not install \`${tool.name}\`. The launch notice stays quiet.`;
-	}
-	try {
-		const result = await $.process.run(tool.install, { timeoutMs: INSTALL_MS });
-		return result.exitCode === 0
-			? `Ran \`${shown}\`.`
-			: `\`${shown}\` failed with exit code ${result.exitCode}: ${result.stderr.trim()}`;
-	} catch (error) {
-		return `Could not run \`${shown}\` (${String(error)}).`;
-	}
 }
 
 /** Adds the project root to Mole's `purge_paths`, unless it or a folder holding it is listed already. */
