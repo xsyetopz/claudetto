@@ -156,3 +156,11 @@ export const WITHHELD = (v: { tokens: number; total: number }): string =>
 
 export const SILENT_TURN_REMINDER =
 	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.";
+
+// Handoff: the notice that asks for a handoff file, and the line that opens the context built from it.
+
+export const HANDOFF_NOTICE = (path: string): string =>
+	`Context is near its limit. Write a handoff file at \`${path}\` with: goal, done work, open tasks, decisions, user's corrections word for word, next step. Then end your turn: claudetto resets context from that file alone, so each line left out is lost.`;
+
+export const HANDOFF_OPENING = (handoff: string): string =>
+	`Context was reset from the handoff below. Continue from its next step.\n\n${handoff}`;
