@@ -9,7 +9,7 @@ const EDIT = `Replaces an exact string in a file. \`Read\` the file first, or th
 const WRITE =
 	"Writes a file and overwrites an existing one. Use it for a new file, or for a file you have `Read` whole; an overwrite of an unread file can fail. Use `Edit` for a change. Success means it landed.";
 
-const SKILL = `Runs a listed skill by its exact listed name, no leading slash (\`plugin:skill\` for a plugin's). When a skill covers the task, call it first and follow it. A \`<command-name>\` block means it is loaded.`;
+const SKILL = `Runs a listed skill by its exact listed name: \`skill\`, or \`plugin:skill\` for a plugin's. When a skill covers the task, call it first and follow it. A \`<command-name>\` block means it is loaded.`;
 
 const ENTER_WORKTREE = `Creates a git worktree on a new branch and moves the session into it. Use it only when the user or CLAUDE.md asks for a worktree; for a branch, use git. Leave with ExitWorktree.`;
 
@@ -42,7 +42,7 @@ const ENTER_PLAN_MODE =
 const EXIT_PLAN_MODE =
 	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It reads the plan file. Ask each open question with AskUserQuestion before you call it.";
 
-const TASK_CREATE = `Adds a \`pending\` task, for work of 3 or more steps or a list user gives. \`subject\`: an imperative title; \`activeForm\`: spinner text. Call \`TaskList\` first to avoid a duplicate.`;
+const TASK_CREATE = `Adds a \`pending\` task, for work of 3 or more steps or a list user gives. \`subject\`: an imperative title; \`activeForm\`: spinner text. Call \`TaskList\` first and reuse a matching task.`;
 
 const TASK_GET = `Returns one task by \`taskId\`, with its \`status\`, \`blocks\`, and \`blockedBy\`. Begin a task only when its \`blockedBy\` is empty.`;
 
@@ -80,7 +80,7 @@ export const planModeText = (file: string, hasPlan: boolean): string =>
 Plan file: ${file}${hasPlan ? ". It already holds a plan: read it, then edit it step by step." : ". Build it step by step with `Write` and `Edit`."}
 
 1. Understand the request and the code behind it. Look for code to reuse before you plan new code.
-2. Search with \`claudetto:Artemis\` agents, as few as fit: one for known files or a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
+2. Search with \`claudetto:Artemis\` agents, as few as fit: one for a small change, up to three in parallel for an open scope, each with its own focus. Search a single fact in a known file yourself.
 3. Weigh the options, read the critical files, and check the plan against the request.
 4. Write the final plan, short to scan and exact enough to run: context and outcome, the one recommended approach, the files to change, the code to reuse with paths, and how to check it end to end.
 5. Ask each open question with \`AskUserQuestion\` before you present the plan for approval.`;
@@ -155,4 +155,4 @@ export const WITHHELD = (v: { tokens: number; total: number }): string =>
 	`The result is about ${count(v.tokens)} tokens, and with it the next request would be about ${count(v.total)}, over the ${count(100_000)} above which Haiku 5.5 bills the whole request at five times. The call ran, but its exit status and output are withheld, so check the state it changed before you repeat it. Ask for a smaller part: a line range, a narrower search, or output cut with \`head\` or \`grep\`.`;
 
 export const SILENT_TURN_REMINDER =
-	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.";
+	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.";
