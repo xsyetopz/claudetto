@@ -3,44 +3,29 @@ import { expect, test } from "claude-code/testing";
 import { valueAt } from "./settings";
 import { everything, listOf } from "./settings.mock";
 
-test("the command rules ask only before a command that destroys what cannot be restored", () => {
-	const ask = valueAt(everything({}), ["permissions", "ask"]);
-
-	for (const rule of [
-		"Bash(git checkout *)",
-		"Bash(git reset --hard *)",
-		"Bash(git worktree remove *)",
-		"Bash(git branch -D *)",
-		"Bash(git push * --delete *)",
-		"Bash(git push * :**)",
-		"Bash(git push :**)",
-		"Bash(git push *--force*)",
-		"Bash(git clean *)",
-		"Bash(rm -*r*)",
-		"Bash(dd *)",
-	]) {
-		expect(ask).toContain(rule);
-	}
-	for (const rule of [
-		"Bash(git switch *)",
-		"Bash(git rebase *)",
-		"Bash(git branch -d *)",
-		"Bash(curl *)",
-		"Bash(eval *)",
-	]) {
-		expect(ask).not.toContain(rule);
-	}
-});
-
-test("pkill and killall are denied, and the ask list holds no pattern that ends in a legacy prefix suffix", () => {
+test("pkill and killall are denied, and the command rules write no ask rule", () => {
 	const written = everything({});
 
 	expect(valueAt(written, ["permissions", "deny"])).toEqual(
 		expect.arrayContaining(["Bash(pkill *)", "Bash(killall *)"]),
 	);
-	for (const rule of listOf(valueAt(written, ["permissions", "ask"]))) {
-		expect(String(rule)).not.toMatch(/:\*\)$/u);
-	}
+	expect(valueAt(written, ["permissions", "ask"])).toBeUndefined();
+});
+
+test("a rerun removes the ask rules an earlier setup wrote and keeps the user's own", () => {
+	const held = {
+		permissions: {
+			ask: ["Bash(rm -*r*)", "Bash(git checkout *)", "Bash(docker push *)"],
+			allow: ["Bash(ls)"],
+		},
+	};
+
+	const written = everything(held);
+
+	expect(valueAt(written, ["permissions", "ask"])).toEqual([
+		"Bash(docker push *)",
+	]);
+	expect(valueAt(written, ["permissions", "allow"])).toContain("Bash(ls)");
 });
 
 test("the read-only allow list names no command that can write through a flag", () => {

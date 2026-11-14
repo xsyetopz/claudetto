@@ -160,6 +160,42 @@ test(
 	},
 );
 
+test(
+	"the log holds the person's answer to a popup, so the check reads the asked-for action as asked",
+	ON,
+	async ($: Engine, on: On) => {
+		const answer = "Undo my changes: revert this branch's guard work";
+		const f = fixture(on, { choices: { "Undo or keep?": answer } });
+		await $.tool.call({
+			tool: "AskUserQuestion",
+			questions: [
+				{
+					question: "Undo or keep?",
+					header: "Undo",
+					options: [
+						{ label: "Undo", description: "Revert it." },
+						{ label: "Keep", description: "Leave it." },
+					],
+					multiSelect: false,
+				},
+			],
+		});
+		await act($, f, "t1");
+		expect(f.body()).toContain(`person: answered "Undo or keep?": ${answer}`);
+	},
+);
+
+test(
+	"the check instructions name a step that turns off a check the person set",
+	ON,
+	async ($: Engine, on: On) => {
+		const f = fixture(on);
+		await act($, f, "t1");
+		expect(f.instructions()).toContain("--no-verify");
+		expect(f.instructions()).toContain("--no-gpg-sign");
+	},
+);
+
 test("a check never forks the session", ON, async ($: Engine, on: On) => {
 	const f = fixture(on);
 	const forks: unknown[] = [];

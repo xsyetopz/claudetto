@@ -193,6 +193,15 @@ A permission list that a settings group writes SHALL keep every rule the user ho
 - **WHEN** the user's `permissions.allow` holds `Bash(ls)`
 - **THEN** the written list holds `Bash(ls)` and the four git rules (`hooks/command.run/useSetup/setup.test.ts`, "setup on an empty file writes the telemetry env and the eight denies and no Agent deny")
 
+### Requirement: The Command Rules Group Writes No Ask Rule
+
+The "Command rules" group SHALL write no `permissions.ask` rule, because an ask rule overrides auto mode, and SHALL remove from `permissions.ask` each rule an earlier setup wrote, keeping every other rule the user holds.
+
+#### Scenario: Old Ask Rules Removed
+
+- **WHEN** the user's `permissions.ask` holds `Bash(rm -*r*)`, `Bash(git checkout *)`, and `Bash(docker push *)`
+- **THEN** setup leaves only `Bash(docker push *)` (`hooks/command.run/useSetup/command-rules.test.ts`, "a rerun removes the ask rules an earlier setup wrote and keeps the user's own")
+
 ### Requirement: The Smaller Prompt Group Carries Fixed Values
 
 The "Smaller prompt" group SHALL write `disableBundledSkills` `true` and `outputStyle` `claudetto:Concise`.

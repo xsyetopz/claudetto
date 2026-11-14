@@ -273,6 +273,12 @@ export const register = (on: On, options: PluginOptions): void => {
 			}
 			const out = await next(e);
 			if (out.deny === undefined && out.isError === undefined) {
+				for (const [question, choice] of Object.entries(out.result.answers)) {
+					addToLog(
+						mem,
+						logEntry("person", `answered "${question}": ${String(choice)}`),
+					);
+				}
 				await closeAnswered($, mem.turns);
 			}
 			return out;

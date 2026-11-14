@@ -33,6 +33,7 @@ export interface Ground {
 	unanswered?: boolean;
 	idFault?: boolean;
 	answer?: string;
+	choices?: Readonly<Record<string, string>>;
 }
 
 export const openRow = (
@@ -121,7 +122,9 @@ export const fixture = (on: On, ground: Ground = {}) => {
 	let held: Promise<boolean> | undefined;
 	on("tool.call", (_$, e) => {
 		ran.push(e.tool);
-		return { result: "ok", text: "ok" };
+		return e.tool === "AskUserQuestion"
+			? { result: { questions: e.questions, answers: ground.choices ?? {} } }
+			: { result: "ok", text: "ok" };
 	});
 	on("model.complete", async (_$, e) => {
 		asked.push(e);
@@ -155,6 +158,7 @@ export const fixture = (on: On, ground: Ground = {}) => {
 		},
 		row: () => rowsOf(store.get("sessions"))[0],
 		body: (): string => asked[0]?.promptBlocks?.[1]?.text ?? "",
+		instructions: (): string => asked[0]?.promptBlocks?.[0]?.text ?? "",
 	};
 };
 

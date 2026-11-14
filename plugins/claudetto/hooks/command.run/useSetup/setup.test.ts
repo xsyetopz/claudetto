@@ -2,7 +2,7 @@ import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 import { valueAt } from "./settings";
-import { FILE, type Lab, lab, run, saved } from "./setup.mock";
+import { FILE, lab, run, saved } from "./setup.mock";
 import { recommended } from "./text";
 
 const idAndIgnored =
@@ -62,22 +62,8 @@ test("setup on an empty file writes the telemetry env, the eight denies, and the
 	}
 });
 
-const BASE_WRITES = ["~/", "/Volumes/", "/private/tmp", "/private/var/folders"];
-
-const allowWrite = (state: Lab): unknown =>
-	valueAt(saved(state), ["sandbox", "filesystem", "allowWrite"]);
-
-test("A Cache Folder Named by an Env Var: setup writes no entry for it, because allowWrite covers it", async ($: Engine, on: On) => {
-	const state = lab(on);
-	state.env = { BUN_INSTALL_CACHE_DIR: "/Volumes/DevAudioStore/bun-cache" };
-
-	await run($, "claudetto:setup");
-
-	expect(allowWrite(state)).toEqual(BASE_WRITES);
-});
-
 test(
-	"each protected path gets a Read deny and a sandbox denyRead entry",
+	"each protected path gets a Read deny",
 	{
 		options: {
 			protectedPaths: ["~/.claudetto-holdout", "$HOME/b", "/srv/holdout/"],
@@ -93,11 +79,6 @@ test(
 				"Read(~/b/**)",
 				"Read(//srv/holdout/**)",
 			]),
-		);
-		expect(
-			valueAt(saved(state), ["sandbox", "filesystem", "denyRead"]),
-		).toEqual(
-			expect.arrayContaining(["~/.claudetto-holdout", "~/b", "/srv/holdout"]),
 		);
 	},
 );

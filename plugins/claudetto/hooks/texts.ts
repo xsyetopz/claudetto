@@ -40,7 +40,7 @@ const ENTER_PLAN_MODE =
 	"Asks user to enter plan mode, where you explore read-only and write a plan file for approval. Call it when user asks for a plan before any change.";
 
 const EXIT_PLAN_MODE =
-	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It reads the plan file. Ask each open question with AskUserQuestion before you call it.";
+	"In plan mode, call it once the plan file is complete: user then reviews that file and approves or rejects it. It reads the plan file. Ask each open question with `AskUserQuestion` before you call it.";
 
 const TASK_CREATE = `Adds a \`pending\` task, for work of 3 or more steps or a list user gives. \`subject\`: an imperative title; \`activeForm\`: spinner text. Call \`TaskList\` first and reuse a matching task.`;
 

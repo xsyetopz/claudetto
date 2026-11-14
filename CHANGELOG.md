@@ -9,12 +9,16 @@ Before 1.0.0, a release can change or remove behavior.
 
 ### Changed
 
+- `/claudetto:setup` writes no `permissions.ask` rules, and a rerun removes the ones an earlier setup wrote, leaving the ask rules you added. An ask rule overrides auto mode, so `rm -r` of a temp folder or `git rm -r --cached` prompted you. Auto mode now passes deletes of temp folders, scratch copies, worktrees, and build output, and still blocks what nothing can restore.
+- `/claudetto:setup` turns the sandbox off (`sandbox.enabled: false`) and no longer writes the other sandbox keys or the `denyRead` entries of the protected paths, which keep their `Read` deny rule. The sandbox cannot cover only dangerous commands, because `excludedCommands` matches a call only when every command in it matches; the command rules and auto mode already stop unrecoverable destruction. The `useSandboxGit` hook, which told the agent to restart after a repository appeared in a sandboxed folder, is deleted with it.
 - `/claudetto:setup` asks Haiku once, for all its questions, before the first dialog. Before, each dialog waited on its own Haiku call of up to 20 seconds, one after another.
 
 ### Fixed
 
 - The repeat guard passes a `Bash` run that prints nothing. Every such run reads the same notice, so an edit made with `sed -i` or a script was withheld as a repeat of an earlier silent command.
 - The repeat guard passes a check rerun after a change, even when the check prints what it printed before. A change is an `Edit`, a `Write`, or a `Bash` run that is not read-only and prints nothing. Before, `bun check` after an edit was withheld as a repeat of the run before the edit.
+- `you-should-know` lets through a call the person just asked for in a popup. The side check now reads each answer to an `AskUserQuestion` as a message from the person; before, it saw only the question, so a chosen action was stopped as unasked.
+- `you-should-know` flags a step that turns off a check the person set, such as `git commit --no-verify`, `--no-gpg-sign`, or a disabled security setting, before it runs.
 
 ## [2.1.325+1] - 2026-11-14
 

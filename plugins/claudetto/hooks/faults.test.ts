@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-import { scanner } from "./secrets.mock";
+import { brokenScanner } from "./secrets.mock";
 
 const UNANSWERED_CALL = "no implementation for tool.call";
 
@@ -47,36 +47,22 @@ test("a call guard that throws before the tool refuses, and the tool does not ru
 	lab(on);
 	const runs = beneath(on, "text");
 
-	on("session.root", () => {
-		throw new Error("no root");
+	on("env.get", () => {
+		throw new Error("no env");
 	});
 
 	const out = await $.tool.call({
-		tool: "Bash",
-		command: "git status",
+		tool: "mcp__claudetto__decide",
 		tool_use_id: "c1",
 	});
 
-	expect(out).toMatchObject({ deny: expect.stringContaining("session.root") });
+	expect(out).toMatchObject({ deny: expect.stringContaining("env.get") });
 	expect(runs.count).toBe(0);
 });
 
-test("a call guard that throws after the tool returns the tool's result", async ($: Engine, on: On) => {
+test("a secret scan that fails after the tool ran withholds the result", async ($: Engine, on: On) => {
 	lab(on);
-	scanner(on);
-	on("session.root", () => ({ value: "/repo" }));
-	// The sandbox git guard checks `.git` before and after the tool, so the second check throws after the tool ran.
-	let checks = 0;
-	let exists = (): { value: boolean } => {
-		exists = () => {
-			throw new Error("after the tool");
-		};
-		return { value: false };
-	};
-	on("fs.exists", () => {
-		checks++;
-		return exists();
-	});
+	brokenScanner(on);
 	const runs = beneath(on, "some text the scan would read");
 
 	const out = await $.tool.call({
@@ -85,10 +71,9 @@ test("a call guard that throws after the tool returns the tool's result", async 
 		tool_use_id: "c1",
 	});
 
-	expect(checks).toBeGreaterThan(1);
 	expect(runs.count).toBe(1);
-	expect(out.deny).toBeUndefined();
-	expect(out.result).toBe("some text the scan would read");
+	expect(out.result).toBeUndefined();
+	expect(out.deny).toContain("withheld");
 });
 
 test("a tool that fails beneath the plugin reaches the caller as its own failure", async ($: Engine, on: On) => {

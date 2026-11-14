@@ -13,6 +13,8 @@ export interface Group {
 	readonly label: string;
 	readonly why: string;
 	readonly settings: Json;
+	/** Lists whose entries an earlier setup wrote and this one removes; the user's other entries stay. */
+	readonly retired?: Json;
 }
 
 export const MINIMUM_VERSION = "2.1.323";
@@ -196,40 +198,8 @@ export const GROUPS: readonly Group[] = [
 	},
 	{
 		label: "Sandbox",
-		why: "Turns on the built-in sandbox with no limit of its own: Bash writes anywhere in your home folder, mounted volumes, and the temp folders, reads every file, reaches any host and system service without a prompt, lets Go tools such as gh verify TLS certificates, runs ps, top, sysctl, launchctl list, and just outside the sandbox, lets a command use any unix socket, and retries any other command the sandbox blocks outside it after auto mode or you approve that retry. The command rules and auto mode stop only unrecoverable destruction.",
-		settings: {
-			sandbox: {
-				enabled: true,
-				// A command the sandbox blocks may retry outside it; the permission flow, not the sandbox, then decides each retry.
-				allowUnsandboxedCommands: true,
-				// Go tools such as `gh` verify TLS through `com.apple.trustd.agent`; without it they fail with `x509: OSStatus -26276`.
-				enableWeakerNetworkIsolation: true,
-				// Commands that fail sandboxed under every key: `ps` and `top` are setuid root, `sysctl` reads a fixed name list, and `just verify` opens a PTY, which the sandbox refuses. A chain such as `cd x && just verify` stays outside the sandbox when each part has an entry. A `git *` entry never takes effect, so `git` stays sandboxed.
-				excludedCommands: [
-					"ps *",
-					"top *",
-					"sysctl *",
-					"launchctl list",
-					"just *",
-				],
-				filesystem: {
-					// The sandbox does not follow the `/tmp` link on macOS, so only the real path opens it. A compiler or a JVM ignores `$TMPDIR` and writes to the per-user temp folder under `/private/var/folders`, whose path differs per person and which no glob opens.
-					allowWrite: [
-						"~/",
-						"/Volumes/",
-						"/private/tmp",
-						"/private/var/folders",
-					],
-				},
-				// A test server or a fake API binds a localhost port, and `bun test` servers and `just` recipes talk over unix sockets.
-				network: {
-					allowedDomains: ["*"],
-					allowMachLookup: ["*"],
-					allowLocalBinding: true,
-					allowAllUnixSockets: true,
-				},
-			},
-		},
+		why: "Turns the sandbox off: it cannot sandbox only dangerous commands, so the command rules and auto mode stop unrecoverable destruction.",
+		settings: { sandbox: { enabled: false } },
 	},
 	STATUS_LINE,
 ];
