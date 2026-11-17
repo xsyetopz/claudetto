@@ -1,6 +1,6 @@
 ---
 status: superseded by ADR-0067
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Nobody Answers Overnight, So Decide and Continue
 

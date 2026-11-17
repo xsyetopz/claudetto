@@ -1,6 +1,6 @@
 ---
 status: superseded by ADR-0087
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # A Script Picks The Holdout Tasks Blind
 
@@ -21,4 +21,4 @@ Chosen: The user chose "Script picks blind" with an `AskUserQuestion` answer. Th
 
 Good: unseen set. Bad: the user cannot run the scoring round; the set is now moot.
 
-Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (handoff Decisions); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded).
+Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (handoff Decisions); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; user answer through AskUserQuestion, 2026-11-16 15:44 UTC, a script picks the holdout tasks blind (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:775).

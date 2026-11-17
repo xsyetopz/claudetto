@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-14 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-14
 ---
 # A Reply Holds Only Work
 
@@ -21,4 +21,4 @@ Chosen: the second.
 
 The CORE prompt stays under 3,500 characters; the Checked: format lives only in the Concise style.
 
-Source: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+Source: user decision, 2026-11-14 14:55 UTC, no chatter, only work (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361).

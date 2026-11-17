@@ -40,7 +40,7 @@
 - [ ] **REQ-REPLY-006** claudetto shall write each prompt, rule, and hook text as the wanted output or replacement behaviour stated positively with examples, not as a NEVER, avoid, or banned-phrase list.
   Acceptance: No claudetto prompt text lists words or things to avoid without a positive example of the wanted output; no shipped rule or hook text bans a quoted phrase, and each names what to do instead (for example, acknowledge a correction with one word). Differs from the old plan: it scoped the positive definition to verbosity; this is a general prompt rule. Prompts and scorers name only the wanted behaviour, never the unwanted words. Verification: inspection.
   Basis: reported by commenters, 47 votes top; reported (the user pasted an argument that a negative constraint puts the banned tokens into context; no source URL given); user decision. Status: have at 088a227c (`git grep -n -i -E 'never|avoid|don't|do not|banned' 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/output-styles` finds no hit)
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:49 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19, reported, user, 2026-11-13; user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:49 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19, reported, user, 2026-11-13; user goal set through `/goal`, 2026-11-16 15:28 UTC, prompts name only the wanted behaviour (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:13); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
   Conflict: Output Style Sentence Form (name the exact tic to ban).
 
 - [ ] **REQ-REPLY-007** claudetto shall describe a trait or background tersely in a prompt ("morally upright without ever talking about it"), because more background in context means more leakage.
@@ -609,7 +609,7 @@
 - [ ] **REQ-REPLY-088** claudetto shall open with the outcome or deciding fact and put a finding, result or error between calls; messages to an agent hold only task, inputs it lacks and done-check, with no greeting or thanks and no readable context; low-risk work starts at once with the reasonable reading stated; replies to a user use plain English with code in backticks cited `file:line`.
   Acceptance: "The hook has no retry; ...gate.ts:234 registers one check." passes, "Now I will read the file" fails; one message per agent, with a follow-up only when the report leaves the task undone. No narration between tool calls, no acknowledgement opener, and no closing line that asks the user to direct the work; the next tool call, not a sentence, carries what comes next; the agent answers what a tool can answer instead of asking the user. Verification: test.
   Basis: cited; user decision, 2026-11-16. Status: partial at 088a227c (root prompt, `plugins/claudetto/output-styles/Concise.md`).
-  Source: openspec/specs/agent-conduct/spec.md:291; openspec/specs/agent-conduct/spec.md:309; openspec/specs/agent-conduct/spec.md:300; openspec/specs/agent-conduct/spec.md:336; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: fact-first replies, tools answer what they can); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded); reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (the user reports that announcing actions does not make them true and calls it a major claudetto fault; cure text proposed in the handoff Next 1).
+  Source: openspec/specs/agent-conduct/spec.md:291; openspec/specs/agent-conduct/spec.md:309; openspec/specs/agent-conduct/spec.md:300; openspec/specs/agent-conduct/spec.md:336; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: fact-first replies, tools answer what they can); user decision, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); user decision, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); user decision, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (the user reports that announcing actions does not make them true and calls it a major claudetto fault; cure text proposed in the handoff Next 1).
 
 ## Second Reading Settled by Evidence
 
@@ -778,7 +778,7 @@
 - [ ] **REQ-REPLY-112** claudetto shall keep a reply to a correction or a stop request free of apology, affirmation of the user, narration of its own mistake or obedience, and a restatement of what the user did, with no word-regex check.
   Acceptance: an eval of a correction and a stop request returns the corrected fact or nothing, and the check holds no word pattern and does not rely on deleting sentences. Anger, praise, or a correction gets the fix and its check alone, with no "if you want" offer of a step the agent can do and no emotional support. Verification: demonstration.
   Basis: reported, user; user decision. Status: missing at 088a227c (`git grep -i padding 088a227c -- plugins` finds only a statusline setting).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241); observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; user decision, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); user decision, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
 ## Prompt Text From Model Guidance
 
@@ -857,7 +857,7 @@
 
 - [ ] **REQ-REPLY-126** claudetto shall tell the agent to do all work itself, to finish every open issue the user named before it reports, and to ask the user only for a physical action.
   Acceptance: the reply rules hold this text, and a transcript where a tool call could do a step shows no request to the user for it. Verification: inspection.
-  Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Basis: user decision, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); user decision, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470); user decision, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); user decision, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10452 (handoff of 2026-11-15, user: it is not finished).
 
 ## Conduct Targets
@@ -879,7 +879,7 @@
 
 - [ ] **REQ-REPLY-130** claudetto shall run the mutation tool a project already has on the lines a change touched before the report, and shall install none in a project without one.
   Acceptance: a project with a `mutate` script or a Stryker, mutmut, or cargo-mutants config gets a mutation run on the touched lines; a project without one gets no install. Verification: test.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: have at 088a227c (`plugins/claudetto/rules/useTestPatterns.md:4`).
+  Basis: user goal set through `/goal`, 2026-11-16 06:24 UTC, tests proven by mutation, least code by jscpd (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11). Status: have at 088a227c (`plugins/claudetto/rules/useTestPatterns.md:4`).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (user answered "Trim mutation rule, then run"; the trimmed line is in the handoff); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (the cost figures that drove the trim).
 
 ## Reply Conduct
@@ -894,33 +894,33 @@
 - [ ] **REQ-REPLY-132** claudetto shall make the agent end the turn with no text when told to stop or be quiet.
   Acceptance: an eval with "shut up." gets a reply with no non-whitespace text. Verification: test.
   Basis: user decision. Status: have.
-  Source: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: reported, user, 2026-11-14 14:55 UTC, end with no text when told to be quiet (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361).
 
 - [ ] **REQ-REPLY-133** claudetto shall wrap each mention of `AskUserQuestion` in the prompts in backticks.
   Acceptance: no bare mention in prompt texts. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (`git grep -n -o AskUserQuestion 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/hooks/features/decide/texts.ts` shows it in backticks at prompt/texts.ts:10 and decide/texts.ts:49)
-  Source: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: reported, user, 2026-11-14 14:21 UTC, AskUserQuestion mentions go in backticks (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
 
 ## Role and Conduct Text
 
 - [ ] **REQ-REPLY-134** claudetto shall prompt the agent as a senior software engineer who catches a mistake before it is written, not as a junior who makes mistakes.
   Acceptance: the role text of each model prompt names a senior engineer who catches a mistake before it gets written; the word "junior" is absent. Verification: inspection.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts:5` reads "You are a junior software engineer").
+  Basis: user decision, 2026-11-16 14:42 UTC, the agent is the senior, not a junior (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7300). Status: missing at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts:5` reads "You are a junior software engineer").
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user's words on senior and junior, relayed in the handoff).
 
 - [ ] **REQ-REPLY-135** claudetto shall make the agent follow the user's order over any queued step or easier path, and shall never choose a step because it is easier to measure.
   Acceptance: a given order is carried out as stated; a step chosen against the order is absent from the run. Verification: demonstration.
-  Basis: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Basis: reported, user, 2026-11-16 14:47 UTC, never pick a step because it is easier (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user reproaches the agent for doing a step because it was easier).
 
 ## Keep Working Without Reports
 
 - [ ] **REQ-REPLY-136** claudetto shall make the agent keep working through its goal, stop to report only when the goal is met or blocked, and fix each defect it finds.
   Acceptance: in a run with a goal, no turn ends with a status report while open items remain, and the final report lists no unfixed defect. Verification: demonstration.
-  Basis: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Basis: reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's words: keep working, who asked you to leave defects unfixed, full run at any cost with no interruptions, log compactly).
 
 - [ ] **REQ-REPLY-137** claudetto shall make the agent log each result compactly in the change's `log.md` or a named log, when the user asks for a full run.
   Acceptance: after a full run, the log holds hypothesis, prediction, command, and result for each probe. Verification: inspection.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Basis: user decision, 2026-11-16 06:00 UTC, log.md is forbidden (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10548). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (handoff, Next step 3); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.

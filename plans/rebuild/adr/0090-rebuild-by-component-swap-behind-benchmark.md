@@ -1,6 +1,6 @@
 ---
 status: superseded by ADR-0046
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Rebuild By Component Swap Behind A Benchmark
 
@@ -21,4 +21,4 @@ Chosen: Per component, a new path at the highest rung that holds, swapped one pe
 
 Good: each swap has a measured reason. Bad: hours of benchmark work and no change to the tree; the user later ruled it out ([ADR-0046](0046-rebuild-clean-slate.md)).
 
-Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, verbatim in the handoff); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded).
+Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, verbatim in the handoff); user decision, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); user decision, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).

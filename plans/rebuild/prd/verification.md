@@ -576,12 +576,12 @@
 - [ ] **REQ-VERIFICATION-086** claudetto shall be dogfooded from a vanilla install of Claude Code until nothing is left to align, and shall fix each issue across subsystems, not once.
   Acceptance: a fault found in one block gets a sweep of every block for the same fault. Verification: demonstration.
   Basis: user decision. Status: partial at 088a227c (project.just:53 `dogfood` and :64 `dogfood-dir` run the plugins from HEAD or the tree; no step compares against a vanilla install or tracks what is left to align)
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+  Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, dogfood from a vanilla install until nothing is left to dogfood (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481).
 
 - [ ] **REQ-VERIFICATION-087** claudetto shall ask the user through `AskUserQuestion` which features are worthwhile compared with vanilla 2.1.325 before it keeps them.
   Acceptance: each kept feature has a user answer on record. Verification: inspection.
   Basis: user decision. Status: missing at 088a227c (`git grep -n -i "vanilla\|dogfood" 088a227c -- tools plugins` finds no feature-worth question)
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+  Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, ask the user through AskUserQuestion which features are worthwhile against vanilla (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481).
 
 - [ ] **REQ-VERIFICATION-088** claudetto shall mark a name absent only after a literal `code` search of the whole `claude` build, not after one `surface` kind.
   Acceptance: each "absent" mark cites a whole-build search. Verification: inspection.
@@ -593,7 +593,7 @@
 - [ ] **REQ-VERIFICATION-089** claudetto shall bump the patch version on the first try of a release, by itself.
   Acceptance: the release recipe changes the version with no ask. Verification: demonstration.
   Basis: user decision. Status: partial at 088a227c (project.just:42-44 `release-version` runs tools/release-version.ts, which refuses a version that does not follow the latest tag; no rule says to bump the patch by itself)
-  Source: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
 
 - [ ] **REQ-VERIFICATION-090** claudetto shall publish nothing to a marketplace and push no release without the user's confirmation, and push a branch only after a green check, never forced.
   Acceptance: the agent asks before publishing. Verification: demonstration.
@@ -605,7 +605,7 @@
 - [ ] **REQ-VERIFICATION-091** claudetto shall ship a `/goal` prompt of at most 4,000 characters, with the old prompt's external references, for a new vanilla install.
   Acceptance: `wc -m` on `plans/rebuild/goal.md` prints at most 4000. Verification: test.
   Basis: user decision. Status: missing at 088a227c (`git grep -n -i -E "4,?000" 088a227c -- tools` finds only the STOCK filler at tools/prompt-bytes.ts:16; no /goal prompt)
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
+  Source: user decision, 2026-11-16 21:50 UTC, a goal prompt of at most 4000 characters (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9249).
 
 ## Real Runs
 

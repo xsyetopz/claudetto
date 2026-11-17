@@ -204,7 +204,7 @@
   - Trigger: a session past half the window, or any compaction; a user restating the stack.
   - Owner: handover
   - Status: partial at 088a227c.
-  - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:134; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c. The auto-compaction 350k-500k setting conflicts with the settled rule that handover replaces core auto compaction by default (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); the cure keeps handover and `/clear`; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:140-146.
+  - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:134; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c. The auto-compaction 350k-500k setting conflicts with the settled rule that handover replaces core auto compaction by default (user decision, 2026-11-16 05:57 UTC, hand over when the window is reached, then /clear through the Mod API and resume (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408)); the cure keeps handover and `/clear`; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:140-146.
 
 - [ ] **RISK-132** Rejected option amnesia: the agent re-proposes an approach the project already rejected.
   Category: context.
@@ -307,7 +307,7 @@
   - Trigger: A handoff has an empty In Progress while a task was under way; a handoff while a tool call is open.
   - Owner: handover
   - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, In Progress: None given); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, user corrections); reported, user, 2026-11-15 (date of the handoff that records it; day of decision not recorded); observed in transcript, 2026-11-12; reported, user, 2026-11-15 (date of the handoff that records it; day of decision not recorded): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:6530.
+  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, In Progress: None given); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, user corrections); reported, user, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369); observed in transcript, 2026-11-12: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:6530.
 
 ## Hooks, Gates, And Notices
 
@@ -411,7 +411,7 @@
   Consequence: The compaction fails or the session stalls at a point the user did not choose.
   Likelihood: 1 (one report).
   Impact: 3 (a stalled session).
-  Existing controls: Handover replaces core auto compaction by default (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)), so the compaction call that trips the classifier does not run.
+  Existing controls: Handover replaces core auto compaction by default (user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369)), so the compaction call that trips the classifier does not run.
   Response: mitigate.
   Actions: Keep the handover path as the default; keep manual /clear writing a handover first. Probe on claude 2.1.326 whether a handover turn trips the same stop.
   Trigger: A safety stop reported during a compaction or handover turn.
@@ -565,7 +565,7 @@
   Trigger: A handoff marks a task user's only.
   Owner: handover
   Status: open
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; reported, user, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); reported, user, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470)
 
 ## Product And Tooling
 

@@ -49,7 +49,7 @@
 - [ ] **REQ-KERNEL-009** claudetto shall hand a step to the user only after a failed attempt (with the error) or a named hard block (sandbox path, missing credential, Reserved Action, unapproved payment). An unavoidable handoff gives one runnable command per step with output readable back; work left by the same user's earlier sessions is in scope; decisions needing the user go in one batched question with a recommendation and default, asked only when costly to undo; a claim is settled with a few tool calls instead of marked "unverified".
   Acceptance: A handoff names its failed attempt or hard block. The agent probes each claim before it reports it, its own and another agent's, and runs each step itself, settings included, handing the user only a step that failed on a password, a touch, or a dialog no command answers (user decision). Verification: inspection.
   Basis: reported (readers' judgement; corrected in at least 12 sessions). Status: missing at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:64; reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:64; reported, user, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); reported, user, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470).
 
 - [ ] **REQ-KERNEL-010** claudetto shall shape asking per model and role: Haiku gets anti-early-stop paragraphs and a looser "reversible"; Opus and Sonnet get "confirm first" with no definition; the plugin defines reversibility (the Reserved Actions list); a delegate stops and reports instead of asking.
   Acceptance: Each model section of the root prompt holds its asking text. Verification: inspection.
@@ -127,24 +127,24 @@
 - [ ] **REQ-KERNEL-023** claudetto shall make the agent treat only the user's own messages as orders. A handoff, an old goal file, a plan file, and a goal the agent wrote itself are context.
   Acceptance: after a context reset from a handoff, the agent starts no work from the handoff's Next list that the user's messages do not ask for. Verification: demonstration.
   Basis: user decision. Status: partial at 088a227c (hooks/features/prompt/texts.ts:10 sorts a remark, brainstorm or pasted material as context; no line names a handoff, an old goal file, a plan file or the agent's own goal as context).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204).
+  Source: user decision, 2026-11-16 15:17 UTC, the handoff is stale; the goal outranks it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192); user decision, 2026-11-16 15:17 UTC, do not trust the handoff as authoritative (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8206).
 
 - [ ] **REQ-KERNEL-024** claudetto shall make the agent ask through `AskUserQuestion` and wait when it holds only a guess about what the user wants. The agent shall not act on the guess.
   Acceptance: a request with two readings produces one `AskUserQuestion` call and no edit. Verification: demonstration.
   Basis: user decision. Status: partial at 088a227c (hooks/features/prompt/texts.ts:10 says to settle an ambiguity from context, state the reading, and ask through `AskUserQuestion` for what the user alone holds; no line says to wait and not act on a guess).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8799); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
+  Source: user decision, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749).
 
 ## Doing The Work
 
 - [ ] **REQ-KERNEL-025** claudetto shall make the agent dig through all the problems of a task, not one or two, and revert nothing the user did not ask to revert.
   Acceptance: a later review of the same area finds no issue the agent saw. Verification: demonstration.
   Basis: user decision. Status: missing at 088a227c (`git show 088a227c:plugins/claudetto/hooks/features/prompt/texts.ts` holds no line to dig through all problems of a task or to revert nothing unasked).
-  Source: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664); reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798).
 
 - [ ] **REQ-KERNEL-026** claudetto shall make the agent touch no file, restore no file and delete no file the user did not name, and never guess what the user means.
   Acceptance: the agent asks through `AskUserQuestion` first. Verification: demonstration.
   Basis: user decision. Status: missing at 088a227c (texts.ts:56 says "Where user was silent, act; delete temp files and build output", the opposite default for temp files; no line says touch, restore or delete no unnamed file).
-  Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8799).
+  Source: reported, user, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749).
 
 - [ ] **REQ-KERNEL-027** claudetto shall make the agent call a file or an agent artifact "the plan" only when the user does.
   Acceptance: no label appears unprompted. Verification: inspection.
@@ -154,4 +154,4 @@
 - [ ] **REQ-KERNEL-028** claudetto shall make the agent call tools by their exact case, such as `Bash`.
   Acceptance: no "No such tool available" error from case. Verification: transcript scan.
   Basis: reported. Status: missing at 088a227c (`git grep -n -i "exact case" 088a227c -- plugins/claudetto/hooks/features/prompt` finds none).
-  Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).
+  Source: reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).

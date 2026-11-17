@@ -120,7 +120,7 @@
 
 - [ ] **CTX-503** Sonnet is more sensitive to prompt quality than Opus: stating the "why" of a request raises quality (two commenters); a Sonnet main session can have an Opus subagent review its plan for flaws.
   Basis: reported.
-  Conflicts with: Fable and Opus are never a subagent model (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
+  Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:36 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/).
 
 ## Rules And Model Behaviour

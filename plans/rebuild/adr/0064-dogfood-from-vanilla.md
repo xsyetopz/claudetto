@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Dogfood From A Vanilla Install Until Nothing Is Left To Align
 
@@ -21,4 +21,4 @@ Chosen: continuous dogfooding from vanilla; each fix applied broadly.
 
 Faults spread like a disease; a fix covers every subsystem.
 
-Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, dogfood from a vanilla install until nothing is left to dogfood (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481).

@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Agent Faults Are Recorded As Medical Errors
 
@@ -21,4 +21,4 @@ Chosen: flag faults as medical errors; the user expects the model to fix them be
 
 Each fault goes to `risk-register.md` with its cure.
 
-Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, flag faults as medical errors (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481).

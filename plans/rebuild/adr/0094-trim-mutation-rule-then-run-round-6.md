@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Trim The Mutation Rule Then Run Round 6
 
@@ -22,4 +22,4 @@ Chosen: The user chose "Trim mutation rule, then run". The rule now reads: when 
 
 Good: dev cost fell to 1.36 times stock. Bad: the round was paid, and benchmark rounds are now out of scope ([ADR-0087](0087-product-first-no-benchmarks.md)).
 
-Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (handoff User's words); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (the 2.3 times figure); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded).
+Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (handoff User's words); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (the 2.3 times figure); user answer through AskUserQuestion, 2026-11-16 16:10 UTC, trim the mutation rule (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1750).

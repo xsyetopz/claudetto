@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-14 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-14
 ---
 # One Model Call for Setup Questions
 

@@ -16,7 +16,7 @@ A design pass listed candidates: lower `autoCompactWindow` for Opus and Sonnet (
 
 ## Decision Outcome
 
-Chosen option: reject each. Athena on Fable is rejected by the owner's rule of 2026-11-13 (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); the others by measurement, probe, or duplication of the stock prompt.
+Chosen option: reject each. Athena on Fable is rejected by the owner's rule of 2026-11-13 (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)); the others by measurement, probe, or duplication of the stock prompt.
 
 ## Consequences
 

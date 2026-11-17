@@ -3,7 +3,7 @@
 - [ ] **CON-011** claudetto shall use real directories and no hyphenated file families, and shall delete each old path when its replacement lands.
   Acceptance: no `foo.ts` beside `foo-one.ts`; no old path remains after its replacement lands. Verification: inspection.
   Basis: cited. Status: missing at 088a227c (79 hyphenated source files, probe: `find plugins tools -name '*-*.ts'` on the 088a227c tree, 2026-11-17).
-  Source: user decision, 2026-11-16 (old plan, What We Can Do); plugins at 088a227c; user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204).
+  Source: user decision, 2026-11-16 (old plan, What We Can Do); plugins at 088a227c; user decision, 2026-11-16 17:36 UTC, files-as-directories is unacceptable; no file families (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3949).
 
 - [ ] **CON-012** claudetto shall use the dossier `external/please-use-me-often/` as the spec for the rebuild.
   Acceptance: each rebuild item names a dossier or other source line. Verification: inspection.
@@ -40,15 +40,15 @@
 - [ ] **CON-019** No plan or repo file shall quote the user verbatim.
   Acceptance: a search for the user's quoted phrases in the repo finds none. Verification: inspection.
   Basis: user decision. Status: missing at 088a227c (`git grep -n -i verbatim 088a227c -- AGENTS.md CLAUDE.md docs` finds no such rule).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204).
+  Source: user decision, 2026-11-16 17:42 UTC, no verbatim user quotes (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177).
 
 - [ ] **CON-020** Each fact in the plan shall be verified against `claude` 2.1.325.
   Acceptance: each fact names its probe or build search. Verification: inspection.
   Basis: user decision. Status: unchecked: the plan files are not in the 088a227c tree.
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+  Source: user decision, 2026-11-16 22:33 UTC, 2.1.326 replaces 2.1.325 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743).
   Conflicts with: Facts are verified against `claude` 2.1.326, which replaces the earlier 2.1.325 target (user decision, 2026-11-16).
 
 - [ ] **CON-021** The plan shall attribute every external and internal source and hold no ambiguity.
   Acceptance: each item has a Source line. Verification: inspection.
   Basis: user decision. Status: missing at 088a227c (`git ls-tree --name-only 088a227c plans` prints nothing: no plan file exists).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
+  Source: user decision, 2026-11-16 21:15 UTC, attribute every external and internal source (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9002).
