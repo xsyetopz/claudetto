@@ -22,4 +22,4 @@ Chosen: verify each fact against `claude` 2.1.326, which replaces the 2.1.325 ta
 
 An "absent" mark needs a literal whole-build `code` search (see the risk of one-kind `surface` queries).
 
-Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352; user decision, 2026-11-16, session 0342617c jsonl:10743 (2.1.326 replaces 2.1.325).
+Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, verify data against 2.1.325 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481); user decision, 2026-11-16 22:33 UTC, 2.1.326 replaces 2.1.325 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743).
