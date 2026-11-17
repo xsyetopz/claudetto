@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # The User Is Watching; the Goal Is Rewritten Without Sleep Conditions
 

@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Ship A Goal Prompt Of At Most 4,000 Characters
 
@@ -21,4 +21,4 @@ Chosen: at most 4,000 characters (3,067 measured with wc -m).
 
 The goal prompt follows the layout.
 
-Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
+Source: user decision, 2026-11-16 21:50 UTC, a goal prompt of at most 4000 characters (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9249).

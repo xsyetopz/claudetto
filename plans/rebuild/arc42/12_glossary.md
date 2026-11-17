@@ -13,7 +13,7 @@
 - [ ] **TERM-003** Medical error: a fault of the agent or product, such as sycophancy, recorded with its diagnosis, mechanism, and cure.
   Acceptance: each risk item names its cure. Verification: inspection.
   Basis: user decision. Status: missing at 088a227c (`git grep -n -i 'medical error' 088a227c` finds nothing).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+  Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, flag faults as medical errors (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481).
 
 - [ ] **TERM-004** Builtin: a plugin with the id `<name>@builtin` that the `claude` binary registers.
   Acceptance: the 14 ids are listed in CTX. Verification: inspection.
@@ -23,7 +23,7 @@
 - [ ] **TERM-005** Handover: the text a session writes so a cleared session resumes; it replaces core compaction's summary in claudetto.
   Acceptance: used in REQ-HANDOVER. Verification: inspection.
   Basis: user decision. Status: partial at 088a227c (the code says `handoff`; `git grep -n -i handover 088a227c -- plugins` finds only a `handover-probe` tool call).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+  Source: user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369).
 
 - [ ] **TERM-006** Prefix reuse: the cache hit measure, the cached read of request n over the read and creation tokens of request n-1, capped at 1.
   Acceptance: used in QS. Verification: inspection.

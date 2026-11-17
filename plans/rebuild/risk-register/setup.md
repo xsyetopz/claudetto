@@ -304,7 +304,7 @@
   Trigger: a settings write or a revert with no user step.
   Owner: setup.
   Status: open.
-  Source: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
+  Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
 - [ ] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.
   Category: claudetto fault.
@@ -319,7 +319,7 @@
   Trigger: setup over one model call, or a hook error in a normal run.
   Owner: setup.
   Status: open.
-  Source: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
+  Source: reported, user, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); reported, user, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
 - [ ] **RISK-415** A plugin secret or settings placeholder leaks into the user settings.
   Category: Claude Code fault.

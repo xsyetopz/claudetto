@@ -692,7 +692,7 @@
   Trigger: The handoff names another session on the same branch.
   Owner: guards
   Status: open
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664).
 
 ## Hooks, Gates, And Notices
 

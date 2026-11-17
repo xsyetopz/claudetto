@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # The User's Orders Outrank Queued Steps
 
@@ -27,4 +27,4 @@ Good: a correction survives a reset. Bad: handoffs must carry the user's words i
 
 Transcript record tx-x02/user-messages-only-orders decided: only the user's own messages are orders. Handoffs, goal files, and `openspec/` are context. The agent checks each next step against the user's messages. Ruled out: acting on a goal the agent set itself.
 
-Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (the user's reproach); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204).
+Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (the user's reproach); user decision, 2026-11-16 17:40 UTC, do what the user asked, nothing else (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4133).

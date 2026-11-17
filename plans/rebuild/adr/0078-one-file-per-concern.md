@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # One File Per Concern
 
@@ -22,4 +22,4 @@ Chosen: one file per concern, cut along industry-standard documents (see [ADR-00
 
 No file mixes concerns.
 
-Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
+Source: user decision, 2026-11-16 21:05 UTC, one file per concern (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8613); user decision, 2026-11-16 21:07 UTC, one file per concern (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8777).

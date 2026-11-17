@@ -45,7 +45,7 @@
   Trigger: A Fable session starts a subagent whose model is Fable.
   Owner: delegation
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
 
 - [ ] **RISK-161** Fable as reviewer assumes instead of reading.
   Category: delegation
@@ -463,7 +463,7 @@
   Likelihood: 3. Impact: 4.
   Existing controls: Athena reviewer agent at plugins/claudetto/agents/Athena.md@088a227c.
   Response: mitigate.
-  Actions: The spec defines proof before building; vertical slices; tests staged before implementation; a context-free checker; behaviour and trace graders with fixtures; one write, one check; a SubagentStop or Task gate dispatching a fresh-context reviewer of another family given the diff and requirements only, with a concrete failing case per finding; subagent context with facts only and a forced `supports plan`, `contradicts plan`, or `insufficient evidence` answer. Fable and Opus are never a subagent model (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)), so the other-family reviewer uses Sonnet or Haiku only.
+  Actions: The spec defines proof before building; vertical slices; tests staged before implementation; a context-free checker; behaviour and trace graders with fixtures; one write, one check; a SubagentStop or Task gate dispatching a fresh-context reviewer of another family given the diff and requirements only, with a concrete failing case per finding; subagent context with facts only and a forced `supports plan`, `contradicts plan`, or `insufficient evidence` answer. Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)), so the other-family reviewer uses Sonnet or Haiku only.
   Trigger: A reviewer finding has no failing case.
   Owner: delegation. Status: open.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/) (reported)
@@ -512,7 +512,7 @@
   Trigger: a user report of overthinking or lazy output on one model.
   Owner: delegation. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:124 (reported); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:91 (url: https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/; the "haywire" report). Other reports in the old item: not located.
-  Conflicts with: Fable and Opus are never a subagent model (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
+  Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
 
 ## Model Variability
 
@@ -965,7 +965,7 @@
   - Category: cost.
   - Cause: The resumed subagent inherits the main model; Helpers asked for as other models default to Opus 5.5, even when Fable was asked; one audit found Opus 5.5 launched subagents on its own model and effort more often than not, and CLAUDE.md rules were sometimes ignored; a commenter's reviewer silently ran on Opus (about $15 in an afternoon); 98% of one user's weekly spend was Opus despite plans naming Sonnet and Haiku; Opus ran 50 subagents although the rule said max 10 (prose does not cap fan-out, a hook does); the `Agent` tool's `model` argument beats the agent file's `model`, and the root prompt's `<delegation>` block invites it ("keep design across files, or pass `model: opus`", `plugins/claudetto/hooks/texts.ts:21`).
   - Event: The 5-hour allowance is gone in minutes; 98% of usage went to Opus 5.5; 75% of the weekly allowance went in 3 days; a subagent runs on the expensive model; 207 Opus subagent replies in four `claudetto:work` agents, against 30,964 Sonnet and 12 Haiku, over 840 transcripts (2026-11-08 to 11-13). Each parent call passed `model: "opus"`.
-  - Consequence: Wasted spend; Fable would act as a subagent model; breaks the rule that Fable and Opus are never a subagent model (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); extra spend.
+  - Consequence: Wasted spend; Fable would act as a subagent model; breaks the rule that Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)); extra spend.
   - Likelihood: 4
   - Impact: 3
   - Existing controls: plugins/claudetto/hooks/features/setup/settings.ts:120 sets CLAUDE_CODE_SUBAGENT_MODEL at 088a227c; plugins/claudetto/hooks/features/setup/settings.ts:120 pins the subagent model env var at 088a227c; `plugins/claudetto/agents/*.md` (model and effort fields) and `plugins/claudetto/hooks/features/agent-model/model.ts` at 088a227c (partial); fan-out cap missing; agent files pin a model (overridden by the argument).

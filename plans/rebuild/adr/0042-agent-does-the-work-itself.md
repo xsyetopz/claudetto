@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-14 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-14
 ---
 # The Agent Does All Work Itself
 
@@ -27,4 +27,4 @@ A handoff carries the rule; a reply that defers a doable step is a conduct defec
 
 Transcript record tx-x02/agent-does-the-work decided: the second. Deleting temp folders never needs the user's approval. The sandbox allows all but dangerous commands.
 
-Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14); user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded); user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14); user decision, 2026-11-14 21:15 UTC, fix open parts at once, do not hand them back (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1008); user decision, 2026-11-14 14:17 UTC, a temp-folder delete needs no approval (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36369).

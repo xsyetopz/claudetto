@@ -101,7 +101,7 @@
 - [ ] **CTX-237** Tool names are case-sensitive: a call to `bash` fails with "No such tool available"; `Bash` works.
   Acceptance: the error text reproduces. Verification: demonstration.
   Basis: reported. Status: have.
-  Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+  Source: reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
 
 ## Mods And Lab Tooling
 

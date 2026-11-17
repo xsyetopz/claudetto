@@ -1,6 +1,6 @@
 ---
 status: accepted
-date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
+date: 2026-11-16
 ---
 # Check A User Claim Before Relying On It
 
@@ -21,4 +21,4 @@ Chosen: check each claim.
 
 Fixed or stale items are trimmed or marked; checked facts carry their evidence.
 
-Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352.
+Source: user decision, 2026-11-16 17:42 UTC, check a user claim before relying on it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352.

@@ -22,7 +22,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0016](../adr/0016-grader-faults-removed.md) | Grader Faults the Person Removed | accepted | 2026-11-09 |
 | [ADR-0017](../adr/0017-jev-never-allows.md) | Jev May Deny or Ask but Never Allow | accepted | 2026-11-09 |
 | [ADR-0018](../adr/0018-lean-openspec-parity.md) | OpenSpec With Core Parity In A Lighter Form | accepted | 2026-11-09 |
-| [ADR-0019](../adr/0019-paid-work-weekly-cap.md) | Ask Before A Paid Call And Cap Paid Work At 25 Percent Of The Seven-Day Limit | superseded by ADR-0105 | 2026-11-09 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0019](../adr/0019-paid-work-weekly-cap.md) | Ask Before A Paid Call And Cap Paid Work At 25 Percent Of The Seven-Day Limit | superseded by ADR-0105 | 2026-11-16 |
 | [ADR-0020](../adr/0020-release-2-1-321-branch.md) | Next Release Targets 2.1.321 On A New feat Branch | accepted | 2026-11-09 |
 | [ADR-0021](../adr/0021-root-prompt-size-cap.md) | Root Prompt Size Cap | superseded by ADR-0082 | 2026-11-09 |
 | [ADR-0022](../adr/0022-sandbox-deny-list-as-first-written.md) | Sandbox Deny List as First Written | superseded by ADR-0159 | 2026-11-09 |
@@ -45,61 +45,61 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0039](../adr/0039-paid-eval-cap-approved.md) | Paid Eval Cap Approved on the Agent's Proposal | superseded by ADR-0045 | 2026-11-13 |
 | [ADR-0040](../adr/0040-permission-policy-removed.md) | Permission-Policy Requirements Removed | accepted | 2026-11-13 |
 | [ADR-0041](../adr/0041-stall-timeout-replaces-time-cap.md) | Replace the Time-Cap Hook With the Stall Timeout | accepted | 2026-11-13 |
-| [ADR-0042](../adr/0042-agent-does-the-work-itself.md) | The Agent Does All Work Itself | accepted | 2026-11-14 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0043](../adr/0043-ask-through-askuserquestion.md) | Ask Questions Through AskUserQuestion | accepted | 2026-11-14 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0042](../adr/0042-agent-does-the-work-itself.md) | The Agent Does All Work Itself | accepted | 2026-11-14 |
+| [ADR-0043](../adr/0043-ask-through-askuserquestion.md) | Ask Questions Through AskUserQuestion | accepted | 2026-11-14 |
 | [ADR-0044](../adr/0044-correction-handling-conflict.md) | Correction Handling | accepted | 2026-11-14 (date of the handoff that records it; day of decision not recorded) |
 | [ADR-0045](../adr/0045-paid-runs-approved.md) | Paid Runs Approved Without A Budget Figure | accepted | 2026-11-14 |
 | [ADR-0046](../adr/0046-rebuild-clean-slate.md) | Rebuild From a Clean Slate | accepted | 2026-11-14 |
-| [ADR-0047](../adr/0047-reply-holds-only-work.md) | A Reply Holds Only Work | accepted | 2026-11-14 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0048](../adr/0048-single-model-call-for-setup-questions.md) | One Model Call for Setup Questions | accepted | 2026-11-14 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0049](../adr/0049-version-bump-by-script.md) | A Script Bumps The Version By SemVer | accepted | 2026-11-14 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0047](../adr/0047-reply-holds-only-work.md) | A Reply Holds Only Work | accepted | 2026-11-14 |
+| [ADR-0048](../adr/0048-single-model-call-for-setup-questions.md) | One Model Call for Setup Questions | accepted | 2026-11-14 |
+| [ADR-0049](../adr/0049-version-bump-by-script.md) | A Script Bumps The Version By SemVer | accepted | 2026-11-14 |
 | [ADR-0050](../adr/0050-version-engine-plus-counter.md) | Fault Fixes Ship As A +patch Release | accepted | 2026-11-14 |
 | [ADR-0051](../adr/0051-you-should-know-recreates-builtin.md) | You-Should-Know Recreates the Builtin | accepted | 2026-11-14 |
 | [ADR-0052](../adr/0052-advisor-tool-disabled.md) | The Advisor Tool Stays Disabled | accepted | 2026-11-16 |
 | [ADR-0053](../adr/0053-agent-decides-in-scope-choices.md) | Agent Decides In-Scope Choices | accepted | 2026-11-16 |
 | [ADR-0054](../adr/0054-ask-rules-for-destructive-commands.md) | Ask Rules for Destructive Commands | accepted | 2026-11-16 |
 | [ADR-0055](../adr/0055-athena-model-sonnet.md) | Athena Is Not on Fable | accepted | 2026-11-16 |
-| [ADR-0056](../adr/0056-benchmark-yardstick-goal.md) | Judge Claudetto By A Headless Stock-Against-Dev Benchmark | superseded by ADR-0087 | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0056](../adr/0056-benchmark-yardstick-goal.md) | Judge Claudetto By A Headless Stock-Against-Dev Benchmark | superseded by ADR-0087 | 2026-11-16 |
 | [ADR-0057](../adr/0057-builtin-disable-in-user-settings.md) | Disable all 14 Claude Code Builtins by Rewriting User Settings | accepted | 2026-11-16 |
 | [ADR-0058](../adr/0058-clear-stays-vanilla.md) | Keep the User's /clear Vanilla | superseded by ADR-0068 | 2026-11-16 |
-| [ADR-0059](../adr/0059-concise-style-length-lower-bound.md) | Keep the Output Style Short, With a Lower Bound | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0059](../adr/0059-concise-style-length-lower-bound.md) | Keep the Output Style Short, With a Lower Bound | accepted | 2026-11-16 |
 | [ADR-0060](../adr/0060-constraint-ledger-by-sentence-selection.md) | Constraint Ledger by Sentence Selection | superseded by ADR-0075 | 2026-11-16 |
 | [ADR-0061](../adr/0061-decider-retry-policy.md) | Decider Retry Policy | accepted | 2026-11-16 |
 | [ADR-0062](../adr/0062-delete-plugin-eval-suite.md) | Delete the Behaviour Eval Suite | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0063](../adr/0063-dogfood-after-each-commit.md) | Dogfood After Each Commit | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0064](../adr/0064-dogfood-from-vanilla.md) | Dogfood From A Vanilla Install Until Nothing Is Left To Align | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0063](../adr/0063-dogfood-after-each-commit.md) | Dogfood After Each Commit | accepted | 2026-11-16 |
+| [ADR-0064](../adr/0064-dogfood-from-vanilla.md) | Dogfood From A Vanilla Install Until Nothing Is Left To Align | accepted | 2026-11-16 |
 | [ADR-0065](../adr/0065-facts-verified-against-claude-2-1-326.md) | Verify Facts Against claude 2.1.326 | accepted | 2026-11-16 |
-| [ADR-0066](../adr/0066-faults-as-medical-errors.md) | Agent Faults Are Recorded As Medical Errors | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0067](../adr/0067-goal-user-is-watching.md) | The User Is Watching; the Goal Is Rewritten Without Sleep Conditions | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0066](../adr/0066-faults-as-medical-errors.md) | Agent Faults Are Recorded As Medical Errors | accepted | 2026-11-16 |
+| [ADR-0067](../adr/0067-goal-user-is-watching.md) | The User Is Watching; the Goal Is Rewritten Without Sleep Conditions | accepted | 2026-11-16 |
 | [ADR-0068](../adr/0068-handover-clear-hook.md) | Handover Through a command.run Clear Hook | accepted | 2026-11-16 |
 | [ADR-0069](../adr/0069-handover-knobs-mirror-compaction.md) | Handover Knobs Mirror Claude Code's Compaction Knobs | accepted | 2026-11-16 |
-| [ADR-0070](../adr/0070-handover-trigger-idle-or-size.md) | Hand Over On An Idle Gap Or Context Size, Never On Age | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0071](../adr/0071-handover-writer-fork-low-effort.md) | Write The Handover With A Low-Effort Fork | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0072](../adr/0072-holdout-script-picks-blind.md) | A Script Picks The Holdout Tasks Blind | superseded by ADR-0087 | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0070](../adr/0070-handover-trigger-idle-or-size.md) | Hand Over On An Idle Gap Or Context Size, Never On Age | accepted | 2026-11-16 |
+| [ADR-0071](../adr/0071-handover-writer-fork-low-effort.md) | Write The Handover With A Low-Effort Fork | accepted | 2026-11-14 |
+| [ADR-0072](../adr/0072-holdout-script-picks-blind.md) | A Script Picks The Holdout Tasks Blind | superseded by ADR-0087 | 2026-11-16 |
 | [ADR-0073](../adr/0073-keep-ideas-not-files.md) | Keep Ideas, Not Files, From The Old Build | accepted | 2026-11-16 |
-| [ADR-0074](../adr/0074-no-acting-on-guess.md) | Never Guess And Never Act On A Guess | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0074](../adr/0074-no-acting-on-guess.md) | Never Guess And Never Act On A Guess | accepted | 2026-11-16 |
 | [ADR-0075](../adr/0075-no-constraint-ledger.md) | No Constraint Ledger | accepted | 2026-11-16 |
 | [ADR-0076](../adr/0076-no-file-families.md) | No File Families Posing As Directories | accepted | 2026-11-16 |
 | [ADR-0077](../adr/0077-no-verbatim-user-quotes.md) | No Verbatim User Quotes | accepted | 2026-11-16 |
-| [ADR-0078](../adr/0078-one-file-per-concern.md) | One File Per Concern | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0079](../adr/0079-one-hook-kind-per-purpose.md) | Use Each Hook Kind For Its Purpose, Found By Probe | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0078](../adr/0078-one-file-per-concern.md) | One File Per Concern | accepted | 2026-11-16 |
+| [ADR-0079](../adr/0079-one-hook-kind-per-purpose.md) | Use Each Hook Kind For Its Purpose, Found By Probe | accepted | 2026-11-16 |
 | [ADR-0080](../adr/0080-one-prompt-type-stop-hook.md) | One Prompt-Type Stop Hook | accepted | 2026-11-16 |
-| [ADR-0081](../adr/0081-overnight-decide-and-continue.md) | Nobody Answers Overnight, So Decide and Continue | superseded by ADR-0067 | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0081](../adr/0081-overnight-decide-and-continue.md) | Nobody Answers Overnight, So Decide and Continue | superseded by ADR-0067 | 2026-11-16 |
 | [ADR-0082](../adr/0082-per-model-system-prompt.md) | One System Prompt per Model | accepted | 2026-11-16 |
 | [ADR-0083](../adr/0083-plan-gaps-all-after-check.md) | Take All Audit Gap Lines After A Check | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0084](../adr/0084-plan-goal-prompt-limit.md) | Ship A Goal Prompt Of At Most 4,000 Characters | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0085](../adr/0085-plan-layout-arc42-hybrid.md) | Lay The Plan Out As arc42 With PRD, ADR And Risk Register | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0086](../adr/0086-plan-old-file-deleted-after-count.md) | Delete The Old Curation File After A Count | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0084](../adr/0084-plan-goal-prompt-limit.md) | Ship A Goal Prompt Of At Most 4,000 Characters | accepted | 2026-11-16 |
+| [ADR-0085](../adr/0085-plan-layout-arc42-hybrid.md) | Lay The Plan Out As arc42 With PRD, ADR And Risk Register | accepted | 2026-11-16 |
+| [ADR-0086](../adr/0086-plan-old-file-deleted-after-count.md) | Delete The Old Curation File After A Count | accepted | 2026-11-16 |
 | [ADR-0087](../adr/0087-product-first-no-benchmarks.md) | Product First, No Benchmarks, No Planner, No Component Swaps | accepted | 2026-11-16 |
 | [ADR-0088](../adr/0088-publish-needs-user-confirmation.md) | Release And Marketplace Publish Need The User's Confirmation | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0089](../adr/0089-rebuild-branch-reinstantiation.md) | The Rebuild Goes On An Orphan Branch That Holds Only The Plan | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0090](../adr/0090-rebuild-by-component-swap-behind-benchmark.md) | Rebuild By Component Swap Behind A Benchmark | superseded by ADR-0046 | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0089](../adr/0089-rebuild-branch-reinstantiation.md) | The Rebuild Goes On An Orphan Branch That Holds Only The Plan | accepted | 2026-11-16 |
+| [ADR-0090](../adr/0090-rebuild-by-component-swap-behind-benchmark.md) | Rebuild By Component Swap Behind A Benchmark | superseded by ADR-0046 | 2026-11-16 |
 | [ADR-0091](../adr/0091-restore-deleted-rules.md) | Restore the Deleted Rules | accepted | 2026-11-16 |
 | [ADR-0092](../adr/0092-run-limits-removed.md) | Run Limits Removed | accepted | 2026-11-16 |
 | [ADR-0093](../adr/0093-subagent-model-without-force.md) | Subagent Model Precedence and Pinning | accepted | 2026-11-16 |
-| [ADR-0094](../adr/0094-trim-mutation-rule-then-run-round-6.md) | Trim The Mutation Rule Then Run Round 6 | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0095](../adr/0095-user-orders-outrank-queued-steps.md) | The User's Orders Outrank Queued Steps | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
-| [ADR-0096](../adr/0096-verify-user-claims.md) | Check A User Claim Before Relying On It | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0094](../adr/0094-trim-mutation-rule-then-run-round-6.md) | Trim The Mutation Rule Then Run Round 6 | accepted | 2026-11-16 |
+| [ADR-0095](../adr/0095-user-orders-outrank-queued-steps.md) | The User's Orders Outrank Queued Steps | accepted | 2026-11-16 |
+| [ADR-0096](../adr/0096-verify-user-claims.md) | Check A User Claim Before Relying On It | accepted | 2026-11-16 |
 | [ADR-0097](../adr/0097-batched-edit-tool.md) | Batched Edit Tool | accepted | 2026-11-17 |
 | [ADR-0098](../adr/0098-block-only-unrecoverable-destructive-commands.md) | Block Only Unrecoverable Destructive Commands | accepted | 2026-11-17 |
 | [ADR-0099](../adr/0099-builtin-agents-replaced-by-greek-agents.md) | Built-in Agents Replaced By Greek Agents | accepted | 2026-11-17 |
@@ -146,7 +146,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0140](../adr/0140-effort-defaults-routing.md) | Effort Defaults and Model Routing | accepted | no source line located (day of decision not recorded) |
 | [ADR-0141](../adr/0141-expanded-shell-group-fold-superseded.md) | Expand the Shell-Group Fold | superseded by ADR-0170 | recorded in openspec/specs/surface-trim/spec.md:222 (day of decision not recorded) |
 | [ADR-0142](../adr/0142-handoff-file-compaction.md) | Handoff File Compaction | superseded by ADR-0143 | recorded in openspec/specs/compaction-path/spec.md:10 (day of decision not recorded) |
-| [ADR-0143](../adr/0143-handover-replaces-auto-compaction.md) | Handover Replaces Core Auto Compaction | accepted | recorded in the 2026-11-17 handover (day of decision not recorded) |
+| [ADR-0143](../adr/0143-handover-replaces-auto-compaction.md) | Handover Replaces Core Auto Compaction | accepted | 2026-11-16 |
 | [ADR-0144](../adr/0144-hook-for-jev-rejected.md) | Jev Check Stays out of a Hook | accepted | recorded in openspec/changes/archive/2026-11-09-release-2-1-319/design.md:154 (day of decision not recorded) |
 | [ADR-0145](../adr/0145-interface-text-reuse.md) | Interface Text Reuse | accepted | recorded in openspec/specs/builtin-rebuild/spec.md:29 (day of decision not recorded) |
 | [ADR-0146](../adr/0146-model-allocation.md) | Model Allocation | accepted | recorded in openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:73 (day of decision not recorded) |

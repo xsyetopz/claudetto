@@ -60,14 +60,14 @@
 
 - [ ] **QS-010** After turn 1, 98 to 99 percent of requests, root and subagents, hit the cache.
   Acceptance: at least 98% of requests hit, where a hit is prefix reuse, `read_n / (read + creation)_(n-1)` at least 0.98 per request from a transcript, and a probe session reads 98.6% on turn 2; measured 98.6% root and 98.9% subagents over three days. Verification: probe.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: have.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (measure); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281). The benchmark runner that scored it is out of scope; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Next 7); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (Decisions: cache hit means prefix reuse); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, State: cache probe).
+  Basis: user decision, 2026-11-16 05:57 UTC, keep the cache hit rate consistent (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408). Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (measure); user decision, 2026-11-16 05:57 UTC, keep the cache hit rate consistent (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408). The benchmark runner that scored it is out of scope; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Next 7); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (Decisions: cache hit means prefix reuse); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, State: cache probe).
 
 ## Session Length
 
 - [ ] **QS-011** No session auto-compacts or runs 59 minutes or longer; handover through the Mod API replaces compaction, and a subagent hands off within the cache window.
   Acceptance: zero compactions per run; no main-loop session runs past 59 minutes of context age without a handoff (`handoff.ts:68` and `handoff.test.ts:246` hold the trigger at 088a227c); no subagent past 300 s without a handoff. Verification: probe.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c.
+  Basis: user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369). Status: partial at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff: "the goal fixes 59 minutes"); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:3402.
 
 ## Rereads
@@ -81,7 +81,7 @@
 
 - [ ] **QS-013** Tests are proven by mutation (Stryker for TypeScript, mutmut for Python), and the code is the least that does the job, measured by jscpd.
   Acceptance: mutation scores are recorded (Stryker 68.00%, mutmut 91% at 74 killed and 7 survived, measured in the old tree); jscpd finds 0 clones in 277 files. Verification: probe.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c.
+  Basis: user goal set through `/goal`, 2026-11-16 06:24 UTC, tests proven by mutation, least code by jscpd (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11). Status: partial at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (scores and jscpd figures).
 
 ## Prompt Size
@@ -101,7 +101,7 @@
 - [ ] **QS-016** claudetto shall carry no clone `jscpd` finds beyond the baseline (21 or 22 clones at the time) and state no instruction twice in runtime text.
   Acceptance: `bunx jscpd --no-tips plugins tools` reports no new clone. Verification: test.
   Basis: user decision. Status: partial at 088a227c (`.jscpd-baseline.json` holds 21 fingerprints and `AGENTS.md:38` holds the jscpd rule; no runtime repeat check).
-  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+  Source: user goal set through `/goal`, 2026-11-16 06:24 UTC, tests proven by mutation, least code by jscpd (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11); observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
 ## Length Targets of the 2.1.325 Goal
 
