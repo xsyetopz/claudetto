@@ -1,0 +1,5 @@
+# Interactive Session Cycle
+
+- [ ] **RT-023** In the interactive TUI the cycle calls `$.session.compact()` and a `session.compact` hook answers `{messages:[handoff]}` for trigger `plugin`; this keeps the session id and sends no summary request, passes the user's own `/clear` through when `e.origin` is `composer` or `sdk`, acts on a clear only when the origin is `plugin`, so it is the primary mechanism in the TUI. Headless it rejects, so there the cycle uses `clear` plus `prompt.submit`.
+  Basis: measured on claude 2.1.325 (unverified in 2.1.326; the name `session.compact` is present in the 2.1.326 binary, 21 lines by `grep -c -a -F`). Status: partial (handoff.ts:74-100 calls $.session.compact() and answers trigger plugin; the trigger is session age) at 088a227c.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, interactive TUI on a fake API stub (recorded in plans/rebuild-curation.md at commit dc499712); plugins/claudetto/hooks/features/compaction/handoff.ts:74-100@088a227c; probe, `claude` 2.1.325, tmux plus a Bun stub, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).

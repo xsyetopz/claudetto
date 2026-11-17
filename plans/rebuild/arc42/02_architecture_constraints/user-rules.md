@@ -1,0 +1,54 @@
+# User Rules
+
+- [ ] **CON-011** claudetto shall use real directories and no hyphenated file families, and shall delete each old path when its replacement lands.
+  Acceptance: no `foo.ts` beside `foo-one.ts`; no old path remains after its replacement lands. Verification: inspection.
+  Basis: cited. Status: missing at 088a227c (79 hyphenated source files, probe: `find plugins tools -name '*-*.ts'` on the 088a227c tree, 2026-11-17).
+  Source: user decision, 2026-11-16 (old plan, What We Can Do); plugins at 088a227c; user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204).
+
+- [ ] **CON-012** claudetto shall use the dossier `external/please-use-me-often/` as the spec for the rebuild.
+  Acceptance: each rebuild item names a dossier or other source line. Verification: inspection.
+  Basis: cited. Status: missing at 088a227c.
+  Source: user decision, 2026-11-16 (old plan, What We Can Do); external/please-use-me-often/.
+
+- [ ] **CON-013** claudetto keeps every feature the user chose and cuts code, overhead, latency, and tokens; small in code does not mean fewer features. A removal needs a measured reason or a user decision.
+  Acceptance: a feature list before and after a rebuild shows no loss; after a cleanup, every feature of the start state still has a test or probe, and the code size does not grow past the start size (13,373 lines at the cleanup end against 13,389 at the base and 13,740 at the peak). Verification: inspection.
+  Basis: reported. Status: have.
+  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words); the same words repeat at :8215; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (code size 13,373 lines, base 13,389, peak 13,740).
+
+- [ ] **CON-014** claudetto rebuilds from a clean slate for Claude Code 2.1.326 (the 2026-11-14 decision named 2.1.325; the target moved by the 2026-11-16 decision): no engineering around the current code or its architecture; the agent fixes the code or architecture itself.
+  Acceptance: no replaced path survives with its tests, settings, or docs; a fix touches the faulty code and the diff holds no wrapper or bypass of it. Verification: inspection.
+  Basis: reported. Status: have.
+  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); user decision, 2026-11-16 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words).
+
+- [ ] **CON-015** The root agent stays opus-5-5[medium].
+  Acceptance: root model reads opus-5-5[medium]. Verification: inspection.
+  Basis: reported. Status: have.
+  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rules); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words); the goal line repeats at :8215.
+
+- [ ] **CON-016** A count or list that a source already defines is computed from that source, not written by hand.
+  Basis: reported, user. Status: missing at 088a227c.
+  Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:719`).
+
+- [ ] **CON-017** Each identifier in code is a headlinese noun phrase.
+  Basis: reported, user. Status: have at 088a227c (plugins/claudetto/rules/useHeadlineseNames.md@088a227c).
+  Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/05884638-c1a2-4b41-83af-50464f374189.jsonl:17`).
+
+- [ ] **CON-018** claudetto shall not hard-bake Bun rules into its hooks.
+  Basis: reported, user rule, 2026-11-13. Status: unchecked, reason: the baseline hooks were not scanned for Bun rules (hold.ts and key.ts mention bunx).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; user decision, 2026-11-13.
+
+- [ ] **CON-019** No plan or repo file shall quote the user verbatim.
+  Acceptance: a search for the user's quoted phrases in the repo finds none. Verification: inspection.
+  Basis: user decision. Status: missing at 088a227c (`git grep -n -i verbatim 088a227c -- AGENTS.md CLAUDE.md docs` finds no such rule).
+  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204).
+
+- [ ] **CON-020** Each fact in the plan shall be verified against `claude` 2.1.325.
+  Acceptance: each fact names its probe or build search. Verification: inspection.
+  Basis: user decision. Status: unchecked: the plan files are not in the 088a227c tree.
+  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+  Conflicts with: Facts are verified against `claude` 2.1.326, which replaces the earlier 2.1.325 target (user decision, 2026-11-16).
+
+- [ ] **CON-021** The plan shall attribute every external and internal source and hold no ambiguity.
+  Acceptance: each item has a Source line. Verification: inspection.
+  Basis: user decision. Status: missing at 088a227c (`git ls-tree --name-only 088a227c plans` prints nothing: no plan file exists).
+  Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).

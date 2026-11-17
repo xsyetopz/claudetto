@@ -1,0 +1,16 @@
+# Design Law
+
+- [ ] **CC-079** Each part of claudetto needs a measured reason to exist. No workaround, scaffold, plumbing, or stub without a present use; a guard stays only for a failure caught in real transcripts; each control sits at the highest rung that holds (hook, gate, or permission over prose); when a bounded pattern does a job better for less, it becomes a design decision and claudetto uses it fully, paired with the built-in where each fits best.
+  Acceptance: each guard and part cites a failure or a measurement. Verification: inspection.
+  Basis: user decision. Status: partial at 088a227c.
+  Source: user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10779); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10693); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rebuild paragraph).
+
+- [ ] **CC-080** claudetto follows DRY in its design and at runtime: no instruction stated twice in runtime text, and code checked for duplication before it is written; the best carrier (rule, CLAUDE.md line, hook) is found by trial.
+  Acceptance: jscpd reports no new clone; no runtime instruction repeats. Verification: test.
+  Basis: user decision. Status: partial at 088a227c (`.jscpd.json` and `AGENTS.md:38` hold the jscpd rule per `git grep -n jscpd 088a227c`; no runtime repeat check).
+  Source: user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928).
+
+- [ ] **CC-081** claudetto writes its root prompt, tool and agent descriptions, and hook texts in block language; replies, docs, and the changelog keep full articles.
+  Acceptance: texts follow the block-language rule. Verification: inspection.
+  Basis: reported. Status: partial at 088a227c (rules/useBlockLanguage.md).
+  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1757).

@@ -1,0 +1,9 @@
+# Skills And Instructions
+
+- [ ] **CC-035** Most skills go: a skill fires only when its description matches words people type (0 of 16 headless runs invoked `diagnosing-bugs` even with the trigger word; named, it loaded and changed the score not at all). The cure is the user's literal phrase in the description, must-happen rules in hooks (a hook cannot be skipped), project-specific steps the model cannot guess in skills, and general methods out. Fewer instructions work better on Opus 5+; Anthropic cut the Claude Code prompt over 80% with no coding-eval loss (cited). Project knowledge lives in versioned repo docs readable by every agent; a skill earns a place by bundling scripts, a capability, or progressive disclosure. A skill, plugin, or setting is added only after the same thing broke twice, and old skills and instructions are audited on each model change. Skill authoring: gerund names, references one level deep, a TOC in long files (agents may read the first 100 lines), evals first with a baseline without the skill, and the description is the product.
+  Basis: reported, cited, and measured (n=3 to 16). Status: partial at 088a227c (`plugins/claudetto/hooks/features/surface/surface.ts`; only `skills/docs` ships).
+  Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:60; plugins/claudetto/hooks/features/surface/surface.ts@088a227c.
+
+- [ ] **CC-036** When a tool has a CLI, a short SKILL.md teaches it (`jq` for structured output, small example outputs) in place of an MCP schema paid every turn; MCP stays for deeply structured data or auth plumbing; deterministic work is mechanical and the agent does judgment.
+  Basis: reported by several, with one unquantified comparison. Status: have at 088a227c (`plugins/claudetto/skills/docs` uses a CLI).
+  Source: unresolved: no source line located for this claim.
