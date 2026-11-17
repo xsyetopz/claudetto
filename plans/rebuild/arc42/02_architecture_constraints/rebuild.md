@@ -118,10 +118,10 @@
   Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: unchecked.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (standing rules).
 
-- [ ] **CON-048** An agent shall ask before a destructive action and before a paid run, shall report cost and weekly share after a paid run, and shall do `rm -rf` of temp folders only with approval.
+- [ ] **CON-048** An agent shall ask before a destructive action and before a paid run, shall report cost and weekly share after a paid run, and shall delete its own temp folders and build output without asking.
   Acceptance: each paid run has a prior ask and a later cost line. Verification: inspection.
   Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: unchecked.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (standing rules).
+  Source: user decision, 2026-11-14 14:17 UTC, deleting temp folders never needs approval (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36369); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (standing rules).
 
 - [ ] **CON-049** Only the lead shall run `just lab`, once, after the Heracles agents end; a worker may use another LLM reviewer through `codex` in headless mode on `gpt-6.1-sol`.
   Acceptance: a session log shows one lab run by the lead. Verification: inspection.
