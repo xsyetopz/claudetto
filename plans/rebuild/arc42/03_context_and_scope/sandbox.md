@@ -36,7 +36,7 @@
   Basis: read.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:242; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:249.
 
-- [ ] **CTX-093** Minimal sandbox probe (user ran it outside Claude Code, $0.0052): writes are denied in the repo outside the working folder, `.git`, hooks, `$TMPDIR`, `/private/tmp`, `~`, `~/.bun`, `~/.cache`, `/etc`, dotfiles, `/dev/tty`, and rename of `.git`; allowed in `/tmp/claude-501` and `/dev/null`. `curl example.com` is denied with CONNECT 403 when no domain is allowed and `-p` cannot ask
+- [ ] **CTX-093** Minimal sandbox probe (user ran it outside Claude Code, $0.0052): writes are denied in the repo outside the working folder, `.git`, hooks, `$TMPDIR`,`/private/tmp`,`~`,`~/.bun`,`~/.cache`,`/etc`, dotfiles,`/dev/tty`, and rename of`.git`; allowed in`/tmp/claude-501` and `/dev/null`.`curl example.com` is denied with CONNECT 403 when no domain is allowed and `-p` cannot ask
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1011.
 
@@ -58,7 +58,7 @@
 
 - [ ] **CTX-097** Linux bubblewrap: a missing allowWrite path (such as /Volumes/) is skipped ("Skipping non-existent write path"). A missing denyWrite path gets /dev/null or an empty folder mounted to block its creation. An unresolvable link fails closed with /dev/null. The 2.1.326 release notes say the Bash sandbox on Linux and WSL now creates some missing `--add-dir` folders before each sandboxed command. launchctl list does not exist on Linux, and whether ps, top, and sysctl fail under bubblewrap is unmeasured.
   Basis: read from the 2.1.319 source; no Linux run.
-  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:164; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:164; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 - [ ] **CTX-098** AppleScript answers "tell application Finder to get version" from the app bundle with no Apple Event, so it passes under (deny appleevent-send). Only events Finder must answer (get name of startup disk, count windows) fail -600 in the sandbox. open -R returned 0 though the reveal was blocked.
   Basis: measured (confirmed by the user).
@@ -72,15 +72,15 @@
 
 - [ ] **CTX-100** Test on CLI 2.1.310, Haiku 5.5: with deny Write(./fake.env), a shell cp overwrote the file in 2 of 2 runs; with deny Edit(./fake.env) the same cp was blocked in 2 of 2; the cause is untested; 2.1.321 notes a related cp fix, not re-run. The 2.1.326 release notes fix cp being refused when only its source was covered by an Edit deny rule.
   Basis: reported, n=2.
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:97; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:99 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/). https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes)
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:97; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:99 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>). <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes)
 
 - [ ] **CTX-101** A PreToolUse hook that matches the typed command text ("flutter build ipa") misses a build launched from inside another script; Bash hooks see only the command string, so cp, redirects, or a python one-liner can write where the hook never parses; the OS sandbox closes the gap (child processes included), is off by default, and does not apply on native Windows.
   Basis: reported, one hook author plus one commenter.
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:105; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:111 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:105; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 - [ ] **CTX-102** Enabling sandboxing for subagents (network and workspace) disrupted a workflow so much through denials and gates that token inefficiency persisted.
   Basis: reported, n=1. Status: not applicable (outside fact).
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:508 (url: https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:508 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
 
 ## Sandbox And Seatbelt
 

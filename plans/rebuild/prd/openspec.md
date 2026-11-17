@@ -2,7 +2,7 @@
 
 ## Core Parity
 
-- [ ] **REQ-OPENSPEC-001** claudetto-openspec shall match openspec@latest in core profile only, lighter than openspec 1.15.0, with Claude 5.5 optimised prompts, selective XML tags where they fit, and fixes for what SDD and TDD complaints in external/ show it does wrong.
+- [ ] **REQ-OPENSPEC-001** claudetto-openspec shall match openspec@latest in core profile only, lighter than openspec, with Claude 5.5 optimised prompts, selective XML tags where they fit, and fixes for what SDD and TDD complaints in external/ show it does wrong.
   Acceptance: behaviour matches openspec@latest core profile; each complaint has a fix or a recorded reason. Verification: demonstration.
   Basis: reported. Status: partial at 088a227c.
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).

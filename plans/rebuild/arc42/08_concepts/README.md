@@ -3,7 +3,7 @@
 arc42 section 8. One file per subsection.
 
 | Subsection | Items |
-|---|---|
+| --- | --- |
 | [Prompt Text](prompt-text.md) | 6 |
 | [Fresh Thread Generation](fresh-thread-generation.md) | 1 |
 | [Review Depth](review-depth.md) | 1 |

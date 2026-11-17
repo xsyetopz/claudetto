@@ -29,7 +29,7 @@
   Trigger: An auto compaction while an edit list is open.
   Owner: handover
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:223 (url: https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/); external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:95 (url: https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:223 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/>); external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:95 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>).
 
 - [ ] **RISK-121** A memory file stuffed with rules, or too many skills, degrades the work.
   - Category: handover.
@@ -44,7 +44,7 @@
   - Trigger: quality falls after the memory file or skill set grows.
   - Owner: handover
   - Status: open.
-  - Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:147; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:151; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:349; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:63 (url: https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/).
+  - Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:147; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:151; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:349; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:63 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
   - Conflict: An added guardrail costs context and focus, yet removing rules brings wild behaviour; one run created an empty git folder.
 
 - [ ] **RISK-122** An added guardrail costs context and focus, yet removing rules brings wild behaviour; one run created an empty git folder.
@@ -60,7 +60,7 @@
   - Trigger: tests fail after an empty git folder appears.
   - Owner: handover
   - Status: open.
-  - Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:199; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:195; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:277 (url: https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/).
+  - Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:199; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:195; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:277 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
   - Conflict: A memory file stuffed with rules, or too many skills, degrades the work.
 
 - [ ] **RISK-123** A stale or abrupt handoff misleads or interrupts ongoing work.
@@ -91,7 +91,7 @@
   Trigger: A tidy pass restores a replaced rule.
   Owner: handover
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:105 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:105 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
 
 - [ ] **RISK-125** A handover written mid-step reports finished work as not done.
   Category: handover.
@@ -136,7 +136,7 @@
   Trigger: An edit imports a module marked obsolete.
   Owner: handover
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:33,47,127,213,220 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:33,47,127,213,220 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/>).
 
 ## Verification And Honesty
 
@@ -153,7 +153,7 @@
   Trigger: A session start finds another live session on the same ID.
   Owner: handover
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:31,41,69 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:31,41,69 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
 
 ## Agent Habits
 
@@ -170,7 +170,7 @@
   Trigger: A change cites a comment as its only evidence.
   Owner: handover
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:129 (url: https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:129 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/>).
 
 ## Context Leakage
 
@@ -187,7 +187,7 @@
   Trigger: The agent claims a reread and the output contradicts the document.
   Owner: handover
   Status: open. Basis: reported, inferred.
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:451 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:451 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
 
 ## Context Loss And Handover
 
@@ -355,7 +355,7 @@
   Trigger: a handoff with no pinned versions while the project pins any.
   Owner: handover.
   Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:230; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:236; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:240 (url: https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/).
+  Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:230; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:236; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:240 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/>).
 
 - [ ] **RISK-142** Opus 5.5 quotes a user verbatim as a "ruling" in a file, then paraphrases it narrower.
   - Category: agent fault
@@ -370,7 +370,7 @@
   - Trigger: A rule file entry that differs from the user's words; the word "ruling" in a reply or plan file.
   - Owner: handover
   - Status: open.
-  - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:110; external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:106 (url: https://www.reddit.com/r/ClaudeAI/comments/1xrpkdt/what_even_is_the_point_of_working_rules_lol/); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported, one Reddit post).
+  - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:110; external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:106 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrpkdt/what_even_is_the_point_of_working_rules_lol/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported, one Reddit post).
 
 - [ ] **RISK-143** Notes and rules that pile into one file contradict each other and the model cannot know which one the user still means.
   Category: agent fault
@@ -385,7 +385,7 @@
   Trigger: Two rules on one subject in one file
   Owner: handover
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs4oh8-how-we-stopped-getting-generic-o-20261110T094228Z.md:59; external/2026-11-10/reddit.com-r-claudeai-comments-1xs4oh8-how-we-stopped-getting-generic-o-20261110T094228Z.md:71 (url: https://www.reddit.com/r/ClaudeAI/comments/1xs4oh8/how_we_stopped_getting_generic_output_from_claude/); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:317; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:319 (url: https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs4oh8-how-we-stopped-getting-generic-o-20261110T094228Z.md:59; external/2026-11-10/reddit.com-r-claudeai-comments-1xs4oh8-how-we-stopped-getting-generic-o-20261110T094228Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs4oh8/how_we_stopped_getting_generic_output_from_claude/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:317; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:319 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>).
 
 - [ ] **RISK-144** An agent accepts another agent's feedback-queue recommendations wholesale and one silently reverses a settled decision.
   Category: agent fault
@@ -400,7 +400,7 @@
   Trigger: A queue item that touches a decision
   Owner: handover
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:56; external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:60 (url: https://www.reddit.com/r/ClaudeCode/comments/1xryuvz/how_often_do_you_face_decisions_getting_lost_in/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:56; external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:60 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xryuvz/how_often_do_you_face_decisions_getting_lost_in/>).
 
 ## Safety Classifier False Positives
 
@@ -418,7 +418,7 @@
   Owner: handover.
   Status: open.
   Basis: reported (one commenter).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgtghe-claude-code-reverseengineered-th-20261028T060614Z.md:165 (url: https://www.reddit.com/r/ClaudeAI/comments/1xgtghe/claude_code_reverseengineered_the_xbox_360_kernel/)
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgtghe-claude-code-reverseengineered-th-20261028T060614Z.md:165 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgtghe/claude_code_reverseengineered_the_xbox_360_kernel/>)
 
 ## Memory Absolutism
 
@@ -435,7 +435,7 @@
   Trigger: A memory entry with "never" or "always" from a single correction.
   Owner: handover.
   Status: open.
-  Source: external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:57; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:85 (url: https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/)
+  Source: external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:57; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:85 (url: <https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/>)
 
 ## Stale Handoff Base
 
@@ -452,7 +452,7 @@
   - Trigger: a handover file written; a handoff cut from a clone of HEAD while the working tree is dirty, or a handoff that names git state with no git call in the turn.
   - Owner: handover
   - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; observed in transcript, 2026-11-16; external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:102 (url: https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:65 (reported, one user).
+  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; observed in transcript, 2026-11-16; external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:102 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:65 (reported, one user).
 
 ## Skipped Notes Index
 
@@ -469,7 +469,7 @@
   Trigger: A pointer in the rules file to notes with no command behind it.
   Owner: handover.
   Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xalih0-for-those-running-claude-code-on-20261102T084737Z.md:49 (url: https://www.reddit.com/r/ClaudeAI/comments/1xalih0/for_those_running_claude_code_on_large_monorepos/)
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xalih0-for-those-running-claude-code-on-20261102T084737Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xalih0/for_those_running_claude_code_on_large_monorepos/>)
 
 ## Concurrent Sessions Share Nothing
 
@@ -486,7 +486,7 @@
   Trigger: Two sessions open on one project.
   Owner: handover.
   Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xkv0oo-the-3-kinds-of-claude-forgot-onl-20261102T083407Z.md:61; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xkv0oo-the-3-kinds-of-claude-forgot-onl-20261102T083407Z.md:63 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkv0oo/the_3_kinds_of_claude_forgot_only_the_first_is_a/)
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xkv0oo-the-3-kinds-of-claude-forgot-onl-20261102T083407Z.md:61; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xkv0oo-the-3-kinds-of-claude-forgot-onl-20261102T083407Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkv0oo/the_3_kinds_of_claude_forgot_only_the_first_is_a/>)
 
 ## Compaction And Memory
 
@@ -503,7 +503,7 @@
   - Trigger: A decision from before the last compaction is absent from context; any compaction in a session with logged decisions.
   - Owner: handover
   - Status: open. Basis: measured by poster (one session); 1.3% per pass reported, one user.
-  - Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:50; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:300; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:64 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:143; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:57.
+  - Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:50; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:300; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:64 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:143; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:57.
 
 - [ ] **RISK-151** Post-compaction continuation text steamrolls plan-then-wait.
   - Category: instruction loss.
@@ -518,7 +518,7 @@
   - Trigger: a compaction while a plan awaits approval.
   - Owner: handover
   - Status: open.
-  - Source: external/2026-10-12/export-How do i stop it writing edits ahead while waiting for action-.jsonl:6 (url: https://www.reddit.com/r/ClaudeCode/comments/1x1htas/how_do_i_stop_it_writing_edits_ahead_while/) (reported). The `/clear` and context-estimate details: not located; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:7 (url: https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids/; weak match, the quoted continuation wording was not located in the export); chunk-4h798pp0.js@2550714 (claude 2.1.326 binary, searched 2026-11-17); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:11 (reported); external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:1 (url: https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/).
+  - Source: external/2026-10-12/export-How do i stop it writing edits ahead while waiting for action-.jsonl:6 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x1htas/how_do_i_stop_it_writing_edits_ahead_while/>) (reported). The `/clear` and context-estimate details: not located; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:7 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids/>; weak match, the quoted continuation wording was not located in the export); chunk-4h798pp0.js@2550714 (claude 2.1.326 binary, searched 2026-11-17); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:11 (reported); external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/>).
 
 - [ ] **RISK-152** An oversized memory file burns the weekly limit.
   - Category: cost.
@@ -533,7 +533,7 @@
   - Trigger: A memory file over a size limit; a memory file over 200 lines or about 100 KB.
   - Owner: handover
   - Status: open.
-  - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:33; external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:35; external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:45; external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:33 (url: https://www.reddit.com/r/ClaudeAI/comments/1xtwsa2/memory_can_silently_burn_your_usage_suggestion/); external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:269 (26 to 11).
+  - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:33; external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:35; external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:45; external/2026-11-13/reddit.com-r-claudeai-comments-1xtwsa2-memory-can-silently-burn-your-us-20261111T234836Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtwsa2/memory_can_silently_burn_your_usage_suggestion/>); external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:269 (26 to 11).
 
 ## Ungrouped
 

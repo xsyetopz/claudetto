@@ -3,7 +3,7 @@
 Index of the ISO 31000 risk register, one file per owning block.
 
 | Owner | Risks | IDs |
-|---|---|---|
+| --- | --- | --- |
 | [`kernel`](../risk-register/kernel.md) | 29 | RISK-001 to RISK-029 |
 | [`guards`](../risk-register/guards.md) | 89 | RISK-030 to RISK-118 |
 | [`handover`](../risk-register/handover.md) | 39 | RISK-119 to RISK-157 |

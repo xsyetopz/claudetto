@@ -4,7 +4,7 @@
 
 - [ ] **CTX-524** Git Bash heredocs collapse double backslashes before Python sees them, so a Windows path with \t silently becomes a tab; the browser upload tool caps files at 16 MB, so render under that instead of retrying; a quoted rate applies to its job only.
   Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:66 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:66 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
 
 ## Machine, Shell, And Disk
 
@@ -78,7 +78,7 @@
 - [ ] **CTX-540** Silent-turn reminder text: env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` > server flag `tengu_hushed_lark_text` > default (2.1.319, read). 2.1.326: env present (also `_REMINDER` triBool, `_SECONDS`, `_TURNS`), and the gates `tengu_hushed_lark` and `tengu_hushed_lark_text` are present, the text default being "The user hasn't heard from you in a while. As you continue, keep them updated when there's something to tell — a finding, a change of plan." (cc-inspect `surface` env and gate, 2026-11-17); the order env over flag over default is unverified in 2.1.326. `DISABLE_TELEMETRY=1` makes `cc-plugin-telemetry` unavailable (read 2.1.318): unverified in 2.1.326, where the release notes say a command turned off by an environment variable such as `DISABLE_TELEMETRY` now says why instead of "Unknown command". `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` also stops updates and refuses `$.http.fetch` with `auth`: env (bool) and `$.http.fetch` present in 2.1.326, the refusal unverified in 2.1.326. On 2.1.325 `CLAUDE_CODE_SILENT_TURN_REMINDER:"0"` and `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` are not alternatives (`chunk-wqb2b4v0.js:3789361`; `$defaults` semantics in `DZn`, `chunk-sk365049.js:435`). On 2.1.325 `CLAUDE_CODE_SILENT_TURN_REMINDER` is read through `LR("silent_turn_reminder", ..., env)`, which returns the env override.
   Acceptance: the code at the offsets matches. Verification: inspection. The binary holds the call. Verification: inspection.
   Basis: cited. Status: partial at 088a227c.
-  Source: openspec/specs/surface-trim/spec.md:337; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388; openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:129; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes); `chunk-wqb2b4v0.js:3789361` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); claude 2.1.325 binary (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Source: openspec/specs/surface-trim/spec.md:337; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388; openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:129; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); `chunk-wqb2b4v0.js:3789361` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); claude 2.1.325 binary (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
 - [ ] **CTX-541** Engine inputs (cited, 2.1.319 source): `/restart` needs GrowthBook flag `tengu_fancy_wand` (default off), an interactive terminal, and macOS or Linux (unverified); on Linux sandbox `allowWrite` -> `--bind`, `denyWrite` -> `--ro-bind`, `denyRead` -> `--tmpfs` or `--ro-bind /dev/null`; `allowMachLookup` and `allowLocalBinding` are macOS-only; `excludedCommands` matches before the wrapper (no Linux run).
   Basis: cited. Status: unchecked (engine behaviour, no baseline code to check).
@@ -100,35 +100,35 @@
 
 - [ ] **CTX-544** A sparse disk image (Docker.raw) showed 60 GB apparent size but 14 GB actual disk usage, so a cleanup agent must measure actual usage (du), not apparent size.
   Basis: reported (author).
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xd77e8-agentic-disk-cleanup-workflow-20261024T061644Z.md:38 (url: https://www.reddit.com/r/ClaudeAI/comments/1xd77e8/agentic_disk_cleanup_workflow/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xd77e8-agentic-disk-cleanup-workflow-20261024T061644Z.md:38 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xd77e8/agentic_disk_cleanup_workflow/>).
 
 - [ ] **CTX-545** Semgrep in a commit gate took 26 s on one file because 11 leftover worktrees held 678k files; it took 0.7 s after cleanup.
   Basis: measured, one user.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgsku3-i-parsed-34-gb-of-my-claude-code-20261028T061008Z.md:35 (url: https://www.reddit.com/r/ClaudeAI/comments/1xgsku3/i_parsed_34_gb_of_my_claude_code_transcripts_20/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgsku3-i-parsed-34-gb-of-my-claude-code-20261028T061008Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgsku3/i_parsed_34_gb_of_my_claude_code_transcripts_20/>).
 
 - [ ] **CTX-546** An OS audit rule (Linux auditd on execve under a dedicated claude user) logs every command and the agent cannot edit it without sudo, but it sees only execs, not file reads or MCP calls.
   Basis: reported (author reply).
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:133 (url: https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:133 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/>).
 
 - [ ] **CTX-547** With --permission-mode acceptEdits, an explicit allow of bare Edit or Write lets the model edit other checkouts by absolute path; acceptEdits alone confines to the working folder; allow find, bash, npx, and npm run anything, so leave them out; Read-tool rules are needed because the sandbox does not cover Read.
   Basis: reported.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:135 (url: https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [ ] **CTX-548** A .env deny pattern under the home folder missed worktrees outside home, letting a model-written script read .env; deny under the run's own checkout too; allow localhost binding only if tests start a server.
   Basis: reported.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:136 (url: https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:136 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [ ] **CTX-549** In an unattended claude -p run, Claude Code refuses edits under .claude/ (skills, hooks, settings) and asks for an approval nobody gives; the executor refuses such briefs up front and routes them to the cloud.
   Basis: reported.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:258 (url: https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:258 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [ ] **CTX-550** Worktrees share the object store, but node_modules and build output are untracked, so each worktree keeps its own copy; a hardlinking package manager with a shared store shrinks it.
   Basis: reported. Status: not applicable (outside fact).
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:79,81 (url: https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:79,81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
 
 - [ ] **CTX-551** gitignore only affects what Git tracks; it neither removes files from the working directory nor stops an agent reading them, so raw material needs an archive outside the default reading path.
   Basis: reported, two commenters. Status: not applicable (outside fact).
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:88 (url: https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:88 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/>).
 
 ## Machine, Shell, And Disk
 

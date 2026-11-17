@@ -5,7 +5,7 @@ The plan for claudetto on Claude Code 2.1.326. Four standards split it; each fil
 ## Layout
 
 | Path | Standard | Answers |
-|---|---|---|
+| --- | --- | --- |
 | `prd/README.md` | ISO/IEC/IEEE 29148:2018 clauses 9.6.2-9.6.9 | What are we building? Purpose, scope in and out, Claude Code interfaces, users, limits, assumptions, deferred work |
 | `prd/<block>.md` | ISO/IEC/IEEE 29148:2018 clauses 9.6.10-9.6.12 | What counts as success? One requirement per item, with its acceptance check |
 | `arc42/01_introduction_and_goals.md` | arc42 9.1 section 1 | Requirements overview (links to `prd/`), top quality goals, stakeholders |
@@ -31,7 +31,7 @@ An arc42 section file over 300 lines becomes a directory of the same name with a
 `<block>` is one of these eleven, taken from the baseline `plugins/` tree at `088a227c`:
 
 | Block | Baseline parts |
-|---|---|
+| --- | --- |
 | `kernel` | `hooks/kernel/` |
 | `guards` | `features/protected`, `secrets`, `repeat`, `line-file`, `web`, `temp-cleanup`, `hygiene`, `bin/claudetto-hygiene` |
 | `handover` | `features/compaction`, `memory`, `scripts/pre-compact.ts`, `scripts/session-start.ts` |
@@ -81,7 +81,7 @@ Each risk carries the fields: Category, Cause, Event, Consequence, Likelihood, I
 Each item names every source it rests on, in one of these forms:
 
 | Source | Form |
-|---|---|
+| --- | --- |
 | Dossier or Reddit export | `external/<path>:<line>`, plus the thread URL from the export header |
 | Deleted OpenSpec | `openspec/<path>:<line>` at `088a227c^` |
 | Baseline code | `plugins/<path>:<line>` at `088a227c` |
@@ -103,7 +103,7 @@ No letter keys such as `Src: C:86`.
 ## Sources Audited
 
 | Source | Count | Coverage |
-|---|---|---|
+| --- | --- | --- |
 | Old curation plan, `plans/rebuild-curation.md@0e987414` | 1,074 checkbox items | Each item maps to an ID or a ledger outcome: 1,074 of 1,074. |
 | Gap lines from the `external/` and `openspec/` sweep | 1,411 lines | 1,252 routed, 143 merged into another item, 16 dropped with a reason. |
 | Deleted OpenSpec, `openspec/` at `088a227c^` | 1,388 files | Read through the old curation plan and the gap sweep. |

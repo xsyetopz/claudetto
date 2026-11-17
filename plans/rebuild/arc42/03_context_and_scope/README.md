@@ -3,7 +3,7 @@
 arc42 section 3. One file per subsection.
 
 | Subsection | Items |
-|---|---|
+| --- | --- |
 | [settings](settings.md) | 22 |
 | [subagents](subagents.md) | 61 |
 | [sandbox](sandbox.md) | 21 |

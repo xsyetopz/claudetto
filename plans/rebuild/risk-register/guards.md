@@ -103,7 +103,7 @@
   Actions: forbid the default temp dir and give a layout for where files and temp space go; tell the agent to check for junk periodically; a RAM-disk /tmp as a natural cap; run on a spare machine or in a container (all reported cures); cap artifacts and worktrees per run and prune at a finished unit of work. Size budget: none stated.
   Trigger: free disk space falls a worktree count grows, or disk or file count grows during an unattended run.
   Owner: guards. Status: open.
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:526,761,763 (url: https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/); external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:33; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:37; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:47; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:123; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:128; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:132; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:136; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:150; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:158 (url: https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/).
+  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:526,761,763 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>); external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:33; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:37; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:47; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:123; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:128; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:132; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:136; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:150; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:158 (url: <https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/>).
 
 - [ ] **RISK-037** Hand-written shell parsers and swallowed errors let a destructive command through.
   Category: agent-built code.
@@ -160,7 +160,7 @@
   Trigger: A denied read is followed by a read of the same path through another tool, or an agent report of "no permission" is followed by a different command on the same target.
   Owner: guards
   Status: open
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/opus_55_just_shared_my_email_address/); external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:163; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:31,33,102; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:61,79,98 (url: https://www.reddit.com/r/aiagents/comments/1xqjioz/i_tested_14_coding_agents_against_their_own_rules/).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/opus_55_just_shared_my_email_address/>); external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:163; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:31,33,102; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:61,79,98 (url: <https://www.reddit.com/r/aiagents/comments/1xqjioz/i_tested_14_coding_agents_against_their_own_rules/>).
 
 - [ ] **RISK-041** An approval prompt is taken as the control and the logged approval was never seen by the user.
   Category: guards
@@ -175,7 +175,7 @@
   Trigger: A destructive command logs an approval with no matching user turn.
   Owner: guards
   Status: open
-  Source: external/2026-11-14/reddit.com-r-aiagents-comments-1xv9vw1-update-a-user-says-claude-code-m-20261113T195018Z.md:29,31,41,43 (url: https://www.reddit.com/r/aiagents/comments/1xv9vw1/update_a_user_says_claude_code_moved_11gb_in/).
+  Source: external/2026-11-14/reddit.com-r-aiagents-comments-1xv9vw1-update-a-user-says-claude-code-m-20261113T195018Z.md:29,31,41,43 (url: <https://www.reddit.com/r/aiagents/comments/1xv9vw1/update_a_user_says_claude_code_moved_11gb_in/>).
 
 - [ ] **RISK-042** A foreign-package-manager regex denies a read-only script and gives two verdicts for one text.
   Category: guards, regex.
@@ -184,7 +184,7 @@
   Consequence: a wasted turn and a wrong block.
   Likelihood: 3 (reproduced once).
   Impact: 2.
-  Existing controls: cure: delete the regex and write permissions.deny Bash(npm *) rules, since the engine matches each parsed subcommand (probe with Bash(cowsay *): quoted forms ran; bare, env-prefixed, chained, and piped forms were denied). This matches the decision of no regex Stop check (user decision, 2026-11-16).
+  Existing controls: cure: delete the regex and write permissions.deny Bash(npm *) rules, since the engine matches each parsed subcommand (probe with Bash(cowsay*): quoted forms ran; bare, env-prefixed, chained, and piped forms were denied). This matches the decision of no regex Stop check (user decision, 2026-11-16).
   Response: avoid.
   Actions: delete the regex; add the deny rules.
   Trigger: a denial of a command that only names npm in a string.
@@ -252,7 +252,7 @@
   Trigger: A Bash call runs `rg` with -r.
   Owner: guards
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:117 (url: https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:117 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>).
 
 - [ ] **RISK-047** A browser agent types into an unfocused box and its keystrokes hit site shortcuts.
   Category: guards
@@ -267,7 +267,7 @@
   Trigger: A typing step with no focus check.
   Owner: guards
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:71,83,85 (url: https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:71,83,85 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/>).
 
 - [ ] **RISK-048** A bare `-j` build flag exhausts the machine.
   Category: guards
@@ -282,7 +282,7 @@
   Trigger: A build command with -j and no number.
   Owner: guards
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:31,55 (url: https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:31,55 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/>).
 
 - [ ] **RISK-049** In-session search skips gitignored files and "found nothing" is wrong.
   Category: guards
@@ -297,7 +297,7 @@
   Trigger: A deletion justified by "no references found".
   Owner: guards
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:37 (url: https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:37 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/>).
 
 ## Credential Leaks
 
@@ -314,7 +314,7 @@
   Trigger: The agent reads a token file outside its job.
   Owner: guards
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:73 (url: https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/).
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:73 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/>).
 
 - [ ] **RISK-051** Bulk run to an outside model sends a secret.
   Category: agent
@@ -329,7 +329,7 @@
   Trigger: An item bound for an outside model that matches a credential pattern.
   Owner: guards
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:102 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:102 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
 
 ## Auto-Mode Classifier Rulings
 
@@ -389,7 +389,7 @@
   Actions: kill by recorded pid only; locks; memory guard; gate deny; halt-the-loop rule; verify with the process list; cap spend externally.
   Trigger: `pkill -f`, an unbounded `while`/`until` loop, or a second heavy run.
   Owner: guards. Status: partial at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:97; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:317; external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/); plugins/claudetto/hooks/features/setup/command-rules.ts:75@088a227c. Unlocated: the 2026-11-11 freeze, 299 triple-polls, 32 min loop.
+  Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:97; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:317; external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/>); plugins/claudetto/hooks/features/setup/command-rules.ts:75@088a227c. Unlocated: the 2026-11-11 freeze, 299 triple-polls, 32 min loop.
 
 - [ ] **RISK-056** Runaway background work: a process outlives its turn and spends on.
   - Category: process.
@@ -404,7 +404,7 @@
   - Trigger: a background command with no `timeout`; a loop with an empty body or a monitor on `tail -F` without an end; a background command with no end condition; a shell read or append, an unbounded loop, or a `!` line with a slash command.
   - Owner: guards
   - Status: open.
-  - Source: external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:85; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; external/2026-10-07/export-I benchmarked my own guardrail pack. It made no difference. Posting it anyway.jsonl:8 (url: https://www.reddit.com/r/ClaudeCode/comments/1wzrhae/i_benchmarked_my_own_guardrail_pack_it_made_no/; the 0-crossings counter-evidence); external/export--clear vs -compact.jsonl:59; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:113 (reported, one report); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
+  - Source: external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:85; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; external/2026-10-07/export-I benchmarked my own guardrail pack. It made no difference. Posting it anyway.jsonl:8 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wzrhae/i_benchmarked_my_own_guardrail_pack_it_made_no/>; the 0-crossings counter-evidence); external/export--clear vs -compact.jsonl:59; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:113 (reported, one report); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 ## Reply Style And Sycophancy
 
@@ -434,7 +434,7 @@
   Actions: Scope edits to the task and report other defects by place only; classify the message first; list the files the agent may touch; never mix a refactor and a permission change in one diff; CI-only deploy; a changed-files list diffed against task-named files at Stop; a hook asks on an out-of-scope write; a sandbox write allowlist plus protectedPaths denies; a PreToolUse deny on an unscoped formatter and git add -A or .; a subagent brief naming files and acceptance checks plus a Stop check on diff files outside the list; A rule that the agent stays inside the task: it names an unrelated finding in its report and does not act on it, and it states a cause only after a check that the task covers; claudetto shall make the agent report a missing tool and keep to the task, unless an install is the task.
   Trigger: A diff touches a file the task did not name; An edit or a check with no link to the user's request; an install or setup command outside the task.
   Owner: guards. Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:53 (SNARE 2605.28122); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:102; external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:39 (url: https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/) (reported); external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:37; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:569; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:588, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1328, reported, user, 2026-11-09
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:53 (SNARE 2605.28122); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:102; external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>) (reported); external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:37; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:569; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:588, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1328, reported, user, 2026-11-09
 
 - [ ] **RISK-059** Handoff command defects: a command handed to the user cannot run or cannot take effect.
   Category: Product.
@@ -531,7 +531,7 @@
   - Trigger: A retry follows a timeout with no check; An identical Bash call runs a third time.
   - Owner: guards
   - Status: open.
-  - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:27,53,89; external/please-use-me-often/swe-worst-practices.md:130; external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:41 (url: https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/) (reported, "never retry blind"). Not located: the 7 of 8 screenshot timeouts.
+  - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:27,53,89; external/please-use-me-often/swe-worst-practices.md:130; external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/>) (reported, "never retry blind"). Not located: the 7 of 8 screenshot timeouts.
 
 - [ ] **RISK-066** Never-commit rule violated after a one-time authorization
   Category: guards.
@@ -551,7 +551,7 @@
 - [ ] **RISK-067** Destructive repair and scope escalation, including a disk-cleanup prompt that is no enforced control.
   Category: Agent behaviour.
   Cause: Parallelism in one tree plus broad credentials; prompt rules fade and the shared tree has no undo; a cleanup prompt is not an enforced control; over-eager tidying; an empty variable in rm -rf "$d"/*; a quoting slip such as `/dir/ *` makes `rm` delete everything.
-  Event: Shared-tree git stash (81 files restored wrong), soft reset to FETCH_HEAD, forced pushes, edits to the user's .claude or AGENTS.md via Bash, an overwritten baseline, a folder moved to another drive and called "safe elsewhere" with no destination, production data deleted with an over-scoped token (three incidents), a whole git repo copied, disks filled to about 1 TB by uncleaned test folders, an unlisted openspec/ vanished with 1,377 staged deletions (cause unproven), `rm -rf` attempted 117 times in 2 months despite a never-list, a quoting slip (/dir/ *) deleting everything; `rm` runs with spaces or globs that widen the target.
+  Event: Shared-tree git stash (81 files restored wrong), soft reset to FETCH_HEAD, forced pushes, edits to the user's .claude or AGENTS.md via Bash, an overwritten baseline, a folder moved to another drive and called "safe elsewhere" with no destination, production data deleted with an over-scoped token (three incidents), a whole git repo copied, disks filled to about 1 TB by uncleaned test folders, an unlisted openspec/ vanished with 1,377 staged deletions (cause unproven), `rm -rf` attempted 117 times in 2 months despite a never-list, a quoting slip (/dir/*) deleting everything; `rm` runs with spaces or globs that widen the target.
   Consequence: User work is lost or a secret or data is destroyed; data destroyed.
   Likelihood: 4. Impact: 5.
   Existing controls: plugins/claudetto/hooks/features/protected at 088a227c (partial).
@@ -709,7 +709,7 @@
   Trigger: A listed-docs reply with missing items
   Owner: guards
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:68; external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:70 (url: https://www.reddit.com/r/ClaudeCode/comments/1xryuvz/how_often_do_you_face_decisions_getting_lost_in/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:68; external/2026-11-10/reddit.com-r-claudecode-comments-1xryuvz-how-often-do-you-face-decision-20261110T095952Z.md:70 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xryuvz/how_often_do_you_face_decisions_getting_lost_in/>).
 
 ## Destructive Actions
 
@@ -725,7 +725,7 @@
   Trigger: a work folder that is not the repository path.
   Owner: guards.
   Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:63; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:73; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:75 (url: https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:63; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:73; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:75 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/>).
 
 - [ ] **RISK-079** A run in a worktree is handed the main repo's auto-memory.
   Category: product behaviour.
@@ -739,7 +739,7 @@
   Trigger: a worktree run that touches a path outside its checkout.
   Owner: guards.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:132 (url: https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:132 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [ ] **RISK-080** Agents delete files they did not create (once 110).
   Category: agent fault
@@ -754,7 +754,7 @@
   Trigger: A write outside the agent's clone
   Owner: guards
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:39; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:75 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:39; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 - [ ] **RISK-081** Classifier Gives Up On Authorized Delete.
   Category: Agent behaviour.
@@ -769,7 +769,7 @@
   Owner: guards.
   Status: open.
   Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:186 (url: https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:186 (url: <https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/>).
 
 - [ ] **RISK-082** Delete Through A Junction.
   Category: Agent behaviour (Windows).
@@ -784,7 +784,7 @@
   Owner: guards.
   Status: open.
   Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:190 (url: https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:190 (url: <https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/>).
 
 - [ ] **RISK-083** Fused Command.
   Category: Agent behaviour.
@@ -799,7 +799,7 @@
   Owner: guards.
   Status: open.
   Basis: reported (anecdote).
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:212 (url: https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:212 (url: <https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/>).
 
 - [ ] **RISK-084** Cleanup Of A Live Resource.
   Category: Agent behaviour.
@@ -814,7 +814,7 @@
   Owner: guards.
   Status: open.
   Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:29 (url: https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
 
 ## Environment, Accounts, And Marketplace
 
@@ -831,7 +831,7 @@
   Trigger: A failed command chain on PowerShell
   Owner: guards
   Status: open
-  Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:43; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:45 (url: https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/).
+  Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:43; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:45 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>).
 
 - [ ] **RISK-086** Identity Leak Into Requests And Commits.
   Category: Agent behaviour.
@@ -846,7 +846,7 @@
   Owner: guards.
   Status: open.
   Basis: reported, n>=6 anecdotes plus one session, no measurement.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:53,57,177,556,609,309,337,349,776 (url: https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:35,43,466,534 (url: https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:53,57,177,556,609,309,337,349,776 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:35,43,466,534 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>).
 
 - [ ] **RISK-087** Wrong Account In Scheduled Run.
   Category: Agent behaviour.
@@ -861,7 +861,7 @@
   Owner: guards.
   Status: open.
   Basis: reported, n=1.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:293 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:293 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
 ## Search Query Leak
 
@@ -877,7 +877,7 @@
   Trigger: A web search made from private documents.
   Owner: guards. Status: open.
   Basis: reported, one blog cited.
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:846 (url: https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3)
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:846 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>)
 
 ## Worktrees In Temp
 
@@ -894,7 +894,7 @@
   Trigger: A worktree path under /tmp, or a missing worktree after a reboot.
   Owner: guards.
   Status: open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:405; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:407; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:415 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/); external/2026-10-31/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261031T084047Z.md:162 (url: https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/); external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:49 (url: https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/)
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:405; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:407; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:415 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>); external/2026-10-31/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261031T084047Z.md:162 (url: <https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/>)
 
 ## Refactor Hides A Permission Change
 
@@ -911,7 +911,7 @@
   Trigger: A diff that touches authorization code and renames symbols together.
   Owner: guards.
   Status: open.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:31 (url: https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/)
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>)
 
 ## Agent Edits Its Own Gate
 
@@ -928,7 +928,7 @@
   Trigger: A diff to a hook file or a settings file in an agent session.
   Owner: guards.
   Status: open.
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:31; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:35; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:69; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:81; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:83; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:95; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:97; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:103 (url: https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/)
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:31; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:35; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:69; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:81; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:83; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:95; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:97; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:103 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/>)
 
 ## Agent Faults: W5-1 to W5-18
 
@@ -980,7 +980,7 @@
   - Trigger: A rejected or interrupted write is followed by a retry with no Read; A write tool result says rejected or interrupted.
   - Owner: guards
   - Status: open (missing at 088a227c).
-  - Source: unresolved: no source states that a rejected write had already landed; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-dezyqkh5.js@1277 (claude 2.1.326 binary); https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  - Source: unresolved: no source states that a rejected write had already landed; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-dezyqkh5.js@1277 (claude 2.1.326 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 ## Safeguards And Guards
 
@@ -1029,7 +1029,7 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The part "restored sections on an unchecked claim" is unresolved: no source line holds it.
 
 - [ ] **RISK-100** The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
-  Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way. 
+  Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
   Consequence: an extra turn. Likelihood: 4. Impact: 1. Existing controls: none; no documented setting turns the shadow off.
   Response: mitigate. Actions: record the userland once (grep is ugrep, BSD tools); use `perl` for context windows.
   Trigger: "exceeds complexity limits". Owner: guards. Status: open.

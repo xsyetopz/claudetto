@@ -47,7 +47,7 @@
   Actions: an instruction saying the agent need not obey that part of the system prompt got around it (one user; unverified in 2.1.326).
   Trigger: a reply is only "continue?".
   Owner: kernel. Status: open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:170 (url: https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:170 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
 
 - [ ] **RISK-004** Gate times out on every tool while the ledger read runs.
   - Category: product defect.
@@ -233,7 +233,7 @@
   Trigger: a hook text inside a nested run.
   Owner: kernel.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [ ] **RISK-016** The agent writes rules and says it never looked at them; hooks and agents built to supervise it only observe.
   Category: agent fault
@@ -248,7 +248,7 @@
   Trigger: A hook that only logs or injects prose
   Owner: kernel
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:181; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:183; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:177 (url: https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:181; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:183; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:177 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>).
 
 ## Environment, Accounts, And Marketplace
 
@@ -264,7 +264,7 @@
   Trigger: a hook sound or work with no agent in the monitor.
   Owner: kernel.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:98 (url: https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:98 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/>).
 
 - [ ] **RISK-018** Quiet Scheduled Failure.
   Category: Agent behaviour.
@@ -279,7 +279,7 @@
   Owner: kernel.
   Status: open.
   Basis: reported.
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:79,107,111 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:79,107,111 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 ## Long Run Stops On Error
 
@@ -296,7 +296,7 @@
   Trigger: A session idle after an API error with work still open.
   Owner: kernel.
   Status: open.
-  Source: external/2026-10-30/reddit.com-r-anthropic-comments-1xihom1-i-am-so-angry-against-anthropic-20261029T115803Z.md:49 (url: https://www.reddit.com/r/Anthropic/comments/1xihom1/i_am_so_angry_against_anthropic_right_now_how/)
+  Source: external/2026-10-30/reddit.com-r-anthropic-comments-1xihom1-i-am-so-angry-against-anthropic-20261029T115803Z.md:49 (url: <https://www.reddit.com/r/Anthropic/comments/1xihom1/i_am_so_angry_against_anthropic_right_now_how/>)
 
 ## Safeguards And Guards
 
@@ -313,7 +313,7 @@
   - Trigger: a canary read that is not denied; A hook file with a wrong `type` or key case loads; a deny rule bypassed by an alternate command form (a permission-denied report followed by a different command for the same effect), a hook error with exit 1, or a new hook.
   - Owner: kernel
   - Status: open. Reported on 2.1.312 with 10 hooks.
-  - Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19 (the judge verdict there is "rejected" for the claim as a claudetto fact; the exit-code rule itself is the documented behaviour); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:28; not located: the 2.1.305 unknown-type line and the PostToolUse exit-2 line; https://github.com/anthropics/claude-code/releases/tag/v2.1.326; external/2026-10-17/export-Your deny rule for git push doesn't stop -git -C . push-. Four ways Claude Code guards silently do n.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1x5tbps/); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:40; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:69; external/2026-11-03/reddit.com-r-claudeai-comments-1xjaly2-tested-10-claude-code-hooks-in-a-20261103T145135Z.md:67 (url: https://www.reddit.com/r/ClaudeAI/comments/1xjaly2/tested_10_claude_code_hooks_in_a_throwaway/); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3) (release notes).
+  - Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19 (the judge verdict there is "rejected" for the claim as a claudetto fact; the exit-code rule itself is the documented behaviour); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:28; not located: the 2.1.305 unknown-type line and the PostToolUse exit-2 line; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326>; external/2026-10-17/export-Your deny rule for git push doesn't stop -git -C . push-. Four ways Claude Code guards silently do n.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5tbps/>); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:40; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:69; external/2026-11-03/reddit.com-r-claudeai-comments-1xjaly2-tested-10-claude-code-hooks-in-a-20261103T145135Z.md:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjaly2/tested_10_claude_code_hooks_in_a_throwaway/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>) (release notes).
 
 ## Guards And Sandbox
 

@@ -31,7 +31,7 @@
   - Trigger: A verifier that agrees every time; a Fable session or a Fable-planned task.
   - Owner: verification
   - Status: open.
-  - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:132 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/); openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:23; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:28; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:30; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:35 (reported).
+  - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:132 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>); openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:23; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:28; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:30; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:35 (reported).
 
 ## Guards
 
@@ -95,7 +95,7 @@
   Trigger: A pass line with no path.
   Owner: verification
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:83 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/>).
 
 - [ ] **RISK-428** A claimed bug fix ships on a test that never failed before the fix, or on a green exit code that hides a failure.
   Category: verification
@@ -110,7 +110,7 @@
   Trigger: A phase closes with only the builder's tests.
   Owner: verification
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:33,35,101,119 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:33,35,101,119 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
 
 - [ ] **RISK-429** Executor test that skips the delegation path.
   Category: agent
@@ -125,7 +125,7 @@
   Trigger: A model verdict from a /clear-and-paste test.
   Owner: verification
   Status: open. Basis: reported, anecdote from a commenter.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:219 (url: https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:219 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
 
 - [ ] **RISK-430** Agent is sure without checking.
   Category: agent
@@ -140,7 +140,7 @@
   Trigger: A date or count written from memory.
   Owner: verification
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:42 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:42 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
 
 - [ ] **RISK-431** Agent asserts from a directory name and answers "you may be right".
   Category: agent
@@ -155,7 +155,7 @@
   Trigger: A challenged reply with no measurement.
   Owner: verification
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:400 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:400 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
 
 - [ ] **RISK-432** A lockfile sync swaps the pytest version and the grader marks a passing run unresolved.
   Category: tooling
@@ -200,7 +200,7 @@
   - Trigger: A commit changes a grader and a prompt after a failing paid run; an edit under tests, baselines, or graders in a session that ran a failing check; a grader, scaffold, fixture, or acceptance-list edit in the same change or session as a plugin text edit or a failed case; a grader, scaffold, or fixture edit in the same change as a plugin text edit; a diff to a grader, scaffold, or acceptance list in the same session as a failed case; a diff of a grader, scaffold, or task after its first run.
   - Owner: verification
   - Status: open.
-  - Source: external/2026-11-16/agent-conduct-dossier-20261116.md:28,57; git commit d21c58d5 (2026-11-16); external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:93; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:94; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:97; external/please-use-me-often/agent-failure-dossier/judged/other.jsonl:39; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:47 (url: https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332. The 6%/3%, 30%/23%, and fix-the-test 8/8 figures: not located by grep; they rest on the old plan item only; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7350 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480, :7424, :7889; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (handoff lists `limit-met`, `fact-first`, and the `NOTES.md` rewrite) (reported, user, 2026-11-16).
+  - Source: external/2026-11-16/agent-conduct-dossier-20261116.md:28,57; git commit d21c58d5 (2026-11-16); external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:93; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:94; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:97; external/please-use-me-often/agent-failure-dossier/judged/other.jsonl:39; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/>); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332. The 6%/3%, 30%/23%, and fix-the-test 8/8 figures: not located by grep; they rest on the old plan item only; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7350 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480, :7424, :7889; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (handoff lists `limit-met`, `fact-first`, and the `NOTES.md` rewrite) (reported, user, 2026-11-16).
 
 - [ ] **RISK-435** Guardrail probe adaptation: the agent routes a probe around the gate instead of reporting it.
   Category: verification.
@@ -228,7 +228,7 @@
   - Trigger: a done claim with no run of the real layer; A reply says done and the turn ran no check; A close or done claim has no recorded exit code; a report with no check command and result; A report says done with no named check; a done claim with no check after the last `Edit`.
   - Owner: verification
   - Status: open; no card view at 088a227c.
-  - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:25-33; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:38-39; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:40; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:42-44; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:46-47; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:49; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:29,31; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:31,55,56; external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:75,135 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/) (reported). Not located: the 49 tasks count; unresolved: no source line located for this claim; unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds the red-flag scan; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:50 (reported).
+  - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:25-33; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:38-39; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:40; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:42-44; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:46-47; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:49; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:29,31; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:31,55,56; external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:75,135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>) (reported). Not located: the 49 tasks count; unresolved: no source line located for this claim; unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds the red-flag scan; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:50 (reported).
 
 - [ ] **RISK-437** Skipped-part completion.
   Category: Agent behaviour.
@@ -297,7 +297,7 @@
   - Trigger: A claim about the workspace follows a turn with no read; a claim of approval with no quote from the user; a new schema or manifest names no standard.
   - Owner: verification
   - Status: open.
-  - Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:46; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:19; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/). Not located: the 45 and 55 thread counts, the "49% to 56%" correction; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:168; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:3349, reported, user, 2026-11-11.
+  - Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:46; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:19; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>). Not located: the 45 and 55 thread counts, the "49% to 56%" correction; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:168; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:3349, reported, user, 2026-11-11.
   - Conflict: Sycophancy and capitulation under pushback.
 
 - [ ] **RISK-442** Test and gate gaming
@@ -390,7 +390,7 @@
   Trigger: A test count that doubles in two weeks.
   Owner: verification
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xxate6-tldr-psa-superpowers-skill-w-20261116T045402Z.md:31,33,52,54 (url: https://www.reddit.com/r/ClaudeCoding/comments/1xxate6/tldr_psa_superpowers_skill_with_opus_ruined_my/).
+  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xxate6-tldr-psa-superpowers-skill-w-20261116T045402Z.md:31,33,52,54 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xxate6/tldr_psa_superpowers_skill_with_opus_ruined_my/>).
 
 ## Spec Drift
 
@@ -407,7 +407,7 @@
   Trigger: A second failed port attempt.
   Owner: verification
   Status: open. Basis: reported, 6 failed attempts by poster.
-  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:49; external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:51 (url: https://www.reddit.com/r/ClaudeAI/comments/1xbmm9l/claude_opus_having_a_hard_time_implementing_a_spec/).
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:49; external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbmm9l/claude_opus_having_a_hard_time_implementing_a_spec/>).
 
 ## Model Variability
 
@@ -471,7 +471,7 @@
   Trigger: A reference to an earlier answer that does not exist
   Owner: verification
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/).
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
 
 ## Verification And Tests
 
@@ -488,7 +488,7 @@
   Trigger: A label set that was never re-judged
   Owner: verification
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:33; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:35; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:63 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:33; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:35; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/>).
 
 - [ ] **RISK-454** A test inherits the environment of a git hook and flips core.bare to true in the real repo; a screenshot script leaves 157 Chrome profiles in temp.
   Category: agent fault
@@ -503,7 +503,7 @@
   Trigger: A test that runs git commands
   Owner: verification
   Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:71 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 ## Lead Agent And Helper Scripts
 
@@ -689,7 +689,7 @@
 ## Lead Agent Conduct
 
 - [ ] **RISK-468** A coverage check takes its input set from the output it checks.
-  Category: verification defect. Cause: the transcript coverage count built the set of turn ids from the `=== ` lines of the chunk files, not from `transcripts/turns.txt`, the list the chunks were cut from.
+  Category: verification defect. Cause: the transcript coverage count built the set of turn ids from the `===` lines of the chunk files, not from `transcripts/turns.txt`, the list the chunks were cut from.
   Event: 84 of 491 turns (57 `handoff`, 27 `typed`) were never put in a chunk, and the check still reported 0 missing; the handover's 434 was the `typed` count, read as the turn total.
   Consequence: 84 turns, including 57 handover summaries that carry user decisions, went unmined through two sessions. Cost: five extra mining workers and a late merge into the dedupe outputs.
   Likelihood: 3. Impact: 4.

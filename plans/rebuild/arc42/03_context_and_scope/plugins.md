@@ -4,7 +4,7 @@
 
 - [ ] **CTX-431** Poster claim, unmeasured: the superpowers plugin loads about 22k tokens before the first prompt, and cost per turn grows 5x-20x once context passes 200k.
   Basis: reported, poster claims, unmeasured.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:122 (url: https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
 
 ## Plugins And Connectors
 
@@ -21,26 +21,26 @@
 - [ ] **CTX-434** One solo user measured the cost of relaying prompts between agents: 257 relay prompts across about 20 terminals in one week, with a median of 11 minutes before an agent finish was noticed.
   Acceptance: The fact holds as the poster counted it; it is a user count, not a claudetto measurement. Verification: inspection.
   Basis: reported, one user (self-count). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:31 (url: https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without/>).
 
 ## Plugins And Connectors
 
 - [ ] **CTX-435** Claude web search is a server-side tool: the model writes the query, Anthropic runs it and returns URLs and snippets with no ranking, and the model decides on its own when to search. Anthropic has not documented the backend; Brave Search and turbopuffer are on its subprocessor list, so a meaning-based own index is inferred.
   Acceptance: The fact is unverified in 2.1.326; Claude's own account of its engine is a guess. Verification: probe.
   Basis: reported and inferred. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:37; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:39; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:65 (url: https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:37; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:39; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/>).
 
 - [ ] **CTX-436** Search quality reports: Exa beat Brave in one user's benchmark; Claude web search is US-focused and weak for non-US product, tax and law queries; Gemini is better on obscure documents; Firecrawl is faster, with a query dashboard and a scrape-to-Markdown function.
   Acceptance: The fact is unverified in 2.1.326; anecdotal, not a benchmark claudetto owns. Verification: probe.
   Basis: reported, anecdotal. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:109; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:93; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:146; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:119 (url: https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:109; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:93; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:146; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:119 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/>).
 
 ## Plugins And Connectors
 
 - [ ] **CTX-437** The Gmail connector rewrites every URL into a google.com redirect, so drafted mails carry defanged links.
   Acceptance: The fact holds as one author reports it. Verification: probe.
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhmtya-i-used-claude-code-to-audit-21k-20261029T124002Z.md:37 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhmtya/i_used_claude_code_to_audit_21k_product_hunt/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhmtya-i-used-claude-code-to-audit-21k-20261029T124002Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhmtya/i_used_claude_code_to_audit_21k_product_hunt/>).
 
 ## Plugins And Connectors
 

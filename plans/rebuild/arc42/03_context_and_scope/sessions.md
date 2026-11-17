@@ -52,7 +52,7 @@
 
 - [ ] **CTX-424** Thread limits: max 4 cache_control breakpoints per thread request; a continue request with system or tools returns 400; no Message Batches, token counting, or compaction on a thread; not ZDR or HIPAA eligible. A thread expires 5 minutes after its last request and is deleted no more than an hour after.
   Basis: reported. Status: not applicable (outside fact).
-  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xnc4ew-anthropic-shipped-message-thread-20261104T085756Z.md:35-36 (url: https://www.reddit.com/r/ClaudeAI/comments/1xnc4ew/anthropic_shipped_message_threads_beta_claude/).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xnc4ew-anthropic-shipped-message-thread-20261104T085756Z.md:35-36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnc4ew/anthropic_shipped_message_threads_beta_claude/>).
 
 ## Sessions And Handoff
 

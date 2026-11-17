@@ -18,7 +18,8 @@
 ## Turn Step Check
 
 - [ ] **RT-007** The `turn.step` flow runs for each non-sub-agent step and starts a check without awaiting it.
-  ```
+
+  ```text
   step(sid, surfaces, index, turnId):
     promptsSince.revive: ended.delete(sid)
     N = (index===0) ? promptsSince.get(sid) : undefined ; if index===0: promptsSince.delete(sid)
@@ -55,12 +56,14 @@
        telemetry proposed{outcome, opener(tag), step:index, latency_ms, cache_read, cache_create, output_tokens, offers_shown}
     checking[sid] = promise.catch(noop).finally(delete)
   ```
+
   Notes: `proposed` telemetry for outcome `none` with `usage===null` sends no mark; `aborted` sends no mark. The fork is a side request on the session's own conversation (`model.fork` takes only `{prompt}`; the SIDE_REQUEST_FRAME says "You share the conversation context"). No digest is built and no model or effort option is passed.
   Basis: cited. Status: partial at 088a227c (baseline starts a check after 3 changing tool calls, builds a digest, and calls `model.complete` with a settings model and effort).
   Source: chunk-na8s6d5h.js@80333 (claude 2.1.326 binary); chunk-na8s6d5h.js@77682 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:167@088a227c; plugins/claudetto-you-should-know/hooks/settings.ts:1-29@088a227c.
 
 - [ ] **RT-008** The `accept(text, seen, known)` step decides whether a reply becomes an offer.
-  ```
+
+  ```text
   accept(text, seen, known):
     P = parseProposedLine(text)
     if P.kind!=="line": return P.kind==="none" ? "none" : "parse_failed"
@@ -71,6 +74,7 @@
     E({offeredTurn:turnId, tag:P.tag, view:{kind:"offer", line:P.line, explanation:P.explanation, shownAt:now}})
     promptsSince.delete(sid); invalidate("ui.render"); "shown"
   ```
+
   Basis: cited. Status: partial at 088a227c (`showReply` in `register.ts` checks ended, `askedTurn`, repeat; it also requires `row.view === null`).
   Source: chunk-na8s6d5h.js@80333 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:63-96@088a227c.
 
@@ -89,7 +93,7 @@
   6. Otherwise `{kind:"unparsable"}` (telemetry `parse_failed`).
   `unquoted(s)`: trim, drop trailing periods, and if wrapped in one matching pair from `"" '' “” ‘’ ``` ` ``` ` with no inner closer, unwrap and drop trailing periods again.
   Basis: cited. Status: partial at 088a227c (baseline `parseReply` in `note.ts:67` holds the 240-character limit; its reply format and rules differ).
-  Source: chunk-na8s6d5h.js@25970 (claude 2.1.326 binary; read: the `learn:`, `explain:`, and `tag:` matchers and the "Heads up" rule are there, relocated from chunk-jc1ynf6x.js@24500 of 2.1.325); plugins/claudetto-you-should-know/hooks/note.ts:67-74@088a227c.
+  Source: chunk-na8s6d5h.js@25970 (claude 2.1.326 binary; read: the `learn:`,`explain:`, and`tag:` matchers and the "Heads up" rule are there, relocated from chunk-jc1ynf6x.js@24500 of 2.1.325); plugins/claudetto-you-should-know/hooks/note.ts:67-74@088a227c.
 
 - [ ] **RT-011** `parseExplanation` turns the explanation into cards. For each line: `d = stripControlSequences(line).trimEnd()`. A line starting with a triple backtick toggles a code fence (the first fence of a card that already holds content flushes it when not already fenced); lines inside a fence go to `sketch` (max 12 lines, each cut to 120 code units, unwrapped). A title line (`/^(?:\*\*([^*]+)\*\*|#+\s*(.+))$/` on the trimmed line) flushes the current card and starts a new one with `title = cleanOneLine(match)` cut to 120. Other lines append (`"\n"+line`) to `lead` if the card has no sketch and no fence has been seen, else to `caption`. Flush: `lead` and `caption` = `truncateAtWordBoundary(proseOf(x), 4000)` where `proseOf` = each line `cleanOneLine`d, empty lines dropped, joined `\n`; truncation cuts to `n-1` code units at a word boundary (used if past half the width) and appends `…`. A card is kept if any of title, lead, sketch, or caption is non-empty. At most 4 cards.
   Basis: cited. Status: partial at 088a227c (baseline `parseCards` in `note.ts:126-175` has the same limits).
@@ -98,7 +102,8 @@
 ## Render of the Note
 
 - [ ] **RT-012** The `ui.render` (AbovePrompt) flow.
-  ```
+
+  ```text
   render(surface, props{isWorking, hasSurvey, isCollapsed, bodyColumns, maxRows, scroll.offset}):
     if surface==="terminal" && props.isWorking: for every idle clock: freeze {since} -> {ms: now - since}
     table = rowsTable(surface, ui.resolve(input)); renderedSurfaces.add(surface)
@@ -119,6 +124,7 @@
     return (checks.length>0 && !hasSurvey) ? debugRows(checks, node) : (node ?? next(input))
     on any exception: idle.clear(); return undefined
   ```
+
   `isNoteRead(clock, view, now)` = view is an offer, not armed, clock has same `shownAt` and `line`, and idle time `>= 2000` ms (idle = `now - since` or stored `ms`).
   Basis: cited. Status: missing at 088a227c (baseline `ui.render` at `register.ts:217` draws the view and has no idle clock).
   Source: chunk-na8s6d5h.js@81333-90000 (claude 2.1.326 binary); chunk-na8s6d5h.js@30182 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c.
@@ -130,7 +136,8 @@
 ## Prompt Submit
 
 - [ ] **RT-014** The `prompt.submit` flow.
-  ```
+
+  ```text
   submit(input, next):
     now=S; snapshot = copy(idle)
     pending = undefined
@@ -157,6 +164,7 @@
     if res.drop===undefined: telemetry answered{answer:"auto_sent", ms_to_answer, turn_in_progress:false, offers_shown, line, tag, iteration}
     return res
   ```
+
   Meaning: with `CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND` on (the name is present in claude 2.1.326: `grep -c -a CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND ~/.local/share/claude/versions/2.1.326` printed 4), when the user typed their own message after reading the offer (offer fully visible and idle >= 2 s, twice) the offered topic is attached to that message as background `context` and the offer is dismissed as known.
   Basis: cited. Status: missing at 088a227c (baseline `prompt.submit` at `register.ts:187` counts typed-past prompts only).
   Source: chunk-na8s6d5h.js@77682 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c.

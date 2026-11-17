@@ -3,7 +3,7 @@
 arc42 section 6. One file per subsection.
 
 | Subsection | Items |
-|---|---|
+| --- | --- |
 | [Agent Mod Recipe](agent-mod-recipe.md) | 2 |
 | [Compact Table Return](compact-table-return.md) | 1 |
 | [Model Side Calls per Turn](model-side-calls-per-turn.md) | 1 |

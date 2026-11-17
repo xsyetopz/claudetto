@@ -3,7 +3,7 @@
 Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 
 | ADR | Title | Status | Date |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | [ADR-0001](../adr/0001-agent-override-files.md) | Agent Override Files In The User Agents Folder | superseded by ADR-0099 | 2026-11-04 |
 | [ADR-0002](../adr/0002-auto-mode-stays-on.md) | Auto Mode Stays On | accepted | 2026-11-04 |
 | [ADR-0003](../adr/0003-background-tasks-stay-enabled.md) | Background Tasks Stay Enabled | accepted | 2026-11-04 |

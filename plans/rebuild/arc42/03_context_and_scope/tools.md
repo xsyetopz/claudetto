@@ -96,11 +96,11 @@
 
 - [ ] **CTX-193** agent-browser can cost more tokens than Playwright MCP unless the agent passes `snapshot -i` (interactive elements only). The maintainer gives this as the way to cut context sharply. One commenter reports 88% token efficiency against native Playwright.
   Basis: reported (maintainer claim); the 88% figure is reported with no stated basis.
-  Source: external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:37; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:51; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:59 (url: https://www.reddit.com/r/nextjs/comments/1qbz5sf/vercels_agentbrowser_an_alternative_to/).
+  Source: external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:37; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:51; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:59 (url: <https://www.reddit.com/r/nextjs/comments/1qbz5sf/vercels_agentbrowser_an_alternative_to/>).
 
 - [ ] **CTX-194** Claude Code retries overloaded responses, timeouts, and dropped connections up to 10 times with backoff and shows a "Retrying in Ns · attempt x/y" spinner line. While retrying, check the status page and switch with /model, since capacity is tracked per model. With no retry line, suspect a stale connection: quit, then run `claude --continue`.
   Basis: reported by one commenter, unverified in 2.1.326; the 2.1.326 release notes say the retry notice now reads "retrying…" during the next attempt and that `claude -p` now shows output while it retries an overloaded request.
-  Source: https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes); external/2026-10-25/reddit.com-r-claudeai-comments-1x8fi7z-claude-code-getting-stuck-for-15-20261024T140704Z.md:79 (url: https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/).
+  Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); external/2026-10-25/reddit.com-r-claudeai-comments-1x8fi7z-claude-code-getting-stuck-for-15-20261024T140704Z.md:79 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/>).
 
 ## Tools And Output
 
@@ -162,7 +162,7 @@
 
 - [ ] **CTX-207** CC subagent and mod facts: `tool.describe` events carry no thread; `engines["claude-code"]` gates install; `plugin validate` type-checks a TypeScript hooks module; the `tool.list` event exists; `subagentStatusLine` is removed (cited; in the 2.1.326 binary it is "deprecated in favor of mods and will stop working in a future release", so it is not removed there); plugin `settings.agent` is deprecated; 44 mod events; 33 classic events. 2.1.326: present (tool.list, tool.describe, `engines["claude-code"]`; binary string search); that `engines` gates install, and 44 mod events, are unverified in 2.1.326.
   Basis: cited, observed.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:27; openspec/changes/archive/2026-11-16-2-1-323/design.md:30; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:27; openspec/changes/archive/2026-11-16-2-1-323/design.md:30; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/>).
 
 - [ ] **CTX-208** Mods (in-process hooks) arrived in 2.1.287; `claude plugin test` fires real hook events with no session, model or network.
   Basis: reported.
@@ -190,7 +190,7 @@
 
 - [ ] **CTX-214** verdict-cli (`tuandm/verdict-cli`, npm 0.1.1) is a persistent headless Chromium for UI verification, not page reading: ARIA snapshots with `@e` refs, `snapshot -i` (interactive only), `snapshot -D` (diff against the previous snapshot), `chain` for batched commands, encrypted auth profiles with a `handoff` to a shown window for SSO, MFA or CAPTCHA. Its README claims about 75 tokens per call against about 1,500 for Playwright MCP.
   Basis: reported (README claim, unmeasured).
-  Source: https://raw.githubusercontent.com/tuandm/verdict-cli/HEAD/README.md (read 2026-11-17); suggested by the user at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
+  Source: <https://raw.githubusercontent.com/tuandm/verdict-cli/HEAD/README.md> (read 2026-11-17); suggested by the user at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
 
 ## Tools And Output
 

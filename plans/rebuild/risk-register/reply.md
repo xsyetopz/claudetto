@@ -115,7 +115,7 @@
   Trigger: A run ends with a green suite and a diff against a build artifact never compared.
   Owner: reply
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xsxbf9-there-was-a-rumor-that-fable-5-20261111T233440Z.md:109,111 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsxbf9/there_was_a_rumor_that_fable_52_finishes_faster/).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xsxbf9-there-was-a-rumor-that-fable-5-20261111T233440Z.md:109,111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsxbf9/there_was_a_rumor_that_fable_52_finishes_faster/>).
 
 - [ ] **RISK-234** A model skims the instruction guide and breaks a rule from the part it skipped.
   Category: reply
@@ -130,7 +130,7 @@
   Trigger: A session reads under a fraction of a required guide before writing.
   Owner: reply
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:83 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
 
 ## Verification And Honesty
 
@@ -147,7 +147,7 @@
   Trigger: A report with no list of what was not checked.
   Owner: reply
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:41,45,51 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:41,45,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/>).
 
 - [ ] **RISK-236** Silent judgment calls.
   Category: Agent behaviour.
@@ -160,7 +160,7 @@
   Actions: List the judgment calls; percentages instead of absolutes; a periodic memory self-audit; review memory diffs; a brief line making anything flagged as the owner's call a blocker, and a Stop check for flagged-but-unanswered items; the owner gate reads the diff.
   Trigger: A report flags an item and the turn continues past it.
   Owner: reply. Status: open.
-  Source: unresolved: the figure 19 of 20 decisions was not found; the only grep hit (external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:21 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvacjb/how_often_do_you_notice_legitimate_issues_in_your/)) is a capture count of reported comments, not a finding.
+  Source: unresolved: the figure 19 of 20 decisions was not found; the only grep hit (external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:21 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvacjb/how_often_do_you_notice_legitimate_issues_in_your/>)) is a capture count of reported comments, not a finding.
 
 - [ ] **RISK-237** Premature convergence and costly assumption.
   Category: Agent behaviour.
@@ -205,7 +205,7 @@
   Trigger: A diff that adds a retry or timeout for a failing step.
   Owner: reply
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xwnzh3-tldr-i-worry-that-anthropic-20261115T134422Z.md:52 (url: https://www.reddit.com/r/ClaudeCoding/comments/1xwnzh3/tldr_i_worry_that_anthropic_does_not_realize_that/).
+  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xwnzh3-tldr-i-worry-that-anthropic-20261115T134422Z.md:52 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xwnzh3/tldr_i_worry_that_anthropic_does_not_realize_that/>).
 
 - [ ] **RISK-240** A 2,000-line change comes back for a task that needed 100 lines.
   Category: reply
@@ -220,7 +220,7 @@
   Trigger: A diff far above the task's size.
   Owner: reply
   Status: open
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:322 (url: https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/).
+  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:322 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
 - [ ] **RISK-241** Anti-over-validation: "verification" and "evidence" in a prompt grow an endless proof chain.
   Category: reply
@@ -235,7 +235,7 @@
   Trigger: A gate rule with an unrelated exception clause.
   Owner: reply
   Status: open
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,833,834 (url: https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/).
+  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,833,834 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
 ## Context Leakage
 
@@ -252,7 +252,7 @@
   Trigger: An avoid-list word appears in a reply.
   Owner: reply
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:439 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:439 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
 
 ## Reply
 
@@ -267,7 +267,7 @@
   Actions: a standing project-instruction line (assume basics only, define every symbol, show every algebra step, write math in LaTeX) plus extended thinking; a reply says a standing line holds only until next week; another commenter suggests a 4.6 pass that translates the output to plain English. All reported, unmeasured.
   Trigger: a user asks again for a skipped step.
   Owner: reply. Status: open.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:29; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:33; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:37; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:342 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcpua5/is_sonnet_55_bad_at_explaining_stuff/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:29; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:33; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:37; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:342 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcpua5/is_sonnet_55_bad_at_explaining_stuff/>).
 
 - [ ] **RISK-244** The agent answers defensively and promises a loop it does not set.
   Category: reply.
@@ -280,7 +280,7 @@
   Actions: none stated in the source.
   Trigger: the agent states a plan it does not run.
   Owner: reply. Status: open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:339; external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:400 (url: https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:339; external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:400 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
 
 - [ ] **RISK-245** Fable ends turns early and duplicates code.
   - Category: model behaviour.
@@ -355,7 +355,7 @@
   - Trigger: an unattended run reaches `end_turn`.
   - Owner: reply
   - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:16 (reported, anecdote) (url: https://www.reddit.com/r/ClaudeAI/comments/1x3sxod/for_those_running_long_claude_agent_loops_in/).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:16 (reported, anecdote) (url: <https://www.reddit.com/r/ClaudeAI/comments/1x3sxod/for_those_running_long_claude_agent_loops_in/>).
 
 ## Context Loss And Handover
 
@@ -372,7 +372,7 @@
   - Trigger: a rule set early that a later call breaks; a repeat of a banned pattern.
   - Owner: reply
   - Status: partial at 088a227c.
-  - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:841; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:226; external/2026-10-12/export-Made Claude Code follow the rules I keep telling it, and catch its own stale memories (Jev + dreamin.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1x26t6z/made_claude_code_follow_the_rules_i_keep_telling/); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:88-95; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:100; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:118; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:175; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:179.
+  - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:841; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:226; external/2026-10-12/export-Made Claude Code follow the rules I keep telling it, and catch its own stale memories (Jev + dreamin.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x26t6z/made_claude_code_follow_the_rules_i_keep_telling/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:88-95; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:100; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:118; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:175; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:179.
   - Conflict: Drift: the model recalls a rule and still breaks it.
 
 ## Model Variability
@@ -388,7 +388,7 @@
   Actions: take cost and ratings from the bill, logs, and humans, never from self-report; human-authored rules from logged failures; docs in context via clawdipedia-docs; a subagent context holding the docs.
   Trigger: a cost or rating stated by the model with no log behind it.
   Owner: reply. Status: open.
-  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/) (the falsifying-a-document case, reported, one user). The cost-estimate and self-rating findings: Source: unresolved, not located.
+  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>) (the falsifying-a-document case, reported, one user). The cost-estimate and self-rating findings: Source: unresolved, not located.
 
 ## Reply Style And Sycophancy
 
@@ -405,7 +405,7 @@
   - Trigger: "You're right" opening a reply after pushback with no new evidence; The first sentence of a reply after a correction is an agreement or apology; A reply that opens by agreeing at length.
   - Owner: reply
   - Status: open.
-  - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:153-158; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:173-185; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:27-29; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:54; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:56; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:154,161,173,175; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281 and tasks.md:229 (measured); external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 (SA-3.3); external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:173 (url: https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/) (reported, one user); plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c. Not located: the 9 of 12 hook-inactive anecdote and the 16/16 vs 14/24 comparison text beyond the two openspec lines; reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`).
+  - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:153-158; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:173-185; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:27-29; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:54; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:56; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:154,161,173,175; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281 and tasks.md:229 (measured); external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 (SA-3.3); external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:173 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>) (reported, one user); plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c. Not located: the 9 of 12 hook-inactive anecdote and the 16/16 vs 14/24 comparison text beyond the two openspec lines; reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`).
   - Conflict: Ungrounded claim: a guess, an invented approval, or an invented identifier stands as fact.
 
 - [ ] **RISK-253** Unfounded pushback and pedantry.
@@ -419,7 +419,7 @@
   Actions: Profile or measure before judging, list assumptions, keep one short stance block, restart a stuck moralising session.
   Trigger: A refusal of a user-requested change that carries no measurement.
   Owner: reply. Status: open.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33 (url: https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/) (reported); external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:43 (url: https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/) (reported)
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33 (url: <https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/>) (reported); external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>) (reported)
 
 - [ ] **RISK-254** Confession instead of fact.
   Category: Agent behaviour.
@@ -460,7 +460,7 @@
   - Trigger: A reply opens with a line announcing the next tool call; A Stop block makes the final reply appear twice.
   - Owner: reply
   - Status: open.
-  - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; openspec/specs/surface-trim/spec.md:337,342; plugins/claudetto/hooks/features/setup/settings.ts:188,202@088a227c; external/2026-11-11/ (Claudeisms thread) reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:65,121 (url: https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/); openspec/specs/agent-conduct/spec.md:452,457 (reported).
+  - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; openspec/specs/surface-trim/spec.md:337,342; plugins/claudetto/hooks/features/setup/settings.ts:188,202@088a227c; external/2026-11-11/ (Claudeisms thread) reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:65,121 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); openspec/specs/agent-conduct/spec.md:452,457 (reported).
 
 - [ ] **RISK-257** Style leak and verbosity.
   Category: Agent behaviour.
@@ -473,7 +473,7 @@
   Actions: Define concise positively, keep a keep-list, use the humanizer skill, write README for humans and AGENTS.md for agents. The `jargon` Stop code was removed in change 2.
   Trigger: A reply to a one-line question exceeds 100 words.
   Owner: reply. Status: open.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:19 (reported); external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:418 (url: https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/) (reported)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:19 (reported); external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:418 (url: <https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/>) (reported)
 
 - [ ] **RISK-258** Comment inflation.
   Category: Product.
@@ -486,7 +486,7 @@
   Actions: A global CLAUDE.md line restating the default and the wanted behaviour, plus a fence line separating it from the system prompt; a comment rule in the plugin prompt.
   Trigger: New code carries comments copied from neighbours.
   Owner: reply. Status: open.
-  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xa7704-suggestion-to-anthropic-please-20261020T100903Z.md:29,75 (url: https://www.reddit.com/r/ClaudeCode/comments/1xa7704/suggestion_to_anthropic_please_do_something_to/) (reported). Not located: the quoted system-prompt line itself.
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xa7704-suggestion-to-anthropic-please-20261020T100903Z.md:29,75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xa7704/suggestion_to_anthropic_please_do_something_to/>) (reported). Not located: the quoted system-prompt line itself.
 
 - [ ] **RISK-259** Stop text and grader pull in opposite directions
   Category: reply.
@@ -572,7 +572,7 @@
   Actions: A Stop open-items check; a Stop hook that blocks a stop whose last message claims done with no verifying tool call; a heartbeat wakeup near 30 min that disarms on completion; retry with exponential backoff (cited docs); a fresh session (inferred); an effort floor of medium in agent files. Blocking on announce-next-work wording by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16); Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
   Trigger: A turn ends on an announced next step; A turn that ends with open steps and a note that the next session or the user continues.
   Owner: reply. Status: open.
-  Source: external/2026-10-17/export-Claude not finishing work + acting weird.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1x6qo84/claude_not_finishing_work_acting_weird/) (reported); external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (reported; unattended agents stop early). Not located: the 8-hour run and /goal incidents.; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`)
+  Source: external/2026-10-17/export-Claude not finishing work + acting weird.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x6qo84/claude_not_finishing_work_acting_weird/>) (reported); external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (reported; unattended agents stop early). Not located: the 8-hour run and /goal incidents.; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`)
 
 - [ ] **RISK-265** Asking leave to fix its own bug.
   - Category: Agent behaviour.
@@ -1133,7 +1133,7 @@
   Trigger: A reply with no plan or solution
   Owner: reply
   Status: open
-  Source: external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:30; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:54; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:62; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:82 (url: https://www.reddit.com/r/Anthropic/comments/1xtmjep/fable_52_is_extremely_passive/).
+  Source: external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:30; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:54; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:62; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:82 (url: <https://www.reddit.com/r/Anthropic/comments/1xtmjep/fable_52_is_extremely_passive/>).
 
 ## Replies And Instruction Following
 
@@ -1149,7 +1149,7 @@
   Trigger: two replies in a row that open with agreement and name a different fix.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xclxdw-opus-55-is-so-good-remember-to-use-20261024T141513Z.md:174 (url: https://www.reddit.com/r/claude/comments/1xclxdw/opus_55_is_so_good_remember_to_use_xhigh_effort/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xclxdw-opus-55-is-so-good-remember-to-use-20261024T141513Z.md:174 (url: <https://www.reddit.com/r/claude/comments/1xclxdw/opus_55_is_so_good_remember_to_use_xhigh_effort/>).
 
 - [ ] **RISK-303** The agent reads a rule, ignores it, then proposes adding the same rule again.
   Category: agent behaviour.
@@ -1163,7 +1163,7 @@
   Trigger: a proposed rule that already stands in the instructions.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:125; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:43; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:134; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:140 (url: https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:125; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:43; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:134; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:140 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>).
 
 - [ ] **RISK-304** The model pads a correct answer with an objection it invented.
   Category: agent behaviour.
@@ -1177,7 +1177,7 @@
   Trigger: a pushback on a point the prompt already holds.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:153; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:159; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:171; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:305 (url: https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/).
+  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:153; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:159; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:171; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:305 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>).
 
 - [ ] **RISK-305** The model opens with "One small pushback...." or closes with "All your issues were addressed ... except these 3 things".
   Category: agent behaviour.
@@ -1191,7 +1191,7 @@
   Trigger: either phrase in a reply.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:59; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:67 (url: https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/).
+  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:59; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:67 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
 
 - [ ] **RISK-306** A rule "when you agree, add the strongest opposing view" turns into a template.
   Category: agent behaviour.
@@ -1205,7 +1205,7 @@
   Trigger: the same opener on consecutive replies.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:65 (url: https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/>).
 
 - [ ] **RISK-307** The model over-works a proof-of-concept brief and makes rules for itself.
   Category: agent behaviour.
@@ -1219,7 +1219,7 @@
   Trigger: tests or plans nobody asked for in a proof-of-concept task.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:329; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:333; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:185 (url: https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/).
+  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:329; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:333; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:185 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>).
 
 - [ ] **RISK-308** The model gives unrequested wellbeing steering.
   Category: agent behaviour.
@@ -1233,7 +1233,7 @@
   Trigger: a rest suggestion aimed at the user.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:35; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:41; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:149; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:159 (url: https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/).
+  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:35; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:41; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:149; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:159 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
 
 - [ ] **RISK-309** The model gives an unrequested psychological reading and then refuses.
   Category: agent behaviour.
@@ -1247,7 +1247,7 @@
   Trigger: a reply that assesses the user's mental state with no request.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:97 (url: https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/).
+  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:97 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
 
 - [ ] **RISK-310** Verbal tics fill replies: "load-bearing", a favourite emoji as sign-off at the end of every message, "Don't overthink this" on greetings, and the Opus 5 style ("The reframe that changes everything", counts such as 79/79 and 139/139 gates with "CLOSED", "I won't let this go unsaid", "thats on me", ending "For now, get some rest").
   Category: product fault
@@ -1262,7 +1262,7 @@
   Trigger: A tic in a reply
   Owner: reply
   Status: open
-  Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:121; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:37; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:49 (url: https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/); external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:108; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:116 (url: https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:278; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:282 (url: https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/).
+  Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:121; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:37; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:49 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:108; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:116 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:278; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:282 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
 
 - [ ] **RISK-311** Human-Time Estimate.
   Category: Agent behaviour.
@@ -1277,7 +1277,7 @@
   Owner: reply.
   Status: open.
   Basis: reported, several users, n>=5 anecdotes, no measurement.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:125,169,173,187 (url: https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:125,169,173,187 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/>).
 
 - [ ] **RISK-312** Time Box Without Clock.
   Category: Agent behaviour.
@@ -1292,7 +1292,7 @@
   Owner: reply.
   Status: open.
   Basis: reported, n=1.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:137,139 (url: https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:137,139 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/>).
 
 - [ ] **RISK-313** Over-Suspicion Of Own Files.
   Category: Agent behaviour.
@@ -1307,7 +1307,7 @@
   Owner: reply.
   Status: open.
   Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xkhqck-opus-55s-safety-guardrails-are-bec-20261105T085115Z.md:134 (url: https://www.reddit.com/r/claude/comments/1xkhqck/opus_55s_safety_guardrails_are_becoming/).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xkhqck-opus-55s-safety-guardrails-are-bec-20261105T085115Z.md:134 (url: <https://www.reddit.com/r/claude/comments/1xkhqck/opus_55s_safety_guardrails_are_becoming/>).
 
 ## Code And Prose Edits
 
@@ -1323,7 +1323,7 @@
   Trigger: a diff that adds an override beside the faulty code.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-aigamedev-comments-1xfcokl-advice-for-those-developing-gam-20261026T063549Z.md:304 (url: https://www.reddit.com/r/aigamedev/comments/1xfcokl/advice_for_those_developing_games_with_ai_so_they/).
+  Source: external/2026-10-26/reddit.com-r-aigamedev-comments-1xfcokl-advice-for-those-developing-gam-20261026T063549Z.md:304 (url: <https://www.reddit.com/r/aigamedev/comments/1xfcokl/advice_for_those_developing_games_with_ai_so_they/>).
 
 - [ ] **RISK-315** The model rebuilds a broken tool from scratch instead of diagnosing it.
   Category: agent behaviour.
@@ -1337,7 +1337,7 @@
   Trigger: a plan to rebuild a part that worked before.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:33; external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:149; external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:137 (url: https://www.reddit.com/r/ClaudeAI/comments/1xfcot1/anyone_else_having_serious_quality_issues_with/).
+  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:33; external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:149; external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:137 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfcot1/anyone_else_having_serious_quality_issues_with/>).
 
 - [ ] **RISK-316** The model tests a claim with a weak test and states a guess as a finding.
   Category: agent behaviour.
@@ -1351,7 +1351,7 @@
   Trigger: a "would not help" claim with no measurement behind it.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:60; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:158; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:134 (url: https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:60; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:158; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:134 (url: <https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/>).
 
 - [ ] **RISK-317** The model rewrites a whole document for a one-section edit.
   Category: agent behaviour.
@@ -1365,7 +1365,7 @@
   Trigger: a diff far larger than the section asked for.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:30 (url: https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/).
+  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:30 (url: <https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/>).
 
 - [ ] **RISK-318** A prose edit leaves an "edit scar".
   Category: agent behaviour.
@@ -1379,7 +1379,7 @@
   Trigger: a sentence that names something absent after an edit.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:130 (url: https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/).
+  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:130 (url: <https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/>).
 
 - [ ] **RISK-319** Edits to English documents come out worse than the first pass.
   Category: agent behaviour.
@@ -1393,7 +1393,7 @@
   Trigger: an edit to prose with no re-read of the document.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:123; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:126; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:122; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:173; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:186 (url: https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/).
+  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:123; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:126; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:122; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:173; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:186 (url: <https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/>).
 
 ## Verification And Tests
 
@@ -1409,7 +1409,7 @@
   Trigger: a "pass" claim over a command that printed nothing.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:169 (url: https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:169 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
 
 - [ ] **RISK-321** A deploy passes its checks on a 200 status while the body is the framework's default 404 page.
   Category: agent behaviour.
@@ -1423,7 +1423,7 @@
   Trigger: a "deployed" claim with status codes only.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:99 (url: https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:99 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
 
 ## Refusals And Model Fallback
 
@@ -1439,7 +1439,7 @@
   Trigger: a session whose task is reverse engineering of protected software.
   Owner: reply.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:2058; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1299; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1432; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:2147 (url: https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:2058; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1299; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1432; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:2147 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
 ## UI Copy In Developer Voice
 
@@ -1455,7 +1455,7 @@
   Trigger: User-facing text drafted with no reader named.
   Owner: reply. Status: open.
   Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xp44k0-claude-is-terrible-at-ux-writing-20261106T082337Z.md:35 (url: https://www.reddit.com/r/ClaudeAI/comments/1xp44k0/claude_is_terrible_at_ux_writing/)
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xp44k0-claude-is-terrible-at-ux-writing-20261106T082337Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xp44k0/claude_is_terrible_at_ux_writing/>)
 
 ## Search By Default And Fence-Sitting
 
@@ -1471,7 +1471,7 @@
   Trigger: A web search on a question the model can answer.
   Owner: reply. Status: open.
   Basis: reported (one heavy user, contested by others).
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:35 (url: https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/)
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:35 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>)
 
 ## Over-Deferral To Professionals
 
@@ -1487,7 +1487,7 @@
   Trigger: A referral to a professional on a request for the model's view.
   Owner: reply. Status: open.
   Basis: reported (one user).
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:81,405 (url: https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/)
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:81,405 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>)
 
 ## Naming Rule Side Effects
 
@@ -1503,7 +1503,7 @@
   Trigger: A persona or pronoun rule in the prompt.
   Owner: reply. Status: open.
   Basis: reported, two single comments.
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xorv25-woke-30-is-truly-back-20261106T080403Z.md:248,96 (url: https://www.reddit.com/r/ClaudeCode/comments/1xorv25/woke_30_is_truly_back/)
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xorv25-woke-30-is-truly-back-20261106T080403Z.md:248,96 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xorv25/woke_30_is_truly_back/>)
 
 ## Partial-Completion Loop
 
@@ -1519,7 +1519,7 @@
   Trigger: A turn smaller than the last, or two incomplete turns.
   Owner: reply. Status: open.
   Basis: reported, one session, n=1.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqlgno-agents-knowingly-fail-to-complet-20261110T093545Z.md:29,39,99,105,169,171,177,183,40 (url: https://www.reddit.com/r/ClaudeAI/comments/1xqlgno/agents_knowingly_fail_to_complete_tasks_in_order/)
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqlgno-agents-knowingly-fail-to-complet-20261110T093545Z.md:29,39,99,105,169,171,177,183,40 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqlgno/agents_knowingly_fail_to_complete_tasks_in_order/>)
 
 ## History In User-Facing Docs
 
@@ -1535,7 +1535,7 @@
   Trigger: A change-history paragraph in a user-facing doc.
   Owner: reply. Status: open.
   Basis: reported.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:287,299 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/)
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:287,299 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>)
 
 ## Premature Done
 
@@ -1552,7 +1552,7 @@
   Trigger: A done claim with no repo-wide search for the changed pattern.
   Owner: reply.
   Status: open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:401 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/)
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:401 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>)
 
 ## Rules From Fear
 
@@ -1569,7 +1569,7 @@
   Trigger: A rule with no reason beside it; a prompt line that says the user is always right.
   Owner: reply.
   Status: open.
-  Source: external/2026-10-31/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261031T083808Z.md:88 (url: https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/)
+  Source: external/2026-10-31/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261031T083808Z.md:88 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>)
 
 ## Size Caps Backfire
 
@@ -1586,7 +1586,7 @@
   Trigger: A cap line in the rules, or a hook that counts words in a working session.
   Owner: reply.
   Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:92; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:94; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:100; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:128 (url: https://www.reddit.com/r/ClaudeAI/comments/1x5qbp9/any_tips_for_reducing_claude_codes_context_usage/); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrln3-how-do-you-decide-which-rules-to-20261101T191454Z.md:31 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkrln3/how_do_you_decide_which_rules_to_delete_from/)
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:92; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:94; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:100; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:128 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x5qbp9/any_tips_for_reducing_claude_codes_context_usage/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrln3-how-do-you-decide-which-rules-to-20261101T191454Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrln3/how_do_you_decide_which_rules_to_delete_from/>)
 
 ## Classifier Refusals On Own Devices
 
@@ -1603,7 +1603,7 @@
   - Trigger: a harness brief that holds the word "reasoning" in a heading; a refusal on a bounded job that names no exploit, pentest, or binary-vuln work; A refusal citing an unread policy or a changed host; The agent asks whether the user owns uploaded material; A refusal that names reverse engineering or a bypass on a device the user owns; a safeguards notice on a trivial prompt, or a refusal on benign work.
   - Owner: reply
   - Status: open (missing at 088a227c).
-  - Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:31 (url: https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/). Unlocated: the reasoning-extraction notice and the firmware/hotel/noodle cases; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:558; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:556 (url: https://www.reddit.com/r/claude/comments/1xbts4v/anthropic_secretly_killed_the_rea_train_reverse/); external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:33-35,89,99,172,158,382,432,464 (url: https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying/); external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:29; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:33; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:35; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:216 (url: https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/); external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:314; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:324; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:412; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:420; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:422; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:371; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:392 (url: https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:144; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:171; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:179; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:181; external/2026-09-29_p2/export-Claude flat out refused to help work on a proxy engine i am currently writing because I mentioned a.jsonl:21 (url: https://www.reddit.com/r/ClaudeAI/comments/1wspzkl/); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/); unresolved for the claim that Opus 5.5 falls back to Opus 5: no source line holds it; chunk-m33vdkhs.js@293799 (claude 2.1.326 binary).
+  - Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>). Unlocated: the reasoning-extraction notice and the firmware/hotel/noodle cases; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:558; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:556 (url: <https://www.reddit.com/r/claude/comments/1xbts4v/anthropic_secretly_killed_the_rea_train_reverse/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:33-35,89,99,172,158,382,432,464 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying/>); external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:29; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:33; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:35; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:216 (url: <https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/>); external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:314; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:324; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:412; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:420; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:422; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:371; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:392 (url: <https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:144; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:171; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:179; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:181; external/2026-09-29_p2/export-Claude flat out refused to help work on a proxy engine i am currently writing because I mentioned a.jsonl:21 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wspzkl/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>); unresolved for the claim that Opus 5.5 falls back to Opus 5: no source line holds it; chunk-m33vdkhs.js@293799 (claude 2.1.326 binary).
 
 ## Corrective Instructions Overcorrect
 
@@ -1620,7 +1620,7 @@
   Trigger: A rule that tells the agent how to relate to the user in one word.
   Owner: reply.
   Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:136; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:158 (url: https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/)
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:136; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:158 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
 
 ## Untested Trust Marker
 
@@ -1637,7 +1637,7 @@
   Trigger: A user complaint that the agent re-reads a file the user just changed.
   Owner: reply.
   Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:85 (url: https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/)
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:85 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
 
 ## Doing Instead Of Discussing
 
@@ -1654,7 +1654,7 @@
   Owner: reply.
   Status: open.
   Basis: reported (one commenter; one report).
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:123 (url: https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:465 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/)
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:123 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:465 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>)
 
 ## Failure Needs a Visible Signal
 
@@ -1768,7 +1768,7 @@
   Trigger: a hook or prompt text that does not name its actor.
   Owner: reply.
   Status: open.
-  Source: unresolved: no source line holds the exemplar text; the nearest hit is external/export-Opus 5.5 Still Overthinks at Higher Effort.jsonl:15 (url: https://www.reddit.com/r/ClaudeAI/comments/1wnj4jl/opus_55_still_overthinks_at_higher_effort/).
+  Source: unresolved: no source line holds the exemplar text; the nearest hit is external/export-Opus 5.5 Still Overthinks at Higher Effort.jsonl:15 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnj4jl/opus_55_still_overthinks_at_higher_effort/>).
 
 ## Reply Risks
 
@@ -1785,7 +1785,7 @@
   - Trigger: A turn ends with thinking only; a turn ends with a tool call and no visible text.
   - Owner: reply
   - Status: open.
-  - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; external/2026-10-02/export-Serious bug in Opus 5.5.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1wva0zg/serious_bug_in_opus_55/) (reported; issue 96288).
+  - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; external/2026-10-02/export-Serious bug in Opus 5.5.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wva0zg/serious_bug_in_opus_55/>) (reported; issue 96288).
 
 - [ ] **RISK-346** A tool result worded as a verdict makes the model tell the user something false.
   - Category: agent failure.
@@ -1800,7 +1800,7 @@
   - Trigger: A tool result text states a verdict instead of a fact; a tool result worded as a verdict.
   - Owner: reply
   - Status: open (partial at 088a227c).
-  - Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbipii-claude-invented-an-email-bounce-20261021T101718Z.md:33 (url: https://www.reddit.com/r/ClaudeAI/comments/1xbipii/claude_invented_an_email_bounce_that_never/); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:33; plugins/claudetto/hooks/features/repeat/texts.ts@088a227c; plugins/claudetto/hooks/features/memory/texts.ts@088a227c; plugins/claudetto/hooks/features/protected/texts.ts@088a227c (reported).
+  - Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbipii-claude-invented-an-email-bounce-20261021T101718Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbipii/claude_invented_an_email_bounce_that_never/>); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:33; plugins/claudetto/hooks/features/repeat/texts.ts@088a227c; plugins/claudetto/hooks/features/memory/texts.ts@088a227c; plugins/claudetto/hooks/features/protected/texts.ts@088a227c (reported).
 
 ## Stop Check
 

@@ -22,7 +22,7 @@
 - [ ] **CTX-727** A poster on the 20x plan (confounded) used about 5 of 7 weekly days on Opus medium, 3.5 days with 45% done on Opus low, 6.25 days with 95% done on Sonnet low (inferred: low effort causes retries). One build per approach with hidden tests: consensus that a detailed prompt beats skill packs on Opus 5.5 (opinion, no repeat runs). A vendor audit skill at high effort exhausted three 5-hour windows in about 10 minutes (unmeasured; subagent cache about 5 min against main about 1 h, second-hand); a two-pass audit (cheap architecture map, then one file at a time) cuts cost.
   Acceptance: the cited posts state the figures. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
-  Source: external/export-What am I missing by only using sonnet when it comes to coding-.jsonl (url: https://www.reddit.com/r/ClaudeAI/comments/1wpxt1c/what_am_i_missing_by_only_using_sonnet_when_it/); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md (url: https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/). Not located: the line numbers and the skill-pack build comparison.
+  Source: external/export-What am I missing by only using sonnet when it comes to coding-.jsonl (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpxt1c/what_am_i_missing_by_only_using_sonnet_when_it/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>). Not located: the line numbers and the skill-pack build comparison.
 
 ## Models And Effort
 
@@ -34,30 +34,30 @@
 
 - [ ] **CTX-729** Hybrid setup: Fable in the main feed does architecture, a local Qwen3.8 inside the Claude Code terminal does about 60% of implementation, and session limits are rarely hit.
   Basis: reported, n=1, unmeasured. Status: not applicable (outside fact).
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:167 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:167 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
 ## Models And Effort
 
 - [ ] **CTX-730** One commenter says to use max effort, not xhigh, for research-style discussion, for better sourcing and thoroughness.
   Basis: reported (one commenter; the original poster uses xhigh and will trial max). Status: not applicable (outside fact).
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:354,358 (url: https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:354,358 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>).
 
 - [ ] **CTX-731** One commenter guesses that medium effort on Opus 5.5 gives "like 85-90%" of the quality of high for far fewer tokens on everyday back and forth, and says high makes sense for complex reasoning or code that must be bulletproof.
   Acceptance: The fact holds on claude 2.1.326 (unverified in 2.1.326); this is a guess with no measurement, so a probe may only bound it. Verification: probe.
   Basis: reported, one commenter, no measurement. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:37 (url: https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/>).
 
 - [ ] **CTX-732** Sonnet 5.5 at high effort consumed about 1.9x the tokens of medium, as shown by Claude itself and the poster's own test, so Opus may be cheaper per task than Sonnet at high; another commenter disputes this for their use case.
   Acceptance: The fact holds on claude 2.1.326 (unverified in 2.1.326); a probe compares tokens per task at medium and high. Verification: probe.
   Basis: reported, one user (disputed by another). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:101; external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:93 (url: https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/).
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:101; external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/>).
 
 ## Models And Effort
 
 - [ ] **CTX-733** claudetto shall treat these relayed benchmarks as directional: Haiku 5.5 high found 44 of 48 files vs Opus 45 for $0.44 vs $6.17 (one user, 6 tasks); Haiku xhigh 3x cost for same files; Haiku flagged 30 correct sentences as errors; Sonnet medium ~15 points below high at 48% cost; Opus xhigh +1.4 points for 2.5x high; Opus low much worse for defect search; Fable advisor +1.7 points for 2.1x; Haiku subagents -15 F1 vs Sonnet subagents on judgment. Personal benchmark (25 tasks, 1-3 runs, small): Opus 5.5 100% ~$0.09/task 27 s; Sonnet 5 100% $0.11 61 s; Opus 5 100% $0.19 47 s; Fable 5.1 100% $0.26 41 s; Haiku 4.5 76% $0.10 78 s; low effort ~20% cheaper ~30% faster with no loss. Opus 5.5 guide (cited by poster): 5.5 medium matched/beat Opus 5 high; default effort medium; Anthropic removed >80% of Claude Code system prompt for Opus 5-class with no coding-eval loss. Terminal Bench: Sonnet 5.5 70.6 vs Opus 5.5 66.4; AA run Opus high 64.2% $3.88 vs Sonnet xhigh 61.5% $5.30. DEFLATE (single run, medium): Opus passed 4055 tests 507 MB/s 10m18s $2.08; Sonnet 447 MB/s 3m41s $0.52. Haiku 5.5 86-question: Haiku 84.7, fastest 3.5 s, weak on tool calling/safety; 18/18 made-up bugs, tomlkit 3/3, cachetools 3/3, humanize 0/3; 37% of tasks flip across identical runs. Small bug fixes (30 runs, hidden tests, 5 setups): all passed, Opus ~16x Haiku cost; harder bug gap shrank, Sonnet won. Fable 5.2 (2026-11-09): up to 30% faster, fast mode up to 2.5x; one comparison Fable 74% at $0.062 vs Opus 68% at $0.028. Effort opinions: medium daily, high for review/blueprint, xhigh overthinks, max overthinks easy tasks; Anthropic docs say highest settings can cause worse, longer outcomes (unverified). Mythos/CVP: Opus 5.5, Sonnet 5.5, Fable 5.x reported excluded, Mythos 5.1 by email, same draw as Fable; not priced for this account except Athena (project CLAUDE.md). Releases/tiers as posted (Fable 5.5 market 44%, "Opus 5.5 = Fable 5.1 at ~60% cost") are not pricing sources. Harness effect: GPT-5.6 Terra 79% in Codex vs 47% via Claude Agent SDK (reported). Models: the model list is unverified in 2.1.326.
   Acceptance: No model choice rests on one number; the settled decision "Fable and Opus are never a subagent model" (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)) stands. Verification: inspection.
   Basis: reported. Status: unchecked: a relayed benchmark, not code at 088a227c.
-  Source: external/2026-10-12/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1x1nsaz/i_tested_haiku_55_sonnet_55_and_opus_55_as/); external/2026-10-02/export-100$ plan - holy sh-.jsonl:101; external/2026-10-02/export-100$ plan - holy sh-.jsonl:67 (url: https://www.reddit.com/r/ClaudeAI/comments/1wvdodf/100_plan_holy_sh/).
+  Source: external/2026-10-12/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1x1nsaz/i_tested_haiku_55_sonnet_55_and_opus_55_as/); external/2026-10-02/export-100$ plan - holy sh-.jsonl:101; external/2026-10-02/export-100$ plan - holy sh-.jsonl:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wvdodf/100_plan_holy_sh/>).
 
 - [ ] **CTX-734** Compaction cost: a handoff adds a 376-byte notice and one continuation request (23,588 B); the built-in compaction adds one request of +6,535 B over a normal turn; both carry `cache_control`; the summarizer request keeps `cache_control` on the parent's last message, same model and 12 tools, no `ttl` (5 m). Handover $0.043 against built-in $0.094 at 166k tokens (one run per arm, 2.1.319). The first request after built-in compaction read 5,819 and wrote 19,448 at 1 h; after a typed `/clear` it read 5,819 and wrote 7,101. A Haiku fork costs about $0.10 per million against $0.17 for `/compact`. No B arm was cheaper than C in 3 paired paid runs ($0.88-3.47 per run). Probe 5 had 5 compactions in one turn, $2.34, 64% cached input read. API compaction overshoots its trigger by up to 7,269 tokens. Real probes 1-4 never compacted because the model redirected large output to files.
   Basis: measured.
@@ -72,7 +72,7 @@
 - [ ] **CTX-736** Prompt cache mechanics: the prefix cache is keyed on model, system prompt, project context, and history; read costs about 0.1x, a 5m write 1.25x, a 1h write 2x; every hit resets the TTL; any change earlier in the prefix (MCP reconnect reordering tools, effort or model switch) invalidates from that point; a subscription main session defaults to a 1h TTL (drops to 5m over plan limit), the API per-token 5m; editing a prompt via `/rewind` is a hit; advisor calls re-send full context uncached. Tip: `/compact` before a break longer than the TTL. Docs cited: code.claude.com/docs/en/prompt-caching. Posts disagree on whether Pro gets 5 m or 1 h; anthropics/claude-code#46829 tracks it (reported).
   Basis: cited, reported. 2.1.326: `CLAUDE_CODE_PROMPT_CACHE_TTL`, `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`, `CLAUDE_CODE_MESSAGES_PROMPT_CACHE_TTL` present (binary string search). Baseline: partial (59-minute age rule in `handoff.ts`; cache gate missing).
   Conflict: claudetto shall rely on these cache facts.
-  Source: external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:7; https://code.claude.com/docs/en/prompt-caching (not re-read); external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:14 (url: https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/).
+  Source: external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:7; <https://code.claude.com/docs/en/prompt-caching> (not re-read); external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:14 (url: <https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/>).
 
 ## Models And Effort
 
@@ -122,35 +122,35 @@
 
 - [ ] **CTX-748** `effort_cost_index` per model, with high = 1.00: opus-5 low 0.67, medium 0.76, xhigh 1.60, max 1.70; fable-5 0.60, 0.77, 1.74, 1.91. Opus 5 max against xhigh used 397,761 against 397,827 tokens (n=2).
   Basis: reported (poster's measurement).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:16 (url: https://www.reddit.com/r/ClaudeAI/comments/1wjr89j/claude_code_ships_a_permodel_table_of_what_each/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:16 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wjr89j/claude_code_ships_a_permodel_table_of_what_each/>.)
 
 - [ ] **CTX-749** A 650-token rule set cut cost 51% (Opus) and 55% (Sonnet) at max, and 11% and 3% at medium (18 tasks, the author's own plugin).
   Basis: reported.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:17 (url: https://www.reddit.com/r/ClaudeCode/comments/1wtbj8x/i_benchmarked_a_30line_claude_code_plugin_on_opus/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:17 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wtbj8x/i_benchmarked_a_30line_claude_code_plugin_on_opus/>.)
 
 - [ ] **CTX-750** Explore follows the main model. `CLAUDE_CODE_SUBAGENT_MODEL=haiku` needs `_FORCE=1` to cover Explore and Plan.
   Basis: cited (docs).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:26 (url: https://www.reddit.com/r/ClaudeCode/comments/1x0kzbh/haiku_55_is_40x_cheaper_than_opus_55_your_explore/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:26 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0kzbh/haiku_55_is_40x_cheaper_than_opus_55_your_explore/>.)
 
 - [ ] **CTX-751** After a prompt rule, 97-98% of subagent tokens still went to Opus, and subagents re-read files the main agent had read (one user).
   Basis: reported, one user.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:27; external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:49 (url: https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:27; external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
 
 - [ ] **CTX-752** Five orchestration methods with Opus 5.5: solo Opus did best, and a second-model reviewer caught a real issue (n=1).
   Basis: reported, one poster.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:29 (url: https://www.reddit.com/r/ClaudeAI/comments/1wt9g4q/i_tested_five_orchestration_methods_with_opus_55/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wt9g4q/i_tested_five_orchestration_methods_with_opus_55/>.)
 
 - [ ] **CTX-753** Opus as fleet orchestrator: cap parallelism at 6-8, have subagents write to files and return a short summary, dispatch atomically with a self-contained brief, delete old rules instead of adding. Only hooks act as hard gates.
   Basis: reported (anecdote).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:32 (url: https://www.reddit.com/r/ClaudeAI/comments/1wnmbqg/opus_55_as_a_fleet_orchestrator_early_notes_from/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:32 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnmbqg/opus_55_as_a_fleet_orchestrator_early_notes_from/>.)
 
 - [ ] **CTX-754** A/B on a 3,012-file FastAPI repo (3 tasks, 2 runs each, tokens from JSON output): cost follows the number of turns, not how much is read. Session length moves the weekly number more than effort.
   Basis: reported (small study).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:62; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:29 (url: https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:62; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>)
 
 - [ ] **CTX-755** Terminal-Bench relayed: Opus 5.5 high 64.2% at $3.88 against Sonnet 5.5 xhigh 61.5% at $5.30.
   Basis: reported (benchmark relay).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:55 (url: https://www.reddit.com/r/ClaudeAI/comments/1wt3baa/sonnet_55_vs_opus_55_the_terminalbench_win_is_max/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wt3baa/sonnet_55_vs_opus_55_the_terminalbench_win_is_max/>.)
 
 - [ ] **CTX-756** A cost-focused `Agent` description halved Fable subagent counts. Fable rarely delegates with a minimal subagent tool.
   Basis: cited.

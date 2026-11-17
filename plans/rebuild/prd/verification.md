@@ -5,43 +5,43 @@
 - [ ] **REQ-VERIFICATION-001** claudetto shall test a lint-hook wrapper with three cases: a clean file, a real lint error, and a missing linter, so the last two give different messages.
   Acceptance: A missing linter and a lint error produce different messages, else the agent edits source to fix a toolchain problem. The same lint command also runs in the build pipeline, because a skill-frontmatter hook runs only after the skill is invoked and is not an always-on gate. Verification: test.
   Basis: reported, 1 author, inferred. Status: missing at 088a227c (the plan holds exit-code and frontmatter facts, not this test set or the CI-duplicate rule).
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xuipfl-your-code-rules-skill-can-enforc-20261112T231521Z.md:58 (url: https://www.reddit.com/r/ClaudeAI/comments/1xuipfl/your_code_rules_skill_can_enforce_itself_with_a/).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xuipfl-your-code-rules-skill-can-enforc-20261112T231521Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xuipfl/your_code_rules_skill_can_enforce_itself_with_a/>).
 
 ## Client Work Habits
 
 - [ ] **REQ-VERIFICATION-002** claudetto shall do a read-only repo tour before edits, agree an acceptance test first, treat repo files as untrusted, use a branch with small reviewed diffs, and scope each job small.
   Acceptance: A run shows the tour before the first edit and the acceptance test before the code. Verification: demonstration.
   Basis: reported (one freelancer). Status: partial at 088a227c (the plan holds untrusted files and tests as spec, not the read-only tour step).
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xuqnw8-5-habits-that-made-claude-code-s-20261112T225600Z.md:31,32,33,34 (url: https://www.reddit.com/r/ClaudeAI/comments/1xuqnw8/5_habits_that_made_claude_code_safe_enough_to_use/).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xuqnw8-5-habits-that-made-claude-code-s-20261112T225600Z.md:31,32,33,34 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xuqnw8/5_habits_that_made_claude_code_safe_enough_to_use/>).
 
 ## Audit Routines For Non-Developers
 
 - [ ] **REQ-VERIFICATION-003** claudetto shall, per session, ask for four plain-English lists (new files, new dependencies, calls to outside services, anything touching passwords, keys, or payment data), then run `/security-review` on the branch and ask for the exact line of any unclear finding.
   Acceptance: The four lists appear in the delivery notes and each unclear finding names a line. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c (`/security-review` appears only in `features/surface/surface.ts`; no four-list routine).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:1623 (url: https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:1623 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/>).
 
 - [ ] **REQ-VERIFICATION-004** claudetto shall list 10-15 things that must never happen (user A sees user B's data, payment without a verified webhook, API keys in the frontend) and have a fresh session try to prove each impossible, citing exact files.
   Acceptance: Each listed item has a verdict with file citations. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c (git grep for never happen found none).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:669 (url: https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:669 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/>).
 
 - [ ] **REQ-VERIFICATION-005** claudetto shall have the coding session write tests per class of input and put the count in the delivery notes, and the reviewer read exactly those N tests.
   Acceptance: The note's count equals the number of tests the reviewer reads. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:815 (url: https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:815 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/>).
 
 - [ ] **REQ-VERIFICATION-006** claudetto shall have an agent extract the codebase's implied coding guidelines, make them explicit in a repo file, verify them against best practice and IT-SEC guidelines, and use them as the review baseline.
   Acceptance: A repo guidelines file exists and a review cites it. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c (git grep for guidelines found only the rule `useHeadlineseNames.md`).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:1567 (url: https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xta125-nondev-here-about-18m-lines-of-20261116T051840Z.md:1567 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xta125/nondev_here_about_18m_lines_of_claude_code_output/>).
 
 ## Bug-Fix Claim Gate
 
 - [ ] **REQ-VERIFICATION-007** claudetto shall accept a bug-fix claim only when a named regression test, written first and committed red before the green fix, fails on pre-fix code on its own assertion for the stated reason and passes on the fix, with the baseline run in a separate temporary worktree (not stash); the new test is shown failing on unchanged code with what should still fail, and a behaviour-preserving refactor starts with a characterization test passing on old code (about 10 golden examples, run more than once).
   Acceptance: The failure matches the expected assertion, with test ID and expected/actual or exception type saved; missing fixtures, timeouts, and import errors count as inconclusive; a bug-fix change holds a red commit before the green one, and a fix commit follows a recorded failing run of its test. About a third of the time the test passed before the fix, so the bug was not the bug. Verification: test.
   Basis: measured (n=3: regression test 3 of 3 with a Karpathy-style CLAUDE.md against 0 of 3, Claude Code 2.1.312); reported (n=31, n=6; one comment). Status: partial at 088a227c (the plan holds fails-before and passes-after only; git grep for inconclusive found none; `plugins/claudetto/hooks/features/prompt/texts.ts:51@088a227c` says "write a failing test first", with no commit-red step or characterization line).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuivsm-i-replayed-4000-of-my-claude-c-20261116T052626Z.md:67,71,79,83 (url: https://www.reddit.com/r/ClaudeCode/comments/1xuivsm/i_replayed_4000_of_my_claude_code_turns_to_see/); external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:39 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/); unresolved: no source line holds the n=31, n=6, or 3-of-3 figures.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuivsm-i-replayed-4000-of-my-claude-c-20261116T052626Z.md:67,71,79,83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuivsm/i_replayed_4000_of_my_claude_code_turns_to_see/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/>); unresolved: no source line holds the n=31, n=6, or 3-of-3 figures.
   Resolved: the pre-fix baseline runs in a separate temporary worktree, never a stash (user decision, AskUserQuestion 2026-11-17).
 
 ## Architecture Gates
@@ -49,89 +49,89 @@
 - [ ] **REQ-VERIFICATION-008** claudetto shall enforce architecture and size by gates, not prompts or asking Claude to be brief: ESLint `max-lines` 500 failing CI, a list of oversized files that only shrinks, folders by product area, specs folded into one technical manual in the same PR as the feature and then deleted, and pre-commit hooks that cap Markdown length, files per folder, headings per file, and lines per code file, with Markdown frontmatter (title, summary, keywords) and a generated INDEX.md per folder.
   Acceptance: A file over 500 lines fails CI unless it is on the shrinking list, and a commit over a cap is refused by the hook. Obsolete designs left in the repo look current to an agent and get rewired. The team's audit found 175 of 180 backend files in one folder, a server file of about 2,000 lines, and 1,499 files in docs/; one user reported 40k-98k tokens of status files loaded per session. Verification: test.
   Basis: reported. Status: missing at 088a227c (git grep for max-lines found none).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:220 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/); unresolved: the second source's tag was not located in external/, openspec, or code at 088a227c.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:220 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/>); unresolved: the second source's tag was not located in external/, openspec, or code at 088a227c.
 
 - [ ] **REQ-VERIFICATION-009** claudetto shall generate a per-folder index of files, classes, and functions with 3-5 word descriptions from symbols or the compiler, enforced through `agent.md` so agents scan it first, with budgets (DRY, line-of-code, zero hardcoding) backed by a failing gate.
   Acceptance: The index is generated, not hand-maintained, since hand-maintained rots and lies; about +-25% justified deviation is allowed; budgets split files by seam, not line count. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:268,270 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:268,270 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/>).
 
 - [ ] **REQ-VERIFICATION-010** claudetto shall stress-test a new interface by asking 3-5 agents to design different games on it, promote repeated friction to a primitive, and read one-off friction as a game asking for what it should not get.
   Acceptance: Each friction point is classed repeated or one-off; hardcoded values move into data or script files as the cheapest blast-radius cut. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:280,282 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv2oax-ai-slop-without-architecture-i-20261116T052334Z.md:280,282 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv2oax/ai_slop_without_architecture_is_how_providers/>).
 
 ## Scheduled Run Verification
 
 - [ ] **REQ-VERIFICATION-011** claudetto shall verify a scheduled run with a checker script outside the agent and independent of the agent's own summary, because the green check is only "process exited 0" and `claude -p` exits 0 whenever the agent stops talking, even on "this is broken" (an agent grading its own summary missed a revoked token; a hook listing failed or never-fired runs over 7 days catches crashes only).
   Acceptance: After each task the checker confirms the expected sections exist and are non-empty, the file size, and that the header date is today (a deploy is checked by curling the live page for a build stamp); the wrapper exits non-zero on failure, with distinct exit codes for API error (3) and nothing produced (4); a preflight call with the token before the agent starts fails hard on a 401; the agent writes a status file ok or degraded (or `claude -p --output-format json --json-schema` checked with `jq -e` on `structured_output.status`) and degraded fails; a run with a revoked token shows as failed in the independent check. Verification: test.
   Basis: reported. Status: partial at 088a227c (the plan holds a status file, buckets, and runner-enforced limits; git grep for preflight found none).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:51,53,55,57,173 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/); unresolved: the independent-check source tag was not located in external/, openspec, or code at 088a227c.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:51,53,55,57,173 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>); unresolved: the independent-check source tag was not located in external/, openspec, or code at 088a227c.
 
 - [ ] **REQ-VERIFICATION-012** claudetto shall compare each run's counts (sections filled, rows, links, bytes) with the last good run and flag a big drop (0 where yesterday had 40).
   Acceptance: Each run ends in one of three states: did the work, had nothing to do, failed; a heartbeat goes to an outside dead-man's switch after a real pass so a run that never started alerts; nothing is sent on pass; the published result is re-fetched and compared character for character with the intended output; a fresh no-memory session answers yes/no questions on spec plus output; a failure reported twice without trying a fix counts as the job failing. Verification: test.
   Basis: reported. Status: partial at 088a227c (git grep for heartbeat found it in `line-file`, `price-step`; none for dead-man).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:83,85,93,121,133,157 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:83,85,93,121,133,157 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>).
 
 ## Security Tests From Bugs
 
 - [ ] **REQ-VERIFICATION-013** claudetto shall turn each security bug into a missing test: change password, then prove the old session and refresh token fail server side (401), then have the agent write the neighbors (password reset, email change, logout everywhere, role removal).
   Acceptance: Semgrep or CodeQL runs in CI with a security-only review pass per PR (authz on every endpoint, session lifecycle, input validation); a short trust-boundary list with one regression test per failure beats reading all generated lines; a fault becomes an instruction loaded by progressive disclosure plus a deterministic architectural test and AST checks. Verification: test.
   Basis: reported. Status: missing at 088a227c (git grep for Semgrep found none).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:92,100,112 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvacjb/how_often_do_you_notice_legitimate_issues_in_your/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:92,100,112 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvacjb/how_often_do_you_notice_legitimate_issues_in_your/>).
 
 ## Plan File Checks
 
 - [ ] **REQ-VERIFICATION-014** claudetto shall have the agent stop after each plan item, ask the user to check it by hand, and tick the checkbox only on confirmation, with the user stating what was checked ("paid with the test card and the invoice showed up").
   Acceptance: No box is ticked without a stated check. Confirming "it works" before a follow-up why-question stops the agent from reading the question as a bug report and ripping out working code. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvcy0y-tip-take-the-time-to-say-it-wo-20261116T052243Z.md:53,61 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvcy0y/tip_take_the_time_to_say_it_works_to_claude_after/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvcy0y-tip-take-the-time-to-say-it-wo-20261116T052243Z.md:53,61 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvcy0y/tip_take_the_time_to_say_it_works_to_claude_after/>).
 
 ## UI State Tests
 
 - [ ] **REQ-VERIFICATION-015** claudetto shall write a decision table of each control's values plus the constraints between them before asking for code on a UI with many interacting options, then test each value once, the risky pairs, and boundary states (disabled, loading, empty).
   Acceptance: Not every combination is tested. Verification: demonstration.
   Basis: reported (one poster). Status: missing at 088a227c (git grep for decision table found none).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwyz3g-your-process-for-massive-or-co-20261116T051324Z.md:102 (url: https://www.reddit.com/r/ClaudeCode/comments/1xwyz3g/your_process_for_massive_or_complex_projects/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwyz3g-your-process-for-massive-or-co-20261116T051324Z.md:102 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xwyz3g/your_process_for_massive_or_complex_projects/>).
 
 ## Fact-Check Passes
 
 - [ ] **REQ-VERIFICATION-016** claudetto shall check a source-derived claim set by two independent passes: a second pass re-reads every primary source and checks each claim, then a separate cold session audits; and shall make the agent check an agent-written document or an earlier report against an outside source before it relies on a claim, and say which claims it has not checked.
   Acceptance: The second pass and the cold audit each report a mistake list; unconfirmed stories are dropped. The poster's run caught a number quoted blog-to-blog, a wrong discoverer, an incident date given as disclosure date, and two unconfirmed stories. A reply built on an agent-written document names each checked claim with its source; an unchecked claim is labelled as such. Verification: demonstration.
   Basis: reported, poster's own; reported, user. Status: partial at 088a227c (the findFactsByExperiment rule in plugins/claudetto/rules/ asks for outside-source checks; no two-pass step; the fact-check practice itself has no baseline term to search).
-  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:35 (url: https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/); reported, user, 2026-11-10 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/1b56d9ba-db9c-4286-88f0-94324ae915c1.jsonl:6`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/62fb35cb-dd6d-4719-9eaa-89f8692eb98f.jsonl:2913`).
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/>); reported, user, 2026-11-10 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/1b56d9ba-db9c-4286-88f0-94324ae915c1.jsonl:6`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/62fb35cb-dd6d-4719-9eaa-89f8692eb98f.jsonl:2913`).
 
 ## Done Criteria
 
 - [ ] **REQ-VERIFICATION-017** claudetto shall tell the agent the result, let it write the tests and define "done" itself, then have the user approve the criteria and review results, not process.
   Acceptance: A task carries agent-written done criteria that the user approves before the run. Verification: demonstration.
   Basis: reported. Status: unchecked (general practice; no baseline term to search).
-  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:85 (url: https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/).
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:85 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/>).
 
 ## Handover Test
 
 - [ ] **REQ-VERIFICATION-018** claudetto shall test a handover by running a fresh session on 2-3 prompts the old session handled well, and by keeping a short list of things the agent must never get wrong (constraints, failed approaches, the load-bearing decision) that the agent states and is scored on before touching code after a compaction or handoff.
   Acceptance: A failure means a rule is missing, not more detail needed. Suspicion: the roadmap returns but the one load-bearing constraint quietly drops (inferred, untested). Verification: test.
   Basis: reported (51); inferred, untested (79). Status: missing at 088a227c.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:239 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/); external/2026-10-22/reddit.com-r-claudecode-comments-1xbq4wv-how-do-developers-using-ai-cod-20261022T003343Z.md:241 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbq4wv/how_do_developers_using_ai_coding_agents_manage/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:239 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/2026-10-22/reddit.com-r-claudecode-comments-1xbq4wv-how-do-developers-using-ai-cod-20261022T003343Z.md:241 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbq4wv/how_do_developers_using_ai_coding_agents_manage/>).
 
 ## Separate QA
 
 - [ ] **REQ-VERIFICATION-019** claudetto shall run QA in a separate repo with no product code, testing only against the issue text with a screenshot for every step; no screenshot means skipped.
   Acceptance: Each QA step has a screenshot. A Stop hook only catches what tests cover; skipped parts are the untested ones. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbkgjm-what-matters-most-to-you-when-20261022T005215Z.md:72 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbkgjm/what_matters_most_to_you_when_working_with_claude/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbkgjm-what-matters-most-to-you-when-20261022T005215Z.md:72 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbkgjm/what_matters_most_to_you_when_working_with_claude/>).
 
 ## Diagnostic Replay
 
 - [ ] **REQ-VERIFICATION-020** claudetto shall diagnose drift by picking three past edits that crossed a module boundary and replaying each from a clean worktree once in a fresh session and once after compaction, recording the ADRs loaded and whether the boundary check failed.
   Acceptance: Only compacted runs drift: fix context selection. Both drift: enforce mechanically. Verification: demonstration.
   Basis: inferred. Status: missing at 088a227c.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbyxeo-how-do-i-structure-my-monorepo-20261022T010218Z.md:65 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbyxeo/how_do_i_structure_my_monorepo_and_workflow_to/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbyxeo-how-do-i-structure-my-monorepo-20261022T010218Z.md:65 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbyxeo/how_do_i_structure_my_monorepo_and_workflow_to/>).
 
 ## Skill Frontmatter Linter
 
-- [ ] **REQ-VERIFICATION-021** claudetto shall lint skill frontmatter against the real parser: flag a value starting `&`, `!`, `?`, `-`, or `#`, ` #` in a plain value, a comma inside the parentheses of a flow list, tabs and plain multi-line values, and a description plus `when_to_use` over the claudetto cap; warn on the colon and `@`-start cases anyway.
+- [ ] **REQ-VERIFICATION-021** claudetto shall lint skill frontmatter against the real parser: flag a value starting `&`, `!`, `?`, `-`, or `#`, `#` in a plain value, a comma inside the parentheses of a flow list, tabs and plain multi-line values, and a description plus `when_to_use` over the claudetto cap; warn on the colon and `@`-start cases anyway.
   Acceptance: A fixture for each flagged form fails the linter, and a fixture for each warned form warns. Warn on colon and `@` because claude.ai and other agents use other parsers. Verification: test.
   Basis: inferred. Status: missing at 088a227c (git grep lint for skills in plugins and tools: no hit; tools/descriptions.test.ts reads frontmatter descriptions only).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1004.
@@ -172,7 +172,7 @@
 - [ ] **REQ-VERIFICATION-027** claudetto shall run the real check at Stop and SubagentStop and block on failure, with a `stop_hook_active` guard against loops, re-blocks capped by `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (at most 8 in a row), verdicts from direct exit codes and never `| grep` or `| tail`, and `model` set on any agent-type hook (the default is Haiku with "use as few steps as possible"). A prompt-type Stop hook judges transcript text only and treats "tests pass" as evidence. The report states the denominator, "measured vs inferred", and the 2-3 least-certain items, and verifies at the layer the claim is about (a UI claim needs rendered observation). `onFailure` has no effect on Stop, SubagentStop, TaskCompleted, or TeammateIdle in 2.1.312 (a crash or timeout lets the turn end); the 2.1.326 schema text still says the field is ignored on those four events (chunk-m33vdkhs.js@20947).
   Acceptance: A failing check at Stop blocks once; a second stop with `stop_hook_active` passes; no block repeats more than 8 times. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:73; external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:4; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:40; claude 2.1.326: `Stop` and `SubagentStop` present (chunk-m33vdkhs.js@5212), `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` present with default 8 (chunk-27vawgnx.js@270820); https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes: a hook's `"decision": "block"` now holds in more cases). No `stop_hook_active` in plugins/ at 088a227c (the earlier removal of most Stop gates).
+  Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:73; external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:4; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:40; claude 2.1.326: `Stop` and `SubagentStop` present (chunk-m33vdkhs.js@5212), `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` present with default 8 (chunk-27vawgnx.js@270820); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes: a hook's `"decision": "block"` now holds in more cases). No `stop_hook_active` in plugins/ at 088a227c (the earlier removal of most Stop gates).
 
 - [ ] **REQ-VERIFICATION-028** claudetto shall run the project check at `TaskCompleted`; exit 2 keeps the task open and stderr goes to the model.
   Acceptance: A failing project check at `TaskCompleted` keeps the task open and shows stderr to the model. Verification: test.
@@ -225,26 +225,26 @@
   Acceptance: a "deployed" claim names the three proofs; status is one of Open, Closed, Watchlist, Deferred ("partially fixed" is not a status); after each compact, live state is re-probed and not read from the summary.
   Verification: demonstration.
   Basis: reported (origin: an agent trusted a stale server checkout). Status: missing at 088a227c (git grep for "Watchlist" finds nothing).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:179 (url: https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:179 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
 
 - [ ] **REQ-VERIFICATION-036** claudetto shall, for a bug fix, stash the fix, rerun the new regression test to show it fails without the change, pop, and show it passes.
   Acceptance: the report holds one failing run without the fix and one passing run with it.
   Verification: demonstration.
   Basis: reported (catches tests that mock the broken function and pass either way; costs one test run). Status: missing at 088a227c (plugins/claudetto/agents/Heracles.md names stash only as a forbidden command).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:193 (url: https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:193 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
   Conflict: Bug-Fix Claim Gate.
 
 - [ ] **REQ-VERIFICATION-037** claudetto shall ask up front for the list of tests edited and why, what was removed or loosened besides what was added, the files modified versus only read, and any config or env path hardcoded to the local machine.
   Acceptance: the delegation text asks the four lists before work starts.
   Verification: inspection.
   Basis: reported (twice caught a laptop-only path headed to commit). Status: partial at 088a227c (plugins/claudetto/agents/Heracles.md protects test assertions; no list is asked).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:153 (url: https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
 
 - [ ] **REQ-VERIFICATION-038** claudetto shall make the agent list the exact commands it ran, name the exact file or flow it never ran, and name the one thing it is least sure of, asked up front and not at done.
   Acceptance: a done report holds the three lists.
   Verification: demonstration.
   Basis: reported ("all tests pass" often followed a run of one file; asked up front it catches more). Status: missing at 088a227c (git grep for "least sure" finds nothing).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:117 (url: https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:117 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
 
 ## Alignment
 
@@ -252,7 +252,7 @@
   Acceptance: the check reports each strayed or assumed part with its place in the build.
   Verification: demonstration.
   Basis: reported (effort Low or Medium restores step-by-step asking while Extra or Max picks odd solutions on its own; inferred cause). Status: missing at 088a227c (git grep for "alignment" finds nothing).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:59 (url: https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:59 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/>).
 
 ## Skills
 
@@ -260,119 +260,119 @@
   Acceptance: each SKILL.md is under 500 lines and its description holds the three parts.
   Verification: inspection.
   Basis: cited (Anthropic skill guide via a mod-bot summary; no built-in eval runner, so roll your own). Status: missing at 088a227c (no line-count check; git grep for "500 lines" finds nothing).
-  Source: external/2026-10-27/reddit.com-r-claudeworkflows-comments-1wymat0-workflow-anthropics-offic-20261026T133946Z.md:53 (url: https://www.reddit.com/r/ClaudeWorkflows/comments/1wymat0/workflow_anthropics_official_agent_skill_best/).
+  Source: external/2026-10-27/reddit.com-r-claudeworkflows-comments-1wymat0-workflow-anthropics-offic-20261026T133946Z.md:53 (url: <https://www.reddit.com/r/ClaudeWorkflows/comments/1wymat0/workflow_anthropics_official_agent_skill_best/>).
 
 ## Completion Labels
 
 - [ ] **REQ-VERIFICATION-041** claudetto shall keep three separate completion labels (agent reported done, checked against this version, accepted by a person), shall mark a task done only on the user's evidence, and shall name whose words (user or assistant) were the evidence; it keeps a short list of claims that need a commit or test behind them and ranks a claim that others depend on above one nobody waits on.
   Acceptance: A done mark shows its evidence source; an assistant summary alone never marks done. Verification: test.
   Basis: measured by hand, one tool (2 of 49 closures came from the user's words; the rest from the assistant's summary) and reported, comment. Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:31,51,67 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:31,51,67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/>).
 
 ## Control Run And Denominator
 
 - [ ] **REQ-VERIFICATION-042** claudetto shall give every "0 results" or green check a control run on both sides (a case that must hit and a case that must not fire), print the denominator with every empty result (pages walked, items matched), and treat any zero as a broken read until a control page proves the selector works.
   Acceptance: A check ships with both cases, and an empty result prints its denominator. Verification: test.
   Basis: reported (each half alone let bugs through; five runs in a row returned a clean believable empty set after a site change). Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:79,111 (url: https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:79,111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/>).
 
 ## Reproduce Before Finding
 
 - [ ] **REQ-VERIFICATION-043** claudetto shall count nothing as a finding until it reproduces; the reproduction becomes the red test for the fix; the fix's author never signs off; a fresh agent reruns the checks, and a disagreement returns the item as refuted.
   Acceptance: A finding carries a reproduction; a sign-off comes from an agent that did not write the fix. Verification: test.
   Basis: reported (a review gave 12 candidate bugs; 5 reproduced and were fixed pre-release, 7 deferred, each needing reproduction). Status: partial at 088a227c (plugins/claudetto/agents/Heracles.md:15 marks each defect reproduced or read; no refutation rule).
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:97,99 (url: https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:97,99 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/>).
 
 ## Evasion Kit
 
 - [ ] **REQ-VERIFICATION-044** claudetto shall run every gate against a standard evasion kit (missing fixture, skipped test, assertion that should fail; each must be rejected) before review, and again when the gate changes.
   Acceptance: A gate change fails the kit run when an evasion gets through. Verification: test.
   Basis: reported, measured by one team (10 of 12 planted evasions got through one new gate). Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:45,89 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:45,89 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 ## Person Approves Merge
 
 - [ ] **REQ-VERIFICATION-045** claudetto shall let the reviewer agent block or request changes while the merge waits for a person's approval, and shall make hook and CI config paths read-only for agents.
   Acceptance: An agent write to a hook or CI config path is refused; no merge without a person's approval. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:81,89 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:81,89 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 ## Instruction File Budget
 
 - [ ] **REQ-VERIFICATION-046** claudetto shall test that the project instructions file stays within a byte budget (20,000 bytes in the report), failing the run when it is over; an overflowing paragraph moves to a spec and one pointer sentence stays.
   Acceptance: A unit test fails on a file over the budget and passes on one under it. Verification: test.
   Basis: reported. Status: partial at 088a227c (a line-count check exists in plugins/claudetto/hooks/features/line-file; no byte budget).
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:313 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:313 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
 ## Skill Eval Validity
 
-- [ ] **REQ-VERIFICATION-047** claudetto shall make an eval suite fail when it tests nothing and mark a skill eval run invalid when the tool-read events hold no read of the skill file path (a name in context proves nothing): assert `grader_count > 0` per case (grader files without frontmatter load as zero graders: 92 of 303 public cases never loaded on 2.1.295); test a converted rubric against known-good and deliberately failing outputs; add a control with the same loading instruction but an empty skill; keep non-loads as a result when the test is automatic selection; lint colons in skill descriptions (the Metis.md description with `: ` that `Bun.YAML.parse` refuses; the test reads frontmatter by line match as Claude Code does); lint rules and CLAUDE.md for rules lacking an incident link or review date and propose converting recurring rules into hooks; add a merged-result test gate for worktree agents and a loop detector for traces. A `/goal` prompt has a 4000-character limit with a fresh neutral verifier, and goals beyond about 3 phases need phase files (GOAL.md) on disk.
+- [ ] **REQ-VERIFICATION-047** claudetto shall make an eval suite fail when it tests nothing and mark a skill eval run invalid when the tool-read events hold no read of the skill file path (a name in context proves nothing): assert `grader_count > 0` per case (grader files without frontmatter load as zero graders: 92 of 303 public cases never loaded on 2.1.295); test a converted rubric against known-good and deliberately failing outputs; add a control with the same loading instruction but an empty skill; keep non-loads as a result when the test is automatic selection; lint colons in skill descriptions (the Metis.md description with `:` that `Bun.YAML.parse` refuses; the test reads frontmatter by line match as Claude Code does); lint rules and CLAUDE.md for rules lacking an incident link or review date and propose converting recurring rules into hooks; add a merged-result test gate for worktree agents and a loop detector for traces. A `/goal` prompt has a 4000-character limit with a fresh neutral verifier, and goals beyond about 3 phases need phase files (GOAL.md) on disk.
   Acceptance: A case with zero graders fails; an eval run with no read event of the skill file is marked invalid, not skill-enabled; the rule lint names each rule with no incident link or review date. A colon in a description broke skill loading silently; a runner had disabled skills in both arms (9.6 against 9.6; with skill 10 against 7, n=5). Verification: test.
   Basis: reported; measured (the line-match frontmatter read; the merged-result gate, by its author); inferred. Status: missing at 088a227c (no grader-count or skill-load assertion).
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr9vrf-before-you-ab-test-an-agent-skil-20261110T094754Z.md:69 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr9vrf/before_you_ab_test_an_agent_skill_check_the_logs/); openspec/changes/2-1-325-rearchitecture/design.md:116; external/export-Goal and Loop - kinda the same-.jsonl:22 (url: https://www.reddit.com/r/ClaudeCode/comments/1uaxlt6/goal_and_loop_kinda_the_same/); external/2026-10-03/export-Any recommendations to reduce the token usage for simple tasks in a large project-.jsonl:11 (url: https://www.reddit.com/r/ClaudeCode/comments/1wwl9a4/any_recommendations_to_reduce_the_token_usage_for/); https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes: `/goal clear` or a new `/goal` now sticks while Stop hooks run); claude 2.1.326: `/goal` limit unverified (a `SetGoal` tool is present, chunk-85qjfjsd.js@776).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr9vrf-before-you-ab-test-an-agent-skil-20261110T094754Z.md:69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr9vrf/before_you_ab_test_an_agent_skill_check_the_logs/>); openspec/changes/2-1-325-rearchitecture/design.md:116; external/export-Goal and Loop - kinda the same-.jsonl:22 (url: <https://www.reddit.com/r/ClaudeCode/comments/1uaxlt6/goal_and_loop_kinda_the_same/>); external/2026-10-03/export-Any recommendations to reduce the token usage for simple tasks in a large project-.jsonl:11 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wwl9a4/any_recommendations_to_reduce_the_token_usage_for/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes: `/goal clear` or a new `/goal` now sticks while Stop hooks run); claude 2.1.326: `/goal` limit unverified (a `SetGoal` tool is present, chunk-85qjfjsd.js@776).
 
 ## Invariant Tests
 
 - [ ] **REQ-VERIFICATION-048** claudetto shall pin each decision it cares about with an invariant test that fails with a one-line reason, and turn each rule the agent learned the hard way into a check in the build script (for example, a build that fails on any FP instruction); a cheap structural rule may be a regex over the source (for example the text of a concurrency cap).
   Acceptance: A test run fails with a one-line reason when a pinned decision is undone, and a fixed bug class has a failing check that guards it. One author reports 25 such tests (15 backend, 10 frontend) and that regressions of old decisions basically stopped; when a guard trips, Claude usually reads the decision entry and backs off. Verification: test.
   Basis: reported, one author. Status: missing at 088a227c.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:41,47 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/); external/2026-10-28/reddit.com-r-claudeai-comments-1xgtghe-claude-code-reverseengineered-th-20261028T060614Z.md:54 (url: https://www.reddit.com/r/ClaudeAI/comments/1xgtghe/claude_code_reverseengineered_the_xbox_360_kernel/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:41,47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/>); external/2026-10-28/reddit.com-r-claudeai-comments-1xgtghe-claude-code-reverseengineered-th-20261028T060614Z.md:54 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgtghe/claude_code_reverseengineered_the_xbox_360_kernel/>).
 
 ## Decision Entries Beside Tests
 
 - [ ] **REQ-VERIFICATION-049** claudetto shall say in the root rules file that a guard failure means an operator decision is being undone: fix the code, or change both the test and the doc on purpose; and shall keep a short decision entry with the why and the post-mortem beside the test.
   Acceptance: The rules file holds the guard-failure line. The decisions file holds the why; one author keeps 39 entries. Claude reads the entry before it touches guarded code, but the test is what stops it. Verification: inspection.
   Basis: reported, one author. Status: missing at 088a227c.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:42,43,71 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:42,43,71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/>).
 
 ## Fixture Of The Bad Response
 
 - [ ] **REQ-VERIFICATION-050** claudetto shall keep, for each fault with a real incident behind it, a recorded fixture of the bad response and a test that feeds it through the code and asserts it counts as a failure, with the failure message pointing at the decision entry.
   Acceptance: A regex over source guards the spelling, not the behavior: a cap moved into a constant or config breaks the guard or leaves it passing after the real limit changed. The cited fault is an upstream aggregator that rate-limits with HTTP 200 and a plain-text body, which looks like success; a fake rate-limited 200 fed through the fetcher must count as a failure. Verification: test.
   Basis: reported, one author (the fault); reasoned, one commenter (the fixture). Status: missing at 088a227c.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:33,71 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:33,71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/>).
 
 ## Tests In A Separate Run
 
 - [ ] **REQ-VERIFICATION-051** claudetto shall keep the agent from touching the tests that cover the code in the same run, and shall flag a changed test file in a fix-the-bug task as the first thing to read: commit tests before a subagent makes them pass; forbid edits to assertions, skips, and deletions; run `git diff` on test files; require a list of each test edit with old behaviour and reason. Spec-and-test flow: spec, acceptance criteria, failing tests staged with `git add`, implementation by a subagent that cannot edit tests, a separate no-context agent checks that tests are not fake; a ticket preflight collects every login and auth approval up front so an overnight run does not stall.
   Acceptance: A fix-the-bug run that changes a test file is flagged, and a subagent diff holds no test edit without a listed reason. One commenter reports an agent that fixed a failing test by deleting the assertions: the suite went green, coverage barely moved since the lines still ran, and the defect shipped, found days later in the diff. Verification: test.
   Basis: reported, one commenter; reported (one thread). Status: partial at 088a227c (plugins/claudetto/agents/Heracles.md protects test assertions).
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:98,100 (url: https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/); unresolved: no source line holds the staging flow.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:98,100 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/>); unresolved: no source line holds the staging flow.
 
 ## Per-Hunk Revert
 
 - [ ] **REQ-VERIFICATION-052** claudetto shall, after an implementer finishes, revert each changed hunk one at a time and rerun the tests for that file; a hunk that can be removed with everything still green is dead or untested.
   Acceptance: Each hunk that survives its own revert is listed. The author calls this mutation testing scoped to the diff, cheap enough to run on every change. Verification: test.
   Basis: reported, one commenter. Status: missing at 088a227c (git grep for hunk and mutation in plugins finds no such step).
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:137 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:137 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
 
 ## Seeded Violation
 
 - [ ] **REQ-VERIFICATION-053** claudetto shall prove each rule that carries a check by seeding a violation and watching the check fail; a rule that cannot fail that way is still only text.
   Acceptance: A seeded violation makes the check fail. Verification: test.
   Basis: reported, one commenter. Status: missing at 088a227c.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:63 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:63 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
 
 ## Test Edit Record
 
 - [ ] **REQ-VERIFICATION-054** claudetto shall have the agent copy the old assertion and its reason into the commit message or the ticket before it touches a test, and shall label the original reason "unknown" when the test is the only surviving record, instead of letting the agent fill it in.
   Acceptance: A commit that edits a test holds the old assertion and its reason, or the word unknown. The failing test is often the only place the old limit is written, so editing it erases the record; then the new requirement and why the changed behavior was accepted are recorded. Verification: inspection.
   Basis: reported, two commenters. Status: missing at 088a227c.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xm2v1a-what-should-claude-code-do-wit-20261102T184500Z.md:130,134 (url: https://www.reddit.com/r/ClaudeCode/comments/1xm2v1a/what_should_claude_code_do_with_a_failing_test/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xm2v1a-what-should-claude-code-do-wit-20261102T184500Z.md:130,134 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xm2v1a/what_should_claude_code_do_with_a_failing_test/>).
 
 ## Predicate Rules Get A Check
 
 - [ ] **REQ-VERIFICATION-055** claudetto shall give each rule that can be stated as a predicate a check attached and take it out of the markdown; rules with no check are stepped over once context is tight.
   Acceptance: Each predicate rule names its check. The commenter's examples: "done = the calendar event prefix changed to a checkmark, no api call = not done" and "numbers only from a command run in this session". One case: 26 demo sites went out unstyled for about 16 hours because an inline style hash was missing from the CSP; a verifier script that fetches every page and checks the hash caught it in one pass, 26 of 26 after the fix. Verification: test.
   Basis: reported, one commenter. Status: missing at 088a227c.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:91,93 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:91,93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
 
 ## Rule Text Check
 
 - [ ] **REQ-VERIFICATION-056** claudetto shall run a CI step that pulls every backticked path and command out of the rules files and fails when one no longer exists, and shall keep a short why on each rule.
   Acceptance: A rule that names a renamed script or a moved folder fails CI. A package rules file falls under the code's CODEOWNERS line; each root rules file needs its own CODEOWNERS line. The rules without a reason are the ones nobody dares to delete. Verification: test.
   Basis: reported, one commenter. Status: missing at 088a227c.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xalih0-for-those-running-claude-code-on-20261102T084737Z.md:100,102 (url: https://www.reddit.com/r/ClaudeAI/comments/1xalih0/for_those_running_claude_code_on_large_monorepos/).
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xalih0-for-those-running-claude-code-on-20261102T084737Z.md:100,102 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xalih0/for_those_running_claude_code_on_large_monorepos/>).
 
 ## Referee Registry
 
@@ -415,14 +415,14 @@
 - [ ] **REQ-VERIFICATION-062** claudetto shall require a repro bundle for each regression claim: exact model selection, repo commit, prompt, rules file, expected result, failing assertions, and several fresh sessions against a previous model.
   Acceptance: a perceived "nerf" is checked against environment rot (many skills or plugins, a 950k session never compacted) or a harness change before it is reported; public nerf trackers showed no degradation (cited). Verification: demonstration.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/export--clear vs -compact.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact/); external/export-I ran out of codex on chatgpt pro with 4 days left. how hard is it to actually kill max 20x with opu.jsonl:29.
+  Source: external/export--clear vs -compact.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact/>); external/export-I ran out of codex on chatgpt pro with 4 days left. how hard is it to actually kill max 20x with opu.jsonl:29.
 
 ## Outcome Rating
 
 - [ ] **REQ-VERIFICATION-063** claudetto shall let hooks or agents grade each run against a rubric that counts human interventions, with the human supplying the grade by default.
   Acceptance: unproven. Verification: demonstration.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-10-03/export-Has anyone compared different orchestration approaches for complex software engineering work-.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1wwp2am/has_anyone_compared_different_orchestration/).
+  Source: external/2026-10-03/export-Has anyone compared different orchestration approaches for complex software engineering work-.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wwp2am/has_anyone_compared_different_orchestration/>).
 
 ## Independent Review
 

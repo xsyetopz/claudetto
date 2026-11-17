@@ -61,7 +61,7 @@
 
 - [ ] **CTX-608** Dossier S12: issue 32376 (opened 9 March 2026) reports a hook's condition narrowed from all code changes to only "SIGNIFICANT" code changes, with a displayed backup diff. It was closed as not planned. The enforcement code was writable by the actor it governs. The diff is stronger evidence than the report's reading of motives (reported, issue tracker).
   Basis: reported, issue tracker.
-  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:167-169 (https://github.com/anthropics/claude-code/issues/32376).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:167-169 (<https://github.com/anthropics/claude-code/issues/32376>).
 
 - [ ] **CTX-609** Dossier S13: a subagent-hook report shows a write blocked in the parent but allowed in a Task subagent. Its reproduction says the blocking script exits 1, and exit 1 alone is non-blocking (S48), so its configuration is confounded. It is not a standalone proof of a product vulnerability (reported).
   Basis: reported.
@@ -69,11 +69,11 @@
 
 - [ ] **CTX-610** Dossier S14: issue 43772 (opened 5 April 2026) reports subagents with `bypassPermissions` running commands outside a hook-based allowlist. It is not a reproduction on a current version (reported).
   Basis: reported.
-  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:175-179 (https://github.com/anthropics/claude-code/issues/43772).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:175-179 (<https://github.com/anthropics/claude-code/issues/43772>).
 
 - [ ] **CTX-611** Dossier S18: issue 46828 (incident 11 April 2026) alleges an approved position-closing script included an unapproved sweep of about $1,446.65. The figure is an allegation; transaction records and legal conclusions were not validated (reported).
   Basis: reported, allegation.
-  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:201 (https://github.com/anthropics/claude-code/issues/46828).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:201 (<https://github.com/anthropics/claude-code/issues/46828>).
 
 ## Hooks And Events
 
@@ -137,7 +137,7 @@
 - [ ] **CTX-624** Hooks never receive cost from Claude Code (issue 11008), so a cost reporter must read the session JSONL files.
   Acceptance: The fact holds as the author of a hook reports it; the issue was not opened. The gap named line 30; the text sits at line 48. Verification: probe.
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:48 (url: https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/).
+  Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>).
 
 ## Hooks And Events
 
@@ -164,7 +164,7 @@
 
 - [ ] **CTX-629** Autonomous scheduled loop, one team (measured): a scheduled session wakes with no memory, reads a status file and task queue from the repo, works up to 4 tasks of roughly equal size, each going planner, builder, reviewer; 181 runs, 2,278 subagents, 463 merged tasks over a month; finished reviewed task cost fell $33 to $6.90 (-79%) at API prices; biggest step: lead and builders from Opus 5 xhigh to Opus 5.5 medium ($23-33 to $7.45, tokens per run halved, reviewer found fewer serious bugs); roles: orchestrator Opus 5.5 high, builder medium, builder-lite Sonnet 5.5 medium, reviewers Opus 5.5; about $6.7k API-equivalent per month on a $200 plan. One session is one branch, one worktree, one PR, archived at merge; the plan is written to a repo file before code. 2.1.326: `/loop` and `/schedule` present (binary string search). Baseline: partial; compare the claudetto-openspec loop design (not read).
   Basis: measured, one team.
-  Source: external/2026-10-14/export-Supercharging your max subscription!.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1x4ixl9/supercharging_your_max_subscription/).
+  Source: external/2026-10-14/export-Supercharging your max subscription!.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x4ixl9/supercharging_your_max_subscription/>).
 
 - [ ] **CTX-630** `claude -p` and Agent SDK credits (reported, citing the October 7 docs update): subscription-authenticated `claude -p` and SDK use subscription limits, not the new API credits; with an API key from the linked Console org they use monthly credits (Max 5x 100 USD, Max 20x 200 USD, Team Standard 20 per seat, Team Premium 100 per seat, pooled cap 500 USD); credits are for API, Agent SDK, and Managed Agents, not Claude Code or chat. Check through clawdipedia-docs before use.
   Basis: reported. Unverified in 2.1.326. Baseline: missing.
@@ -219,7 +219,7 @@
 
 - [ ] **CTX-641** In CC 2.1.319 a changed tool input voids auto mode's review (`serverClassifierInputRewritten`); such calls return "gave no verdict". 2.1.326: present (`serverClassifierInputRewritten`, chunk-jfnh5wnd.js:40592). The 2.1.326 release notes say a PreToolUse hook's `updatedInput` is now kept when more than one hook answers a tool call, so the rewrite runs in more cases.
   Basis: measured.
-  Source: openspec/specs/low-hitl/spec.md:249; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  Source: openspec/specs/low-hitl/spec.md:249; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 - [ ] **CTX-642** `$.env.get` sees a key in settings `env` (`seen-1`); a project `.env` is not read (P13); no header gives 403, a made-up key gives 401 (P9). 2.1.326: present (`$.env.get`; binary string search).
   Basis: measured.

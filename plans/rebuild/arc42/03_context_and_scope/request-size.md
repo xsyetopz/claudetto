@@ -164,7 +164,7 @@
   Basis: observed and cited.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:50-57.
 
-- [ ] **CTX-696** The system prompt holds the cache boundary line __SYSTEM_PROMPT_DYNAMIC_BOUNDARY__.
+- [ ] **CTX-696** The system prompt holds the cache boundary line **SYSTEM_PROMPT_DYNAMIC_BOUNDARY**.
   Basis: cited.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:57.
 
@@ -190,40 +190,40 @@
 
 - [ ] **CTX-702** Measured on 2.1.319: first request tools 29,295 -> 7,633 bytes with the Mod; bare `-p` first request 18,065 vs baseline 36,902 (47,683 before deferring three tools); paid two-request session 9,228 vs 9,048 tokens; the second request cache-reads the whole first and writes 258-266 tokens; the prefix after handover differs only in `messages[1]` (engine-added environment block; not fixable, keep no code). With the plugin loaded the TUI starts in auto mode (the 2.1.326 release notes say sessions with no mode set now start in auto mode when the organization policy has not loaded); a compound command raised "Auto mode can't check actions" under the fake API (artifact).
   Basis: measured (2.1.319). Status: unchecked (2.1.319-era numbers; not re-measured on 2.1.326).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2609; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:65; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:262; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2609; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:65; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:262; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 ## Request Size
 
 - [ ] **CTX-703** The poster measures the Opus-plans/Sonnet-executes plus code-graph plus 400K-context setup only by the usage meter: 50% extra weekly allowance lasted to day 4-5, 25% extra to day 2-3, and now to day 7, with about 60% savings credited to the combination. There is no A/B and the tasks are "comparable"; subagents self-report "1M+ tokens saved".
   Basis: reported, eyeballed, one author.
   Conflict: One user's internal audit found a code-graph token-saving tool cost as much as or more than it saved.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:150 (url: https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:150 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
 
 - [ ] **CTX-704** One user's internal audit found a code-graph token-saving tool (trail/graft) cost as much as or more than it saved, and he removed it; the author of another post in the batch claims 30-40% savings by usage-meter eyeballing.
   Basis: reported, one audit, figures not given.
   Conflict: The poster measures the Opus-plans/Sonnet-executes plus code-graph plus 400K-context setup only by the usage meter.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:134 (url: https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:134 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
 
 - [ ] **CTX-705** One poster moved a 10-agent batch job from Opus to Sonnet and it used about as many tokens, only slower, so a saving is price per token, not token count. A same-task-both-ways run is proposed as the settle.
   Basis: reported, one test.
-  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:57 (url: https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/).
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:57 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
 
 - [ ] **CTX-706** A reviewer subagent checked every commit for two weeks: 86 runs, stopped exactly one (over a stale comment link), so the per-commit review cost was not repaid.
   Basis: reported, one user.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:100 (url: https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:100 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
 
 - [ ] **CTX-707** One contributor reports about 7.4M Claude tokens spent on Ghidra labelling alone for one project.
   Basis: reported, single user.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1475 (url: https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1475 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
 - [ ] **CTX-708** The REA skill prompt plus skill list cost about 150k tokens, its compat variant 50k or more; one Ghidra-launching request of 1M tokens killed 4 A40 GPUs on a local Qwen.
   Basis: reported, single user, 10 minutes.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1700 (url: https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1700 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
 - [ ] **CTX-709** One user (reported) found Opus 5.5 never invoked the REA skill in any session and did the work without it; skill packs only make the model more prescriptive.
   Basis: reported, one user.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:553 (url: https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:553 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
 - [ ] **CTX-710** A commenter keeps main sessions on a default autocompact of 150k-240k, treats a starting context above 60k as a concern, and launches workers with about 11k starting context and a 100k autocompact limit.
   Basis: reported, one user, unmeasured.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:48 (url: https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:48 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).

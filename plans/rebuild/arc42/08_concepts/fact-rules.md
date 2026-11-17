@@ -8,7 +8,7 @@
 - [ ] **CC-062** claudetto shall source facts in this order: the project first (code, tests, git history, logs, the running program), then primary external sources (versioned docs, specs, upstream source, issue trackers); cite each source beside its claim; search when a fact may have changed since training; label each statement observed this session, documented (cited), reported by the user, or inferred (an inference stays a hypothesis until a check confirms it); a user-reported test or fix count is evidence with user attribution.
   Acceptance: each factual claim in a reply carries one of the four labels. Verification: inspection.
   Basis: reported. Status: partial at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
 
 - [ ] **CC-063** Every artifact, claim, test result, and decision traces to its source and authority; an agent's self-report is checked against git changes, tool records, and the user's instructions, and an agent note never becomes evidence by repetition.
   Acceptance: each claim in a report cites a command, file, or user instruction. Verification: inspection.

@@ -6,43 +6,43 @@
   Acceptance: Marked reported, one commenter (autocompact set at 600k), unverified in 2.1.326. Verification: probe.
   Basis: reported, one commenter.
   Status: n/a (fact).
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:203 (url: https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/)
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:203 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/>)
 
 - [ ] **CTX-315** Hook log fields: `tool_use_id` is on the PreToolUse input and on both post-tool inputs (a retry is a new id; the permission-request input has no tool_use_id); `is_interrupt` on PostToolUseFailure tells a stopped call from an errored one; Stop does not fire on interrupt, and API errors fire StopFailure, so also log StopFailure and SessionEnd; a PreToolUse id still open at Stop goes in a "never resolved" bucket, not counted as failure or denial; a failure does not prove nothing happened; async is for record-only hooks since PreToolUse must stay synchronous to block.
   Acceptance: Each field is checked against claude 2.1.326 before use; `tool_use_id`, `is_interrupt`, `PostToolUseFailure`, and `StopFailure` are present in the 2.1.326 hook input and event list (code search `is_interrupt` at chunk-bprgtdg6.js@272645, `StopFailure` at chunk-bprgtdg6.js@268960), the other fields are unverified in 2.1.326. Verification: probe.
   Basis: reported by the author of a recorder tool and commenters; the fields not named in the Acceptance line are unverified in 2.1.326. The plan holds only "log PostToolUseFailure besides PostToolUse".
   Status: n/a (fact); PostToolUseFailure and is_interrupt appear nowhere in plugins at 088a227c; StopFailure appears in `features/stop-notice`.
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuk52d-if-you-log-claude-codes-hooks-20261116T052718Z.md:37,39,41,67,75,79 (url: https://www.reddit.com/r/ClaudeCode/comments/1xuk52d/if_you_log_claude_codes_hooks_add/)
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuk52d-if-you-log-claude-codes-hooks-20261116T052718Z.md:37,39,41,67,75,79 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuk52d/if_you_log_claude_codes_hooks_add/>)
 
 - [ ] **CTX-316** Measured hook effect over 34,053 hook events (Nov 1-12, one poster): when a hook let the action through with a warning, the agent corrected on its next try 36% of the time; when it rejected the action and named the replacement command, 95%.
   Acceptance: Reject only where the move must change (irreversible or expensive), since each rejection costs a step. Verification: inspection.
   Basis: measured by the poster. In a small test a rejection stopped 3 of 3 but the agent took the suggested command 1 of 3; a rejection whose suggested path another rule blocked made the agent invent a path; a context note injected before a command did not stop it (3 of 3 ran).
   Status: n/a (fact).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:75,77,79 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/)
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:75,77,79 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>)
 
 - [ ] **CTX-317** Auto memory's "feedback" note type is corrections plus approaches the user confirmed, so telling Claude "it works" is a signal it saves; the first 200 lines of the MEMORY.md index load each session.
   Acceptance: Say "remember that" for what matters and check /memory. Verification: inspection.
   Basis: reported (a commenter citing docs; not verified here, unverified in 2.1.326).
   Status: n/a (fact).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvcy0y-tip-take-the-time-to-say-it-wo-20261116T052243Z.md:93,97 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvcy0y/tip_take_the_time_to_say_it_works_to_claude_after/)
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvcy0y-tip-take-the-time-to-say-it-wo-20261116T052243Z.md:93,97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvcy0y/tip_take_the_time_to_say_it_works_to_claude_after/>)
 
 - [ ] **CTX-318** Account-level experiments can change the model behind one model string.
   Acceptance: "Feels like a different model" can be a different model; the experiment ID is saved in the session logs. Verification: probe.
   Basis: reported, one commenter: account in "experiment 763" from Nov 1 to 6, during which claude-opus-5-5 knew news from late May 2026 that it does not know outside the experiment; same-week reports of extra unrequested additions, ignored CLAUDE.md and uppercase Go error strings from Fable 5.2.
   Status: n/a (fact).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvfbtd-opus-55-not-working-well-today-20261116T051607Z.md:57,59,95 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvfbtd/opus_55_not_working_well_today/)
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvfbtd-opus-55-not-working-well-today-20261116T051607Z.md:57,59,95 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvfbtd/opus_55_not_working_well_today/>)
 
 - [ ] **CTX-319** Long-session evidence from one poster's five longest sessions (29 to 54 h): three never compacted and peaked at 425k-490k; one auto compaction fired at 323k (Opus 5.5, CLI 2.1.322) while a same-model 54 h session on 2.1.321/2.1.322 reached 480k without one; the 36.5 h session's three drops (621k, 469k, 539k down to 32k-43k) were manual /compact.
   Acceptance: A flat per-request average mixes compacted sessions with slow climbers; model or version did not separate them; `compact_boundary` in the JSONL logs trigger and preTokens but not the threshold. Verification: inspection.
   Basis: measured by the poster.
   Status: n/a (fact).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:57,65,67,71 (url: https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/)
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:57,65,67,71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>)
 
 - [ ] **CTX-320** A CLAUDE.md prose pointer "look at AGENTS.md" is compacted with the conversation, while an `@AGENTS.md` import is re-read verbatim and not diluted.
   Acceptance: Split files need a "read X before task Y" line so they are re-read after compaction. Verification: probe.
   Basis: reported, inferred, one commenter; compaction named factor 1 of instruction drift.
   Status: n/a (fact).
-  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:96,97 (url: https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/)
+  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:96,97 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>)
 
 ## Claude Code Surface And Version Notes
 
@@ -125,7 +125,7 @@
 - [ ] **CTX-337** With remote control enabled Claude Code puts a link to the conversation in the commit message, and commenters add that author emails always get committed.
   Acceptance: The facts hold as two commenters report them. Verification: probe.
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:61; external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:57 (url: https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:61; external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
 
 ## Claude Code Surface And Version Notes
 

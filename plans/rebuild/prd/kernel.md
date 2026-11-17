@@ -27,7 +27,7 @@
 - [ ] **REQ-KERNEL-005** claudetto shall number each hook verdict with a per-device monotonic counter, so silence is self-evident: the next record shows how many never arrived.
   Acceptance: a gap in the counter sequence is visible in the log without a second source. Verification: test.
   Basis: reported, commenters, no test (a hash-chained log proves what arrived but not that sending stopped). Status: missing at 088a227c (git grep for "monotonic" finds nothing).
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:62 (url: https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:62 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/>).
 
 - [ ] **REQ-KERNEL-006** claudetto shall use each hook kind for its purpose, found by probe and trial and error, and shall put each rule on the surface that mitigates its failure best (hook, Mod, output style, system prompt, appended prompt, global CLAUDE.md, rule).
   Acceptance: each failure in the risk register names its surface and a probe result. Verification: probe.

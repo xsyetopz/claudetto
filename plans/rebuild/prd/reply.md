@@ -5,62 +5,62 @@
 - [ ] **REQ-REPLY-001** claudetto shall carry these prompt recipes as power phrases: ask "what information would you need" and "what tools would you build before solving" in one window, then solve in a new window; state what was wrong instead of rerolling; for a big task ask for a short plan first and read it before code.
   Acceptance: Each recipe appears once in the power phrases. The thread's "turn a paste into a skill on its third repeat" is not in the source; the source says skills pay for tasks you repeat. Verification: inspection.
   Basis: reported. Status: partial at 088a227c (the plan holds plan-first, not the ask-needs-then-new-window step).
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xugxu4-how-do-i-prompt-good-20261112T231549Z.md:45,48,54,84 (url: https://www.reddit.com/r/ClaudeAI/comments/1xugxu4/how_do_i_prompt_good/).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xugxu4-how-do-i-prompt-good-20261112T231549Z.md:45,48,54,84 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xugxu4/how_do_i_prompt_good/>).
 
 ## Clarifying Questions
 
 - [ ] **REQ-REPLY-002** claudetto shall, when the user asks, ask questions until a shared understanding exists, split the reply into what is known, what is still to verify, and the next action, and give a confidence level; the split stops an educated guess hardening into fact.
   Acceptance: The reply carries the three parts and a confidence level. Ask only when the answer changes something expensive to undo (plan rule). Verification: demonstration.
   Basis: reported (2 votes for the know-verify-next form). Status: missing at 088a227c (git grep for knowns found none).
-  Source: external/2026-11-14/reddit.com-r-claudecoding-comments-1xrk02o-tldr-whats-the-one-prompt-yo-20261113T223628Z.md:55 (url: https://www.reddit.com/r/ClaudeCoding/comments/1xrk02o/tldr_whats_the_one_prompt_you_keep_coming_back_to/); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:532 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/).
+  Source: external/2026-11-14/reddit.com-r-claudecoding-comments-1xrk02o-tldr-whats-the-one-prompt-yo-20261113T223628Z.md:55 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xrk02o/tldr_whats_the_one_prompt_you_keep_coming_back_to/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:532 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>).
 
 ## Review The Choices
 
 - [ ] **REQ-REPLY-003** claudetto shall end a feature by asking the agent "what did you decide, consider and not do, and why", over the choice classes: where data lives, server versus browser checks, money as cents or decimals, reuse or rewrite.
   Acceptance: The thread adds that a self-report misses silent defaults, so deterministic schema diffs and migration dry-runs back it up for silent defaults, missing auth checks, and broken migration assumptions. The thread's point that a separate agent should do the explaining is not in the source. Each feature has 3-5 real decisions. Verification: demonstration.
   Basis: reported. Status: partial at 088a227c (the plan lists judgment calls; no choice-class list or schema-diff backstop).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv6dia-tip-from-someone-who-reviews-a-20261116T052047Z.md:29,75 (url: https://www.reddit.com/r/ClaudeCode/comments/1xv6dia/tip_from_someone_who_reviews_a_lot_of_ai_code/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xv6dia-tip-from-someone-who-reviews-a-20261116T052047Z.md:29,75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv6dia/tip_from_someone_who_reviews_a_lot_of_ai_code/>).
 
 ## Rules File Cost
 
 - [ ] **REQ-REPLY-004** claudetto shall keep a rule that costs too much to follow small: split a 19,000-token rules file into an index plus one file per host and change the rule to "grep the index, then read the one file it names".
   Acceptance: A session loads only the file it needs; a rule that costs too much to follow gets dropped without notice. The file in the source is a ports file read before choosing a port. Verification: inspection.
   Basis: reported (one poster's analysis of 500 builder sessions). Status: missing at 088a227c (git grep for per-host found none).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwt6qe-a-poster-analyzed-500-builder-20261116T051511Z.md:122 (url: https://www.reddit.com/r/ClaudeCode/comments/1xwt6qe/a_poster_analyzed_500_builder_discussions_and/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwt6qe-a-poster-analyzed-500-builder-20261116T051511Z.md:122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xwt6qe/a_poster_analyzed_500_builder_discussions_and/>).
 
 ## Skill Overlap
 
 - [ ] **REQ-REPLY-005** claudetto shall add a skill only after the same correction repeats, and measure with `/context` and `/skills` before and after an install.
   Acceptance: Skills with near-identical descriptions for one moment (Superpowers brainstorm and TDD against mattpocock spec-grilling and TDD) leave the pick to the wording; each description loads at session start. Verification: probe.
   Basis: reported (2 commenters). Status: missing at 088a227c (the plan states skill value, placement, and the disable-model-invocation cost, with no overlap rule).
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx6lxa-do-coding-skills-make-claude-a-20261116T051025Z.md:129,131 (url: https://www.reddit.com/r/ClaudeCode/comments/1xx6lxa/do_coding_skills_make_claude_actually_better_or/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx6lxa-do-coding-skills-make-claude-a-20261116T051025Z.md:129,131 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx6lxa/do_coding_skills_make_claude_actually_better_or/>).
 
 ## Positive Prompting
 
 - [ ] **REQ-REPLY-006** claudetto shall write each prompt, rule, and hook text as the wanted output or replacement behaviour stated positively with examples, not as a NEVER, avoid, or banned-phrase list.
   Acceptance: No claudetto prompt text lists words or things to avoid without a positive example of the wanted output; no shipped rule or hook text bans a quoted phrase, and each names what to do instead (for example, acknowledge a correction with one word). Differs from the old plan: it scoped the positive definition to verbosity; this is a general prompt rule. Prompts and scorers name only the wanted behaviour, never the unwanted words. Verification: inspection.
   Basis: reported by commenters, 47 votes top; reported (the user pasted an argument that a negative constraint puts the banned tokens into context; no source URL given); user decision. Status: have at 088a227c (`git grep -n -i -E 'never|avoid|don't|do not|banned' 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/output-styles` finds no hit)
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:49 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19, reported, user, 2026-11-13; user goal set through `/goal`, 2026-11-16 15:28 UTC, prompts name only the wanted behaviour (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:13); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:49 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19, reported, user, 2026-11-13; user goal set through `/goal`, 2026-11-16 15:28 UTC, prompts name only the wanted behaviour (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:13); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
   Conflict: Output Style Sentence Form (name the exact tic to ban).
 
 - [ ] **REQ-REPLY-007** claudetto shall describe a trait or background tersely in a prompt ("morally upright without ever talking about it"), because more background in context means more leakage.
   Acceptance: A prompt that carries a persona or background holds one terse trait line, not lore or reference documents. Verification: inspection.
   Basis: reported. Status: unchecked (general practice; no baseline term to search).
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:107 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:107 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
 
 ## Reviewer Load
 
 - [ ] **REQ-REPLY-008** claudetto shall never leave two tasks waiting on the user at once: each task pauses at a decision point, the user reviews one at a time in set batch times, and a note records what was approved and what is checked next.
   Acceptance: At most one task is waiting on the user at any time. Verification: demonstration.
   Basis: reported, 4 comments. Status: unchecked (general practice; no baseline term to search).
-  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:69 (url: https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/).
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/>).
 
 ## Report Artifact
 
 - [ ] **REQ-REPLY-009** claudetto shall let the user read a report artifact without the model's reasoning, and shall prefer charts, diagrams, and proportional-font rich text over monospaced prose for glanceability.
   Acceptance: The user can ask for a report and read only it. Verification: demonstration.
   Basis: reported. Status: unchecked (general practice; no baseline term to search).
-  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:94 (url: https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/).
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:94 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/>).
 
 ## Open Items
 
@@ -81,40 +81,40 @@
 - [ ] **REQ-REPLY-012** claudetto shall tell the agent to state the mechanism in one or two sentences, how it works and not what it will do, before any code exists.
   Acceptance: the reply guidance text holds the rule. Verification: inspection.
   Basis: reported practice. Status: missing at 088a227c (git grep for "mechanism" in rules, reply, prompt: no hit).
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcnaru-we-measured-how-60-engineers-dir-20261024T061824Z.md:39 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcnaru/we_measured_how_60_engineers_direct_ai_coding/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcnaru-we-measured-how-60-engineers-dir-20261024T061824Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcnaru/we_measured_how_60_engineers_direct_ai_coding/>).
 
 ## Claims Register
 
 - [ ] **REQ-REPLY-013** claudetto shall guide the agent to store each number in one claims file as claim, section or page, the source line itself, then the link, and to use only claims in that file; the check rereads that spot, so "nothing to paste" yields "couldn't verify". When a source changes, every entry is reread and an entry the source no longer backs is marked unsupported with the reason and cannot be used.
   Acceptance: a number with no stored source line is reported as unverified; an entry marked unsupported is refused. Verification: test.
   Basis: reported practice. Status: missing at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:113,117 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:113,117 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
 
 - [ ] **REQ-REPLY-014** claudetto shall guide the agent to label every number it calculated itself "our arithmetic" with its inputs shown, so a derived figure never passes as sourced. A CLI calculator skill that logs full equations is the stronger form.
   Acceptance: a derived figure in a reply carries the label and its inputs. Verification: demonstration.
   Basis: reported practice. Status: missing at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:77,121,125,129 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:77,121,125,129 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
 
 ## Teaching Workflow
 
 - [ ] **REQ-REPLY-015** claudetto shall guide a teaching reply to list prerequisites by a depth cap (SHORT 1, NORMAL 2, LONG 3), order them by post-order DFS, ask check questions and then STOP without the answers in the same message, and answer a follow-up from a new angle, not in the same words.
   Acceptance: a teaching reply ends at its check questions with no answers; a follow-up uses a new analogy. Verification: demonstration.
   Basis: reported template; tested by one commenter on Sonnet at medium, not beyond. Status: missing at 088a227c (git grep for teach, glossary, prerequisite: no hit).
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:122,181,221,300,313 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcpua5/is_sonnet_55_bad_at_explaining_stuff/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:122,181,221,300,313 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcpua5/is_sonnet_55_bad_at_explaining_stuff/>).
 
 ## Industry Standard Term
 
 - [ ] **REQ-REPLY-016** claudetto shall guide the agent to preface its answer to a vague description with "the industry standard term for this is ...", and to flag its confidence in the term.
   Acceptance: the reply to a vague description names the standard term and a confidence flag. Verification: demonstration.
   Basis: reported opinion. It is said to raise prompting skill and constrain inventive drift. Counterpoints: forcing standard terms yields clichés (line 42, line 94); the named term may be the trendiest, not the most precise (line 202). Status: missing at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcx3td-do-yall-nondev-vibecoders-implem-20261024T063457Z.md:25,29,42,94,202 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcx3td/do_yall_nondev_vibecoders_implement_any_kind_of/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcx3td-do-yall-nondev-vibecoders-implem-20261024T063457Z.md:25,29,42,94,202 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcx3td/do_yall_nondev_vibecoders_implement_any_kind_of/>).
 
 ## End-Of-Reply Lines
 
 - [ ] **REQ-REPLY-017** claudetto shall guide the agent to end a reply with one plain-word line on what it touched and why, and with "what would break first if 100 people used this?".
   Acceptance: a reply that changes files ends with both lines. Verification: demonstration.
   Basis: reported. The FEYNMAN.md memory style named in the same thread is an unexplained idea (opinion). A running glossary file is a separate suggestion in the same thread (line 202). Status: missing at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcx3td-do-yall-nondev-vibecoders-implem-20261024T063457Z.md:180,188,198 (url: https://www.reddit.com/r/ClaudeAI/comments/1xcx3td/do_yall_nondev_vibecoders_implement_any_kind_of/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcx3td-do-yall-nondev-vibecoders-implem-20261024T063457Z.md:180,188,198 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcx3td/do_yall_nondev_vibecoders_implement_any_kind_of/>).
 
 ## Disputes and Openers
 
@@ -182,7 +182,7 @@
 - [ ] **REQ-REPLY-027** claudetto shall define verbosity positively and word a brevity rule to name what to cut instead of a length target.
   Acceptance: the reply prompt says "concise means no repetition, filler or hedging, not short", not a negative correction ("do not be lengthy but not terse"); the Concise output style leads with the result, cuts narration, names what to cut (restating the question, recaps, hedging), and says "these rules win over general formatting guidance"; no prose cap "under N lines" is used, because caps cost reasoning tokens. Verification: inspection.
   Basis: reported (the re-injection each turn as a system-reminder is copied from a post, unverified). Status: partial at 088a227c (`plugins/claudetto/hooks/features/reply/reply.ts`; `plugins/claudetto/output-styles/Concise.md` rule 6 states 'short by default' and a caveat limit, with no what-to-cut list).
-  Source: unresolved, the Reddit posts behind the old item were not located by grep; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388 holds the narration side; external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:37 (url: https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/).
+  Source: unresolved, the Reddit posts behind the old item were not located by grep; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388 holds the narration side; external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
   Conflict: Concise Output (task report stays under about 150 words).
   Conflict: Agent-Conduct Text Settled by the User (hard numeric caps beat "be concise").
   Conflict: Reply Shape (end each reply on the result; an end-of-task report runs 5-10 lines).
@@ -204,7 +204,7 @@
 - [ ] **REQ-REPLY-030** claudetto shall, for a step that needs what only the user holds (a login in the macOS keychain, a one-time trust setup, the user's secret or terminal), give the exact command to run, ready to paste, as one runnable command or script per step with the place to run it (a separate terminal) and with output to files the agent can read back, go on with every other step, not run the step with the sandbox off or wait idle, and bundle remaining decisions into one question with a recommendation and a default. A gate refusal makes the agent hand the command to the user.
   Acceptance: a reply that hands off holds the full command, where to run it, one command per step, and one bundled question; a task that needs a keychain login ends with a command block for the user and the rest of the work done. Verification: demonstration.
   Basis: reported (audit). Status: missing at 088a227c (no grep hit for exact-command text or sandbox-off guidance in `plugins/claudetto`).
-  Source: external/2026-10-11/export-What's the best way to hand off to a new terminal - without asking for a hand off prompt-.jsonl:18 (url: https://www.reddit.com/r/ClaudeCode/comments/1x2gt63/whats_the_best_way_to_hand_off_to_a_new_terminal/); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:41; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:3369, user decision, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:276, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:292, user decision, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:292, reported, user, 2026-11-10.
+  Source: external/2026-10-11/export-What's the best way to hand off to a new terminal - without asking for a hand off prompt-.jsonl:18 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x2gt63/whats_the_best_way_to_hand_off_to_a_new_terminal/>); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:41; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:3369, user decision, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:276, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:292, user decision, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:292, reported, user, 2026-11-10.
 
 ## Behaviour Requirements From The Agent Terms Dossier
 
@@ -218,11 +218,11 @@
 - [ ] **REQ-REPLY-032** claudetto shall compose the root prompt per model in `prompt.compose` (main loop only; it does not reach subagents): Sonnet and Haiku get finish, scope, ideas-stop, and no-unasked-review paragraphs; Haiku gets a short prompt and a rules-hold-when-the-user-argues line; Opus 5.5 gets length, scope, a subagent-damping line, and no verification line. The system prompt stays stable from request 1 (a changed `system` or `tools` breaks the thinking prefix, 400 on Fable 5.2). It omits "think carefully", CRITICAL emphasis, standing delegate lines, and unscoped never-absolutes. The root prompt weighs a disputed claim as a third party's, checks it the same turn, opens with the corrected fact, drops an act the user says nobody asked for, and looks up a credential in the repo `.env` before it asks.
   Acceptance: root prompt size on claude 2.1.325 fake API, Opus clean config (a measurement on 2.1.325, unverified in 2.1.326): Opus 4,553, Sonnet 5,227, Haiku 4,174 chars; stock Concise 1,373; tools array 28,455 chars, 12 tools; the lab cap holds the root prompt to the stock lean body char count. Verification: test.
   Basis: cited (Anthropic guide) and measured. Status: have at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts:73-82` OPUS joins no FINISH or SCOPE; :84-92 hold them, :102 SONNET joins them)
-  Source: external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1ws08mu/claude_opus_55_official_prompting_guide/); openspec/changes/2-1-325-rearchitecture/design.md:38; plugins/claudetto/hooks/features/prompt/compose.ts@088a227c; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (the agent's decision, citing the Opus guide: remove explicit verification instructions from an Opus prompt); observed in transcript, 2026-11-16.
+  Source: external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1ws08mu/claude_opus_55_official_prompting_guide/>); openspec/changes/2-1-325-rearchitecture/design.md:38; plugins/claudetto/hooks/features/prompt/compose.ts@088a227c; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (the agent's decision, citing the Opus guide: remove explicit verification instructions from an Opus prompt); observed in transcript, 2026-11-16.
 
 ## Output Style: Need From You
 
-- [ ] **REQ-REPLY-033** claudetto shall list in "What I Need From You" only what the user alone can do, each as one plain `- ! <command>` bullet (no checkbox), with at most ONE command bullet per reply (the one the work needs first), and a command bullet only if its text starts with `! ` or `` `! ``. Questions go only through the AskUserQuestion popup: a `- [ ]` question item makes the Stop block say to ask by popup and drop the item. The heading capitalizes every word. The wording "a command only the user can run" is replaced, because it makes the agent hand off whatever a gate refuses.
+- [ ] **REQ-REPLY-033** claudetto shall list in "What I Need From You" only what the user alone can do, each as one plain `- ! <command>` bullet (no checkbox), with at most ONE command bullet per reply (the one the work needs first), and a command bullet only if its text starts with `!` or `` `! ``. Questions go only through the AskUserQuestion popup: a `- [ ]` question item makes the Stop block say to ask by popup and drop the item. The heading capitalizes every word. The wording "a command only the user can run" is replaced, because it makes the agent hand off whatever a gate refuses.
   Acceptance: held-out form 28/32 (Wilson 0.719-0.950); the output style, Stop check, and `claudetto-you-should-know` agree so a question reaches the user once. Verification: test.
   Basis: measured and read. Status: missing at 088a227c (`git grep 'What I Need'` finds nothing under `plugins/`).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-20/README.md:176; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:320; openspec/specs/run-limits/spec.md:71; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:300.
@@ -234,7 +234,7 @@
 - [ ] **REQ-REPLY-034** claudetto shall write replies with the actor as the subject and its own verb, each clause spelled out ("The check shows a gap. Task 4.3 fixes it." passes; "The check surfaces a gap that the plan wants to address" fails: animate verb, inanimate actor); each rule leads with what to do; a negation only inside a sentence naming the act to bound it; no bare prohibition with never, don't, do not, without, avoid, nothing, none, or nor. The `<register>` block: write the fact, the corrected result, the next step; a mistake as error and cause; the check behind each claim; an answer to the question asked; each step the agent can take itself, done; only done steps as a report; a choice the agent can make, made and named; after a remark, notice, or reply already on screen, only what is new. Also: answer first, severity levels for findings, one bullet is one idea in one sentence, work at full depth and lead with the result, decision cards with a recommended default, name the exact tic to ban (negative parallelism, stacked "No X." lines, closing "Just.", excess colons, "quietly", "silently") because "write naturally" avoids nothing; match format to question type; when drift returns after some turns, add a short example and a concrete format ("decision first, three bullets, details on request") and re-check several turns in.
   Acceptance: a held-out reply set passes a rule check for animate verbs and bare prohibitions. Verification: test.
   Basis: reported (output-style drift, tic list) and checked rule text. Status: partial at 088a227c (`plugins/claudetto/output-styles/Concise.md`, `hooks/features/reply/reply.ts`, `prompt/compose.ts`).
-  Source: openspec/specs/agent-facing-text/spec.md:8; external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:130; external/2026-10-02/export-My -anti Claude-speak- system prompt.jsonl:3 (url: https://www.reddit.com/r/ClaudeAI/comments/1wc7tn7/my_anti_claudespeak_system_prompt/).
+  Source: openspec/specs/agent-facing-text/spec.md:8; external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:130; external/2026-10-02/export-My -anti Claude-speak- system prompt.jsonl:3 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wc7tn7/my_anti_claudespeak_system_prompt/>).
   Conflict: Positive Prompting (write each prompt as the wanted output or replacement behaviour, with no banned phrase).
 
 ## Stop Block Keeps the Screen
@@ -242,7 +242,7 @@
 - [ ] **REQ-REPLY-035** claudetto shall end each Stop block that asks for a reply again (grader, unread-grade, slice-commit, register blocks) with `KEEP_ANSWER` (the screen keeps the blocked reply; a full resend shows one report twice in two wordings that can disagree). Blocks that name lines to move or delete (ask form, command form, missing file, agree opener) name the edit and carry no `KEEP_ANSWER`. For a waited-on background task the Stop note sends the last reply nowhere again and tells the model to follow output with Monitor filtered to step and error lines. A SendMessage result shows on screen from the tool result; no hook writes it into a reply.
   Acceptance: the grader block text ends with `KEEP_ANSWER`; the ask-form block text does not. Verification: test.
   Basis: reported. Status: missing at 088a227c (`git grep KEEP_ANSWER` finds nothing under `plugins/`; `hooks/features/stop-notice/` exists). `Monitor` is present in claude 2.1.326 (tool list, `chunk-85qjfjsd.js@532`). Release note 2.1.326: Monitor now tells Claude when a watch expires with no events and its command wrote to stderr, and which file holds the output.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:366; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:794; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/agent-conduct/spec.md:131; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:366; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:794; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/agent-conduct/spec.md:131; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 ## Harness Messages Quoted as They Appear
 
@@ -304,8 +304,8 @@
 
 ## Reply Quote Command
 
-- [ ] **REQ-REPLY-044** claudetto shall register `/reply`, which appends `Re:`, each quoted line behind `> `, and a blank line to the prompt draft and sends nothing, so the user can reply to a selected part of the agent's last reply with a quote block headed "Re:". The quoted text is `$.ui.selection()` when not blank, else paragraph N of the last assistant message with text. `/reply` alone, or N out of range, prints the numbered paragraphs and leaves the draft. The command binds no key.
-  Acceptance: `/reply 2` appends paragraph 2 prefixed with `> `; `/reply` alone prints numbered paragraphs and leaves the draft unchanged; a passage the user selects in the TUI reaches the agent as a quote block above the reply, and where mods cannot do this a probe names the limit. Verification: test.
+- [ ] **REQ-REPLY-044** claudetto shall register `/reply`, which appends `Re:`, each quoted line behind `>`, and a blank line to the prompt draft and sends nothing, so the user can reply to a selected part of the agent's last reply with a quote block headed "Re:". The quoted text is `$.ui.selection()` when not blank, else paragraph N of the last assistant message with text. `/reply` alone, or N out of range, prints the numbered paragraphs and leaves the draft. The command binds no key.
+  Acceptance: `/reply 2` appends paragraph 2 prefixed with `>`; `/reply` alone prints numbered paragraphs and leaves the draft unchanged; a passage the user selects in the TUI reaches the agent as a quote block above the reply, and where mods cannot do this a probe names the limit. Verification: test.
   Basis: measured (2.1.319: a plugin Button action can name an engine keybinding action but declares no chord; `prompt.edit` raises no event for a Shift+Left that moves no caret). Status: have at 088a227c (`features/reply/reply.ts:40` uses `$.ui.selection`, confirmed with `git grep 'ui.selection' 088a227c -- plugins/claudetto/hooks/features/reply/reply.ts`; `reply.test.ts:39` tests `/reply N`). `$.ui.selection` is present in claude 2.1.326 (`chunk-qg227pzf.js@3309`) and `prompt.edit` is present (`chunk-qg227pzf.js@3953`).
   Source: openspec/specs/reply-quote/spec.md:10; plugins/claudetto/hooks/features/reply/reply.ts:40@088a227c; plugins/claudetto/hooks/features/reply/reply.test.ts:39@088a227c; plugins/claudetto/hooks/features/reply@088a227c; user decision, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048).
 
@@ -371,7 +371,7 @@
 - [ ] **REQ-REPLY-053** claudetto shall narrow a "close every loose end" rule to loose ends this change caused, and list suggested next steps before the PR opens, then do each or mark it out of scope with a reason.
   Acceptance: a reply to "done" lists next steps; none is left undone and unmarked. Verification: demonstration.
   Basis: reported, two users (a blanket rule gold-plates). Status: missing at 088a227c (git grep for "loose end" finds nothing).
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:76 (url: https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:76 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/>).
   Conflict: Finish The Work (close every loose end in the same PR).
 
 ## Assumptions
@@ -379,7 +379,7 @@
 - [ ] **REQ-REPLY-054** claudetto shall, when two or more reasonable approaches change the result or an assumption would materially change the solution, stop and ask, and otherwise pick the smallest reversible change and list its assumptions at the end, so they can be scanned in seconds; stack and repo commands stay in project instructions.
   Acceptance: a finished task ends with an assumptions list; a task with a solution-changing assumption gets a question, a task without one gets the smallest reversible change and a stated assumption; the agent front-loads the reason in the first message (the model fills missing context with the worst case), asks a doubt once with the useful facts, declines at most once and briefly, and reconsiders on new facts, saying whether the answer changes. Verification: test.
   Basis: reported. Status: partial at 088a227c (`plugins/claudetto/hooks/features/decide/texts.ts:49` is `DECIDE_GIVE_BACK` ("state the assumption, or put it to the user with `AskUserQuestion`"), checked with `git show 088a227c:plugins/claudetto/hooks/features/decide/texts.ts`; no end-of-task list).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:79 (url: https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/); openspec/specs/agent-conduct/spec.md:31; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:47; external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:113 (url: https://www.reddit.com/r/ClaudeAI/comments/1xryurq/whats_that_one_instruction_in_your_claude/); plugins/claudetto/hooks/features/decide/texts.ts:49@088a227c.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:79 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/>); openspec/specs/agent-conduct/spec.md:31; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:47; external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:113 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xryurq/whats_that_one_instruction_in_your_claude/>); plugins/claudetto/hooks/features/decide/texts.ts:49@088a227c.
   Conflict: State Assumptions (state assumptions and wait for them to be resolved).
 
 ## Pushback
@@ -387,21 +387,21 @@
 - [ ] **REQ-REPLY-055** claudetto shall phrase an anti-sycophancy instruction as a checkable behavior ("before agreeing, list the two strongest objections"), keep it in project instructions and not in turn 1, and add a UserPromptSubmit hook so it stays recent.
   Acceptance: the hook text holds the checkable wording on each prompt. Verification: inspection.
   Basis: reported (objections soften before they vanish, from about message 30-40). Status: missing at 088a227c.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:74 (url: https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:74 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/>).
 
 ## After A Long Session
 
 - [ ] **REQ-REPLY-056** claudetto shall offer, after a long session, a quiz of the model on what it did wrong, what it could do better, and what could be pulled into a skill.
   Acceptance: the quiz prompt names those three questions. Verification: demonstration.
   Basis: reported, one user (another notes the answer depends on how the question is framed). Status: missing at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdphff-am-i-really-supposed-to-outsma-20261024T061449Z.md:87 (url: https://www.reddit.com/r/ClaudeCode/comments/1xdphff/am_i_really_supposed_to_outsmart_claude_to_avoid/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdphff-am-i-really-supposed-to-outsma-20261024T061449Z.md:87 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdphff/am_i_really_supposed_to_outsmart_claude_to_avoid/>).
 
 ## Question Cap
 
 - [ ] **REQ-REPLY-057** claudetto shall tell the model to ask at most 5 questions about audience, format, and constraints before it begins, not a general "ask me any questions".
   Acceptance: a reply to an open task holds at most 5 questions, each on audience, format, or a constraint. Verification: test.
   Basis: reported, no measure. Status: partial at 088a227c (`plugins/claudetto/hooks/features/decide/texts.ts:49` asks questions through `AskUserQuestion` with no cap).
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrtmvs-asking-claude-what-do-you-need-t-20261109T151940Z.md:50 (url: https://www.reddit.com/r/ClaudeAI/comments/1xrtmvs/asking_claude_what_do_you_need_to_know_before/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrtmvs-asking-claude-what-do-you-need-t-20261109T151940Z.md:50 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrtmvs/asking_claude_what_do_you_need_to_know_before/>).
   Conflict: Concise Output (ask one clarifying question, then proceed).
 
 ## Plan Check
@@ -409,56 +409,56 @@
 - [ ] **REQ-REPLY-058** claudetto shall tell the model to name the files it will touch before it edits across a few files, and to fix the plan first when that list misses one.
   Acceptance: the plan turn lists the files before the first edit; a file edited outside the list sends the model back to the plan; a change run opens with a file list. One commenter says the list caught a few wrong guesses before they became a mess. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrvnbi-what-is-the-best-way-to-learn-an-20261110T094238Z.md:77 (url: https://www.reddit.com/r/ClaudeAI/comments/1xrvnbi/what_is_the_best_way_to_learn_and_make_the_most/); external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:90 (url: https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrvnbi-what-is-the-best-way-to-learn-an-20261110T094238Z.md:77 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrvnbi/what_is_the_best_way_to_learn_and_make_the_most/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:90 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/>).
 
 ## Unknown Facts
 
 - [ ] **REQ-REPLY-059** claudetto shall tell the model to write TO FILL IN for information that is not in what the user gave, and not to guess it.
   Acceptance: given a task whose input lacks a price, the reply holds TO FILL IN at that place and no invented value. Verification: test.
   Basis: reported, inferred reasoning (a checkable condition, was it in the message, works where "say so if unsure" fails because the model cannot tell when it guesses). Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:42,156 (url: https://www.reddit.com/r/ClaudeAI/comments/1xryurq/whats_that_one_instruction_in_your_claude/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:42,156 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xryurq/whats_that_one_instruction_in_your_claude/>).
 
 ## Anti-Generic Output
 
 - [ ] **REQ-REPLY-060** claudetto shall steer output away from generic defaults with 3 to 5 examples that vary enough to avoid unintended patterns, not with an instruction such as "avoid a generic AI look".
   Acceptance: a style prompt holds 3 to 5 varied examples and no generic-avoidance instruction; one example is not accepted. Verification: inspection.
   Basis: cited (Anthropic's Opus 5.5 prompting guide and prompting docs, second-hand) and reported (scout of about 100 candidates, about 10 marked good with reasons, feedback saved at three levels: skill main file for all runs, per-type reference file, per-project folder, with a catalog index the scout reads first). Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs4oh8-how-we-stopped-getting-generic-o-20261110T094228Z.md:29,31,35,37 (url: https://www.reddit.com/r/ClaudeAI/comments/1xs4oh8/how_we_stopped_getting_generic_output_from_claude/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs4oh8-how-we-stopped-getting-generic-o-20261110T094228Z.md:29,31,35,37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs4oh8/how_we_stopped_getting_generic_output_from_claude/>).
 
 ## Cannot With Evidence
 
 - [ ] **REQ-REPLY-061** claudetto shall require "can't" and "isn't there" to come with where the agent stopped plus one artifact (the command and its output, or the file line), otherwise the reply says "not checked yet"; test a capability before stating "X has no Y", and read the diff, not the summary (n=10).
   Acceptance: a claim of inability without an artifact is rejected; evidence covers only the command it came from (a permission error on one tool is not evidence about an untried tool); a "cannot" in a reply names the test behind it. Cheaper models fail by silent omission and do not know they are unsure; Haiku at low effort invents reasons not to test. Verification: test.
   Basis: reported. Status: partial at 088a227c (`plugins/claudetto/output-styles/Concise.md` line 10 marks a claim unverified only when no held tool can check it; `git grep -n -i -E 'not checked yet|isn.t there|cannot|can.t' 088a227c -- plugins/claudetto/rules plugins/claudetto/hooks/features/prompt` finds no rule that asks for an artifact behind "can't").
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:78 (url: https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/); openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:27; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:53.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:78 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/>); openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:27; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:53.
 
 ## Glossary
 
 - [ ] **REQ-REPLY-062** claudetto shall keep a project glossary: the model uses no language from it except as defined and none outside it when the glossary can serve; a separate pass reviews glossary adherence; plans name each function and class in backticks and a later step that swaps in a synonym is flagged.
   Acceptance: a reply that swaps a defined term for a synonym is flagged by the review pass; a rename is not reported as a missing feature. Verification: test.
   Basis: reported (one commenter; grows over the project). Status: missing at 088a227c.
-  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xqp2l0-sick-of-semantic-substitution-20261110T172348Z.md:61,69 (url: https://www.reddit.com/r/ClaudeAI/comments/1xqp2l0/sick_of_semantic_substitution/).
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xqp2l0-sick-of-semantic-substitution-20261110T172348Z.md:61,69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqp2l0/sick_of_semantic_substitution/>).
 
 ## Term Consistency Style
 
 - [ ] **REQ-REPLY-063** claudetto shall ship an output style that forbids literary, essayist, and journalistic techniques, metaphors, and synonyms and demands term consistency.
   Acceptance: the style text holds each ban and the term-consistency rule. Verification: inspection.
   Basis: reported, one user (largely fixed synonym drift and vague allusions). Status: partial at 088a227c (`plugins/claudetto/output-styles/Concise.md` exists; it holds none of these bans).
-  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xqp2l0-sick-of-semantic-substitution-20261110T172348Z.md:139 (url: https://www.reddit.com/r/ClaudeAI/comments/1xqp2l0/sick_of_semantic_substitution/).
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xqp2l0-sick-of-semantic-substitution-20261110T172348Z.md:139 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqp2l0/sick_of_semantic_substitution/>).
 
 ## Pre-Mortem
 
 - [ ] **REQ-REPLY-064** claudetto shall tell the model to list what could break before it writes anything, and shall keep gates that update with each feature or fix; with smaller chunks and more oversight when a change's fallout stops being handled.
   Acceptance: a plan holds a break list before the first write; a gate exists for each fix. Verification: test.
   Basis: reported, one author (catches more). Status: missing at 088a227c.
-  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtwd6q-opus-55-now-unable-to-foresee-futu-20261111T234828Z.md:37,49 (url: https://www.reddit.com/r/claude/comments/1xtwd6q/opus_55_now_unable_to_foresee_future_problems/).
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtwd6q-opus-55-now-unable-to-foresee-futu-20261111T234828Z.md:37,49 (url: <https://www.reddit.com/r/claude/comments/1xtwd6q/opus_55_now_unable_to_foresee_future_problems/>).
 
 ## State Assumptions
 
 - [ ] **REQ-REPLY-065** claudetto shall tell the model to state its assumptions and uncertainties and to wait for them to be resolved before it proceeds, unless told to proceed on them.
   Acceptance: a reply with an open assumption stops and waits unless the prompt says to proceed. Verification: test.
   Basis: reported, one author. Status: partial at 088a227c (`plugins/claudetto/hooks/features/decide/texts.ts:49` states the assumption or asks).
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:196 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:196 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>).
   Conflict: Assumptions (pick the smallest reversible change and list the assumptions at the end).
 
 ## Rewrite Pass
@@ -466,121 +466,121 @@
 - [ ] **REQ-REPLY-066** claudetto shall run a rewrite pass with per-character voice and avoided monotone rhythm, and shall require an artifact that lists each change with before, after, and reason, then an overview table.
   Acceptance: a rewrite pass returns the change artifact and the table. Verification: demonstration.
   Basis: reported, one author. Status: missing at 088a227c.
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xu92kx-what-does-claude-really-suck-at-20261112T231534Z.md:68,70,80 (url: https://www.reddit.com/r/ClaudeAI/comments/1xu92kx/what_does_claude_really_suck_at/).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xu92kx-what-does-claude-really-suck-at-20261112T231534Z.md:68,70,80 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xu92kx/what_does_claude_really_suck_at/>).
 
 ## One Decision At A Time
 
 - [ ] **REQ-REPLY-067** claudetto shall carry a rule that, when documents do not settle a choice, the agent asks with 2 to 4 concrete options, one marked recommended with a short rationale, through the structured-choice tool if present, else one short message.
   Acceptance: the rule text states the 2-4 options, the recommended mark, and the one-decision-at-a-time limit. Verification: inspection.
   Basis: reported, one user, estimate (the recommended option is right in about 90% of cases, weaker on UX flows). Status: missing at 088a227c (AskUserQuestion appears only in plugins/claudetto-you-should-know/hooks/register.ts:268).
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:209,213 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:209,213 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
 ## Prove Wrong First
 
 - [ ] **REQ-REPLY-068** claudetto shall carry a rule that, before writing a change, the agent names how it would prove the change wrong (a test or case), which becomes the acceptance check; after more than two failed fix attempts it writes three lines of what it now believes about the bug before the next try.
   Acceptance: the rule text holds both steps. Verification: inspection.
   Basis: reported, one user (half the time the belief is wrong). Status: missing at 088a227c.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:323 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:323 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
 ## Brevity Rules
 
 - [ ] **REQ-REPLY-069** claudetto shall add to a brevity rule 'if you left out anything that changes the decision, list it in one line at the end', and test the instruction on an old conversation where the key details are known.
   Acceptance: the style text holds the omission line. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:41 (url: https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
 
 - [ ] **REQ-REPLY-070** claudetto shall scope a short-reply rule to replies to the user, not to the doc or code written.
   Acceptance: the style text names replies to the user as its scope. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:49 (url: https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
 
 ## UI Work Rules
 
 - [ ] **REQ-REPLY-071** claudetto shall carry a UI-work rule: give realistic data (long names, missing values, mixed statuses) before asking for a layout, and ask to make the most frequent task easy to reach, then style that screen.
   Acceptance: the rule text holds both steps. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:99 (url: https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:99 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/>).
 
 - [ ] **REQ-REPLY-072** claudetto shall carry a UI-work rule: the generic look comes from equal visual weight (same card size, padding, shadow); make the one number or action that matters twice as big and quiet the rest.
   Acceptance: the rule text holds the visual-weight rule. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:59 (url: https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:59 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/>).
 
 - [ ] **REQ-REPLY-073** claudetto shall carry a taste-elicitation step for UI work: sort about 30 screenshots on a 5-point dislike-to-like spectrum, or describe the vibe and have Claude spike a few directions, pick one, iterate; build the concept visually elsewhere first.
   Acceptance: the rule text holds the step. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:83,125 (url: https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:83,125 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/>).
 
 - [ ] **REQ-REPLY-074** claudetto shall carry a UI-work step for a user without design vocabulary: prompt 'Interview me to develop a comprehensive brand kit and style guide'; a design-system file (Figma tokens or one derived from a liked site) is declared binding for all UI.
   Acceptance: the rule text holds the interview step and the binding design-system file. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:244 (url: https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:244 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/>).
 
 - [ ] **REQ-REPLY-075** claudetto shall carry a rule that a long spec opens with 'Before you write any code, suggest improvements, ideas and opinions, and correct my mistakes and misunderstandings'.
   Acceptance: the rule text holds the opening line. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:206 (url: https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:206 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/>).
 
 - [ ] **REQ-REPLY-076** claudetto shall carry a UI-consistency rule: decide design once (one component library, a tokens file with 2-3 colors, one font, one spacing scale, one radius, a CLAUDE.md rule to use only those); give reference screenshots plus a REFERENCES.md instead of adjectives; build one representative screen first and review desktop and mobile screenshots before the rest; one icon set; motion only for game-state changes at 200-300 ms with prefers-reduced-motion.
   Acceptance: the rule text holds each step. Verification: inspection.
   Basis: reported, advice from commenters, unmeasured, low relevance to a plugin core. Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xm5lz3-what-toolsplugins-do-you-use-wit-20261109T152902Z.md:30-44 (url: https://www.reddit.com/r/ClaudeAI/comments/1xm5lz3/what_toolsplugins_do_you_use_with_claude_code_to/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xm5lz3-what-toolsplugins-do-you-use-wit-20261109T152902Z.md:30-44 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xm5lz3/what_toolsplugins_do_you_use_with_claude_code_to/>).
 
 ## Self-Critique Wrapper
 
 - [ ] **REQ-REPLY-077** claudetto shall offer a self-critique wrapper: restate the task, solve, assume the answer is wrong and find the single likeliest error, fix, then give the final answer plus a low, medium or high confidence and the one assumption that would break it; use it only when something smells off, because the assume-wrong step invents problems.
   Acceptance: the wrapper text holds the five steps and the use limit. Verification: inspection.
   Basis: reported, 11 votes. Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:50,109-113,195 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:50,109-113,195 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>).
 
 ## Restate Before Change
 
 - [ ] **REQ-REPLY-078** claudetto shall carry a rule: 'Before you change anything, explain back what you think I'm asking and list what you are NOT going to touch', which catches misread requirements before code.
   Acceptance: the rule text holds the restatement and the not-touch list. Verification: inspection.
   Basis: reported, 24 votes. Status: missing at 088a227c.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:195 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:195 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>).
 
 ## Reasoning Trace
 
 - [ ] **REQ-REPLY-079** claudetto shall make the agent state why before it acts, so a human review of the action is fast and meaningful.
   Acceptance: a change the agent proposes carries its reason before execution. Wrong AI conclusions come with good justifications, so reviewers accept plausible ones; the trace helps review but does not replace it. Verification: inspection.
   Basis: reported, commenters. Status: missing at 088a227c.
-  Source: external/2026-10-30/reddit.com-r-anthropic-comments-1xhodax-interesting-anthropic-study-20261028T190543Z.md:39,75 (url: https://www.reddit.com/r/Anthropic/comments/1xhodax/interesting_anthropic_study/).
+  Source: external/2026-10-30/reddit.com-r-anthropic-comments-1xhodax-interesting-anthropic-study-20261028T190543Z.md:39,75 (url: <https://www.reddit.com/r/Anthropic/comments/1xhodax/interesting_anthropic_study/>).
 
 ## High-Stakes Research
 
 - [ ] **REQ-REPLY-080** claudetto shall have the agent list the exact queries it ran before it answers a high-stakes research question, and tell the user to open every cited source.
   Acceptance: a research answer lists its queries. One user ran the logged query on 14 engines and the found article appeared on none; the same terms on Google often give different results. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:41 (url: https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/>).
 
 ## Proportionality
 
 - [ ] **REQ-REPLY-081** claudetto shall have the agent weigh the real stakes before it raises a concern, and give a small-stake situation no warning or long explanation.
   Acceptance: a reply to a small-stake action holds no warning block. Verification: demonstration.
   Basis: reported, one thread, model self-report. Status: missing at 088a227c.
-  Source: external/2026-10-31/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261031T083808Z.md:33 (url: https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/).
+  Source: external/2026-10-31/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261031T083808Z.md:33 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>).
 
 ## Anchoring On The Agent
 
 - [ ] **REQ-REPLY-082** claudetto shall have the agent, before any analysis of a judgment call, list every fork where a reasonable analyst could go either way and what each option changes, and recommend nothing; and shall offer the user a way to write their own call down before asking.
   Acceptance: the fork list appears before any recommendation and the writeup shows which calls were inherited. Commenters give the reason: a second adversarial review still hands over another recommendation to anchor on; the poster lists adversarial prompts ("poke holes", "give three reasons this is the wrong call") and a debate subagent, anecdotal. Verification: demonstration.
   Basis: reasoned, commenters; reported, anecdotal. Status: missing at 088a227c.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:57,59,202,226,250,252,268 (url: https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:57,59,202,226,250,252,268 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>).
 
 ## Prose Style
 
 - [ ] **REQ-REPLY-083** claudetto shall give the reply style a contract up front (plain words, no metaphors unless asked, short declarative sentences, delete any sentence whose loss drops no information) and shall accept a sample of the user's own writing to match.
   Acceptance: the style rules hold the contract and a way to supply a sample. One commenter reports that a sample calibrates faster than abstract rules, that a skill in the Google developer documentation style fixed Opus 5 prose, and that a list of annoying phrases the model rotates out helps; the commenter's cause, RLHF raters preferring "considered" prose, is inferred. Verification: demonstration.
   Basis: reported, anecdotal; inferred (cause). Status: missing at 088a227c.
-  Source: external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:222,262,278 (url: https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/).
+  Source: external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:222,262,278 (url: <https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/>).
 
 ## Debugging Recipes
 
 - [ ] **REQ-REPLY-084** claudetto shall have the agent, when it debugs an answer, argue against its own conclusion before it improves the answer, and compare the broken case with a tiny known-good example before it proposes a fix.
   Acceptance: the argument names the assumption that would make the answer wrong, and a known-good example sits beside the broken one. One commenter says the useful part is whether the model can name that assumption, not whether it changes its mind. Verification: demonstration.
   Basis: reported, one commenter. Status: missing at 088a227c.
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:131,133 (url: https://www.reddit.com/r/ClaudeAI/comments/1xl9c92/forget_the_usual_claude_tips_what_are_the_strange/).
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:131,133 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl9c92/forget_the_usual_claude_tips_what_are_the_strange/>).
 
 ## Rules Text
 
@@ -644,7 +644,7 @@
 - [ ] **REQ-REPLY-093** claudetto shall treat the work as done only when everything asked is delivered and nothing else, and shall reject "done" on a summary: a real check ran with exit 0 (or the report names the check that could not run and why) and its command output, exit code, test run, or screenshot is pasted; the targeted failure was rerun and is gone; `git status` shows only intended changes; no user-owned value changed without named consent; no session narration in shipped source; no own background job runs unless handed over; the Record is updated; the report follows clause SL-6 of the service-level agreement and gives what was checked and skipped.
   Acceptance: a reply claiming done carries command output; the claim is verified at its own layer (a UI needs a rendered page; an eval harness a live run, not fakes); the verdict comes from the exit code and complete output, not a pipe through grep, tail, or head; the report gives the denominator ("9 of 12"), measured against inferred, and the 2-3 least sure items; "fixed" only after rerunning the failing case, else "changed, not yet verified"; a task stays unticked while a dependent check is red or a delegate reported partial. Users add (reported): beyond code, overview, control, trust (the agent often skips places unless pointed out every time), continuity, realism (Claude overestimates duration), and momentum (restart effort after a break makes users procrastinate); list files modified versus only read; hardcoded local paths, env, and config (a laptop-only path was caught twice); review the diff for missed edge cases, then run relevant tests plus a build; check impact on external systems, shared resources, and callers; a second-model review; "done" often fixes one instance, so demand a repo-wide sweep for the same pattern with proof. Discrimination check: when the baseline also scores 1.00, report "case does not separate the arms", never "pass" (session e473653f; router cases too easy yet set a cheaper-pair table, session 1213c32c); changing a case after results is a test change, so rerun the original; thin samples (shipping after 2 runs of a one-caller case, session d84dc11f). Keep traces and changed files for every paid run and the graded inputs (a work folder deleted after each run left two failing runs undiagnosable, session 2a88ad5a; graded inputs deleted, no re-grade, session a481f295). Orchestrator re-verification caught most subagent false reports; a fake-tested harness exited 0 on all-invalid runs. A claim of done or "tests pass" holds only when the last test run came after the last change and passed. Verification: test.
   Basis: cited; user decision, 2026-11-16. Status: partial at 088a227c (verify skill; the Stop gate for unchecked claims is not in `plugins/`).
-  Source: external/please-use-me-often/agent-terms/SERVICE-LEVEL-AGREEMENT.md:51; openspec/specs/agent-conduct/spec.md:420; external/2026-10-22/reddit.com-r-claudecode-comments-1xbkgjm-what-matters-most-to-you-when-20261022T005215Z.md:33 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbkgjm/what_matters_most_to_you_when_working_with_claude/); unresolved: no source line holds the completion-gate text; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: conduct from actions, proven done claims, checks pass); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded).
+  Source: external/please-use-me-often/agent-terms/SERVICE-LEVEL-AGREEMENT.md:51; openspec/specs/agent-conduct/spec.md:420; external/2026-10-22/reddit.com-r-claudecode-comments-1xbkgjm-what-matters-most-to-you-when-20261022T005215Z.md:33 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbkgjm/what_matters_most_to_you_when_working_with_claude/>); unresolved: no source line holds the completion-gate text; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: conduct from actions, proven done claims, checks pass); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded).
 
 ## Planning
 
@@ -658,21 +658,21 @@
 - [ ] **REQ-REPLY-095** claudetto shall keep instruction files small: a mini-wiki with a global and project index, very short instruction files that point to it, and "Write this / Not this" pairs; "remove repetition and omit what a professional knows" beats "be concise".
   Acceptance: reported only; none is a measured effect. Also from the thread: frontmatter (type, status, created) past a few hundred files; skills as an on-demand library from logged misses; a session that hits compaction is killed and restarted from the wiki; a flawed-reference prompt names what to take and what to burn, pastes 200-300 annotated lines, or uses two sessions (a design doc of the reference's ideas, then the build); succinct output follows ASD-STE100 and answer-first; power phrases: restate the goal, "don't touch anything else", "one step at a time", "just answer, no impl"; start fresh after a session goes sideways; a `/grill-me` style debate risks answering "agreed" to forty questions, and an opposing view says specs-only worsened code; audit cycles on vibe-coded projects strip 30-50% bloat. Verification: inspection.
   Basis: reported. Status: partial at 088a227c (`plugins/claudetto/rules/useBlockLanguage.md`).
-  Source: external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39 (url: https://www.reddit.com/r/ClaudeAI/comments/1x0uhhr/what_are_claude_code_power_users_doing_with/).
+  Source: external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x0uhhr/what_are_claude_code_power_users_doing_with/>).
 
 ## Time Estimates
 
 - [ ] **REQ-REPLY-096** claudetto shall give steps or minutes of agent work, not human dev time, in an estimate, by adding a line to `texts.ts` `REQUESTS` (merged from plan:1547).
   Acceptance: a plan "in months" was 8 of 10 done after three sessions; "2-3 weeks" took about 2 hours. Candidate (n=2). Verification: inspection.
   Basis: reported. Status: missing at 088a227c (`texts.ts:8` REQUESTS exists; `git grep -n -i -E 'estimate|minutes' 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts` finds no such line).
-  Source: external/2026-09-29/export-Can Claude Pro $20 plan will be enough for me-.jsonl:21 (url: https://www.reddit.com/r/ClaudeAI/comments/1wsh0z7/can_claude_pro_20_plan_will_be_enough_for_me/); plugins/claudetto/hooks/features/prompt/texts.ts:8@088a227c.
+  Source: external/2026-09-29/export-Can Claude Pro $20 plan will be enough for me-.jsonl:21 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wsh0z7/can_claude_pro_20_plan_will_be_enough_for_me/>); plugins/claudetto/hooks/features/prompt/texts.ts:8@088a227c.
 
 ## Concise Output
 
 - [ ] **REQ-REPLY-097** claudetto shall tell the model to lead with the result, name what is never cut, and keep every number and every condition ("short, but every number and every unless stays"), because a brevity rule drops caveats first, not filler.
   Acceptance: failures, bad news, assumptions, skipped work, caveats that change the next step, and anything needing user action are kept and override every length rule; narration of steps, rationale for routine decisions, closing recaps, and "let me know if" offers are cut; a simple question gets 1-3 sentences; a task report stays under about 150 words excluding code and errors; a bare "be concise" makes the model bury caveats and soften bad news. Variants: fixed final-message shape (answer, files changed, how verified); `unverified` when no test or build ran; reply-form rules in an output style (appended to the system prompt, drifts as context grows; contested against CLAUDE.md or a skill). Verification: inspection.
   Basis: reported, contested on placement. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/compose.ts`, `plugins/claudetto/hooks/features/reply/reply.ts`; `Concise.md` rule 6 keeps a caveat that changes the next step; this wording missing). `/output-style` is present in claude 2.1.326 (`chunk-4h798pp0.js@2122686`).
-  Source: unresolved: no matching line found in external/ for the quoted block; kept because the user curated it; external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:53 (url: https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/).
+  Source: unresolved: no matching line found in external/ for the quoted block; kept because the user curated it; external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:53 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
   Conflict: Reply Shape (define verbosity positively; no prose cap).
 
 - [ ] **REQ-REPLY-098** claudetto shall tell the model: ask one clarifying question when the request is ambiguous, then proceed on best judgment.
@@ -707,21 +707,21 @@
 - [ ] **REQ-REPLY-102** claudetto shall word its Monitor text so that a notice is not the user's reply, the command prints only lines the model acts on (failures included), and the command runs the writer itself, because `tail -F` never ends after its writer exits.
   Acceptance: the Monitor text states these three rules. Verification: inspection.
   Basis: measured. Status: have at 088a227c (`plugins/claudetto/hooks/features/surface/texts.ts:20` says each line is a notice from the command, to print lines acted on with failures, and to run the writer itself; checked with `git show 088a227c:plugins/claudetto/hooks/features/surface/texts.ts`). `Monitor` is present in claude 2.1.326 (tool list, `chunk-85qjfjsd.js@532`). Release note 2.1.326: Monitor now tells Claude when a watch expires with no events and its command wrote to stderr, and which file holds the output.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:91; plugins/claudetto/hooks/features/surface/texts.ts:20@088a227c; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:91; plugins/claudetto/hooks/features/surface/texts.ts:20@088a227c; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 ## Behaviour Notes
 
 - [ ] **REQ-REPLY-103** claudetto shall carry short behaviour rules: meeting notes force an owner and a date per item plus an `unclear` list; data parsing uses one script per dataset that hard-fails on a bad row and cites row ids; an out-of-scope finding is reported in one line while work stays on topic; an exploratory opener reads "no plan yet, poke holes, one question at a time" and waits for "go"; no unrequested fact-check and no caveat that adds nothing; function guardrails 30 NLOC, cognitive 10, cyclomatic 8, depth 2, params 4, lint-enforced.
   Acceptance: each rule sits in the reply rules or the lint config. The plan item's Stop-hook for caveat and opener patterns and TextFold (five reading levels) are not carried: a regex Stop check is a settled out (no regex or word-list Stop check for openers, user decision, 2026-11-16). Verification: inspection.
   Basis: reported (Opus 5.5 converges on a plan by message two; ASD-STE100 reportedly cut 580 words to 100; threats to validity: one user, three days, one project). Status: missing at 088a227c (`git grep -n -i -E 'NLOC|cyclomatic|unclear' 088a227c -- plugins` finds no rule text; its one hit is an unrelated hygiene comment).
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:183 (url: https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/); external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:72.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:183 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>); external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:72.
 
 ## Keep Context Small
 
 - [ ] **REQ-REPLY-104** claudetto shall keep context small: verify lightest first (type check, targeted tests, full build); raw logs go to files and the reply returns status, errors, decisive lines, and a path; no "just in case" scans; VCS and generated dirs are excluded from search; one topic per task; concept and doc questions are answered without opening the repo; read line ranges, not whole files; wide research goes to a subagent that returns only the conclusion; test scripts are quiet; `/clear` before unrelated tasks.
   Acceptance: the reply rules hold each line. Measured (six months of own transcripts at API rates): 56% of spend was context re-reads and 20% useful work. Verification: inspection.
   Basis: measured (own logs). Status: partial at 088a227c.
-  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xak96j-i-measured-87000-of-my-claude-20261020T074808Z.md:56 (url: https://www.reddit.com/r/ClaudeCode/comments/1xak96j/i_measured_87000_of_my_claude_code_api_calls_two/).
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xak96j-i-measured-87000-of-my-claude-20261020T074808Z.md:56 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xak96j/i_measured_87000_of_my_claude_code_api_calls_two/>).
 
 ## Report Template
 
@@ -735,7 +735,7 @@
 - [ ] **REQ-REPLY-106** claudetto shall close every loose end (a doc note, a debug flag, a scratch script that belongs in the repo, a test, a stale comment) in the same PR before reporting done, with no "optional next steps" for a loose end; a step only the owner can take is a named required action with reason and steps; new-scope work takes one line; the reply ends with "Nothing outstanding." or the owner-action list; it distinguishes work it cannot do from work it has not done and makes done checkable (commands in AGENTS.md: tests, lint, grep).
   Acceptance: a final reply holds either "Nothing outstanding." or the owner-action list. Verification: inspection.
   Basis: reported. Status: partial at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:48 (url: https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/>).
   Conflict: Scope Of A Change.
 
 ## Prompt and Output Limits

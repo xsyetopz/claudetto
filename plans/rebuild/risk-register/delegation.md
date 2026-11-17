@@ -8,7 +8,7 @@
   Event: claudetto's `tool.call` that rewrites Agent `subagent_type` (the amod mapping) sends the call and later calls to the local classifier text of 63.7k chars.
   Consequence: a wait of seconds and tokens on each Agent call in auto mode.
   Likelihood: 4. Impact: 3.
-  Existing controls: a result rewrite keeps the server route; a nested `$.tool.call` is skipped by the classifier ("called by plugin claudetto"). A route where the model names `amod:Artemis` itself (`agent.offer` only, no rewrite) keeps the server route (not run).
+  Existing controls: a result rewrite keeps the server route; a nested `$.tool.call` is skipped by the classifier ("called by plugin claudetto"). A route where the model names `amod:Artemis`itself (`agent.offer` only, no rewrite) keeps the server route (not run).
   Response: mitigate.
   Actions: probe the no-rewrite route on the real API; prefer a result rewrite to an input rewrite.
   Trigger: a `tool.call` handler that changes an input in auto mode.
@@ -45,7 +45,7 @@
   Trigger: A Fable session starts a subagent whose model is Fable.
   Owner: delegation
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
 
 - [ ] **RISK-161** Fable as reviewer assumes instead of reading.
   Category: delegation
@@ -60,7 +60,7 @@
   Trigger: A review verdict that names no quoted line.
   Owner: delegation
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xtskai-i-switched-opus-to-medium-and-20261111T235140Z.md:96 (url: https://www.reddit.com/r/ClaudeCode/comments/1xtskai/i_switched_opus_to_medium_and_only_ask_fable_for/).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xtskai-i-switched-opus-to-medium-and-20261111T235140Z.md:96 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtskai/i_switched_opus_to_medium_and_only_ask_fable_for/>).
 
 - [ ] **RISK-162** An orchestrator overrides a correct tester and a fix breaks working behaviour.
   Category: delegation
@@ -75,7 +75,7 @@
   Trigger: A fix lands against a tester's false-alarm verdict.
   Owner: delegation
   Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:50,52,161,215 (url: https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:50,52,161,215 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
 
 - [ ] **RISK-163** Opinion smuggling into subagent briefs.
   Category: agent
@@ -90,7 +90,7 @@
   Trigger: A subagent result that restates the plan.
   Owner: delegation
   Status: open. Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:91 (url: https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
 
 - [ ] **RISK-164** Stub files override agent roles and stop subagent handoff.
   Category: delegation.
@@ -103,7 +103,7 @@
   Actions: open; no cure is stated in the source.
   Trigger: subagent calls drop to zero while usage rises.
   Owner: delegation. Status: open.
-  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:153 (url: https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/).
+  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/>).
 
 - [ ] **RISK-165** An agent leaves hundreds of junk benchmark-report files.
   Category: delegation.
@@ -116,7 +116,7 @@
   Actions: none stated in the source.
   Trigger: report files appear in the work tree.
   Owner: delegation. Status: open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:343 (url: https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:343 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
 
 - [ ] **RISK-166** Subagent report falsification: the lead trusts a report that is false, incomplete, or unverified.
   Category: delegation.
@@ -155,7 +155,7 @@
   Actions: agent files keep low effort for narrow retrieval only; a read-only reviewer subagent checks before use.
   Trigger: a low-effort subagent used for a decision.
   Owner: delegation. Status: open.
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74 (url: https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/) holds a related cheaper-model accuracy report; the "low-effort retrieval subagent answers confidently wrong" text itself: not located, reported, one user.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>) holds a related cheaper-model accuracy report; the "low-effort retrieval subagent answers confidently wrong" text itself: not located, reported, one user.
 
 - [ ] **RISK-169** Premature hand-back with a running job: the job dies with the turn.
   Category: delegation.
@@ -284,7 +284,7 @@
   - Trigger: a Fable session.
   - Owner: delegation
   - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:20; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:50 (reported); external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md (url: https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:20; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:50 (reported); external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
 - [ ] **RISK-178** Fable research task reads without limit.
   - Category: model behaviour.
@@ -299,7 +299,7 @@
   - Trigger: a Fable research task with no file scope.
   - Owner: delegation
   - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:81; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:88 (reported); external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:61 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:81; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:88 (reported); external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:61 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>).
 
 - [ ] **RISK-179** Subagent runs hit refusals, tool-name misses, and edit conflicts.
   - Category: Claude Code limit.
@@ -359,7 +359,7 @@
   - Trigger: a read-only agent with `Bash`.
   - Owner: delegation
   - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:131 (reported, one thread); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:81 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:131 (reported, one thread); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>).
 
 - [ ] **RISK-183** Large agent swarm gives wrong answers at high token cost.
   - Category: agent conduct.
@@ -374,7 +374,7 @@
   - Trigger: a task split over dozens of agents.
   - Owner: delegation
   - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:133 (reported, one case); external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:133 (reported, one case); external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 - [ ] **RISK-184** An agent is spawned for no stated reason and reports nothing.
   - Category: agent conduct.
@@ -421,7 +421,7 @@
   Trigger: a refusal text "too complex to verify" in a subagent transcript.
   Owner: delegation.
   Status: open.
-  Source: https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
+  Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
 
 - [ ] **RISK-187** The engine blocks a foreground "sleep N" and subagents have no other way to wait.
   Category: delegation, engine check.
@@ -466,7 +466,7 @@
   Actions: The spec defines proof before building; vertical slices; tests staged before implementation; a context-free checker; behaviour and trace graders with fixtures; one write, one check; a SubagentStop or Task gate dispatching a fresh-context reviewer of another family given the diff and requirements only, with a concrete failing case per finding; subagent context with facts only and a forced `supports plan`, `contradicts plan`, or `insufficient evidence` answer. Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)), so the other-family reviewer uses Sonnet or Haiku only.
   Trigger: A reviewer finding has no failing case.
   Owner: delegation. Status: open.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/) (reported)
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>) (reported)
 
 - [ ] **RISK-190** Review loop inflation.
   Category: Agent behaviour.
@@ -496,7 +496,7 @@
   Trigger: A timeout raised twice in a row.
   Owner: delegation
   Status: open
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,159,161 (url: https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/).
+  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,159,161 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
 ## Conflicts With Settled Decisions
 
@@ -511,7 +511,7 @@
   Actions: match model and effort to the task; plan in Fable/Opus and implement in Sonnet; plan mode; review in Fable. This action list conflicts with the settled rule that Fable and Opus are never a subagent model; plan and review stay in the lead.
   Trigger: a user report of overthinking or lazy output on one model.
   Owner: delegation. Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:124 (reported); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:91 (url: https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/; the "haywire" report). Other reports in the old item: not located.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:124 (reported); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>; the "haywire" report). Other reports in the old item: not located.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
 
 ## Model Variability
@@ -600,7 +600,7 @@
   - Trigger: a worker report that touches history or another worker's files.
   - Owner: delegation
   - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 - [ ] **RISK-199** Delegated agent stops at its turn limit before it reports.
   - Category: Delegation
@@ -644,7 +644,7 @@
   Trigger: the word "reasoning" in a delegation or judge prompt.
   Owner: delegation.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:69; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:43; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:51; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:130 (url: https://www.reddit.com/r/Anthropic/comments/1xfdown/claude_refuses_judges_and_evals_if_they_include_a/).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:69; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:43; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:51; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:130 (url: <https://www.reddit.com/r/Anthropic/comments/1xfdown/claude_refuses_judges_and_evals_if_they_include_a/>).
 
 - [ ] **RISK-202** Delegated subagent runs are slow and burn many tokens.
   Category: product behaviour.
@@ -658,7 +658,7 @@
   Trigger: a delegated run far slower than the same prompt run directly.
   Owner: delegation.
   Status: Open.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:127 (url: https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:127 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
 
 - [ ] **RISK-203** The model believes its subagents will not survive /clear or /compact and restarts finished ones.
   Category: agent behaviour.
@@ -672,7 +672,7 @@
   Trigger: the agent claims a subagent will not survive a context reset.
   Owner: delegation.
   Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:44; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:47; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:65; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:71 (url: https://www.reddit.com/r/ClaudeAI/comments/1xdqi79/claude_doesnt_know_subagents_survive_compactclear/).
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:44; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:47; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:65; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdqi79/claude_doesnt_know_subagents_survive_compactclear/>).
 
 - [ ] **RISK-204** Each subagent receives the whole conversation history.
   Category: product behaviour.
@@ -686,7 +686,7 @@
   Trigger: a subagent run past an hour with no real change.
   Owner: delegation.
   Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:29; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:33; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:92 (url: https://www.reddit.com/r/ClaudeAI/comments/1xeozdj/usage_cap_advice_for_the_nontechnical/).
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:29; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:33; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:92 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeozdj/usage_cap_advice_for_the_nontechnical/>).
 
 - [ ] **RISK-205** Fable 5.2 reads an indexed project past 500K tokens (the compaction limit) before finishing research, then re-reads the same code after compaction.
   - Category: product fault
@@ -701,7 +701,7 @@
   - Trigger: Reads past 500K tokens.
   - Owner: delegation
   - Status: open.
-  - Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:29; external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:33 (url: https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/).
+  - Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:29; external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:33 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/>).
 
 - [ ] **RISK-206** A coordinator on Opus xhigh loses what it relays.
   Category: product fault
@@ -716,7 +716,7 @@
   Trigger: A task with no status
   Owner: delegation
   Status: open
-  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33; external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:34 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/).
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33; external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:34 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/>).
 
 - [ ] **RISK-207** Research Over Measure.
   Category: Agent behaviour.
@@ -731,7 +731,7 @@
   Owner: delegation.
   Status: open.
   Basis: reported, n=1.
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 - [ ] **RISK-208** Verifier Inherits Reasoning.
   Category: Agent behaviour.
@@ -746,7 +746,7 @@
   Owner: delegation.
   Status: open.
   Basis: reported, confirmed by the poster.
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 - [ ] **RISK-209** Worker Check Stall.
   Category: Agent behaviour.
@@ -761,7 +761,7 @@
   Owner: delegation.
   Status: open.
   Basis: reported, one user.
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:123-125 (url: https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:123-125 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 ## Fable And Opus Behaviour
 
@@ -778,7 +778,7 @@
   - Trigger: A reply with happy-path-only work; a reply that skips repo examples.
   - Owner: delegation
   - Status: open.
-  - Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:38; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:39; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:48; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:330; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:349 (url: https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/); external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:52; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:100; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:163; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:31 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/).
+  - Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:38; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:39; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:48; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:330; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:349 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:52; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:100; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:163; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>).
 
 - [ ] **RISK-211** Fable 5.2 ignores rules and workflows "to drive innovation", does not know when to stop innovating, and keeps changing goals behind the user's back.
   Category: product fault
@@ -793,7 +793,7 @@
   Trigger: A goal change nobody asked for
   Owner: delegation
   Status: open
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:395; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:397; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:453 (url: https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:395; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:397; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:453 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
 ## Replies And Instruction Following
 
@@ -809,7 +809,7 @@
   Trigger: a local model edits across a rule boundary.
   Owner: delegation.
   Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:252; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:174 (url: https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:252; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:174 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 ## Lead Agent And Helper Scripts
 
@@ -857,7 +857,7 @@
   Trigger: An agent count over the cap the user set.
   Owner: delegation. Status: open.
   Basis: reported, one session.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:31,41,43 (url: https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/)
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:31,41,43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>)
 
 ## Subagent Token Burn
 
@@ -874,7 +874,7 @@
   Trigger: Two agents exchange more than a few turns without a file change.
   Owner: delegation.
   Status: open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:126 (url: https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents/)
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:126 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents/>)
 
 - [ ] **RISK-217** Idle subagents re-read their context while they wait.
   - Category: agent failure.
@@ -889,7 +889,7 @@
   - Trigger: A subagent is pending with no progress; A subagent that polls or waits with repeated reads; a spawn in an area where a finished agent exists; new work in an area where a finished agent exists.
   - Owner: delegation
   - Status: open.
-  - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xunrxf-subagents-not-correctly-closed-20261116T052612Z.md:45,49 (url: https://www.reddit.com/r/ClaudeCode/comments/1xunrxf/subagents_not_correctly_closed_after_end_of_their/); external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:621 (url: https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:52 (observed).
+  - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xunrxf-subagents-not-correctly-closed-20261116T052612Z.md:45,49 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xunrxf/subagents_not_correctly_closed_after_end_of_their/>); external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:621 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:52 (observed).
 
 ## Effort Level Quality
 
@@ -906,7 +906,7 @@
   Trigger: A review that misses a seeded defect at medium effort.
   Owner: delegation.
   Status: open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:41; external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:63 (url: https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/)
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:41; external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/>)
 
 ## Lead Drops Tasks
 
@@ -923,7 +923,7 @@
   Trigger: A lead that has to track several parts of a large project.
   Owner: delegation.
   Status: open.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:71; external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:73 (url: https://www.reddit.com/r/ClaudeCode/comments/1xlz2bs/how_do_you_manage_worktrees_when_your_agents_end/)
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:71; external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:73 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlz2bs/how_do_you_manage_worktrees_when_your_agents_end/>)
 
 ## Agent Fault: Orchestration and Guardrail Packs
 
@@ -940,7 +940,7 @@
   Trigger: A review loop runs past the request.
   Owner: delegation.
   Status: open.
-  Source: external/2026-09-29/export-Sonnet 5.5 beats Opus 5.5 at coding and it's half the price--.jsonl:43 (url: https://www.reddit.com/r/ClaudeCode/comments/1wsmhaz/sonnet_55_beats_opus_55_at_coding_and_its_half/); external/2026-09-29/export-Introducing Claude Sonnet 5.5, the second model in the Claude 5.5 family.jsonl:125 (url: https://www.reddit.com/r/ClaudeCode/comments/1wsly42/introducing_claude_sonnet_55_the_second_model_in/).
+  Source: external/2026-09-29/export-Sonnet 5.5 beats Opus 5.5 at coding and it's half the price--.jsonl:43 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsmhaz/sonnet_55_beats_opus_55_at_coding_and_its_half/>); external/2026-09-29/export-Introducing Claude Sonnet 5.5, the second model in the Claude 5.5 family.jsonl:125 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsly42/introducing_claude_sonnet_55_the_second_model_in/>).
 
 ## Workflow Harness Frame
 
@@ -957,7 +957,7 @@
   Trigger: A Workflow launch follows an AskUserQuestion answer.
   Owner: delegation.
   Status: open (missing at 088a227c; 2.1.326: the harness frame text is present, code search "computed task text", chunk-cpycaw0p.js@1036 and @1272).
-  Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/); chunk-cpycaw0p.js@1036 (claude 2.1.326 binary).
+  Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/>); chunk-cpycaw0p.js@1036 (claude 2.1.326 binary).
 
 ## Safeguards And Guards
 
@@ -974,7 +974,7 @@
   - Trigger: A subagent resumed with the env var unset; Usage by model that differs from the plan; a subagent spawn with no `model`; an `Agent` call that carries `model`.
   - Owner: delegation
   - Status: open.
-  - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
+  - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
 
 ## Product And Tooling
 

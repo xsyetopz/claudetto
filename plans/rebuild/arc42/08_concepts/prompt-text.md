@@ -4,7 +4,7 @@
 
 - [ ] **CC-001** Workarounds for unwanted echo of notes: let the model dump the info first in a labeled author's-note paragraph; tag small notes "do not make this explicit, it is only to inform"; pack notes into precise single words. Block rules "no-note-echo" (notes govern silently, infer fresh) and "no-obviousness" (assume baseline stakes understood) are reported as hit-or-miss; "stay on the boat" grounded-scope rule: check the premise first, answer from the strongest evidence, add caveats only when they change the logic, no unsupported expansion.
   Basis: reported.
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:351; external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:363 (url: https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:351; external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:363 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
 
 ## Rules
 

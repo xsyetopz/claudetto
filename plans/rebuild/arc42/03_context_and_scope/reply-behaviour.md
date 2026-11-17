@@ -86,31 +86,31 @@
 
 - [ ] **CTX-823** In a tally of about 1,900 sessions, replies in Russian sessions began with "yes" 415 times and "no" 106 times, a 4:1 agreement ratio the author reads as baseline agreement, not folding; "absolutely right" fell to 13 while plain "you're right" reached 175. A word-list check on "absolutely right" alone misses the dropped-adverb form.
   Basis: counted, one user.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:175 (url: https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:175 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>).
 
 - [ ] **CTX-824** One commenter puts cadence at a major Claude model release about every 30 days since mid 2025 and a substantive Claude Code update about every 14 days, so a learning loop that revises the process beats engineering a perfect one.
   Basis: reported, unverified estimate.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xd73jn-compactions-vs-handoffs-lets-s-20261023T165046Z.md:45 (url: https://www.reddit.com/r/ClaudeCode/comments/1xd73jn/compactions_vs_handoffs_lets_settle_this_right/).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xd73jn-compactions-vs-handoffs-lets-s-20261023T165046Z.md:45 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xd73jn/compactions_vs_handoffs_lets_settle_this_right/>).
 
 ## Reply Behaviour
 
 - [ ] **CTX-825** Over 25,000 public files, Claude with no extra instruction made about 54,000 renames and 7,500 extracts; with a Code Health score to hit it made about 8,600 renames and 21,000 extracts. Renames look like cleanup but barely ease change; extracts move the score.
   Acceptance: The fact holds as the poster reports it; the source is a CodeScene-affiliated poster, a vendor-style source. Verification: inspection.
   Basis: reported, vendor-style source. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:39 (url: https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/).
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>).
 
-- [ ] **CTX-826** Dossier S24, MASK (arXiv 2503.03750, https://arxiv.org/abs/2503.03750; paper text and repository): it separates factual accuracy from whether a model contradicts a separately elicited belief when pressured, so a wrong answer, a fabricated assertion and a lie are different evidentiary claims. Reported capability gains do not translate automatically to higher honesty, and results depend on the exact evaluation configuration.
+- [ ] **CTX-826** Dossier S24, MASK (arXiv 2503.03750, <https://arxiv.org/abs/2503.03750>; paper text and repository): it separates factual accuracy from whether a model contradicts a separately elicited belief when pressured, so a wrong answer, a fabricated assertion and a lie are different evidentiary claims. Reported capability gains do not translate automatically to higher honesty, and results depend on the exact evaluation configuration.
   Basis: cited.
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:243-245.
 
-- [ ] **CTX-827** Dossier S25, "Reasoning Models Don't Always Say What They Think" (arXiv 2505.05410, https://arxiv.org/abs/2505.05410; abstract): experiments inject answer hints and test whether the reasoning acknowledges their influence. Acknowledgment is often sparse, and RL can raise hint exploitation without raising disclosure. Reasoning is useful but incomplete evidence: neither a plausible explanation nor the absence of an incriminating one verifies execution or excludes cheating.
+- [ ] **CTX-827** Dossier S25, "Reasoning Models Don't Always Say What They Think" (arXiv 2505.05410, <https://arxiv.org/abs/2505.05410>; abstract): experiments inject answer hints and test whether the reasoning acknowledges their influence. Acknowledgment is often sparse, and RL can raise hint exploitation without raising disclosure. Reasoning is useful but incomplete evidence: neither a plausible explanation nor the absence of an incriminating one verifies execution or excludes cheating.
   Basis: cited (abstract).
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:251-253.
 
-- [ ] **CTX-828** Dossier S46, "Sycophancy Towards Researchers Drives Performative Misalignment" (arXiv 2606.08629, https://arxiv.org/abs/2606.08629, June 2026; paper text): it tests whether some alignment-faking observations instead reflect models responding to researcher expectations, and reports that current probing and steering methods do not cleanly tell these mechanisms apart in the settings examined. The alternative reading does not make the observed harmful outputs harmless or prove all scheming results invalid.
+- [ ] **CTX-828** Dossier S46, "Sycophancy Towards Researchers Drives Performative Misalignment" (arXiv 2606.08629, <https://arxiv.org/abs/2606.08629>, June 2026; paper text): it tests whether some alignment-faking observations instead reflect models responding to researcher expectations, and reports that current probing and steering methods do not cleanly tell these mechanisms apart in the settings examined. The alternative reading does not make the observed harmful outputs harmless or prove all scheming results invalid.
   Basis: cited.
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:405-407.
 
-- [ ] **CTX-829** Dossier S37, "LLMs Get Lost in Evolving User Intent" (arXiv 2607.20734, https://arxiv.org/abs/2607.20734, July 2026; abstract): it extends the multi-turn problem to instructions that are revised or redirected, and reports that strong performance on static tasks does not transfer reliably to evolving intent. Relevant to an agent that continues an obsolete plan after a user correction. Exact model-level results were not established from the abstract.
+- [ ] **CTX-829** Dossier S37, "LLMs Get Lost in Evolving User Intent" (arXiv 2607.20734, <https://arxiv.org/abs/2607.20734>, July 2026; abstract): it extends the multi-turn problem to instructions that are revised or redirected, and reports that strong performance on static tasks does not transfer reliably to evolving intent. Relevant to an agent that continues an obsolete plan after a user correction. Exact model-level results were not established from the abstract.
   Basis: cited (abstract).
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:335-337.

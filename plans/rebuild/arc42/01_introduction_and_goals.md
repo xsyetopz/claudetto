@@ -5,7 +5,7 @@
 The requirements are in [the PRD](../prd/README.md): purpose, scope, and one file per block.
 
 | Block | Requirements |
-|---|---|
+| --- | --- |
 | [`kernel`](../prd/kernel.md) | 28 |
 | [`guards`](../prd/guards.md) | 72 |
 | [`handover`](../prd/handover.md) | 71 |
@@ -39,6 +39,6 @@ The quality scenarios of [section 10](10_quality_requirements.md), in its order:
 ## Stakeholders
 
 | Stakeholder | Expectation | Source |
-|---|---|---|
+| --- | --- | --- |
 | The user, `xsyetopz`, owner of the repository and sole user | Coding in Claude Code at the lowest token cost | `plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c` |
 | Claude Code 2.1.326, the host | claudetto uses its official extension points only and patches nothing | `plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`; user decision, 2026-11-16 (`0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`) |

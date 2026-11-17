@@ -3,7 +3,7 @@
 arc42 section 2. One file per subsection.
 
 | Subsection | Items |
-|---|---|
+| --- | --- |
 | [Sandbox Limits](sandbox-limits.md) | 5 |
 | [Upstream OpenSpec Size](upstream-openspec-size.md) | 1 |
 | [Mod Loader Constraints](mod-loader-constraints.md) | 1 |

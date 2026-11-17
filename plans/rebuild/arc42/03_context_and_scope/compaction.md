@@ -4,19 +4,19 @@
 
 - [ ] **CTX-443** Reported by a commenter (poster on 2.1.241 lacked the field): PreCompact can block compaction (exit 2 or {"decision":"block"}); a proactive auto compact is then skipped, but if the API already returned the context-limit error, blocking makes the request fail. A trigger auto/manual field exists since 2.1.290, so one can block auto and run a manual /compact with "keep every decision and rejected option verbatim". Checked in claude 2.1.326 with cc-inspect `code` search for `compact_summary`: the PreCompact hook input carries `trigger` "manual" or "auto" (chunk-bprgtdg6.js@278627). The blocking behavior, exit 2, and `{"decision":"block"}` claims are unverified in 2.1.326.
   Basis: reported; the trigger field measured in the 2.1.326 binary, the rest unverified.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:237 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/); claude 2.1.326 binary chunk-bprgtdg6.js@278627.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:237 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); claude 2.1.326 binary chunk-bprgtdg6.js@278627.
 
 ## Compaction And Context Thresholds
 
 - [ ] **CTX-444** Reported: PreCompact is a shell command whose output never reaches Claude or the summary; PostCompact receives the new summary as compact_summary, so a script can check each generation against the decision log; hook output over 10,000 characters is swapped for a file path plus a 2,000-character preview that Claude is not asked to read. Checked in claude 2.1.326 with cc-inspect `code` search for `compact_summary`: the PostCompact input has `compact_summary` ("The conversation summary produced by compaction") (chunk-bprgtdg6.js@278627). The PreCompact output and the 2,000-character preview claims are unverified in 2.1.326.
   Basis: reported; the PostCompact field measured in the 2.1.326 binary, the rest unverified.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:364 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/); claude 2.1.326 binary chunk-bprgtdg6.js@278627.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:364 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); claude 2.1.326 binary chunk-bprgtdg6.js@278627.
 
 ## Compaction And Context Thresholds
 
 - [ ] **CTX-445** Audit of one user's transcripts: 72% of input was Claude re-reading context past 400k tokens (method unstated).
   Basis: reported, one user, method unstated.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:266 (url: https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:266 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
 
 ## Compaction And Context Thresholds
 
@@ -79,41 +79,41 @@
 
 - [ ] **CTX-458** Autocompact replaces the window with a summary of about 64k tokens: a rewrite task needed 375k tokens just to load inputs for its smallest slice, so a compaction resumed with 64k.
   Basis: reported, one user, no comparison test. Status: not applicable (outside fact).
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:281-283 (url: https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:281-283 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
 
 - [ ] **CTX-459** One user's own monitoring found 130k tokens the most cost-effective point to clear; the app injects a save-progress-to-disk request, then clears and continues, with auto-compact off.
   Basis: reported, one user, no figures. Status: not applicable (outside fact).
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:516 (url: https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:516 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
 
 - [ ] **CTX-460** Settings rationale given for 300k and 75: below 300k summaries lose detail, above it context cost creeps; 75 leaves the agent room to write the compact, while 80-100 fumbles and below 75 compacts too often.
   Basis: reported, one user, 20 USD plan, no measures. Status: not applicable (outside fact).
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:53-54 (url: https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:53-54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
 
 ## Compaction And Context Thresholds
 
 - [ ] **CTX-461** One commenter, citing a GitHub issue (98747), reports idle compaction, in since 2.1.290 and undocumented at the time: it fires at 90 percent of the cache TTL and only when the cache lifetime is 1 hour; the minimum-token floor (env CLAUDE_CODE_IDLE_COMPACT_MIN_TOKEN) defaults to 200k and the server may lower it to 100k, presumably at peak hours, with no word on whether a user value can be overridden the same way. idleCompaction false turns it off, but the cache still expires and the next message rewrites the whole context. autoCompactEnabled false also turns it off but also stops threshold auto-compaction. Compaction uses the session model unless configured otherwise, not Haiku, per issue 29550. The same commenters report the message "Compacted while idle, before the prompt cache expired"; one post doubted it could be turned off, which the `idleCompaction` setting refutes. `/autocompact <n>` values named are 250k, 272k, 400k and 450k ("will double your usage", unverified); a claim that Anthropic docs name 250k is unsourced.
   Acceptance: The facts hold as commenters report them. Checked on claude 2.1.326 by binary string search: setting `idleCompaction`, `autoCompactWindow`, `/autocompact`, flag `--autocompact` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` are present, and only the plural `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` exists; the release notes name idle compaction; the timing, the token floor and the 1-hour TTL gate are unverified in 2.1.326. Verification: probe.
   Basis: reported, commenters; cited (issues, secondhand); the presence of the settings is read from the 2.1.326 binary. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:72; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:74; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:92; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:94; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:120; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:37; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:39 (url: https://www.reddit.com/r/ClaudeAI/comments/1x1a6ym/claude_code_compacts_automatically_before_cache/); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:17; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes).
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:72; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:74; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:92; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:94; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:120; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:37; external/2026-11-02/reddit.com-r-claudeai-comments-1x1a6ym-claude-code-compacts-automatical-20261102T070932Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x1a6ym/claude_code_compacts_automatically_before_cache/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:17; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 - [ ] **CTX-462** Commenters report that hitting the 5-hour limit mid-task, or switching accounts mid-task, causes a cache miss that wastes weekly limit. On Max 5x each redo costs about 3 to 5 percent of the 5-hour window and 1 to 2 percent of the week, over 10 percent of the week when repeated; with many agents it also pays 200k to 999k of fresh input, a cache write and agent re-orientation. One user reports that 4 percent of the 5-hour window was usually about 1 percent of the weekly limit.
   Acceptance: The figures hold as commenters report them. Verification: probe.
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:112; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:423; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:467; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:469 (url: https://www.reddit.com/r/ClaudeAI/comments/1xjlvlc/anthropic_renames_max5_and_max20_and_removes_5h/).
+  Source: external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:112; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:423; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:467; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:469 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjlvlc/anthropic_renames_max5_and_max20_and_removes_5h/>).
 
 ## Compaction And Context Thresholds
 
 - [ ] **CTX-463** /export writes what was reported on the terminal during the session, not the loaded context or thinking tokens. One commenter never compacts: a tool clones and truncates messages or starts a new session with parent-session back pointers, plus a fast full-text search over past session files so agents or humans can search prior work.
   Acceptance: The facts hold as commenters report them. Verification: probe.
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:133; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:335; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:339 (url: https://www.reddit.com/r/ClaudeAI/comments/1pwt86e/pro_tip_disable_compacting_use_your_own/).
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:133; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:335; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:339 (url: <https://www.reddit.com/r/ClaudeAI/comments/1pwt86e/pro_tip_disable_compacting_use_your_own/>).
 
 ## Compaction And Context Thresholds
 
 - [ ] **CTX-464** One author reports that in the last 30 days 78 of 82 auto-compactions landed mid-task, and that Claude re-reads files afterwards to work out where it was. In a replay of long sessions Claude re-read about 30 percent less context once it picked its own moment to compact; the author says the replay side flatters this tool a bit, since it includes the handoff steps, which is why the figure is about 30 percent and not 33.
   Acceptance: The figures hold as one author reports them; the saving is a replay, not a controlled run. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:29, https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:115, https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:29, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:115, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>.
 
 ## Compaction And Context Thresholds
 
@@ -122,7 +122,7 @@
   Basis: reported. Status: unchecked: a fact about Claude Code, not code at 088a227c.
   Conflict: Cache: turn 1 had a 49.6% hit.
   Conflict: Prompt cache mechanics: the prefix cache is keyed on model.
-  Source: external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:27; external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:2 (url: https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/); openspec/changes/2-1-325-rearchitecture/design.md:102.
+  Source: external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:27; external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>); openspec/changes/2-1-325-rearchitecture/design.md:102.
 
 ## Compaction And Context Thresholds
 
@@ -177,7 +177,7 @@
 
 - [ ] **CTX-477** `subagentPromptCacheTtl` "1h" raised total cost for subagents and lowered it for the orchestrator (one user).
   Basis: reported, one user.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:28 (url: https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/.)
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:28 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>.)
 
 ## Compaction And Context Thresholds
 
