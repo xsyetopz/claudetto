@@ -11,5 +11,9 @@
 	"engines": {
 		"claude-code": ">=2.1.327"
 	},
-	"keywords": ["openspec", "spec", "workflow"]
+	"keywords": [
+		"openspec",
+		"spec",
+		"workflow"
+	]
 }
