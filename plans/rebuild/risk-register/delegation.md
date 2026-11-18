@@ -78,7 +78,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:50,52,161,215 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
 
-- [ ] **RISK-163** Opinion smuggling into subagent briefs.
+- [x] **RISK-163** Opinion smuggling into subagent briefs.
   Category: agent
   Cause: A main session that disagrees during planning leaks its opinion into subagent briefs.
   Event: The subagent returns an echo of the plan.
@@ -90,7 +90,7 @@
   Actions: Brief with facts observed, hard constraints, files to inspect, the leaning decision, disconfirming evidence to seek, and the output format; require the result to state supports plan, contradicts plan, or insufficient evidence.
   Trigger: A subagent result that restates the plan.
   Owner: delegation
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: accepted; vanilla 2.1.327 already tells the lead to explain what it has learned or ruled out and never to delegate understanding (cc-inspect code search "Never delegate understanding", chunk-m14bt1pz.js@3959626), and Athena.md:12 and Heracles.md:17 require each finding to carry `path:line` evidence marked read or reproduced, so a bare echo of the plan cannot pass as a finding. A brief form with a leaning decision and a supports/contradicts verdict has no measured gain over this, and it would add a prompt line (ADR-0177).
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
 
 - [x] **RISK-164** Stub files override agent roles and stop subagent handoff.
@@ -344,7 +344,7 @@
   - Status: closed. Accepted, recorded only. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:654 (measured).
 
-- [ ] **RISK-181** Review prompt that limits to high severity hides findings.
+- [x] **RISK-181** Review prompt that limits to high severity hides findings.
   - Category: model behaviour.
   - Cause: Opus follows "only report high-severity issues" literally.
   - Event: documented by the vendor (cited).
@@ -356,7 +356,7 @@
   - Actions: ask a reviewer for everything, then filter.
   - Trigger: a review prompt with a severity filter.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: mitigated; Athena.md:10 sends no severity filter and asks for every defect and slow path ("Report defects and slow paths, because the lead reviews each line you send"), so the lead filters after the sweep. No claudetto text asks a reviewer for high severity only (grep of plugins/claudetto, claude 2.1.327, 2026-11-19).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:50 (cited).
 
 - [x] **RISK-182** Read-only agent still edits through Bash.
@@ -390,7 +390,7 @@
   - Status: closed. Swarms are out (OUT-061); the roster has four agents and no swarm launcher. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:133 (reported, one case); external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
-- [ ] **RISK-184** An agent is spawned for no stated reason and reports nothing.
+- [x] **RISK-184** An agent is spawned for no stated reason and reports nothing.
   - Category: agent conduct.
   - Cause: the root started a short-lived agent without a task or report path.
   - Event: a status check found one more agent, started 19 seconds earlier, finished, with no report.
@@ -402,10 +402,10 @@
   - Actions: spawn an agent only with a task and a report to the root.
   - Trigger: a subagent finishes with no report returned.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: mitigated; the Agent tool takes `prompt` and `description` for every spawn (chunk-nk78ptca.js@344), and Heracles.md:17, Athena.md:13 and Artemis.md:13 each open the report to the lead with the result, so a spawn has a task and returns a report. hooks/delegation/spawn.ts denies a barred model on the call. claude 2.1.327, 2026-11-19.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
-- [ ] **RISK-185** The agent starts a background shell and never looks at it.
+- [x] **RISK-185** The agent starts a background shell and never looks at it.
   - Category: agent conduct.
   - Cause: Claudetto 2.1.319 gave the agent no step to watch its background shell.
   - Event: the agent spawned a shell and the user had to ask what the progress was.
@@ -417,7 +417,7 @@
   - Actions: the agent checks its own background tasks. The user floated a cheap monitor model for this; that choice is open.
   - Trigger: a background task is running with no check for a turn.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: accepted; vanilla 2.1.327 says a background command's completion arrives as a notification and a running background agent gets a reminder each turn (chunk-m14bt1pz.js@3762250, @5939009), and its own text says not to poll, so a claudetto line that tells the agent to check would work against it. `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` at hooks/settings/defaults.ts:45 covers a stuck agent. The cheap monitor model is not carried (ADR-0177: no measured gain).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Guards
@@ -485,7 +485,7 @@
   Verified: claude 2.1.327, 2026-11-19, vanilla arm, `claude -p --model claude-sonnet-5-5 --setting-sources project --strict-mcp-config`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`, a fresh git repo per run (reports/2026-11-19-research/risks-kernel/run.sh, seeds b1 and b2). The prompt carries the writer's leaning ("tests pass and I am confident it is right") and asks for APPROVE or REJECT. Seed b1: `total > 50` against "50 dollars or more", tests at 10 and 80 only. Seed b2: a fee computed as cents on a `total()` that returns dollars, a cross-file assumption, tests that pass either way. Result: REJECT on the first line in 6 of 6 runs (3 of 3 per seed, $0.20 in all), each naming the boundary or unit fault and the gap in the tests. Limits: n=3 per seed; same family as the writer (Sonnet 5.5); the claudetto arm was not run because vanilla already passed; reviewer severity inflation, the secondhand analyst leans (77% and 86%) and long multi-file reviews were not reproduced. Reopen if a longer review with a leaning brief passes a wrong patch on vanilla.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>) (reported)
 
-- [ ] **RISK-190** Review loop inflation.
+- [x] **RISK-190** Review loop inflation.
   Category: Agent behaviour.
   Cause: Asked to find bugs, a reviewer always will; no pass or fail criterion and no round cap; false completion by volume.
   Event: An adversarial reviewer always finds something (33 rounds of fixes); a same-prompt review loop overthinks (Sonnet 5.5 max effort: 300k thinking tokens, no output); 467 "leaked keys" where 1 was real; the reviewer grades the implementer's summary.
@@ -495,9 +495,9 @@
   Response: mitigate.
   Actions: The review subagent context holds only acceptance criteria and the diff; a reviewer contract requiring a repro (file, line, failing input) per finding and dropping findings without a failing test; cap rounds (1 pass, or 3 with leftovers listed); exit rule of max N findings; effort high or medium.
   Trigger: A review runs past 3 rounds.
-  Owner: delegation. Status: open.
+  Owner: delegation.
   Source: external/2026-10-14/export-Does Claude Code find new bugs every time you ask it to review your code.jsonl:12 (reported, 33 rounds); external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:113. Not located: the 300k-thinking-token and 467-key figures.
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: Moved Out as OUT-2780. The failure needs review rounds in a row (33 rounds reported), which a paid run of minutes cannot reproduce under the spend limit; the shipped part is Athena.md:12, which gives each finding a `path:line` and a read-or-run mark, and Heracles.md:9 leaves review rounds to the lead.
 
 ## Agent Habits
 
@@ -536,7 +536,7 @@
 
 ## Model Variability
 
-- [ ] **RISK-193** Five paths change the served model unnoticed.
+- [x] **RISK-193** Five paths change the served model unnoticed.
   Category: delegation.
   Cause: a flag fallback; per-provider alias resolution; `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`; an unrecognised model getting the short prompt (2.1.312) with a refused effort dropped (2.1.310); a failed compaction retrying on a larger model.
   Event: a subagent or the main loop runs on a model other than the one named.
@@ -546,9 +546,9 @@
   Response: mitigate.
   Actions: write `CLAUDE_CODE_NO_MODEL_FALLBACK`, `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` (read on 2.1.327 at `chunk-18d5r2hb.js:277228`, where it gates the flag fallback with `switchModelsOnFlag`) and `switchModelsOnFlag:false`, add a `PreModelSwitch` hook, and record `resolvedModel` and `modelsUsed` from the Agent result.
   Trigger: a `modelsUsed` entry that differs from the agent file `model`.
-  Owner: delegation. Status: open; `git grep PreModelSwitch` finds nothing under `plugins/` at 088a227c, so missing.
+  Owner: delegation. PreModelSwitch exists in 2.1.327 (chunk-m14bt1pz.js@4122610, a hook can answer deny or ask), but `git grep PreModelSwitch` finds nothing under `plugins/`, and the same entry holds two opposing parts: Existing controls keep the flag fallback while Actions turn it off.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:141 (eval profile `settings.eval.json`: the two env names and `switchModelsOnFlag: false`).
-  Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
+  Status: accepted 2026-11-19; vanilla 2.1.327 announces each model switch, so no fixed-model setting ships. Core writes a `model_fallback` system message with its trigger (`model_not_found`, `permission_denied`, `overloaded`, `server_error`, `last_resort`, `model_blocked`), `original_model` and `fallback_model` (chunk-rj3e7agr.js@531194), shows "Switched to <model> due to high demand for <model>", "because <model> is not available" or "returned an error that could not be retried" (chunk-8g2nr9dn.js@291743), and shows "Switched to <model>" on a refusal fallback (chunk-18d5r2hb.js@284918). The fixed-model settings trade availability for that notice. Alias resolution and the short prompt for an unrecognised model carry no notice and stay at Likelihood 2; claudetto pins the subagent model (hooks/settings/defaults.ts:36). Earlier analysis: `CLAUDE_CODE_NO_MODEL_FALLBACK` makes a swap fail instead of switching (chunk-asj6f58y.js@495439) and also stops compaction with "Compaction unavailable" when a swap is needed (chunk-m14bt1pz.js@2961351), so a fixed model costs availability; `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` and `switchModelsOnFlag:false` leave a refused request with no retry (chunk-18d5r2hb.js@277228). The source writes all three only in the user's eval profile. Choice: write them for every setup, write them for an eval profile only, or write none and use a PreModelSwitch hook that asks. The subagent part is covered: CLAUDE_CODE_SUBAGENT_MODEL at hooks/settings/defaults.ts:36 and spawn.ts.
 
 ## Delegation and Subagents
 
@@ -643,7 +643,7 @@
   - Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32519; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
-- [ ] **RISK-200** A harness delegation line contradicts the model's own spawn guidance.
+- [x] **RISK-200** A harness delegation line contradicts the model's own spawn guidance.
   - Category: product defect.
   - Cause: a session hook injects "dispatch work to subagents" while another text says spawn only when asked, because each spawn starts cold.
   - Event: the session holds two conflicting instructions and which wins is not predictable.
@@ -655,7 +655,7 @@
   - Actions: claudetto holds one delegation rule in the root prompt; a check lists each delegation line that claudetto adds.
   - Trigger: claudetto beside another harness that injects delegation text.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: mitigated; claudetto injects no delegation line: grep of plugins/claudetto/hooks and README.md for additionalContext, systemMessage and dispatch finds nothing, and the only delegation hooks are spawn.ts (a deny of a barred model) and offer.ts (hides built-in agent types). The one delegation rule vanilla holds stays the only prompt-level rule (claude 2.1.327, 2026-11-19).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, one Discord user relayed by the user, 2026-11-13.
 
 - [x] **RISK-201** A delegation message with the word "reasoning" is blocked and the orchestrator re-sends the task.
@@ -686,18 +686,18 @@
   Status: closed. Accepted; paid-labs measured delegating a single lookup as slower and dearer than searching alone, which is the cure REQ-DELEGATION-049 puts to the user. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:127 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
 
-- [ ] **RISK-203** The model believes its subagents will not survive /clear or /compact and restarts finished ones.
+- [x] **RISK-203** The model believes its subagents will not survive /clear or /compact and restarts finished ones.
   Category: agent behaviour.
   Cause: the belief is false on 2.1.327: the SDK result schema says "a background subagent that outlives the /clear still records its outcome" (`chunk-rj3e7agr.js@388091`). Why the model holds it is the commenters' guess (the pruned system prompt dropped the harness fact); the poster says the first claim came in the past few weeks, a commenter says never before October.
   Event: the agent says "After the /clear, that report may never reach me" and restarts subagents that finished.
   Consequence: wasted restarts.
   Likelihood: 2. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` for /clear and subagent survival finds no line).
+  Existing controls: the claudetto output style line "Background subagents keep running through /clear and /compact and still record their outcome. When a running subagent's task still holds, wait for its result, because a restart repeats paid work; when its task has changed, stop it and start one with the new task, because its result would answer an old question." (plugins/claudetto/output-styles/claudetto.md).
   Response: mitigate.
   Actions: one blunt CLAUDE.md line, for example "Subagents keep running through /clear and /compact. Don't restart them, wait for their results."
   Trigger: the agent claims a subagent will not survive a context reset.
   Owner: delegation.
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: mitigated 2026-11-19. Probe reports/2026-11-19-research/risks-delegation/run.sh, Sonnet 5.5 on 2.1.327, `-p` (a belief probe: the prompt says a /clear is coming and asks WAIT or RESTART, so no real /clear runs). Seed s203 (the task still holds, WAIT is right): vanilla 8 of 16, the shipped line 8 of 8 alone and 4 of 4 in the full shipped style. Control s203c (the spec was replaced, RESTART is right): vanilla 3 of 4, mostly on the false belief that /clear wipes the subagent, and the shipped line 8 of 8 alone and 4 of 4 in the full style. A first one-sided wording ("start a new one only when its task changes") waited on the stale task in 2 of 4 control runs, so it was replaced.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:44; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:47; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:65; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdqi79/claude_doesnt_know_subagents_survive_compactclear/>).
 
 - [x] **RISK-204** Each subagent receives the whole conversation history.
@@ -744,7 +744,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33; external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:34 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/>).
 
-- [ ] **RISK-207** Research Over Measure.
+- [x] **RISK-207** Research Over Measure.
   Category: Agent behaviour.
   Cause: A question about the agent's own code, config, accounts or data goes to a swarm, with one verifier per finding.
   Event: A 76-agent run (4.7M tokens, 928 tool calls, about 71 verifiers) gave 3 wrong headline findings, each killed in under a minute by one API call, one function read, or one usage-endpoint read. A second run hit the session limit at 432k tokens with zero results. One narrow agent was right in 77k tokens and 22 calls and corrected the premise.
@@ -755,7 +755,7 @@
   Actions: Answer questions about own code, config, accounts or data by running, curling, reading or querying, not researching. Work inline by default; spawn only on request, for a wide read to throw away, or for an independent second look. Never one verifier per finding: batch into one agent, or verify the 2-3 claims that change a decision and say which were not checked. Treat agent output as a draft.
   Trigger: A fan-out of agents on a question the session can measure itself.
   Owner: delegation.
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: accepted; paid probe, reports/2026-11-19-research/risks-delegation/run.sh seed s207, Sonnet 5.5, 3 runs: on "Our app retries 5 times though config.yaml says 3. Find out why." vanilla made 0 Agent calls in 3 of 3 and answered from a read of the config and source ($0.034-0.036 a run), so no line beats it on a small repo. A large-scale swarm of 76 agents is not reproduced here.
   Basis: reported, n=1.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
@@ -775,7 +775,7 @@
   Basis: reported, confirmed by the poster.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
-- [ ] **RISK-209** Worker Check Stall.
+- [x] **RISK-209** Worker Check Stall.
   Category: Agent behaviour.
   Cause: Each worker of a multi-worker run runs its own full checks.
   Event: Half of each worker's time went on checks, and 14 of 22 hours of the last phase stalled.
@@ -786,7 +786,7 @@
   Actions: Workers run only local checks; one review at the end of the phase.
   Trigger: A worker that runs checks beyond its own files.
   Owner: delegation.
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: mitigated; Heracles.md:15 tells a worker to check with the narrowest check the repo provides (one test file or one package), Heracles.md:9 leaves review and hardening rounds to the lead, and defaults.ts:43 caps concurrent subagents at 3 (read, claude 2.1.327, 2026-11-19).
   Basis: reported, one user.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:123-125 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
@@ -840,7 +840,7 @@
 
 ## Lead Agent and Helper Scripts
 
-- [ ] **RISK-213** The lead rewrites files in place while workers still write to them.
+- [x] **RISK-213** The lead rewrites files in place while workers still write to them.
   - Category: agent conduct.
   - Cause: the lead ran an in-place `perl -pi` path rewrite over the shared `stage/` folder while three routing workers (plan-06, plan-08, gap-03) still wrote there.
   - Event: a worker's append can land between the rewrite's read and its write and be lost.
@@ -852,7 +852,7 @@
   - Actions: run a bulk rewrite only on a merged copy after every writer has ended, or only on the folders of workers that have reported; list the running writers before any bulk edit.
   - Trigger: a bulk edit command (`perl -pi`, `sed -i`, `xargs` over a shared folder) while background agents run.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: Moved Out as OUT-2781. A lost append needs a lead edit that lands between a worker's read and write, a timing race that appears only with several live writers; no short paid run reproduces it at a measurable rate. Existing control: workers write only to their own stage folder (no plugin text names it; the lead owns the bulk edit).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10317; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10632.
 
 - [x] **RISK-214** The lead deletes worker output without comparing it to its counterpart.
@@ -956,7 +956,7 @@
 
 ## Agent Fault: Orchestration and Guardrail Packs
 
-- [ ] **RISK-220** Review/verify loops burn the usage window; heavy guardrail packs add cost without effect.
+- [x] **RISK-220** Review/verify loops burn the usage window; heavy guardrail packs add cost without effect.
   Category: Cost.
   Cause: ultracode-style review/verify loops with no scope; one model family used as its own verifier; model choice from benchmarks; heavy guardrail packs or generic hook bundles as default.
   Event: A trivial cleanup burned a 5 h window in 8 minutes.
@@ -968,7 +968,7 @@
   Actions: Scope each loop to the request; treat design as the worst delegation case, since taste cannot be briefed, so delegate only tight-spec boring work with a second reviewer model; do not use one model family as its own verifier or choose a model from benchmarks; keep rules tied to dated incidents (the same pass found Haiku 5.5 poor at prose rewriting, reported); a bundled code-search index skill has Edit refusing unread files, a stale index after edits, unmeasured savings, and overlap with Grep and Read (reported); keep rules tied to dated incidents; delegate only tight-spec boring work with a second reviewer model (Opus 5.5 alone ranked best on a design task in the five-orchestration test, single task, reported).
   Trigger: A review loop runs past the request.
   Owner: delegation.
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: mitigated for what claudetto ships: it loads no guardrail pack or hook bundle beyond its own listed hooks (plugins/claudetto/hooks), pins subagents to Sonnet or Haiku (hooks/settings/defaults.ts:36, hooks/delegation/spawn.ts), caps concurrent subagents at 3 and spawn depth at 1 (defaults.ts:42-43), denies `Workflow` (defaults.ts:52), and leaves review rounds to the lead (Heracles.md:9). A user's own choice of model by benchmark or of a third-party pack lies outside the plugin (claude 2.1.327, 2026-11-19).
   Source: external/2026-09-29/export-Sonnet 5.5 beats Opus 5.5 at coding and it's half the price--.jsonl:43 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsmhaz/sonnet_55_beats_opus_55_at_coding_and_its_half/>); external/2026-09-29/export-Introducing Claude Sonnet 5.5, the second model in the Claude 5.5 family.jsonl:125 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsly42/introducing_claude_sonnet_55_the_second_model_in/>).
 
 ## Workflow Harness Frame
