@@ -8,7 +8,7 @@ import { aboutKeyOf } from "./copy";
 import { autoSentNote, respondDraft } from "./draft";
 import { clearOffLine, isOffCommand, ranOffCommand } from "./off";
 import { tagOf } from "./parse";
-import { isNoteRead, isOpenView, rowOf, type Watched, withViewCleared } from "./session-rows";
+import { isNoteRead, isOpenView, rowOf, type Watched, withViewCleared } from "./session/rows";
 import { markKnown } from "./store";
 import { fault } from "./fault";
 

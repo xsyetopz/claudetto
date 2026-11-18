@@ -18,7 +18,7 @@ import {
 	rowOf,
 	storedCount,
 	withRow,
-} from "./session-rows";
+} from "./session/rows";
 
 export type StepAt = { readonly turnId: string; readonly index: number };
 

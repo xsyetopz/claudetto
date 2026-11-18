@@ -2,7 +2,7 @@ import type { On, PluginOptions } from "claude-code";
 
 import { newCtx } from "./context";
 import { registerRender } from "./render";
-import { registerSession } from "./session";
+import { registerSession } from "./session/hooks";
 import { registerStep } from "./step";
 import { registerCommand, registerSubmit } from "./submit";
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { isNoteRead, withRow, type Row } from "./session-rows";
+import { isNoteRead, withRow, type Row } from "./rows";
 
 describe("withRow", () => {
 	test("puts the new row first and replaces its older one", () => {

@@ -1,23 +1,21 @@
 /** Picks the row to draw for the stored view and wires its presses to the actions. */
 
-import { parseExplanation } from "./cards";
-import type { Ctx } from "./context";
-import { noteTopic } from "./draft";
-import { fitCards } from "./fit";
-import { aboutFrame, aboutKeyOf } from "./copy";
+import { parseExplanation } from "../cards";
+import type { Ctx } from "../context";
+import { noteTopic } from "../draft";
+import { fitCards } from "../fit";
+import { aboutFrame, aboutKeyOf } from "../copy";
 import {
 	askedRow,
 	explainedAskedRow,
 	explainedRow,
 	explainingRow,
 	failedRow,
-	makingRow,
 	offerRow,
-	readyRow,
-} from "./rows";
-import { iterationOf, type View } from "./session-rows";
-import { hasOwnComposer, type Table } from "./table";
-import type { Actions } from "./view-actions";
+} from "../rows";
+import { iterationOf, type View } from "../session/rows";
+import { hasOwnComposer, type Table } from "../table";
+import type { Actions } from "./actions";
 
 export type RowArgs = {
 	readonly view: View | null;
@@ -54,22 +52,6 @@ export function rowFor(args: RowArgs): unknown {
 		return null;
 	}
 	switch (view.kind) {
-		case "making":
-			return makingRow(table);
-		case "ready": {
-			let isAnswered = false;
-			const answer = (name: string) => () => {
-				if (!isAnswered) {
-					isAnswered = true;
-					void actions.answered(name).then(() => actions.clear());
-				}
-			};
-			return readyRow(table, view.url, {
-				helpful: answer("page_helpful"),
-				notHelpful: answer("page_not_helpful"),
-				unread: answer("page_unread"),
-			});
-		}
 		case "failed":
 			return failedRow(table, view.reason, () => void actions.clear());
 		case "explaining":

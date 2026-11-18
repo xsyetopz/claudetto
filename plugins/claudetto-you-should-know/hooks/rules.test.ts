@@ -3,7 +3,7 @@ import { describe, expect, test } from "claude-code/testing";
 import { parseExplanation } from "./cards";
 import { proseMarkdown } from "./markdown";
 import { parseProposedLine } from "./parse";
-import { type Row, withRow } from "./session-rows";
+import { type Row, withRow } from "./session/rows";
 
 const DAY = 86_400_000;
 

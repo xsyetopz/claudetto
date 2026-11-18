@@ -9,11 +9,11 @@ import type { Ctx } from "./context";
 import { aboutKeyOf, closedOfferRows } from "./copy";
 import { tagOf } from "./parse";
 import { debugRows } from "./rows";
-import { idleMsOf, isUnattendedInFlight, rowOf, withRow } from "./session-rows";
+import { idleMsOf, isUnattendedInFlight, rowOf, withRow } from "./session/rows";
 import { aboutShown, toggleAbout } from "./store";
 import { rowsTable } from "./table";
-import { actionsFor } from "./view-actions";
-import { rowFor } from "./view-row";
+import { actionsFor } from "./view/actions";
+import { rowFor } from "./view/row";
 import { fault, swallow } from "./fault";
 
 export function registerRender(on: On, ctx: Ctx): void {

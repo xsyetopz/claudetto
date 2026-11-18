@@ -1,16 +1,14 @@
 /** The per-session rows kept in the store, and the pure rules over them. */
 
-import { NOTE_READ_MS, SESSIONS_MAX, SHOWN_KEEP_MS } from "./constants";
-import type { Check } from "./checks";
-import type { Tag } from "./parse";
+import { NOTE_READ_MS, SESSIONS_MAX, SHOWN_KEEP_MS } from "../constants";
+import type { Check } from "../checks";
+import type { Tag } from "../parse";
 
 export type View =
 	| { kind: "offer"; line: string; explanation?: string | undefined; shownAt?: number; promptsSurvived?: number; isOffArmed?: boolean }
 	| { kind: "explaining"; line: string; iteration?: number }
 	| { kind: "explained"; line: string; text: string; iteration?: number; shownAt?: number; promptsSurvived?: number }
 	| { kind: "asked"; line: string; iteration?: number; shownAt?: number }
-	| { kind: "making"; line?: string }
-	| { kind: "ready"; line?: string; url: string }
 	| { kind: "failed"; reason: string }
 	| { kind: "off"; line: string; shownAt?: number };
 
@@ -29,7 +27,7 @@ export type Row = {
 export type Idle = { readonly ms: number } | { readonly since: number };
 export type Watched = { shownAt: number | undefined; line: string; idle: Idle };
 
-const VIEW_KINDS: readonly string[] = ["offer", "explaining", "explained", "asked", "making", "ready", "failed", "off"];
+const VIEW_KINDS: readonly string[] = ["offer", "explaining", "explained", "asked", "failed", "off"];
 
 export const viewOf = (value: unknown): View | null =>
 	typeof value === "object" &&
@@ -129,7 +127,7 @@ export const isUnattendedInFlight = (
 	view: View | null | undefined,
 	id: string,
 	explaining: ReadonlySet<string>,
-): boolean => (view?.kind === "explaining" || view?.kind === "making") && !explaining.has(id);
+): boolean => view?.kind === "explaining" && !explaining.has(id);
 
 export function forgetDetached(set: Set<string>, surfaces: readonly string[]): void {
 	for (const s of [...set]) {

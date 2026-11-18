@@ -254,8 +254,6 @@ export function stillRow(table: Table, text: string): Node {
 }
 
 export const explainingRow = (table: Table): Node => stillRow(table, "One moment…");
-export const makingRow = (table: Table): Node =>
-	stillRow(table, "Making your page (a minute or two) · Claude keeps working…");
 
 export type FailedKind = "publish" | "blocked" | "explain" | "turn_off" | string;
 
@@ -362,30 +360,5 @@ export function offerRow(
 				copy: about.copy,
 			}),
 		choicesRow(table, [...before, ...fit.choices, ...after]),
-	);
-}
-
-export type ReadyHandlers = {
-	readonly helpful?: (() => void) | undefined;
-	readonly notHelpful?: (() => void) | undefined;
-	readonly unread?: (() => void) | undefined;
-};
-
-export function readyRow(table: Table, text: string, on: ReadyHandlers): Node {
-	const { Box, Text } = table;
-	return el(
-		Box,
-		{ flexDirection: "column", marginTop: 1 },
-		el(Text, { wrap: "truncate-end" }, lead(table), "Learning page ready"),
-		el(
-			Box,
-			{ marginLeft: 2 },
-			el(Text, { dimColor: true, wrap: "wrap" }, text),
-		),
-		choicesRow(table, [
-			{ hotkey: "1", label: "Helpful", onPress: on.helpful },
-			{ hotkey: "2", label: "Not helpful", onPress: on.notHelpful },
-			{ hotkey: "3", label: "Didn't read", onPress: on.unread },
-		]),
 	);
 }

@@ -8,7 +8,7 @@ import { SEEN_MAX } from "./constants";
 import type { Ctx } from "./context";
 import { lineKey, parseProposedLine } from "./parse";
 import { proposePrompt } from "./prompt";
-import { isOfferDue, type Row, rowOf, withRow } from "./session-rows";
+import { isOfferDue, type Row, rowOf, withRow } from "./session/rows";
 import { stringLines } from "./store";
 import { fault } from "./fault";
 

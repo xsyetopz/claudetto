@@ -2,12 +2,12 @@
 
 import type { EngineInterface } from "claude-code";
 
-import { ASKED_MS } from "./constants";
-import type { Ctx } from "./context";
-import { keepsDraft, OFF_BOX_BUSY } from "./draft";
-import { parseExplanation } from "./cards";
-import { OFF_COMMAND } from "./constants";
-import { explainPrompt, type Redo } from "./prompt";
+import { ASKED_MS } from "../constants";
+import type { Ctx } from "../context";
+import { keepsDraft, OFF_BOX_BUSY } from "../draft";
+import { parseExplanation } from "../cards";
+import { OFF_COMMAND } from "../constants";
+import { explainPrompt, type Redo } from "../prompt";
 import {
 	isSameShowing,
 	type OpenView,
@@ -15,16 +15,16 @@ import {
 	storedCount,
 	type View,
 	withRow,
-} from "./session-rows";
-import { markKnown } from "./store";
+} from "../session/rows";
+import { markKnown } from "../store";
 import {
 	RESPOND_BLOCKED,
 	RESPOND_BOX_BUSY,
 	RESPOND_NOT_FILLED,
 	respondDraft,
-} from "./draft";
-import type { Card } from "./cards";
-import { fault, swallow } from "./fault";
+} from "../draft";
+import type { Card } from "../cards";
+import { fault, swallow } from "../fault";
 
 export type Fields = { readonly line: string; readonly shownAt?: number | undefined; readonly iteration?: number | undefined };
 

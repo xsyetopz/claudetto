@@ -3,7 +3,7 @@
 import type { Timer } from "claude-code";
 
 import { newOffState, type OffState } from "./off";
-import type { Watched } from "./session-rows";
+import type { Watched } from "./session/rows";
 
 export type Ctx = {
 	/** Sessions with a model check in flight. */
