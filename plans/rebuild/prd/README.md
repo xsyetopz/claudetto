@@ -72,7 +72,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints).
   Conflict: claudetto shall not carry the removed Stop-hook machinery.
 
-#### Removed Features And Files
+#### Removed Features and Files
 
 - [ ] **OUT-009** claudetto shall do no work on its own `classify` module (task 3.1, keep or remove) until the user decides. The choice is left to the user at `design.md:111`. The user decisions of the item index are at source lines 2583-2587. Running paid total at that point: $11.91 ($9.11 plus $2.80). Row recheck by `xref.ts`, $0.
   Basis: reported.
@@ -224,7 +224,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported, users.
   Source: external/2026-10-11/export-Why is it so fussed over web scraping now-.jsonl:29; external/2026-10-11/export-Why is it so fussed over web scraping now-.jsonl:58; external/2026-10-11/export-Why is it so fussed over web scraping now-.jsonl:73 (url: see export header line 1).
 
-#### Removed Bash Gate And Permission Rules
+#### Removed Bash Gate and Permission Rules
 
 - [ ] **OUT-042** claudetto shall not ship the Gradle rule (deny `mvn`, `ant`, `sbt` in a Gradle build with no `pom.xml`) or the `just` rule (route `make` to `just` for the recipe names a `justfile` holds). The equivalence table has no row for either, and a `justfile` rule needs its recipe names. `karanb192/claude-code-hooks` `protect-tests` is a candidate rule of the same parser. Xmake, `pnpx`, and Deno need the equivalence table of task 3.6a first.
   Basis: read.
@@ -283,7 +283,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 - [ ] **OUT-053** claudetto shall not rewrite a command inside a hook; it blocks with a reason instead. in 2.1.319 a changed tool input voids auto mode's review (`serverClassifierInputRewritten`), and the call returns "gave no verdict". Basis: measured.
   Source: openspec/specs/low-hitl/spec.md:249; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/low-hitl/spec.md:5.
 
-#### Stop Checks And Completion Gates
+#### Stop Checks and Completion Gates
 
 - [ ] **OUT-054** claudetto shall not block at Stop to ask for commits, and so needs no `changedOf` filter for `<cwd>/.claude/worktrees/` paths (the commit check was a real catch for 47% of 230 blocks in 7 days, partial for 27%); the commit rule stays a prompt line. D323 removed the slice-commit Stop block.
   Acceptance: No Stop hook runs a commit check. Verification: inspection.
@@ -299,7 +299,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported. Status: missing at 088a227c.
   Source: user decision, 2026-11-16; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:154,161; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281 (word lists failed: 10 of 12 evasions passed, as the old plan states it).
 
-#### Model Routing And Subagent Models
+#### Model Routing and Subagent Models
 
 - [ ] **OUT-057** claudetto shall not route Sonnet-implements and Opus-reviews for simple tasks (measured costlier than Opus alone) or tiered thinker, planner, and typist chains (contested).
   Acceptance: no default chain routes a simple task through a second model. Verification: inspection.
@@ -336,7 +336,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Acceptance: Haiku keeps to bounded, verifiable jobs; Fable spawned 5 agents for 1 agent's work (contested, others run it for months). Basis: reported. Status: n/a.
   Source: external/2026-10-11/export-Haiku 5.5 token usage.jsonl:9.
 
-#### Compaction And Handover
+#### Compaction and Handover
 
 - [ ] **OUT-065** claudetto shall not keep the stock `includeGitInstructions` text or the auto, idle, and precomputed compaction. At `088a227c` `settings.ts` sets `includeGitInstructions: false` and `precomputeCompactionEnabled: false`, and `includeBetterGitInstructions` appears nowhere (plugins/claudetto/hooks/features/setup/settings.ts:166-172@088a227c).
   Basis: reported, user feature list.
@@ -385,7 +385,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@22091 (claude 2.1.327 binary).
 
-#### Prompts, Skills And Rules
+#### Prompts, Skills and Rules
 
 - [ ] **OUT-076** The current bloated suite of rules: redone, not kept.
   Acceptance: the rules reduce to what the surface choice in [REQ-KERNEL-006](kernel.md) needs. Verification: inspection.
@@ -448,7 +448,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: cited.
   Source: external/please-use-me-often/swe-worst-practices.md:52; external/please-use-me-often/swe-worst-practices.md:79.
 
-#### Env Settings And Cost Knobs
+#### Env Settings and Cost Knobs
 
 - [ ] **OUT-091** claudetto shall vary no setting by subscription plan except the concurrent subagent cap (REQ-SETUP-027, REQ-DELEGATION-012). A wider tier table of cost settings has no source, while the subagent cap has one: each subagent spends from a 5-hour window, which Ultra and an API key do not have.
   Acceptance: the only `oauthAccount` read under plugins/ feeds `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. Verification: inspection (`git grep oauthAccount -- plugins`).
@@ -487,7 +487,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported. Status: partial at 088a227c (setup still writes `subagentPromptCacheTtl: "1h"` at `settings.ts:118`).
   Source: the dossier verdict is "adopted" and setup writes 1h (external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:12 and :69; plugins/claudetto/hooks/features/setup/settings.ts:117-118@088a227c), which contradicts a "goes" reading; the conflict sits with plan:804 (Cache discipline).
 
-#### Third-Party Tools And Noise
+#### Third-Party Tools and Noise
 
 - [ ] **OUT-098** claudetto shall not ship a Supabase row-level-security or database-privilege checklist.
   Acceptance: No block holds a REVOKE EXECUTE, has_function_privilege, or SET ROLE test. Verification: inspection.
@@ -4002,7 +4002,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 - [x] **OUT-682** Out (REQ-REPLY-037, ADR-0177, ADR-0190): the build parts drop, because vanilla already carries the ask rule. Verified 2026-11-19 on Claude Code 2.1.327 (cc-inspect cli `-p go --permission-prompt-tool stdio`, tool AskUserQuestion): the stock description says to ask only for a decision that is genuinely the user's and otherwise to pick the obvious option and proceed; a one-sentence replacement would drop its plan-mode note and stand-alone question guidance, deferring the tool adds a ToolSearch call before every question, and the `mcp__claudetto__decide` service has no measured gain over vanilla. The shall-not parts hold by absence: claudetto registers no ask tool, asks the user nothing through `$.ui.ask` (no setup wizard, ADR-0190), and never answers AskUserQuestion. Original text: claudetto shall register no ask tool (the classifier reads answers only as `[User answered AskUserQuestion]: ...` and drops other tool results); replace the description with the one-sentence `ASK_TEXT`; defer the tool when the session has ToolSearch; use `$.ui.ask` for setup's own questions (a dismiss rejects); never answer AskUserQuestion in the user's place; send the model's own decisions to `mcp__claudetto__decide`, which registers only with `TYPESAFE_API_KEY`, reads it nowhere else, carries question texts, option labels, and fixed pick or approval texts and no transcript, file, or path; other hooks reach Jev only through the Decider; no `typesafeApiKey` userConfig. Thresholds belong to a question set and a pinned model version (`jev-1.14.0`) and change only with a recorded run on held-out cases.
 
-#### Claude Code Behaviour With No Plugin Fix
+#### Claude Code Behaviour with No Plugin Fix
 
 - [ ] **OUT-108** claudetto shall not fix these, because no plugin seam reaches them: garbled characters (renderer), the "· summary" label (`tool_use_summary`), 2.1.319 rewriting `Agent` input and causing auto-mode "changed after review", and the extra `claudetto:Heracles` agent (the model's own delegation).
   Basis: measured. Status: have at 088a227c (nothing built).
@@ -4126,7 +4126,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: measured. The adherence extension ran 2026-11-18 (paid, user approved, Sonnet 5.5 medium, 2.1.327, reports/2026-11-18-research/paid-labs/adherence/). Two system rules (the last line reads END-OF-REPLY; no lists), 3 sessions per size, 3 list-inviting questions each. At about 29k tokens, 9 of 9 replies kept both rules. At about 410k, END held 9 of 9 and one reply of 9 broke the no-lists rule (11 list lines). At about 714k, the first question broke the no-lists rule in 2 of 3 sessions (12 and 10 list lines); auto-compaction then cut the context to 4k-6k and one later reply dropped END. Rule loss grows with context size, which supports renewal at a task boundary (ADR-0178) over long sessions. Status: missing at 088a227c.
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160@088a227c9^ (run 2, 18 runs); openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/compaction-path/spec.md:3@088a227c9^ (the four-arm probe requirement).
 
-## Conflicts With Settled Decisions
+## Conflicts with Settled Decisions
 
 Items that contradict a settled decision. Each waits for the user to keep the decision or reopen it.
 

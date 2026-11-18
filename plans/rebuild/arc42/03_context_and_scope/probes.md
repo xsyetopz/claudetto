@@ -1,6 +1,6 @@
-# probes
+# Probes
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-348** Handoff tail defect probes A/B/C: the fork missed the newest tool steps; the fix lists the last three tool-using assistant steps.
   Acceptance: Probe A $0.6545, B $0.6343, C $0.6411; counts 380/412/385 equal truth; handoff "data1 done, data2 done, data3 read only", 3 commits, 11 turns, 48.8 s. Verification: probe.
@@ -14,14 +14,14 @@
   Status: n/a (fact).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:136; probe `probe-prefix`, fake API with body dump, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-350** The old plugin made 2 side calls on a plain typed prompt, 3 on one Bash turn (the sonnet grade runs when tool results exist), 5 on a foreign-branch force-delete; grade timeout 15 s, Decider timeout 20 s.
   Acceptance: a ledger of one session shows those counts. Verification: probe.
   Basis: measured. Status: have at 088a227c (the grader is gone; history).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:924 (1 haiku call plus 1 sonnet call when tool results exist). Not located: the 5-call and timeout lines.
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-351** `$.command.run({command:'clear'})` called unawaited at main-loop `turn.complete` clears the session: `first one` appears only in request 1, the session id changes, and `session.end` fires with `{reason:"clear", sessionId:<old id>}`. A typed `/clear` has origin `{"kind":"composer"}` and the plugin's has `{"kind":"plugin"}`; after the clear `session.start` does not fire; an unawaited `$.command.run({command:'clear'})` followed by `$.prompt.submit({text, asUser:true})` puts the handoff text only in request 2, headless (probe, fake API, claude 2.1.325); `$.fs.write` has no append option.
   Acceptance: the probe log shows `CR clear {"kind":"plugin","name":"probe"}` and `SE clear <old id>`. Verification: probe.
@@ -61,7 +61,7 @@
   Basis: measured.
   Source: lead probe, claude 2.1.325, 2026-11-16, `$.fs.write` with `{append:true}` (recorded in plans/rebuild-curation.md at commit dc499712).
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-360** A `command.run` hook on `{command:'clear'}` that awaits `$.model.fork`, stores the text, and returns `next(e)`, with a `prompt.context` block `probe:handover`, produces 3 requests: the fork is request 2 and holds `first one`; request 3 opens with `# probe:handover` plus the handover and holds no `first one`; cache_control sits on `messages[1].content[0]` in request 1 and `messages[2].content[0]` in the fork.
   Basis: measured.
@@ -103,31 +103,31 @@
   Basis: measured.
   Source: handover probe F, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414); clawdipedia `extend/mod-api/types/session/compact-measure-messages` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-369** Probe 2.8b ran 35 fixtures: 18 were judged by the built-in classifier (16 blocked; `git checkout -- .` and `export -p` were allowed) and 17 were never judged because the claudetto gate's `tool.check` denied them first. The run used 1,657,843 tokens and $0.3882 (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:35.
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-370** Probe 2.8 found the `ceiling` field of a `tool.check` event absent on every case run (`research/probes.md` section 13); `engines` is in sections 3 and 14 and `AbovePrompt` in section 15 (probe record). `tool.check` input keys: tool, input, tool_use_id, agentId, isReadOnly. No ceiling appeared in any run. A deny rule (WebFetch) yields no `tool.check` event. `ui.render` hooks did not fire under `-p`.
   Basis: measured.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:18; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:147.
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-371** Claude Code caches an experiment assignment in ~/.claude.json (.clientDataCacheSlots[].data.experimentKey and .atis) and sends it with every request; r/ClaudeCode posts found that assignments change behaviour (more tool calls per reply, much longer shell commands, less narration) and one added system-prompt text; transcripts carry an atis-latch record per session, with history kept about 30 days; opt-out removes the assignment keys after a backup, plus an env var that people report blocks re-enrollment. Reported, one commenter each: experiment flags named turnstone_plinth (Opus 5.5) or dotterel_architrave (Fable 5.1) in the user's .claude.json mark a test group; attached prompts steer reasoning toward a "seen not done" effect (context held but not acted on); one poster confirms an experiment named claude_code_turnstone_plinth_experiment; check by searching .claude.json for "experiment.".
   Basis: reported (behaviour change not proven quality loss), unverified.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:116; external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:117 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrpkdt/what_even_is_the_point_of_working_rules_lol/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:263 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:33; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:41; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:48; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:49; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrxiru/i_made_a_free_tool_to_check_whether_your_claude/>).
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-372** Reported long autonomous task (Opus 5.5, Claude Code in VS Code, about 1 week, about 548M tokens of which 546.2M were cache reads and writes, about $200 at API list prices, run on a Pro plan): the model first said the task was impossible, then compared encrypted files against a few intact copies, found only the first 16 KB encrypted, built a per-format module tool re-run after each improvement (the last round brought back about 100 files), trained a U-Net, and recovered 26% fully, 27% damaged, 12% content-only, 35% lost.
   Basis: reported, one author, write-up not verified. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xn6tu3-i-gave-claude-700-ransomware-enc-20261109T152841Z.md:36-45,49,67,198 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xn6tu3/i_gave_claude_700_ransomware_encrypted_files_it/>).
 
-## Probes And Experiments
+## Probes and Experiments
 
 - [ ] **CTX-373** claudetto shall record these measured paid eval results (11 cases x 3 runs): Haiku 0.965 (+0.098, $0.22); Sonnet 0.948 (+0.052, $3.10); Opus 0.956 (+0.071, $6.38, stopped at $6 ceiling); `no-unasked-revert` lower with the plugin and did not reproduce; no case spawns a subagent, so no result covers agents and none is claimed for them.
   Acceptance: A paid run waits for the user's approval and budget report (task 10.3; reported). Verification: inspection.

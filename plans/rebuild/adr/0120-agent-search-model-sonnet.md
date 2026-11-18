@@ -2,7 +2,7 @@
 status: superseded by ADR-0117
 date: recorded in openspec/specs/agent-conduct/spec.md:338 (day of decision not recorded)
 ---
-# Search And Plan Agents Run Sonnet 5.5
+# Search and Plan Agents Run Sonnet 5.5
 
 ## Context and Problem Statement
 

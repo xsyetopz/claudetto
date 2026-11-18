@@ -1,4 +1,4 @@
-# Conflicts With Settled Decisions
+# Conflicts with Settled Decisions
 
 - [ ] **RT-038** The root decides who runs a slice by this algorithm: if the slice is smaller than one file read or about 5 requests, the root does it (a fresh Artemis writes about 5k and Heracles about 11k tokens before work; 6 runs on 2026-11-09); if it needs more than about 25k tokens of reads, Artemis reads; if it is a specified edit with a check command, Heracles at Sonnet; if it is design or cross-cutting, the root does it or passes `model: opus`. The cut-offs come from measurement. Measured delegation: two bounded fixes in parallel took 31 s and `/cost` $0.3012 (Opus root $0.2144, Sonnet workers $0.0861, Haiku $0.0008), and each worker used 62k-126k tokens.
   Basis: measured. Status: partial at 088a227c (`plugins/claudetto/hooks/features/delegation/texts.ts`).

@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-09
 ---
-# OpenSpec With Core Parity In A Lighter Form
+# OpenSpec with Core Parity in a Lighter Form
 
 ## Context and Problem Statement
 

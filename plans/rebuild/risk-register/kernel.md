@@ -18,7 +18,7 @@
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:36 (measured count).
   Verified 2026-11-19: every catch site in claudetto and claudetto-you-should-know writes its error to the debug log through a fault() helper; claudetto compact.test.ts and you-should-know fault.test.ts each fail on a mutant without the log (claude plugin test: 42 and 63 pass, 0 fail).
 
-## Verification And Honesty
+## Verification and Honesty
 
 - [ ] **RISK-002** Training-prior default: the agent asserts the commonest answer over repo state.
   - Category: Agent behaviour.
@@ -96,7 +96,7 @@
   - Status: closed; same grep: no pin hook in plugins/claudetto/hooks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
-## Context Loss And Handover
+## Context Loss and Handover
 
 - [x] **RISK-008** Drift: the model recalls a rule and still breaks it
   - Category: kernel.
@@ -114,7 +114,7 @@
   - Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:32-36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:58; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:16; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:35; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:121; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:126.
   - Conflict: Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
 
-## Reply Style And Sycophancy
+## Reply Style and Sycophancy
 
 - [x] **RISK-009** Anti-sycophancy and CLAUDE.md rules decay
   Category: kernel.
@@ -129,7 +129,7 @@
   Owner: kernel. Status: closed; claude 2.1.327, 2026-11-18, grep of plugins/claudetto for `Stop` hooks that block: the only classic.Stop handler (renewal.ts:41) returns next(e) and blocks nothing, so no regex Stop check ships.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:11-13; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:33; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:34; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:95.
 
-## Guards And Destructive Actions
+## Guards and Destructive Actions
 
 - [x] **RISK-010** An `Edit` spanning two sentences fails.
   Category: Technical.
@@ -148,7 +148,7 @@
 
 
 
-## Hooks, Gates, And Notices
+## Hooks, Gates, and Notices
 
 - [x] **RISK-013** The claudetto gate blocks real work or asks a person on a harmless command.
   - Category: product.
@@ -195,14 +195,14 @@
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 
-## Environment, Accounts, And Marketplace
+## Environment, Accounts, and Marketplace
 
 
 
-## Long Run Stops On Error
+## Long Run Stops on Error
 
 
-## Safeguards And Guards
+## Safeguards and Guards
 
 - [ ] **RISK-020** Guard hooks fail open.
   - Category: guard bypass.
@@ -219,7 +219,7 @@
   - Status: open. Reported on 2.1.312 with 10 hooks.
   - Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19 (the judge verdict there is "rejected" for the claim as a claudetto fact; the exit-code rule itself is the documented behaviour); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:28; not located: the 2.1.305 unknown-type line and the PostToolUse exit-2 line; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326>; external/2026-10-17/export-Your deny rule for git push doesn't stop -git -C . push-. Four ways Claude Code guards silently do n.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5tbps/>); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:40; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:69; external/2026-11-03/reddit.com-r-claudeai-comments-1xjaly2-tested-10-claude-code-hooks-in-a-20261103T145135Z.md:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjaly2/tested_10_claude_code_hooks_in_a_throwaway/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>) (release notes).
 
-## Guards And Sandbox
+## Guards and Sandbox
 
 - [x] **RISK-021** A hook blocks the agent because it reads the user's work request as a remark or question.
   - Category: product defect.
@@ -347,7 +347,7 @@
   Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` restricted to source files: no hyphenated file family in plugins/claudetto/hooks (files: builtins/, handover/, settings/).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (state: 91 files; reported, user: unacceptable); measured, 2026-11-16
 
-## Product And Tooling
+## Product and Tooling
 
 - [x] **RISK-029** The prompt holds two rules that conflict.
   - Category: product.

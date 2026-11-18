@@ -2,7 +2,7 @@
 status: superseded by ADR-0087
 date: 2026-11-16
 ---
-# Judge Claudetto By A Headless Stock-Against-Dev Benchmark
+# Judge Claudetto by a Headless Stock-Against-Dev Benchmark
 
 ## Context and Problem Statement
 

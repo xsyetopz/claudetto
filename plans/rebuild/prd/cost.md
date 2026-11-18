@@ -10,13 +10,13 @@
 
 ## Price-Step Guard
 
-## Budget Note After a Paid Run
+## Budget Note after a Paid Run
 
 ## Window Budget
 
 ## Budget Text
 
-## Cost Accounting From Transcripts
+## Cost Accounting from Transcripts
 
 ## Cache
 
@@ -32,7 +32,7 @@
 
 ## Decider
 
-## Decision Log And Plan
+## Decision Log and Plan
 
 ## Measuring Cost
 

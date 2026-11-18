@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Lay The Plan Out As arc42 With PRD, ADR And Risk Register
+# Lay the Plan Out as arc42 with PRD, ADR and Risk Register
 
 ## Context and Problem Statement
 

@@ -1,36 +1,36 @@
 # rules-behaviour
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-479** The syntax @path/to/file in CLAUDE.md inlines another file (a cross-project memory index loaded from user CLAUDE.md). A commenter reports the memory store hit its limit and ejected the wrong memories.
   Basis: reported, anecdote.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:231 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-480** One month, about 15 agents with the rule "when corrected write one dated line to memory/lessons.md and read it each session": 247 lines (busiest agent 47, some under 5), mostly environment facts (zsh no word-split, find is bfs and rejects -newermt, no PIL use sips, tool calls die at 600s) and vague asks, not model faults; "a failed check with 2>/dev/null looked like a pass".
   Basis: reported, poster.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:29 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-481** Per-agent lessons load about 8 KB plus about 6 KB shared (about 3.5k tokens), identical each session so cached; a 10 KB cap per agent file, past which duplicates merge and some archive. Kept loaded, not behind an index, because expensive mistakes throw no error (wrong weekday, "doc does not exist") so a pointer is never followed.
   Basis: reported.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:115 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-482** Source read of other harnesses: Aider rebuilds a system_reminder every request, last in the list, only if tokens < max_input_tokens. Codex compaction keeps recent user messages verbatim, newest first, up to 20,000 tokens and re-injects canonical context. SWE-agent never trims the first observation. OpenHands never condenses `keep_first` events (default 2) and has an off-by-default critic loop (threshold 0.6, 3 iterations). None of the five has an agreement gate. Structure beats reminding (source read, no published rates).
   Basis: source read, no published rates.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:102-107; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:111-115.
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-483** Claude Code 2.1.323 hook types, checked against the 2.1.327 Mod API declarations: `prompt.submit` returns `context` blocks for per-turn reminders; `session.compact` `instructions` plus `classic.SessionStart` with source `compact` carry a rule through compaction; `classic.Stop` blocks while `turn.complete` cannot; `tool.check` enforces commit and scope bans; the `session.compact` `messages` field lets a plugin keep a message whole by its handle (`prompt.submit` result `context`, `session.compact` input `instructions` and `messages` with handles: clawdipedia get_schema "types", 2026-11-18, cache; the events `prompt.submit`, `turn.complete`, `session.compact`, `tool.check`, `classic.Stop`, `classic.SessionStart` listed by cc-inspect surface mod-api on 2.1.327). A run that shows `classic.Stop` blocking, or `tool.check` denying a commit, was not made here: the declarations carry the types and a blocking run needs a plugin probe.
   Basis: cited, clawdipedia get_schema "types" (PromptSubmitResult, SessionCompactInput; badge: clawdipedia.cc cache, fetched 2026-11-18) and read from the 2.1.327 binary (cc-inspect surface mod-api); the blocking behaviour of each hook is declared, not run.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:47-55.
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-484** A post on a lintable prompt language (llmmd) defines a PREVENT ladder. Rung 1 asks for a lint rule of the file that shows the error. Rung 2 writes one EARS sentence into `.claude/rules/<topic>.md` with a `paths` list of the files where the error happens. Rung 3 adds one CHECK line for REVIEW (reported, by the post's author).
   Basis: reported, post author.
@@ -48,7 +48,7 @@
   Basis: reported, post author's claim; the post names no test, and it concerns the author's own analyzer, not Claude Code, so a local probe has no subject.
   Source: external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md:180.
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-488** `PIN_EXTRACT` arms on 130 samples: long text 120/130 at 1,732 static characters, plain 101/130 at 1,135, credit 130/130 at 1,211, C2 (closed label list, no credit wording) at 1,207. On a blind set of 120: old 116 and 118; A 115 and 112; B 118 and 119; C 111 and 111. Credit wording adds nothing measurable once the closed label list exists (measured).
   Basis: measured.
@@ -58,7 +58,7 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:363.
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-490** Violations ran about 0.6% for rules a hook enforced against about 5.6% for rules that were text only; keep prose for what cannot be checked mechanically.
   Basis: reported, measured by one team (own data).
@@ -72,7 +72,7 @@
   Basis: reported, hypothesis (a poster's); the watermark and its effect on sampling are server-side behaviour, not in the binary, so a local probe cannot show them; kept as reported.
   Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xqp2l0-sick-of-semantic-substitution-20261110T172348Z.md:143 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqp2l0/sick_of_semantic_substitution/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-493** The agent follows existing architecture and makes small improvements. For a larger change, say 'do not be constrained by what exists, build it as if from scratch' and pare back later, or paste reference screenshots (a redesign only moved elements until Dribbble references were given). A 'moonshot' prompt run as a skill suggested one already-planned breaking change, one already-filed bug, and a rendering-engine swap its own red-pen round called a waste; a skeptic reports token waste and over-engineering.
   Basis: reported, n=3. Status: not applicable (outside fact).
@@ -106,7 +106,7 @@
   Basis: reported. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:435 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-501** Karpathy-rules file test (24 runs, Claude Code 2.1.312, Opus 5.5): hidden tests passed either way; time 274 s vs 281 s and $2.56 vs $2.69 over 12 runs each; all 6 runs on the messy-bug task fixed the same single line with or without the file; retry helper 10 to 12 lines with the file vs 12 to 17 without; one of three with-file runs on the vague date task made an 8-line change that passed unknown date text through, which no without-file run did, so a smaller diff moved the ambiguity to the user.
   Basis: measured, n=3 per cell. Status: not applicable (outside fact).
@@ -116,35 +116,35 @@
   Basis: reported, one author, own tickets. Status: not applicable (outside fact).
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xmhy1d-the-karpathy-claudemd-clearly-20261105T173154Z.md:272-284 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xmhy1d/the_karpathy_claudemd_clearly_changed_claude/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-503** Sonnet is more sensitive to prompt quality than Opus: stating the "why" of a request raises quality (two commenters); a Sonnet main session can have an Opus subagent review its plan for flaws.
   Basis: reported.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-504** A cited paper (arXiv 2608.23550) checked how many written security rules had any effect: only 4 to 16 percent. The poster concludes that prose rules are suggestions and executable guards (git hooks, linter rules, static analysis, scripts) hold.
   Acceptance: The figure holds as the poster cites it; the paper was not opened. Verification: inspection.
   Basis: cited, secondhand. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjcfjs/how_to_build_a_harness_that_actually_improves/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-505** A commenter reports that Swift warnings as errors in a build hook catch unused variables and never-read results, and Periphery catches unused declarations, but a call with a side effect whose result is unread (layoutIfNeeded) passes both and a lint rule; only a reader of the diff catches it.
   Acceptance: The fact holds as one commenter reports it for Swift. Verification: probe.
   Basis: reported, one commenter. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:109; external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-506** claudetto shall treat these small-sample effects as reported: Karpathy CLAUDE.md, 2.1.312, Opus 5.5, n=3 per cell: asks before guessing 2/3 vs 0/3, regression test 3/3 vs 0/3. Writing skill that only bans things: 5/5 vs 0; three-reviewer skill same score at ~14x cost; public skill tied 8/8 vs 8/8 (5 runs each, blind grader; commenters: bans beat instructions because pass/fail). PR-review filter benchmark: Copilot reviews kept ~92% of real bugs; 11 missed real bugs kept as regression cases, 2 high severity. Anthropic guide of Oct 22 (single agent with skills often beats subagent teams; cited). Weekly burn reports (Max 20x gone in 2.5 days on Opus 5.5 medium; 2x vs 3.7x vs 1.5-1.7x plan ratios, unverified); tool-use: a user cut usage 30%+ to <10% by terminating stuck agents. Watermark/anti-distillation/nerf theories: inferred, unverified.
   Acceptance: None is a basis for a requirement alone. Verification: inspection.
   Basis: reported. Status: unchecked: a reported result, not code at 088a227c.
   Source: external/2026-10-02/export-+50% usage if you start a doc-.jsonl:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wvkhud/50_usage_if_you_start_a_doc/>); external/2026-10-07_p2/export-Engineers who write all their code with claude now- how do you do it-.jsonl:232 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wgm4si/engineers_who_write_all_their_code_with_claude/>); unresolved: the Karpathy n=3 cell figures were not found by grep in this pass.
 
-## Rules And Model Behaviour
+## Rules and Model Behaviour
 
 - [ ] **CTX-507** Table-8 mechanism limits: the SubagentStart contract carries text only; PreCompact takes instructions; a PreToolUse provenance guard is blind to Bash writes; autoMode `soft_deny` works in user settings only and in auto mode only; optional Stop gates fail open, cap at 8, and default to Haiku; judgement rules (calibration, scope of corrections, when to ask) stay prose with reasons.
   Basis: cited. One commenter advises a global CLAUDE.md with instructions and no reasons (external/2026-11-18_p2/reddit.com-r-claude-comments-1xufj43-claude-in-chrome-save-tokens-20261118T183349Z.md:52); that is opinion with no measurement, so the reasons stay on judgement rules and stay off mechanical ones (cache, quota), which the agent need not reason about.

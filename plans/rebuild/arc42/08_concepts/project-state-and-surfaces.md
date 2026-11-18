@@ -1,4 +1,4 @@
-# Project State And Surfaces
+# Project State and Surfaces
 
 - [ ] **CC-066** claudetto shall treat project state as read where the agent reads it, derived by script where possible. When a rules file contradicts observable state, the agent stops the affected step, reports with evidence, proposes corrected wording and continues unaffected work (changelog `[Unreleased]` example); a rule added atop a wrong rule does not help. Precedence list: the higher wins.
   Basis: reported. Status: partial at 088a227c (root prompt).

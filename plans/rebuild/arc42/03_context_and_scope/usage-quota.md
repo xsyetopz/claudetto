@@ -1,6 +1,6 @@
 # usage-quota
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-762** Commit-check blocks over 7 days of logs (575 files): 230 blocks; 108 list only real files, 61 only .claude/worktrees/agent-* files, and 61 both. The block is a catch for 47% and in part for 27% more.
   Basis: measured.
@@ -26,7 +26,7 @@
   Basis: observed.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:10.
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-768** Model table (cited): Opus 5.5 $4/$20 per MTok, medium effort; Sonnet 5.5 $2/$10, default high (docs say medium for agentic coding); Haiku 5.5 from $0.10/$0.50; Fable 5.2 $8/$40, high; minimum Claude Code versions 2.1.280, 2.1.284, 2.1.293, 2.1.321. Cache read is 0.05x input for Opus and Sonnet 5.5, 0.025x for Fable 5.1 (reported). Agentic coding uses about 1000x chat tokens with 30x run variance (cited, arXiv 2604.22750); RouteLLM and FrugalGPT up to 98%; AgentDiet -39.9 to -59.7%; four agents at 200k are said to cost less than one at 800k (estimate); three agents hit 90% of a $100 plan in 4-5 h (reported).
   Basis: cited and reported. Status: not applicable.
@@ -56,21 +56,21 @@
   Basis: reported. Status: not applicable.
   Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:43 (script-fed tmux session cost) and external/2026-10-11/export-This is incredible value for Max plans.jsonl:2 (monthly credits on Max and Team). The tmux send-message orchestration and worktree coordination-cost claims: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-775** Jev answers in 152-262 ms warm and 0.2-1.8 s on a first call, with confidence `(p_max-1/n)/(1-1/n)`; the `lhviet/jev-bridge` README says Haiku with a loose prompt called `jev_ask` in 5 of 6 runs. Jev timings: a real key answers 200 in 257 ms at $0.0033; a bogus key gives 401 in 140 ms, then Haiku takes 1400 ms at $0.0019; TTY Jev takes 170-239 ms against Haiku 1.9-3.7 s; `-p` has no terminal surface, so you-should-know shows no tip.
   Acceptance: the README states the 5-of-6 figure. Verification: inspection.
   Basis: reported. Status: have at 088a227c. measured.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>); openspec/changes/archive/2026-11-09-release-2-1-319/design.md:153; openspec/changes/2-1-325-rearchitecture/design.md:71.
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-776** Several users reported Opus 5.5 usage dropping after launch and the same prompts consuming more on some days; one user reported bonus usage moving from +50% to a permanent +25%; quality complaints for Opus 5.5 (ignoring global instructions, bare minimum) came with no repro; "How is Claude doing today?" appeared 4-5 times a day (pressing good or bad shares the session with Anthropic); a commenter says Claude Code injects the user's email into the system prompt and commit authorship (no issue number given in the post); remote control adds a conversation link to commit messages.
   Acceptance: each post states its claim. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/2026-10-03/export-Mmmkay. I didn't believe others at first, but something is suddenly off with Opus 5.5.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wurd3e/mmmkay_i_didnt_believe_others_at_first_but/>); external/2026-10-04/export-Opus 5.5 - seems like it has begun.jsonl:9 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wu17jz/opus_55_seems_like_it_has_begun/>). Not located: the email, bonus-usage, and "How is Claude doing" lines.
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-777** One user on high effort reports 20% of weekly usage in one session where a week before they ran 4 to 5 sessions at max, so token use changed by about 90% in days; another says medium burned 20% of a Max 5 on two identical prompts.
   Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
@@ -114,7 +114,7 @@
   Basis: reported, one commenter, conflicting.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:157 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-787** Fable 5.2 is a bit more token efficient at medium but emits about 50-100% more output tokens at high, xhigh, and max, so run one effort level lower than usual; a user reported a task that cost Opus 20% of a 5 h limit took Fable 100% without finishing; the cost chart is logarithmic and Max costs about 5x any other setting.
   Basis: reported, one commenter's benchmark claim, no measure shown.
@@ -168,7 +168,7 @@
   Basis: reported, inferred.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:83; external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>).
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-800** One 20x user's rough hours per weekly limit are Fable 5.1 15-20 h, Opus 5.5 30-40 h, Sonnet 5.5 60-80 h; a migration document grown over 18 months took 30%+ of tokens before work began.
   Acceptance: Resolved 2026-11-18 as reported by one 20x user, not measured; hours vary by user, and quota use needs a paid account session, which the fake API does not produce.
@@ -195,7 +195,7 @@
   Basis: reported, one Pro user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj6245-tips-to-save-usage-and-how-its-a-20261030T103246Z.md:69; external/2026-10-30/reddit.com-r-claudeai-comments-1xj6245-tips-to-save-usage-and-how-its-a-20261030T103246Z.md:71; external/2026-10-30/reddit.com-r-claudeai-comments-1xj6245-tips-to-save-usage-and-how-its-a-20261030T103246Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj6245/tips_to_save_usage_and_how_its_actually_calculated/>).
 
-## Usage Meter, Quota, And Plans
+## Usage Meter, Quota, and Plans
 
 - [ ] **CTX-805** Commenters report these recovery limits. /rewind covers files Claude edited with its editing tools, including later Bash changes to those same files; files touched only by Bash, most subagent edits and changes from other sessions are not generally covered, so it is session recovery and not a backup. A reviewed commit gives a known file state, and separate worktrees keep parallel sessions off the same files; neither protects a database or reverses an API call. An email sent, a row deleted in a live database and a deploy cannot be undone from git. Claude Code docs say deny rules still apply in bypassPermissions and a PreToolUse hook can block a call before it runs.
   Acceptance: The facts hold as commenters report them; one cites the docs, which were not opened here. Verification: probe.

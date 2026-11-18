@@ -1,4 +1,4 @@
-# Cross-cutting Concepts
+# Cross-Cutting Concepts
 
 arc42 section 8. One file per subsection.
 

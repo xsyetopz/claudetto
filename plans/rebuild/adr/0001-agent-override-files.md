@@ -3,7 +3,7 @@ status: superseded by ADR-0099
 date: 2026-11-04
 ---
 
-# Agent Override Files In The User Agents Folder
+# Agent Override Files in the User Agents Folder
 
 ## Context and Problem Statement
 

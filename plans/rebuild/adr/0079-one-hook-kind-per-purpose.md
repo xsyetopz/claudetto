@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Use Each Hook Kind For Its Purpose, Found By Probe
+# Use Each Hook Kind for Its Purpose, Found by Probe
 
 ## Context and Problem Statement
 

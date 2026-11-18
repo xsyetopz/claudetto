@@ -1,4 +1,4 @@
-# Loading And Environment
+# Loading and Environment
 
 - [ ] **CC-073** claudetto shall load about 1,000 tokens of core terms each session (`.claude/rules/agent-terms.md`), load `paths:`-scoped rules on touching tests, shipped source, or own config, keep the full text (27-31K tokens) opt-in, and give a routing table naming which instrument to read before which action. Rule files under `plugins/claudetto/rules/` have no frontmatter, one to four non-empty lines, and a reason with "because" (`tools/rules.test.ts`); the root file is about 80 lines (build and test commands, directory boundaries).
   Acceptance: `tools/rules.test.ts` fails on a rule file with frontmatter. Instruction count itself degrades following. Verification: test.

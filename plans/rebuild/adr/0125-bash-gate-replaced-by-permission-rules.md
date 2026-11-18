@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/changes/archive/2026-11-16-2-1-323/design.md:105 (day of decision not recorded)
 ---
-# Settings gates replace bash gate
+# Settings Gates Replace Bash Gate
 
 ## Context and Problem Statement
 

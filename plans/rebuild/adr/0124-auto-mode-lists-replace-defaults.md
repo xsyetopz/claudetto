@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/specs/low-hitl/spec.md:240 (day of decision not recorded)
 ---
-# Automode user scope and list replace
+# Automode User Scope and List Replace
 
 ## Context and Problem Statement
 

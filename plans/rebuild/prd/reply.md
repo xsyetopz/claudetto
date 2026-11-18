@@ -73,7 +73,7 @@
   Basis: measured (tool-before-text 5/10 to 0/10) and reported. Status: have at 088a227c (`plugins/claudetto/hooks/features/decide/`, `reply/`).
   Source: openspec/specs/decide/spec.md:8; openspec/specs/claim-check/spec.md:8; openspec/changes/2-1-325-rearchitecture/design.md:171; plugins/claudetto/hooks/features/reply/reply.ts@088a227c.
 
-## Hand-Off, if Unavoidable
+## Hand-Off, If Unavoidable
 
 - [ ] **REQ-REPLY-030** claudetto shall, for a step that needs what only the user holds (a login in the macOS keychain, a one-time trust setup, the user's secret or terminal), give the exact command to run, ready to paste, as one runnable command or script per step with the place to run it (a separate terminal) and with output to files the agent can read back, go on with every other step, not run the step with the sandbox off or wait idle, and bundle remaining decisions into one question with a recommendation and a default. A gate refusal makes the agent hand the command to the user.
   Acceptance: a reply that hands off holds the full command, where to run it, one command per step, and one bundled question; a task that needs a keychain login ends with a command block for the user and the rest of the work done. Verification: demonstration.
@@ -82,7 +82,7 @@
 
 ## Per-Model Root Prompt
 
-## Output Style: Need From You
+## Output Style: Need from You
 
 - [ ] **REQ-REPLY-033** claudetto shall list in "What I Need From You" only what the user alone can do, each as one plain `- ! <command>` bullet (no checkbox), with at most ONE command bullet per reply (the one the work needs first), and a command bullet only if its text starts with `!` or `` `! ``. Questions go only through the AskUserQuestion popup: a `- [ ]` question item makes the Stop block say to ask by popup and drop the item. The heading capitalizes every word. The wording "a command only the user can run" is replaced, because it makes the agent hand off whatever a gate refuses.
   Acceptance: held-out form 28/32 (Wilson 0.719-0.950); the output style, Stop check, and `claudetto-you-should-know` agree so a question reaches the user once. Verification: test.
@@ -93,7 +93,7 @@
 
 ## Harness Messages Quoted as They Appear
 
-## Ask via Built-in AskUserQuestion Only
+## Ask via Built-In AskUserQuestion Only
 
   Acceptance: the plugin tool list holds no ask tool; `mcp__claudetto__decide` is absent without `TYPESAFE_API_KEY`; Jev latency warm 152-262 ms, first 0.2-1.8 s. Verification: test.
   Basis: measured, cited, and reported. Status: have at 088a227c (`plugins/claudetto/hooks/features/decide/`, `hooks/kernel/decider/`).
@@ -149,7 +149,7 @@
 
 ## Search Nudge per Model
 
-## Scope Of A Change
+## Scope of a Change
 
 - [ ] **REQ-REPLY-053** claudetto shall narrow a "close every loose end" rule to loose ends this change caused, and list suggested next steps before the PR opens, then do each or mark it out of scope with a reason.
   Decision: ADR-0190, REQ-REPLY-053 wins over REQ-REPLY-106.
@@ -158,14 +158,14 @@
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:76 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/>).
   Conflict: Finish The Work (close every loose end in the same PR).
 
-## Cannot With Evidence
+## Cannot with Evidence
 
 - [ ] **REQ-REPLY-061** claudetto shall require "can't" and "isn't there" to come with where the agent stopped plus one artifact (the command and its output, or the file line), otherwise the reply says "not checked yet"; test a capability before stating "X has no Y", and read the diff, not the summary (n=10).
   Acceptance: a claim of inability without an artifact is rejected; evidence covers only the command it came from (a permission error on one tool is not evidence about an untried tool); a "cannot" in a reply names the test behind it. Cheaper models fail by silent omission and do not know they are unsure; Haiku at low effort invents reasons not to test. Verification: test.
   Basis: reported. Status: partial at 088a227c (`plugins/claudetto/output-styles/Concise.md` line 10 marks a claim unverified only when no held tool can check it; `git grep -n -i -E 'not checked yet|isn.t there|cannot|can.t' 088a227c -- plugins/claudetto/rules plugins/claudetto/hooks/features/prompt` finds no rule that asks for an artifact behind "can't").
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:78 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/>); openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:27; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:53.
 
-## One Decision At A Time
+## One Decision at a Time
 
 - [ ] **REQ-REPLY-067** claudetto shall carry a rule that, when documents do not settle a choice, the agent asks with 2 to 4 concrete options, one marked recommended with a short rationale, through the structured-choice tool if present, else one short message.
   Acceptance: the rule text states the 2-4 options, the recommended mark, and the one-decision-at-a-time limit. Verification: inspection.
@@ -192,7 +192,7 @@
   Source: openspec/specs/agent-conduct/spec.md:31; openspec/specs/agent-conduct/spec.md:59; openspec/specs/agent-conduct/spec.md:160.
   Conflict: Output Style: Need From You (one plain `- ! <command>` bullet, no checkbox).
 
-## Text Between Tool Calls
+## Text between Tool Calls
 
 - [ ] **REQ-REPLY-088** claudetto shall open with the outcome or deciding fact and put a finding, result or error between calls; messages to an agent hold only task, inputs it lacks and done-check, with no greeting or thanks and no readable context; low-risk work starts at once with the reasonable reading stated; replies to a user use plain English with code in backticks cited `file:line`.
   Acceptance: "The hook has no retry; ...gate.ts:234 registers one check." passes, "Now I will read the file" fails; one message per agent, with a follow-up only when the report leaves the task undone. No narration between tool calls, no acknowledgement opener, and no closing line that asks the user to direct the work; the next tool call, not a sentence, carries what comes next; the agent answers what a tool can answer instead of asking the user. Verification: test.
@@ -213,7 +213,7 @@
   Basis: cited. Status: partial at 088a227c (`plugins/claudetto/rules/findFactsByExperiment.md` exists without the free-undo list; project CLAUDE.md holds the FAFO text).
   Source: openspec/specs/agent-conduct/spec.md:8; openspec/specs/agent-conduct/spec.md:133; openspec/specs/agent-conduct/spec.md:214; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19, user decision, 2026-11-13.
 
-## Evidence Before Claims
+## Evidence before Claims
 
 - [ ] **REQ-REPLY-091** claudetto shall give every material claim a basis (observed, cited source, labelled inference), cite beside the claim, prefer primary sources, and hold "consistent with" short of "proves" and "passed once" short of "works".
   Acceptance: one standard applies to own and user claims; the user's firsthand observation is attributed context. Also: the source must state the claim; snippets are leads; "I found no source" is not "absent"; investigate disagreeing sources; research before concluding; fact-check the user only when asked or when the error changes the outcome, naming which evidence contradicts which statement; hypothetical exceptions are not counterexamples; revise on contradicting info and say so; no cherry-picking; replace "not necessarily" with precise evidence; never guess API behaviour, ownership, units, concurrency, platform, serialization, compatibility, or error semantics; cite path, line, or URL; say "not run" if a check could not run; report files modified versus read, what was loosened, what was not tested; confidence labels (n=19, 7, 6, 4, 4). Held example: "I did not change the bound or the baseline, because that choice is yours" (session cddf47ce). Verification: inspection.
@@ -256,7 +256,7 @@
   Basis: reported. Status: partial at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:117.
 
-## Finish The Work
+## Finish the Work
 
 - [ ] **REQ-REPLY-106** claudetto shall close every loose end (a doc note, a debug flag, a scratch script that belongs in the repo, a test, a stale comment) in the same PR before reporting done, with no "optional next steps" for a loose end; a step only the owner can take is a named required action with reason and steps; new-scope work takes one line; the reply ends with "Nothing outstanding." or the owner-action list; it distinguishes work it cannot do from work it has not done and makes done checkable (commands in AGENTS.md: tests, lint, grep).
   Decision: ADR-0190, REQ-REPLY-053 wins; only the owner-action list of this item is kept.
@@ -272,7 +272,7 @@
   Basis: reported. Status: partial at 088a227c (output-styles/Concise.md only).
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
 
-## Choices Through AskUserQuestion
+## Choices through AskUserQuestion
 
 - [ ] **REQ-REPLY-108** claudetto shall route each question to the user, a choice with options included, through the AskUserQuestion tool, not in plain text.
   Acceptance: a user question in a run appears as an AskUserQuestion call; a turn that offers options calls AskUserQuestion and its reply holds no prose option list. A product choice, a decision the user should know, and a step git cannot undo go to the user through `AskUserQuestion` too. Verification: test.
@@ -301,7 +301,7 @@
   Basis: reported, user; user decision. Status: missing at 088a227c (`git grep -i padding 088a227c -- plugins` finds only a statusline setting).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; user decision, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); user decision, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
-## Prompt Text From Model Guidance
+## Prompt Text from Model Guidance
 
 ## Root Prompt Rules
 
@@ -358,7 +358,7 @@
   Basis: reported, user, 2026-11-16 14:47 UTC, never pick a step because it is easier (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user reproaches the agent for doing a step because it was easier).
 
-## Keep Working Without Reports
+## Keep Working without Reports
 
 - [ ] **REQ-REPLY-136** claudetto shall make the agent keep working through its goal, stop to report only when the goal is met or blocked, and fix each defect it finds.
   Acceptance: in a run with a goal, no turn ends with a status report while open items remain, and the final report lists no unfixed defect. Verification: demonstration.

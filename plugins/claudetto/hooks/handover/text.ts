@@ -36,7 +36,7 @@ export function extract(rows: readonly Row[]): string {
 /** The handover body followed by the git state read at that moment. */
 export function compose(body: string, head: string, status: string): string {
 	const git = [`git HEAD: ${head || "unknown"}`, "git status --short:", status || "(clean)"];
-	return [`# Handover From Previous Session`, "", body.trim(), "", ...git].join("\n");
+	return [`# Handover from Previous Session`, "", body.trim(), "", ...git].join("\n");
 }
 
 /** Reads "70000", "70k" or "1.5M"; undefined for anything else. */

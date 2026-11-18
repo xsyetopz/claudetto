@@ -467,7 +467,7 @@
   Status: closed. Cause (a wrapper tool answered in its own `tool.call`) left with the removed `ask` wrapper (ADR-0127); grep for `tool.call` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:453.
 
-## Verification And Honesty
+## Verification and Honesty
 
 - [ ] **RISK-189** Review blindness.
   Category: Agent behaviour.
@@ -514,7 +514,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,159,161 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
-## Conflicts With Settled Decisions
+## Conflicts with Settled Decisions
 
 - [ ] **RISK-192** Subagent and effort mismatch: model and effort do not fit the task.
   Category: delegation.
@@ -547,7 +547,7 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:141 (eval profile `settings.eval.json`: the two env names and `switchModelsOnFlag: false`).
   Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
 
-## Delegation And Subagents
+## Delegation and Subagents
 
 - [x] **RISK-194** Subagent runaway with no limit
   Category: delegation.
@@ -606,7 +606,7 @@
   - Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:13444, reported, user, 2026-11-10.
 
-## Delegation And Worker Reports
+## Delegation and Worker Reports
 
 - [ ] **RISK-198** A worker's report says a command was refused while the reflog shows it ran.
   - Category: delegation.
@@ -785,7 +785,7 @@
   Basis: reported, one user.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:123-125 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
-## Fable And Opus Behaviour
+## Fable and Opus Behaviour
 
 - [x] **RISK-210** Fable 5.2 makes low-effort and half-done work look sound: about 15 independent users report faults, and 5 authors report corner-cutting stated with full confidence.
   - Category: product fault
@@ -817,7 +817,7 @@
   Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:395; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:397; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:453 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
-## Replies And Instruction Following
+## Replies and Instruction Following
 
 - [x] **RISK-212** A local model behind Claude Code ignores hard rules in CLAUDE.md.
   Category: agent behaviour.
@@ -833,7 +833,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:252; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:174 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
-## Lead Agent And Helper Scripts
+## Lead Agent and Helper Scripts
 
 - [ ] **RISK-213** The lead rewrites files in place while workers still write to them.
   - Category: agent conduct.
@@ -865,7 +865,7 @@
   - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9407; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9764.
 
-## Agent Swarm From Wording
+## Agent Swarm from Wording
 
 - [x] **RISK-215** Agent Swarm From Wording.
   Category: Agent behaviour.
@@ -982,7 +982,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/>); chunk-6rveqv0x.js@1036 (claude 2.1.327 binary).
 
-## Safeguards And Guards
+## Safeguards and Guards
 
 - [x] **RISK-222** A subagent with no `model` inherits the main session model.
   - Category: cost.
@@ -1000,7 +1000,7 @@
   - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5 moved a no-model subagent under an Opus main from claude-opus-5-5 to claude-sonnet-5-5.
 
-## Product And Tooling
+## Product and Tooling
 
 - [x] **RISK-223** Haiku workers overflow and a plugin withholds reads past 100k tokens.
   - Category: product.

@@ -3,7 +3,7 @@ status: superseded by ADR-0168
 date: recorded in openspec/changes/archive/2026-11-16-2-1-323/design.md:123 (day of decision not recorded)
 ---
 
-# Tool check fault asks
+# Tool Check Fault Asks
 
 ## Context and Problem Statement
 

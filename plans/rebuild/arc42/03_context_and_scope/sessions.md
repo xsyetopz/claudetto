@@ -1,6 +1,6 @@
-# sessions
+# Sessions
 
-## Sessions And Handoff
+## Sessions and Handoff
 
 - [ ] **CTX-416** What held: the agent refused a subagent's lowered bound from 190 to 180.
   Acceptance: Kept as a held behaviour. Verification: inspection.
@@ -26,7 +26,7 @@
   Status: n/a (fact).
   Source: external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:64.
 
-## Sessions And Handoff
+## Sessions and Handoff
 
 - [ ] **CTX-420** Session audits (counted; corpus 43 main and 227 subagent transcripts, Claude Code 2.1.292-2.1.296, about 170 incidents, one power user): 191 What I Need sections with one bullet repeated 30 times; "files not committed" Stop blocks 44 in a row; HooksError spam of 319 lines in 12 minutes; compaction every 10 minutes; 65 Stop blocks about 10% of a session (inferred).
   Basis: measured (counted) and inferred. Status: not applicable.
@@ -42,26 +42,26 @@
   Basis: measured (read of audits). Status: have at 088a227c (the old plugin is gone; this is history).
   Source: openspec/changes/archive/2026-11-16-2-1-323/proposal.md:7; openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:10; openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:73; openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:43. Corrected: the 6.3k figure is 5,779 at text-audit.md:43.
 
-## Sessions And Handoff
+## Sessions and Handoff
 
 - [ ] **CTX-423** The reactive (prompt-too-long) path calls the `session.compact` hooks with `trigger:"auto"` and `agentId`; a hook's `{messages}` (`kind:"replaced"`) becomes the replacement; a `{skip}` returns `{result:null,hookBlocked:true}` with the notice "not compacted". The `precompute` pass takes a hook's `{messages}` as a ready replacement and logs "ready with a hook's N messages"; a `{skip}` records a veto. Re-read in 2.1.326: each of these statements is in the cited text.
   Basis: measured.
   Source: cc-inspect read, chunk-m14bt1pz.js@2628332 (2.1.327), @2582830, @2955174 (claude 2.1.326 binary; the 2.1.325 offsets @2499078, @2498600, @2871600 were replaced by @2955174 after a search for "ready with").
 
-## Sessions And Handoff
+## Sessions and Handoff
 
 - [ ] **CTX-424** Thread limits: max 4 cache_control breakpoints per thread request; a continue request with system or tools returns 400; no Message Batches, token counting, or compaction on a thread; not ZDR or HIPAA eligible. A thread expires 5 minutes after its last request and is deleted no more than an hour after.
   Basis: reported. Status: not applicable (outside fact).
   Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xnc4ew-anthropic-shipped-message-thread-20261104T085756Z.md:35-36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnc4ew/anthropic_shipped_message_threads_beta_claude/>).
 
-## Sessions And Handoff
+## Sessions and Handoff
 
 - [ ] **CTX-425** claudetto delivers a handoff as a prompt the plugin submits between turns, opening "Context was reset from the handoff below. Continue from its next step, and take each open task yourself." and ending with "Git now" and the porcelain status; a file handoff (`.claude/claudetto/handoffs/handoff-<timestamp>.md`) is delivered with a notice to run `git status -sb` before reporting branch or push state.
   Acceptance: a session started from a handoff shows the opening line and the git state. Verification: demonstration.
   Basis: observed in transcript, 2026-11-12. Status: have at 088a227c (`plugins/claudetto/hooks/features/compaction/texts.ts`, HANDOFF_OPENING).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (notice text); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (opening and Git now block).
 
-## Sessions And Handoff
+## Sessions and Handoff
 
 - [ ] **CTX-426** `$.model.fork` replays the last request of the main thread, so tool calls answered after that request are missing from what the fork sees.
   Acceptance: a handover fork prompt lists the calls that ran after the replayed request, each result cut to 500 characters. Verification: test.

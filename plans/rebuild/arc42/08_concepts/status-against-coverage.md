@@ -1,4 +1,4 @@
-# Status Against Coverage
+# Status against Coverage
 
 - [ ] **CC-032** Execution status is mechanical and coverage is its own field (N of M checked, missing, findings that fail validation). Missing optional evidence gives a partial report with the gap on top; missing required evidence fails the run. A run can report "completed" while child work failed (Managed Agents, not the dynamic workflows beta; the workflows page on code.claude.com read on 2.1.327 says nothing of it). The agent never sets its own done bit.
   Basis: cited. Status: partial at 088a227c (verification hooks, unconfirmed).

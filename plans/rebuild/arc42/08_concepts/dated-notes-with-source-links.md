@@ -1,4 +1,4 @@
-# Dated Notes With Source Links
+# Dated Notes with Source Links
 
 - [ ] **CC-054** claudetto shall keep raw exports untouched and extract each call into a dated note (decisions, open questions, contradictions) with each item linking its source; flag conflicts instead of resolving silently; mark replaced decisions as replaced and point to the new one, so the agent does not pick the old one from a transcript; update after every call. Keep plans, decisions and specs as dated versioned files in the repo, not in chat (about 500 memory files with conflicting revisions made agents argue); plans use `@` paths; facts go in a dated notes file; skills load one line of description and the full text on match; SKILL.md stays under about 300 lines; overlapping or unused skills are disabled; generic skill packs are largely obsolete.
   Basis: reported. Status: partial at 088a227c (dated and superseded markers for context files only, not checked in code; `git ls-tree 088a227c openspec` is empty, so the deleted OpenSpec is not at that commit; `plugins/claudetto/rules/` exists).

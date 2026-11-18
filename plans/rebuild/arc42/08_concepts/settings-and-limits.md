@@ -1,4 +1,4 @@
-# Settings And Limits
+# Settings and Limits
 
 - [ ] **CC-071** claudetto shall read window, heavy-call cap, and fail limits from `userConfig`; start, depth, and time caps are Claude Code env keys that setup writes, not `userConfig`. `userConfig` keys are camelCase (`...Enabled`, `...PeriodDays`, `...Model`, `...EffortLevel`); setup asks for each missing key (CONTEXT7_API_KEY, TYPESAFE_API_KEY) and writes it to settings env.
   Acceptance: no cap key sits in `userConfig`; each missing key is asked for once. Verification: inspection.

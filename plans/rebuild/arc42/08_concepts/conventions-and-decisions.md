@@ -1,4 +1,4 @@
-# Conventions And Decisions
+# Conventions and Decisions
 
 - [ ] **CC-056** claudetto shall keep only timeless conventions in the rules file and put each decision (for example "we chose X over Y", "do not touch Z until migration lands") in one issue per open question, with its rationale and plan, which the agent pulls when it works there.
   Acceptance: the rules file holds no dated decision. The commenter says decisions rot and that the rule works without their tool. Verification: inspection.

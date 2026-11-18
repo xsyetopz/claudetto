@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-12
 ---
 
-# The Agent Commits Its Own Work When The User Allows It
+# The Agent Commits Its Own Work When the User Allows It
 
 ## Context and Problem Statement
 

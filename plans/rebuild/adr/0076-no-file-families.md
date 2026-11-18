@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# No File Families Posing As Directories
+# No File Families Posing as Directories
 
 ## Context and Problem Statement
 

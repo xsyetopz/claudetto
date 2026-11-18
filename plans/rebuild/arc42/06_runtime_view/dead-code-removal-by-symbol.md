@@ -1,4 +1,4 @@
-# Dead Code Removal By Symbol
+# Dead Code Removal by Symbol
 
 - [ ] **RT-032** Dead-code removal runs by symbol where hunks will not compile alone. A new property and every line that touches it are removed together; a group that still will not build without it is skipped, which is a sign it is still wired in. For slow builds the check runs only on the files the diff touches and the test targets that cover them, once before merge, not as a per-edit hook.
   Acceptance: The run costs one pass per change and removes no group that breaks the build. Verification: demonstration.

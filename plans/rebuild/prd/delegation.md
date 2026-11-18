@@ -1,6 +1,6 @@
 # Delegation Requirements
 
-## Questions To The User
+## Questions to the User
 
 ## Checking Worker Output
 

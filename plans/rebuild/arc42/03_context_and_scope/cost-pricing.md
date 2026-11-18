@@ -1,6 +1,6 @@
 # cost-pricing
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-129** Classifier cost is in no `-p` result field: `total_cost_usd` equals `modelUsage` `costUSD` of the main loop (a2: 0.0015538 against a real 0.0020576). The decision log's `costUSD` holds the classifier cost. A claudetto budget line that reads `total_cost_usd` undercounts auto mode. Confirmed in paid run P1 (0.000503 per call).
   Basis: measured, claude 2.1.318.
@@ -10,13 +10,13 @@
   Basis: reported.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2040; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2411; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2726.
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-131** A commenter claims the todo list re-sends everything after each step and burns tokens versus updating one line in an md file. Refuted as stated for 2.1.327: the full list is re-sent only in a reminder after 10 assistant turns without a task-tool call and at least 10 turns since the previous reminder (`TURNS_SINCE_WRITE` and `TURNS_BETWEEN_REMINDERS` both 10, chunk-m14bt1pz.js@3994287; reminder gate chunk-m14bt1pz.js@4067869 and @4068471; text at @5925448 for `TodoWrite` and @5925960 for `TaskCreate`/`TaskUpdate`). The reminder lists every task as `#id. [status] subject`, so its size grows with the list. Where tasks are enabled (the default, `CLAUDE_CODE_ENABLE_TASKS` not false, chunk-dvrnw8ty.js@9596) the `TodoWrite` reminder returns nothing and the task-tool reminder applies. Fake-API probe, `TaskCreate` then 22 `Bash` turns: the reminder 'The task tools haven't been used recently' first appears in request 13, ten turns after the `TaskCreate` in request 3, and not before. Not measured: the commenter's own session or a longer run with repeated reminders.
   Basis: measured (probe and program, claude 2.1.327, 2026-11-18).
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:144 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-132** Prices checked against the docs: Opus and Sonnet cache reads are 5 percent of input ($0.20, $0.10 per MTok), Haiku 10 percent ($0.01, $0.05 over 100K). Haiku writes step 5m $0.125 to $0.625 and 1h $0.20 to $1 over 100K. Routing to Haiku is 40x (Opus) and 20x (Sonnet) cheaper under 100K, 8x and 4x over; no 10x case. The Sonnet 5.5 API default effort is high (only Opus and Haiku default medium), so the Gemini line "medium" is wrong for the API. `.claudeignore` does not exist in the 2.1.318 binary
   Basis: cited, docs plus binary read.
@@ -30,7 +30,7 @@
   Basis: cited.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1599.
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-135** Haiku 5.5 fails API tasks that need an output spec, yet works near Opus on coding and review.
   Basis: reported, one commenter; another commenter found the opposite on classification (see next item).
@@ -44,13 +44,13 @@
   Basis: reported by one commenter, not checked.
   Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:106 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-138** Per-feature artifact files (spec, plan, review, QA, notes) run to about 20,000 tokens per feature per read. A local no-LLM graph query over stable story and criterion IDs (US-2, AC-2.3) answered "which criteria, which tasks, did each pass QA" at a median of about 690 tokens, against about 21,000 reading spec, plan and QA and about 11,000 grepping the IDs, over 61 stories.
   Basis: reported by the author; stand-in tokenizer, cached reads cost less, C++ code not parsed.
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xbyg3k-i-made-claude-write-down-what-it-20261023T040746Z.md:41:43; :44; :45; :47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbyg3k/i_made_claude_write_down_what_it_rejected_not/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-139** A task that costs about 3x its neighbours usually was badly cut, not hard, so cost works as a signal of skill or spec quality.
   Basis: reported by a vendor founder about 60 engineers; no data shown.
@@ -60,7 +60,7 @@
   Basis: reported, a single test (n=1); the author does not call it proven.
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:41; external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45; external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-141** METR Feb-Mar 2026: "only around half" of passing SWE-bench solutions would pass review; Mythos Preview system card 4.5.5.3 test deletion and grader-file access; the dossier: 1,662 merged claims judged (674 adopted, 887 rejected, 50 blocked, 51 candidate); 49 records, 40 failure patterns; related ImpossibleBench, MALT (10,919 transcripts, 21 models), lost-in-conversation.
   Basis: cited. Status: not a code requirement.
@@ -82,7 +82,7 @@
   Basis: measured. Status: not applicable.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:229; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:393.
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-146** Cache read costs 10% of fresh input; a write costs 1.25x on 5m and 2x on 1h; the cache is prefix-based and exact; Haiku 5.5 bills prompts over 100,000 tokens at $0.50/MTok against $0.10 below (platform docs read 2026-11-13); the subagent cache clock ticks only while the subagent is idle (reported). Version gates (reported): `promptCacheTtl` 2.1.242+, `/usage` prompt-cache line 2.1.251+, miss-cause 2.1.260+, `/doctor prompt-audit` 2.1.283+, conPACT mod 2.1.284+, the `haiku` alias to Haiku 5.5 from 2.1.293; exit code 2 is the only blocking code.
   Conflict: Cache reads on Opus 5.5 bill at 5% of normal input price. Resolved by docs: both hold per model; a cache read costs 10% of base input, 5% on Opus 5.5 and Sonnet 5.5, 2.5% on Fable 5.2, Mythos 5.2, Fable 5.1 and Mythos 5.1 (platform.claude.com `models/haiku-5-5/overview`, note under "How it compares", read 2026-11-17).
@@ -90,7 +90,7 @@
   Basis: cited for prices (Haiku 5.5 step re-read on the platform docs, CTX-283); gates checked on claude 2.1.327, 2026-11-18: `promptCacheTtl` and `subagentPromptCacheTtl` settings exist (chunk-ja5z738t.js@277237; main conversation 'Unset = automatic: 1 hour on a Claude subscription within its usage limits, 5 minutes on an API key', subagents 5 minutes unless `ENABLE_PROMPT_CACHING_1H=1`), the `prompt-audit` subcommand exists (chunk-2vcnvx3f.js@7849), and the `haiku` alias resolves to `claude-haiku-5-5` (chunk-f892tj2r.js@22350). Not found by literal search: 'conPACT' (the mod-api lists `session.compact`, `classic.PreCompact` and `classic.PostCompact` only). The 'since' versions (2.1.242 to 2.1.293) cannot be checked on one build and stay reported. The subagent idle clock is a server-side cache expiry rule and is not checkable from the program. Status: have at 088a227c.
   Source: openspec/specs/tier-profiles/spec.md:32; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:3. Not located: the version-gate post.
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-147** The same 6 weeks repriced per model (author's correction after a commenter showed the 0.1x cache-read weight was not fixed: Opus 5.5 and Sonnet 5.5 read the cache at 0.05x, Fable 5.1 at 0.025x): cache reads 57% of spend (not 75%), cache writes 21%, output 16% (not 10%), requests absent from transcripts (compaction summaries, titles, WebFetch page reads) 6%, raw cache-read tokens still about 99% of prompt tokens. The fix reads Claude Code's own session total, which matched the reported cost on 77 of 78 runs. These are API list prices, not plan-limit usage.
   Basis: reported, one author. Status: not applicable (outside fact).
@@ -112,7 +112,7 @@
   Basis: reported, proxy maintainer. Status: not applicable (outside fact).
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1sb8fb3-i-routed-all-my-claude-code-tr-20261105T172241Z.md:180-182 (url: <https://www.reddit.com/r/ClaudeCode/comments/1sb8fb3/i_routed_all_my_claude_code_traffic_through_a/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-152** A cheaper split than an advisor: Opus writes the brief or spec and the done conditions once, Sonnet builds, Opus reviews against the spec and sends misses back as a residual carried into the next build, so the strong model wakes twice instead of repeatedly.
   Basis: reported, inferred. Status: not applicable (outside fact).
@@ -122,7 +122,7 @@
   Basis: reported, inferred. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrh0co-sonnet-with-opus-advisor-20261109T152503Z.md:128 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrh0co/sonnet_with_opus_advisor/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-154** One commenter says that setting Fable as advisor does not draw down the separate Fable usage.
   Acceptance: The claim is unverified; the advisor tool stays disabled by a settled user decision (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)). Verification: probe.
@@ -130,28 +130,28 @@
   Basis: reported, one commenter, unverified. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:74 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-155** Two commenters say that saying what is going on (or which bug is hunted) and listing the files involved saves a huge amount of tokens and discovery time, and that only the files a task touches should be sent, since whole-project uploads burn the budget.
   Acceptance: The claim holds as commenters report it; it is not measured. Verification: probe.
   Basis: reported, commenters, not measured. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:179; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:141 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-156** One commenter says that running analysis, planning and implementation all in Claude Code fills the context with codebase detail, and that implementation can be handed to Sonnet.
   Acceptance: The claim holds as one commenter reports it. Verification: probe.
   Basis: reported, one commenter. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:113 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-157** Haiku 5.5 bills input at $0.50 per MTok past 100,000 prompt tokens against $0.10 at or below (cache reads and writes count); on 79 Managed Agents tasks about 5% of requests carried 73% of cost. Also reported: Haiku 5.5 costs about 50x less than Opus for the first 100k tokens, about like Opus 4.8 (another post says "40x cheaper under 100k"); the lower rate applies under 100k request context on the API and not in the app plan; light use (10 prompts) was 0% of the 5h window; chat re-sends the conversation, so a long session crosses 100k silently; under 1% of one author's token use; it is reported to lose basic context after long competent stretches; the orchestrator was billed 5x in one fleet. Lineup named in a post (Oct 2026): Fable 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5 (the post wrongly says Haiku 4.5); account models follow repo rules. A plugin withholds reads once a worker's context passes 100k, and Haiku workers also overflow ("Autocompact is thrashing") (observed in transcript, 2026-11-16).
   Acceptance: the withheld-read notice appears past 100k. Verification: demonstration.
   Basis: cited; reported.
   Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:97; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:37; unresolved: the thread behind plan tag G:154 was not located by grep; the Haiku billing rule itself is openspec/changes/archive/2026-11-16-2-1-323/design.md:97 (billed at $0.50 per MTok above 100,000 tokens, read 2026-11-13); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:18; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
 
-## Cost And Pricing
+## Cost and Pricing
 
 - [ ] **CTX-158** Measured spend (2026-11-07, Sonnet 5.5): held-out r4 (24 cases) 10 runs 237/240 twice then 239/240, 33 sessions, $2.3-$2.6 per run, largest session ~205k tokens; public cap $60 spent 2026-11-08 ($61.98); paid ledger over 9.15M tokens by task 12.1. 18 paid runs on 2.1.319 by `total_cost_usd`: A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47; recall 10/10 in all 18; growth ~1,000 tokens a turn; no B arm cheaper than C in 3 paired runs.
   Basis: measured.

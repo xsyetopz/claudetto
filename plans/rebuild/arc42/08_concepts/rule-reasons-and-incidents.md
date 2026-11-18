@@ -1,4 +1,4 @@
-# Rule Reasons And Incidents
+# Rule Reasons and Incidents
 
 - [ ] **CC-011** Each memory rule or lesson carries a one-or-two sentence reason ("Why:" and "How to apply:" lines; inline form ends with what the mistake cost). A bare rule is followed loosely or applied too literally or dropped when a case differs; a rule with its why is applied to unlisted cases. A CLAUDE.md of 127 lines had about 45 generated; longer reasons go to a memory file; rules stay in CLAUDE.md itself, not behind a pointer.
   Basis: reported, 2 posters.

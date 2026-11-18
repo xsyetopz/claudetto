@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-14
 ---
-# Fault Fixes Ship As A +patch Release
+# Fault Fixes Ship as a +Patch Release
 
 ## Context and Problem Statement
 

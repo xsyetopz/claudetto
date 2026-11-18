@@ -1,12 +1,12 @@
-# plugins
+# Plugins
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-431** Poster claim: the superpowers plugin loads about 22k tokens before the first prompt, and cost per turn grows 5x-20x once context passes 200k.
   Basis: reported (a poster's claim, kept as reported; the 22k figure depends on the superpowers version the poster had installed, which the post does not name, and the 5x-20x per-turn cost is server-side billing that needs a paid run).
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-432** Skill use in the user's sessions, by workflow: apply 10 Skill calls and 5 slash, explore 7, propose 6, update 6, verify 3 slash, archive 2, sync 0 (folded into archive)
   Basis: measured.
@@ -16,14 +16,14 @@
   Basis: measured, by grep and probe.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:437.
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-434** One solo user measured the cost of relaying prompts between agents: 257 relay prompts across about 20 terminals in one week, with a median of 11 minutes before an agent finish was noticed.
   Acceptance: The fact holds as the poster counted it; it is a user count, not a claudetto measurement. Verification: inspection.
   Basis: reported, one user (self-count). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without/>).
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-435** Claude web search is a server-side tool: the model writes the query, Anthropic runs it and returns URLs and snippets with no ranking, and the model decides on its own when to search. Anthropic has not documented the backend; Brave Search and turbopuffer are on its subprocessor list, so a meaning-based own index is inferred.
   Acceptance: Resolved 2026-11-18 as reported and inferred (Claude's own account of its engine is a guess), not measured; the backend is server-side, so no local probe can read it.
@@ -35,14 +35,14 @@
   Basis: reported, anecdotal. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:109; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:93; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:146; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:119 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/>).
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-437** The Gmail connector rewrites every URL into a google.com redirect, so drafted mails carry defanged links.
   Acceptance: The fact holds as one author reports it. Verification: probe.
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhmtya-i-used-claude-code-to-audit-21k-20261029T124002Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhmtya/i_used_claude_code_to_audit_21k_product_hunt/>).
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-438** claudetto shall note that plugin modules load before `settings.read` answers, so a mod cannot disable a built-in plugin; setup writes `enabledPlugins: false` for unused built-in plugins, and the binary registers claude-platform without the `cc-plugin-` prefix. Related to the settled decision that every `@builtin` gets a disable enforced at runtime (user decision, 2026-11-16). A user-tier plugin also cannot refuse a builtin at `plugin.register`: native plugins are judged only by native ones, and user-tier plugins never judge non-user ones (2.1.327: `hNt`, chunk-m14bt1pz.js@4830970, keeps user-tier judges only for a user-tier plugin; 2.1.325: `ruo()`, `chunk-wqb2b4v0.js@4661039`).
   Acceptance: On 2.1.327 `claude-platform` is registered under that id with no `cc-plugin-` prefix (chunk-syz79m2z.js@1749), and `cc-plugin-claude-platform` has 0 hits; the rest of the claim (load order against `settings.read`) rests on the earlier probes and was not rerun. Verification: inspection.
@@ -54,7 +54,7 @@
   Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
   Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states (`-p go`, stream-json init event), claude 2.1.325; probe, `claude` 2.1.325, 2026-11-16, cc-inspect `cli` `-p go` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290).
 
-## Plugins And Connectors
+## Plugins and Connectors
 
 - [ ] **CTX-440** Claude Code 2.1.327 registers 13 built-in plugins (chunk-syz79m2z.js@450-1844): always `cc-plugin-sec-default`, `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`; outside the `local-agent` entrypoint `cc-plugin-plugin-authoring`, `cc-plugin-mods-guide`, `cc-plugin-you-should-know`, and, when also not a tenant entrypoint, `cc-plugin-tips`, `cc-plugin-mermaid`; `cc-plugin-responsive-mode` on interactive or `remote`; `cc-plugin-diff` and `claude-platform` on interactive; `cc-plugin-easel` on interactive or `remote_cowork`. `cc-plugin-claude-test` is no longer registered: 2.1.327 keeps it only in the external id map (chunk-ja5z738t.js@7635) and in a step that removes the old `claude-test@builtin` and `cc-plugin-claude-test@builtin` data folders (chunk-ddhdrc1h.js@15340). History: Claude Code 2.1.326 registered 14 built-in plugins in `JOe`: always `cc-plugin-sec-default`, `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`; outside the `local-agent` entrypoint `cc-plugin-plugin-authoring`, `cc-plugin-mods-guide`, `cc-plugin-you-should-know`; outside `local-agent` and tenant entrypoints also `cc-plugin-tips`, `cc-plugin-mermaid`, `cc-plugin-diff`, `claude-platform`, `cc-plugin-claude-test`; `cc-plugin-responsive-mode` there or on `remote`; `cc-plugin-easel` there or on `remote_cowork`. you-should-know loads from `chunk-nvx1z6pc.js` (2.1.327). Claude Code 2.1.326 registers 14 builtins, each with the id `<name>@builtin`: `cc-plugin-sec-default`, `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`, `cc-plugin-plugin-authoring`, `cc-plugin-mods-guide`, `cc-plugin-tips`, `cc-plugin-mermaid`, `cc-plugin-responsive-mode`, `cc-plugin-diff`, `cc-plugin-you-should-know`, `cc-plugin-easel`, `claude-platform`, and `cc-plugin-claude-test`. On 2.1.325 the list was in `chunk-62ne6tjy.js`: `cc-plugin-tips` and `cc-plugin-mermaid` only when not a tenant entrypoint, `cc-plugin-responsive-mode` when not local-agent and not tenant, or remote, and `cc-plugin-diff`, `cc-plugin-easel`, `claude-platform`, `cc-plugin-claude-test` with no condition stated. On 2.1.325 `you-should-know` code is in `chunk-jc1ynf6x.js` with `defaultEnabled:false` and its id constant in `chunk-1wecqt9s.js` (2.1.326: `chunk-na8s6d5h.js`; 2.1.327: `chunk-nvx1z6pc.js`).
   Acceptance: the registration list of the build holds these 13 names (2.1.327; 14 on 2.1.326). Verification: inspection. Checked in 2.1.326: a string search of the binary finds exactly these 13 `cc-plugin-*` names and `claude-platform`. The registration list in `chunk-62ne6tjy.js` matches. Verification: inspection. Both chunk names appear in the binary. Verification: inspection.

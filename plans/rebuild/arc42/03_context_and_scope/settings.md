@@ -1,6 +1,6 @@
-# settings
+# Settings
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-002** `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` changes nothing in the interactive TUI, and `permissions.deny` `Agent(Explore)` removes the Explore listing line there.
   Basis: measured, claude 2.1.318, interactive probe run by the user in Terminal (run 4): L3c body 55,890 bytes equals the L3e control with Explore listed; deny `Agent(Explore)` gives 55,394 bytes, 496 less. The earlier -1,544 bytes applies to `-p` only.
@@ -10,13 +10,13 @@
   Basis: measured (the `-p` and API-key notes were first reported, claude 2.1.318 probe notes).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1731; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2348.
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-004** `plansDirectory` default is `~/.claude/plans` (user home); `bashEditDiffEnabled` default is off, on in auto and bypass modes; `respondToBashCommands` default is true and false skips the whole request (read in the binary, not run); `askUserQuestionTimeout` unset means it never auto-answers; `dialogExpiry` default is 5m; `showClearContextOnPlanAccept` default is false; `disableBundledSkills` equals `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1`.
   Basis: cited, clawdipedia settings schema and binary read as the source states (Claude Code 2.1.316 schema).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:732.
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-005** Probes 2.1 and 2.1a on `2.1.318` in `-p` mode: a `settings.read` hook changes only `disableBundledSkills` and `outputStyle` of the measured tier keys. A plugin's own `settings.json` carries `subagentStatusLine`
   Basis: measured.
@@ -46,13 +46,13 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1484.
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-012** Claude Code 2.1.318 holds 1,338 `tengu_*` server gates and no setting changes one. Seen: `tengu_quiet_pike` (default false, Bash tail preview) and `tengu_typed_pebble` (default 0, a skill budget floor)
   Basis: cited.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1662.
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-013** About 80 settings keys leave the first request unchanged (0 chars, same fields), among them advisorModel, plansDirectory, respondToBashCommands false, autoDreamEnabled, syncClaudeAiSkills and syncClaudeAiPlugins false, fastModePerSessionOptIn, autoUploadSessions false, disableDeepLinkRegistration, askUserQuestionTimeout, enableArtifact, disableRemoteControl, teammateMode, todoFeatureEnabled, pluginSuggestionMarketplaces, feedbackSurveyRate, feedbackDrafts off or quiet, autoUpdatesChannel, enableAllProjectMcpServers, breakReminder, quietHours, and about 60 more.
   Basis: measured.
@@ -62,7 +62,7 @@
   Basis: measured; the rule is from the spec.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:693,1012; openspec/changes/archive/2026-11-09-release-2-1-319/specs/sandbox/spec.md:49; openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/sandbox/spec.md:61.
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-015** CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS turns off the built-in agents in print mode only (non-interactive: `ye()` returns `!isInteractive`). CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS is the interactive switch. In -p the built-in agents seen are claude, general-purpose, and statusline-setup, and only the DISABLE_* env names remove them. Fake-API probe L3a: Explore=1, general-purpose=2; L3b: Explore=0, general-purpose=1. The interactive half is blocked by no pty under the sandbox.
   Basis: measured, fake API; also cited and observed.
@@ -88,7 +88,7 @@
   Basis: cited, unprobed.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:31,33,34.
 
-## Settings And Switches
+## Settings and Switches
 
 - [ ] **CTX-021** claudetto shall treat these as reported: `/goal` 4000-character condition limit, stop hook with fresh verifier (`/goal` 2.1.327: present; limit verified: the handler rejects a condition longer than 4000 characters with "Goal condition is limited to 4000 characters", chunk-qwykd6a6.js@1130 and chunk-v2rqpwd4.js@6685 (2.1.327); the fresh-verifier stop hook is reported); `/loop` creates a cron (CronCreate) regardless; `/loop` with Monitor beats short polling; Remote Control needs `/rc` or `claude rc` per session (2.1.327: flag `--remote-control` present; `/rc` present as alias of `/remote-control`, chunk-m14bt1pz.js:2525877); auto-mode classifier reportedly sends the whole transcript per bash call to Haiku (reported; not checkable locally because the auto-mode check runs on the server: a fake-API probe, 2026-11-18, made no classifier request and printed "Its safety check runs on the server"); Haiku reportedly dispatched for many spawned agents by default (corrected: the built-in Explore agent has `model:"inherit"`, capped at opus, chunk-m14bt1pz.js@242090 (2.1.327)); feedback prompts mostly after bad sessions, answering consents to training (reported; not checkable locally because it concerns server-side data policy); experiment id saved in session logs (reported; not checkable locally because the fake-API init reports `analytics_disabled:true` and assignments come from the server; the GrowthBook client holds `experimentId` per feature, chunk-asj6f58y.js@765365 (2.1.327)); Claude Code reading between sessions (truncated; reported); desktop auto-handoff button (reported; not checkable locally because it is a desktop app feature, not the CLI); `claude -p` flags `--max-turns` (present), `--max-budget-usd` (present), shell `timeout` wrapper; MCP Tasks and `/tasks`; API first official version drops `temperature` (cited); skill authoring guide (gerund names, one-level references, third-person description, progressive disclosure; cited secondhand); skill-creator `evals.json` vs `claude plugin eval` case folders (reported; the `claude plugin eval [target]` and `plugin eval init [name]` subcommands are present, chunk-j2hryht5.js@35035 and @39372 (2.1.327); `evals.json` was not found by string search); image billing by 28x28 patches (reported; the binary shows no patch formula, only per-model `image_limits` of 2576 px and 4784 tokens, chunk-f892tj2r.js@4532 (2.1.327); billing is server-side); cleanup: Claude Code leaves large artefacts (~1 TB tests/builds, 45 GB logs, 1.2M files across worktrees; reported); `cleanupPeriodDays` present (default 30, min 1).
   Acceptance: Reported items stay reported until re-queried. Verification: probe.

@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-12
 ---
-# Use the Built-In Monitor Under a Trimmed Text
+# Use the Built-In Monitor under a Trimmed Text
 
 ## Context and Problem Statement
 claudetto rebuilt `Monitor` as `mcp__claudetto__monitor` and hid the built-in tool. Does it keep that wrapper and the plugin `Monitor` deferral?

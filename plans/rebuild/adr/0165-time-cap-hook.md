@@ -3,7 +3,7 @@ status: superseded by ADR-0041
 date: recorded in openspec/changes/archive/2026-11-13-feat-2-1-321/specs/run-limits/spec.md:166 (day of decision not recorded)
 ---
 
-# Cap Agent Run Time With a Hook
+# Cap Agent Run Time with a Hook
 
 ## Context and Problem Statement
 

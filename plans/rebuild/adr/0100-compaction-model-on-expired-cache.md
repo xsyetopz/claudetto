@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-17
 ---
 
-# Compaction Model On Expired Cache
+# Compaction Model on Expired Cache
 
 ## Context and Problem Statement
 

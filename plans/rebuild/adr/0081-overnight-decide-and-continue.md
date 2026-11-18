@@ -2,7 +2,7 @@
 status: superseded by ADR-0067
 date: 2026-11-16
 ---
-# Nobody Answers Overnight, So Decide and Continue
+# Nobody Answers Overnight, so Decide and Continue
 
 ## Context and Problem Statement
 

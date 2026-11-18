@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-13
 ---
 
-# Replace the Time-Cap Hook With the Stall Timeout
+# Replace the Time-Cap Hook with the Stall Timeout
 
 ## Context and Problem Statement
 

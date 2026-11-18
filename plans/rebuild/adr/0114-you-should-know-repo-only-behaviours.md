@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-17
 ---
 
-# The repo-only behaviours of You should know
+# The repo-only Behaviours of You Should Know
 
 ## Context and Problem Statement
 

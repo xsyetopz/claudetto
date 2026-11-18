@@ -252,21 +252,21 @@
   Basis: reported. Status: have at 088a227c (hooks/kernel, hooks/features, kernel/settings.ts `deciderModel`, rules/useTestPatterns.md).
   Source: openspec/changes/2-1-325-rearchitecture/proposal.md:12; openspec/changes/2-1-325-rearchitecture/design.md:107.
 
-## setup
+## Setup
 
 - [ ] **BB-047** At baseline `settings.ts:146` writes `minimumVersion`, not `requiredMinimumVersion`; `settings.ts:114` sets Haiku `autoCompactWindow` to 100000; `settings.ts:178` handles the advisor.
   Acceptance: the lines hold those keys. Verification: inspection.
   Basis: observed in transcript. Status: have.
   Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
 
-## delegation
+## Delegation
 
 - [ ] **BB-048** At baseline `hooks/runs.ts` writes the run log and reuses `isRecord`, `lineOf`, `pathOf` and `WRITING_TOOLS` from `handoff/transcript.ts`.
   Acceptance: the exports exist. Verification: inspection.
   Basis: observed in transcript. Status: have.
   Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
-## kernel
+## Kernel
 
 - [ ] **BB-049** At baseline `Concise.md` says to ask through the popup before assuming anything the request leaves open, which conflicts with `texts.ts:16`; a manifest test pins the older line.
   Acceptance: both lines exist. Verification: inspection.

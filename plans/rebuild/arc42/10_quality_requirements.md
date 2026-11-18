@@ -49,7 +49,7 @@
   Measure: 100 iterations with real `betterleaks` and `memory_pressure`. Basis: measured (design findings). Status: partial at 088a227c.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:148; openspec/specs/run-limits/spec.md:276 (heartbeat).
 
-## Repo Gate And Footprint
+## Repo Gate and Footprint
 
 - [ ] **QS-009** claudetto shall pass `just check` (lint, type check, tests, plugin validation, hook labs, no generated-wiki step; a dangling wiki reference fails the build) and stay inside footprint budgets: a byte budget per piece (root prompt, Concise output style, each skill description, hook-injected text) in a test naming piece, size, and budget, derived from measurement; a tool description of at most 200 chars (18 of 59 were over; `tools/descriptions.test.ts`); plugin hook source lines (tests and generated excluded) at most 10,419; a baseline red fixed first so failures are attributable; the CHANGELOG records before and after numbers per command; each responsibility has one owner.
   Acceptance: root prompt 6,437 B and tool texts 2,296 B (measured); prohibitions rewritten as action plus reason cut prompt bytes from 12,797 to 10,184 (cited and measured); baseline red: type 0, verify 925 of 927 (two manifest tests fail only in the sandbox because `ps` and `renice` are refused), clones 19, validate 13 main specs INVALID (17 requirements over 500 chars, 2 placeholder Purposes, 1 scenario with no THEN). Also count `just clones` new clones and `catch` sites binding no error. Verification: test.
@@ -77,7 +77,7 @@
   Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (round 6 row).
 
-## Tests And Code
+## Tests and Code
 
 - [ ] **QS-013** Tests are checked by mutation as a kill check, never as a score ([ADR-0180](../adr/0180-behavioural-and-mutation-tests.md)): every surviving mutant of the hook code (Stryker for TypeScript, mutmut for Python) leads to a test or to deleting dead code, every behaviour rule has a mutant its behavioural test kills, and the code is the least that does the job, measured by jscpd.
   Acceptance: zero surviving mutants that the tests should kill, each equivalent mutant listed with a reason; each behaviour rule's mutant fails its trace test in at least 10 runs; jscpd finds 0 clones. No mutation score is reported or targeted. Verification: probe.

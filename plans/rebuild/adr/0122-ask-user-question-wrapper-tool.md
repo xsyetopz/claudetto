@@ -3,7 +3,7 @@ status: superseded by ADR-0127
 date: recorded in openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:392 (day of decision not recorded)
 ---
 
-# Ask user question wrapper tool
+# Ask User Question Wrapper Tool
 
 ## Context and Problem Statement
 

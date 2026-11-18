@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Ship A Goal Prompt Of At Most 4,000 Characters
+# Ship a Goal Prompt of at Most 4,000 Characters
 
 ## Context and Problem Statement
 

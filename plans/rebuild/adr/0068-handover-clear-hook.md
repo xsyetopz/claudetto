@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Handover Through a command.run Clear Hook
+# Handover through a command.run Clear Hook
 
 ## Context and Problem Statement
 

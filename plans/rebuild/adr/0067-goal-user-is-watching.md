@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# The User Is Watching; the Goal Is Rewritten Without Sleep Conditions
+# The User Is Watching; the Goal Is Rewritten without Sleep Conditions
 
 ## Context and Problem Statement
 

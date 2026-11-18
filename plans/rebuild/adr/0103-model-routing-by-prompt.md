@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-17
 ---
 
-# Model Routing By Prompt
+# Model Routing by Prompt
 
 ## Context and Problem Statement
 

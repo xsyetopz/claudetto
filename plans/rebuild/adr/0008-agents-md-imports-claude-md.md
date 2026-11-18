@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-05
 ---
 
-# AGENTS.md Stays An Import Of CLAUDE.md
+# AGENTS.md Stays an Import of CLAUDE.md
 
 ## Context and Problem Statement
 

@@ -3,7 +3,7 @@ status: accepted
 date: recorded in openspec/specs/low-hitl/spec.md:294 (day of decision not recorded)
 ---
 
-# Builtin ask user question with one sentence description
+# Builtin Ask User Question with One Sentence Description
 
 ## Context and Problem Statement
 

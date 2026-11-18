@@ -355,7 +355,7 @@
   Status: closed, ADR-0190 (out of scope, cause outside claudetto: the auto-mode classifier, owned by Claude Code).
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts (the ls denial and CC 2.1.292-296 report).
 
-## Boundaries And Safety
+## Boundaries and Safety
 
 - [x] **RISK-053** Held-out leak: a session sees data the wall must keep from it.
   Category: safety.
@@ -414,7 +414,7 @@
   - Status: open.
   - Source: external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:85; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; external/2026-10-07/export-I benchmarked my own guardrail pack. It made no difference. Posting it anyway.jsonl:8 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wzrhae/i_benchmarked_my_own_guardrail_pack_it_made_no/>; the 0-crossings counter-evidence); external/export--clear vs -compact.jsonl:59; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:113 (reported, one report); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
-## Reply Style And Sycophancy
+## Reply Style and Sycophancy
 
 - [ ] **RISK-057** Narration in shipped source.
   Category: Agent behaviour.
@@ -429,7 +429,7 @@
   Owner: guards. Status: open.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/agent-conduct/spec.md:153; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:32 (SA-2.5)
 
-## Autonomy, Consent, And Scope
+## Autonomy, Consent, and Scope
 
 - [ ] **RISK-058** Overreach and unrequested work.
   Category: Agent behaviour.
@@ -556,7 +556,7 @@
   Owner: guards. Status: open.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:15; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:59.
 
-## Guards And Destructive Actions
+## Guards and Destructive Actions
 
 - [x] **RISK-067** Destructive repair and scope escalation, including a disk-cleanup prompt that is no enforced control.
   Category: Agent behaviour.
@@ -628,7 +628,7 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:72-73; openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:86.
   Status: closed 2026-11-18: the `rules.ts` stat and the gate denial log are dropped with the gate (OUT-035); `git grep -F -e 'was not resolved' -e DENIAL_WRITE -- plugins` finds no hit.
 
-## Cost And Resources
+## Cost and Resources
 
 - [ ] **RISK-072** Memory and CPU exhaustion from overlapping heavy commands, parallel agents, or busy-wait loops.
   - Category: cost and resources.
@@ -707,7 +707,7 @@
   Status: open
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664).
 
-## Hooks, Gates, And Notices
+## Hooks, Gates, and Notices
 
 - [x] **RISK-077** Hooks that require the agent to read docs get subverted.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: docs-reading hooks of other repos, owned by their authors).
@@ -833,7 +833,7 @@
   Basis: reported.
   Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
 
-## Environment, Accounts, And Marketplace
+## Environment, Accounts, and Marketplace
 
 - [x] **RISK-085** Claude on Windows PowerShell chains commands with the ampersand instead of the semicolon, fails, and retries.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: Windows PowerShell dialect, owned by Claude Code).
@@ -899,7 +899,7 @@
   Basis: reported, one blog cited.
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:846 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>)
 
-## Worktrees In Temp
+## Worktrees in Temp
 
 - [x] **RISK-089** Worktrees and scratchpads in /tmp are wiped or fill memory.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: WSL temp placement of worktrees, owned by Claude Code).
@@ -917,7 +917,7 @@
   Status: closed, ADR-0190 (out of scope, cause outside claudetto: WSL temp placement of worktrees, owned by Claude Code).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:405; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:407; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:415 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>); external/2026-10-31/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261031T084047Z.md:162 (url: <https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/>)
 
-## Refactor Hides A Permission Change
+## Refactor Hides a Permission Change
 
 - [ ] **RISK-090** A refactor hides a permission change in one diff.
   Category: agent failure.
@@ -1004,7 +1004,7 @@
   - Status: open (missing at 088a227c).
   - Source: no source states that a rejected write had already landed (Dropped (2026-11-18) for that detail); the program's interrupted-call texts are verified on 2.1.327: "Nothing refused it; re-run it if still needed" at chunk-4xhk2fyb.js@1288 and "Check whether it took effect before relying on it" at chunk-4xhk2fyb.js@4200; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-4xhk2fyb.js@1288 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
 
-## Safeguards And Guards
+## Safeguards and Guards
 
 - [x] **RISK-095** Claude keeps using grep and the explore subagent over code-graph and index tools.
   Category: agent failure.
@@ -1117,7 +1117,7 @@
   Status: open (`pipefail` appears only in justfile and project.just at 088a227c).
   Source: openspec/specs/permission-policy/spec.md:372; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/permission-policy/spec.md:99.
 
-## Guards And Sandbox
+## Guards and Sandbox
 
 - [x] **RISK-105** A gate reads command text as file paths and prints "path was not resolved" notices.
   - Category: product defect.
@@ -1290,7 +1290,7 @@
   Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30180`); observed in transcript, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:11026`).
   Verified: claude 2.1.327, 2026-11-18. The force-push deny rules refuse the command without a prompt and cc-inspect cli showed them enforced under bypassPermissions; user-banned commands are the user's own deny rules, which setup keeps (fill.test.ts: user entries stay).
 
-## Untasked Action And Unproven Cause
+## Untasked Action and Unproven Cause
 
 - [ ] **RISK-116** The agent acts, and then checks, on a claim about a cause it has no proof for, outside its task.
   - Category: conduct

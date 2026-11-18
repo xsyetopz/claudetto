@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-12
 ---
 
-# Merge, Tag, And Release Wait For The User
+# Merge, Tag, and Release Wait for the User
 
 ## Context and Problem Statement
 

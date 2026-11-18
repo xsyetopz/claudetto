@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-13
 ---
 
-# No Grep Replacement With a Short Schema
+# No Grep Replacement with a Short Schema
 
 ## Context and Problem Statement
 

@@ -1,6 +1,6 @@
-# tools
+# Tools
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-172** Monitor costs 8 chars in the deferred list; loaded through ToolSearch it is the largest tool: description 6,354 plus schema 1,040 chars (about 2.7k tokens). Workflow 3,480 plus 1,775, ScheduleWakeup 3,396 plus 1,392, Agent 3,227 plus 1,942.
   Basis: measured, claude 2.1.318.
@@ -58,7 +58,7 @@
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2711; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2712.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-186** `taskOutputMaxChars` has no effect in 2.1.318 (schema: "Deprecated: no longer has any effect"). `bashOutputMaxChars` defaults to 30000 and is clamped 4000-128000, so the Gemini line that gives default 131072 and a working `taskOutputMaxChars` is wrong
   Basis: measured, binary.
@@ -80,19 +80,19 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1376.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-191** `MAX_MCP_OUTPUT_TOKENS` order: the variable, then server flag `tengu_velvet_ibis.mcp_tool`, then 25,000. Over the limit the result is saved to the session tool-results folder as `mcp-<server>-<tool>-<ms>` and only a notice (about 1,293 chars) enters context; the cut at limit x 4 chars with "[OUTPUT TRUNCATED...]" runs only when `ENABLE_MCP_LARGE_OUTPUT_FILES` is false, with images or documents, or with no session files. The 10,000-token screen warning is display-only and fixed. Separate unchanged limits: 50,000 chars before a text result goes to a file, per-tool `_meta` `maxResultSizeChars` up to 500,000, error text over about 11,000 chars keeps first and last 5,000. Fake-API table: 30,000 and 45,000 chars kept whole by default, saved at 10000. User decision: 10000
   Basis: measured, fake API, read from binary.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1149.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-192** `permissions.deny ["ScheduleWakeup"]` is -4,887 chars (-1,771 tok); `ReportFindings` -2,178; `ListAgents` -1,152; all three -8,217 (-2,977 tok). `--disallowedTools` gives the same bytes
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1620.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-193** agent-browser can cost more tokens than Playwright MCP unless the agent passes `snapshot -i` (interactive elements only). The maintainer gives this as the way to cut context sharply. One commenter reports 88% token efficiency against native Playwright.
   Basis: reported (maintainer claim); the 88% figure is reported with no stated basis.
@@ -102,25 +102,25 @@
   Basis: reported by one commenter, not measured. On 2.1.327 the spinner strings are `will retry in N · check your network` for a stalled reply (chunk-wr3rwknv.js@17592) and `next try in N · attempt a/b` (chunk-wr3rwknv.js@18744, auto-mode check), not `Retrying in Ns · attempt x/y`; the count of 10 retries was not located, and `CLAUDE_CODE_MAX_RETRIES` is the env override (chunk-2ew0jg68.js@45599). The 2.1.326 release notes say the retry notice now reads "retrying…" during the next attempt and that `claude -p` now shows output while it retries an overloaded request.
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); external/2026-10-25/reddit.com-r-claudeai-comments-1x8fi7z-claude-code-getting-stuck-for-15-20261024T140704Z.md:79 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/>).
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-195** `TaskStop` of another task is not covered by the gate's owner check: Claude Code looks a task up in this session's task registry and otherwise answers "No task found with ID". The 2.1.326 binary holds that lookup and message (chunk-1vttvse2.js@45168 (2.1.327): `taskRegistry.get`, then name resolution, then the error); the message there also adds "Did you mean" and running-teammate hints. The task named the old module `chunk-kj840p5h.js@36960` with no binary version, and that module is not in 2.1.325. A path reached through `cd`, a variable, or a glob is compared as written (read).
   Basis: reported, task text.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:331; chunk-1vttvse2.js@44058, @44889 (claude 2.1.327 binary).
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-196** An agent's own background tasks are the running tasks whose id its own tool results print: `Bash` prints "Command running in background with ID: <id>", and `Monitor` prints "Monitor started (task <id>, ...". A synchronous subagent's background command ends at its final response (`backgroundEndsWithFinalResponse`) (read).
   Basis: reported, task text.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:407.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-197** Task 18.42 probes of the folders each tool makes: pdm makes `.pdm-build`, Mix makes `_build` and `deps`, Flutter makes an `ephemeral` folder, Clojure makes `.cpcache`, LuaRocks makes `lua_modules`, vcpkg makes `vcpkg_installed` and `buildtrees`, sbt makes `target`, `project/target`, `.bsp`, and `.scala-build`, direnv makes `.direnv`. A `result` symlink from nix-build points into /nix/store and Bazel makes only symlinks into `~/Library/Caches/bazel`; the walk does not follow links, so neither has a rule, and the nix gcroot rule is the only one for them. Nix was not run (the install needs sudo and an APFS volume); its facts come from docs and source (measured, except Nix).
   Basis: measured, Nix from docs and source.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:399; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:401.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-198** Task 18.5, 2.1.319, `claude-sonnet-5-5`, 60 sessions per arm (6 tasks x 10, two identical launches pooled): sessions that called `Read` with no offset on a file of 20,000 bytes or more were 2/60 (Wilson 0.009-0.114) for base and 50/60 (0.720-0.907) for the plugin. Such calls that landed were 2/60 against 22/60 [0.26, 0.49] (p < 0.0001); heavy-file tasks landed 2/40 against 9/40 (p = 0.0476); control tasks (files the guard does not name) 0/20 against 17/20 attempts and 0/20 against 13/20 landed. The guard worked (33 whole reads denied; every landed heavy read carried `limit` 50, 60 or 80). The prediction of fewer attempts with the plugin failed. Likely cause (hypothesis): the plugin denied Bash reads 62 times ("Use Read to read a file, not the shell"), which steered the model to `Read` (`Read` 132 calls against 14, Bash 79 against 86). Cost $5.41 against $1.19, 4.54M against 2.50M tokens, largest session 227,848 against 119,822 (measured).
   Basis: measured.
@@ -142,7 +142,7 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-23/README.md:3-38; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:324.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-203** `CLAUDE_ENV_FILE` is sourced into each Bash shell (probe nice `10 9 9`); CPU: default 26-27M, `nice -n 10` 23.7M, `taskpolicy -c utility` 5.3M, `background` 0; `CARGO_BUILD_JOBS` and `GOMAXPROCS` default to all CPUs. 2.1.326: present (CLAUDE_ENV_FILE; binary string search).
   Basis: measured.
@@ -192,7 +192,7 @@
   Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: <https://raw.githubusercontent.com/tuandm/verdict-cli/HEAD/README.md> (read 2026-11-17); suggested by the user at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
 
-## Tools And Output
+## Tools and Output
 
 - [ ] **CTX-215** `sleep` chains are blocked in a Bash call; the agent waits with `run_in_background` or an `until` loop with a timeout.
   Acceptance: a `sleep 240; cat file` call is refused; an `until` loop with a timeout runs. Verification: probe.

@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-04
 ---
 
-# Titles Use Title Case In Chicago Style
+# Titles Use Title Case in Chicago Style
 
 ## Context and Problem Statement
 

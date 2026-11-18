@@ -3,7 +3,7 @@ status: accepted
 date: recorded in openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3401 (day of decision not recorded)
 ---
 
-# The Concise First-Sentence Rule Stays As Shipped
+# The Concise First-Sentence Rule Stays as Shipped
 
 ## Context and Problem Statement
 

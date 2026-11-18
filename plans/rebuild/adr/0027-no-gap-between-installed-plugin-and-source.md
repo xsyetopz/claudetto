@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-10
 ---
 
-# No Gap Accepted Between the Installed Plugin and the Source
+# No Gap Accepted between the Installed Plugin and the Source
 
 ## Context and Problem Statement
 

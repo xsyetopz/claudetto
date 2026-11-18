@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# One File Per Concern
+# One File per Concern
 
 ## Context and Problem Statement
 

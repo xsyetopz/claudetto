@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/specs/permission-policy/spec.md:262 (day of decision not recorded)
 ---
-# Tmpdir writes pass no marker
+# Tmpdir Writes Pass No Marker
 
 ## Context and Problem Statement
 

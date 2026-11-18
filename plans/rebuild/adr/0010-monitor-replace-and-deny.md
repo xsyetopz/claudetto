@@ -3,7 +3,7 @@ status: superseded by ADR-0031
 date: 2026-11-05
 ---
 
-# Replace Monitor With A claudetto Tool And Deny The Built-in
+# Replace Monitor with a claudetto Tool and Deny the Built-In
 
 ## Context and Problem Statement
 

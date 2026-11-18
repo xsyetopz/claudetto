@@ -1,4 +1,4 @@
-# Checking Between Turns
+# Checking between Turns
 
 - [ ] **CC-021** Check what the agent touched (files, whether tests changed) between turns, not once at the end. Delegation compresses what the reviewer sees into a summary, so the half-fail shape recurs one level down. Detection without an owner is a log line.
   Basis: reported, vendor claim (a hook-recorder co-founder), no data shown.

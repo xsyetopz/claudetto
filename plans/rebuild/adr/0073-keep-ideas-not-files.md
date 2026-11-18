@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Keep Ideas, Not Files, From The Old Build
+# Keep Ideas, Not Files, from the Old Build
 
 ## Context and Problem Statement
 

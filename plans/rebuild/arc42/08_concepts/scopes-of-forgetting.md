@@ -1,4 +1,4 @@
-# Scopes Of Forgetting
+# Scopes of Forgetting
 
 - [ ] **CC-058** claudetto shall diagnose "Claude forgot" by asking which scope it happened in: mid-session (a rule set early stops shaping replies), between sessions, or between projects. Only the first is a window problem, so a bigger window does not fix the others.
   Acceptance: a forgetting report names its scope before a fix is chosen. The write-up blames oldest-first trimming for the first scope and the poster calls it one account of one mechanism, not a study. Verification: inspection.

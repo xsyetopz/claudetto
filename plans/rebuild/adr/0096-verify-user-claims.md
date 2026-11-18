@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Check A User Claim Before Relying On It
+# Check a User Claim before Relying on It
 
 ## Context and Problem Statement
 

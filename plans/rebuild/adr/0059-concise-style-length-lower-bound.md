@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Keep the Output Style Short, With a Lower Bound
+# Keep the Output Style Short, with a Lower Bound
 
 ## Context and Problem Statement
 

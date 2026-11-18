@@ -3,7 +3,7 @@ status: superseded by ADR-0031
 date: 2026-11-04
 ---
 
-# Cut Monitor Through tool.describe
+# Cut Monitor through tool.describe
 
 ## Context and Problem Statement
 

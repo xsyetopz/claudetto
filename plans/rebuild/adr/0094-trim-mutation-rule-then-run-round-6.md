@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Trim The Mutation Rule Then Run Round 6
+# Trim the Mutation Rule Then Run Round 6
 
 ## Context and Problem Statement
 

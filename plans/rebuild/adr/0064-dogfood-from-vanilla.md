@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Dogfood From A Vanilla Install Until Nothing Is Left To Align
+# Dogfood from a Vanilla Install until Nothing Is Left to Align
 
 ## Context and Problem Statement
 

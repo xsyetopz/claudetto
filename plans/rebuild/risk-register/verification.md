@@ -1,6 +1,6 @@
 # Verification Risks
 
-## Friction Of The Agent
+## Friction of the Agent
 
 - [ ] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
   Category: agent behaviour.
@@ -51,7 +51,7 @@
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:822 (P176, measured).
   Verified: 2026-11-18, commit 328809c7f, `claude plugin test plugins/claudetto`: text.test.ts pins the 70k default as the literal 70000, so an undefined constant fails.
 
-## Verification And Honesty
+## Verification and Honesty
 
 - [x] **RISK-425** Regex graders punish the behaviour they reward.
   Category: verification
@@ -458,7 +458,7 @@
   Status: open
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, Next step 9); observed in transcript, 2026-11-15.
 
-## Fable And Opus Behaviour
+## Fable and Opus Behaviour
 
 - [ ] **RISK-452** Fable 5.2 refers to content that does not exist ("here's your answer above/below", "x prior questions still await your call") and says a PDF was updated without checking the write.
   Category: product fault
@@ -475,7 +475,7 @@
   Status: open
   Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
 
-## Verification And Tests
+## Verification and Tests
 
 - [x] **RISK-453** A hand-labelled ground-truth set is wrong, and some questions have no stable answer.
   Category: measurement fault
@@ -507,7 +507,7 @@
   Status: mitigated. Verified: `claude plugin test plugins/claudetto` with a logging git stub first on PATH and GIT_CONFIG_GLOBAL=/dev/null, claude 2.1.327, 2026-11-18: 25 pass and the stub log was never created, so no test can inherit hook git variables.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
-## Lead Agent And Helper Scripts
+## Lead Agent and Helper Scripts
 
 - [x] **RISK-455** A helper script reads a file under a changed record separator.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
@@ -717,7 +717,7 @@
   Trigger: a brief that asks a worker for a date from a summary. Owner: verification. Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Basis: observed in transcript, 2026-11-17. Source: the audit brief and worker output, deleted after the plan commit; the fix: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:12215.
 
-## Agent conduct
+## Agent Conduct
 
 - [ ] **RISK-470** The agent lowers a pin or bypasses a check to turn a result green.
   Category: agent conduct.
@@ -752,7 +752,7 @@
   - Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8799); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
-## Product And Tooling
+## Product and Tooling
 
 - [x] **RISK-472** The just check suite fails its PTY test inside the sandbox.
   - Category: tooling.
@@ -815,7 +815,7 @@
   - Status: closed. Cause removed: no commitlint config exists in the tree (2026-11-18); the retired commit type needs no action.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
-## Conduct Faults From the Rearchitecture Sessions
+## Conduct Faults from the Rearchitecture Sessions
 
 - [x] **RISK-476** The agent words a reply or a test to game the plugin, or tests prose.
   Category: agent conduct.

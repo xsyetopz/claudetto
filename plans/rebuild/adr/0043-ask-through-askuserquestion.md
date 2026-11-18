@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-14
 ---
-# Ask Questions Through AskUserQuestion
+# Ask Questions through AskUserQuestion
 
 ## Context and Problem Statement
 

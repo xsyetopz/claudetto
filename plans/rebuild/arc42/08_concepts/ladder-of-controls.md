@@ -1,4 +1,4 @@
-# Ladder Of Controls
+# Ladder of Controls
 
 - [ ] **CC-082** claudetto-you-should-know stays and is improved, never dropped.
   Acceptance: the plugin ships in the rebuild. Verification: inspection.

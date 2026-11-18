@@ -1,4 +1,4 @@
-# Definition Of Done And Stop Condition
+# Definition of Done and Stop Condition
 
 - [ ] **CC-051** claudetto shall define 'done', 'planned' and 'filed' in terms an agent cannot redefine mid-session: 'done' is a checkable artifact, each goal has a predicate written at commit time, spend or send waits on an approval file only the user writes. 'Keep going until it works' is replaced by STOP WHEN: gate green, or 2 failed fixes, or context past 150k.
   Basis: reported (one commenter). Status: missing at 088a227c (a stop-condition text appears only in plugins/claudetto-openspec/skills/apply/SKILL.md).

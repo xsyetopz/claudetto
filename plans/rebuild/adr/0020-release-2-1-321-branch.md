@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-09
 ---
-# Next Release Targets 2.1.321 On A New feat Branch
+# Next Release Targets 2.1.321 on a New Feat Branch
 
 ## Context and Problem Statement
 

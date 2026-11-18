@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/changes/archive/2026-11-16-2-1-323/design.md:123 (day of decision not recorded)
 ---
-# Tool check fault leaves verdict beneath
+# Tool Check Fault Leaves Verdict Beneath
 
 ## Context and Problem Statement
 

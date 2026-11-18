@@ -1,6 +1,6 @@
 # You Should Know Requirements
 
-## Prompts And Note Text
+## Prompts and Note Text
 
 - [x] **REQ-YOU-SHOULD-KNOW-001** claudetto shall open every side-request prompt of You should know with this frame, verbatim.
   Superseded: 2026-11-19 user ruling (ADR-0190 Prompt text): the port keeps the builtin's behaviour and interface; this text is now claudetto's own, so byte equality is no longer the acceptance. Behaviour pinned by hooks/prompt.test.ts, claude 2.1.327, 2026-11-19, claude plugin test plugins/claudetto-you-should-know: pass. Size SIDE_REQUEST_FRAME 985 -> 724 bytes.
@@ -117,7 +117,7 @@
   Verified: byte comparison of the plugin's propose prompt (also prompt.test.ts) against the text extracted from the 2.1.327 binary (bun probe), claude 2.1.327, 2026-11-18, bun /tmp/claude-501/probe/cmp2.ts: equal.
   Superseded: 2026-11-19 user ruling (ADR-0190 Prompt text): the port keeps the builtin's behaviour and interface; this text is now claudetto's own, so byte equality is no longer the acceptance. Behaviour pinned by hooks/prompt.test.ts, claude 2.1.327, 2026-11-19, claude plugin test plugins/claudetto-you-should-know: pass. Size proposePrompt (empty lists) 33204 -> 11072 bytes.
 
-## Toasts, Row Text, And Copy
+## Toasts, Row Text, and Copy
 
 - [x] **REQ-YOU-SHOULD-KNOW-010** claudetto shall use these toast texts, verbatim, one per refusal: `OFF_BOX_BUSY` (turn off with text in the box), `RESPOND_BLOCKED` (dialog open), `RESPOND_BOX_BUSY` (text in the box), `RESPOND_NOT_FILLED` (the box did not take the note). The apostrophe in `Couldn’t` is the curly one (U+2019).
   - `OFF_BOX_BUSY`: `Your prompt box has text in it. Send or clear it, then press again to turn suggestions off.`
@@ -145,7 +145,7 @@
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@15916 (claude 2.1.327 binary); chunk-nvx1z6pc.js@16644-16863 (claude 2.1.327 binary).
 
-## Surfaces And Layout
+## Surfaces and Layout
 
 - [x] **REQ-YOU-SHOULD-KNOW-013** claudetto shall treat the surfaces `terminal`, `desktop`, `mobile` and `vscode` with `hasOwnComposer` false for terminal and true for desktop, mobile, vscode and an unknown surface, and shall render every view as a child of the `AbovePrompt` slot through `ui.resolve(input)` elements `Box`, `Text`, `Button` and `Code`.
   Acceptance: each surface draws the views in the slot; an unknown surface is drawn as one with its own composer. Verification: test.
@@ -215,7 +215,7 @@
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@17799 (claude 2.1.327 binary); chunk-nvx1z6pc.js@34348-34498 (claude 2.1.327 binary); chunk-nvx1z6pc.js@85978-86538 (claude 2.1.327 binary).
 
-## Hooks And Check Trigger
+## Hooks and Check Trigger
 
 - [ ] **REQ-YOU-SHOULD-KNOW-025** claudetto shall call the model with `model.fork` on the live conversation: no digest, the cache shared, no model or effort option. It shall not build the 8-entry log digest nor call `$.model.complete` with `maxTokens 512` and `timeoutMs 20000`.
   Acceptance: a check issues one `model.fork` and no `model.complete`; the settings hold no model or effort key. Verification: test.
@@ -285,7 +285,7 @@
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:137-167@088a227c; chunk-nvx1z6pc.js@23321 (claude 2.1.327 binary); chunk-nvx1z6pc.js@23900 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24057 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24868 (claude 2.1.327 binary).
 
-## Note Views And Buttons
+## Note Views and Buttons
 
 - [x] **REQ-YOU-SHOULD-KNOW-039** claudetto shall on Learn more show the explanation that came with the offer, or run an explain fork when none came; it shall show the `explaining` view (`One moment…`) and the `failed` view with `OK`. The repo shows only the shipped explanation and hides the button when none.
   Acceptance: Learn more with no shipped explanation runs a fork and shows the result; the button is never hidden. Verification: test.
@@ -319,7 +319,7 @@
   Source: plugins/claudetto-you-should-know/hooks/view.ts:84-88@088a227c; chunk-nvx1z6pc.js@31434-31471 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28630-28941 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32658 (claude 2.1.327 binary); chunk-nvx1z6pc.js@33353 (claude 2.1.327 binary).
   Verified: empty explanation shows the failed row with OK (hooks/surfaces.test.ts), claude 2.1.327, 2026-11-18, claude plugin test plugins/claudetto-you-should-know: pass.
 
-## Availability And Wiring
+## Availability and Wiring
 
 - [x] **REQ-YOU-SHOULD-KNOW-045** claudetto shall list `claudetto-you-should-know` with the description "You should know: a side agent watches your back while Claude works on longer tasks. It looks for things worth knowing that you might miss, and surfaces them above the prompt."
   Acceptance: the plugin listing shows exactly this text. Verification: inspection.
@@ -351,7 +351,7 @@
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@22722 (claude 2.1.327 binary); chunk-nvx1z6pc.js@29190 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88967 (claude 2.1.327 binary); chunk-nvx1z6pc.js@22914 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
 
-## Off, Respond, And Auto-Send
+## Off, Respond, and Auto-Send
 
 - [ ] **REQ-YOU-SHOULD-KNOW-053** claudetto shall turn off by filling the prompt box, never by running the command: if the box holds non-blank text, toast `OFF_BOX_BUSY`, invalidate, and stop; else set the `off{line,shownAt}` view and fill `/plugin disable cc-plugin-you-should-know@builtin` with mode `replace`. If the fill fails, show `failed{reason:"turn_off"}`. The user presses Enter. It detects an off command on `prompt.submit` and `command.run` (`isOffCommand`) and confirms or abandons the off.
   Acceptance: after the press the box holds the disable command and the plugin ran nothing; with text in the box a toast shows and the box is unchanged. A submitted disable command confirms the off. Verification: test.
@@ -374,7 +374,7 @@
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@34348-34488 (claude 2.1.327 binary); chunk-nvx1z6pc.js@78478-79278 (claude 2.1.327 binary); chunk-nvx1z6pc.js@77457 (claude 2.1.327 binary); chunk-nvx1z6pc.js@76017 (claude 2.1.327 binary).
 
-## Backoff And Dedupe
+## Backoff and Dedupe
 
 - [ ] **REQ-YOU-SHOULD-KNOW-057** claudetto shall skip proposing after repeated ignored offers: `looksToSkipAfter(n) = n<=2 ? 0 : min(16, 2**(n-3))` (n=3:1, 4:2, 5:4, 6:8, 7 and up:16 further checks skipped, each skip consuming one eligible check), where `typedPastInARow` counts offers the user typed past. Any answer except `ignored_timeout` resets both counters to 0. The store keys are `looksToSkip` and `typedPastInARow`; the 2.1.326 code computes the skip count as `n<=2 ? 0 : min(16, 2**(n-3))`. The repo resets on `know`, `dismiss` and `learn` through `saveBackoff($,0,0)`.
   Acceptance: after 3 ignored offers 1 eligible check is skipped; after 7, 16; an answer resets both counters. Verification: test.
@@ -391,7 +391,7 @@
   Basis: cited. Status: partial at 088a227c (`git grep -n -E "CLEAR_AFTER_PROMPTS|ignored_submit|typedPast" 088a227c -- plugins/claudetto-you-should-know` finds `LIMITS.clearAfterPrompts` at hooks/register.ts:57 and no `ignored_submit`; the merged items disagreed, have against partial).
   Source: plugins/claudetto-you-should-know/hooks/note.ts:9@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:57@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:45-65@088a227c; chunk-nvx1z6pc.js@80198-80778 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24178 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27241 (claude 2.1.327 binary).
 
-## Cache And TTL Notice
+## Cache and TTL Notice
 
 
 ## Timing
@@ -409,7 +409,7 @@
   Basis: cited. Status: missing at 088a227c (`git grep -n -E "truncate-end|overflowX|maxLines" 088a227c -- plugins/claudetto-you-should-know` finds none).
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
-## Conflicts With Settled Decisions
+## Conflicts with Settled Decisions
 
 
 

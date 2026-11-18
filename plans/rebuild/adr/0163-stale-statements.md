@@ -3,7 +3,7 @@ status: superseded by the specs named in Source (no ADR holds the new wording)
 date: recorded in openspec/specs/permission-policy/spec.md:50 (day of decision not recorded)
 ---
 
-# Stale And Conflicting Statements Retired
+# Stale and Conflicting Statements Retired
 
 ## Context and Problem Statement
 

@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-17
 ---
-# Notice Order And Call Announcement
+# Notice Order and Call Announcement
 
 ## Context and Problem Statement
 

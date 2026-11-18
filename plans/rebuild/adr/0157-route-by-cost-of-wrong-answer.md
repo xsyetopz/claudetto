@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in external/please-use-me-often/agent-failure-dossier/judged/spec.jsonl:3 (day of decision not recorded)
 ---
-# Route Model By Cost Of A Wrong Answer
+# Route Model by Cost of a Wrong Answer
 
 ## Context and Problem Statement
 

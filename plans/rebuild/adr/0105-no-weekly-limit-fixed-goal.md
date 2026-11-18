@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-17
 ---
-# No Weekly Limit; a Fixed Goal With a Fixed Outcome
+# No Weekly Limit; a Fixed Goal with a Fixed Outcome
 
 ## Context and Problem Statement
 

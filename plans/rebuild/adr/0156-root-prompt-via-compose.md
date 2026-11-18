@@ -3,7 +3,7 @@ status: accepted
 date: recorded in plugins/claudetto/agents/Heracles.md@088a227c (day of decision not recorded)
 ---
 
-# Root Prompt Only Through prompt.compose
+# Root Prompt Only through prompt.compose
 
 ## Context and Problem Statement
 

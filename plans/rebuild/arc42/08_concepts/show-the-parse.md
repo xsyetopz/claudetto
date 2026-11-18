@@ -1,4 +1,4 @@
-# Show The Parse
+# Show the Parse
 
 - [ ] **CC-046** claudetto shall add a display of what the parser saw before a smarter heuristic: every clever text heuristic added was a bug, and every display caught one (six defects found by display, none by a smarter parser).
   Basis: reported.

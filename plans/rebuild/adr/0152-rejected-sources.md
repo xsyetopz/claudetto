@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/changes/2-1-325-rearchitecture/design.md:423-432 (day of decision not recorded)
 ---
-# Source Verdicts Of The Rearchitecture
+# Source Verdicts of the Rearchitecture
 
 ## Context and Problem Statement
 

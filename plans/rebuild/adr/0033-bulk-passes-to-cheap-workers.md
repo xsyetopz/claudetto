@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-13
 ---
 
-# Bulk Passes Go To Cheap Workers
+# Bulk Passes Go to Cheap Workers
 
 ## Context and Problem Statement
 

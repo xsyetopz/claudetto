@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Agent Faults Are Recorded As Medical Errors
+# Agent Faults Are Recorded as Medical Errors
 
 ## Context and Problem Statement
 

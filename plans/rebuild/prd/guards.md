@@ -72,7 +72,7 @@
   Basis: reported (conduct n=10, 9, 7, 3, 3). Status: partial at 088a227c.
   Source: plugins/claudetto/hooks/features/prompt/texts.ts:54@088a227c (`CONSENT`); the old plan cites :56; not located: the dossier lines. Missing: a hook denying approval claims without a user prompt.
 
-## No Route Around a Block
+## No Route around a Block
 
 - [ ] **REQ-GUARDS-042** claudetto shall treat a permission, sandbox, classifier, or hook block as final for that action: no other command, tool, encoding, archive, script, delegate, or nested session. SIP, Gatekeeper, code signing, the sandbox, hooks, and pre-commit stay on (a pre-commit failure means fix what it reports; `--no-verify` fails the eval). A failed `pgrep`, `ps`, `ls`, `grep`, or read is unknown, not negative. On a classifier block, give a notice naming the rule (Irreversible Local Destruction, Safety Bypass Flag, Credential Exploration, Create Unsafe Agents, Tmux Self Drive) and say once if it is a false positive; never drive the own terminal pane or a nested agent with keystrokes. A deny list alone is no boundary: agents wrote their own program, switched to Node or Python, or built a container with a bind mount to run `rm -rf` past a command guard (do not mount a directory the agent must not change). Block, never rewrite; always print the alternative in the PreToolUse stderr or the model tries the next way around; log every block.
   Acceptance: After a block, no tool call reaches the same effect by another route in a test session; each block carries an alternative in stderr. Verification: test.

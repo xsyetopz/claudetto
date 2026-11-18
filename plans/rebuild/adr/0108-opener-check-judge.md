@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-17
 ---
-# Opener Check With or Without a Judge Call
+# Opener Check with or without a Judge Call
 
 ## Context and Problem Statement
 

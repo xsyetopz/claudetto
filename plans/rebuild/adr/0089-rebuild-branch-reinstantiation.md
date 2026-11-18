@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# The Rebuild Goes On An Orphan Branch That Holds Only The Plan
+# The Rebuild Goes on an Orphan Branch That Holds Only the Plan
 
 ## Context and Problem Statement
 

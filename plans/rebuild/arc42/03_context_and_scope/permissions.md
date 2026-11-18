@@ -1,18 +1,18 @@
-# permissions
+# Permissions
 
-## Permissions And Prompts
+## Permissions and Prompts
 
 - [ ] **CTX-587** "Allow always" approves one exact command string, so each new "cd <repo> && git x" re-prompts. A PreToolUse hook denies that form and one git-in.sh <repo> wrapper makes a single approval cover all.
   Basis: reported.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:272 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
 
-## Permissions And Prompts
+## Permissions and Prompts
 
 - [ ] **CTX-588** Reported, version differs from the 2.1.326 target: version 2.1.307 emits a telemetry event for every call a rule, hook, or sandbox stopped, and /permissions lists recently denied commands. Review an unattended run starting with what was denied or blocked. On 2.1.327 the `tool_decision` OpenTelemetry event has 2 call sites (chunk-f41c8jb6.js, `surface` otel-event) and the result message carries `permission_denials` (chunk-rj3e7agr.js@465776); the 2.1.307 behaviour of /permissions listing recent denials was not re-read. The 2.1.326 release notes add that PreToolUse hooks in managed settings now leave an OpenTelemetry `tool_decision` event and a `permission_denials` entry when they refuse a direct tool call.
   Basis: reported; the 2.1.326 note cited; the "/permissions lists recently denied commands" part was not found by search for "recently denied" in 2.1.327.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xc84d3-are-u-guys-really-trusting-the-20261022T044105Z.md:94 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xc84d3/are_u_guys_really_trusting_these_models_on/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
-## Permissions And Prompts
+## Permissions and Prompts
 
 - [ ] **CTX-589** One commenter says Opus 5/5.5 runs cyber safety checks on every request including web results Claude reads, falls back to Opus 4.8 on exploit, pentest, and binary-vuln requests with a notice, and that Claude Code Config, MODEL & OUTPUT can turn the switching off.
   Basis: reported, unverified.
@@ -34,7 +34,7 @@
   Basis: reported, one user. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqwdbp-is-there-any-way-to-stop-claude-20261109T153047Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqwdbp/>).
 
-## Permissions And Prompts
+## Permissions and Prompts
 
 - [ ] **CTX-594** Even with 100+ allow rules in settings, a user still got prompts for first-time logins (gh, vercel, cloudflared, connectors), for edits to .git and .claude when a session starts in Auto, and for computer-use once per app; the remedy is manual mode for that one command, or handing over a token.
   Basis: reported, one user quoting Claude's own answer. Status: not applicable (outside fact).

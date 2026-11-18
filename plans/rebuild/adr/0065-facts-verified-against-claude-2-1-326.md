@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Verify Facts Against claude 2.1.326
+# Verify Facts against claude 2.1.326
 
 ## Context and Problem Statement
 

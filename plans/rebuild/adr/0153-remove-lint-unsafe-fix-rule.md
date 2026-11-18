@@ -2,7 +2,7 @@
 status: accepted
 date: no source line located (day of decision not recorded)
 ---
-# Remove The Linter Unsafe-Fix Rule
+# Remove the Linter Unsafe-Fix Rule
 
 ## Context and Problem Statement
 Should a patch rule deny linter fixes that rewrite code unsafely?

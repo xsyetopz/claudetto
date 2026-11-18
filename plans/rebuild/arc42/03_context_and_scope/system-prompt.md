@@ -1,6 +1,6 @@
 # system-prompt
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-240** `/statusline` is TUI-only: in `-p` it prints "/statusline isn't available in this environment." with 0 requests. In a pty the stock command sends 'Create an Agent with subagent_type "statusline-setup" ...'. A project or user `commands/statusline.md` or a Mod `command.run` replaces it; `statusline-setup.md` replaces the spawned agent.
   Basis: measured, claude 2.1.318.
@@ -14,20 +14,20 @@
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2966.
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-243** On 2.1.326 these flags exist (checked: `code` search of 2.1.326 finds each name in the CLI option lists): `--system-prompt`, `--system-prompt-file`, `--append-system-prompt`, `--append-system-prompt-file`, `--append-subagent-system-prompt`, `--exclude-dynamic-system-prompt-sections`, `--system-prompt-snapshot <on|off>`; the same lists also hold `--append-subagent-system-prompt-file` and `--plan-mode-instructions`; `autoMode` is present (chunk-ja5z738t.js@184432 (2.1.327)). Which flags are hidden in `--help` was recorded on 2.1.325 (`-file` forms and `--append-subagent-system-prompt` hidden) and is confirmed on 2.1.327: `--append-subagent-system-prompt`, `--append-subagent-system-prompt-file`, `--append-system-prompt-file` and `--system-prompt-file` are hidden, and `--append-system-prompt`, `--system-prompt`, `--exclude-dynamic-system-prompt-sections` and `--system-prompt-snapshot` are listed (chunk-rnt5hbrt.js@58278-60289). The last two flags of the first list are cache-related and not mentioned in the input; no repo use found.
   Acceptance: `claude --help` on 2.1.326 lists the visible flags. Verification: probe.
   Basis: measured. Status: missing at 088a227c (no repo use of the two cache flags).
   Source: probe on claude 2.1.325, per the old plan; chunk-avas472e.js@809 (2.1.327), chunk-avas472e.js@4374 (2.1.327; first read in claude 2.1.326 binary); plugins/ grep at 088a227c for `system-prompt-snapshot` returned no line.
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-244** The `/statusline` edit text is 323 characters and named `@~/.claude/settings.json`, so `CLAUDE_CONFIG_DIR` pointed it at the HOME file while bare `/statusline` wrote the configured one. The `/init` interview text shrank from 1,592 to 1,144 characters (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:145.
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-245** Tool choice degrades past 30-50 tool definitions in the system prompt (Anthropic guide, as relayed); the fix is grouping tools by user intent and deferred tool search. Two commenters report wrong-tool picks at about 40 tools, fixed by grouping or splitting by job.
   Basis: cited as relayed; commenters reported.
@@ -65,7 +65,7 @@
   Basis: reported. Status: not applicable (outside fact).
   Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:166 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-254** Claude Code puts the account email in the system prompt (issue anthropics/claude-code 81138 cited), and a commenter reports it steering output (default timezone set to Sweden from a Swedish surname). The mods API removes a system-prompt section with on('prompt.section', {name}, () => ({text:null})) and names sections 'pronouns' and 'statusline-setup'; ccglass audits request logs. The harness system prompt also carries a pronoun rule (default they/them, never infer pronouns from a name) that spends tokens in every session; commenters report removing it, the account email, and the GitHub username with a session-start hook or mod (the pronoun quote is not verified in this thread).
   Basis: reported. Status: not applicable (outside fact).
@@ -75,14 +75,14 @@
   Basis: measured (claude 2.1.327, 2026-11-18, cc-inspect `code` search, chunk-m14bt1pz.js). The program holds all three instructions with small wording differences. 'End your turn when the request is done or nothing is left that you can do without them' (the program says 'them', not 'the user') at @2774805; 'When one part of a task is blocked, unclear, or apparently wrong, the rest usually is not ... Finish everything that does not depend on the stuck part, and open your final message with what is stuck' at @2776525; 'When you have enough information to act, act. Do not re-derive facts already established ...' at @2800845, which a flag-read function (`tengu_cedar_lantern`, env override) switches on. Whether a given session receives each section is decided by flags the fake API does not set and was not probed. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqlgno-agents-knowingly-fail-to-complet-20261110T093545Z.md:282-291 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqlgno/agents_knowingly_fail_to_complete_tasks_in_order/>).
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-256** Running claude -p showed build and gh tools injecting about 70% of one Rust project's context; the user is removing most of it.
   Acceptance: Resolved 2026-11-18 as reported by one user, not measured; the share depends on that user's Rust project, and `code run` against a fake API can show the injected tool bytes for a given project but was not run on theirs. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:908 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
 
-## System Prompt And Context
+## System Prompt and Context
 
 - [ ] **CTX-257** Default compose sections on Opus, in order, with bytes: lean_body 1,229 (shared), then session pronouns 357, action_caution 520, session_guidance 163, memory 2,142, env_info_simple 620, context_management 280, act_dont_rederive 277, original_games 265 (Opus only). Haiku adds heron_brook 2,790 and total_tokens 49. Compose cannot replace system[0] (74 B), system[1] (62 B), or the 8.1 KB system-role message in messages[1].
   Basis: measured (claude 2.1.323).

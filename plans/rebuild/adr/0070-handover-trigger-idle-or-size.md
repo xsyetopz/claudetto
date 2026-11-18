@@ -2,7 +2,7 @@
 status: superseded by ADR-0178
 date: 2026-11-16
 ---
-# Hand Over On An Idle Gap Or Context Size, Never On Age
+# Hand Over on an Idle Gap or Context Size, Never on Age
 
 ## Context and Problem Statement
 

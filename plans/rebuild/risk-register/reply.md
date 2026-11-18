@@ -11,7 +11,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 - Check (ADR-0177, ADR-0180): at least 10 runs per arm, vanilla against vanilla plus the text, on stored prompts that reproduce one fault per class, plus one prompt per opposite fault (RISK-333). The text ships only for the classes where the fault rate falls.
 - Boundary: a third-party report with no reproduction here is not a cure target (ADR-0177); its entry moved to scope Out.
 
-## Friction Of The Agent
+## Friction of the Agent
 
 - [ ] **RISK-226** Claude asks or stops when it could act.
   Category: agent behaviour.
@@ -111,7 +111,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2413.
 
-## Verification And Honesty
+## Verification and Honesty
 
 - [ ] **RISK-238** The agent names a fix for a failure from a guess and ignores that the step worked before.
   - Category: conduct.
@@ -145,7 +145,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build CONDUCT. Basis: reported.
   Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:439 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
 
-## Context Loss And Handover
+## Context Loss and Handover
 
 - [ ] **RISK-250** Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
   - Category: context.
@@ -163,7 +163,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:841; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:226; external/2026-10-12/export-Made Claude Code follow the rules I keep telling it, and catch its own stale memories (Jev + dreamin.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x26t6z/made_claude_code_follow_the_rules_i_keep_telling/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:88-95; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:100; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:118; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:175; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:179.
   - Conflict: Drift: the model recalls a rule and still breaks it.
 
-## Reply Style And Sycophancy
+## Reply Style and Sycophancy
 
 - [ ] **RISK-252** Sycophancy and capitulation under pushback.
   - Category: reply.
@@ -304,7 +304,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: open, build CONDUCT.
   - Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`).
 
-## Autonomy, Consent, And Scope
+## Autonomy, Consent, and Scope
 
 - [ ] **RISK-262** Defect or gap reported and left unfixed.
   Category: conduct.
@@ -405,7 +405,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:443, reported, user, 2026-11-11.
 
-## Guards And Destructive Actions
+## Guards and Destructive Actions
 
 - [x] **RISK-269** Stop blocks loop on files that are not the agent's
   - Category: reply.
@@ -859,7 +859,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, latest instructions); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10452 (handoff of 2026-11-15, goal); reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798).
 
-## Hooks, Gates, And Notices
+## Hooks, Gates, and Notices
 
 - [x] **RISK-300** Stop grader ignores an answer picked in the ask-user-question dialog.
   - Category: Claude Code or claudetto fault
@@ -876,7 +876,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: closed. Cause left with a removed part: the Stop grader is removed by product rule; no grader reads the dialog answer. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:799.
 
-## Replies And Instruction Following
+## Replies and Instruction Following
 
 - [ ] **RISK-304** The model pads a correct answer with an objection it invented.
   Category: agent behaviour.
@@ -952,7 +952,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build CONDUCT.
   Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:136; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:158 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
 
-## Doing Instead Of Discussing
+## Doing Instead of Discussing
 
 - [ ] **RISK-335** A question or casual remark is taken as an instruction to act.
   Category: agent failure.
@@ -1151,7 +1151,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: open, build YSK.
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:782 (measured).
 
-## Agent conduct
+## Agent Conduct
 
 - [ ] **RISK-351** The agent speaks about itself, to soothe, or to please when the user wants work only.
   - Category: agent conduct.
@@ -1313,7 +1313,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10.
 
-## Open And Unchecked Work
+## Open and Unchecked Work
 
 - [ ] **RISK-362** The agent stops with open, unchecked, or unresolved items and waits for the user.
   - Category: conduct
@@ -1364,7 +1364,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175; measured, 2026-11-16
 
-## Product And Tooling
+## Product and Tooling
 
 - [ ] **RISK-365** The root prompt names the opener it forbids.
   - Category: product.
@@ -1458,7 +1458,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, process slip); observed in transcript, 2026-11-12; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit: "0/12 to 11/12", `design.md` L75 and L77, `df3d38d6`, `00a08195`).
 
-## Conduct Faults From the Rearchitecture Sessions
+## Conduct Faults from the Rearchitecture Sessions
 
 - [ ] **RISK-371** The agent leaves a defect unfixed and stops to report.
   Category: agent conduct.

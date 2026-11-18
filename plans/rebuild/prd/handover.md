@@ -46,7 +46,7 @@
 ## Package Manager Detection at SessionStart
 
 
-## State Across Clear
+## State across Clear
 
 - [ ] **REQ-HANDOVER-017** claudetto shall carry state across `/clear` through SessionStart and PreCompact (a user pause was forgotten after `/clear` and the agent began implementing; "71% context left" is no trigger; a session fanned out to a hard stop).
   Acceptance: After `/clear` a recorded pause still holds in the next session. Verification: test.
@@ -98,7 +98,7 @@
   Basis: measured (probe C). Status: missing (no CLAUDETTO_ knob in plugins/claudetto/hooks at 088a227c).
   Source: handover probe C, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); `settings.read` and `env.get` are in the 2.1.326 capability list (chunk-dafpvz32.js@3656 (2.1.327)); user decision, 2026-11-16 19:00 UTC, handover mimics the compaction settings; a manual /clear gets a handover first (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6412); probe C and G, `claude` 2.1.325, fake API, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
 
-## Goal Restore After Clear
+## Goal Restore after Clear
 
 
 ## Checked Handover
@@ -108,26 +108,26 @@
 
 
 
-## Rules After Compaction
+## Rules after Compaction
 
 
 
-## Dated Rules And Mistakes File
+## Dated Rules and Mistakes File
 
 
 ## Live Machine Facts
 
 
-## Decisions Reachable By Every Agent
+## Decisions Reachable by Every Agent
 
 
-## Decision At The Code
+## Decision at the Code
 
 
-## Quote Before Change
+## Quote before Change
 
 
-## Cold Start From A Doc
+## Cold Start from a Doc
 
 
 ## Memory Write Gate
@@ -178,7 +178,7 @@
 ## Memory Guard
 
 
-## Compaction Instructions And Cache
+## Compaction Instructions and Cache
 
 - [x] **REQ-HANDOVER-055** claudetto shall keep `/compact` on and visible: a manual `/compact` settles in about 5 s through `next()`, writes a `compact_boundary` with trigger manual, and survives `--resume`. The surface `OFF_COMMANDS` list had held `compact` against the spec, so the model said "/compact is off".
   Acceptance: after the fix a manual `/compact` completes and a resume in a second process keeps the state. Verification: test.
@@ -211,7 +211,7 @@
   Basis: reported. Status: partial at 088a227c (plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; no measured comparison).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:79; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09).
 
-## Handover In Place Of Compaction
+## Handover in Place of Compaction
 
 - [ ] **REQ-HANDOVER-061** claudetto shall replace core auto-compaction's summary with its handover by default, and keep sessions short by renewing at task boundaries (RT-027), not by a session-age bound. The renewal calls `$.session.compact` between turns, and claudetto's `session.compact` hook returns the handover in place of the core summary, so core makes no summarizer call (CTX-843, RT-025). Headless renewal is sent by the driver ([ADR-0184](../adr/0184-headless-renewal-by-driver.md)).
   Acceptance: after a renewal, the first request holds the handover and none of the old messages; a dogfood session renews at each task boundary above the RT-027 threshold and at no other time; the user's own `/clear` stays unbroken. Verification: probe.
@@ -231,11 +231,11 @@
   Source: reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:6530 (handoff turn; the user said the handoff abruptly interrupts ongoing work, as read in the earlier pass).
   Verified: test and probe, claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto` (renewal: "an open task is no boundary", "background work holds the boundary") and `bun -e` compose("body","",""): git HEAD and status lines follow the body.
 
-## Resume From An Earlier Session
+## Resume from an Earlier Session
 
 
 
-## Conflicts With Settled Decisions
+## Conflicts with Settled Decisions
 
 - [x] **REQ-HANDOVER-067** claudetto shall append "Keep the user's corrections, refusals, and consents word for word." after the existing instructions of each compaction, through `next({...e, instructions})` (the summarizer reads it as `Additional Instructions:` ending the request; the hook module has no `process`, so the text is a constant; a failing hook logs `session.compact hook skipped`), then stored constraints as `-` lines. A classic `PreCompact` command hook prints one keep line (manual and automatic; no model call, no read of earlier messages). Keep verbatim: every user correction, every rejection or block (never retried), a consent with its named value, a user-owned value change (old, new, approved), open notices and unverified claims, running jobs with ID, log and lock, the Record or SOW path; never attribute to the user what only the assistant said.
   Acceptance: the compaction request ends with the instruction; the built-in summary keeps only security constraints verbatim and corrections only lossily, and one summary form caps at 2,000 words. Verification: test.

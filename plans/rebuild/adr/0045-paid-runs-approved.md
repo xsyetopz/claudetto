@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-14
 ---
-# Paid Runs Approved Without A Budget Figure
+# Paid Runs Approved without a Budget Figure
 
 ## Context and Problem Statement
 

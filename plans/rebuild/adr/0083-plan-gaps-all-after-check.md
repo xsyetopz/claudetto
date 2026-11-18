@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
 ---
-# Take All Audit Gap Lines After A Check
+# Take All Audit Gap Lines after a Check
 
 ## Context and Problem Statement
 

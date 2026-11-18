@@ -2,7 +2,7 @@
 status: superseded by ADR-0087
 date: 2026-11-16
 ---
-# A Script Picks The Holdout Tasks Blind
+# A Script Picks the Holdout Tasks Blind
 
 ## Context and Problem Statement
 

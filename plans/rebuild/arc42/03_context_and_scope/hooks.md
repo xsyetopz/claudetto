@@ -1,6 +1,6 @@
-# hooks
+# Hooks
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-840** The task-boundary payloads on claude 2.1.327 are these. Every payload holds session_id, transcript_path, cwd, prompt_id and hook_event_name. TaskCreated and TaskCompleted add task_id, task_subject and task_description, with no status and no list of the other tasks, so a renewal check calls TaskList to learn whether work remains. PostToolUse on Bash adds permission_mode, effort.level, tool_name, tool_input.command, tool_response {stdout, stderr, interrupted, isImage, noOutputExpected}, tool_use_id and duration_ms, with no exit code, so a commit match reads tool_input.command plus a non-interrupted response with stdout. Stop adds permission_mode, effort.level, stop_hook_active, last_assistant_message, background_tasks and session_crons. The task tools are deferred under `-p` and need a ToolSearch `select:` call first.
   Basis: measured. Status: closes the open probe in ADR-0178 and RT-027.
@@ -18,13 +18,13 @@
   Basis: measured.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:286.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-598** Hook text (`additionalContext`, `systemMessage`, `initialUserMessage`, stdout) is capped at 10,000 chars each; over the cap it goes to a file and the model gets the path
   Basis: cited.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1651.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-599** WorktreeCreate for an Agent with isolation "worktree" fires before the folder exists (0.5 s before "Created agent worktree"). It carries session_id, transcript_path, cwd (repo root), prompt_id, hook_event_name, and name agent-<agentId>, and holds no path, branch, or agent id. SubagentStart then carries agent_id and a cwd of <root>/.claude/worktrees/agent-<agentId>. The Agent result text ends with agentId, worktreePath, and worktreeBranch only for a foreground call that left a commit. An agent with no change gets "Removed agent worktree", and one with a commit "Agent worktree kept".
   Basis: measured with a throwaway plugin.
@@ -59,13 +59,13 @@
   Basis: cited. Status: have at 088a227c. cited. Status: unchecked: a fact about Claude Code, not code at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:91; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:69; Clawdipedia capture 541cf9e, Claude Code 2.1.312 (27 Oct 2026), read through clawdipedia-docs.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-607** The ljw1004 `you_are_not_right.sh` gist is a `UserPromptSubmit` hook that reads the last 5 assistant entries, tests the first 80 characters of each text block against a you-are-right regex, and prints a `<system-reminder>` only on a match. It fires one turn late and depends on the raw transcript format. No measurement exists; it is the only mechanism Anthropic staff pointed to (reported, no measurement).
   Basis: reported, no measurement.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:88-90.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-608** Dossier S12: issue 32376 (opened 9 March 2026) reports a hook's condition narrowed from all code changes to only "SIGNIFICANT" code changes, with a displayed backup diff. It was closed as not planned. The enforcement code was writable by the actor it governs. The diff is stronger evidence than the report's reading of motives (reported, issue tracker).
   Basis: reported, issue tracker.
@@ -83,19 +83,19 @@
   Basis: reported, allegation.
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:201 (<https://github.com/anthropics/claude-code/issues/46828>).
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-612** Task 18.31 found that the claudekit loader rejects r2 cases with tool blocks in the prefix, so sets need string prefixes. The fixture grade prints only `{n, pass, byLabel}`, and `run.ts` removes `cfg/` and `ws/` after grading. Session 11314703 printed the first cases of `held-out-r3.json`, which contaminated r3. Before tuning, r4 scored 21/24 in run 1 and 22/24 in run 2 (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-613** Stop grader arms, caught/clean flagged: old text 57, 59, 58, 57 / 4, 7, 9, 7; short text with credit opening 58, 58 / 9, 10; plain opening 57, 58 / 8, 10 (no clear difference between credit and plain); calm 57, 57 / 4, 4, but case t050 moved from caught to missed. In ten runs of t050: lowercase 0/10, NOT 9/10, "the user has not seen it" 5/10, "hidden from the user" 10/10. calm3 scored 225/240 and 19/160, and its extra misses were silent picks. calm4 adds "A value the reply names that the request did not, such as a version or a branch name, counts as a pick." The plugin prompt equals the arm on all 340 case prompts. t050 stays flaky: calm4 missed it 3 of 4 runs, old text 0 of 4 (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:348-354.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-614** The Stop grader on held-out replies (68 calls per split), measured 2026-11-06. Before the prompt change: unchecked recall 2/11 [0.05, 0.48], unfiled 1/8, clean flagged 2/49 (108,075 tokens). After: dev split 10/11 and 8/8 with 4/49 clean flagged; held-out split 8/8, 8/8, 5/52. The misses came from replies that say "I haven't checked" yet adopt the value, and from a grader that did not know the hook's two facts: no look this turn, and nothing written to the issues file (measured). claudetto shall record these measured Stop grader figures: 2026-11-06 Haiku 0.6-3.2 s (median about 1 s over 10 concurrent sessions), $0.0002-0.0006; Sonnet 4.3 s vs Haiku 0.78 s live; held-out unchecked 8/8 [0.68,1], 5/52 clean flagged [0.04,0.21]; `unseen` Haiku precision about 0.79 (0-4 of 31 clean flagged; Sonnet alone flagged 8/39 clean, with peers 0-1/39 and recall 7-8/8); set 2 (60 faulty, 40 clean) old text 231/240 caught and 27/160 clean flagged vs calmer text 229/240 and 28/160; `parseFaults` variants (last JSON against first `{` to last `}`) differ on 0 of 486 answers.
   Acceptance: Hand-written fixtures; point estimates. Verification: inspection.
@@ -126,7 +126,7 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-38/README.md:60-82.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-621** Held-out r4 runs 3-22 (20 runs) scored 474/480; every run was 23/24 or better and 14 runs were 24/24 (runs 13-22 on the shortened texts of commit `a3144659`). The misses were claim flip in runs 8, 11, 15 and 17 (the repeating one), claim drift in run 3, and ledger drift in run 20. Public set c1 scored 24, 23, 24 (measured).
   Basis: measured.
@@ -140,21 +140,21 @@
   Basis: read.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/README.md:1-31.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-624** Hooks never receive cost from Claude Code (issue 11008), so a cost reporter must read the session JSONL files.
   Acceptance: The fact holds as the author of a hook reports it; the issue was not opened. The gap named line 30; the text sits at line 48. Verification: probe.
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>).
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-625** Mod API limits measured on 2.1.325; re-measured on 2.1.327 for one: from `turn.complete` under `-p`, `$.session.compact()` throws "not available in a headless (-p / SDK) session yet: compaction here runs inside a turn (a /compact prompt)" (cc-inspect cli with a plugin under `--plugin-dir`, fake API, 2026-11-18). The mid-turn throw, the interactive PTY compaction and the 13-29 s fork time are kept as measured on 2.1.325; the interactive ones need a PTY session, and `session.compact` and `model.fork` are present in the 2.1.327 surface: `$.session.compact()` mid-turn throws "a turn is running"; from `turn.complete` under `-p` it throws "not available in a headless (-p / SDK) session yet"; interactive works and the module's `session.compact` hears it; the test kit gives a plugin's own call neither trigger nor messages; `$.model.fork` takes effort only, no model; fork handoffs take 13-29 s each. A plugin-started compaction is rejected headless (reported). Hook modules have no `process`; a throwing hook logs `session.compact hook skipped`. Also: from a `turn.step` hook the call throws "a turn is running"; from `turn.complete` in an interactive PTY session it compacts and runs the `$.model.fork` handoff. In the test kit a `turn.complete` stub must answer with the plain result `{ text: "done" }` (the `{ value }` form gives "no implementation") and a compaction stub must leave at least one message.
   Acceptance: three fake-API probes reproduce the three results. Verification: probe. Each of the three stub forms behaves as stated under `claude plugin test`. Verification: probe.
   Basis: measured.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:64; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Age handoff probes 1-3; scripts in `/private/tmp/claude-501/probe-age/`, types at `.claude-plugin/types/claude-code/index.d.ts:3064-3069`).
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-626** Status line stdin on 2.1.319: `context_window_size` is the model window and `used_percentage` is against it; there is no theme key; `$.config.list()` returns `theme`; `$.session.usage({breakdown:"summary"})` is local. The Claude Code permission-modes page (read 2026-10-30) says modes set the baseline, rules layer on top, and allow rules have no effect in bypassPermissions; "auto mode drops broad allow rules on entry" is NOT stated.
   Basis: measured; cited (docs page).
@@ -164,7 +164,7 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:363; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:248; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:186; openspec/specs/claim-check/spec.md:10; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:91; the `deny Agent(Plan)` fact: unresolved, not found by grep.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-628** Hook uses that claudetto plugins lack, from 12 reference repos: SubagentStart read-only injection, TDD gate PreToolUse plus Stop, WorktreeCreate and WorktreeRemove layout, PreCompact, PostToolUse commit reminder, model switch events (`PreModelSwitch` and `PostModelSwitch` present on 2.1.326: 36 and 15 string hits); five repos yielded no hook config by regex (regex limit).
   Basis: cited; untrusted data.
@@ -250,7 +250,7 @@
   Basis: measured 2.1.319.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:314.
 
-## Hooks And Events
+## Hooks and Events
 
 - [ ] **CTX-647** A failing pre-push hook stops `git push` (bare remote probe: rc 1, no main; rc 0, main updated). A `gh release create` goes through the API and is not covered. A push once ran before verify, 5 s after the commit. Cure: the bedrock pre-push runs `just verify`.
   Basis: measured.
@@ -296,7 +296,7 @@
   Basis: reported (read).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:759.
 
-## Hooks Under Safe Mode
+## Hooks under Safe Mode
 
 - [ ] **CTX-853** On claude 2.1.327 `--safe-mode` drops hooks passed with `--settings`: a PreToolUse hook that appends to a file did not run under `--safe-mode --settings s.json`, and ran under `--setting-sources project --settings s.json`. A lab arm that adds a hook therefore uses `--setting-sources project --strict-mcp-config` as its base, and so does the vanilla arm it is compared with.
   Acceptance: both lab arms start from the same base and differ only in `--settings`. Verification: probe.

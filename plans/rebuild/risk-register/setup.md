@@ -110,7 +110,7 @@
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1266 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1434; reported, user, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1266); reported, user, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1434) (reported, user, 2026-11-09).
 
-## Boundaries And Safety
+## Boundaries and Safety
 
 - [x] **RISK-401** Sandbox escape by convenience: the agent turns the sandbox off for each EPERM.
   Verified: probe, claude 2.1.327, 2026-11-18, cc-inspect cli with the ADR-0188 block: routine Bash writes (under /opt/homebrew and /private/var/folders) ran with 0 prompts and no EPERM, so the agent meets no failure that tempts it to set dangerouslyDisableSandbox; the fill writes the block (defaults.test.ts).
@@ -126,7 +126,7 @@
   Owner: setup. Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:61; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:156; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:157; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:37; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:77.
 
-## Context Loss And Handover
+## Context Loss and Handover
 
 - [x] **RISK-402** An earlier plugin default of `cleanupPeriodDays: 14` deleted transcripts.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn cleanupPeriodDays plugins/claudetto --exclude-dir=types`: 0 hits; nothing writes a retention value, so the Claude Code default (30) stands.
@@ -176,7 +176,7 @@
   Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, jscpd tools not available); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, 'claudetto ask tool disconnected'); observed in transcript, 2026-11-12 and 2026-11-14.
 
-## Environment, Accounts, And Marketplace
+## Environment, Accounts, and Marketplace
 
 - [x] **RISK-405** Claude Code sends the claude.ai login token to a custom base URL.
   Status: closed. Cause is outside setup or outside claudetto (OUT-865, ADR-0190).
@@ -224,7 +224,7 @@
   Basis: reported.
   Source: external/2026-11-04/reddit.com-r-claudecode-comments-1wpcirc-ccs-most-underrated-feature-dy-20261104T085040Z.md:107 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wpcirc/ccs_most_underrated_feature_dynamic_context/>).
 
-## Product And Tooling
+## Product and Tooling
 
 - [x] **RISK-408** The version floor key is wrong.
   Verified: code search, claude 2.1.327, 2026-11-18, cc-inspect `code search requiredMinimumVersion`: enforced from policySettings only (chunk-4dxjsc3b.js@2149). The floor is `engines` ">=2.1.327" in plugin.json (`claude plugin validate` passes), so no user-settings key is written.
@@ -308,7 +308,7 @@
   Status: open.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Bash classifier outages); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:4092 (round 2 dev arm).
 
-## Conduct Faults From the Rearchitecture Sessions
+## Conduct Faults from the Rearchitecture Sessions
 
 - [x] **RISK-413** The agent edits user settings or reverts work with no order.
   Status: closed. Cause is outside setup or outside claudetto (OUT-864, ADR-0190).

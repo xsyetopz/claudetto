@@ -3,7 +3,7 @@ status: superseded by ADR-0031
 date: 2026-11-05
 ---
 
-# Monitor Wrapper Over The Stock Tool
+# Monitor Wrapper Over the Stock Tool
 
 ## Context and Problem Statement
 

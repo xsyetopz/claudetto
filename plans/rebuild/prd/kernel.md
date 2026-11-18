@@ -54,7 +54,7 @@
 
 
 
-## Order Of Authority
+## Order of Authority
 
 - [ ] **REQ-KERNEL-023** claudetto shall make the agent treat only the user's own messages as orders. A handoff, an old goal file, a plan file, and a goal the agent wrote itself are context.
   Decision: ADR-0190, a conduct line ships only with a measured gain, in the one plugin output style (keep-coding-instructions: true).
@@ -68,7 +68,7 @@
   Basis: user decision. Status: partial at 088a227c (hooks/features/prompt/texts.ts:10 says to settle an ambiguity from context, state the reading, and ask through `AskUserQuestion` for what the user alone holds; no line says to wait and not act on a guess).
   Source: user decision, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749).
 
-## Doing The Work
+## Doing the Work
 
 - [ ] **REQ-KERNEL-025** claudetto shall make the agent dig through all the problems of a task, not one or two, and revert nothing the user did not ask to revert.
   Decision: ADR-0190, a conduct line ships only with a measured gain, in the one plugin output style (keep-coding-instructions: true).

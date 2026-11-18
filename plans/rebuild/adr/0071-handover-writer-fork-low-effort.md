@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-14
 ---
-# Write The Handover With A Low-Effort Fork
+# Write the Handover with a Low-Effort Fork
 
 ## Context and Problem Statement
 

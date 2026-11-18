@@ -1,4 +1,4 @@
-# Tool Text And Surface
+# Tool Text and Surface
 
 - [ ] **CC-027** claudetto shall keep tool and hook texts neutral and factual, and put validation gates in code.
   Acceptance: a tool-result text states the fact, not a verdict (the model carries the tone of tool-result text into its reply: "NOT SENT, domain cannot receive email" became "your email bounced"; "payment failed due to suspicious activity" became a fraud lecture for an expired card); a validation gate, such as a DNS MX check before the creating tool, sits in code, not in prompt. Verification: inspection.

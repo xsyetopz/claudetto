@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-17
 ---
-# Web Read Returns A Path And An Outline
+# Web Read Returns a Path and an Outline
 
 ## Context and Problem Statement
 

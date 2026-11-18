@@ -21,7 +21,7 @@
   Basis: measured on claude 2.1.325; holds on 2.1.327 after a user-typed clear (reports/2026-11-18-research/handover.md, RT status). Status: missing (handoff.ts keeps compactedAt in module state; no pending handover) at 088a227c.
   Source: handover probe E, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414); plugins/claudetto/hooks/features/compaction/handoff.ts:72-73@088a227c. The /reload-plugins reason is the old plan's inference; no probe in the source lines shows it.
 
-## Reset Or Continue
+## Reset or Continue
 
 - [x] **RT-027** claudetto shall renew only at a task boundary (`TaskCompleted`, Stop with no open task, or `PostToolUse` on a Bash `git commit`) when the context P is above the break-even size ([ADR-0178](../../adr/0178-renewal-at-task-boundaries.md)). Break-even requests N = (P x read + H x output + Sr x read + (Sw + H) x write) / ((P - Sr - Sw - H) x read). The variables:
   Verified: tests in plugins/claudetto/hooks/handover/renewal.test.ts (task done, commit, stop, open task, subagent, background work, under 70k); probe (claude 2.1.327, 2026-11-18, fake API stub, `claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`, stub reporting 195k input tokens): the Stop boundary called `$.session.compact` and logged the headless rejection.

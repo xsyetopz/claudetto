@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in user decision, 2026-11-13 (day of decision not recorded)
 ---
-# Rule Files Stay Few And Use camelCase Names
+# Rule Files Stay Few and Use camelCase Names
 
 ## Context and Problem Statement
 

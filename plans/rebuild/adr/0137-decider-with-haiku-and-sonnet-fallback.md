@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281 (day of decision not recorded)
 ---
-# Decider With Haiku And Sonnet Fallback
+# Decider with Haiku and Sonnet Fallback
 
 ## Context and Problem Statement
 

@@ -2,7 +2,7 @@
 status: rejected
 date: 2026-11-17
 ---
-# Add The Edit Versus Write Line To The Root Prompt
+# Add the Edit versus Write Line to the Root Prompt
 
 ## Context and Problem Statement
 

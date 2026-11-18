@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-14
 ---
-# Rebuild From a Clean Slate
+# Rebuild from a Clean Slate
 
 ## Context and Problem Statement
 

@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-14
 ---
-# A Script Bumps The Version By SemVer
+# A Script Bumps the Version by SemVer
 
 ## Context and Problem Statement
 

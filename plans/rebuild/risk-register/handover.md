@@ -80,7 +80,7 @@
 ## Delegation
 
 
-## Verification And Honesty
+## Verification and Honesty
 
 
 ## Agent Habits
@@ -89,7 +89,7 @@
 ## Context Leakage
 
 
-## Context Loss And Handover
+## Context Loss and Handover
 
 - [ ] **RISK-131** Context decay and rot: long context drops earlier instructions and facts, and a session resumes from a wrong or empty picture.
   - Category: context.
@@ -195,7 +195,7 @@
   - Status: closed; the cause (a fixed-point trigger) left with the 59-minute rule; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: "an open task is no boundary" and "background work holds the boundary" pass.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, In Progress: None given); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, user corrections); reported, user, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369); observed in transcript, 2026-11-12: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:6530.
 
-## Hooks, Gates, And Notices
+## Hooks, Gates, and Notices
 
 - [x] **RISK-139** Pin hook re-injects constraints the user never gave.
   - Category: Conduct and hook text
@@ -212,7 +212,7 @@
   - Status: closed; claude 2.1.327, 2026-11-18, `grep -rniE "pin" plugins/claudetto/hooks` (non-test): no hit, so no pin hook exists.
   - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
-## Handover, Memory, And Notes
+## Handover, Memory, and Notes
 
 - [ ] **RISK-140** Stale git state from before a compaction is reported as current.
   - Category: Conduct
@@ -275,7 +275,7 @@
 ## Concurrent Sessions Share Nothing
 
 
-## Compaction And Memory
+## Compaction and Memory
 
 - [ ] **RISK-150** Compaction loses old decisions.
   - Category: context loss.
@@ -312,7 +312,7 @@
 
 
 
-## Product And Tooling
+## Product and Tooling
 
 - [x] **RISK-155** prompt.context re-sends its block after a compaction.
   - Category: product.
@@ -344,7 +344,7 @@
   - Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: "a failed fork falls back to the transcript extract" passes; clear.ts keeps the pending text in `$.store`.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
-## Conduct Faults From the Rearchitecture Sessions
+## Conduct Faults from the Rearchitecture Sessions
 
 - [ ] **RISK-157** The handover fork misses the tool calls after the replayed request.
   Category: Claude Code fault.

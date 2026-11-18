@@ -3,7 +3,7 @@ status: superseded by ADR-0166
 date: recorded in openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/session-hygiene/spec.md:61 (day of decision not recorded)
 ---
 
-# Created by marker file
+# Created by Marker File
 
 ## Context and Problem Statement
 

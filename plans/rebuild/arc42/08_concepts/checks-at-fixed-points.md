@@ -1,4 +1,4 @@
-# Checks At Fixed Points
+# Checks at Fixed Points
 
 - [ ] **CC-055** claudetto shall run a code-health score at three points (before a risky edit, before commit, before the PR), not per keystroke, and treat the PR check as the winner on disagreement; AGENTS.md is a note agents skip, not a gate.
   Acceptance: per-keystroke scoring makes the agent thrash and the ticket never finishes; the same score runs in the session, on the laptop before commit, and on the PR. Verification: inspection.

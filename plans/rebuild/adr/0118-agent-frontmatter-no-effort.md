@@ -2,7 +2,7 @@
 status: superseded by ADR-0117
 date: recorded in openspec/specs/subagent-prompts/spec.md:19 (day of decision not recorded)
 ---
-# Agent Frontmatter Without Effort
+# Agent Frontmatter without Effort
 
 ## Context and Problem Statement
 

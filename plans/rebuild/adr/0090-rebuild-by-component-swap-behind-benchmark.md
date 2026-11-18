@@ -2,7 +2,7 @@
 status: superseded by ADR-0046
 date: 2026-11-16
 ---
-# Rebuild By Component Swap Behind A Benchmark
+# Rebuild by Component Swap behind a Benchmark
 
 ## Context and Problem Statement
 

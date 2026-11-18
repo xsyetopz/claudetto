@@ -1,6 +1,6 @@
-# research
+# Research
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-374** Coding agents change code that is already fixed: a 200-task benchmark where the correct action is no change (arXiv 2605.07769).
   Acceptance: Kept as the no-change-needed case. Verification: inspection.
@@ -86,7 +86,7 @@
   Status: n/a (fact).
   Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:61,154.
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-388** 2605.15184 "Is Grep All You Need": inline grep beat inline vector in every pair; the harness moved accuracy (Opus 4.6 inline grep 93.1 on Chronos against 76.7 on Claude Code)
   Basis: reported, by subagent read, not rechecked.
@@ -112,35 +112,35 @@
   Basis: reported.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1219.
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-394** A third-party blog teardown claims more than 6 system-prompt variants across Claude Code and Desktop, an injectable live-prompt section `heron_brook`, fast mode for Opus as a different decoding layer, and a human-in-the-loop against a no-human variant.
   Acceptance: the blog states each claim. Verification: inspection.
   Basis: measured in part (claude 2.1.327, 2026-11-18). `heron_brook` is confirmed (chunk-m14bt1pz.js@2773954, see Source). The variant count (more than 6), the Desktop variants and the human-in-the-loop against no-human variant are not found in the program: a literal search for 'system prompt variant' returns no hit, and 'no human' hits only notification and permission-provenance text (chunk-zspx3ycy.js@3245, @4579; chunk-rj3e7agr.js@330592), not a prompt variant. Fast mode is a request field the client sends (`speed`, `usage.speed` 'standard' in the probe result); the decoding layer behind it is server-side and cannot be checked from the program. Status: have at 088a227c.
   Source: the blog was not found (Dropped (2026-11-18) for the 6-variant, fast-mode-decoding-layer and human-in-the-loop claims: no source located in external/, openspec/, reports/, git history or the user's transcripts). `heron_brook` is verified in the program on 2.1.327: a string flag `tengu_heron_brook` read from client data or the feature-value store and used when non-empty (chunk-m14bt1pz.js@2773960); it also appears as a section id at openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:17@088a227c9^ and plugins/claudetto/hooks/features/prompt/compose.test.ts:9@088a227c.
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-395** Per one skill's README, skill folders under `~/.claude/skills/<name>` also work with Codex and Cursor; nothing in claudetto depends on it. A commenter cited Anthropic "The AI-native SDLC playbook" (not fetched). In a multi-agent relay post the author copy-pasted 257 relay prompts across about 20 terminals in a week, with a median 11 min until noticing an agent finished; a local-plus-cloud routing recipe saved little (the best local model on 48 GB handled about 5% of complex tasks).
   Acceptance: the cited posts state the figures. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/2026-10-25_p2/reddit.com-r-claudecoding-comments-1xc8h4t-running-many-claude-code-age-20261025T160048Z.md:31 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xc8h4t/running_many_claude_code_agents_without/>); external/2026-10-12_p3/export-Engineers who write all their code with claude now- how do you do it-.jsonl:278 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wgm4si/engineers_who_write_all_their_code_with_claude/>); external/2026-10-21/reddit.com-r-claudeai-comments-1wu40t8-whats-the-one-line-in-your-claud-20261020T234709Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1wu40t8/whats_the_one_line_in_your_claudemd_that_made_the/>). Not located: the Cursor and 48 GB lines.
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-396** An AST-only code map (graphify) plus a CLAUDE.md rule to ask the map first cut a flow question from about 169k to about 2.9k tokens, with little saving on one-file fixes. After a rename and move the map answered with old names and lines and no warning, so it now checks staleness before each query.
   Acceptance: The figures hold as one author reports them. Verification: probe.
   Basis: reported, one author; contradicted as a general result by four commenters who say Claude did not call a graphify or codegraph MCP although CLAUDE.md named it, preferred the Explore subagent and grep, needed the instruction restated, and fell back to grep and Read when the index output looked truncated, paying twice (external/2026-10-21/reddit.com-r-claudecode-comments-1ueobkd-codegraph-or-graphify-20261021T181506Z.md:48, :52, :74, :129). A code map ships only if a measured arm beats vanilla (ADR-0177), and a CLAUDE.md line alone does not make the agent call it. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudecoding-comments-1xhhdye-made-a-skill-so-claude-code-20261028T082712Z.md:29; external/2026-10-30/reddit.com-r-claudecoding-comments-1xhhdye-made-a-skill-so-claude-code-20261028T082712Z.md:31 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xhhdye/made_a_skill_so_claude_code_queries_a_code_map/>).
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-397** claudetto shall treat these literature numbers as cited and unverified here: Corrections compiled to runtime checks cut violations 100% -> 37.6% in-distribution and 2.0% out-of-distribution (TRACE); framework explains ~56% of overeager variance, model ~21% (SNARE); removing a consent declaration moved Claude Code's overeager rate 0.0% -> 17.1%; repo context files add >20% cost without raising success; agents skipped asked-for files in 67.9% of runs and 80.4% of those misreported it; package hallucination (5.2% commercial, 21.7% open, 205,474 fake names [2406.10279]); 7.8% of SWE-bench passing patches fail developer tests; multi-turn 39% below single-turn; paper judge rejected claims (test 83, tool 75, other 96) as unmeasured/off-topic/non-Claude/contradicted: treat as not required. Further cited numbers: Docs absent -> executable code only 42.55% on evolving APIs, structured docs + self-reflection 66.36% [2604.09515]; RepoCoder >10% over in-file [2303.12570]; registry-check pipeline 76% clean [2608.23897]; De-Hallucinator +23.9-61.0% [2401.01701]; DocPrompting +52% relative [2207.05987]; Spotlighting <2% attack success [2403.14720]; CaMeL 77% vs 84% undefended [2503.18813]; "Attacker Moves Second" broke 12 defenses >90% [2510.09023]; coding-assistant defenses mitigate <50% of adaptive attacks [2601.17548]; "Your AI, My Shell" up to 84% [2509.22040]; Agentless [2407.01489]; Cursor adoption raised velocity briefly, warnings persistently [2511.04427]. CC prompt (strings): flag suspected injection, hook feedback as from user, pasted-content tags followed only where the user message asks, `switchModelsOnFlag` (2.1.326: `switchModelsOnFlag` present, binary string search; the other prompt strings were not re-searched on 2.1.327).
   Acceptance: No plan decision rests on one of these numbers alone. Verification: inspection.
   Basis: cited. Status: unchecked: literature, not code at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:49; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:47; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:37; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:36.
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-398** Hook stacks, word lists, swarms, and an advisor that reads the whole context are the practices that people report as harmful; the practices reported as working are small: a short `CLAUDE.md`, the sandbox with file denials at the system level, a hook only for the few hard rules, a Stop hook that runs tests, plan files with native compaction, one worktree per agent.
   Acceptance: the figures below are in the source. Verification: inspection.
@@ -176,7 +176,7 @@
   Basis: measured 2.1.319.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:30; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:407.
 
-## Research And Studies
+## Research and Studies
 
 - [ ] **CTX-406** Study and benchmark claims, cited second-hand and not verified: ETH Zurich (2602.11988): AGENTS.md-style and LLM-generated context files did not raise success versus none and added more than 20% inference cost (about 20% more); human-written improved about 4%; content matters, not existence, and a human-written harness beats machine-generated context; Vercel removed 80 percent of its agent's tools: success went from 80 to 100 percent, token use fell by more than half, latency fell from 724 to 141 seconds, and Microsoft reportedly cut 100 tools to 5; 10 memory systems on BEAM 100K: top two 70.1%/67.8% against full context 69.5%, BM25 55.3%, claude-mem 51.5%, CIs ~10 points (retrieval beat bulk context; layers cause anchoring; no repo action).
   Acceptance: The figures hold as the posters cite them; no source paper was opened. Verification: inspection.

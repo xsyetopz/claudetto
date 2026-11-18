@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-04
 ---
 
-# Only The -5-5 Model Family
+# Only the -5-5 Model Family
 
 ## Context and Problem Statement
 

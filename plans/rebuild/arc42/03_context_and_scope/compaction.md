@@ -1,30 +1,30 @@
-# compaction
+# Compaction
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-443** Reported by a commenter (poster on 2.1.241 lacked the field): PreCompact can block compaction (exit 2 or {"decision":"block"}); a proactive auto compact is then skipped, but if the API already returned the context-limit error, blocking makes the request fail. A trigger auto/manual field exists since 2.1.290, so one can block auto and run a manual /compact with "keep every decision and rejected option verbatim". Checked in claude 2.1.327 with cc-inspect `code` search for `compact_summary`: the PreCompact hook input carries `trigger` "manual" or "auto" (chunk-rj3e7agr.js@277959). On 2.1.327 a blocked PreCompact hook result returns `blockedBy` with the hook command and its output (chunk-m14bt1pz.js@4116467-4117400); how exit 2 and `{"decision":"block"}` map to `blocked` was not read.
   Basis: reported; the trigger field measured in the 2.1.326 binary; exit 2 blocking verified by fake-API probe, 2026-11-18 (a PreCompact hook exiting 2 made `/compact` return "Compaction blocked by PreCompact hook"); the `{"decision":"block"}` form blocks too (probe 2026-11-18, probes-open-five/probe3: a PreCompact command hook printing `{"decision":"block","reason":"probe-json-block"}` made `/compact` return "Compaction blocked by PreCompact hook: ...: probe-json-block"); auto-compaction honours the block by code read, not probe (runner `_Ye` returns `blockedBy`, chunk-m14bt1pz.js@4116436; auto path @2626495 and precompute path @3004070 skip; reactive compact @2626737 skips with "Reactive compact blocked by PreCompact hook" except when `requestCannotGoOut && CLAUDE_CODE_REMOTE && tengu_typed_snail`, chunk-6ydtrx6k.js@1892), and `settingsHooksOff` disables the block.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:237 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); claude 2.1.327 binary chunk-rj3e7agr.js@277959.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-444** Reported: PreCompact is a shell command whose output never reaches Claude or the summary; PostCompact receives the new summary as compact_summary, so a script can check each generation against the decision log; hook output over 10,000 characters is swapped for a file path plus a 2,000-character preview that Claude is not asked to read. Checked in claude 2.1.327 with cc-inspect `code` search for `compact_summary`: the PostCompact input has `compact_summary` ("The conversation summary produced by compaction") (chunk-rj3e7agr.js@277959). Corrected on 2.1.327: PreCompact hook output over 10,000 characters (`Ake=1e4`, chunk-ez3vve9s.js@340) is cut in place and gets a note "output cut: N characters is over the 10000-character limit" (chunk-m14bt1pz.js@4116467, @4116900); no file path or 2,000-character preview is made for PreCompact. The constant `f3e=2000` sits beside `Ake` and serves other hook output.
   Basis: reported; the PostCompact field measured in the 2.1.326 binary, the rest reported.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:364 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); claude 2.1.327 binary chunk-rj3e7agr.js@277959.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-445** Audit of one user's transcripts: 72% of input was Claude re-reading context past 400k tokens (method unstated).
   Basis: reported, one user, method unstated.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:266 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-446** Four outside sources that claim built-in compaction is expensive were read on 2026-10-28. None changed a value, because the only one with a real sample fits its band on a window near 1M against the project's 300,000, and the often-quoted figure of about $3.00 per compaction appears in no source read
   Basis: reported.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/compaction-path/spec.md:27.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-447** Auto-compact fires at the window minus 13,000 (warning 20,000 before, hard block at the window minus 3,000). The haiku-5-5 980,000 window gives 967,000. `compact_boundary` records show 967k-983k in, 11k-15k out, 72-237 s each
   Conflict: The merged 6:302 group (merged/004.md) measured on 2.1.325 that real compaction runs at 490,000 on haiku-5-5 while the reported threshold is 967,000; this item says auto-compact fires at 967,000 on the 980,000 window. Probe 2026-11-17 (2.1.326, cc-inspect `cli` `/context`, model claude-haiku-5-5, API key, no settings): window 1m, autocompact buffer 33k, so the default threshold is 967,000; 490,000 needs a smaller resolved window, whose source (env, settings, client data, experiment, model default) the 2.1.325 run did not record (`resolveAutoCompactWindow` sources, chunk-rj3e7agr.js@618658 (2.1.327)).
@@ -35,7 +35,7 @@
   Basis: cited.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1586.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-449** Paid four-arm handover probe, run 2 (18 runs, cost by total_cost_usd, last value per session): A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47. No B arm cost less than C in all 3 pairs. Run 1's $13.52 summed every running total, so it overstates cost.
   Basis: measured.
@@ -65,7 +65,7 @@
   Basis: read, not run.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:186-189.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-456** Community reports on what survives compaction: root CLAUDE.md and unscoped rules are re-read after compaction; scoped rules, mid-session instructions, and hook output become summary paraphrase. A post found 2 of 8 compactions dropped a skill body (v2.1.285, `-p --resume` only) and compact-hook output attached in 4 of 4 tests. Bug #15174 (compact matcher output not injected) was closed (reported, anecdote).
   Basis: reported, anecdote.
@@ -75,7 +75,7 @@
   Basis: reported, snippet.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:12-14; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:28.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-458** Compaction replaces the window with a summary of a few thousand tokens, not tens of thousands. On claude 2.1.327 a manual `/compact` cut about 122k to 3.2k and about 17k to 3.6k tokens, and auto-compaction cut sessions of about 714k to 4k-6k. A third-party reading of `isCompactSummary` transcript lines found summaries of about 14,500 characters (about 3.5k tokens). One user's figure of about 64k after a 375k-token load is refuted for this version; a 375k-token input still leaves a few thousand tokens of summary, so the handover file, not the summary, carries the detail.
   Basis: measured (paid runs, reports/2026-11-18-research/paid-labs/README.md:61-75 and :140-146); the 3.5k figure is reported (third-party, numbers shown); the 64k figure is reported, one user, and refuted. Status: not applicable (outside fact).
@@ -89,7 +89,7 @@
   Basis: reported, one user, 20 USD plan, no measures. Status: not applicable (outside fact).
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:53-54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-461** One commenter, citing a GitHub issue (98747), reports idle compaction, in since 2.1.290 and undocumented at the time: it fires at 90 percent of the cache TTL and only when the cache lifetime is 1 hour; the minimum-token floor (env CLAUDE_CODE_IDLE_COMPACT_MIN_TOKEN) defaults to 200k and the server may lower it to 100k, presumably at peak hours, with no word on whether a user value can be overridden the same way. idleCompaction false turns it off, but the cache still expires and the next message rewrites the whole context. autoCompactEnabled false also turns it off but also stops threshold auto-compaction. Compaction uses the session model unless configured otherwise, not Haiku, per issue 29550. The same commenters report the message "Compacted while idle, before the prompt cache expired"; one post doubted it could be turned off, which the `idleCompaction` setting refutes. `/autocompact <n>` values named are 250k, 272k, 400k and 450k ("will double your usage", unverified); a claim that Anthropic docs name 250k is unsourced.
   Acceptance: The facts hold as commenters report them. Checked on claude 2.1.326 by binary string search: setting `idleCompaction`, `autoCompactWindow`, `/autocompact`, flag `--autocompact` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` are present, and only the plural `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` exists; the release notes name idle compaction; verified on 2.1.327 (chunk-m14bt1pz.js@2128112-2129300): the idle timer fires at 0.9 of the span from last activity to cache expiry (`BZr=0.9`), arms only for a 1-hour cache TTL (`not_one_hour` otherwise), and compacts only above a floor of `max(1e5, ...)` tokens read through `oHn()` (default `tHn=1e5`). Verification: probe.
@@ -101,21 +101,21 @@
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:112; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:423; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:467; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:469 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjlvlc/anthropic_renames_max5_and_max20_and_removes_5h/>).
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-463** /export writes what was reported on the terminal during the session, not the loaded context or thinking tokens. One commenter never compacts: a tool clones and truncates messages or starts a new session with parent-session back pointers, plus a fast full-text search over past session files so agents or humans can search prior work.
   Acceptance: The facts hold as commenters report them. Verification: probe.
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:133; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:335; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:339 (url: <https://www.reddit.com/r/ClaudeAI/comments/1pwt86e/pro_tip_disable_compacting_use_your_own/>).
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-464** One author reports that in the last 30 days 78 of 82 auto-compactions landed mid-task, and that Claude re-reads files afterwards to work out where it was. In a replay of long sessions Claude re-read about 30 percent less context once it picked its own moment to compact; the author says the replay side flatters this tool a bit, since it includes the handoff steps, which is why the figure is about 30 percent and not 33.
   Acceptance: The figures hold as one author reports them; the saving is a replay, not a controlled run. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:29, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:115, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-465** claudetto shall rely on these cache facts: Main session TTL 1 h on subscription, 5 min for subagents (cited docs); a subagent idle 31 min read 50,876 tokens from cache, wrote 1,054 (measured one user); `subagentPromptCacheTtl` needs 2.1.242+ (2.1.327: present, binary string search); `promptCacheTtl` (present in 2.1.327); `/usage` "Prompt cache (main)" line present in 2.1.327 (chunk-m14bt1pz.js@1251209; the v2.1.251 start is not checkable locally because only 2.1.327 is installed); issue anthropics/claude-code #101685 claims 5 min again (unverified); thinking keeps cache warm (reported); Claude Code no longer uses Haiku for compaction, uses session model unless configured (fake-API probe, 2026-11-18: with `--model claude-sonnet-5-5`, `/compact` sent its summary request to claude-sonnet-5-5; a compaction-model setting was not found by search for `compactModel`); idle compaction first in 2.1.290, 2.1.299 release notes (reported); desktop "Code" tab has no TTL worry (unverified); preserve-thinking invalidates earlier thinking blocks on any prefix change (reported); weekly limit ~9 five-hour windows Pro/Max 5x, ~4.5 Max 20x (arithmetic unverified); effort change mid-session on Opus 5.5 no longer invalidates cache (single commenter; conflict with "effort change mostly separate cache"). Changelog-based theory (as posted): v2.1.232 subagent forking default, background spawns; v2.1.257 advisor sessions missed cache on compaction/`/recap`/suggestions; v2.1.260 (Fable 5.1) context after tool results uncached each turn. Measured (own transcripts, 6 months): 56% of spend context re-read, 20% useful, ~half of calls >200k; slide compaction benchmark (Haiku 5.5, third party) and window tuning before/after (reported). Env: `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` present, `CLAUDE_CODE_AUTO_COMPACT_WINDOW` present, `CLAUDE_CODE_MAX_OUTPUT_TOKENS` present (chunk-2ew0jg68.js:45562), `MAX_THINKING_TOKENS` and `MAX_MCP_OUTPUT_TOKENS` present (2.1.327 binary string search), `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKEN` absent in 2.1.327 (the real name is `..._TOKENS`; matches of the singular form are all the plural), setting `idleCompaction` present in 2.1.327, `/autocompact 500000` works as a command (fake-API probe, 2026-11-18: "Auto-compact window for Opus 5.5 set to 500k tokens"; the setting minimum is 100000, chunk-ja5z738t.js@279780; flag `--autocompact` present in 2.1.327).
   Acceptance: Reported lines are re-queried on 2.1.327 before use. Verification: probe.
@@ -124,7 +124,7 @@
   Conflict: Prompt cache mechanics: the prefix cache is keyed on model.
   Source: external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:27; external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>); openspec/changes/2-1-325-rearchitecture/design.md:102.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-466** On 2.1.325 with haiku-5-5, `$.session.usage({breakdown}).autoCompactThreshold` reports 967,000 while real compaction runs at 490,000 (`thresholdSource=model-default`), so no context notice can precede compaction (measured on 2.1.325). On 2.1.327 with `claude-haiku-5-5`, no settings and the fake API, `/context` reports a 1m window and a 33k autocompact buffer, so the default threshold is 967,000 and the 490,000 figure is not reproduced. A smaller window can come from `clientdata` or `experiment` sources, which are server-supplied (the `autocompact_state` schema lists `env`, `settings`, `clientdata`, `experiment`, `model-default`, `unknown-model`, `auto`; chunk-rj3e7agr.js@617843), so the 490,000 case is kept as observed on 2.1.325 and cannot be re-created with a fake API. `CLAUDE_CODE_AUTO_COMPACT_WINDOW=40000` is raised to Claude Code's 100k minimum (effective 80k); `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is a percent of the window less the 20,000 output reserve. CLAUDE_AUTOCOMPACT_PCT_OVERRIDE is a percent of the window less the 20,000 output reserve (L4, Ure in chunk-24jdhyyr.js, claude 2.1.319 binary; the module is gone from 2.1.327). Verified on 2.1.327: the effective window is the model window minus `min(maxOutputTokens, 20000)` (chunk-m14bt1pz.js@1998790) and the threshold is `min(floor(effective*pct/100), effective-13000)` for a pct above 0 and up to 100 (chunk-m14bt1pz.js@1992285), so 29.44 on a 200k window with 20k or more output tokens gives floor(180000*0.2944)=52,992, near 53,000.
   Conflict: dedup/chunks/ctx-2.md:487 says auto-compact fires at the window minus 13,000 (967,000 on the 980,000 haiku-5-5 window), with compact_boundary records at 967k-983k in; this item says real compaction runs at 490,000. Probe 2026-11-17 (2.1.326, cc-inspect `cli` `/context`, model claude-haiku-5-5, API key, no settings): window 1m, autocompact buffer 33k, so the default threshold is 967,000; 490,000 needs a smaller resolved window, whose source (env, settings, client data, experiment, model default) the 2.1.325 run did not record (`resolveAutoCompactWindow` sources, chunk-rj3e7agr.js@618658 (2.1.327)).
@@ -141,7 +141,7 @@
   Basis: cited / reported.
   Source: openspec/specs/compaction-path/spec.md:70; openspec/specs/setup/spec.md:115; the "about 9 GB" and D1-D10.38 wording: unresolved.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-469** 524 `thinking_drop` `prefix_mismatch` rows: 515 fall within 10 minutes after a `compact_boundary` and 510 report `firstChangedMessageIndex` 0, so compaction causes them, not a plugin hook.
   Basis: measured.
@@ -179,7 +179,7 @@
   Basis: reported, one user each, opposite results; resolved by the CTX-294 break-even, not by either report.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:28 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>.); external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:84; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:88; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:92.
 
-## Compaction And Context Thresholds
+## Compaction and Context Thresholds
 
 - [ ] **CTX-478** Claude Code 2.1.325 has env vars `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (accepts `k` and `M`), `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`, `CLAUDE_CODE_SLEEP_COMPACT` (a timer at 0.9 of the cache TTL), `CLAUDE_CODE_SLEEP_COMPACT_AFTER_MS` (clamped to 60000-210000), `CLAUDE_CODE_COLD_COMPACT`, `CLAUDE_CODE_DISABLE_PRECOMPACT_SKIP`, `CLAUDE_AFTER_LAST_COMPACT`, `DISABLE_AUTO_COMPACT`, `DISABLE_COMPACT`; settings `autoCompactEnabled`, `autoCompactWindow`, `idleCompaction` (default true), `precomputeCompactionEnabled`.
   Acceptance: cc-inspect `surface` lists them. Verification: probe.

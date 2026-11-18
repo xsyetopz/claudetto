@@ -2,7 +2,7 @@
 status: superseded by ADR-0105
 date: 2026-11-16
 ---
-# Ask Before A Paid Call And Cap Paid Work At 25 Percent Of The Seven-Day Limit
+# Ask before a Paid Call and Cap Paid Work at 25 Percent of the Seven-Day Limit
 
 ## Context and Problem Statement
 

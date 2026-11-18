@@ -3,7 +3,7 @@ status: accepted
 date: recorded in openspec/changes/archive/2026-11-09-release-2-1-319/design.md:154 (day of decision not recorded)
 ---
 
-# Jev Check Stays out of a Hook
+# Jev Check Stays Out of a Hook
 
 ## Context and Problem Statement
 

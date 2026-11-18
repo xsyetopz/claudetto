@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Never Guess And Never Act On A Guess
+# Never Guess and Never Act on a Guess
 
 ## Context and Problem Statement
 

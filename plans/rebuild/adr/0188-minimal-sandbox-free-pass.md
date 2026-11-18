@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-18
 ---
-# Minimal Sandbox: Non-Destructive Commands Run Without a Prompt
+# Minimal Sandbox: Non-Destructive Commands Run without a Prompt
 
 ## Context and Problem Statement
 

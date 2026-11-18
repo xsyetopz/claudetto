@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-18
 ---
-# Evidence Before Reversing Finished Work
+# Evidence before Reversing Finished Work
 
 ## Context and Problem Statement
 

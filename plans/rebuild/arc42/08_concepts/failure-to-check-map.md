@@ -1,4 +1,4 @@
-# Failure To Check Map
+# Failure to Check Map
 
 - [ ] **CC-047** claudetto shall map each failure to a check: hollow tests to test modules named for what they pin with a script that refuses others; silently skipped tests to recorded data in the repo, flaky test as sev-1, no live cluster; hand-written fake responses to a live response recorded as fixture; copy-paste to a merge-blocking clone check; a silenced lint or type error to audit greps on every diff.
   Basis: reported.

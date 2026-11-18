@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-17
 ---
-# Built-in Agents Replaced By Greek Agents
+# Built-In Agents Replaced by Greek Agents
 
 ## Context and Problem Statement
 

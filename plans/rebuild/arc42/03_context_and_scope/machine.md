@@ -1,18 +1,18 @@
-# machine
+# Machine
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-524** Git Bash heredocs collapse double backslashes before Python sees them, so a Windows path with \t silently becomes a tab; the browser upload tool caps files at 16 MB, so render under that instead of retrying; a quoted rate applies to its job only.
   Basis: reported.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:66 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-525** `additionalDirectories`: `"$TMPDIR"` is not expanded and the read is refused; `"~/side"` expands to `$HOME` and reads (SIDE-CANARY returned); an absolute path reads. `blockReadsExemptPaths` is ignored in every `settings.json` and has no temp-dir exemption
   Basis: measured, fake API.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:827.
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-526** On macOS (Darwin 27.2.0) ulimit -v, -m, and -d and setrlimit of RLIMIT_AS, RLIMIT_DATA, and RLIMIT_RSS all fail with EINVAL. Only RLIMIT_CPU takes a value.
   Basis: measured.
@@ -43,7 +43,7 @@
   Basis: measured. Status: have at 088a227c (`plugins/claudetto/hooks/kernel/shell/readonly.ts:19-20`@088a227c: the regex `/^--(?:output|pre)\b/u` marks `--output` as a write or run).
   Source: openspec/specs/low-hitl/spec.md:87; openspec/specs/low-hitl/spec.md:117.
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-533** Disk on 2026-11-12: /private/tmp/claude-501 1.85 GB (474 entries, 166 older than 60 min), /private/tmp 1.98 GB, system temp folder 0.31 GB (22,123 TemporaryDirectory.* entries made by Swift, not by this repository), ~/.claude 1.44 GB, data volume 282 of 460 GiB (68%). A dry run said "would remove 0 entries, 0 B" for temp and trash, named 28 OpenJoystickDriver agent worktrees (51.4 GB), and kept 4 with uncommitted changes (2.7 GB). Most space is worktrees.
   Basis: measured.
@@ -65,7 +65,7 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:815.
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-538** `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` turns off the built-in advisor tool; setup writes it with the value `1` so the claudetto decide tool is the only advisor. Present in 2.1.326 (bool; cc-inspect `surface` env, 2026-11-17).
   Basis: cited. Status: have at 088a227c.
@@ -84,19 +84,19 @@
   Basis: cited. Status: unchecked: engine behaviour, no baseline code to check.
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:145; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:164.
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-542** A stray `tsc --lsp --stdio` (TypeScript 7.0.2, pid 48197, running 27 hours at 127% CPU, parent launchd) was not started by the session. The user ran `! kill -9 48197`, and `ps -p 48197` then found no process (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:412.
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-543** Eight commits that commitlint rejected (4 headers over 100 characters, 4 body lines over 100) were reworded by `git rebase -r --exec` with the same trees. All 365 signatures stayed (`G`), `bunx commitlint` exited 0, and `git push --force-with-lease` replaced the remote head. The `just validate` check reports README_MISSING (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:413; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:415.
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-544** A sparse disk image (Docker.raw) showed 60 GB apparent size but 14 GB actual disk usage, so a cleanup agent must measure actual usage (du), not apparent size.
   Basis: reported (author).
@@ -130,7 +130,7 @@
   Basis: reported, two commenters. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:88 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/>).
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-552** One `Bash` call `perl -0pi -e 's/.../.../g' a b c` replaces many `Edit` calls. Under `acceptEdits` it is denied: "The following part requires approval: perl -0pi -e ...".
   Acceptance: the probe prints the denial. Verification: probe.
@@ -142,7 +142,7 @@
   Basis: measured. Status: missing at 088a227c.
   Source: probe on Claude Code 2.1.325 as the old plan states (probe name, date, and command not given).
 
-## Machine, Shell, And Disk
+## Machine, Shell, and Disk
 
 - [ ] **CTX-554** The CLI settings schema describes the per-model `autoCompactWindow` as "in tokens (at least 100000)" or "auto" (2.1.327, chunk-ja5z738t.js@279536). The 1000000 upper bound is not in the schema text and is not claimed.
   Acceptance: the schema text names 100000 as the floor. Verification: probe.

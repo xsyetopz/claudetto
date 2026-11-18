@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-17
 ---
 
-# The userConfig switch replaces the builtin gate
+# The userConfig Switch Replaces the Builtin Gate
 
 ## Context and Problem Statement
 

@@ -3,7 +3,7 @@ status: accepted
 date: recorded in openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:10 (day of decision not recorded)
 ---
 
-# Bun check in place of biome
+# Bun Check in Place of Biome
 
 ## Context and Problem Statement
 

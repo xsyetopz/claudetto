@@ -3,7 +3,7 @@ status: accepted
 date: 2026-11-17
 ---
 
-# Telemetry of You should know
+# Telemetry of You Should Know
 
 ## Context and Problem Statement
 

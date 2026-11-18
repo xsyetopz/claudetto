@@ -1,6 +1,6 @@
-# mods
+# Mods
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-219** A Monitor rebuilt as `mcp__claudetto__monitor` (Bash through `$.tool.call` `run_in_background:true`, polling the output file every 200 ms), measured on claude 2.1.318: hooks modules are not loaded until workspace trust is accepted; `$.session.send` needs `{to, text}` and refuses its own session id and "main"; `$.prompt.submit` runs once idle, so events arrive after the turn ends, while stock Monitor delivers inside the running turn. Per event: stock 620 chars, Mod 380 chars. `mt1` trimmed stock Monitor to 1,960 bytes (description 845, schema 1,040, -74%); `mt2` Mod tool 792 bytes (description 495, schema 209) against 7,586 stock. Losses: no in-turn delivery, user-turn framing, no ws source, 100-message cap.
   Basis: measured.
@@ -26,19 +26,19 @@
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2818.
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-225** Mod worker limits (claude 2.1.318): no `process` global (ReferenceError "process is not defined"); `$.session.cwd()` answered only at shutdown ("no session bound"); `$.env.get("HOME"/"CLAUDE_CONFIG_DIR")` works; sequential `$.fs.exists` calls on missing paths stalled the hook (cause not isolated), parallel calls work (a relative `exists` miss gives false, list or read misses reject ENOENT); the loader refuses a `$` passed to anything but a top-level function. Probe `setmod3` lists the four skills and commands dirs in parallel once. Workflow text goes from 3,480 to 20,256 chars with `workflow-authoring` off.
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3171.
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-226** The baseline lab at commit `62e2fe96` on Claude Code `2.1.318` (`claude plugin test /tmp/claudetto-baseline/plugins/claudetto`) ran 357 tests across 46 files with 0 failing
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:3.
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-227** On 2.1.323 (observed) and 2.1.326 (names re-listed on 2026-11-17): `prompt.compose` sees `e.model`, replaces the whole default body per model (not the billing line, identity line or system-role message), has sections of scope `shared`, one shared section `lean_body` on a lean model, and does not reach a built-in or plugin-agent subagent; a plugin agent body replaces the default text and the engine appends about 1,294 bytes; `tool.list` removes tools for main and subagents (`next(e)` returns `{ value: ToolInfo[] }`; 22 tools, 3 removed, 73.9 ms); `agent.spawn` rewrites subagent `model` and `prompt`; no classic hook input carries `model`; `PreToolUse` carries `effort.level`; `engines["claude-code"]` refuses install from a git or remote source; default `system[2]` is 5,893 bytes (Opus), 5,630 (Sonnet), 8,471 (Haiku); tool schemas are about 28.6 KB; no settings key sets the prompt; an agent file body replaces the default (304 vs 6,274 bytes on Opus 5.5); an output style lands in the environment message and does not reach subagents; `SessionStart` `model` is absent under `-p`; default system sizes are Opus 5.5 6,274 B, Haiku 5.5 8,862 B, tools 29,666 B. On 2.1.326 these names are present: `prompt.compose`, `tool.list`, `agent.spawn`, `tool.describe`, `settings.read`, `$.model.fork`, `$.tool.register`, `$.tool.call`, `$.ui.*`, `$.fs.*`, `$.env.get`, `$.process.*` (253 mod-api names in 2.1.326; 239 were listed on 2.1.325).
   Acceptance: each name is listed by `surface` on 2.1.326. Verification: probe.
@@ -65,28 +65,28 @@
   Basis: measured; the old plan marks it unverified. Status: have at 088a227c.
   Source: openspec/specs/prompt-cache/spec.md:114.
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-232** A usage-cap mod, reported by one author (MIT repo), holds these facts. A plan with no 5-hour window has that window missing from the usage data, which is not 0 percent used. The weekly percent is a whole number and one point is many tokens on Ultra, so the mod estimates between points from token counts and learns the tokens-per-point ratio. Polled usage after idle counts as fresh only when its values change. At the cap it refuses new prompts and subagents but leaves running turns and tool calls alone, and background task notifications always get through, since blocking them breaks agents. If usage is unreadable it shows a warning and lets calls through, or blocks them when set to fail closed. The 15-percent-of-weekly default is the author's least sure part.
   Acceptance: The facts hold as one author reports them. Verification: probe.
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:29; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:33; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:35; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:37; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:39; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:43 (url: <https://www.reddit.com/r/Anthropic/comments/1xkzigh/made_a_mod_that_caps_my_own_claude_code_usage_in/>).
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-233** claudetto shall rely on these measured facts: the lab loads `*.test.ts` only inside the plugin folder; `claude plugin validate`/`test` do not write `.claude-plugin/types` while a print run with `CLAUDE_CODE_PLUGIN_DIR_WATCH=1` does (2.1.319; env present in 2.1.326, binary string search: 6 hits); a lab test asserting `undefined` equals `undefined` passed and only `bun check` flagged it; baseline 62e2fe96 (2.1.318, Bun 1.4.4) held 23,266 lines in plugins/claudetto/src (16,079 non-test), 23 blocks, 20 userConfig keys, a 4,677-line gate with 27 spec tests, 1,257 you-should-know source lines; `test` 1,776 pass, 7 fail, 2 errors from confine limits (mkdtemp EPERM, pty/tmux).
   Acceptance: Each figure is reproduced from its run before use. Verification: probe.
   Basis: measured. Status: have at 088a227c (tests/, tools/).
   Source: openspec/specs/mod-architecture/spec.md:107; openspec/specs/mod-architecture/spec.md:28; openspec/changes/2-1-325-rearchitecture/items.json:114; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:8.
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-234** claudetto shall record these measured bench rounds (9 tasks, Opus 5.5, auto mode): R2 stock 8/8 $4.16 vs dev 6/7 $5.07; R3 stock 8/9 $4.18 4.85M tokens vs dev 7/9 $6.79 9.31M; R4 stock 8/9 $4.02 vs dev 7/9 $5.73 6.20M (dedupe cut 33% tokens); R5 stock 8/9 $3.98 4.36M vs dev 9/9 $9.10 12.22M regraded; conduct: reply opens with fact stock 6-7/9 vs dev 9/9, seeded claim never acted on 9/9 both, 0 compactions, 0 subagents; round costs $10.97, $9.75, $13.08.
   Acceptance: History only; the settled decision "No benchmarks" (user decision, 2026-11-16) bars new rounds. Verification: inspection.
   Basis: measured. Status: unchecked: a measured result, not code at 088a227c.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:238; openspec/changes/2-1-325-rearchitecture/design.md:29; openspec/changes/2-1-325-rearchitecture/design.md:250.
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-235** `$.command.run` runs a slash command as if typed, queued until idle, and rejects inside a hook the turn waits on; hooks see `e.origin` `{kind:'plugin'}`. `$.prompt.submit` submits a prompt as its own turn once idle. `$.session.compact` compacts between turns with trigger `plugin`.
   Acceptance: the types in clawdipedia `get_schema` `types` match. Verification: inspection.
@@ -103,7 +103,7 @@
   Basis: reported. Status: have.
   Source: reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
 
-## Mods And Lab Tooling
+## Mods and Lab Tooling
 
 - [ ] **CTX-238** `$.model.fork({prompt, effort})` runs one tool-less completion over the main thread's last request with the prefix from cache; it returns `isAnswered`, `text`, `usage`, or `reason:'nothing-to-fork'` when no turn ran since a clear or resume. Hook time stops during `$` calls and the hook's own budget is 10 s; `session.end` hooks share 1.5 s; `prompt.context` fires once per conversation and answers `{blocks:[{name,text}]}`.
   Acceptance: the docs pages match. Verification: inspection.

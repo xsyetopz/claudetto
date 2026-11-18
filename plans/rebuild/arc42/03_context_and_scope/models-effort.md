@@ -1,6 +1,6 @@
 # models-effort
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-724** `showThinkingSummaries` on against off, two runs each at effort high: output 187 and 275 against 144 and 164 tokens; thinking 94 and 143 against 84 and 91. No separate charge, under $0.0001 per Haiku call; noise cannot be separated at n=2
   Basis: measured.
@@ -10,33 +10,33 @@
   Basis: measured, paid.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1305.
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-726** An article "Spending your effort" and commenters say: Opus 5.5 high is the new xhigh and medium the default; Fable 5.1 low is cost-effective; thinking cannot be disabled, so start low and measure; lowering effort cuts thinking more reliably than prompt wording. Second-hand points of the Opus 5.5 prompting guide: drop "think carefully", name exact styles to ban, look around before acting.
   Acceptance: a read of the article and the guide confirms each point. Verification: inspection.
   Basis: reported (cited via link, not read). Status: have at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:121 (Opus 5.5 high is the new xhigh) and external/export-Token optimization from Anthropic- choosing the right effort level to the task.jsonl:9. The article "Spending your effort" itself was not found; the article claim is Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-727** A poster on the 20x plan (confounded) used about 5 of 7 weekly days on Opus medium, 3.5 days with 45% done on Opus low, 6.25 days with 95% done on Sonnet low (inferred: low effort causes retries). One build per approach with hidden tests: consensus that a detailed prompt beats skill packs on Opus 5.5 (opinion, no repeat runs). A vendor audit skill at high effort exhausted three 5-hour windows in about 10 minutes (second-hand, kept as reported; the burn rate needs a paid run, subagent cache about 5 min against main about 1 h, second-hand); a two-pass audit (cheap architecture map, then one file at a time) cuts cost.
   Acceptance: the cited posts state the figures. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/export-What am I missing by only using sonnet when it comes to coding-.jsonl (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpxt1c/what_am_i_missing_by_only_using_sonnet_when_it/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>). Not located: the line numbers and the skill-pack build comparison.
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-728** Task 3.1a, 120 sessions per arm, passed/failed and cost: built-in 120/0 ($2.14), suite 120/0 ($1.06), haiku 120/0 ($0.03), sonnet 114/6 ($0.25, all six failures push-after-no-push). Total $3.48, 13.7M tokens (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:66.
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-729** Hybrid setup: Fable in the main feed does architecture, a local Qwen3.8 inside the Claude Code terminal does about 60% of implementation, and session limits are rarely hit.
   Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session). Status: not applicable (outside fact).
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:167 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-730** One commenter says to use max effort, not xhigh, for research-style discussion, for better sourcing and thoroughness.
   Basis: reported (one commenter; the original poster uses xhigh and will trial max). Status: not applicable (outside fact).
@@ -52,7 +52,7 @@
   Basis: reported, one user (disputed by another). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:101; external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/>).
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-733** claudetto shall treat these relayed benchmarks as directional: Haiku 5.5 high found 44 of 48 files vs Opus 45 for $0.44 vs $6.17 (one user, 6 tasks); Haiku xhigh 3x cost for same files; Haiku flagged 30 correct sentences as errors; Sonnet medium ~15 points below high at 48% cost; Opus xhigh +1.4 points for 2.5x high; Opus low much worse for defect search; Fable advisor +1.7 points for 2.1x; Haiku subagents -15 F1 vs Sonnet subagents on judgment. Personal benchmark (25 tasks, 1-3 runs, small): Opus 5.5 100% ~$0.09/task 27 s; Sonnet 5 100% $0.11 61 s; Opus 5 100% $0.19 47 s; Fable 5.1 100% $0.26 41 s; Haiku 4.5 76% $0.10 78 s; low effort ~20% cheaper ~30% faster with no loss. Opus 5.5 guide (cited by poster): 5.5 medium matched/beat Opus 5 high; default effort medium; Anthropic removed >80% of Claude Code system prompt for Opus 5-class with no coding-eval loss. Terminal Bench: Sonnet 5.5 70.6 vs Opus 5.5 66.4; AA run Opus high 64.2% $3.88 vs Sonnet xhigh 61.5% $5.30. DEFLATE (single run, medium): Opus passed 4055 tests 507 MB/s 10m18s $2.08; Sonnet 447 MB/s 3m41s $0.52. Haiku 5.5 86-question: Haiku 84.7, fastest 3.5 s, weak on tool calling/safety; 18/18 made-up bugs, tomlkit 3/3, cachetools 3/3, humanize 0/3; 37% of tasks flip across identical runs. Small bug fixes (30 runs, hidden tests, 5 setups): all passed, Opus ~16x Haiku cost; harder bug gap shrank, Sonnet won. Fable 5.2 (2026-11-09): up to 30% faster, fast mode up to 2.5x; one comparison Fable 74% at $0.062 vs Opus 68% at $0.028. Effort opinions: medium daily, high for review/blueprint, xhigh overthinks, max overthinks easy tasks; Anthropic docs say highest settings can cause worse, longer outcomes (unverified). Mythos/CVP: Opus 5.5, Sonnet 5.5, Fable 5.x reported excluded, Mythos 5.1 by email, same draw as Fable; not priced for this account except Athena (project CLAUDE.md). Releases/tiers as posted (Fable 5.5 market 44%, "Opus 5.5 = Fable 5.1 at ~60% cost") are not pricing sources. Harness effect: GPT-5.6 Terra 79% in Codex vs 47% via Claude Agent SDK (reported). Models: verified on 2.1.327 (`surface` model): ids `claude-opus-5-5` (chunk-pmhjgtb5.js@2208), `claude-sonnet-5-5` (@1622), `claude-haiku-5-5` (@1894), `claude-fable-5`, `-5-1`, `-5-2` (@2366, @1732, @1786) and `claude-mythos-5`, `-5-1`, `-5-2` (chunk-jtw26wbb.js@583, @601, @621) are present, and the `[1m]` forms exist for Opus 5.5 and Sonnet 5.5 (chunk-18d5r2hb.js@271909, @272031).
   Acceptance: No model choice rests on one number; the settled decision "Fable and Opus are never a subagent model" (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)) stands. Verification: inspection.
@@ -74,7 +74,7 @@
   Conflict: claudetto shall rely on these cache facts.
   Source: external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:7; <https://code.claude.com/docs/en/prompt-caching> (not re-read); external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:14 (url: <https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/>).
 
-## Models And Effort
+## Models and Effort
 
 - [ ] **CTX-737** Minimum Claude Code versions: Opus 5.5 2.1.280, Sonnet 5.5 2.1.284, Haiku 5.5 2.1.293, Fable 5.2 2.1.321.
   Basis: cited.

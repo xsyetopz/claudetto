@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Disable all 14 Claude Code Builtins by Rewriting User Settings
+# Disable All 14 Claude Code Builtins by Rewriting User Settings
 
 ## Context and Problem Statement
 

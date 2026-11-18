@@ -3,7 +3,7 @@ status: accepted
 date: recorded in openspec/changes/2-1-325-rearchitecture/design.md:281 (day of decision not recorded)
 ---
 
-# Candidates Rejected In The 2.1.325 Design
+# Candidates Rejected in the 2.1.325 Design
 
 ## Context and Problem Statement
 

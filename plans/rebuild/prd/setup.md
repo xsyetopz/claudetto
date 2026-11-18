@@ -1,6 +1,6 @@
 # Setup Requirements
 
-## Prompt Commands And Local Commands
+## Prompt Commands and Local Commands
 
 - [ ] **REQ-SETUP-004** claudetto shall answer a bare `/statusline` from a Mod `skill.prompt` text of 323 chars, so no subagent run starts.
   Open: built as a `skill.prompt` hook (hooks/statusline/command.ts, 36 tests pass), but a headless run lists no `/statusline`, so the firing and the 0-request answer are unprobed on 2.1.327 and need a TUI run. The built text keeps the main-model edit path, so no subagent starts once the hook fires.
@@ -35,7 +35,7 @@
   Basis: user decision, 2026-11-16; measured. Status: partial at 088a227c (settings.ts:63-77 `BUILTIN_PLUGINS_OFF` lists 11 ids and no `cc-plugin-privacy@builtin`; no session-start drift repair; `git grep -n privacy 088a227c -- plugins` finds no privacy id)
   Source: user decision, 2026-11-16; probe: cc-inspect `cli`, claude 2.1.325, a `tool.call` hook writes `<config-dir>/settings.json` before a `Skill plugin-authoring` call, 2026-11-16 (old plan); see [ADR-0057](../adr/0057-builtin-disable-in-user-settings.md); user answer through AskUserQuestion, 2026-11-16 18:04 UTC, all 14 builtins off, perl allowed with a diff hook, settings rewritten (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5034); probe, `claude` 2.1.325, 2026-11-16, cc-inspect `cli` `--settings` with all 14 ids `false` gave `[]` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).; probe: claude 2.1.327, 2026-11-18, `CLAUDE_CONFIG_DIR=<empty dir> claude -p hi --plugin-dir plugins/claudetto --debug-file d.log` twice: the first run logged "claudetto turned off 13 builtin plugin(s)" and wrote all 13 ids `false`; the second run loaded 0 `@builtin` hooks modules
 
-## Tool Text Keeps The Shorter Text
+## Tool Text Keeps the Shorter Text
 
 ## Settings Never Written
 
@@ -66,7 +66,7 @@
 
 ## Setup Fallback When Hooks Do Not Run
 
-## Deny A Tool Name As A Size Lever
+## Deny a Tool Name as a Size Lever
 
 - [x] **REQ-SETUP-033** claudetto shall deny eight tools by name in `permissions.deny`, which removes each definition from the request: Workflow, ScheduleWakeup, ReportFindings, CronCreate, CronDelete, CronList, EnterPlanMode, ExitPlanMode (on 2.1.311 denying the first three took the first request from 42,676 to 30,510 chars, 12,166 = three definitions; on 2.1.312 from 42,879 to 30,713). A deny of an absent tool is dropped unless the real login shows it; no mod answer removes a built-in tool and `settings.read` does not reach permission rules. The surface-trim purpose is CLI and TUI only: turn off claude.ai, web, mobile, cloud, and onboarding surfaces by setting, env, or deny by name. Built-in agents go off with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`; the old `permissions.deny Agent(<name>)` is dropped by the 2.1.323 change.
   Acceptance: The first request lacks the eight tool definitions. Verification: probe.
@@ -82,7 +82,7 @@
   Basis: measured. Status: missing at 088a227c.
   Source: plugins/claudetto/hooks/features/setup/settings.ts:211@088a227c (no `var/folders` in plugins/); openspec/specs/sandbox/spec.md:164.
 
-## Setup Rules To Keep
+## Setup Rules to Keep
 
 ## Statusline Edit Text
 
@@ -160,7 +160,7 @@
 
 ## Auto Mode
 
-## Conflicts With Settled Decisions
+## Conflicts with Settled Decisions
 
 ## Silent-Turn Reminder
 

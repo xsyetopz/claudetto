@@ -1,6 +1,6 @@
 # claude-code-surface
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-314** Subagents do not respect the user's auto-compact threshold setting.
   Acceptance: Reported by one commenter (autocompact set at 600k), not measured. On 2.1.327 the compact window resolves per model from `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, then settings (chunk-m14bt1pz.js@1995867); no subagent-specific branch was read, and showing that a subagent ignores it needs a long paid session. Verification: paid probe.
@@ -44,7 +44,7 @@
   Status: n/a (fact).
   Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:96,97 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>)
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-321** CLAUDE_CODE_HOOK_HEARTBEAT_INTERVAL_MS takes 100 to 30000 ms. A hook heartbeat (note 6) means the status-line heartbeat file needs review.
   Basis: cited.
@@ -62,7 +62,7 @@
   Basis: cited.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:42.
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-325** In Claude Code 2.1.327 the builtin `cc-plugin-you-should-know` (chunk-nvx1z6pc.js) sets `isAvailable` to `(S3e()||false) && !xo("hipaa") && !xo("zdr") && !xo("ldr") && b(Wo(), Rn)`. `S3e` returns `verdict.complianceTaintsSettled()` or false (chunk-2mhcazb3.js@2480; the verdict is registered at chunk-6z86r3hs.js@37719). `xo(name)` is `taints.includes(name)` (chunk-2mhcazb3.js@1692), so the builtin is off when the taint set holds hipaa, zdr, or ldr. `Wo()` is the gate name `tengu_jolly_dewdrop` (chunk-nvx1z6pc.js@15696) and `Rn` is its default, false (chunk-nvx1z6pc.js@89762). The earlier 2.1.326 search missed the call because it looked in chunk-na8s6d5h.js, a module name that changed; the builtin lives in chunk-nvx1z6pc.js in 2.1.327.
   Basis: read from source (2.1.327 binary, cc-inspect code search, 2026-11-18); the run-time outcome of the gate depends on server-side gate state, which the binary does not hold.
@@ -88,7 +88,7 @@
   Basis: read from source (2.1.327 binary, cc-inspect code search, 2026-11-18): `Press again to disable` (chunk-nvx1z6pc.js@32795), `Chat in main session` (@31190, @44593), `Not published (blocked by a permission setting)` (@31670), `tengu_jolly_dewdrop` (@15696). Run-time behaviour is not measured: the gate value is server-side and the side agent needs a paid run.
   Source: chunk-nvx1z6pc.js@15696-44593 (2.1.327; first read in claude 2.1.326 binary); chunk-nvx1z6pc.js@0-94447 (2.1.327; first read in claude 2.1.325 binary); binary grep of /Users/krystian/.local/share/claude/versions/2.1.325, 2026-11-17.
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-331** Claude Code 2.1.326 has these names (checked with cc-inspect `surface` on 2026-11-17; first measured on 2.1.325): env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` (str), `_REMINDER` (triBool), `_SECONDS`, `_TURNS`; gates `tengu_hushed_lark` and `tengu_hushed_lark_text`; hook events Stop, SubagentStop, PreToolUse, PostToolUse, UserPromptSubmit; setting key `sandbox.filesystem.denyRead`; tools AskUserQuestion and Monitor (listed as `MonitorTool`); all of them are present in 2.1.326. Not queried: the `isolation:"worktree"` param, the `tools:` agent frontmatter, `--no-write`, and settings `env` replacement on a tool result.
   Basis: measured. Status: not applicable.
@@ -102,28 +102,28 @@
   Basis: cited. Status: not applicable.
   Source: verified in the program on 2.1.327: `default_claude_max_5x` (chunk-asj6f58y.js@669513), `default_claude_max_20x` (chunk-8b50zmfk.js@40113); `claude_pro` is a subscription-type value that maps to `pro` (chunk-asj6f58y.js@371893), not a rate-limit tier value, so the plan's tier list for Pro is corrected to the subscription type.
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-335** The engine has a hook budget of 10 s per event (docs); a plugin hook past budget twice is unloaded (reported); a `$.http.fetch` wait stops the hook clock even with `$.clock.sleep` raced beside it, has its own 30 s cap, and takes no `signal`; a `tool.check` deny arrives at `tool.call` as `isError`; a PreToolUse allow followed by a check error counts as no answer; `tool.describe` events carry no thread (subagent and main get one Bash text); `$.tool.check({tool:"Read"})` gives the session's verdict; `$.fs.exists` throws on `/\` paths (a grep pattern like `/\.git/` reads as a network location); the 33 classic events agree between docs and types, with 44 mod events. On 2.1.326 (checked: `code` search of each name): `$.http.fetch`, `$.clock.sleep`, `$.tool.check`, `tool.describe`, `$.fs.exists` are present; the 33 classic events are confirmed by `surface` hook-event on 2.1.327 (chunk-ja5z738t.js@5436); the count of 44 mod events was not re-counted.
   Acceptance: Each line is reproduced by a probe on 2.1.326. Verification: probe.
   Basis: measured and cited. Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:15; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:978; chunk-dafpvz32.js@3461, @3540, @3582, @3722; chunk-ecn8g7cy.js@2430, @2397 (claude 2.1.327 binary). Not located: the hook-clock, 30 s cap, and `$.fs.exists` lines.
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-336** Plan mode is a permission mode, not a method; newer models need it less; it is useful as a short output for evals (save git hashes and short prompts as cases, blind-review plans).
   Acceptance: Not applicable (context fact). Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
   Source: `plan` is a permission mode on 2.1.327 (the mode list `acceptEdits, auto, bypassPermissions, default, dontAsk, plan`, chunk-k57p2hm4.js@1322). The remaining claims (newer models need it less, use for evals) are opinion; Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-337** With remote control enabled Claude Code puts a link to the conversation in the commit message, and commenters add that author emails always get committed.
   Acceptance: The facts hold as two commenters report them. Verification: probe.
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:61; external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
 
-## Claude Code Surface And Version Notes
+## Claude Code Surface and Version Notes
 
 - [ ] **CTX-338** A poster's subagent limits are 60 tool calls, a 100K-token soft handoff and a 150K hard limit; another poster's hook caps 20 agents per session.
   Basis: reported (anecdote).

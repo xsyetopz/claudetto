@@ -3,7 +3,7 @@ status: accepted
 date: recorded in user decision, 2026-11-11 and 2026-11-12 (day of decision not recorded)
 ---
 
-# No Plugin-Invented Schemas Or Files
+# No Plugin-Invented Schemas or Files
 
 ## Context and Problem Statement
 

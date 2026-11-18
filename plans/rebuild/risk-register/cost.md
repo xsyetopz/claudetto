@@ -61,7 +61,7 @@
   Status: closed 2026-11-18. The price-step hook is out (REQ-COST-010, ADR-0131), so the abort log cannot occur; grep of plugins/claudetto/hooks finds no price-step or usage wait.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:71; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:595-597.
 
-## Verification And Honesty
+## Verification and Honesty
 
 - [ ] **RISK-377** Miscalibrated estimate.
   Category: Agent behaviour.
@@ -76,7 +76,7 @@
   Owner: cost. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:163; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:142 (about 191 threads). Not located: the 94% session $2.88 and the days-for-hours estimate quotes.
 
-## Cost And Resources
+## Cost and Resources
 
 - [x] **RISK-378** Done work looks busy for 40 minutes (one commenter, about 30 agents).
   Category: Technical.
@@ -108,7 +108,7 @@
   - Status: partly done.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; `CHANGELOG.md:286` at 088a227c; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
-## Hooks, Gates, And Notices
+## Hooks, Gates, and Notices
 
 - [ ] **RISK-380** Memory watch poll fails with a visible error after 30000 ms.
   - Category: Claude Code or claudetto fault
@@ -125,7 +125,7 @@
   - Status: open.
   - Source: reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
 
-## Refusals And Model Fallback
+## Refusals and Model Fallback
 
 - [x] **RISK-381** A session falls back to Opus 4.8 and stays there.
   Verified: 2026-11-18, closed by ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
@@ -142,7 +142,7 @@
   Status: closed (accepted), ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1604; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:219; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:799 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
-## Environment, Accounts, And Marketplace
+## Environment, Accounts, and Marketplace
 
 - [x] **RISK-382** Approval Wait Outlasts Thread Expiry.
   Verified: 2026-11-18, closed by ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
@@ -176,7 +176,7 @@
   Basis: reported, one user.
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:380,388,392-397 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>)
 
-## Audit Skill At Top Effort
+## Audit Skill at Top Effort
 
 - [ ] **RISK-384** An orchestrator picks the top model and effort for a big audit skill and burns the limits.
   Category: agent failure.
@@ -193,7 +193,7 @@
   Status: open.
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:49; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:53; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>)
 
-## Compaction And Memory
+## Compaction and Memory
 
 - [ ] **RISK-385** A session resumed after the cache TTL re-sends and re-writes its whole context at the write premium.
   - Category: cost.
@@ -210,7 +210,7 @@
   - Status: open.
   - Source: external/export--clear vs -compact.jsonl:59. The 15-40% figure: not located; external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:44 (900k session) (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>); external/export--clear vs -compact.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact/>). The 15% and 0% to 40% figures were not located by grep.
 
-## Cost And Statusline
+## Cost and Statusline
 
 - [x] **RISK-386** Status-line task counter and panel never turn on.
   - Category: product defect.
