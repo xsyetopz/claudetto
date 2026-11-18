@@ -27,7 +27,18 @@ export const pause = (): Promise<void> => new Promise((resolve) => setTimeout(()
 
 export type Box = { text: string; filled: string[]; toasts: string[]; forks: number };
 
-export const offered = async ($: Engine, on: On, box: Box, surface = "terminal", props: object = PROPS) => {
+export type Offer = {
+	readonly surface?: string;
+	readonly props?: object;
+	readonly env?: Record<string, string>;
+	/** Fork replies in order; the last one repeats. The first answers the check. */
+	readonly replies?: readonly string[];
+};
+
+export const offered = async ($: Engine, on: On, box: Box, opts: Offer = {}) => {
+	const { surface = "terminal", props = PROPS, env = {}, replies = [REPLY] } = opts;
+	let call = 0;
+	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	mock.clock(on, { now: 1000 });
 	mock.store(on);
 	on("session.id", () => ({ value: "s1" }));
@@ -43,7 +54,7 @@ export const offered = async ($: Engine, on: On, box: Box, surface = "terminal",
 	});
 	on("model.fork", () => {
 		box.forks++;
-		return { value: { isAnswered: true as const, text: REPLY, usage: USAGE } };
+		return { value: { isAnswered: true as const, text: replies[Math.min(call++, replies.length - 1)] ?? "", usage: USAGE } };
 	});
 	on("turn.step", async function* (_$, e) {
 		yield { kind: "text", index: 0, text: "" };
