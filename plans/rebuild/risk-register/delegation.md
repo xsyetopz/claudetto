@@ -516,7 +516,7 @@
 
 ## Conflicts with Settled Decisions
 
-- [ ] **RISK-192** Subagent and effort mismatch: model and effort do not fit the task.
+- [x] **RISK-192** Subagent and effort mismatch: model and effort do not fit the task.
   Category: delegation.
   Cause: reported, anecdotal; views differ by model.
   Event: Opus misses structure and nuance on large projects where Fable catches it; Fable is too eager to code, haywire in execution, over-researches past 500K; Sonnet 5.5 lazy, deflecting, or lecturing; a medium orchestrator wrecked a system; max/xhigh effort overthinks (3-5% hyper-focused runs) and burns the 5 h limit on Pro in about 20 min; Haiku hidden thinking tripled tokens.
@@ -526,10 +526,11 @@
   Response: mitigate.
   Actions: match model and effort to the task; plan in Fable/Opus and implement in Sonnet; plan mode; review in Fable. This action list conflicts with the settled rule that Fable and Opus are never a subagent model; plan and review stay in the lead.
   Trigger: a user report of overthinking or lazy output on one model.
-  Owner: delegation. Status: open.
+  Owner: delegation. Status: closed.
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:124 (reported); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>; the "haywire" report). Other reports in the old item: not located.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
-  Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
+  Status: closed. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
+  Verified: grep model:/effort: plugins/claudetto/agents/*.md -> every agent file names a model and an effort; defaults.ts sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5 without _FORCE; hooks/delegation/spawn.ts denies Opus, Fable and Mythos spawns (2.1.327, 2026-11-19).
 
 ## Model Variability
 
