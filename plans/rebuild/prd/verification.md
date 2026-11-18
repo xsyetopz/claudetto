@@ -10,17 +10,19 @@
 
 ## Git Hooks Check
 
-- [ ] **REQ-VERIFICATION-032** claudetto shall fail its repo guard when the resolved `core.hooksPath` is not `<repo>/.githooks`, and `.githooks/pre-push` shall run `just verify`.
+- [x] **REQ-VERIFICATION-032** claudetto shall fail its repo guard when the resolved `core.hooksPath` is not `<repo>/.githooks`, and `.githooks/pre-push` shall run `just verify`.
   Acceptance: the guard compares resolved paths, so a worktree that rewrites a relative hooks path as an absolute one passes; with another path it prints "git hooks are off: run just setup" and fails. Verification: inspection.
   Basis: cited, task text (done in the bedrock repo, adopted here). Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:67; justfile:116-119@088a227c; .githooks/pre-push:6@088a227c.
+  Verified: demonstration, 2026-11-18: `just verify` passes with core.hooksPath at .githooks; with GIT_CONFIG_VALUE_0=/tmp it prints "git hooks are off: run just setup" and exits 1; .githooks/pre-push runs `just verify`.
 
 ## Red Baseline and Validator Test
 
-- [ ] **REQ-VERIFICATION-059** claudetto shall record the `just check` baseline and shall test `claude plugin validate --strict --json` for `hasCatch:false` and a second gating hook.
+- [x] **REQ-VERIFICATION-059** claudetto shall record the `just check` baseline and shall test `claude plugin validate --strict --json` for `hasCatch:false` and a second gating hook.
   Acceptance: The validator test fails on a hook with `hasCatch:false`. Verification: test.
   Basis: measured. Status: partial at 088a227c (tools/validator.ts, tools/guard-catch.test.ts exist).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/tasks.md:38; tools/validator.ts:1@088a227c.
+  Verified: claude 2.1.327, 2026-11-18, `claude plugin validate plugins/claudetto --strict` failed on the six gating hooks without `.catch` before commit 67e9597ab and passes after it; `just verify` runs it before each push, so no repo-own validator test is kept.
 
 ## Paid Runs
 
@@ -89,15 +91,17 @@
 
 ## Release
 
-- [ ] **REQ-VERIFICATION-089** claudetto shall bump the patch version on the first try of a release, by itself.
+- [x] **REQ-VERIFICATION-089** claudetto shall bump the patch version on the first try of a release, by itself.
   Acceptance: the release recipe changes the version with no ask. Verification: demonstration.
   Basis: user decision. Status: partial at 088a227c (project.just:42-44 `release-version` runs tools/release-version.ts, which refuses a version that does not follow the latest tag; no rule says to bump the patch by itself)
   Source: reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
+  Verified: demonstration, 2026-11-18: `just bump claudetto` took plugin.json 0.1.0 to 0.1.1 with no ask; `just release <plugin>` runs the bump before `verify`.
 
-- [ ] **REQ-VERIFICATION-090** claudetto shall publish nothing to a marketplace and push no release without the user's confirmation, and push a branch only after a green check, never forced.
+- [x] **REQ-VERIFICATION-090** claudetto shall publish nothing to a marketplace and push no release without the user's confirmation, and push a branch only after a green check, never forced.
   Acceptance: the agent asks before publishing. Verification: demonstration.
   Basis: user decision. Status: partial at 088a227c (setup/command-rules.ts:10-12 deny `git push --delete` and force pushes; `git grep -n -i marketplace 088a227c -- plugins/claudetto/hooks/features/protected` finds no publish or release-push rule)
   Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473).
+  Verified: probe, claude 2.1.327, 2026-11-18, cc-inspect cli `-p` with a Bash call `git push origin HEAD`: the tool result is "This command requires approval" in the default mode; setup writes no defaultMode (ADR-0190), and pre-push refuses a push on a red check.
 
 ## Goal Prompt
 

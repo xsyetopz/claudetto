@@ -1,0 +1,3 @@
+#!/bin/sh
+# Refuses a push unless every shipped plugin validates and its tests pass.
+exec just --justfile "$(git rev-parse --show-toplevel)/justfile" verify
