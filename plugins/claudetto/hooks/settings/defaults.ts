@@ -26,8 +26,15 @@ export const KEYS: Readonly<Json> = {
 	showClearContextOnPlanAccept: true,
 };
 
-/** Env values written only when unset; the advisor stays off by product rule. */
+/**
+ * Env values written only when unset; the advisor stays off by product rule.
+ * `CLAUDE_CODE_SUBAGENT_MODEL` moves a subagent with no model of its own from
+ * the main model to Sonnet (an Opus main sends its general-purpose subagent to
+ * `claude-opus-5-5` otherwise); an agent file's `model:` still wins, and the
+ * `_FORCE` variant is left unset so it does.
+ */
 export const ENV: Readonly<Record<string, string>> = {
+	CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-5-5",
 	CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
 	CLAUDE_CODE_DISABLE_CRON: "1",
 	CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
@@ -35,7 +42,7 @@ export const ENV: Readonly<Record<string, string>> = {
 };
 
 /** Bumped when the defaults change, so a fill runs once per set and never undoes a user's later edit. */
-export const FILL_VERSION = 1;
+export const FILL_VERSION = 2;
 
 export type Fill = { readonly text: string; readonly added: readonly string[] };
 
