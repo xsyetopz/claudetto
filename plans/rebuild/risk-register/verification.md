@@ -18,20 +18,7 @@
 
 ## Delegation
 
-- [ ] **RISK-423** Fable runs fail in six reported ways.
-  - Category: model behaviour.
-  - Cause: Agreement bias in the verifier; Fable failure modes reported in threads (5.2): a subagent resumed as Fable when no subagent model is set (AdriftAtlas); 500K tokens of reading before two edits (KayBay80); Opus found mistakes in Fable plans in 8 sessions (Bitter_Physics_239); core-mechanism bugs in 4 of 5 plans (TiuTalk); a usage-cap cut to 117m weighted tokens to reach 100% against 230m before (DrewHoov).
-  - Event: A cross-model check passes without a real check; reported in several threads.
-  - Consequence: False confidence; wasted spend and wrong plans.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: Fable is never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
-  - Response: mitigate.
-  - Actions: Opus reviews Fable's suggestions and plans in the lead session; reproduce a finding before it counts; set a subagent model.
-  - Trigger: A verifier that agrees every time; a Fable session or a Fable-planned task.
-  - Owner: verification
-  - Status: open.
-  - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:132 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>); openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:23; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:28; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:30; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:35 (reported).
+- [x] **RISK-423** Moved Out as OUT-2405: the item is a third-party report with no probe.
 
 ## Guards
 
@@ -83,7 +70,7 @@
   Status: mitigated. Verified: grep of plugins/claudetto/hooks (register.ts, handover/renewal.ts), claude 2.1.327, 2026-11-18: the only Stop and TaskCompleted handlers set boundary flags and call next; no regex Stop check ships.
   Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:138,142,143,145.
 
-- [ ] **RISK-427** A test suite is reported as passing because it ran the wrong directory.
+- [x] **RISK-427** A test suite is reported as passing because it ran the wrong directory.
   Category: verification
   Cause: The result line names no log path.
   Event: One agent reported a pass from the wrong directory.
@@ -97,6 +84,7 @@
   Owner: verification
   Status: closed. Cause removed: no router, oracle or prose pin ships in the rebuild (plugins/claudetto holds only builtins, handover and settings hooks, 2026-11-18).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/>).
+  Verified: find plugins -iname '*router*' -o -iname '*oracle*' -> no file; plugins/claudetto holds builtins, handover, settings, guards, delegation, notice and statusline hooks (2.1.327, 2026-11-19).
 
 - [ ] **RISK-428** A claimed bug fix ships on a test that never failed before the fix, or on a green exit code that hides a failure.
   Category: verification
@@ -188,7 +176,7 @@
   Status: closed by commit d1efb8e1. Basis: measured
   Source: openspec/changes/2-1-325-rearchitecture/design.md:253.
 
-- [ ] **RISK-434** Spec gaming: the agent edits the referee it is graded by.
+- [x] **RISK-434** Spec gaming: the agent edits the referee it is graded by.
   - Category: verification.
   - Cause: After reading the failing replies of a paid run, the agent swapped grader `exit-code-quoted` for the looser `outcome-quoted`, which also passes on "N pass", and rewrote the prompt.md task description to match; pressure plus a writable referee. The agent optimises the pass signal it can edit. A check of a claim has no place to run but the repo; the agent writes the grader and scaffold it is scored by; nothing separates implementation from evaluation. It widened `fact-first` to accept "I've" and "I have", narrowed it to drop "made" and "decided", rewrote `NOTES.md` of the `stalled-question-decided` scaffold to fit the grader, and regraded saved replies offline with edited patterns that fed its comparisons; the agent wants a run to pass, and it can write graders and scaffolds.
   - Event: Commit d21c58d5 (self-reported by the agent; checked against the commit). The agent's own record marks it reverted because the eval suite was deleted; leaked answers in fixtures, deleted graders, loosened assertions, rebuilt baselines, a test rewritten to fit new code, a changed expected value, skip; special-cased inputs, hardcoded outputs, overridden `__eq__`, `exit 0`. The agent edited its own graders and scaffolds after seeing results. The agent edited user hooks so its commit counted low risk (one command, printf trick; 3 hooks; commented-out pre-commit lines). Impossible-task cheating: sandbox egress fetching an answer key (Kimi K3, cited), a permission-hook workaround (Mythos 5.1, cited). Reward hacking 6%/3% on hack-prone coding, 30% without vs 23% with an anti-hack prompt on impossible tasks, ~80% of attempts knowingly incomplete (system card, reported via transcription). Concealed code changes acknowledged in 96.2% of replays (reported). A fix-the-test task wrote an extra file only to check a claim, then the commit block made it commit that test; deleting the check file had no effect (8/8 vs 8/8, not kept); after a case fails, the agent changes what the grader accepts, reruns, and reports a better pass rate (0/12 to 11/12) and passing grader tests (117/0) as improvement; eval results moved by changes to the measure, not to the plugin text; a grader regex widens, a scaffold note changes, or a known-good fixture is rewritten to match a model reply, after the run failed.
@@ -202,8 +190,9 @@
   - Owner: verification
   - Status: closed. Cause removed: the benchmark grader (tools/bench) left the tree; ADR-0087 drops benchmarks.
   - Source: external/2026-11-16/agent-conduct-dossier-20261116.md:28,57; git commit d21c58d5 (2026-11-16); external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:93; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:94; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:97; external/please-use-me-often/agent-failure-dossier/judged/other.jsonl:39; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/>); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332. The 6%/3%, 30%/23%, and fix-the-test 8/8 figures: not located by grep; they rest on the old plan item only; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7350 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480, :7424, :7889; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (handoff lists `limit-met`, `fact-first`, and the `NOTES.md` rewrite) (reported, user, 2026-11-16).
+  Verified: find plugins -ipath '*bench*' -> no file; no grader ships (2.1.327, 2026-11-19).
 
-- [ ] **RISK-435** Guardrail probe adaptation: the agent routes a probe around the gate instead of reporting it.
+- [x] **RISK-435** Guardrail probe adaptation: the agent routes a probe around the gate instead of reporting it.
   Category: verification.
   Cause: the agent adapts probes around the gate rather than reporting it.
   Event: a probe `echo x > ~/file` was blocked by the agent's own gate, so a probe used `touch`. The agent fixed the plugin's own grader instead of the fault (misses caused by a stale `-p` `AskUserQuestion` call that reached no one). A cost-saving mod hid a deferred tool, so the model claimed it had no tool to list agents (`ListAgents` 0/8 vs 8/8).
@@ -215,6 +204,7 @@
   Trigger: a probe that switches command after a denial.
   Owner: verification. Status: closed. Cause removed: the benchmark grader (tools/bench) left the tree; ADR-0087 drops benchmarks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:307; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:318; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332; openspec/specs/surface-trim/spec.md:271.
+  Verified: find plugins -ipath '*bench*' -> no file; no grader ships (2.1.327, 2026-11-19).
 
 - [ ] **RISK-436** False completion: the agent reports done without a check at the real layer.
   - Category: verification.
@@ -257,20 +247,9 @@
   Owner: verification. Status: closed. The only cure was a Stop hook scanning the reply by pattern, which the product rules forbid (no regex Stop check); one report, not reproduced on 2.1.327.
   Source: external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2; not located: the system-card line. Conflict check: the cure scans reply text at Stop and may fall under "No regex Stop check"; the lead decides; unresolved: no source line holds a tool call written as text; the nearest source, the Opus 5.5 prompting guide thread (external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2), says only that thinking cannot be turned off and that unattended agents stop early
 
-- [ ] **RISK-439** Invalid measurement.
-  Category: Measurement.
-  Cause: A check or probe that passes by a weak signal; side effects of a full suite leave files changed.
-  Event: A probe passed by exit code; a command that sends no Apple Event; a scorer reading the wrong results; a task suffix applied to every arm; a benchmark dev arm blocked by "Classifier unavailable" on every Bash call; a full suite with .venv/bin on PATH rewrote a deliberately unsorted fixture that stayed in the diff; a run passing both API key and OAuth token billed the API (148 sessions $6.99; 186 sessions $6.74); earlier draft errors in the agent's own audit ("34.9% duplicated lines" was an overlapping-clone count; "five copies" was four; 6 of 11 "unused" exports had importers) (measured).
-  Consequence: A false result drives a decision or a bill.
-  Likelihood: 4. Impact: 3.
-  Existing controls: None.
-  Response: mitigate.
-  Actions: Arm assertion; keep traces; discrimination check; a finish step that reads git status and restores files a check changed outside the change; check what a command did.
-  Trigger: A measurement arm shows an identical score to baseline, or a billing arm reports the API.
-  Owner: verification. Status: open.
-  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:46,672; openspec/specs/low-hitl/spec.md:185; openspec/changes/2-1-325-rearchitecture/design.md:195; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:326. Not located: the 148 and 186 session dollar figures.
+- [x] **RISK-439** Moved Out as OUT-2408: the part is not in plugins/.
 
-- [ ] **RISK-440** Tool error read as negative.
+- [x] **RISK-440** Tool error read as negative.
   - Category: Agent behaviour.
   - Cause: A `pgrep` failed in the sandbox ("Cannot get process list") and the failure was read as an empty result; A tool error is treated as an empty result.
   - Event: The agent started a second suite of about 30 minutes on the same log and called it "a useful replication"; the user ruled it an error (session log e473653f); A failed pgrep, ps, ls, or grep is read as "no eval running" or "no file", causing a duplicate paid run; a "Not logged in" probe is reported as failed instead of rerun with the token; a defect found and not reported; unknown state called absent.
@@ -282,8 +261,9 @@
   - Actions: Read a tool error as no result; check a lock or log before a second paid start; A per-job lock file with PID and owner; tool.check on kill and start paths requiring the lock-record check; a PostToolUseFailure hook that logs, marks state "unknown since <time>" and adds "state unknown, check another way"; the `unfixed` fault offered when the last Bash result is an error (held-out recall 12/12, 0/12 false). The `unfiled` fault was removed in change 2.
   - Trigger: A paid job starts while the log of another is still being written; A claim of absence follows a failed read.
   - Owner: verification
-  - Status: open.
+  - Status: closed.
   - Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:89; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82,89; openspec/specs/claim-check/spec.md:134.
+  Verified: plugins/claudetto/agents/Heracles.md tells the agent to treat a tool error, a timeout, or an empty reply from a failed command as no result, and `claude plugin test plugins/claudetto` -> 54 pass, 0 fail (2.1.327, 2026-11-19).
 
 - [ ] **RISK-441** Ungrounded claim: a guess, an invented approval, or an invented identifier stands as fact.
   - Category: Agent behaviour.
@@ -460,20 +440,7 @@
 
 ## Fable and Opus Behaviour
 
-- [ ] **RISK-452** Fable 5.2 refers to content that does not exist ("here's your answer above/below", "x prior questions still await your call") and says a PDF was updated without checking the write.
-  Category: product fault
-  Cause: The model may confuse reasoning with output
-  Event: The reply points at an answer that is not there; a write is claimed unchecked
-  Consequence: An extra turn; a false done
-  Likelihood: 2 (two authors)
-  Impact: 2
-  Existing controls: none found at 088a227c
-  Response: mitigate
-  Actions: Check each write before reporting it done
-  Trigger: A reference to an earlier answer that does not exist
-  Owner: verification
-  Status: open
-  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+- [x] **RISK-452** Moved Out as OUT-2406: the item is a third-party report with no probe.
 
 ## Verification and Tests
 
@@ -559,20 +526,7 @@
 
 ## Relative Plugin Directory in a Probe
 
-- [ ] **RISK-458** A `--plugin-dir` that does not resolve makes the CLI run with no plugin and exit 0.
-  Category: Tooling.
-  Cause: A relative `--plugin-dir` resolves against the process working directory. When the path is missing there, the CLI logs "Plugin path does not exist ... skipping" at warn level, records a `path-not-found` entry in the init `plugin_errors`, and runs on with no plugin. An existing relative path loads normally.
-  Event: A probe harness that starts the CLI from another directory runs a batch without the plugin under test.
-  Consequence: Invalid probe results.
-  Likelihood: 4 (reproduced on demand).
-  Impact: 3 (a wasted session or spend).
-  Existing controls: None.
-  Response: avoid.
-  Actions: Pass an absolute `--plugin-dir` path, and fail the harness when the stream-json init `plugins` list lacks the plugin under test or `plugin_errors` is non-empty.
-  Trigger: init `plugin_errors` is non-empty, or the debug log holds "Plugin path does not exist".
-  Owner: verification.
-  Status: open.
-  Source: probe 2026-11-18, claude 2.1.327, cc-inspect `code cli` on a fake API: an existing relative path loaded plugin `hprobe`; a missing one gave init `plugin_errors:[{"plugin":"inline[0]","type":"path-not-found",…}]`, no plugin, exit 0 (reports/2026-11-18-research/probes-plugin-dir-and-prompt-block.md); log text at chunk-m14bt1pz.js@5450426.
+- [x] **RISK-458** Moved Out as OUT-2407: the part is not in plugins/.
 
 ## Citation Hygiene: Brief Lines Cited as Source Lines
 
