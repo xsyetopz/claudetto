@@ -385,6 +385,18 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@22091 (claude 2.1.327 binary).
 
+- [x] **OUT-2001** Out (REQ-YOU-SHOULD-KNOW-055, ADR-0190 agent decision, not the user's): the `dialog` and `no_composer` refusal branches of the Chat flow stay untested by a behaviour test, because the test kit strips a refusal cause that a hook writes in `prompt.fill`, so a test cannot make the plugin see either cause. The fill, box-busy and not-filled branches are tested.
+  Acceptance: a person with a dialog open, or on a surface with no composer, who presses Chat in main session sees the matching toast and keeps the card. Verification: demonstration in a TUI session.
+  Basis: cited. Status: untested.
+  Verified: probe of the harness, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know` with a hook-written refusal cause: the cause arrives stripped, so the branch falls to the not-filled text.
+  Source: plugins/claudetto-you-should-know/hooks/draft.ts (REQ-YOU-SHOULD-KNOW-055).
+
+- [x] **OUT-2002** Out (CTX-001, ADR-0190 agent decision, not the user's): whether the 2.1.326 fix keeps a row when a `wrap="truncate-end"` text holds a line feed shows only in a painted terminal, which the test kit does not run; a test sees the node tree, not the screen. The plugin cleans one-line text of line feeds before it draws (`cleanOneLine`, tested in rules.test.ts), so no line feed reaches a clipped text.
+  Acceptance: a card or row draws clipped text without losing a row when its text holds a line feed. Verification: demonstration in a TUI session.
+  Basis: cited. Status: untested on screen.
+  Verified: line feeds removed before drawing, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail (rules.test.ts); the painted check is not run.
+  Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
 #### Prompts, Skills and Rules
 
 - [ ] **OUT-076** The current bloated suite of rules: redone, not kept.
