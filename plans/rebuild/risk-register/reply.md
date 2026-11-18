@@ -971,7 +971,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## Failure Needs a Visible Signal
 
-- [ ] **RISK-336** A failure signalled only in a log goes unnoticed.
+- [x] **RISK-336** A failure signalled only in a log goes unnoticed.
   Category: Reliability.
   Cause: The only failure signal is a log line (other n=3, tool n=2).
   Event: A scheduled job failed 86 times in four days; a mid-run API error left a CLI idle 8 hours.
@@ -986,6 +986,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open, build STOPFAIL. (partial at 088a227c).
   Basis: reported.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 86 failures and 8 hours figures.
+  Verified: 2026-11-18, hooks/notice/stop.ts raises a native notification on an API-error stop (REQ-KERNEL-003; stop.test.ts passes).
 
 ## Conduct Failures
 
