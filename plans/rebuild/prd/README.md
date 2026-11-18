@@ -4648,6 +4648,163 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured (third-party, pre-registered tests, numbers shown).
   Source: external/2026-10-07_p2/export-This study of 424k agent runs showed you can't predict what a Claude agent run will cost up front, b.jsonl:2.
 
+- [ ] **OUT-1000** claudetto shall not carry CTX-524 (from `machine.md`) as a checked context fact: Git Bash heredocs collapse double backslashes before Python sees them, so a Windows path with \t silently becomes a tab; the browser upload tool caps files at 16 MB, so render under that instead of retrying; a quoted rate applies to its job only.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:66 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1001** claudetto shall not carry CTX-525 (from `machine.md`) as a checked context fact: `additionalDirectories`: `"$TMPDIR"` is not expanded and the read is refused; `"~/side"` expands to `$HOME` and reads (SIDE-CANARY returned); an absolute path reads. `blockReadsExemptPaths` is ignored in every `settings.json` and has no temp-dir exemption
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured on an earlier version; rechecking needs a paid model run or an installed marketplace plugin, and no shipped part in plugins/ depends on the number.
+  Basis: measured, fake API.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:827.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1002** claudetto shall not carry CTX-527 (from `machine.md`) as a checked context fact: memoryGuard reads the free share at tool.check only. A 4 GB single-process growth (8 blocks of 512 MB, 1.5 s apart) moved memory_pressure -Q free share only from 47% to 52%, because macOS compresses pages and frees cache. So the share cannot follow one process, and per-process RSS is the signal.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs a 4 GB growth run on one machine; a measurement of macOS memory pressure, not of Claude Code.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:801.
+
+- [ ] **OUT-1003** claudetto shall not carry CTX-529 (from `machine.md`) as a checked context fact: The reported 120 GB RAM incident was explained as clawdipedia's surface tests (bun test 10,125 MB; one snapshot.test.ts 15,332 MB, others 8 GB; one Claude Code bundle parse 4,700 MB; a test comment says each build peaks near 18 GB) beside 8 Claude Code processes and backgrounded agent checks on a 32 GB MacBookPro18,2. The kernel logged JETSAM_REASON_LOWSWAP kills (60 processes at 01:26:59). 120 GB is the summed footprint counting compressed and swapped pages. No claudetto run exceeds 1.5 GB (replay of the agents' edits: 699 MB lint, plugin test 1,410 MB).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured; the 120 GB reading is inferred.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:476-487.
+
+- [ ] **OUT-1004** claudetto shall not carry CTX-533 (from `machine.md`) as a checked context fact: Disk on 2026-11-12: /private/tmp/claude-501 1.85 GB (474 entries, 166 older than 60 min), /private/tmp 1.98 GB, system temp folder 0.31 GB (22,123 TemporaryDirectory.* entries made by Swift, not by this repository), ~/.claude 1.44 GB, data volume 282 of 460 GiB (68%). A dry run said "would remove 0 entries, 0 B" for temp and trash, named 28 OpenJoystickDriver agent worktrees (51.4 GB), and kept 4 with uncommitted changes (2.7 GB). Most space is worktrees.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:810,831.
+
+- [ ] **OUT-1005** claudetto shall not carry CTX-534 (from `machine.md`) as a checked context fact: Tests leave no temp folder: 18 hygiene, statusline, and manifest test files left 0 entries under a fresh TMPDIR. tools/hygiene/trash.test.ts exited 1 under the changed TMPDIR and passed 12 tests under the default. The helper tools/temp.mock.ts removes each test's folder. The hygiene sweep starts only at SessionStart source startup (67 session files in 3 days, 10 spanning over 12 hours, 4 transcript records of SessionStart:startup, so at most 67 runs), and a session that compacts or resumes starts none. The later fix sweeps at startup, resume, clear, and compaction (openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:139).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:812; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:139.
+
+- [ ] **OUT-1006** claudetto shall not carry CTX-535 (from `machine.md`) as a checked context fact: Local branch survey (git cherry per branch in 12 listed projects): OpenJoystickDriver 121 local branches (36 in a worktree, 85 with a commit the default lacks, 0 merged); OpenRAC-next 19 (2 merged, both worktree-agent-*); bedrock 11 and claudetto 11, none merged; asd-ste100-skill-next 7 (4 merged); SwifterKit 1 merged. 6 would go, no upstream gone.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:813.
+
+- [ ] **OUT-1007** claudetto shall not carry CTX-536 (from `machine.md`) as a checked context fact: GitHub delete_branch_on_merge is true only for OpenJoystickDriver and false for the other 11 repositories, so merged remote heads remain (JagFx 8, bedrock 9, claudetto 2, SwifterKit 1, versionlens-redux 2, OpenJoystickDriver 1, OpenSAD 1). 9 heads have no open PR and a merged PR tip or all commits in default. git cherry misses a squash-merged head (bedrock fix/clang-format-binpack shows 2 commits, only the PR shows it). gh needs the sandbox off (HTTP 401).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:814.
+
+- [ ] **OUT-1008** claudetto shall not carry CTX-537 (from `machine.md`) as a checked context fact: Dry run with --remote after the fixes: "would remove 26 entries, 790704 B" of temp, 28 agent worktrees (51399544832 B), and "would delete 10 branches" (4 local in asd-ste100-skill-next, 6 remote). claudetto feat/2.1.319+1 is named twice because the session worktree and its checkout are both listed. The other 4 merged bedrock heads stay because a worktree has them checked out. Nothing was removed.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:815.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1009** claudetto shall not carry CTX-542 (from `machine.md`) as a checked context fact: A stray `tsc --lsp --stdio` (TypeScript 7.0.2, pid 48197, running 27 hours at 127% CPU, parent launchd) was not started by the session. The user ran `! kill -9 48197`, and `ps -p 48197` then found no process (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:412.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1010** claudetto shall not carry CTX-543 (from `machine.md`) as a checked context fact: Eight commits that commitlint rejected (4 headers over 100 characters, 4 body lines over 100) were reworded by `git rebase -r --exec` with the same trees. All 365 signatures stayed (`G`), `bunx commitlint` exited 0, and `git push --force-with-lease` replaced the remote head. The `just validate` check reports README_MISSING (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:413; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:415.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1011** claudetto shall not carry CTX-544 (from `machine.md`) as a checked context fact: A sparse disk image (Docker.raw) showed 60 GB apparent size but 14 GB actual disk usage, so a cleanup agent must measure actual usage (du), not apparent size.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (author).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xd77e8-agentic-disk-cleanup-workflow-20261024T061644Z.md:38 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xd77e8/agentic_disk_cleanup_workflow/>).
+
+- [ ] **OUT-1012** claudetto shall not carry CTX-545 (from `machine.md`) as a checked context fact: Semgrep in a commit gate took 26 s on one file because 11 leftover worktrees held 678k files; it took 0.7 s after cleanup.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured, one user.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgsku3-i-parsed-34-gb-of-my-claude-code-20261028T061008Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgsku3/i_parsed_34_gb_of_my_claude_code_transcripts_20/>).
+
+- [ ] **OUT-1013** claudetto shall not carry CTX-546 (from `machine.md`) as a checked context fact: An OS audit rule (Linux auditd on execve under a dedicated claude user) logs every command and the agent cannot edit it without sudo, but it sees only execs, not file reads or MCP calls.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (author reply).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:133 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/>).
+
+- [ ] **OUT-1014** claudetto shall not carry CTX-547 (from `machine.md`) as a checked context fact: With --permission-mode acceptEdits, an explicit allow of bare Edit or Write lets the model edit other checkouts by absolute path; acceptEdits alone confines to the working folder; allow find, bash, npx, and npm run anything, so leave them out; Read-tool rules are needed because the sandbox does not cover Read.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
+
+- [ ] **OUT-1015** claudetto shall not carry CTX-548 (from `machine.md`) as a checked context fact: A .env deny pattern under the home folder missed worktrees outside home, letting a model-written script read .env; deny under the run's own checkout too; allow localhost binding only if tests start a server.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:136 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
+
+- [ ] **OUT-1016** claudetto shall not carry CTX-549 (from `machine.md`) as a checked context fact: In an unattended claude -p run, Claude Code refuses edits under .claude/ (skills, hooks, settings) and asks for an approval nobody gives; the executor refuses such briefs up front and routes them to the cloud.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:258 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
+
+- [ ] **OUT-1017** claudetto shall not carry CTX-550 (from `machine.md`) as a checked context fact: Worktrees share the object store, but node_modules and build output are untracked, so each worktree keeps its own copy; a hardlinking package manager with a shared store shrinks it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Outside fact about git worktrees and package managers; not a Claude Code behaviour and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:79,81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
+
+- [ ] **OUT-1018** claudetto shall not carry CTX-551 (from `machine.md`) as a checked context fact: gitignore only affects what Git tracks; it neither removes files from the working directory nor stops an agent reading them, so raw material needs an archive outside the default reading path.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Outside fact about gitignore; not a Claude Code behaviour and no shipped part in plugins/ depends on it.
+  Basis: reported, two commenters. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:88 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/>).
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1019** claudetto shall not carry CTX-831 (from `machine.md`) as a checked context fact: On 2026-11-18 the user's 512 GB Mac had 51.6 GB free in its APFS container (about 90% used, against 68% on 2026-11-12); the Data volume used 394.2 GB. `du -xhd1 /System/Volumes/Data` outside the sandbox totals 306 GB (Users 128 GB, private 128 GB, opt 20 GB, System 15 GB, Applications 13 GB); the gap is not snapshots: the Data volume has none (the three `com.apple.os.update` snapshots belong to the system volume). `du` also counts 79 GB of Chrome clones that cost about one copy (CTX-832), so about 166 GB of real use sits in 585 folders that `du` cannot read even outside the sandbox: 280 under `~/Library/Containers`, 134 under `~/Library/Group Containers` (including OrbStack's `HUAQ24HBR6.dev.orbstack` data), 70 under `/private/var/folders/cl`, and root-owned folders under `/private/var/db` (Spotlight, biome and others). These folders and `~/.Trash` (CTX-834) are protected by macOS privacy controls (TCC), so only the user can size them: grant the terminal Full Disk Access and run `du -sh ~/Library/Containers ~/Library/Group\ Containers ~/.Trash`, run `docker system df` or `orb` outside the sandbox, or read System Settings > General > Storage. `/Volumes/DevAudioStore` is an external drive and not part of the gap. The user's `docker system df` (Docker 29.8.2 on OrbStack, 2026-11-18) reports 42.7 GB, of which 34.5 GB is reclaimable: 485 local volumes, none in use, 23.27 GB; 11 images, 7.50 GB (5.48 GB reclaimable); build cache 11.91 GB (5.76 GB reclaimable); 20 containers, 155.6 kB. Unused Docker volumes are the largest single reclaimable item measured on the machine. `docker volume prune` removes only anonymous volumes; `-a` also removes unused named ones (`docker volume prune --help`). On the user's instruction the same day, `docker image prune -a -f`, `docker builder prune -a -f` and `docker volume prune -a -f` freed 4.3, 11.9 and 23.3 GB (39.5 GB in all; `builder prune -a` also removes cache that `docker system df` counts as not reclaimable). The data volume then had 85 GB free (`df -h`, 80% used), and the running containers kept running. The collector of ADR-0185 repeats this without asking, for unused items only.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: probed (`diskutil apfs list`, `df -h`, `du` error count by folder outside the sandbox, `diskutil apfs listSnapshots` on the Data volume, 2026-11-18; inside the sandbox `diskutil` returns ERROR -69620). The sizes behind TCC are a user-held measurement. Status: n/a (machine state).
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671 and :3505); probe output of this session.
+
+- [ ] **OUT-1020** claudetto shall not carry CTX-832 (from `machine.md`) as a checked context fact: `du` counts each APFS clone in full, so it overstates disk use. `/private/var/folders/*/X` held 79 GB by `du` in 55 `com.google.Chrome.code_sign_clone` copies of about 1.4 GB each, but a `getattrlist` probe of `ATTR_CMNEXT_PRIVATESIZE` gave 0.00 GB of private bytes for them: they share blocks, so their real cost is about one copy.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: probed (C program using `fts` and `getattrlist` with `FSOPT_ATTR_CMN_EXTENDED`, built and run 2026-11-18). Status: n/a (machine state).
+  Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl; CTX-544.
+
+- [ ] **OUT-1021** claudetto shall not carry CTX-833 (from `machine.md`) as a checked context fact: On 2026-11-18 the largest measured consumers outside the system were: `~/CodeProjects` 55 GB (OpenJoystickDriver 26 GB, of which agent worktrees under `.claude/worktrees` 14 GB and `.build` 11 GB); `/opt/homebrew` 20 GB; `~/.gradle` 13 GB (caches 8.8 GB, jdks 3.1 GB); `/Applications` 13 GB; Xcode `iOS DeviceSupport` 6.6 GB; `~/.rustup` 5.6 GB; `~/.bun` 5.6 GB; a Swift toolchain 4.8 GB; `~/.konan` 3.2 GB; `$TMPDIR` 8.5 GB in 87,631 entries (65,295 `TemporaryDirectory.*`, 1,065 `ccdocs-cli-test`, 1,064 `claude-run`, 758 `surface`, 671 `bedrock-test`, 385 `claude-session-repo`, 133 `mutant`). The `~/.claude` folder held 899 MB and `~/.local/share/claude` 1.6 GB (versions 2.1.323, 2.1.325, 2.1.326, 2.1.327).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: probed (`du -xhd1`, `find`, 2026-11-18; apparent sizes, clones counted in full). Status: n/a (machine state).
+  Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+
+- [ ] **OUT-1022** claudetto shall not carry CTX-834 (from `machine.md`) as a checked context fact: `~/.Trash` cannot be read by a process without Full Disk Access: listing it fails with "Operation not permitted" even outside the sandbox (macOS TCC). Its size is held by the user.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: macOS TCC permission of one machine; the size is held by the user and no probe can read it.
+  Basis: probed (2026-11-18). Status: n/a.
+  Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+  ## External Sweep, 2026-11-18
+
+- [ ] **OUT-1023** claudetto shall not carry CTX-878 (from `machine.md`) as a checked context fact: Two parallel background subagents re-rendered video frames, each frame starting a headless Chrome with a 4 GB GPU memory budget, and two Chrome processes never exited; with 11 sessions and 44 MCP server processes, swap reached 5.4 of 7 GB at load average 26 on a 16 GB, 10-core MacBook, which froze three times in a week. Heavy subagent jobs wait for free memory and leaked browser processes are reaped (RISK-048).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured (third-party, numbers shown).
+  Source: external/2026-10-17/export-My Mac kept freezing while Claude Code agents ran, so I built a plugin that makes heavy jobs wait th.jsonl:2.
+
+- [ ] **OUT-1024** claudetto shall not carry CTX-879 (from `machine.md`) as a checked context fact: Disk growth from agents on one 16 GB Mac: transcripts reached 11 GB (one 262 MB log held 175 MB of base64 screenshots); setting `cleanupPeriodDays` to 7 (default 30, CTX-142) freed 7.4 GB on the first cleanup; one session left 6 copies of DerivedData (6.9 GB), one per variant. A cleanup agent once deleted two folders it judged build junk that held test-package source, so its rules became: delete only what is untouched for 3+ hours, skip folders `lsof +D` shows open, and nothing during a build. A commenter adds: check each agent worktree for uncommitted work first, then run `git worktree prune`. claudetto's hygiene step (CTX-550) follows these rules, and deletion of anything outside its own scratch paths needs the user's confirmation.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured (third-party, numbers shown) for the sizes; reported for the rules.
+  Source: external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:40; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:46; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:52-56; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:75; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:147.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
