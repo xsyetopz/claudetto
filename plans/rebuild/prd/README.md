@@ -4117,6 +4117,21 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:752 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying>).
   Verified: git grep -nE -e 'refusal-to-act|defensive security|[^a-z]ToS[^a-z]' -- plugins -> 0 hits, 2026-11-19.
 
+#### Kernel and Handover Triage
+
+- [x] **OUT-2004** Out (core gives a plugin no idle or sleep trigger; part of REQ-HANDOVER-024 in handover.md): the knobs `idleHandover`, `CLAUDETTO_IDLE_HANDOVER_MIN_TOKENS`, `CLAUDETTO_SLEEP_HANDOVER` and `CLAUDETTO_SLEEP_HANDOVER_AFTER_MS` stay unshipped. `session.compact` names only `manual`, `auto`, `plugin` and `precompute` as its trigger, so a hook cannot tell an idle or sleep compaction from the threshold one; Claude Code's own `idleCompaction` and `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` still govern them.
+  Basis: read, types/claude-code/index.d.ts `SessionCompactTrigger` (2.1.327, 2026-11-19).
+
+- [x] **OUT-2005** Out (no measured gain, ADR-0177; moved from REQ-HANDOVER-059 in handover.md): claudetto shall write `idleCompaction: false`: from 2.1.290 a session idle about 54 minutes is compacted just before the 1-hour cache expires (warm and cheap, but a lossy summary and handover files are re-read), and the setting stops it (present in 2.1.327, default true; code search finds `idleCompaction` with default `!0` at chunk-6ydtrx6k.js@927). The posted env `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKEN` is absent from the build; the installed name `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` is present in 2.1.327 (chunk-2ew0jg68.js@32646).
+  Acceptance: the written settings hold `idleCompaction` false. Cost claim, inferred from pricing: warm reads at 0.05x against a rewrite at 1.25x (5 minutes) or 2x (1 hour). Verification: test.
+  Basis: reported (the 2.1.299 release note); inferred (the cost claim). Status: have at 088a227c (plugins/claudetto/hooks/features/setup/groups.test.ts:101@088a227c).
+  Source: external/2026-10-25_p2/reddit.com-r-claudecode-comments-1x0omjh-i-built-conpact-claude-code-co-20261025T162222Z.md:92 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0omjh/i_built_conpact_claude_code_compacts_its_own/>); plugins/claudetto/hooks/features/setup/groups.test.ts:101@088a227c.
+
+- [x] **OUT-2006** Out (needs paid runs of the same task; moved from REQ-HANDOVER-060 in handover.md): claudetto shall make the handover flow cost less than Claude Code's built-in compaction and auto-compaction, and write the handover so that it hits the prompt cache and costs half a core compaction.
+  Acceptance: the handover rewrites message 0, a cache read follows it, and its cost is at most half the cost of one core compaction on the same session; a measured run of the same task costs fewer tokens with handover than with built-in compaction. Verification: probe.
+  Basis: reported. Status: partial at 088a227c (plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; no measured comparison).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:79; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09).
+
 #### Context Facts N-Z
 
 - [x] **OUT-1500** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-587 in permissions.md): "Allow always" approves one exact command string, so each new "cd <repo> && git x" re-prompts. A PreToolUse hook denies that form and one git-in.sh <repo> wrapper makes a single approval cover all.

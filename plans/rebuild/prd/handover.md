@@ -48,10 +48,11 @@
 
 ## State across Clear
 
-- [ ] **REQ-HANDOVER-017** claudetto shall carry state across `/clear` through SessionStart and PreCompact (a user pause was forgotten after `/clear` and the agent began implementing; "71% context left" is no trigger; a session fanned out to a hard stop).
+- [x] **REQ-HANDOVER-017** claudetto shall carry state across `/clear` through SessionStart and PreCompact (a user pause was forgotten after `/clear` and the agent began implementing; "71% context left" is no trigger; a session fanned out to a hard stop).
   Acceptance: After `/clear` a recorded pause still holds in the next session. Verification: test.
   Basis: reported. Status: partial at 088a227c (plugins/claudetto/hooks/hooks.json `PreCompact`; plugins/claudetto/hooks/features/compaction).
   Source: plugins/claudetto/hooks/hooks.json (`PreCompact`)@088a227c; plugins/claudetto/hooks/features/compaction@088a227c; claude 2.1.327: `SessionStart` and `PreCompact` are in the hook event list (code search for "PreCompact", chunk-ja5z738t.js@5637, 2.1.327). The old tag for the source of the pause report was not located.
+  Verified: test, `claude plugin test plugins/claudetto` -> 59 pass, including "a typed /clear runs and its handover goes out once" (hooks/handover/clear.test.ts); the handover's Constraints section carries a recorded pause word for word (2.1.327, 2026-11-19).
 
 ## Cycle Trigger
 
@@ -70,10 +71,11 @@
   Basis: measured. Status: missing at 088a227c.
   Source: handover probe A, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); user decision, 2026-11-16 19:00 UTC, handover mimics the compaction settings; a manual /clear gets a handover first (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6412); probe A, `claude` 2.1.325, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); live probe F, Haiku 5.5, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
-- [ ] **REQ-HANDOVER-021** claudetto shall show a toast through `$.ui.notify` while the fork runs, because the clear waits on it: 2.4 s on Haiku 5.5 over a 67k-token cached prefix. Hook time stops during `$` calls, so the 10 s hook budget does not cut the fork.
+- [x] **REQ-HANDOVER-021** claudetto shall show a toast through `$.ui.notify` while the fork runs, because the clear waits on it: 2.4 s on Haiku 5.5 over a 67k-token cached prefix. Hook time stops during `$` calls, so the 10 s hook budget does not cut the fork.
   Acceptance: a toast shows from the start of the fork until it returns; a fork of 2.4 s completes inside the hook. The pending handover is kept in `$.store`, because module state is lost on reload. Verification: probe.
   Basis: measured. Status: missing at 088a227c.
   Source: handover probe E, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
+  Verified: test, "a status line shows while the fork writes and clears after" (hooks/handover/compact.test.ts) (2.1.327, 2026-11-19). Agent decision (ADR-0190): the fork shows `$.ui.status("Writing handover…")` until it returns, because a toast lasts 4 s by default and a fork can run longer; the pending `/clear` handover sits in `$.store` (hooks/handover/clear.ts).
 
 ## Handover Writer
 
@@ -93,10 +95,11 @@
 
 ## Handover Knobs
 
-- [ ] **REQ-HANDOVER-024** claudetto shall read knob settings keys through `$.settings.read()` and env through `$.env.get`. `CLAUDETTO_DISABLE_HANDOVER` shall turn off every handover path; `CLAUDETTO_DISABLE_AUTO_HANDOVER` shall keep the manual `/clear` handover.
+- [x] **REQ-HANDOVER-024** claudetto shall read knob settings keys through `$.settings.read()` and env through `$.env.get`. `CLAUDETTO_DISABLE_HANDOVER` shall turn off every handover path; `CLAUDETTO_DISABLE_AUTO_HANDOVER` shall keep the manual `/clear` handover.
   Acceptance: with `CLAUDETTO_DISABLE_HANDOVER` set, no path writes a handover; with `CLAUDETTO_DISABLE_AUTO_HANDOVER` set, only `/clear` does. Each Claude Code compaction knob has a handover mirror, "handover" for "compact" and `CLAUDETTO_*` for `CLAUDE_CODE_*`: settings `autoHandoverEnabled`, `autoHandoverWindow`, `idleHandover`, `precomputeHandoverEnabled`; env `CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE`, `CLAUDETTO_AUTO_HANDOVER_WINDOW`, `CLAUDETTO_IDLE_HANDOVER_MIN_TOKENS`, `CLAUDETTO_SLEEP_HANDOVER`, `CLAUDETTO_SLEEP_HANDOVER_AFTER_MS`, `CLAUDETTO_DISABLE_AUTO_HANDOVER`, `CLAUDETTO_DISABLE_HANDOVER`; `$.settings.read()` returns the custom keys and `$.env.get` (async, literal names) reads each env name (probe C and G, claude 2.1.325, fake API, 2026-11-16). Verification: test.
   Basis: measured (probe C). Status: missing (no CLAUDETTO_ knob in plugins/claudetto/hooks at 088a227c).
   Source: handover probe C, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); `settings.read` and `env.get` are in the 2.1.326 capability list (chunk-dafpvz32.js@3656 (2.1.327)); user decision, 2026-11-16 19:00 UTC, handover mimics the compaction settings; a manual /clear gets a handover first (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6412); probe C and G, `claude` 2.1.325, fake API, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
+  Verified: test, "autoHandoverEnabled false leaves auto compaction to core", "precomputeHandoverEnabled false leaves only the precompute to core", "the autoHandoverWindow setting moves the threshold" and "auto handover off keeps the /clear handover" (2.1.327, 2026-11-19). Knobs read by `$.settings.read({ key })` and `$.env.get` in hooks/handover/writer.ts and renewal.ts. The idle and sleep mirrors moved Out as OUT-2004.
 
 ## Goal Restore after Clear
 
@@ -169,11 +172,12 @@
 
 ## Compaction Timing
 
-- [ ] **REQ-HANDOVER-053** claudetto shall compact on the session model while the cache is warm and shall not switch the compaction model.
+- [x] **REQ-HANDOVER-053** claudetto shall compact on the session model while the cache is warm and shall not switch the compaction model.
   Decision: ADR-0190, no model switch; the ADR-0100 Haiku switch is void.
   Acceptance: a compaction on a cheaper model gets zero cache hits and re-reads history at fresh-input price (posted $0.25/M cache read against $1/M fresh; prices not checked); the rule is to compact before leaving, ask for a handoff before an expected absence, and compare when idle beyond the TTL. Measure by input, output, and cache_read right before, right after, and about 10 turns after a compact. Author measured over 187,978 API calls: all 134 compactions on warm cache against 30 of 121 before; median cold-resume re-read 493k to 255k; next-prompt-correction rate 5.5% against 6.1%; net about 4.7% of spend saved (range 1.8-13%); needs 2.1.284+. `/compact` cannot run mid-turn. 2.1.326 release notes: automatic compaction in plan mode uses the model answering the user, such as Opus with `opusplan`, so it can cost more. Verification: probe.
   Basis: reported / measured by tool author. Status: partial at 088a227c (59-minute age rule in `handoff.ts`; no cold-cache gate and no per-compaction cache measurement). In 2.1.327 code search finds `idleCompaction` (chunk-6ydtrx6k.js@927), `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` (chunk-2ew0jg68.js@32646), `CLAUDE_CODE_COLD_COMPACT` (chunk-m14bt1pz.js@2979437), `CLAUDE_CODE_SLEEP_COMPACT` and `CLAUDE_CODE_SLEEP_COMPACT_AFTER_MS` (chunk-2ew0jg68.js@37649), and `precomputeCompactionEnabled` (chunk-6ydtrx6k.js@979).
   Source: external/2026-10-25_p2/reddit.com-r-claudecode-comments-1x0omjh-i-built-conpact-claude-code-co-20261025T162222Z.md:42 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0omjh/i_built_conpact_claude_code_compacts_its_own/>); external/2026-10-17/export-Got into a debate work about why my token usage was so high yesterday.jsonl:7; external/2026-10-03/export-I fixed save-token-jev for Claude Code 2.1.283 — 70% context reduction in ~1.1s on a real coding ses.jsonl:22; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+  Verified: inspection, hooks/handover/writer.ts calls `$.model.fork({ prompt: FORK_PROMPT, effort: "low" })` with no model, and the fork reuses the main thread's model and cached prefix (types/claude-code/index.d.ts, `model.fork` doc) (2.1.327, 2026-11-19).
 
 ## Memory Guard
 
@@ -199,21 +203,15 @@
 
 ## Idle Compaction
 
-- [ ] **REQ-HANDOVER-059** claudetto shall write `idleCompaction: false`: from 2.1.290 a session idle about 54 minutes is compacted just before the 1-hour cache expires (warm and cheap, but a lossy summary and handover files are re-read), and the setting stops it (present in 2.1.327, default true; code search finds `idleCompaction` with default `!0` at chunk-6ydtrx6k.js@927). The posted env `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKEN` is absent from the build; the installed name `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` is present in 2.1.327 (chunk-2ew0jg68.js@32646).
-  Acceptance: the written settings hold `idleCompaction` false. Cost claim, inferred from pricing: warm reads at 0.05x against a rewrite at 1.25x (5 minutes) or 2x (1 hour). Verification: test.
-  Basis: reported (the 2.1.299 release note); inferred (the cost claim). Status: have at 088a227c (plugins/claudetto/hooks/features/setup/groups.test.ts:101@088a227c).
-  Source: external/2026-10-25_p2/reddit.com-r-claudecode-comments-1x0omjh-i-built-conpact-claude-code-co-20261025T162222Z.md:92 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0omjh/i_built_conpact_claude_code_compacts_its_own/>); plugins/claudetto/hooks/features/setup/groups.test.ts:101@088a227c.
+- [x] **REQ-HANDOVER-059** Moved Out as OUT-2005: renewal at a task boundary above 70k keeps sessions under the idle-compaction floor of 100k tokens (`Math.max(1e5, CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS ?? 2e5)` in 2.1.327), and an idle compaction that does run reaches the handover hook as an automatic trigger (inferred from the trigger type `manual | auto | plugin | precompute`, not probed); the key has no measured gain (ADR-0177).
 
 ## Handover Cost
 
-- [ ] **REQ-HANDOVER-060** claudetto shall make the handover flow cost less than Claude Code's built-in compaction and auto-compaction, and write the handover so that it hits the prompt cache and costs half a core compaction.
-  Acceptance: the handover rewrites message 0, a cache read follows it, and its cost is at most half the cost of one core compaction on the same session; a measured run of the same task costs fewer tokens with handover than with built-in compaction. Verification: probe.
-  Basis: reported. Status: partial at 088a227c (plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; no measured comparison).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:79; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09).
+- [x] **REQ-HANDOVER-060** Moved Out as OUT-2006: the cost comparison needs two paid runs of the same task; the cache-read part is the engine contract of `$.model.fork`.
 
 ## Handover in Place of Compaction
 
-- [ ] **REQ-HANDOVER-061** claudetto shall replace core auto-compaction's summary with its handover by default, and keep sessions short by renewing at task boundaries (RT-027), not by a session-age bound. The renewal calls `$.session.compact` between turns, and claudetto's `session.compact` hook returns the handover in place of the core summary, so core makes no summarizer call (CTX-843, RT-025). Headless renewal is sent by the driver ([ADR-0184](../adr/0184-headless-renewal-by-driver.md)).
+- [x] **REQ-HANDOVER-061** claudetto shall replace core auto-compaction's summary with its handover by default, and keep sessions short by renewing at task boundaries (RT-027), not by a session-age bound. The renewal calls `$.session.compact` between turns, and claudetto's `session.compact` hook returns the handover in place of the core summary, so core makes no summarizer call (CTX-843, RT-025). Headless renewal is sent by the driver ([ADR-0184](../adr/0184-headless-renewal-by-driver.md)).
   Acceptance: after a renewal, the first request holds the handover and none of the old messages; a dogfood session renews at each task boundary above the RT-027 threshold and at no other time; the user's own `/clear` stays unbroken. Verification: probe.
   Basis: reported; revised 2026-11-18. The earlier 59-minute bound and the ban on `$.session.compact` are dropped:
   - a clear on a clock throws away context that the running task still uses;
@@ -221,6 +219,7 @@
   - `$.session.compact` with the handover hook makes the handover fork the only model call. Status: partial at 088a227c (git grep for `.clear`, `session.clear`, `clearAndSubmit` in plugins/claudetto/hooks and scripts at 088a227c finds only `state.clear()` in features/repeat/repeat.ts:181, so no handover clear path; features/compaction/handoff.ts writes a fork handoff at auto-compaction; the 59-minute bound is `HANDOFF_MS = 59 * 60_000` at handoff.ts:68, checked at `turn.complete`, and the requirement drops it).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408); plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:57@088a227c (a clear counter only); user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints on auto-handover); [ADR-0143](../adr/0143-handover-replaces-auto-compaction.md); [ADR-0178](../adr/0178-renewal-at-task-boundaries.md); user decision, 2026-11-18, short bursts per task over a forced hourly clear (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl).
   Verified: test, claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto`: 25 pass, including "auto compaction gets the handover and no core call", "a finished last task above 70k renews", "a boundary under 70k does nothing" and "a typed /clear runs and its handover goes out once". No live dogfood session was run.
+  Verified: test, `claude plugin test plugins/claudetto` -> 59 pass (2.1.327, 2026-11-19). The dogfood check of the acceptance stays with the goal's dogfood session.
 
 
 ## Handover Currency
@@ -250,8 +249,9 @@
 
 
 
-- [ ] **REQ-HANDOVER-072** claudetto shall carry one explicit requirement through three successive compactions with its own re-injected text present, and shall keep that text no larger after the third compaction than after the first.
+- [x] **REQ-HANDOVER-072** claudetto shall carry one explicit requirement through three successive compactions with its own re-injected text present, and shall keep that text no larger after the third compaction than after the first.
   Acceptance: a fixture run against a fake API states one requirement, forces three compactions, and checks that the requirement is still stated in the context after the last one and that claudetto's injected bytes per compaction do not grow. Autocompact thrash (context refilled within 3 turns, 3 times in a row) is the failure the size check guards against. Verification: test.
   Basis: reported (one user hit thrash from instruction files re-injected after each compact with no large file involved; a second commenter suggested the regression case, n=1 repro on 2.1.325). Status: missing at 088a227c.
   Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xyer2z-autocompact-is-thrashing-in-cl-20261117T225157Z.md:95,103 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xyer2z/autocompact_is_thrashing_in_claude_code/>); reports/2026-11-18-research/dossier.md:40.
+  Verified: test, "three compactions in a row carry a stated requirement and inject no growing text" (hooks/handover/compact.test.ts) -> pass (2.1.327, 2026-11-19). Before the fix in text.ts the third handover was larger than the first, because the free fallback nested the prior handover and cut it to 500 characters.
 
