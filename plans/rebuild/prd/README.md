@@ -4805,6 +4805,500 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured (third-party, numbers shown) for the sizes; reported for the rules.
   Source: external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:40; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:46; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:52-56; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:75; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:147.
 
+- [ ] **OUT-1025** claudetto shall not carry CTX-556 (from `model-behaviour.md`) as a checked context fact: Measured cheap-decision-model (Jev) trap: each extra round trip resends 60-75k tokens of context to the orchestrator, so on a 14-issue backlog the Jev run used more Opus tokens than Opus reading the issues; break-even about 45-60 issues (15-20k tokens of bodies). On 267 closed issues Opus used 1.7M against 9.5M tokens (5.7x fewer raw, about 4x cost-weighted); Jev made 223 calls for $0.014; verdicts agreed 208 of 223, Jev the stricter.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured, one author.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:98 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1026** claudetto shall not carry CTX-557 (from `model-behaviour.md`) as a checked context fact: Haiku 5.5 chat rule: past about 5 prompts in one thread move to Sonnet, because Haiku asks for the same information again; it forgot to write decisions to the database and to close open issues and claimed it recorded them while re-asking, so as a subagent it needs a handler.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xcfufy-haiku-55-is-very-good-heres-why-20261023T025633Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcfufy/haiku_55_is_very_good_heres_why_i_dont_use_it/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1027** claudetto shall not carry CTX-558 (from `model-behaviour.md`) as a checked context fact: A commenter cites Anthropic's September 2025 postmortem as confirming three infrastructure bugs that degraded output for weeks, in a list of nerf explanations: A/B routing, infra bugs, distillation, harness changes, release prep.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a commenter, not checked.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:76; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:77 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
+
+- [ ] **OUT-1028** claudetto shall not carry CTX-559 (from `model-behaviour.md`) as a checked context fact: One user reports Opus 5.5 effort showing medium after starting on high with no change by the user. Another dropped xhigh to high, then medium, over two weeks with no visible quality loss.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user each.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:139; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:312 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
+
+- [ ] **OUT-1029** claudetto shall not carry CTX-560 (from `model-behaviour.md`) as a checked context fact: A commenter reports tracker numbers: nerf-bench moved from -5% to +5%; Margin Lab shows Opus 5.5 at a 77% pass rate today, 76% over 7 days, 81% over 30 days.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a commenter, not checked.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:129; external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:130 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
+
+- [ ] **OUT-1030** claudetto shall not carry CTX-561 (from `model-behaviour.md`) as a checked context fact: Context quality is ideal up to about 150K tokens and degrades at 250-300K even on a 1M window (anecdotal). Opus 4.6 is preferred for conversation and concision, 5.5 is smarter but flatter, harness prompts flatten tone, and 5.5 at low effort feels most like 4.6 (opinion).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable.
+  Source: external/export-Opus 5.5 is the smartest model I've used but it fucking forgets everything 😭.jsonl:15 (a commenter: ideal performance to about 150K tokens, degradation at 250K-300K on a 1M window). The 4.6 versus 5.5 tone opinions: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [ ] **OUT-1031** claudetto shall not carry CTX-562 (from `model-behaviour.md`) as a checked context fact: Sonnet 5.5 cost more per task than Opus 5.5 Max at max effort ($7.60 against $5.98 per AA task; 193k output tokens); Haiku hidden thinking mode tripled tokens, and off it is about 50% cheaper than Sonnet 5.5 low (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:37.
+
+- [ ] **OUT-1032** claudetto shall not carry CTX-563 (from `model-behaviour.md`) as a checked context fact: Compaction costs more tokens than it saves (reported by other users, 2026-11-09); a current handoff file plus `/clear` at a milestone while the cache is warm works better; small subagent tasks on a lesser model save tokens; hooks that inject a skill at session start and after compaction work "reasonably" on Opus 5.5. Not measured. The 2.1.326 release notes say automatic compaction in plan mode now uses the model answering you, such as Opus with `opusplan`, so it can cost more. Auto-compaction runs on the session model at 5m TTL: 434 compactions in a week, 2.8% of tokens. The 2.1.326 notes add that automatic compaction in plan mode uses the model answering the user, such as Opus with `opusplan`, so it can cost more.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable. inferred (from a log).
+  Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); unresolved: no source line located for the reports; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:78; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [ ] **OUT-1033** claudetto shall not carry CTX-564 (from `model-behaviour.md`) as a checked context fact: Third-party tip threads are kept as mentions only: ASD-STE100 for skills (the repo already cites it), weekly-limit complaint threads, and a worktree-coordination thread in which one deploy or test worker owns the environment and reports per commit SHA. They carry no measurements.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:259,265 (ASD-STE100) and external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:54 (one deploy or test worker owns the shared environment and reports per commit SHA). The weekly-limit complaint threads: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+  ## Model Behaviour
+
+- [ ] **OUT-1034** claudetto shall not carry CTX-565 (from `model-behaviour.md`) as a checked context fact: A user reports the built-in you-should-know agent said Fable 5.2 "was trained with deliberate limits" on optimization and frontier-risk work (a CPU inference hill-climb), so a worse result may be the model's safeguard, not the prompt; the Fable 5.2 announcement carries an "AI research and development" safeguard header; a commenter says the screenshotted prompt is not found in the installed repo.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one screenshot, disputed, unverified.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsbmk1-youshouldknow-fable-52-may-be-sa-20261110T093112Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsbmk1/youshouldknow_fable_52_may_be_sandbagging_you/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:139; external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:149 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>).
+
+- [ ] **OUT-1035** claudetto shall not carry CTX-566 (from `model-behaviour.md`) as a checked context fact: After Opus said no more speedup was possible on an 80k-agent simulation, Fable found about 25% more performance; others report 6% and about 40% (Fable planning with Opus agents coding) on rendering and perf work.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, anecdotal.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:178; external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:196 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
+
+- [ ] **OUT-1036** claudetto shall not carry CTX-567 (from `model-behaviour.md`) as a checked context fact: For a periodic fleet check-in, Sonnet "spaced out" and missed inefficiencies, while Opus went off on tangents and invented non-existent security requirements that wasted the fleet's resources; Fable did it right.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user. Another user ran Sonnet 5.5 as orchestrator for a weekend and found no arguing, no tangents, no invented mechanisms and two marginally wrong judgement calls (external/2026-10-31/reddit.com-r-claude-comments-1xindob-sonnet-55-opusfable-20261031T082828Z.md:27). The tasks differ (periodic check-in against continuous orchestration), so neither report changes the orchestrator model; the ADR-0177 gate decides it.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:222 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
+
+- [ ] **OUT-1037** claudetto shall not carry CTX-568 (from `model-behaviour.md`) as a checked context fact: Reported Fable 5.2 use: a full code review of a 100k-line game found 31 improvements including a physics tick lower than display tick; another review found about 50 bugs Opus did not on the same code; Opus 5.5 high twice found fewer than Fable.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, 3 authors, no baseline measured.
+  Source: external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:35; external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:180; external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:182; external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:261 (url: <https://www.reddit.com/r/aigamedev/comments/1xtallk/is_fable_52_and_improvement_over_opus_55_for_game/>).
+
+- [ ] **OUT-1038** claudetto shall not carry CTX-569 (from `model-behaviour.md`) as a checked context fact: Models "fake it over the finish line" on projects with messy multi-faceted acceptance criteria, but work well when boxed in with exhaustive closed-form tests.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, 1 author.
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:126 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+
+- [ ] **OUT-1039** claudetto shall not carry CTX-570 (from `model-behaviour.md`) as a checked context fact: One author says telling Fable it is "a big strong capable frontier model" cures its laziness; another suspects A/B testing for opposite experiences.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, no check.
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:392 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+
+- [ ] **OUT-1040** claudetto shall not carry CTX-571 (from `model-behaviour.md`) as a checked context fact: Reported Fable 5.x wins: decompilation moved ahead in 1 hour where Opus 5.5 was stuck in one function across more than 10 agents; a roadmap of 26 dependency-checkpointed tasks where Opus gave only the next 5 steps regardless of effort; a use-after-free found in a public library; a shader and a portfolio site fixed on first pass when told "full creative freedom".
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, anecdotes, n about 8.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:88; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:260; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:228; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xta14a/examples_of_fable_doing_things_much_better_than/>).
+
+- [ ] **OUT-1041** claudetto shall not carry CTX-572 (from `model-behaviour.md`) as a checked context fact: A team reports a Fable 5.2 custom harness without discovery steps is "orders of magnitude" cheaper in tokens than Claude Code's discovery-based exploration; 5.5 may suit harnesses that must read hundreds of millions of tokens to learn an architecture.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported, 1 author, no numbers.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:270 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
+
+- [ ] **OUT-1042** claudetto shall not carry CTX-573 (from `model-behaviour.md`) as a checked context fact: Anthropic published a guide with about ten rules for prompting Fable 5.2.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a commenter, not read.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:490 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
+
+- [ ] **OUT-1043** claudetto shall not carry CTX-574 (from `model-behaviour.md`) as a checked context fact: One commenter runs a daily benchmark on Opus 5.5 and says it is strictly identical since launch, against reports of a quality drop.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, 1 author, no data shown.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/>).
+
+- [ ] **OUT-1044** claudetto shall not carry CTX-575 (from `model-behaviour.md`) as a checked context fact: Tasks the agent cannot verify in place lower the quality of every model.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:50 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>).
+
+- [ ] **OUT-1045** claudetto shall not carry CTX-576 (from `model-behaviour.md`) as a checked context fact: Giving 2-3 past reports as examples in a Project moves output more than model choice; Sonnet matches Opus quality on many small well-defined tasks at lower cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xshd7l-models-and-use-cases-what-works-20261110T093140Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xshd7l/models_and_use_cases_what_works_best/>).
+
+- [ ] **OUT-1046** claudetto shall not carry CTX-577 (from `model-behaviour.md`) as a checked context fact: Cross-harness test: DeepSeek 4.1 Flash matched Opus 5.5 and Kimi on a QA and security task list, GLM 5.3 Flash missed much; both strong models omitted file:line in findings; the setup needs hooks to force each model to follow rules.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, other vendors.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:156; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:158 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1047** claudetto shall not carry CTX-578 (from `model-behaviour.md`) as a checked context fact: Amazon Bedrock keeps a model available about a year after Anthropic removes it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmcdri-opus-55-for-code-opus-46-for-ide-20261104T090223Z.md:60 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmcdri/opus_55_for_code_opus_46_for_ideas_and/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1048** claudetto shall not carry CTX-579 (from `model-behaviour.md`) as a checked context fact: PR-review replay: Sonnet found 13 real findings plus 7 false positives (about 50% extra), Opus 13 real plus 1 false positive.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmn6qp-is-sonnet-actually-any-worse-at-20261104T090031Z.md:189 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmn6qp/is_sonnet_actually_any_worse_at_executing_tasks/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1049** claudetto shall not carry CTX-580 (from `model-behaviour.md`) as a checked context fact: A cited paper (arXiv 2610.01023) says weaker models are acceptable as judges when the checks are decisive.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited, secondhand. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-31/reddit.com-r-claude-comments-1xixg9h-is-the-consensus-currently-that-fa-20261031T082729Z.md:240 (url: <https://www.reddit.com/r/claude/comments/1xixg9h/is_the_consensus_currently_that_fable_51_is/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1050** claudetto shall not carry CTX-581 (from `model-behaviour.md`) as a checked context fact: Harness matters as much as model: the SNARE framework explains about 56% of the variance in overeager behaviour against about 21% for the model [2605.28122]; harness alone costs 5-30x (catalog Cat 24:3 citing [2608.01347]; the multiplier is the catalog's). Opinion on Opus 5.5 is split: the majority says heavy harnesses (Superpowers, GSD) waste tokens and a short grill-me skill, a spec split into issues, a definition of done, and a fresh-context adversarial review suffice; a minority keeps design-implement-verify. Sequential execution is cheaper than per-step subagents.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (the variance and cost figures); reported (the split opinion).
+  Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:55; external/please-use-me-often/agent-failure-dossier/judged/spec.jsonl:3.
+
+- [ ] **OUT-1051** claudetto shall not carry CTX-582 (from `model-behaviour.md`) as a checked context fact: Effort in code review, measured by one poster (not agentic): 36 seeded bugs, 144 `claude -p --effort` runs. Recall 80% low, 85% medium, 86% high (noise about 4 points, so medium equals high); false alarms per review 3.4, 2.3, 1.9; output tokens Opus 5.5 1,496/2,701/3,734, Haiku 5.5 5,930/10,993/18,614; Sonnet 5.5 low false alarms 5.8 against 0.8 at high. Practice: medium by default, high when a false alarm blocks a merge. Cross-lab review did not beat same-lab (22 of 100 defects caught by the other lab).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured, one poster.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>).
+
+- [ ] **OUT-1052** claudetto shall not carry CTX-583 (from `model-behaviour.md`) as a checked context fact: Per-model notes (cited from Anthropic 5.5 guides plus corpus). Opus 5.5 stops prematurely in four named ways (announce next step, offer to continue, list non-blocking decisions); Sonnet 5.5 calls tools with wrong case (`bash`; 6 corpus calls, all subagent), adds unrequested tests and docs, may report done unchecked at low effort; Haiku 5.5 stops early and reports unverified at low or medium. Sonnet 5.5 batches reads into one shell command and writes whole files (fewer test runs 1.6 against 6.7, passes 25/30 to 30/30, about $0.15 against $0.36 per task; one poster, 10 tasks x 3 runs, saturated). Cost at max effort against high: Sonnet 5.5 5x, Opus 3.44x, Haiku 4.34x. Speed does not follow price (one 7-task set: Opus 5.5 about 121 s, Sonnet 5.5 about 140 s, Haiku 5.5 about 100 s). One game-dev anecdote: Opus 5.5 180k output tokens and all of the remaining 85% usage, unfinished; Sonnet 5.5 58k, about 15%, finished.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (Anthropic guides); measured, one poster (the task and speed figures); reported, one user (the game-dev anecdote).
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xak96j-i-measured-87000-of-my-claude-20261020T074808Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xak96j/i_measured_87000_of_my_claude_code_api_calls_two/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>).
+
+- [ ] **OUT-1053** claudetto shall not carry CTX-584 (from `model-behaviour.md`) as a checked context fact: Fable 5.2 at high to xhigh and Opus 5.5 at medium to high are reported as sweet spots (Anthropic reportedly said xhigh adds little over high). Fable ties Opus on controlled runs at 1.5-3x cost. Mythos 5.2 is reported as the same model with extra safeguards. Fable draws the weekly all-models limit with no separate pool; the extra cap is about half the weekly limit on some plans; one claim that a Fable advisor draws no separate usage is unverified. Reopen rates are equal at twice the cost on 30 issues (one codebase). Fable as a Projects coordinator is wasteful (a router is Haiku-grade). `claude-fable-5-2` and `claude-mythos-5-2` are present as model IDs in 2.1.327 (chunk-jtw26wbb.js@622, chunk-f892tj2r.js@21145; code search). Fable 5.2 and Mythos 5.2 are reported (by the user, 2026-11-13) to be one model with different guardrails; most dossiers cover Fable 5.1; many reports say Fable falls short of standards (a claim, not checked against a dossier).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (reported, user, 2026-11-13 for the one-model claim).
+  Source: external/2026-11-10/reddit.com-r-claudecoding-comments-1xs84wp-tldr-fable-52-high-vs-opus-5-20261110T095106Z.md:2 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xs84wp/tldr_fable_52_high_vs_opus_55_xhigh_via/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:26; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5317, reported, user, 2026-11-13.
+
+- [ ] **OUT-1054** claudetto shall not carry CTX-585 (from `model-behaviour.md`) as a checked context fact: Community reports relayed by the user say: Haiku gets stuck on small mistakes as a coordinator and is best for cheap reviews, quick answers, and scouting; Sonnet at medium is the everyday default; Opus 5.5 at medium is the default and max effort inflates cost; Fable at max effort is discouraged.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, several Discord users, relayed by the user, 2026-11-13.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6028; reported, user, 2026-11-13.
+
+- [ ] **OUT-1055** claudetto shall not carry CTX-586 (from `model-behaviour.md`) as a checked context fact: A poster using Sonnet 5.5 on the free tier asked about papers on LLM introspection; Claude saw a cited paper on fine-tuning a model to predict its own outputs to gain introspective access (arXiv 2410.13787, <https://arxiv.org/abs/2410.13787>), asked to try an experiment, and then made up its own protocol that had nothing to do with the paper, writing predictions with confidence levels first (for example 42 at 45% for "pick a number between 1 and 100").
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one poster; no run).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xfs68x-claude-decided-to-run-an-experim-20261028T060928Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfs68x/claude_decided_to_run_an_experiment_on_itself/>).
+  ## External Sweep, 2026-11-18
+
+- [ ] **OUT-1056** claudetto shall not carry CTX-868 (from `model-behaviour.md`) as a checked context fact: Scope escapes: in one author's 35-task bug-fix test (hidden tests) Opus 5.5 and Sonnet 5.5 each fixed 34, and Sonnet wrote outside its assigned folder on 4 of 35 tasks against 0 for Opus; in another report Opus 5.5 moved a folder outside the repo that it was told to leave. A scope fence in the brief (ADR-0140) is paired with a guard that rejects writes outside the scope path, for every model.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured (third-party, one harness, numbers shown) for the 4 of 35; reported for the folder move.
+  Source: external/2026-09-29/export-Sonnet 5.5 has been out for an hour. Has anyone gotten a chance to stress test it-.jsonl:4; external/export-Opus 5.5 made a significant, -non-aligned- decision without instruction or being explicit.jsonl:2.
+
+- [ ] **OUT-1057** claudetto shall not carry CTX-869 (from `model-behaviour.md`) as a checked context fact: Haiku used only for exploration ignored an explicit read-only instruction and wrote and changed files. A read-only subagent gets read-only tools in its definition (ADR-0120), not an instruction alone.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1x4gs6s-do-you-recommend-haiku-55-high-or-20261025T160635Z.md:69.
+
+- [ ] **OUT-1058** claudetto shall not carry CTX-870 (from `model-behaviour.md`) as a checked context fact: Instruction adherence differs by model and effort: on one morning Opus 5.5 and Sonnet 5.5 answered Thai input in Thai against a project rule to translate it, while Opus 4.8 and Haiku 4.5 followed it; another user found Sonnet at low effort ignored CLAUDE.md and memory rules that Opus 5.5 at low rarely ignores. A subagent brief restates the rules the task depends on (REQ-DELEGATION-047, ADR-0140), and a hook checks the ones a machine can check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, two users, no controlled run.
+  Source: external/2026-10-01/export-What is wrong with Opus 5.5 all of a sudden- I have it on Max and it's only used 20k tokens in 30 mi.jsonl:49; external/2026-10-21/reddit.com-r-claudecode-comments-1xakpl1-am-i-the-only-one-sonnet-55-ro-20261020T073630Z.md:86.
+
+- [ ] **OUT-1059** claudetto shall not carry CTX-871 (from `model-behaviour.md`) as a checked context fact: A coordinating agent asked to choose a model for delegated work picks its own model about 95% of the time, whether that is overkill or underkill, by one commenter's account. claudetto fixes the model per step type in the agent file or a routing table (ADR-0103, REQ-DELEGATION-057) and does not ask the orchestrator to choose.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter; the 95% has no count behind it.
+  Source: external/export-The one thing LLMs still can't do.jsonl:2; external/export-The one thing LLMs still can't do.jsonl:13.
+
+- [ ] **OUT-1060** claudetto shall not carry CTX-873 (from `model-behaviour.md`) as a checked context fact: Two verification traps in model-written test suites: storage and system APIs are mocked, so the suite stays green while real persistence breaks on restart or upgrade; and expected values written by the model agree with the model's wrong formula, so code and test share the same wrong number. A reviewer asks which tests hit real persistence, and expected values for computed results come from the specification or the user, not from the model that wrote the code (REQ-VERIFICATION-075, ADR-0180).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx6asn-how-do-you-make-sure-your-app-20261116T051049Z.md:85; external/2026-11-16/reddit.com-r-claudecode-comments-1xx6asn-how-do-you-make-sure-your-app-20261116T051049Z.md:139.
+
+- [ ] **OUT-1061** claudetto shall not carry CTX-874 (from `model-behaviour.md`) as a checked context fact: UI work converges faster when a script renders the current state to an image that the agent reads after each change, and when vague adjectives are replaced by a spacing scale and a named palette in a file. A UI verification step reads a rendered image, not a text description of it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-17/export-I learned I have to completely change my prompt style when building backend vs. frontend.jsonl:4.
+
+- [ ] **OUT-1062** claudetto shall not carry CTX-875 (from `model-behaviour.md`) as a checked context fact: Verification loops are not silent: in 7 of 8 timeouts on one comparison night the change was already correct and the model kept retaking screenshots until the limit; a note at 5 minutes to stop checking and answer, and two screenshot tries per reply, fixed it. A stall timeout that counts silence (ADR-0041) does not catch this; the guard also counts repeats of the same check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured (third-party, numbers shown, one author).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcut-how-did-you-get-better-at-buildi-20261104T085832Z.md:68.
+
+- [ ] **OUT-1063** claudetto shall not carry CTX-889 (from `model-behaviour.md`) as a checked context fact: Test cadence conflict. For: a commenter says the harness instruction to test after every change gives 20-30% more passes in their benchmarks. Against: the agent ran the full suite repeatedly despite explicit instructions not to; it re-ran the full suite after a wording change in a settings menu (Opus 5.5 high); a suite cut from 13 to under 3 minutes grew back to 13 as the agent kept adding tests. Resolution: test after each change, lightest check first and the nearest tests only, with the full suite once per tree from the main loop (REQ-REPLY-104, REQ-DELEGATION-006); test growth is reviewed like code.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (four commenters; the +20-30% has no data shown).
+  Source: external/2026-10-07/export-ClaudeCode Opus 5.5 overtesting-.jsonl:29; external/2026-10-07/export-ClaudeCode Opus 5.5 overtesting-.jsonl:21; external/2026-10-17/export-After this latest update Claude code is slower, uses more tokens, and makes mistakes constantly.jsonl:8; external/2026-10-13/export-What do you do about the growing number of tests in a large project-.jsonl:6.
+
+- [ ] **OUT-1064** claudetto shall not carry CTX-890 (from `model-behaviour.md`) as a checked context fact: Scope creep on a long-term project (changes beyond the task, unneeded abstractions) is held by a written task contract, not more docs: before the session, one task, the files it may touch and the test that proves it, with a stop-and-ask outside that list; a short per-task plan approved before any edit, then a review of the diff against that plan; code that should not be imitated is removed or marked legacy; generated files get `permissions.deny` `Edit(...)` rules (Unity scene, prefab and meta YAML), which stop only the Edit tool unless the sandbox is on (REQ-GUARDS-076). Asking first for the assumptions and the three riskiest parts, then waiting, is REQ-REPLY-065.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (four commenters, no counts).
+  Source: external/2026-11-18_p2/reddit.com-r-claudeai-comments-1xzfuv3-using-claude-code-on-a-longterm-20261118T183016Z.md:35,67,89,103,125; external/2026-11-18_p2/reddit.com-r-promptengineering-comments-1xxoxn1-stop-chasing-the-onesho-20261118T183200Z.md:35.
+
+- [ ] **OUT-1065** claudetto shall not carry CTX-724 (from `models-effort.md`) as a checked context fact: `showThinkingSummaries` on against off, two runs each at effort high: output 187 and 275 against 144 and 164 tokens; thinking 94 and 143 against 84 and 91. No separate charge, under $0.0001 per Haiku call; noise cannot be separated at n=2
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:814.
+
+- [ ] **OUT-1066** claudetto shall not carry CTX-726 (from `models-effort.md`) as a checked context fact: An article "Spending your effort" and commenters say: Opus 5.5 high is the new xhigh and medium the default; Fable 5.1 low is cost-effective; thinking cannot be disabled, so start low and measure; lowering effort cuts thinking more reliably than prompt wording. Second-hand points of the Opus 5.5 prompting guide: drop "think carefully", name exact styles to ban, look around before acting.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (cited via link, not read). Status: have at 088a227c.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:121 (Opus 5.5 high is the new xhigh) and external/export-Token optimization from Anthropic- choosing the right effort level to the task.jsonl:9. The article "Spending your effort" itself was not found; the article claim is Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+  ## Models and Effort
+
+- [ ] **OUT-1067** claudetto shall not carry CTX-727 (from `models-effort.md`) as a checked context fact: A poster on the 20x plan (confounded) used about 5 of 7 weekly days on Opus medium, 3.5 days with 45% done on Opus low, 6.25 days with 95% done on Sonnet low (inferred: low effort causes retries). One build per approach with hidden tests: consensus that a detailed prompt beats skill packs on Opus 5.5 (opinion, no repeat runs). A vendor audit skill at high effort exhausted three 5-hour windows in about 10 minutes (second-hand, kept as reported; the burn rate needs a paid run, subagent cache about 5 min against main about 1 h, second-hand); a two-pass audit (cheap architecture map, then one file at a time) cuts cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: have at 088a227c.
+  Source: external/export-What am I missing by only using sonnet when it comes to coding-.jsonl (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpxt1c/what_am_i_missing_by_only_using_sonnet_when_it/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>). Not located: the line numbers and the skill-pack build comparison.
+  ## Models and Effort
+
+- [ ] **OUT-1068** claudetto shall not carry CTX-728 (from `models-effort.md`) as a checked context fact: Task 3.1a, 120 sessions per arm, passed/failed and cost: built-in 120/0 ($2.14), suite 120/0 ($1.06), haiku 120/0 ($0.03), sonnet 114/6 ($0.25, all six failures push-after-no-push). Total $3.48, 13.7M tokens (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:66.
+  ## Models and Effort
+
+- [ ] **OUT-1069** claudetto shall not carry CTX-729 (from `models-effort.md`) as a checked context fact: Hybrid setup: Fable in the main feed does architecture, a local Qwen3.8 inside the Claude Code terminal does about 60% of implementation, and session limits are rarely hit.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session). Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:167 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
+  ## Models and Effort
+
+- [ ] **OUT-1070** claudetto shall not carry CTX-730 (from `models-effort.md`) as a checked context fact: One commenter says to use max effort, not xhigh, for research-style discussion, for better sourcing and thoroughness.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one commenter; the original poster uses xhigh and will trial max). Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:354,358 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>).
+
+- [ ] **OUT-1071** claudetto shall not carry CTX-731 (from `models-effort.md`) as a checked context fact: One commenter guesses that medium effort on Opus 5.5 gives "like 85-90%" of the quality of high for far fewer tokens on everyday back and forth, and says high makes sense for complex reasoning or code that must be bulletproof.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter, no measurement. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/>).
+
+- [ ] **OUT-1072** claudetto shall not carry CTX-732 (from `models-effort.md`) as a checked context fact: Sonnet 5.5 at high effort consumed about 1.9x the tokens of medium, as shown by Claude itself and the poster's own test, so Opus may be cheaper per task than Sonnet at high; another commenter disputes this for their use case.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user (disputed by another). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:101; external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/>).
+  ## Models and Effort
+
+- [ ] **OUT-1073** claudetto shall not carry CTX-733 (from `models-effort.md`) as a checked context fact: claudetto shall treat these relayed benchmarks as directional: Haiku 5.5 high found 44 of 48 files vs Opus 45 for $0.44 vs $6.17 (one user, 6 tasks); Haiku xhigh 3x cost for same files; Haiku flagged 30 correct sentences as errors; Sonnet medium ~15 points below high at 48% cost; Opus xhigh +1.4 points for 2.5x high; Opus low much worse for defect search; Fable advisor +1.7 points for 2.1x; Haiku subagents -15 F1 vs Sonnet subagents on judgment. Personal benchmark (25 tasks, 1-3 runs, small): Opus 5.5 100% ~$0.09/task 27 s; Sonnet 5 100% $0.11 61 s; Opus 5 100% $0.19 47 s; Fable 5.1 100% $0.26 41 s; Haiku 4.5 76% $0.10 78 s; low effort ~20% cheaper ~30% faster with no loss. Opus 5.5 guide (cited by poster): 5.5 medium matched/beat Opus 5 high; default effort medium; Anthropic removed >80% of Claude Code system prompt for Opus 5-class with no coding-eval loss. Terminal Bench: Sonnet 5.5 70.6 vs Opus 5.5 66.4; AA run Opus high 64.2% $3.88 vs Sonnet xhigh 61.5% $5.30. DEFLATE (single run, medium): Opus passed 4055 tests 507 MB/s 10m18s $2.08; Sonnet 447 MB/s 3m41s $0.52. Haiku 5.5 86-question: Haiku 84.7, fastest 3.5 s, weak on tool calling/safety; 18/18 made-up bugs, tomlkit 3/3, cachetools 3/3, humanize 0/3; 37% of tasks flip across identical runs. Small bug fixes (30 runs, hidden tests, 5 setups): all passed, Opus ~16x Haiku cost; harder bug gap shrank, Sonnet won. Fable 5.2 (2026-11-09): up to 30% faster, fast mode up to 2.5x; one comparison Fable 74% at $0.062 vs Opus 68% at $0.028. Effort opinions: medium daily, high for review/blueprint, xhigh overthinks, max overthinks easy tasks; Anthropic docs say highest settings can cause worse, longer outcomes (unverified). Mythos/CVP: Opus 5.5, Sonnet 5.5, Fable 5.x reported excluded, Mythos 5.1 by email, same draw as Fable; not priced for this account except Athena (project CLAUDE.md). Releases/tiers as posted (Fable 5.5 market 44%, "Opus 5.5 = Fable 5.1 at ~60% cost") are not pricing sources. Harness effect: GPT-5.6 Terra 79% in Codex vs 47% via Claude Agent SDK (reported). Models: verified on 2.1.327 (`surface` model): ids `claude-opus-5-5` (chunk-pmhjgtb5.js@2208), `claude-sonnet-5-5` (@1622), `claude-haiku-5-5` (@1894), `claude-fable-5`, `-5-1`, `-5-2` (@2366, @1732, @1786) and `claude-mythos-5`, `-5-1`, `-5-2` (chunk-jtw26wbb.js@583, @601, @621) are present, and the `[1m]` forms exist for Opus 5.5 and Sonnet 5.5 (chunk-18d5r2hb.js@271909, @272031).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: unchecked: a relayed benchmark, not code at 088a227c.
+  Source: external/2026-10-12/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1x1nsaz/i_tested_haiku_55_sonnet_55_and_opus_55_as/); external/2026-10-02/export-100$ plan - holy sh-.jsonl:101; external/2026-10-02/export-100$ plan - holy sh-.jsonl:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wvdodf/100_plan_holy_sh/>).
+
+- [ ] **OUT-1074** claudetto shall not carry CTX-734 (from `models-effort.md`) as a checked context fact: Compaction cost: a handoff adds a 376-byte notice and one continuation request (23,588 B); the built-in compaction adds one request of +6,535 B over a normal turn; both carry `cache_control`; the summarizer request keeps `cache_control` on the parent's last message, same model and 12 tools, no `ttl` (5 m). Handover $0.043 against built-in $0.094 at 166k tokens (one run per arm, 2.1.319). The first request after built-in compaction read 5,819 and wrote 19,448 at 1 h; after a typed `/clear` it read 5,819 and wrote 7,101. A Haiku fork costs about $0.10 per million against $0.17 for `/compact`. No B arm was cheaper than C in 3 paired paid runs ($0.88-3.47 per run). Probe 5 had 5 compactions in one turn, $2.34, 64% cached input read. API compaction overshoots its trigger by up to 7,269 tokens. Real probes 1-4 never compacted because the model redirected large output to files.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:139; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:38; openspec/changes/2-1-325-rearchitecture/design.md:61; the 376 B, 23,588 B, and 6,535 B figures: unresolved, not found by grep.
+
+- [ ] **OUT-1075** claudetto shall not carry CTX-735 (from `models-effort.md`) as a checked context fact: Cache: turn 1 had a 49.6% hit (read 12,921, write 13,133, $0.1096) against turn 2 at 98.6% across `--resume` (Opus 5.5 medium, $0.1220); both write only a 1 h cache. Real sessions over 3 days: root 7,226/7,331 (98.6%), subagents 4,064/4,109 (98.9%) at or above 98%; 39 of 45 subagent misses under 50% follow `compact_boundary`, 5 a gap over 1 h; of 105 root misses 39 follow compaction, 5 a model switch, 8 a gap over 300 s. A top-level effort change mid-conversation re-wrote 81k of 101k cached prompt while a per-message change re-wrote nothing (Agent `effort` effect inferred). `CLAUDE_CODE_DISABLE_CRON=1` makes the `/loop` gate false. 40 sessions and 1,021 turns: median 5 tool steps, 50% end before step 6. Footprint: on 2.1.314 the first request's standing context was 907 chars of the MCP server. Haiku bills past 100k at 5x.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Conflict: claudetto shall rely on these cache facts.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:129; openspec/changes/2-1-325-rearchitecture/design.md:131; openspec/changes/2-1-325-rearchitecture/design.md:27; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:57; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:145; openspec/specs/docs-lookup/spec.md:10 (907 chars); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (probe `/private/tmp/claude-501/probe-sub/cache.ts`, using `requestsOf`).
+
+- [ ] **OUT-1076** claudetto shall not carry CTX-737 (from `models-effort.md`) as a checked context fact: Minimum Claude Code versions: Opus 5.5 2.1.280, Sonnet 5.5 2.1.284, Haiku 5.5 2.1.293, Fable 5.2 2.1.321.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:14.
+
+- [ ] **OUT-1077** claudetto shall not carry CTX-738 (from `models-effort.md`) as a checked context fact: An Opus orchestrator with Sonnet subagents on work larger than one context costs about a third less than one Opus session at about the same score. Haiku subagents under Opus medium cost 32% less at a pass rate about 4 points lower: on a coding set, Opus medium with Haiku medium scored 68.8% at $3.35, against Opus alone 72.1% at $4.78 and Opus low 63.0% at $1.84. It lies on the low-to-medium straight line, so it gains nothing over lowering effort.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:32; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:33; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:34; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:51.
+
+- [ ] **OUT-1078** claudetto shall not carry CTX-739 (from `models-effort.md`) as a checked context fact: Effort escalation: run at low or medium and re-run failures at high. Opus solved about 97% for $0.17-$0.24, against 95.3% at $0.29 all-high (about 40% saving). It needs a checker that fails bad work.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:35; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:53.
+
+- [ ] **OUT-1079** claudetto shall not carry CTX-740 (from `models-effort.md`) as a checked context fact: Defect-search F1 and cost: Haiku 0.577/$25; Opus with Haiku subagents 0.677/$47; Sonnet 0.760/$103; Opus with Sonnet subagents 0.831/$139; Opus medium/high 0.827/0.850 at $200/$236; Fable low/high 0.866/0.909 at $357/$563.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:41; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:50.
+
+- [ ] **OUT-1080** claudetto shall not carry CTX-741 (from `models-effort.md`) as a checked context fact: Coding scores: Sonnet medium 62.7%/$0.16, high 77.8%/$0.33; Opus low 74.8%/$0.35, medium 86.6%/$0.84, high 88.4%/$1.38, xhigh 91.1%/$4.11; Fable low 88.9%/$1.05, high 93.5%/$5.39. Work at Sonnet medium needs a high re-run on a failed check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:52.
+
+- [ ] **OUT-1081** claudetto shall not carry CTX-742 (from `models-effort.md`) as a checked context fact: Opus on an SWE-bench Pro subset: low 87.4%/$0.11, medium 92.8%/$0.21, high 95.3%/$0.29, xhigh 96.7%/$0.74. Low is 34 points lower for defect search.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:27.
+
+- [ ] **OUT-1082** claudetto shall not carry CTX-743 (from `models-effort.md`) as a checked context fact: Advisor consult rate: Sonnet 5.5 at high consulted an Opus advisor on 0 of 20 SWE-bench Pro problems (3 and 4 of 20 at xhigh). Neither Haiku nor Sonnet called it on GPQA without a prompt. Opus at low consulted on 1 of 300 charts. The advisor stays disabled.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:54.
+
+- [ ] **OUT-1083** claudetto shall not carry CTX-744 (from `models-effort.md`) as a checked context fact: Fable 5.2 at high scored 1.9 points below Opus medium on DeepResearch Bench II at $4.82 against $1.69 per task. Fable medium beat low by 0.6, inside noise.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:55.
+
+- [ ] **OUT-1084** claudetto shall not carry CTX-745 (from `models-effort.md`) as a checked context fact: Fable as orchestrator cost 19% more than Opus at about the same score. Opus at low with an advisor scored 7 points lower than alone.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:28.
+
+- [ ] **OUT-1085** claudetto shall not carry CTX-746 (from `models-effort.md`) as a checked context fact: Raising `max_tokens` to 64,000 did not raise cost per solved task. Opus solved 57.6% at 16,384 against 75.6% at 64,000.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:56.
+
+- [ ] **OUT-1086** claudetto shall not carry CTX-747 (from `models-effort.md`) as a checked context fact: Pasted-claim check: Opus xhigh solved 96.5% against Fable high 96.3% at $0.75 against $1.39 per solved task. Opus high 95.5% at $0.30; Fable low 94.6% at $0.39. The AA index shows Fable low 54 at $3.10 ahead of Opus high 52 at $3.46.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (relayed).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:63; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:64.
+
+- [ ] **OUT-1087** claudetto shall not carry CTX-748 (from `models-effort.md`) as a checked context fact: `effort_cost_index` per model, with high = 1.00: opus-5 low 0.67, medium 0.76, xhigh 1.60, max 1.70; fable-5 0.60, 0.77, 1.74, 1.91. Opus 5 max against xhigh used 397,761 against 397,827 tokens (n=2).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (poster's measurement).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:16 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wjr89j/claude_code_ships_a_permodel_table_of_what_each/>.)
+
+- [ ] **OUT-1088** claudetto shall not carry CTX-749 (from `models-effort.md`) as a checked context fact: A 650-token rule set cut cost 51% (Opus) and 55% (Sonnet) at max, and 11% and 3% at medium (18 tasks, the author's own plugin).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:17 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wtbj8x/i_benchmarked_a_30line_claude_code_plugin_on_opus/>.)
+
+- [ ] **OUT-1089** claudetto shall not carry CTX-751 (from `models-effort.md`) as a checked context fact: After a prompt rule, 97-98% of subagent tokens still went to Opus, and subagents re-read files the main agent had read (one user).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:27; external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
+
+- [ ] **OUT-1090** claudetto shall not carry CTX-752 (from `models-effort.md`) as a checked context fact: Five orchestration methods with Opus 5.5: solo Opus did best, and a second-model reviewer caught a real issue (n=1).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one poster.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wt9g4q/i_tested_five_orchestration_methods_with_opus_55/>.)
+
+- [ ] **OUT-1091** claudetto shall not carry CTX-753 (from `models-effort.md`) as a checked context fact: Opus as fleet orchestrator: cap parallelism at 6-8, have subagents write to files and return a short summary, dispatch atomically with a self-contained brief, delete old rules instead of adding. Only hooks act as hard gates.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:32 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnmbqg/opus_55_as_a_fleet_orchestrator_early_notes_from/>.)
+
+- [ ] **OUT-1092** claudetto shall not carry CTX-754 (from `models-effort.md`) as a checked context fact: A/B on a 3,012-file FastAPI repo (3 tasks, 2 runs each, tokens from JSON output): cost follows the number of turns, not how much is read. Session length moves the weekly number more than effort.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (small study).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:62; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>)
+
+- [ ] **OUT-1093** claudetto shall not carry CTX-755 (from `models-effort.md`) as a checked context fact: Terminal-Bench relayed: Opus 5.5 high 64.2% at $3.88 against Sonnet 5.5 xhigh 61.5% at $5.30.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported (benchmark relay).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wt3baa/sonnet_55_vs_opus_55_the_terminalbench_win_is_max/>.)
+
+- [ ] **OUT-1094** claudetto shall not carry CTX-756 (from `models-effort.md`) as a checked context fact: A cost-focused `Agent` description halved Fable subagent counts. Fable rarely delegates with a minimal subagent tool.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:85.
+
+- [ ] **OUT-1095** claudetto shall not carry CTX-757 (from `models-effort.md`) as a checked context fact: Fable report style: "# Communicating clearly" asks for key points first and plain words. Claude Code docs say "Describe the outcome, not the steps" and "Skip the verification reminders".
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:86; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:87.
+
+- [ ] **OUT-1096** claudetto shall not carry CTX-758 (from `models-effort.md`) as a checked context fact: Haiku 5.5 moving from low to medium halved early stops and doubled output tokens. Its stock Claude Code prompt is the largest at 8,429 chars with 5 extra paragraphs.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:77; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:78.
+
+- [ ] **OUT-1097** claudetto shall not carry CTX-759 (from `models-effort.md`) as a checked context fact: The docs give no prompt token limit. Long prompts hurt Haiku at low effort, a short end reminder helps, and Fable piles up stale cautions, so delete lines whose reason no longer holds.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:92.
+
+- [ ] **OUT-1098** claudetto shall not carry CTX-760 (from `models-effort.md`) as a checked context fact: Discord reports: one user removed over 80% of rules, moved the rest to mechanical checks, and set goals and a bar, with better output, less churn, and lower usage. Another said "no point in having 100k of prompt per turn for 10 words added". In a Reddit thread on Fable as coordinator, most put Fable on architecture and review and Sonnet or Haiku on routing.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (not measured).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:763.
+
+- [ ] **OUT-1099** claudetto shall not carry CTX-761 (from `models-effort.md`) as a checked context fact: Fable 5.2 controlled results. OpenMarkAI: Fable 74% at $0.062 and 74 s against Opus 5.5 68% at $0.028 and 40 s. Arqium adjudicator: Fable low 98, 98 against Opus 59, 98, 65, 53, about 45% more per run. Round_Ad_5832, six repos with a seeded bug: Fable 2 of 2 against Opus 0 of 2, Opus 2.1x faster. klashnkoof: Opus xhigh 51 min $19 against Fable high 58 min $29. mod-bot: Fable high 45.3% against Opus xhigh 45.5% at about half the cost. PSA advisor: Opus high with a Fable advisor 90.1% at $2.92 against Opus xhigh alone 91.1% at $4.11. SatoshiReport: about 30 issues, reopens equal, Fable 2x cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:14; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:15; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:16; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:17; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:18; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:19; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:20; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:21.
+
+- [ ] **OUT-1100** claudetto shall not carry CTX-848 (from `models-effort.md`) as a checked context fact: One-task comparison at medium effort measured with ccusage (reported, n=1 task, one user): Fable 5.2 $4.27 and 3.86M tokens, Sonnet 5.5 $1.98 and 6.66M, Opus 5.5 $5.15 and 11.94M; the poster's score was 3.82 of 5 for Fable and 3.36 for Opus. All models waited for approval before a commit and before using the screen. This conflicts with three comments that Fable 5.2 costs more usage than Opus 5.5, thinks for about 20 minutes on one import and burns quota fast; the thread data shows Fable cheaper per task but slower, so cost and latency need separate measurement in plan-window units (REQ-COST-046).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: reported (n=1 task; comments n=4). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xyp4h6-mildly-interesting-oneshotprom-20261117T224734Z.md:36-37,50-53,67-90 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xyp4h6/mildly_interesting_oneshotprompting/>); external/2026-11-18/reddit.com-r-claudecode-comments-1xxikj2-fable-52-is-lazy-and-makes-swe-20261117T183133Z.md:94; reports/2026-11-18-research/dossier.md:162,163.
+
+- [ ] **OUT-1101** claudetto shall not carry CTX-860 (from `models-effort.md`) as a checked context fact: A cited 65-day analysis of more than 43,000 Claude Code invocations reports that 39% of Fable 5 calls got zero thinking tokens, with a median of 123. On claude 2.1.327 a model in adaptive thinking mode decides its own thinking per request (OUT-093), so a low thinking count is the model's choice at that effort, not a client budget; effort is the lever claudetto sets.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party, a quoted post; method not shown).
+  Source: external/export-It's time to cancel your subscriptions - Anthropic is silently nerfing Claude's reasoning budget whi.jsonl:2.
+
+- [ ] **OUT-1102** claudetto shall not carry CTX-861 (from `models-effort.md`) as a checked context fact: Effort-ladder measurements. Three Opus 5.5 agents fixed one bug round in parallel worktrees: xhigh 88 min, high 67, medium 44; medium broke an unrelated part, high fixed everything, xhigh also caught two wrong premises in the orchestrator's instructions. One enterprise user's evals put xhigh about 10% more satisfying than high at much higher cost. Haiku 5.5 at max used 285 requests and about $1.50 against 54 requests and $0.21 at high with no correctness gain. Sonnet 5.5 at max thought for 300K tokens without output on one batch run. One commenter's 13 effort and role variants found xhigh best. This supports REQ-DELEGATION-047: high by default, xhigh for planning and for escalation on faulty or ambiguous instructions, no max, and a Haiku ceiling of high.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured (third-party, single tasks or small tests, numbers shown) except the 13 variants and the 300K run, which are reported.
+  Source: external/2026-09-29/export-opus 5.5 usage is honestly great. ~7 agents nonstop since sunday reset, 76% left (20x).jsonl:22; external/2026-10-21/reddit.com-r-claudeai-comments-1xbfyi5-what-are-your-experiences-with-t-20261021T101643Z.md:90; external/2026-10-11/export-Is Haiku 5.5 good enough to be your main coding agent, not just the cheap one- I ran a small control.jsonl:58; external/2026-10-17/export-Is it just me, or does Claude Code take hours to finish a task when prompt contains to self-review-.jsonl:4; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xckkpr-are-superpowers-skills-and-sdd-s-20261102T084956Z.md:269.
+
+- [ ] **OUT-1103** claudetto shall not carry CTX-862 (from `models-effort.md`) as a checked context fact: Ultracode is an orchestration prompt, not an effort level; one commenter estimates it would have used 40-50x the tokens of a normal run against a stated 3.5x, and another cites a video in which the same prompt cost $48 at max and $348 with Ultracode. claudetto does not turn Ultracode on by default (REQ-DELEGATION-047, CTX-286, CTX-288).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party estimate and a cited comparison; figures not shown).
+  Source: external/2026-10-17/export-Don't use Ultracode.jsonl:14; external/2026-10-17/export-Hey is it me or does ultracode use lesser tokens than max.jsonl:13.
+
+- [ ] **OUT-1104** claudetto shall not carry CTX-891 (from `models-effort.md`) as a checked context fact: Browser work routed to a cheap subagent: one user defines a `browser-runner` agent in `~/.claude/agents`, sends all browser work there from the global CLAUDE.md, and uses Haiku to read pages and find elements and Sonnet for clicks and forms, because repeated rereads of page content pile up against the weekly limit even on cache hits. Matches the plan's cheap-model routing for read-heavy work (Fable and Opus never subagents).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one user, no counts).
+  Source: external/2026-11-18_p2/reddit.com-r-claude-comments-1xufj43-claude-in-chrome-save-tokens-20261118T183349Z.md:40.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
