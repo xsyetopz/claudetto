@@ -36,6 +36,10 @@ export type Box = {
 	clock?: MockClock;
 	/** Prompt texts the plugin submitted itself. */
 	submitted?: string[];
+	/** Each prompt that reached the bottom of the chain, as the plugin passed it on. */
+	sent?: { text: string; context?: unknown }[];
+	/** Lines the plugin wrote with `ui.log`. */
+	logs?: string[];
 };
 
 export type Offer = {
@@ -90,7 +94,12 @@ export const offered = async ($: Engine, on: On, box: Box, opts: Offer = {}) => 
 	});
 	on("prompt.submit", (_$, e) => {
 		(box.submitted ??= []).push(e.text);
+		(box.sent ??= []).push({ text: e.text, context: (e as { context?: unknown }).context });
 		return { ...e } as never;
+	});
+	on("ui.log", (_$, e) => {
+		(box.logs ??= []).push(e.text);
+		return { value: undefined };
 	});
 	on("model.fork", async (_$, e) => {
 		box.forks++;
