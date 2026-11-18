@@ -8,7 +8,9 @@
 		"exactOptionalPropertyTypes": true,
 		"forceConsistentCasingInFileNames": true,
 		"isolatedModules": true,
-		"lib": ["es2023"],
+		"lib": [
+			"es2023"
+		],
 		"module": "esnext",
 		"moduleDetection": "force",
 		"moduleResolution": "bundler",
@@ -28,7 +30,9 @@
 		"types": [],
 		"useDefineForClassFields": true
 	},
-	"include": ["hooks/**/*.ts"],
+	"include": [
+		"hooks/**/*.ts"
+	],
 	"files": [
 		".claude-plugin/types/claude-code/index.d.ts",
 		".claude-plugin/types/claude-code-tools/index.d.ts",
