@@ -95,7 +95,6 @@
 
 ## Ask via Built-in AskUserQuestion Only
 
-- [ ] **REQ-REPLY-037** claudetto shall register no ask tool (the classifier reads answers only as `[User answered AskUserQuestion]: ...` and drops other tool results); replace the description with the one-sentence `ASK_TEXT`; defer the tool when the session has ToolSearch; use `$.ui.ask` for setup's own questions (a dismiss rejects); never answer AskUserQuestion in the user's place; send the model's own decisions to `mcp__claudetto__decide`, which registers only with `TYPESAFE_API_KEY`, reads it nowhere else, carries question texts, option labels, and fixed pick or approval texts and no transcript, file, or path; other hooks reach Jev only through the Decider; no `typesafeApiKey` userConfig. Thresholds belong to a question set and a pinned model version (`jev-1.14.0`) and change only with a recorded run on held-out cases.
   Acceptance: the plugin tool list holds no ask tool; `mcp__claudetto__decide` is absent without `TYPESAFE_API_KEY`; Jev latency warm 152-262 ms, first 0.2-1.8 s. Verification: test.
   Basis: measured, cited, and reported. Status: have at 088a227c (`plugins/claudetto/hooks/features/decide/`, `hooks/kernel/decider/`).
   Source: openspec/specs/decide/spec.md:8; openspec/specs/decide/spec.md:37; openspec/changes/2-1-325-rearchitecture/design.md:75; openspec/changes/2-1-325-rearchitecture/design.md:100.
