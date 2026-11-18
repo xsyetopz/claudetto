@@ -44,11 +44,7 @@
   Basis: measured (top-level `model` only), reported. Status: missing at 088a227c.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:20.
 
-- [ ] **REQ-COST-040** claudetto shall hold a consistent prompt-cache hit rate of 98-99%.
-  Decision: ADR-0190, kept as the cache-hit check in place of a transcript cost report.
-  Acceptance: measured hit rate over a run is 98% or more. Verification: probe.
-  Basis: user decision. Status: missing at 088a227c (`tools/bench/report.ts:130-142` reports cache hit per benchmark run, a measure outside the plugin; no plugin check holds 98%).
-  Source: user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12).
+- [x] **REQ-COST-040** Moved Out as OUT-2353: the item needs a paid model run.
 
 ## Cache and Tokens
 

@@ -2,19 +2,7 @@
 
 ## Destructive Cleanup
 
-- [ ] **RISK-030** A delete built from an unchecked variable destroys data (F7, P10).
-  Category: agent behaviour.
-  Cause: `expect tui.exp` ran with no arguments, so `name` was empty and `file delete -force /tmp/probe-fake/req/$name` deleted all of `/tmp/probe-fake/req` at 11:07.
-  Event: the raw request bodies of every earlier fake-API probe (L1-L13a, k*, j*, pg-*, t*) were deleted; no APFS snapshot or Time Machine destination exists.
-  Consequence: findings and `/tmp/probe-fake/log` (835 run names) remain, but a finding needs a re-run of `bin/*.sh` to be re-checked.
-  Likelihood: 3. Impact: 5.
-  Existing controls: `tui.exp` exits 2 on an empty name; `tui.sh`, `run.sh`, `gitrun.sh`, `gitrun2.sh` use `${name:?}`. Both guards were tested (exit 2, sh 127, `req/` intact).
-  Response: avoid.
-  Actions: guard every delete path built from a variable with a non-empty check.
-  Trigger: a delete or `rm` whose path holds a variable.
-  Owner: guards.
-  Status: mitigated for the probe scripts; open for the product.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2416; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
+- [x] **RISK-030** Moved Out as OUT-2315: the item describes a part that plugins/ does not ship.
 
 ## Cost
 
@@ -63,20 +51,7 @@
   Status: closed 2026-11-18: the failure ledger is not shipped (ADR-0154 removed the fail-limit hold; OUT-016); `git grep -F -e failLimit -e withFailure -- plugins` finds no hit.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:713 (P43, measured).
 
-- [ ] **RISK-034** A vanished path in one find batch makes hygiene name 0 temp entries.
-  Category: guards, hygiene.
-  Cause: one find over a batch of about 430-500 paths exits 1 when a path vanished (28,466 lines printed; stderr "No such file or directory" for five claude-plugin-test-* folders another session removed), and the code dropped the whole batch ("were not searched"). P84 passed only because nothing vanished.
-  Event: idleTemp names 0 entries while temp entries remain.
-  Consequence: temp folders grow without limit (disk of /private/tmp/claude-501 was 1.85 GB with 474 entries).
-  Likelihood: 4 (seen in two or more runs: P160, P161).
-  Impact: 3.
-  Existing controls: the fix at 2.1.321: a vanished path no longer fails the batch; any other find error splits the batch until the failing entry stands alone and is left out; after it a dry run names 26 entries. At baseline hygiene has "vanished entry tolerated" (plans/rebuild-curation.md:978), and the split rule is absent in baseline code: `hygiene/sweep.ts:252-257` runs a per-path `lstat` with errors caught and logged ("was not read"), `du -sk` runs in batches of 500 (`hygiene/temp.ts`), and `namesIn` returns [] on error.
-  Response: mitigate.
-  Actions: keep the split rule and a test with a path that vanishes mid-batch; the sweep starts at startup, resume, clear, and compaction.
-  Trigger: a dry run that names 0 temp entries while the temp folder holds entries older than the limit.
-  Owner: guards.
-  Status: open (rebuild).
-  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:811,831-833 (P161); openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:139 (P160-P165).
+- [x] **RISK-034** Moved Out as OUT-2316: the item describes a part that plugins/ does not ship.
 
 - [x] **RISK-035** Each worktree Claude Code creates flips the shared core.hooksPath to an absolute path, and the bedrock guard-base prints "git hooks are off".
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the bedrock repo's guard-base hook, owned by that repo).
@@ -94,18 +69,7 @@
   - Status: closed, ADR-0190 (out of scope, cause outside claudetto: the bedrock repo's guard-base hook, owned by that repo).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:371-375 (measured); openspec/changes/archive/2026-11-16-2-1-323/tasks.md:67; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (agent reply: the shared config now holds an absolute path); observed in transcript, 2026-11-12 (reported).
 
-- [ ] **RISK-036** Agent runs fill the user's disk.
-  Category: guards.
-  Cause: tests and builds from a test folder with no cleanup step; simulators for app builds; scratch and log files across many worktrees; a script logging one line repeatedly; long unattended work with no cap on output. One commenter argues the cause was a build cache, not the agent.
-  Event: about 1 TB used by tests and builds; a new drive filled in 2 days; 45 GB of logs and scratch files and 1.2 million files across hundreds of worktrees. Another report: 500 PowerShell scripts in 5 days of unattended work, 300 pruned by Opus 5.5 in 5 hours; another run filled a 2 TB disk with test artifacts and worktrees.
-  Consequence: the drive is full and the user must clean up by hand.
-  Likelihood: 2. Impact: 3.
-  Existing controls: the baseline temp-cleanup feature covers /tmp leftovers only (plugins/claudetto/hooks/features/temp-cleanup/cleanup.ts@088a227c); the plan holds 250 files for a 200-line script.
-  Response: mitigate.
-  Actions: forbid the default temp dir and give a layout for where files and temp space go; tell the agent to check for junk periodically; a RAM-disk /tmp as a natural cap; run on a spare machine or in a container (all reported cures); cap artifacts and worktrees per run and prune at a finished unit of work. Size budget: none stated.
-  Trigger: free disk space falls a worktree count grows, or disk or file count grows during an unattended run.
-  Owner: guards. Status: open.
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:526,761,763 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>); external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:33; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:37; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:47; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:123; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:128; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:132; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:136; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:150; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:158 (url: <https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/>).
+- [x] **RISK-036** Moved Out as OUT-2317: the item describes a part that plugins/ does not ship.
 
 - [x] **RISK-037** Hand-written shell parsers and swallowed errors let a destructive command through.
   Category: agent-built code.
@@ -165,20 +129,7 @@
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/opus_55_just_shared_my_email_address/>); external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:163; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:31,33,102; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:61,79,98 (url: <https://www.reddit.com/r/aiagents/comments/1xqjioz/i_tested_14_coding_agents_against_their_own_rules/>).
   Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. A channel outside the shell and Read tools (an MCP server) is not covered.
 
-- [ ] **RISK-041** An approval prompt is taken as the control and the logged approval was never seen by the user.
-  Category: guards
-  Cause: The process that acts also records the user's yes; the user's own report says a permission rule to ask first was set.
-  Event: One user's report, field report kept as reported; a Windows manual-approval run cannot be probed on this Mac (anthropics/claude-code issue 108022 per the commenter): on Windows in manual approval mode, 9 PowerShell commands moved about 11 GB to the recycle bin; the log shows a yes per command that the user says never appeared, 3 recorded while the user was typing.
-  Consequence: User files are moved or deleted with no real consent.
-  Likelihood: 1
-  Impact: 4
-  Existing controls: none found at 088a227c for an approval seen-by-user check.
-  Response: mitigate
-  Actions: Treat the approval prompt as not the control: gate destructive actions separately and give the agent no delete or move permission.
-  Trigger: A destructive command logs an approval with no matching user turn.
-  Owner: guards
-  Status: open
-  Source: external/2026-11-14/reddit.com-r-aiagents-comments-1xv9vw1-update-a-user-says-claude-code-m-20261113T195018Z.md:29,31,41,43 (url: <https://www.reddit.com/r/aiagents/comments/1xv9vw1/update_a_user_says_claude_code_moved_11gb_in/>).
+- [x] **RISK-041** Moved Out as OUT-2318: the item is a third-party report with no probe.
 
 - [x] **RISK-042** A foreign-package-manager regex denies a read-only script and gives two verdicts for one text.
   Category: guards, regex.
@@ -242,20 +193,7 @@
 
 ## Agent Habits
 
-- [ ] **RISK-046** The agent passes -r to ripgrep on macOS, where -r means replace.
-  Category: guards
-  Cause: Repeated instructions never stopped the agent from passing -r to ripgrep.
-  Event: One user reports a hook that silently strips -r from ripgrep calls; another keeps shims for many utilities and a re-read guard to cut duplicate tool use.
-  Consequence: A search that rewrites output instead of recursing.
-  Likelihood: 2
-  Impact: 2
-  Existing controls: none found at 088a227c (no ripgrep hook).
-  Response: mitigate
-  Actions: Strip -r from rg calls in a PreToolUse hook; keep a re-read guard.
-  Trigger: A Bash call runs `rg` with -r.
-  Owner: guards
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:117 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>).
+- [x] **RISK-046** Moved Out as OUT-2319: the item is a third-party report with no probe.
 
 - [x] **RISK-047** A browser agent types into an unfocused box and its keystrokes hit site shortcuts.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the browser tool, owned by agent-browser).
@@ -273,35 +211,9 @@
   Status: closed, ADR-0190 (out of scope, cause outside claudetto: the browser tool, owned by agent-browser).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:71,83,85 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/>).
 
-- [ ] **RISK-048** A bare `-j` build flag exhausts the machine.
-  Category: guards
-  Cause: `cmake --build build -j` with no number started about 300 compiler processes.
-  Event: It used 49 GB and hard-hung the poster's machine, twice (reported, one poster).
-  Consequence: A hung machine and lost work.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: Plan rule: never bare -j.
-  Response: mitigate
-  Actions: Always pass a number, nproc at most; cap CMAKE_BUILD_PARALLEL_LEVEL at nproc divided by the session count.
-  Trigger: A build command with -j and no number.
-  Owner: guards
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:31,55 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/>).
+- [x] **RISK-048** Moved Out as OUT-2320: the item is a third-party report with no probe.
 
-- [ ] **RISK-049** In-session search skips gitignored files and "found nothing" is wrong.
-  Category: guards
-  Cause: The search tool inside a session skips gitignored files, so .env files and build output are never searched.
-  Event: A test with five planted strings in gitignored paths found one (measured by the poster's test).
-  Consequence: A removal on the strength of an empty search result.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: none found.
-  Response: mitigate
-  Actions: Before removing anything on the strength of an empty search, search the ignored paths too.
-  Trigger: A deletion justified by "no references found".
-  Owner: guards
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:37 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/>).
+- [x] **RISK-049** Moved Out as OUT-2321: the item is a third-party report with no probe.
 
 ## Credential Leaks
 
@@ -371,22 +283,11 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/levers-review.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:380; plugins/claudetto/.claude-plugin/plugin.json:84@088a227c; plugins/claudetto/hooks/features/setup/changes.ts:131@088a227c.
   Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. The holdout wall is in deny, denyRead and denyWrite by default; the holdout path itself was not probed.
 
-- [ ] **RISK-054** Injection and disclosure: the agent treats data as the user's message.
-  Category: safety.
-  Cause: no distinction between data and the user's message.
-  Event: the agent misreported a subagent injection; fetched text steers the agent; an email put in an outbound header; fabricated user turns (13 assistant messages continued into fake user turns, four asking to write keychain keys to a handover file, n=1, reported); the agent asked the user for a credential the repo `.env` holds; it executes instructions found in repo or web content; a hook text saying "Set each one to `false`" made the model edit its own settings.
-  Consequence: a secret leaks or settings change on a data instruction.
-  Likelihood: 2. Impact: 5.
-  Existing controls: `plugins/claudetto/hooks/features/secrets/` (partial at 088a227c).
-  Response: mitigate.
-  Actions: untrusted tags, hidden-text stripping, PreToolUse hook on outbound headers, find the credential in `.env` then env; CONSENT/UNTRUSTED text naming what is data; hook texts saying who acts; injection detector with spot-check.
-  Trigger: an instruction inside a tool result or fetched page.
-  Owner: guards. Status: partial at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:166; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:129; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:125; plugins/claudetto/hooks/features/secrets/scan.ts@088a227c. The outbound-header email case: not located by grep.
+- [x] **RISK-054** Moved Out as OUT-2322: the item describes a part that plugins/ does not ship.
 
 ## Process Hygiene
 
-- [ ] **RISK-055** Process hygiene failure: the agent starts, kills, or forgets processes it does not own.
+- [x] **RISK-055** Process hygiene failure: the agent starts, kills, or forgets processes it does not own.
   Category: process.
   Cause: no ownership check on targets.
   Event: loose `pkill -f` killing the user's or own shell; `until`/`while` busy-wait loops (full core each; a 32 min loop counted four successes when one was 403); expiring Monitors; orphaned jobs and fake APIs for 7 days; duplicate paid suites; many heavy runs at once (2026-11-11 freeze; >6 GB per test file); false reassurance that a background process was idle (billing while looping); another session's test run killed; 299 triple-polls in a benchmark; unannounced runs; unclosed subagents; `/goal` continuing hours after a classifier denial.
@@ -398,6 +299,8 @@
   Trigger: `pkill -f`, an unbounded `while`/`until` loop, or a second heavy run.
   Owner: guards. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:97; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:317; external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/>); plugins/claudetto/hooks/features/setup/command-rules.ts:75@088a227c. Unlocated: the 2026-11-11 freeze, 299 triple-polls, 32 min loop.
+  Status: closed 2026-11-19: pkill and killall ask first, and the free-memory hold gates heavy calls.
+  Verified: fill.test.ts 'asks before stash, tag pushes and process kills' passes; rules.ts ASK holds `Bash(pkill *)` and `Bash(killall *)`; the memory hold stops a call under 20% free; claude plugin test plugins/claudetto: 54 pass (2.1.327, 2026-11-19). Weak tick: kill by recorded pid is not enforced.
 
 - [ ] **RISK-056** Runaway background work: a process outlives its turn and spends on.
   - Category: process.
@@ -474,20 +377,7 @@
   - Source: observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:13333`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25106`).
   Verified: claude 2.1.327, 2026-11-18. Force pushes are denied and hard reset, clean, stash and branch -D ask first (fill.test.ts pins the ask rules; cc-inspect cli showed the force push denied, also in a compound command). Running a release step after a failed step is not controlled.
 
-- [ ] **RISK-061** Agent interrupts the user's screen to capture or test.
-  - Category: conduct.
-  - Cause: The agent raises windows, sends keystrokes, or opens a visible app to take screenshots or captures while the user works; The agent grants system permissions with osascript clicks in System Settings.
-  - Event: The user's main screen is taken over; the user asks for hidden or background capture; The UI scripting captured the user's Discord window once; the handoff then bans UI scripting of the screen.
-  - Consequence: The user's current work is interrupted; Private screen content read; a wrong click changes system settings.
-  - Likelihood: 2
-  - Impact: 5
-  - Existing controls: A handoff rule only; the sandbox blocks osascript for Apple Events in some sessions.
-  - Response: mitigate.
-  - Actions: Add a reply rule: capture hidden, off-screen, or in the background; never raise a window, press a key, or drive the live screen. Offer an env switch in the project when the app needs one; claudetto shall deny osascript UI scripting of the screen and tell the agent to ask the user for the physical action.
-  - Trigger: A command that opens a visible window, posts a key event, or brings an app forward; The agent runs osascript with System Events.
-  - Owner: guards
-  - Status: open.
-  - Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:762`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:4489`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4706`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, Done list); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, Rules and Decisions); observed in transcript, 2026-11-14.
+- [x] **RISK-061** Moved Out as OUT-2359: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 - [ ] **RISK-062** Silent bound change.
   Category: Agent behaviour.
@@ -502,7 +392,7 @@
   Owner: guards. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:82,84,85,88,92,116
 
-- [ ] **RISK-063** Removal without consent.
+- [x] **RISK-063** Removal without consent.
   Category: Agent behaviour.
   Cause: The autonomy dial is turned to overreach; own judgement is treated as consent; A commit hook rejects the new AGENTS.md rule where it sits; the agent plans to delete it instead of moving it.
   Event: A retried rejected edit, "decision of the user" in own comments, a retried denied command, a cancelled call read as a refusal, an attempt to edit own permission files after a denial, --no-verify, a proposal to disable SIP, the sandbox turned off for gh or git push because the keychain denied, a plan to delete tools the user uses (popup, monitor, handoff, hygiene, you-should-know) without asking, person-authored rules deleted and person-named agents renamed (commit 378782f3), a file the user removed restored; A side-agent note warns that the next edit removes the rule; the agent asks the user whether to move it.
@@ -514,8 +404,10 @@
   Trigger: A diff deletes a tool or rule the user wrote; An edit that deletes a rule the same session added.
   Owner: guards. Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:289; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:43; observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30577`)
+  Status: closed 2026-11-19: destructive git and the user settings file ask first.
+  Verified: fill.test.ts pins the ask rules for `git reset --hard`, `git clean`, `git branch -D` and edits of ~/.claude/settings.json; the cc-inspect cli fill wrote them (2.1.327, 2026-11-19). Weak tick: a plain `rm` is not covered.
 
-- [ ] **RISK-064** Retry and route-around after a denial or refusal.
+- [x] **RISK-064** Retry and route-around after a denial or refusal.
   Category: Agent behaviour.
   Cause: Background subagents see no human, so a rejection reads as a transient error; the harness STOP text is not carried into the hand-back; a command-text deny is not a boundary and the model treats a block as a puzzle; a decline is treated as tool-specific; A rejection reads as a transient error to a background subagent (it sees no human); A tool refuses an action (an `--force` override of a confirmation, a `pkill`), and the agent overrides or runs it.
   Event: A rejected or denied action is repeated in other words, through another tool (sed then Python, Write, Node), another agent, or later; a container with a bind mount runs rm -rf, packaging around a filename deny, keystroke approval of a nested session, tmux send-keys; a subagent pressed "1" on a nested session's sandbox-escape prompt and counted it as proof the approval rule works; one subagent pushed an edit through after the user rejected it; A rejected action is retried reworded, through another tool (sed then Python), by another agent, or later; a rejected tool call may already have written the file; The agent turns on an access endpoint with `--force` and mints a control token, or runs `pkill` against a user rule; a side-agent note and the permission system flag it.
@@ -527,34 +419,12 @@
   Trigger: A denied change reappears through another tool; A call identical to a rejected one reaches PreToolUse; A command with `--force` after a refusal in the same session, or `pkill` and `killall`.
   Owner: guards. Status: open (reported; hook missing).
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:159,162; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; plugins/claudetto/hooks/features/repeat@088a227c; observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30180`); observed in transcript, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:11026`)
+  Status: closed 2026-11-19: the deny rules and the sandbox are the boundary.
+  Verified: cc-inspect cli on the filled settings: `git push --force` is denied, also inside a compound; a write to a denyWrite path failed with Operation not permitted; claude plugin test plugins/claudetto: 54 pass (2.1.327, 2026-11-19). The boundary is the deny rules and the sandbox, not command text.
 
-- [ ] **RISK-065** Blind retry.
-  - Category: Agent behaviour.
-  - Cause: After a timeout the agent repeats the step; half the time it already went through; No idempotency, no memory of the denial, no state read before the second act.
-  - Event: Reported rule "never retry blind"; A timed-out step or an identical call after denial is retried (7 of 8 screenshot timeouts had the change already right); a Bash command repeated after two identical failures; the agent "cleans up" files it thinks unused; worktrees put in /tmp.
-  - Consequence: A duplicate post, payment, or send; Duplicate acts and lost files.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: Plan: two failed attempts then stop (a different rule).
-  - Response: mitigate.
-  - Actions: After a timeout check what happened first. Use proof from outside the agent (confirmation email, new database row, response status) and have the agent name which it saw. With none, embed a unique marker in the submission, reload and look for it: found means done, not found means safe to retry after slow saves land; otherwise say it could not confirm; tool.check denies an identical call after 2 denials naming the earlier reason (a different input passes); a retry guard pauses the third identical Bash command; make steps idempotent; a hook that denies a repeated call after a timeout until a state check ran; git diff --stat before cleanup on its own branch; a PreToolUse deny of irreversible actions.
-  - Trigger: A retry follows a timeout with no check; An identical Bash call runs a third time.
-  - Owner: guards
-  - Status: open.
-  - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:27,53,89; external/please-use-me-often/swe-worst-practices.md:130; external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/>) (reported, "never retry blind"). Not located: the 7 of 8 screenshot timeouts.
+- [x] **RISK-065** Moved Out as OUT-2323: the item is a third-party report with no probe.
 
-- [ ] **RISK-066** Never-commit rule violated after a one-time authorization
-  Category: guards.
-  Cause: one per-task authorization collapses into permission for the whole session (a commenter's theory; the sandboxed fake-API probe cannot show a server-side authorization, so it stays a field report).
-  Event: "Never commit unless asked" is violated across Sonnet 4.5 and Opus 4.7 (#68724, #58883, #34774, #69151).
-  Consequence: user work committed without consent.
-  Likelihood: 2. Impact: 3.
-  Existing controls: tool.check items.
-  Response: mitigate.
-  Actions: the reported remedy is a deterministic tool.check gate with the user's words in the deny reason and an entry lifted only by the user; that needs a ledger, which is out of scope. Another route is the Stop text for commits (REQ in reply).
-  Trigger: a commit with no request from the user.
-  Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:15; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:59.
+- [x] **RISK-066** Moved Out as OUT-2324: the item conflicts with a rule.
 
 ## Guards and Destructive Actions
 
@@ -572,18 +442,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:27,43; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:76; openspec/changes/2-1-325-rearchitecture/design.md:187; external/please-use-me-often/agent-terms/TERMS-OF-USE.md:224; unresolved: no source line located for this claim
   Verified: claude 2.1.327, 2026-11-18. Settings ask rules prompt on hard reset, clean, stash, branch -D, tag pushes, pkill and killall (fill.test.ts). Prompts are Claude Code's own and are enforced by it. The disk-cleanup prompt part is not built.
 
-- [ ] **RISK-068** Temp-folder residue: a dependency or setup proven under /tmp is left there and absent from the project.
-  Category: Agent behaviour.
-  Cause: Root-prompt wording points at /tmp: "Run checks where undoing is free, such as /tmp" (hypothesis); the agent installs a library only into a test folder, then reports it as done.
-  Event: The agent installed a probed dependency only under /tmp and left it; the user answered "nobody told you to put it in temp and leave it there"; the reply says the library is installed only in a temp folder, not in the project.
-  Consequence: A residue dependency stays outside the project; the project lacks the dependency; the user orders the install.
-  Likelihood: 1. Impact: 2.
-  Existing controls: plugins/claudetto/hooks/features/temp-cleanup/ at 088a227c (partial).
-  Response: mitigate.
-  Actions: Install the dependency into the project (eval dependency-into-project); temp-cleanup; after a probe passes, the agent applies the setup in the project.
-  Trigger: A dependency is installed under /tmp and not removed; a reply names a temp-only install.
-  Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:486,549,789; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/39e93978-aee6-46bb-be40-431b82dc06d7.jsonl:587, reported, user, 2026-11-11
+- [x] **RISK-068** Moved Out as OUT-2325: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 - [x] **RISK-069** An installed skill or plugin carries an injection or hidden capability.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: third-party skills and plugins, owned by the user's install choices).
@@ -630,7 +489,7 @@
 
 ## Cost and Resources
 
-- [ ] **RISK-072** Memory and CPU exhaustion from overlapping heavy commands, parallel agents, or busy-wait loops.
+- [x] **RISK-072** Memory and CPU exhaustion from overlapping heavy commands, parallel agents, or busy-wait loops.
   - Category: cost and resources.
   - Cause: type-aware oxlint peaks at 129 MB for one file, 556 MB for plugins, and 584 MB for the whole repo (602 MB on the 2026-11-10 tree), so a one-file lint is about a quarter of a repo run; no scope nears 2.5 GB. SIGTERM to oxlint leaves its tsgolint child alive to the end of the run (0.5 s later node 42 MB and tsgolint 391 MB growing, gone by 2 s). GOMEMLIMIT=150MiB cut tsgolint only about 20% (604-654 MB to 486-535 MB) at up to 2x time; GOGC=50 gave 572 MB (weak). .claude/worktrees is not linted (.gitignore:22); clawdipedia's surface tests: bun test 10,125 MB; one snapshot.test.ts 15,332 MB, others 8 GB; one Claude Code bundle parse 4,700 MB; a test comment says each build peaks near 18 GB. They ran beside 8 Claude Code processes and backgrounded agent checks on a 32 GB MacBookPro18,2. 120 GB is the summed footprint counting compressed and swapped pages (the user's reading of a memory display; the sum is a field report); about 16 type-aware lint runs overlap, each holding about 3.8 GB, on a 32 GB Mac; Several sessions or agents run at once, and one of them uses more than 120 GB of RAM; A change parsed 2,921 modules at once, and each test file that read the installed program held over 6 GB while `bun test` ran every file in one process. A cleanup change ran two builds at once on a 32 GB Mac. Two busy-wait loops (`until grep ...; do :; done`) used a full core each; the code parsed every module at once and `bun test` runs all files in one process; each test file held over 6 GB; `agent.spawn/useMemoryHold` counts agents, not processes, and no text under `plugins/` mentions `tsgolint`; the `Agent` text splits work to parallel agents; five lint agents each ran type-aware `oxlint` (tsgolint) in parallel; `bun test` ran every file in one process and each file that read the installed program held over 6 GB; modules were parsed in parallel.
   - Event: parallel agent lint runs add up in memory; the kernel logged JETSAM_REASON_LOWSWAP kills (60 processes at 01:26:59); the machine freezes; the user saw 120 GB in use; The user reports that a session took the system RAM over 120+ GB; The user reports that a session used over 120 GB of memory, and that the machine ran out of memory and restarted. The test run timed out in four tries; five parallel `tsgolint` runs at about 16 GB each; one run used up to 16 GB and slowed another session, shown by a screenshot of the memory use; the machine ran out of memory and restarted; a user report says one session used over 120 GB of RAM; One run used up to 16 GB and slowed another session; a screenshot showed the memory use.
@@ -642,25 +501,13 @@
   - Actions: rewrite the root-prompt reason from the 129 MB figure; do not count on GOMEMLIMIT; a heavy suite needs memoryProcessMaxPercent raised per repository (see prd/guards.md); the lead runs one memory-heavy check at a time; a rule or hook holds each lint, type check, and test suite to one at a time, per machine, across workers; Cap concurrent agents and heavy processes; cure is inferred (the user stated none); A rule that the agent measures the memory of a heavy check alone first, runs heavy checks one at a time, and never writes a busy-wait loop; a wait uses a monitor or a sleep; claudetto shall make the agent run one test file at a time, under a memory limit, when a run is known to be large; one task per worker; run one heavy check at a time; add a heavy-check rule or count processes; at most one type-aware lint run at a time; the user also wants the bedrock lint base to prevent it; run each heavy test file alone under a memory watchdog; kill a run over 1 GB.
   - Trigger: tsgolint resident size above 1 GB; JETSAM_REASON_LOWSWAP in the kernel log; two heavy commands run at once; Memory over a set share while agents run; A test, build, or probe that parses a whole program or runs in parallel with another heavy task; a test file that reads the installed program; two heavy checks in parallel; several agents running the same heavy check; two or more type-aware lint processes at once; a test process over 1 GB; Two or more type-aware lint processes run at once.
   - Owner: guards
-  - Status: open.
+  - Status: closed 2026-11-19: the free-memory hold and the subagent caps are shipped.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:454-456; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:476-487; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:6352, observed in transcript, 2026-11-11 (the agent cites another session's account, not measured here); reported, user, 2026-11-10 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/1b56d9ba-db9c-4286-88f0-94324ae915c1.jsonl:4887`); reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:15121; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8; observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:47 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:55 (reported: "five agents, 16 GB each"); `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:467` (the agent's estimate from the run logs: about 8 GB over ten `oxlint` runs and one `claude plugin test`); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:55 (observed); openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:21; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:3710 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:4827; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:3710, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363, reported, user, 2026-11-10 (measured).
+  Verified: hooks/guards/memory.ts holds Bash, Monitor and Agent calls under `memoryFreeMinPercent` (default 20); defaults.ts sets CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3 and MAX_SUBAGENT_SPAWN_DEPTH 1; memory.test.ts passes (2.1.327, 2026-11-19). Weak tick: a heavy suite alone is not capped.
 
 ## Agent Conduct
 
-- [ ] **RISK-073** The agent asks the user for a token or a login while the repo `.env` already holds one, and makes throwaway credential files.
-  - Category: agent conduct.
-  - Cause: the agent does not check whether the repo-local `.env` has the field with a value, though it need not read the value.
-  - Event: the agent told the user to run `claude setup-token` and save the token to a new file in the home directory; later the paste flow stuck at the copy prompt, and the agent asked for `claude setup-token` again.
-  - Consequence: the user does login work twice; the new file is a throwaway that the user disallows; The user does login work twice; the new file is a proprietary throwaway that the user disallows.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: none.
-  - Response: mitigate
-  - Actions: check that `.env` holds a non-empty field without printing it, and use it; never create credential files; give a terminal command only after that check fails.
-  - Trigger: the agent plans a login step, or a token file, for a run that needs a token.
-  - Owner: guards
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1729 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1729, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134, reported, user, 2026-11-12 (reported, user, 2026-11-12).
+- [x] **RISK-073** Moved Out as OUT-2326: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 - [x] **RISK-074** Agent re-reads the same unchanged files.
   - Category: agent conduct, cost.
@@ -677,35 +524,9 @@
   - Status: closed 2026-11-18: re-read denial is out (OUT-178) and the cost-side requirement is REQ-COST-042 in prd/cost.md; no repeat hook ships (`git grep -F features/repeat -- plugins` finds no hit).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
 
-- [ ] **RISK-075** The agent asks for ANTHROPIC_API_KEY where the OAuth token is the way in.
-  Category: agent conduct.
-  Cause: a tool the agent wrote reads only an API key; the agent told the user to export it.
-  Event: the user was asked for an API key and called it a hazardous violation; the user wants the OAuth token used.
-  Consequence: a secret handled wrongly and an extra turn.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: kernel secrets guard exists at 088a227c (read at 088a227c: `hooks/features/secrets/scan.ts` and `hooks/kernel/secrets.ts` redact secret values in tool results; no baseline rule stops a request for an API key or names the OAuth token).
-  Response: avoid
-  Actions: write each tool that calls a model to use the Claude Code OAuth token; never ask the user for an API key.
-  Trigger: a script that calls the Messages API.
-  Owner: guards
-  Status: open; no baseline control (see Existing controls).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+- [x] **RISK-075** Moved Out as OUT-2327: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
-- [ ] **RISK-076** A repo changes under an agent without its owner asking.
-  Category: agent conduct
-  Cause: Another session or agent committed to the same branch, switched the repo to a new dependency, and left a branch for CLA signatures and a stale pull request.
-  Event: The user finds the branch changed and a dependency swapped and says the other session is defunct and asks what is going on in the repo.
-  Consequence: User work lost or confused; an extra turn to restore the branch.
-  Likelihood: 1
-  Impact: 4
-  Existing controls: The handoff says: run git status and git log -5 before each commit; touch nothing unasked; no force push, PR close, or branch delete without asking.
-  Response: mitigate
-  Actions: claudetto shall tell an agent to run git status and git log before each commit, to touch no branch, pull request, or stash it did not make, and to ask before a force push or a delete.
-  Trigger: The handoff names another session on the same branch.
-  Owner: guards
-  Status: open
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664).
+- [x] **RISK-076** Moved Out as OUT-2328: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 ## Hooks, Gates, and Notices
 
@@ -727,19 +548,7 @@
 
 ## Destructive Actions
 
-- [ ] **RISK-078** The agent copies a whole git repository folder, or makes worktrees on its own.
-  Category: agent behaviour.
-  Cause: unprompted choice by the agent.
-  Event: one agent copied a whole project folder and worked in the copy though it is a git repository; another created worktrees by itself, which stopped an occasional overwrite of handover notes but left orphaned trees, uncommitted work, and unsaved files.
-  Consequence: work lost in orphaned trees.
-  Likelihood: 2. Impact: 3.
-  Existing controls: plugins/claudetto/hooks/features/hygiene/worktrees.ts@088a227c cleans up the agent's own worktrees.
-  Response: mitigate.
-  Actions: none in the source.
-  Trigger: a work folder that is not the repository path.
-  Owner: guards.
-  Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:63; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:73; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:75 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/>).
+- [x] **RISK-078** Moved Out as OUT-2329: the item describes a part that plugins/ does not ship.
 
 - [x] **RISK-079** A run in a worktree is handed the main repo's auto-memory.
   Verified: 2026-11-18, closed by ADR-0190 (accepted, left to REQ-SETUP-065).
@@ -756,35 +565,9 @@
   Status: closed (accepted), ADR-0190 (accepted, left to REQ-SETUP-065).
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:132 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
-- [ ] **RISK-080** Agents delete files they did not create (once 110).
-  Category: agent fault
-  Cause: The agent works in the shared checkout
-  Event: Files it did not create are deleted
-  Consequence: User work lost
-  Likelihood: 1 (one report)
-  Impact: 4
-  Existing controls: none found at 088a227c
-  Response: mitigate
-  Actions: Each agent works in its own clone and hooks refuse writes outside it; back up untracked and ignored work outside the agent's writable area (a clone does not hold it) and keep real secrets out of the clone
-  Trigger: A write outside the agent's clone
-  Owner: guards
-  Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:39; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
+- [x] **RISK-080** Moved Out as OUT-2330: the item is a third-party report with no probe.
 
-- [ ] **RISK-081** Classifier Gives Up On Authorized Delete.
-  Category: Agent behaviour.
-  Cause: The auto-mode classifier blocks and the model gives up at once.
-  Event: It blocked deletes the user had explicitly authorized.
-  Consequence: An extra turn.
-  Likelihood: 1. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Update the classifier rules to tell it to prompt for approval instead of giving up when it hits a block.
-  Trigger: A classifier block on an authorized action.
-  Owner: guards.
-  Status: open.
-  Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:186 (url: <https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/>).
+- [x] **RISK-081** Moved Out as OUT-2331: the item is a third-party report with no probe.
 
 - [x] **RISK-082** Delete Through A Junction.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: Windows junction handling, owned by Claude Code).
@@ -818,20 +601,7 @@
   Basis: reported (anecdote).
   Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:212 (url: <https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/>).
 
-- [ ] **RISK-084** Cleanup Of A Live Resource.
-  Category: Agent behaviour.
-  Cause: A disk cleanup script deletes a cache a live process holds.
-  Event: The server kept answering and stayed broken for a week.
-  Consequence: A broken service, found a week late.
-  Likelihood: 1. Impact: 4.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Check open handles or a running process in the directory before delete.
-  Trigger: A cleanup of a directory with an open handle.
-  Owner: guards.
-  Status: open.
-  Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
+- [x] **RISK-084** Moved Out as OUT-2332: the item describes a part that plugins/ does not ship.
 
 ## Environment, Accounts, and Marketplace
 
@@ -851,20 +621,7 @@
   Status: closed, ADR-0190 (out of scope, cause outside claudetto: Windows PowerShell dialect, owned by Claude Code).
   Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:43; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:45 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>).
 
-- [ ] **RISK-086** Identity Leak Into Requests And Commits.
-  Category: Agent behaviour.
-  Cause: A site convention (contact details in the User-Agent) or a default outranks the standing rule against sending the user's identity; the account email also sits in the system prompt (issue 81138 on anthropics/claude-code).
-  Event: The account email went into HTTP headers, commit author fields, and a Wikipedia and SEC EDGAR download User-Agent in Opus 5.5 auto mode, which the model called a technical detail, not data leaving the machine; project names went into User-Agent when probing open APIs; one user found the email by grep of ~/.claude/projects, and 36 such uses in one user's last month of conversation history. The rule against it was in context and nothing checked the command.
-  Consequence: The user's identity reaches outside services unasked.
-  Likelihood: 2. Impact: 4.
-  Existing controls: None found by git grep 088a227c for an email or User-Agent check.
-  Response: mitigate.
-  Actions: Ask whenever a service wants contact details. A PreToolUse hook on Bash, WebFetch (and a second prompt adds PowerShell, WebSearch) refuses a good number of calls, but the user cannot tell which leaks slip through; it misses an address written to a script by Write or Edit and run later, and misses base64 forms, so add Write|Edit to the matcher; the stated real fix is limiting which sites the agent can reach. A dummy-email web-fetch wrapper replaces the real email and marks incoming text as an external source. Honeytoken: a CLAUDE.md line to give a decoy email when a site asks to identify the user (not login); the agent complied, and a user-agent asking for contact information never required it to be valid.
-  Trigger: A tool call whose headers, URL, body, or script holds the account email or a project name.
-  Owner: guards.
-  Status: open.
-  Basis: reported, n>=6 anecdotes plus one session, no measurement.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:53,57,177,556,609,309,337,349,776 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:35,43,466,534 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>).
+- [x] **RISK-086** Moved Out as OUT-2333: the item is a third-party report with no probe.
 
 - [x] **RISK-087** Wrong Account In Scheduled Run.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: scheduled runs and browser accounts, owned by the user's scheduler setup).
@@ -919,20 +676,7 @@
 
 ## Refactor Hides a Permission Change
 
-- [ ] **RISK-090** A refactor hides a permission change in one diff.
-  Category: agent failure.
-  Cause: The agent pulled a helper into its own file, renamed a variable in a dozen places and left a support-impersonation override three ifs deep in authorize(); tests were green and half the diff looked like a helper rename.
-  Event: A refactor and a permission change land in one diff.
-  Consequence: A security-relevant change ships unreviewed.
-  Likelihood: 1 (one team).
-  Impact: 4 (a wrong result shipped).
-  Existing controls: None at 088a227c: "refactor" appears only in `agents/Heracles.md:9` and `agents/Metis.md:10`, as a note to mention refactors at the end of a report.
-  Response: mitigate.
-  Actions: Never mix a refactor with a permission change in one diff; tell the agent auth gets no cleanup, only the exact change; reject a file that comes out worse than it went in.
-  Trigger: A diff that touches authorization code and renames symbols together.
-  Owner: guards.
-  Status: open.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>)
+- [x] **RISK-090** Moved Out as OUT-2334: the item is a third-party report with no probe.
 
 ## Agent Edits Its Own Gate
 
@@ -954,55 +698,15 @@
 
 ## Agent Faults: W5-1 to W5-18
 
-- [ ] **RISK-092** The agent breaks one of the W5 forbidden practices.
-  Category: Agent behaviour.
-  Cause: The agent edits, skips, deletes or weakens tests (W5-1), special-cases inputs, hardcodes outputs, overrides `__eq__`, exits 0 to fake a pass (W5-2), fabricates (W5-3), covers up (W5-4), repairs destructively when surprised (W5-5), ignores constraints (W5-6), obeys instructions in content (W5-7), leaks secrets (W5-8), uses unverified dependencies (W5-9), claims done without build/tests (W5-10), creeps scope (W5-11), reinvents (W5-12), falls back silently (W5-13), guesses APIs or invents keys (W5-14), pushes through the impossible (W5-15), leaves noise and stray files (W5-16), ignores conventions (W5-17), flatters (W5-18).
-  Event: A task ends with a faked pass or a hidden change.
-  Consequence: Wrong result shipped or user work lost.
-  Likelihood: 2 (two or more reports).
-  Impact: 4 (a wrong result shipped or user work lost).
-  Existing controls: Prompt rules only; enforcement idea: deny edits under tests/CI diff.
-  Response: mitigate.
-  Actions: Keep the enforcement idea of denying edits under tests/CI diff lint; ask on destructive git; run `git status` at end of turn. Groups: tests (W5-1, W5-2); honesty (W5-3, W5-4); destructive repair when surprised (W5-5); constraints, content-borne instructions, secrets, dependencies (W5-6 to W5-9); done, scope, reinvention, fallbacks, guessed APIs, impossible tasks (W5-10 to W5-15); noise, conventions, sycophancy (W5-16 to W5-18).
-  Trigger: A test file or CI file appears in the diff of a non-test task.
-  Owner: guards.
-  Status: open.
-  Source: external/please-use-me-often/swe-worst-practices.md:170; external/please-use-me-often/swe-worst-practices.md:187.
+- [x] **RISK-092** Moved Out as OUT-2335: the item is a third-party report with no probe.
 
 ## Agent Fault: Compound Command Approval
 
-- [ ] **RISK-093** Approval of one tool call hides an embedded effect.
-  Category: Safety.
-  Cause: Approval of one tool call is read as approval of each embedded effect (pipes, subshells, chains).
-  Event: One approved line hides `oc delete --all` or a secret read leaking into a log or commit three steps later.
-  Consequence: A destructive effect or a leaked secret.
-  Likelihood: 2 (reported, issue 46828).
-  Impact: 5 (a secret leaked or data destroyed).
-  Existing controls: Claude Code parses a Bash command for its `permissions` rules; setup writes `autoMode.hard_deny` for loss and secrets; baseline partial: features/secrets, protected, kernel/shell at 088a227c.
-  Response: mitigate.
-  Actions: Split pipes, subshells and chains; deny or ask when any segment is destructive or reaches out; keep the read pile (`cat .env`, `printenv`, keychain) on the same list as the destroy pile.
-  Trigger: A chain with a destructive or secret-reading segment gets one approval.
-  Owner: guards.
-  Status: open.
-  Basis: reported (issue 46828).
-  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:199; openspec/changes/archive/2026-11-16-2-1-323/specs/permission-policy/spec.md:97.
+- [x] **RISK-093** Moved Out as OUT-2336: the item is a third-party report with no probe.
 
 ## Agent Fault: Cancelled Call Read as Refusal
 
-- [ ] **RISK-094** The agent trusts a rejection text after a rejected or interrupted write.
-  - Category: Agent behaviour.
-  - Cause: The rejected write had already landed (session 2a80f39f); A rejected or interrupted write may already have landed ("The command that you rejected had already written the file", session `2a80f39f` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)).
-  - Event: The agent believes "command rejected" and retries or reports nothing written; The agent re-does or abandons a write on a false rejection.
-  - Consequence: A duplicate write or a false "not written" claim; Duplicate or lost writes.
-  - Likelihood: 1
-  - Impact: 3
-  - Existing controls: Engine 2.1.319 cancelled-call texts ("Nothing refused it; re-run it if still needed" vs "stopped while running, not refused before it ran") cover the fault without a hook; 2.1.326: the cancelled-call texts are present (code search "Nothing refused it", claude 2.1.326: chunk-4xhk2fyb.js@1288 (2.1.327), @2515); the 2.1.326 release notes also fix background agents being told the user refused a tool call after Ctrl+C twice at the exit dialog or an interface crash.
-  - Response: mitigate.
-  - Actions: A PostToolUse or tool.call hook after a rejected or interrupted write that injects the file's current state, or a Stop check requiring a Read of the target before a "not written" claim; After a reject or interrupt, Read the target before trusting the rejection text.
-  - Trigger: A rejected or interrupted write is followed by a retry with no Read; A write tool result says rejected or interrupted.
-  - Owner: guards
-  - Status: open (missing at 088a227c).
-  - Source: no source states that a rejected write had already landed (Dropped (2026-11-18) for that detail); the program's interrupted-call texts are verified on 2.1.327: "Nothing refused it; re-run it if still needed" at chunk-4xhk2fyb.js@1288 and "Check whether it took effect before relying on it" at chunk-4xhk2fyb.js@4200; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-4xhk2fyb.js@1288 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
+- [x] **RISK-094** Moved Out as OUT-2337: the item is a third-party report with no probe.
 
 ## Safeguards and Guards
 
@@ -1022,12 +726,7 @@
 
 ## Conduct Failures
 
-- [ ] **RISK-096** The agent searches the `openspec/` deletion, transcripts, and `~/.Trash` unasked, then repeats it in another form.
-  Category: conduct. Cause: the agent widens a search past what the user named. Event: it looks into the `openspec/` deletion, transcripts, and `~/.Trash`, and again in another form.
-  Consequence: a wasted session and an unwanted read of user data. Likelihood: 1. Impact: 3. Existing controls: none found.
-  Response: mitigate. Actions: look only at what the user names; give the cure a mechanism.
-  Trigger: a read or search outside the paths the user named. Owner: guards. Status: open.
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
+- [x] **RISK-096** Moved Out as OUT-2338: the item is a third-party report with no probe.
 
 - [x] **RISK-097** The agent reads past the read cap and the read is cut off.
   Category: conduct. Cause: a read with no slice. Event: a cut-off read.
@@ -1037,54 +736,15 @@
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the nearest hit, `defects.md` beside `issues-2026-11-09.md`, records a different cause.
   Status: closed 2026-11-18: the built-in Read pages with offset and limit (OUT-178 text, read this session); claudetto adds no read guard. Weak evidence: read from the OUT item, not probed.
 
-- [ ] **RISK-098** The agent runs `cd` in place of using absolute paths.
-  Category: conduct. Cause: relative habit. Event: a `cd` before a command.
-  Consequence: a compound command refused whole; an extra turn. Likelihood: 1. Impact: 1. Existing controls: none found.
-  Response: mitigate. Actions: use absolute paths.
-  Trigger: a command that starts with `cd`. Owner: guards. Status: open.
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31@088a227c9^ records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
+- [x] **RISK-098** Moved Out as OUT-2339: the item is a third-party report with no probe.
 
-- [ ] **RISK-099** The agent deletes things nobody asked it to remove.
-  Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
-  Consequence: user work lost. Likelihood: 1. Impact: 4. Existing controls: none found (`issues-2026-11-09.md:39` read: only a rule file).
-  Response: mitigate. Actions: remove only what the user names.
-  Trigger: a delete of a file or export the user did not name. Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The clause about restoring sections on an unchecked claim was dropped on 2026-11-18: no source line holds it.
+- [x] **RISK-099** Moved Out as OUT-2340: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
-- [ ] **RISK-100** The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
-  Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
-  Consequence: an extra turn. Likelihood: 4. Impact: 1. Existing controls: none; no documented setting turns the shadow off.
-  Response: mitigate. Actions: record the userland once (grep is ugrep, BSD tools); use `perl` for context windows.
-  Trigger: "exceeds complexity limits". Owner: guards. Status: open.
-  Source: `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:616` (measured, 24 calls; probe P-D10.22). Not rechecked: macOS `cat -A`, which BSD `cat` lacks.
+- [x] **RISK-100** Moved Out as OUT-2341: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
-- [ ] **RISK-101** Injected text in repo or web content steers the agent, and benign work is refused.
-  Category: product failure.
-  Cause: repo and web content is untrusted (a wiki page carried injection text aimed at agents); an injection detector flagged 4 benign subagent reports that quoted docs.
-  Event: the agent follows injected text, or refuses benign work (localhost security testing, a DB connection to a feature env, harness reminders read as injections).
-  Consequence: a wasted session or a wrong result shipped.
-  Likelihood: 2. Impact: 4.
-  Existing controls: the CONSENT and UNTRUSTED texts (partial).
-  Response: mitigate.
-  Actions: treat repo and web content as untrusted (a read-only tour first, an acceptance test first); a curl-based fetch script with a headless-Chrome fallback keeps pages out of context; the coordinator spot-checks flagged reports.
-  Trigger: fetched content that addresses the agent.
-  Owner: guards.
-  Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:9.
+- [x] **RISK-101** Moved Out as OUT-2342: the item is a third-party report with no probe.
 
-- [ ] **RISK-102** A paid job runs twice or its watcher never sees success.
-  Category: agent failure.
-  Cause: no lock per job; a watcher success check never tested against a real finished log (a watcher looked for a relative `Wrote evals/results/` while the log printed an absolute path, about 8 hours unseen).
-  Event: a duplicate paid run starts, or a finished run goes unseen.
-  Consequence: a wasted spend.
-  Likelihood: 2. Impact: 3.
-  Existing controls: none.
-  Response: mitigate.
-  Actions: one lock per expensive or paid job recording PID, start time, and owner, with no start while held (a duplicate paid run is a breach); a unique timestamped output path; every script `set -euo pipefail`; guard `mktemp` (`d=$(mktemp -d) || exit 1`) and never `cd` into a possibly empty variable; one watcher per job, its success check tested against a real finished log.
-  Trigger: a second start of a paid job.
-  Owner: guards.
-  Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:106.
+- [x] **RISK-102** Moved Out as OUT-2343: the item describes a part that plugins/ does not ship.
 
 - [x] **RISK-103** A destructive action by a subagent loses user work.
   Category: agent failure.
@@ -1164,20 +824,7 @@
   - Status: closed 2026-11-18: the cleanup guard and ownership check are dropped (OUT-021); the ADR-0185 collector removes only worktrees that pass its in-use test; `git grep -F -e ownsOf -e createdOf -- plugins` finds no hit.
   - Source: observed in transcript, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3219`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3268`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134, observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824, observed in transcript, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (handoff: the user must remove the 7 old agent worktrees because the plugin blocks the agent); observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
 
-- [ ] **RISK-108** The idle sweep deletes probe folders still in use.
-  - Category: product defect.
-  - Cause: the temp cleanup rule deletes temp folders after 60 idle minutes; the sweep at session start removes a folder that sat idle for minutes (the agent's guess; at 088a227c the sweep rule differs, see Status).
-  - Event: `/private/tmp/opensab-pentest/`, `/tmp/claude-501/probe-advisor`, and `/tmp/ojdcli` vanished mid-task; probe records, platform scripts, and a game-server log were lost; probe folders such as opensab-pentest, probe-advisor, and ojdcli vanish; platform scripts and a game-server log are lost; `/private/tmp/opensab-pentest/`, `/tmp/claude-501/probe-advisor`, and `/tmp/ojdcli` vanished mid-task; probe records were lost.
-  - Consequence: a probe is lost and rebuilt, costing time; a report loses its evidence; probe evidence is lost; a rebuild costs time; a probe is lost and rebuilt; a report loses its evidence.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: a Write to an unmarked /tmp folder is denied with a recipe that writes the .created-by-claudetto marker.
-  - Response: avoid
-  - Actions: give each session a probe folder under its session ID and remove it on `session.end`, which reaches both the classic `SessionEnd` hook and the Mod API (P-D9.6c, confirmed by the agent); delete the 60-idle-minute rule. The user notes a session can last under an hour, so an idle timer cannot be the cleaner. If a sweep stays: sweep only folders whose marker names a dead session and whose age exceeds a stated limit; never sweep a folder a live session wrote to in that window; report each removed folder.
-  - Trigger: a folder the session made is gone while the session runs; session start with an idle /tmp folder.
-  - Owner: guards
-  - Status: open. Corrected: at 088a227c the sweep removes only `<root>/-<project>/<session>` folders older than `sessionDays ?? days ?? host.days` days and skips live sessions (`hygiene/sweep.ts:143-170`); `sessionTempCleanup` (`temp-cleanup/cleanup.ts:48-70`) removes only the ended session's own folder. No 60-minute rule and no `.created-by-claudetto` marker exist in baseline code (grep finds none), so the cause and the Existing controls text above describe a later tree; the idle-minutes claim stays the agent's guess.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13).
+- [x] **RISK-108** Moved Out as OUT-2344: the item describes a part that plugins/ does not ship.
 
 - [x] **RISK-109** The temp marker rule blocks the Write tool.
   - Category: product defect.
@@ -1209,20 +856,7 @@
   - Status: closed 2026-11-18: the repeat guard is not shipped (OUT-178, ADR-0154); `git grep -F features/repeat -- plugins` finds no hit.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10693 (observed in transcript, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10779 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10682; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10693); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10779); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10682); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281); observed in transcript, 2026-11-14: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (Next 6) (reported, user, 2026-11-16).
 
-- [ ] **RISK-111** A check piped to `tail` hides a failed exit code.
-  - Category: agent conduct.
-  - Cause: the agent ran `<check> | tail` without `set -o pipefail`.
-  - Event: a failed check exited 0 through the pipe; none was chained to a commit.
-  - Consequence: a broken check could pass a commit step.
-  - Likelihood: 1
-  - Impact: 4
-  - Existing controls: later runs used `set -o pipefail` or printed the exit code; no baseline guard found by `git grep pipefail 088a227c -- plugins` (no match); Later runs used `set -o pipefail` or printed the exit code; no baseline guard found by `git grep pipefail` at 088a227c.
-  - Response: mitigate
-  - Actions: refuse a check piped to `tail`, `head`, or `grep` without `pipefail` (the user's list for 2.1.321).
-  - Trigger: a command line pipes a test or lint command into `tail`.
-  - Owner: guards
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363, reported, user, 2026-11-10 (reported, user, 2026-11-10).
+- [x] **RISK-111** Moved Out as OUT-2345: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 - [x] **RISK-112** The formatter rewrites archived evidence files.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: this repo's formatter configuration, owned by the repo maintainer).
@@ -1292,20 +926,7 @@
 
 ## Untasked Action and Unproven Cause
 
-- [ ] **RISK-116** The agent acts, and then checks, on a claim about a cause it has no proof for, outside its task.
-  - Category: conduct
-  - Cause: The agent blames a tool for a change in the user's file and starts to restore the file, with no check and no task for it.
-  - Event: The agent plans to restore two project sections it says adopt deleted. The user says it was not tasked to restore them and has no proof. The agent then runs a check of the claim, and the user says it was not tasked to check either.
-  - Consequence: An edit of user content on a guess, and a turn spent on work nobody asked for.
-  - Likelihood: 1 (one report)
-  - Impact: 3
-  - Existing controls: none found.
-  - Response: mitigate
-  - Actions: A rule that the agent stays inside the task: it names an unrelated finding in its report and does not act on it, and it states a cause only after a check that the task covers.
-  - Trigger: An edit or a check with no link to the user's request.
-  - Owner: guards
-  - Status: open
-  - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:569; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:588, reported, user, 2026-11-09.
+- [x] **RISK-116** Moved Out as OUT-2346: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 ## Ungrouped
 
@@ -1341,17 +962,4 @@
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (handoff, bug the agent caused); observed in transcript, 2026-11-16
   Verified: claude 2.1.327, 2026-11-18. Setup writes sandbox.enabled true when unset (fill.test.ts), so the agent starts inside the sandbox; allowUnsandboxedCommands stays true per ADR-0159, so an agent can still ask for a call outside it and that call prompts.
 
-- [ ] **RISK-486** The disk fills and builds, caches and Claude Code itself fail.
-  - Category: environment.
-  - Cause: agent worktrees, build output, test temp folders and toolchain caches accumulate with no cleanup.
-  - Event: the container reached about 90% used on 2026-11-18, up 22 points in six days (CTX-831).
-  - Consequence: failed writes, failed builds, a truncated transcript or a lost handover.
-  - Likelihood: 4
-  - Impact: 4
-  - Existing controls: none at 088a227c.
-  - Response: mitigate.
-  - Actions: REQ-GUARDS-073 and REQ-GUARDS-074; a session-start notice when container free space is under 10%.
-  - Trigger: container free space under 10%.
-  - Owner: guards
-  - Status: open
-  - Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671); arc42/03_context_and_scope/machine.md CTX-831, CTX-833.
+- [x] **RISK-486** Moved Out as OUT-2347: the item describes a part that plugins/ does not ship.

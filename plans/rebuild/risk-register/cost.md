@@ -31,7 +31,7 @@
   Status: partial at abed830ed: the fill writes CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3; the caps in effect and the subagent model deny are unprobed.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3 in hooks/settings/defaults.ts take effect in the probe; Opus and Fable spawns refused by agent.spawn; no defaults.ts change needed.
 
-- [ ] **RISK-375** Subagent sprawl: many tiny subagents cost more than inline work.
+- [x] **RISK-375** Subagent sprawl: many tiny subagents cost more than inline work.
   Category: cost.
   Cause: each subagent pays a cold cache write; briefs lack stop conditions.
   Event: many tiny subagents cost more than inline; subagents decide; no receipt (the hidden second conversation).
@@ -43,6 +43,8 @@
   Trigger: a subagent call for work under about 50k context.
   Owner: cost. Status: open.
   Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>) (the read-only subagent cut tokens per call from about 116k to 30k); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>). The 50k threshold: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
+  Status: closed 2026-11-19: spawn depth and concurrency are capped.
+  Verified: defaults.ts sets CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1, MAX_CONCURRENT_SUBAGENTS 3 and FORK_SUBAGENT 0; spawn.test.ts passes (2.1.327, 2026-11-19). Weak tick: no context threshold is shipped.
 
 ## Guards
 
@@ -63,18 +65,7 @@
 
 ## Verification and Honesty
 
-- [ ] **RISK-377** Miscalibrated estimate.
-  Category: Agent behaviour.
-  Cause: No measurement before the claim; training on human-programmer durations.
-  Event: A 13% saving called small ("13% is still a lot"), a run "would cost a lot" with no number vs a 94% session costing $2.88, a tool shipped after 2 runs of a trivial case, machine-wide sudo proposed from inference; Opus says "years/months" or "5-7 days" for a task it finishes in hours, an invented deadline for a task of about 30 minutes (reported). Cost is the largest Reddit theme (about 191 threads, cited count).
-  Consequence: A user decision rests on a false size or cost.
-  Likelihood: 2. Impact: 2.
-  Existing controls: plugins/claudetto/hooks/features/price-step and budget at 088a227c (partial).
-  Response: mitigate.
-  Actions: Compute numbers, dry run, give cost as a number against the budget; price-step and budget hooks give a dry-run token or USD figure before the ask; prompt text forbidding human-time estimates; ask for agent time and human review hours. A Stop check for day, week, or month estimates by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16).
-  Trigger: A reply gives a duration in days or a cost with no number.
-  Owner: cost. Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:163; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:142 (about 191 threads). Not located: the 94% session $2.88 and the days-for-hours estimate quotes.
+- [x] **RISK-377** Moved Out as OUT-2354: the item describes a part that plugins/ does not ship.
 
 ## Cost and Resources
 
@@ -93,24 +84,11 @@
 
 ## Agent Conduct
 
-- [ ] **RISK-379** The agent asks the user for `ANTHROPIC_API_KEY`.
-  - Category: conduct.
-  - Cause: a paid-run tool that the agent wrote read only the API key and stopped when it was unset; a paid-run tool read the API key and stopped when it was unset.
-  - Event: the agent told the user to export the key; the user called this a hazardous violation and said to use the OAuth token; the agent told the user to export the key; the user called this hazardous and said to use the OAuth token.
-  - Consequence: a secret handled in chat; a run billed to the API instead of the login; an extra turn.
-  - Likelihood: 1
-  - Impact: 3
-  - Existing controls: at 088a227c the paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` and the claim-check launcher drops the API key (`CHANGELOG.md:286`); a kernel secrets guard exists at 088a227c but redacts secret values in tool results (`hooks/features/secrets/scan.ts`, `hooks/kernel/secrets.ts`); no baseline rule stops a request for an API key or names the OAuth token (grep for `ANTHROPIC_API_KEY|OAUTH` finds only `setup/changes.ts:92` and `kernel/secrets.ts:13`).
-  - Response: mitigate.
-  - Actions: claudetto shall make the agent use the OAuth login and write each tool that calls a model to use the Claude Code OAuth token; claudetto shall make the agent use the OAuth login and never ask the user for an API key.
-  - Trigger: the text `ANTHROPIC_API_KEY is not set` in a tool result; a script that calls the Messages API.
-  - Owner: cost
-  - Status: partly done.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; `CHANGELOG.md:286` at 088a227c; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+- [x] **RISK-379** Moved Out as OUT-2355: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
 ## Hooks, Gates, and Notices
 
-- [ ] **RISK-380** Memory watch poll fails with a visible error after 30000 ms.
+- [x] **RISK-380** Memory watch poll fails with a visible error after 30000 ms.
   - Category: Claude Code or claudetto fault
   - Cause: The memory watch runs ps through $.process.run, and the call aborts after 30000 ms.
   - Event: The notice 'A memory watch poll failed (HooksError: $.process.run(ps) aborted: still running after 30000ms)' shows twice in one reply.
@@ -122,8 +100,9 @@
   - Actions: Find why ps runs past 30000 ms and keep a failed poll out of the reply.
   - Trigger: The notice shows in a session.
   - Owner: cost
-  - Status: open.
+  - Status: closed 2026-11-19: the per-process `ps` watcher is not shipped (ADR-0190), so the 30000 ms poll cannot occur.
   - Source: reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
+  Verified: hooks/guards/memory.ts runs `memory_pressure -Q` once per held call and catches a failed read through fault(); no `ps` poll ships (grep ' ps ' memory.ts -> 0 hits) (2.1.327, 2026-11-19).
 
 ## Refusals and Model Fallback
 
@@ -162,53 +141,15 @@
 
 ## Subagent Cache Goes Cold
 
-- [ ] **RISK-383** Subagent Cache Goes Cold.
-  Category: Cost.
-  Cause: Subagents default to a 5-minute cache TTL against 1 hour on the main thread.
-  Event: A subagent that waits on a nested subagent, is resumed, or blocks on a build or test over 5 minutes goes cold. One commenter saw +40% usage. Cache creation bills 1.25x input at 5 minutes and 2x at 60 minutes. One cache bust in a 400k subagent transcript can cost more than running at 60 minutes, and iterative-test subagents may bust 10-20 times.
-  Consequence: Spend.
-  Likelihood: 1. Impact: 3.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (REQ-DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
-  Trigger: A subagent turn that waits more than 5 minutes.
-  Owner: cost. Status: open.
-  Basis: reported, one user.
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:380,388,392-397 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>)
+- [x] **RISK-383** Moved Out as OUT-2356: the item is a third-party report with no probe.
 
 ## Audit Skill at Top Effort
 
-- [ ] **RISK-384** An orchestrator picks the top model and effort for a big audit skill and burns the limits.
-  Category: agent failure.
-  Cause: An orchestrator told to run a Cloudflare security-audit skill with its recommended model and effort chose Fable High and ran unattended; a second user needed three 5-hour sessions even on Sonnet. A commenter adds that a skill that fans out into subagents re-reads context at full cost, since subagents get about a 5-minute prompt cache against about 1 hour for the main session on a subscription plan.
-  Event: A large audit skill runs with the top model and effort, fanned out into subagents.
-  Consequence: Three 5-hour limits and 50 percent of the weekly tokens went to 11 percent of the task.
-  Likelihood: 2 (two users).
-  Impact: 3 (a wasted session or spend).
-  Existing controls: None at 088a227c: only the agent files fix effort (Artemis high on Haiku; Metis, Athena, Heracles medium on Sonnet, `plugins/claudetto/agents/*.md:4-5`@088a227c); no rule names an audit skill.
-  Response: mitigate.
-  Actions: Build a lightweight architecture map (signatures, exports, data flow) kept as one summary, then audit one file at a time against it; use a cheaper model for the bulk file-by-file passes and the top model for the final cross-file review; run /context and turn off unused MCP servers.
-  Trigger: A skill that fans out into subagents, or an orchestrator that picks the top effort without asking.
-  Owner: cost.
-  Status: open.
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:49; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:53; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>)
+- [x] **RISK-384** Moved Out as OUT-2357: the item is a third-party report with no probe.
 
 ## Compaction and Memory
 
-- [ ] **RISK-385** A session resumed after the cache TTL re-sends and re-writes its whole context at the write premium.
-  - Category: cost.
-  - Cause: cache expiry (TTL) forces a full re-write; compaction on a cold or switched model gets no cache hit; past the cache TTL (about 5 minutes API; 1h subscription; reports of about 1h10m) a resumed long session pays the full re-write.
-  - Event: the user or agent resumes a long idle session, or compacts cold, and burns 15-40% of a window; resume after a 20-minute break rewrote cost silently and users learned from the bill (harness fault, not model); a 900k session left overnight cost about 15% of the 5h window and 2% weekly on the first request (cause: cache expiry, not the handoff prompt); a 400k+ session resumed cold jumped the 5h limit about 15%; "continue" after a limit reset re-reads everything at full price (0% to 40% in seconds); `/compact` is itself a full pass (11% in seconds).
-  - Consequence: a wasted session or spend; wasted spend.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: 59-minute age rule in `handoff.ts` at 088a227c (partial); blocking idle guard and cold-return cost display missing.
-  - Response: mitigate.
-  - Actions: UserPromptSubmit hook that blocks or warns on a stale session and shows the cold cost; a warm-cache compact/handoff step before idle; notice candidate; do not resume a session idle over about 30-60 min; start fresh from a handoff file; `/export [filename]` writes plain text with no model call; ask for the handoff before walking away; do not change model or effort mid-session; front-load the first prompt; a hook that blocks a stale session until the user approves; spawn a fresh subagent instead of resuming one idle over 5 minutes when the resume would need over about 200k tokens (the 200k is a reported estimate from the agent's own cost log). Not probed: whether terminating a session expires the cache; the cache lives server-side, so a local fake API cannot show it and a probe needs a paid live run.
-  - Trigger: a prompt after the cache TTL has passed; first prompt after an idle gap over the TTL.
-  - Owner: cost
-  - Status: open.
-  - Source: external/export--clear vs -compact.jsonl:59. The 15-40% figure: not located; external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:44 (900k session) (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>); external/export--clear vs -compact.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact/>). The 15% and 0% to 40% figures were not located by grep.
+- [x] **RISK-385** Moved Out as OUT-2358: the item describes a part that plugins/ does not ship.
 
 ## Cost and Statusline
 
@@ -227,7 +168,7 @@
   - Status: closed 2026-11-18. The OpenSpec task counter left with the openspec block (ADR-0189).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (observed, grep miss).
 
-- [ ] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
+- [x] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
   - Category: product defect.
   - Cause: `statusline/color.ts:82-85` `colorOff` reads `NO_COLOR`; nothing handles `FORCE_COLOR`. Checked on 2.1.327 (2026-11-18, cc-inspect `code search`): Claude Code sets `NO_COLOR` only in the PowerShell tool environment (`chunk-m14bt1pz.js@1114484`, used at `@1115526`), not for the statusLine command, and https://clawdipedia.cc/configure/status-line (retrieved 2026-11-18) says ANSI colors work there. A second report found no cause; the first-render cause needs an interactive TTY capture.
   - Event: a screenshot report; a second screenshot report says the statusline renders without colour at first, then colour appears once a few more elements come up.
@@ -239,10 +180,11 @@
   - Actions: check the cause first; handle `FORCE_COLOR`; reproduce with the statusline binary on the first render; render colour on every element from the first frame.
   - Trigger: an interactive session; any session start with a statusline.
   - Owner: cost
-  - Status: open (`colorOff` reads only `NO_COLOR` at `plugins/claudetto/statusline/color.ts:82-85@088a227c`, checked with `git show`; the first-render cause needs an interactive TTY capture, which a local probe cannot make. Checked on 2.1.327: Claude Code sets `NO_COLOR` only in the PowerShell tool environment (`chunk-m14bt1pz.js@1114484`, used at `@1115526`), not for the statusLine command; the docs page https://clawdipedia.cc/configure/status-line (retrieved 2026-11-18) says ANSI colors work in the statusLine process).
+  - Status: closed 2026-11-19: the shipped status line has no colour, so the cause left with the removed statusline code.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:37 (observed); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13).
+  Verified: hooks/statusline/statusline.ts draws plain text with no colour code and no window label (grep -in 'color|NO_COLOR|1M|200k' -> 0 hits); statusline.test.ts passes (2.1.327, 2026-11-19).
 
-- [ ] **RISK-388** The statusline reports a 1M window when the system uses 300k.
+- [x] **RISK-388** The statusline reports a 1M window when the system uses 300k.
   - Category: product fault (statusline).
   - Cause: the context size shown does not follow the window the session runs with.
   - Event: the statusline shows 1M for a 300k window.
@@ -254,8 +196,9 @@
   - Actions: show the window the session runs with.
   - Trigger: a shown window that differs from the real one.
   - Owner: cost
-  - Status: open.
+  - Status: closed 2026-11-19: the shipped status line has no window, so the cause left with the removed statusline code.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:1353 (reported, user, 2026-11-09).
+  Verified: hooks/statusline/statusline.ts draws plain text with no colour code and no window label (grep -in 'color|NO_COLOR|1M|200k' -> 0 hits); statusline.test.ts passes (2.1.327, 2026-11-19).
 
 - [x] **RISK-389** A paid-run tool asks for an API key.
   - Category: product fault (tooling).
@@ -274,7 +217,7 @@
 
 ## Statusline
 
-- [ ] **RISK-390** Statusline colours are missing until more elements appear.
+- [x] **RISK-390** Statusline colours are missing until more elements appear.
   Category: product defect.
   Cause: not found; see RISK-387 for what 2.1.327 rules out (no `NO_COLOR` for the statusLine command); the user saw it with a screenshot.
   Event: the statusline renders without colour at first, then colour appears once a few more elements come up.
@@ -286,8 +229,9 @@
   Actions: reproduce with the statusline binary on the first render; render colour on every element from the first frame.
   Trigger: any session start with a statusline.
   Owner: cost
-  Status: open at 088a227c; same report and same limit as RISK-387: the first-render cause needs an interactive TTY capture; on 2.1.327 `NO_COLOR` is not set for the statusLine command (`chunk-m14bt1pz.js@1114484`).
+  Status: closed 2026-11-19: the shipped status line has no colour, so the cause left with the removed statusline code.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: hooks/statusline/statusline.ts draws plain text with no colour code and no window label (grep -in 'color|NO_COLOR|1M|200k' -> 0 hits); statusline.test.ts passes (2.1.327, 2026-11-19).
 
 ## Conduct
 
