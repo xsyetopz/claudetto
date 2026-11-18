@@ -3993,17 +3993,6 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: openspec/specs/builtin-rebuild/spec.md:65; openspec/specs/builtin-rebuild/spec.md:68.
   Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
 
-- [x] **OUT-680** Out (REQ-YOU-SHOULD-KNOW-073, ADR-0051, the builtin prompt is recreated verbatim): the rebuild drops this. claudetto shall write its own observer prompt for size and not for licence, because the original's fixed prompt rides on every check and instructs about artifacts, pages and follow-up directions the rebuild drops, and shall report the shipped prompt's character count.
-  Acceptance: the release notes state the character count of the shipped observer prompt. Verification: inspection.
-  Basis: reported (spec). Status: partial at 088a227c (`plugins/claudetto-you-should-know/hooks/texts.ts` `CHECK_INSTRUCTIONS` is 2,477 characters and names no artifact; the original's prompt in 2.1.327 runs past 9,000 characters from chunk-nvx1z6pc.js@42299 and teaches the artifact offer, example cards and an output structure; the shipped count is stated at release).
-  Source: openspec/specs/builtin-rebuild/spec.md:39 (task 11.4 reports the count).
-  Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
-
-- [x] **OUT-681** Out (REQ-YOU-SHOULD-KNOW-062, ADR-0190, the propose prompt stays byte-equal to the 2.1.327 builtin): claudetto shall put in the side check's fixed instructions that a password or secret inside a command (an osascript keystroke, a Terminal window it drives) was not typed into the chat unless a person message holds it, and shall carry the clause in the cached instructions block of the request.
-  Acceptance: the cached instructions block holds the clause. Verification: inspection.
-  Basis: cited. Status: have at 088a227c (plugins/claudetto-you-should-know/hooks/texts.ts:11 holds "A password or secret inside a command, such as an osascript..."; the cached-block placement is asserted by `register-check.test.ts:59`: the fixed instructions are the cached block and the body follows unmarked).
-  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/you-should-know/spec.md:50; plugins/claudetto-you-should-know/hooks/texts.ts:11@088a227c.
-  Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
 - [x] **OUT-800** Out (REQ-YOU-SHOULD-KNOW-028, ADR-0190 agent decision, not the user's): the scan manifest field is read only for builtin plugins, and `claude plugin validate --strict` warns "Unknown field 'scan'. Claude Code ignores it at load time", so a normal plugin gains nothing from it. The hooks, calls and env reads it listed stay in code and are pinned by the behaviour tests.
   Acceptance: none; the hooks `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach`, `session.end` stay registered. Verification: inspection.
   Verified: claude plugin validate plugins/claudetto-you-should-know --strict, claude 2.1.327, 2026-11-18: a scan field is warned as ignored at load time.
