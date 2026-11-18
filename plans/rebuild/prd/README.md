@@ -797,6 +797,11 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: user decision, 2026-11-17 (the MCP overhead "must never happen" on claudetto or its MCP servers); 2.1.326 caps an MCP result at 25,000 tokens and saves no text to a file (code read). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487; chunk-vxavegfm.js@768 and chunk-bwkc74bx.js@7110 (2.1.327).
 
+- [x] **OUT-700** Out (REQ-GUARDS-072, ADR-0190): claudetto shall block only unrecoverable destructive commands on macOS and Linux and let every other command pass.
+  Reason: ADR-0190, agent decision: the classifier lists that ADR-0098 relied on (autoMode) do not ship; the deny rules, ask rules and sandbox that setup fills (hooks/guards/rules.ts) are the enforced layer, and a probe on 2.1.327 showed them enforced where vanilla ran the command. A second unrecoverable-only gate has no measured gain over them (ADR-0177).
+  Basis: triage of REQ-GUARDS-072, 2026-11-19. Status: have in part (deny, ask and sandbox rules).
+  Source: removed REQ-GUARDS-072; ADR-0098; ADR-0190.
+
 #### Delegation
 
 - [x] **OUT-231** Out (REQ-DELEGATION-001, ADR-0177, ADR-0169): the paid run showed delegation costing more than working alone, and ListAgents keeps its stock rows. claudetto shall tell the model in the Agent tool text to pass `name` to address a subagent by that name, and shall keep ListAgents with a trimmed text.

@@ -9,7 +9,7 @@ describe("defaults fill", () => {
 
 		// Assert
 		const next = JSON.parse(fill?.text ?? "");
-		expect(next.permissions.deny).toEqual([...DENY]);
+		expect(next.permissions.deny).toEqual(expect.arrayContaining([...DENY]));
 		expect(next.env).toEqual({ ...ENV });
 		expect(next.worktree).toEqual({ baseRef: "head" });
 		expect(next.skillListingMaxDescChars).toBe(60);

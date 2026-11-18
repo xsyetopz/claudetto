@@ -1,3 +1,5 @@
+import { fillGuards } from "../guards/fill";
+import { WALLS } from "../guards/rules";
 import { type Json, indentOf, isRecord, parseSettings } from "./settings";
 
 /**
@@ -24,6 +26,8 @@ export const DENY: readonly string[] = [
 export const KEYS: Readonly<Json> = {
 	skillListingMaxDescChars: 60,
 	showClearContextOnPlanAccept: true,
+	// One trailer in the form the project convention names; vanilla adds a Co-Authored-By line (REQ-GUARDS-063).
+	attribution: { commit: "Assisted-by: Claude Code", pr: "Assisted-by: Claude Code" },
 };
 
 /** Env values written only when unset; the advisor stays off by product rule. */
@@ -35,12 +39,12 @@ export const ENV: Readonly<Record<string, string>> = {
 };
 
 /** Bumped when the defaults change, so a fill runs once per set and never undoes a user's later edit. */
-export const FILL_VERSION = 1;
+export const FILL_VERSION = 2;
 
 export type Fill = { readonly text: string; readonly added: readonly string[] };
 
 /** Adds each default the settings text lacks; undefined when the text is not a JSON object. */
-export const fillSettings = (text: string | undefined): Fill | undefined => {
+export const fillSettings = (text: string | undefined, walls: readonly string[] = WALLS): Fill | undefined => {
 	const held = text === undefined || text.trim() === "" ? {} : parseSettings(text);
 	if (held === undefined) return undefined;
 	const added: string[] = [];
@@ -69,6 +73,7 @@ export const fillSettings = (text: string | undefined): Fill | undefined => {
 		next["permissions"] = { ...permissions, deny: [...deny, ...denyAdds] };
 		added.push(...denyAdds.map((tool) => `deny ${tool}`));
 	}
+	fillGuards(next, added, walls);
 	if (added.length === 0) return { text: text ?? "", added };
 	return { text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`, added };
 };
