@@ -1,6 +1,3 @@
-import type { On, PluginOptions } from "claude-code";
-import { fault } from "../fault";
-
 const DEFAULT_MINUTES = 30;
 
 /**
@@ -36,16 +33,3 @@ export const limitCommand = (command: string, seconds: number): string =>
 		"kill $__claudetto_w 2>/dev/null",
 		"(exit $__claudetto_s)",
 	].join("\n");
-
-/**
- * Caps each Bash call's wall time (RISK-056). A command moved to the
- * background, by the model or after the foreground timeout, otherwise runs
- * until someone stops it; uncapped loops have run for hours past their turn.
- */
-export function registerLimit(on: On, options: PluginOptions = {}): void {
-	const limit = minutes(options["bashTimeLimitMinutes"]);
-	if (limit === 0) return;
-	on("tool.call", { tool: "Bash" }, ($, e, next) =>
-		e.tool === "Bash" ? next({ ...e, command: limitCommand(e.command, limit * 60) }) : next(e),
-	).catch(($, e, next) => (fault($, "time limit", next.error), next(e)));
-}

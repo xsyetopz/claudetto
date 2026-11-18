@@ -1,6 +1,3 @@
-import type { On } from "claude-code";
-import { fault } from "../fault";
-
 /** Matches a command that records or publishes work. */
 const PUBLISH = /\bgit\b[^|;&\n]*?\s(?:commit|push)\b/;
 
@@ -18,10 +15,3 @@ const PUBLISH = /\bgit\b[^|;&\n]*?\s(?:commit|push)\b/;
  */
 export const gateCommit = (command: string): string =>
 	PUBLISH.test(command) ? `set -o pipefail\n${command}` : command;
-
-/** Stops a commit or push behind a check whose failure a pipe would hide (RISK-104). */
-export function registerCommit(on: On): void {
-	on("tool.call", { tool: "Bash" }, ($, e, next) =>
-		e.tool === "Bash" ? next({ ...e, command: gateCommit(e.command) }) : next(e),
-	).catch(($, e, next) => (fault($, "commit gate", next.error), next(e)));
-}

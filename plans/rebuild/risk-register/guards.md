@@ -317,6 +317,21 @@
   - Status: closed 2026-11-19. General cure: a wall-time limit on every Bash call, foreground or background (`hooks/guards/limit.ts`, option `bashTimeLimitMinutes`, default 30). A perl watchdog stops the call's process group, which is that call's tree, because Claude Code starts each Bash call as its own group leader (checked: shell pid equals its pgrp). Probe on 2.1.327 with the limit at 0.1 min: `sh -c 'sleep 40 & sleep 40'` ended after 6 s with the reason line in the result; `echo quick` returned in the same second.
   - Source: external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:85; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; external/2026-10-07/export-I benchmarked my own guardrail pack. It made no difference. Posting it anyway.jsonl:8 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wzrhae/i_benchmarked_my_own_guardrail_pack_it_made_no/>; the 0-crossings counter-evidence); external/export--clear vs -compact.jsonl:59; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:113 (reported, one report); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
+- [x] **RISK-492** A claudetto command rewrite turns every allowed Bash call into an approval request.
+  - Category: agent behaviour (plugin defect).
+  - Cause: Claude Code checks permissions on the command a `tool.call` hook rewrote, and its parser asks about a brace group or a quoted brace ("A group in braces or double parentheses in this command can't be checked before it runs"). The stdin, time-limit and commit guards wrap every command in braces. Their probes ran under `bypassPermissions`, which hid the ask.
+  - Event: probe, claude 2.1.327, 2026-11-19, cc-inspect cli under `acceptEdits` with `Bash(git *)` allowed: `git init` was refused with that message, and a perl edit with "Contains brace with quote character (expansion obfuscation)".
+  - Consequence: in default and acceptEdits modes each Bash call needs approval; under `-p` each is refused. A dialog or saved rule would carry the wrapper, not the model's command.
+  - Likelihood: 5
+  - Impact: 4
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: one general cure for every command rewrite. `hooks/guards/shell.ts` asks the session's verdict for the model's own command first, wraps only an allowed command, and answers the check of the wrapped call with that verdict. A command that needs approval or is denied runs as written, so the dialog, saved rules and the auto mode classifier see the model's text. A guard probe runs under `acceptEdits`, not `bypassPermissions`.
+  - Trigger: a Bash result with "can't be checked before it runs" or "expansion obfuscation" for a command the rules allow.
+  - Owner: guards
+  - Status: closed 2026-11-19. Probe on 2.1.327 under `acceptEdits` with allow `Bash(git *)`, `Bash(perl -0pi -e *)` and deny `Bash(git push --force*)`: `git init` ran, the perl edit ran, the force push was denied with the vanilla text, and an unlisted `curl` got the vanilla "This command requires approval". `false | tail -1 && git commit` made 0 commits, so the guards still wrap allowed calls.
+  - Source: probe, claude 2.1.327, 2026-11-19 (cc-inspect cli); `extend/mod-api/calls/tool-command-config` (clawdipedia, read 2026-11-19): `tool.check` fires after `tool.call`.
+
 ## Reply Style and Sycophancy
 
 - [ ] **RISK-057** Narration in shipped source.
