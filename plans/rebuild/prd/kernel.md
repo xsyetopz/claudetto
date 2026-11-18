@@ -24,11 +24,7 @@
 
 
 
-- [ ] **REQ-KERNEL-013** claudetto shall put these rules in the root prompt: weigh a disputed claim as a third party's; drop an act the user says nobody asked for; look up a credential in the repo `.env`, then the environment, never ask the user for a new file; probe where undoing is free, but a needed dependency goes into the project (`bun add`); write a URL or name into a file only from a source read; report and wait after `! <command>` or a correction; announce a paid or background run; mark a guess. A paid tool must not pass the shell `ANTHROPIC_API_KEY` into a spawned `claude` (the key is billed before the subscription login).
-  Decision: ADR-0190, a conduct line ships only with a measured gain, in the one plugin output style (keep-coding-instructions: true).
-  Acceptance: none of these rules conflicts with never-search-for-secrets, block-is-final, one-line pre-call notice or corrections-as-context (the 2.1.322 dossier flagged them). The agent verifies a claim of the user against the repo or a probe before it relies on it; it stops when told to stop and starts no work the user has not named, including an inquiry into what vanished from the repo or from `~/.Trash`. Verification: inspection.
-  Basis: read. Status: partial at 088a227c (`hooks/features/prompt/texts.ts:10` holds the message-sorting rule; a `git grep` of that folder for "nobody asked", ".env" and "bun add" finds none of the other rules; the conflict check is this item's acceptance and runs at build).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:119; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:281; reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204); user decision, 2026-11-16 (date of the handoff that records it.
+- [x] **REQ-KERNEL-013** Moved Out as OUT-2829: ADR-0177 and ADR-0190: the root prompt and `texts.ts` are gone (OUT-411); of the listed rules, disputed claim, scope and act-before-handoff passed on vanilla 2.1.327 in 3 of 3 Sonnet 5.5 runs each (reports/2026-11-19-research/conduct), and the rest have no measured gain, so no line ships.
 
 ## Env File and Shell Setup at SessionStart
 
@@ -64,14 +60,6 @@
 
 - [x] **REQ-KERNEL-027** Moved Out as OUT-2737: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-KERNEL-028** claudetto shall make the agent call tools by their exact case, such as `Bash`.
-  Decision: ADR-0190, a conduct line ships only with a measured gain, in the one plugin output style (keep-coding-instructions: true).
-  Acceptance: no "No such tool available" error from case. Verification: transcript scan.
-  Basis: reported. Status: missing at 088a227c (`git grep -n -i "exact case" 088a227c -- plugins/claudetto/hooks/features/prompt` finds none).
-  Source: reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
+- [x] **REQ-KERNEL-028** Moved Out as OUT-2830: ADR-0177 and ADR-0190: vanilla 2.1.327 made 0 wrong-case tool calls in 4 of 4 Sonnet 5.5 runs and returns a named `No such tool available` error that the model corrects on the next turn (OUT-2777, reports/2026-11-19-research/risks-verification), so no line ships.
 
-- [ ] **REQ-KERNEL-029** claudetto shall tell the agent to stop after two failed tries of the same approach, state what failed in its reply, and then switch approach or ask, provided a behavioural test shows it beats vanilla.
-  Decision: ADR-0190, a conduct line ships only with a measured gain, in the one plugin output style (keep-coding-instructions: true).
-  Acceptance: on a task whose obvious fix cannot work, N=5 runs per arm count attempts of the same approach; the text ships only if the median is lower than vanilla Opus 5.5 and Sonnet 5.5 at medium, and its characters stay inside the root-prompt budget. No hook and no refusal is added (ADR-0154 stands). Verification: test.
-  Basis: reported (one user; older runs repeated a broken fix five or six times). Status: missing at 088a227c.
-  Source: external/2026-11-18/reddit.com-r-ai-agents-comments-1xx5l8s-im-tired-of-ai-explaining-thing-20261118T123732Z.md:344 (url: <https://www.reddit.com/r/AI_Agents/comments/1xx5l8s/im_tired_of_ai_explaining_things_instead_of/>); reports/2026-11-18-research/dossier.md:184.
+- [x] **REQ-KERNEL-029** Moved Out as OUT-2831: ADR-0177 and ADR-0190: on a `deploy.sh` that always fails (license server unreachable) vanilla 2.1.327 stopped after one failing try in 5 of 5 Sonnet 5.5 runs, the same as the candidate line (4 of 5 after one try, 1 of 5 after two), so the median is not lower and no line ships (reports/2026-11-19-research/risks-reply-reqs, batch-act.sh, seed k).
