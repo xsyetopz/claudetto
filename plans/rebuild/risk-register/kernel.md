@@ -392,7 +392,7 @@
   - Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: 25 pass, including "session.compact > a failed fork falls back to the transcript extract". The test does not log once per window.
   - Source: reports/2026-11-18-research/surface.md:59 (release notes, claude 2.1.327, 2026-11-18).
 
-- [ ] **RISK-488** A Bash call hangs for 120 seconds on stdin.
+- [x] **RISK-488** A Bash call hangs for 120 seconds on stdin.
   - Category: host behaviour.
   - Cause: a command with a heredoc keeps an open stdin (CTX-837), and a path glob that starts with `-` empties a variable (CTX-838), so a reader such as `wc -l` waits on stdin.
   - Event: a subagent of this project waited 122 seconds; the GodHand session found the same pattern.
@@ -404,5 +404,5 @@
   - Actions: the agent rules say: write paths from a glob as `./*` or after `--`; in a command that holds a heredoc, give each other stdin reader a file or `</dev/null`. A trace test runs both mutants. Report the heredoc stdin behaviour to Claude Code (user-held).
   - Trigger: a Bash result that says it was moved to the background after 120 s.
   - Owner: kernel
-  - Status: open
+  - Status: closed 2026-11-19. `hooks/guards/stdin.ts` runs each Bash command as `{ cmd\n} </dev/null`; the model's command stays in history, so the cache prefix holds. Probe on 2.1.327 (cc-inspect cli, Bash `cat <<EOF >/dev/null … EOF; wc -l`): vanilla moved the call to the background and did not end in 60 s; with the plugin `wc -l` printed 0 in the same second. An emptied glob variable (CTX-838) now reads EOF the same way.
   - Source: arc42/03_context_and_scope/tools.md CTX-837, CTX-838.
