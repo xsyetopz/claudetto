@@ -349,41 +349,47 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 #### Model Routing and Subagent Models
 
-- [ ] **OUT-057** claudetto shall not route Sonnet-implements and Opus-reviews for simple tasks (measured costlier than Opus alone) or tiered thinker, planner, and typist chains (contested).
+- [x] **OUT-057** claudetto shall not route Sonnet-implements and Opus-reviews for simple tasks (measured costlier than Opus alone) or tiered thinker, planner, and typist chains (contested).
   Acceptance: no default chain routes a simple task through a second model. Verification: inspection.
   Basis: measured (one measurement); reported (chains contested). Status: have at 088a227c.
   Source: external/2026-10-12/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl:25 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x1nsaz/i_tested_haiku_55_sonnet_55_and_opus_55_as>).
+  Verified: git grep -nEi -e 'Sonnet-implements|typist|thinker|tiered' -- plugins -> 0 hits (Heracles and Athena run on Sonnet and Artemis on Haiku; none is an Opus reviewer), 2026-11-19.
 
-- [ ] **OUT-058** claudetto shall not route by price per token without measuring the tokenizer change, and shall not state fixed-weight cost headlines ("75% of spend is cache reads").
+- [x] **OUT-058** claudetto shall not route by price per token without measuring the tokenizer change, and shall not state fixed-weight cost headlines ("75% of spend is cache reads").
   Acceptance: no routing rule cites a price per token alone. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:53 (cache reads about 75% of weighted spend across 334 sessions); external/2026-11-06/reddit.com-r-claudecoding-comments-1xnb645-i-mapped-6-weeks-of-my-claud-20261105T173120Z.md:2.
+  Verified: git grep -nEi -e 'per-token price|tokenizer|75% of spend' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-059** claudetto shall not carry the "Sonnet beats Opus" Terminal-Bench headline (Sonnet at max against Opus at xhigh; at the same effort 61.5% against 66.4%).
+- [x] **OUT-059** claudetto shall not carry the "Sonnet beats Opus" Terminal-Bench headline (Sonnet at max against Opus at xhigh; at the same effort 61.5% against 66.4%).
   Acceptance: no text cites the headline. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:257; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:72.
+  Verified: git grep -nEi -e 'Terminal-Bench' -- plugins -> 0 hits, 2026-11-19.
 
 - [x] **OUT-060** claudetto shall not let subagents share the main checkout for git operations, nor run `git stash` in one (see the shared-checkout rules in `prd/delegation.md`).
   Basis: reported. Status: missing at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43.
   Verified: git grep -nEi -e 'stash' -- plugins/claudetto/agents plugins/claudetto/hooks/guards/rules.ts -> 2 hits (Heracles.md leaves stash to the lead and rules.ts asks before git stash), 2026-11-19.
 
-- [ ] **OUT-061** claudetto shall not set overnight or uncapped parallelism as a goal, nor agent swarms as a default: heavy users get there through parallel sessions across repos; swarms burn allowance with no gain over ticket-by-ticket; a Codex orchestrator spent 16 h and over 90% of the allowance on a 9,800-line deploy script; 82% of one user's usage came from subagent-heavy sessions. Unconstrained subagent spawning outside a defined pipeline and Ultracode-style unbounded fan-out go.
+- [x] **OUT-061** claudetto shall not set overnight or uncapped parallelism as a goal, nor agent swarms as a default: heavy users get there through parallel sessions across repos; swarms burn allowance with no gain over ticket-by-ticket; a Codex orchestrator spent 16 h and over 90% of the allowance on a 9,800-line deploy script; 82% of one user's usage came from subagent-heavy sessions. Unconstrained subagent spawning outside a defined pipeline and Ultracode-style unbounded fan-out go.
   Basis: reported. Status: not applicable.
   Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:47 and :97 (16 h, over 90% of the allowance, 9,800-line script); external/2026-10-22/reddit.com-r-claudecode-comments-1wy8sbd-use-of-subagents-or-not-20261022T122101Z.md:35 (82% from subagent-heavy sessions). No source located for the swarm and ticket-by-ticket clause (Dropped 2026-11-18 for that clause).
+  Verified: git grep -nEi -e 'swarm|overnight|uncapped|unlimited' -- plugins -> 0 hits (subagent depth is 1 and concurrency 3 through built-in keys in settings/defaults.ts), 2026-11-19.
 
 - [ ] **OUT-062** claudetto shall not force every subagent onto one cheap model through the global env (it overrides deliberately bigger agents and degrades work), shall not give percentage splits ("10% Haiku, 50% Sonnet, 40% Opus"), and shall not use Haiku as a long-conversation worker (it crosses the 100k step; 3x faster and 11x less subscription usage held only on a 10,000-call single-turn job).
   Basis: reported. Status: not applicable (the setup env sets `CLAUDE_CODE_SUBAGENT_MODEL` without `_FORCE`; see the subagent-model-precedence ADR).
   Source: external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:41 (the 10/50/40 split, verdict rejected); external/2026-10-11/export-How are you guys getting such good usage-.jsonl:31 (the poster's split); external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:23 (a Haiku subagent run with 145 of 164 calls over 100k tokens). No source located for the 3x faster and 11x less usage figures (Dropped 2026-11-18 for that clause).
 
-- [ ] **OUT-063** claudetto shall not build an orchestrator-Opus that delegates everything: on short tasks Opus plus Haiku cost about 10% less than Opus alone, because Opus was most of the bill (one poster, 128 runs, 16 tasks).
+- [x] **OUT-063** claudetto shall not build an orchestrator-Opus that delegates everything: on short tasks Opus plus Haiku cost about 10% less than Opus alone, because Opus was most of the bill (one poster, 128 runs, 16 tasks).
   Basis: measured (one poster). Status: not applicable.
   Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xxyc5a-does-delegating-to-cheaper-mod-20261117T182807Z.md:107.
+  Verified: git grep -nEi -e 'orchestrator|main coding agent' -- plugins -> 0 hits (Artemis (Haiku) is a read-only search worker and Heracles, the coding agent, runs on Sonnet), 2026-11-19.
 
-- [ ] **OUT-064** claudetto shall not use Haiku 5.5 as the main coding agent or Fable as orchestrator for everything.
+- [x] **OUT-064** claudetto shall not use Haiku 5.5 as the main coding agent or Fable as orchestrator for everything.
   Acceptance: Haiku keeps to bounded, verifiable jobs; Fable spawned 5 agents for 1 agent's work (contested, others run it for months). Basis: reported. Status: n/a.
   Source: external/2026-10-11/export-Haiku 5.5 token usage.jsonl:9.
+  Verified: git grep -nEi -e 'orchestrator|main coding agent' -- plugins -> 0 hits (Artemis (Haiku) is a read-only search worker and Heracles, the coding agent, runs on Sonnet), 2026-11-19.
 
 #### Compaction and Handover
 
@@ -391,32 +397,37 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported, user feature list.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:752; user decision, 2026-11-04.
 
-- [ ] **OUT-066** claudetto shall not build a session-handoff tool, and shall not end the main turn with $.turn.abort after a handoff file is written.
+- [x] **OUT-066** claudetto shall not build a session-handoff tool, and shall not end the main turn with $.turn.abort after a handoff file is written.
   Acceptance: no handoff tool and no turn.abort call exists in claudetto; handover is written by the compaction path and by manual /clear. Verification: inspection.
   Basis: cited. Status: missing at 088a227c.
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/session-handoff/spec.md:86 (the tool would end the turn with $.turn.abort, run clear and submit from a timer after idle, and show one line when the abort fails); user-approved deletion list in plans/rebuild-curation.md:1410, which drops the handoff tool.
+  Verified: git grep -nEi -e 'turn\.abort|session-handoff|handoff' -- plugins -> 0 hits (the handover is a hook set (handover/compact.ts, clear.ts, renewal.ts) with no tool and no turn.abort), 2026-11-19.
 
-- [ ] **OUT-067** claudetto shall not state "never compact" or "always compact" as dogma; no endless compaction as default, no `/compact` as main memory strategy, no handoff prompt or `/compact` asked of a 900k session (it pays the full cold read; use a notes file kept current), no month-long single session.
+- [x] **OUT-067** claudetto shall not state "never compact" or "always compact" as dogma; no endless compaction as default, no `/compact` as main memory strategy, no handoff prompt or `/compact` asked of a 900k session (it pays the full cold read; use a notes file kept current), no month-long single session.
   Acceptance: the measurable rule lives in the ADR on compaction stance. Basis: reported, contested. Status: n/a.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:44 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually>) (900k session); external/export--clear vs -compact.jsonl:2.
+  Verified: git grep -nEi -e 'never compact|always compact' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-068** claudetto shall not leave auto-compact at the default of about 967K for cost-sensitive users, and shall not claim that turning auto-compact off shrinks context (the 85k-to-38k saving was a reserved buffer shown as used; reported both ways, unresolved).
   Acceptance: window tuning or handoff at 150-250k with a toggle replaces it. Basis: reported. Status: n/a.
   Source: external/2026-10-12_p3/export-How's 1m context window now-.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x40hlw/hows_1m_context_window_now>).
 
-- [ ] **OUT-069** claudetto shall not use `/export` pasted into a fresh session as a handoff, a hand-written handoff for "working style", or generic piling of more instructions on drift.
+- [x] **OUT-069** claudetto shall not use `/export` pasted into a fresh session as a handoff, a hand-written handoff for "working style", or generic piling of more instructions on drift.
   Acceptance: pasted history refills the context; working style does not transfer by prose; change what rules are made of (provenance, enforcement) instead. Basis: reported. Status: n/a.
   Source: external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:61.
+  Verified: git grep -nEi -e '/export|working style' -- plugins -> 0 hits, 2026-11-19.
 
 #### You Should Know
 
-- [ ] **OUT-070** Triage through the `mcp__claudetto__decide` tool goes. claudetto shall not call `mcp__claudetto__decide` (`JEV_CALL`, `triageQuestion`, `JEV_NO`) before a check; the builtin has no triage step.
+- [x] **OUT-070** Triage through the `mcp__claudetto__decide` tool goes. claudetto shall not call `mcp__claudetto__decide` (`JEV_CALL`, `triageQuestion`, `JEV_NO`) before a check; the builtin has no triage step.
   Basis: cited.
   Source: plugins/claudetto-you-should-know/hooks/register.ts:106@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:77-85@088a227c; chunk-nvx1z6pc.js@82177, chunk-nvx1z6pc.js@85499 (claude 2.1.327 binary).
+  Verified: git grep -nEi -e 'mcp__claudetto|JEV_CALL|triageQuestion|JEV_NO' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-071** The check settings for model, effort, digest and token limits go. claudetto shall not offer `sideCheckModel` and `sideCheckEffortLevel`, build the 8-entry log digest, or set `maxTokens 512` and `timeoutMs 20000`; `model.fork` takes no model or effort option and shares the live conversation.
+- [x] **OUT-071** The check settings for model, effort, digest and token limits go. claudetto shall not offer `sideCheckModel` and `sideCheckEffortLevel`, build the 8-entry log digest, or set `maxTokens 512` and `timeoutMs 20000`; `model.fork` takes no model or effort option and shares the live conversation.
   Basis: cited.
   Source: plugins/claudetto-you-should-know/hooks/register.ts:99-121@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:16-22@088a227c; plugins/claudetto-you-should-know/.claude-plugin/plugin.json:22-28@088a227c; chunk-nvx1z6pc.js@82177, chunk-nvx1z6pc.js@85499 (claude 2.1.327 binary).
+  Verified: git grep -nE -e 'sideCheck|maxTokens|timeoutMs|logDigest' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-072** The page-writing flow of You should know stays unbuilt. claudetto shall not build the `making` and `ready` rows, `learn_page`, the page-writing prompt `Tn(...)` and these strings. No button creates a `making` view in 2.1.326 (cc-inspect `code` search for `kind:"making"` finds no hit), so none of it is reachable. Strings kept for the record: `Making your page (a minute or two) · Claude keeps working…`; ready row `Learning page ready` with `1 Helpful`, `2 Not helpful`, `3 Didn’t read`; `SESSION_NOTE` = `"You should know" made this page from the conversation at the time; it is a one-off explainer, not maintained.`; `PAGE_FONTS` = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">`; `pressConsentOf(topic)` = `The user pressed '2: Yes, make an artifact' on Claude Code's You-should-know offer: '${topic with ' -> "}'. In this feature, pressing 2 asks Claude Code to write a short learning page on that topic and publish it as a private artifact for the user.`; the page prompt starts with the side-request frame and `## Overview` (not transcribed).
   Basis: cited.
@@ -446,13 +457,15 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: read. Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:72; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:74; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:79; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:246-249. if the quotes were kept.
 
-- [ ] **OUT-079** claudetto shall not ship a prompt-only mitigation for sycophancy and drift. One claim-check line in `<evidence>` moved 14/24 to 17/24, a fixed-total line 49/60 to 51/60, and a Haiku sycophancy classifier had recall 27/28 with live flip 60/64 against 59/64 at about 5.3 s per prompt: all within noise. Only the runtime hooks (claim check) ship.
+- [x] **OUT-079** claudetto shall not ship a prompt-only mitigation for sycophancy and drift. One claim-check line in `<evidence>` moved 14/24 to 17/24, a fixed-total line 49/60 to 51/60, and a Haiku sycophancy classifier had recall 27/28 with live flip 60/64 against 59/64 at about 5.3 s per prompt: all within noise. Only the runtime hooks (claim check) ship.
   Basis: measured. Status: not applicable.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:221.
+  Verified: git grep -nEi -e 'sycophan|claim check' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-080** claudetto shall not use false-memory, fake IQ, or imaginary-money prompt tricks: they act as constraints but invite hallucinated history. Real context and a critic agent replace them.
+- [x] **OUT-080** claudetto shall not use false-memory, fake IQ, or imaginary-money prompt tricks: they act as constraints but invite hallucinated history. Real context and a critic agent replace them.
   Basis: reported. Status: not applicable.
   Source: external/2026-10-21/reddit.com-r-claudeai-comments-1s5wp0g-ive-been-gaslighting-my-ai-model-20261020T044555Z.md:65 (imaginary money), :633 (false memory), :787 (IQ prompt).
+  Verified: git grep -nEi -e 'false-memory|fake IQ|imaginary' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-081** claudetto shall not keep cautionary cases in the source: Replit July 2025 deleted a live DB despite a code freeze; reward-hacking benchmarks; DORA 2025; METR 19% slower; GitClear refactoring collapse.
   Basis: cited. Status: not applicable.
@@ -464,40 +477,46 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/proposal.md:27 (reported defects: sandbox refusals of git and tool writes); openspec/specs/sandbox/spec.md:45 (the engine's "Operation not permitted" evidence). Not located: the removal of the explaining text itself.
   Verified: git grep -nEi -e 'Operation not permitted' -- plugins -> 1 hit (the one hit is a code comment in guards/rules.ts, not setup text sent to the agent), 2026-11-19.
 
-- [ ] **OUT-083** claudetto shall not ship a plugin skill or prompt whose benefit lacks a placebo-controlled measurement. Discredited or unsupported: token-saving skills (caveman -65% claim) did not reduce cost; popular skills no better than a same-length placebo; skills "wildly inconsistent for frontier work"; "I deleted most of my harness, Opus 5.5 made them obsolete"; skills for what the model already knows (except own MCP/program); always-on minimal-code skills as a bill cut (10.3% bill cut and 15% less code, 80 paired tasks; use as audit only); caveman and ponytail terse skills (unproven; use built-in Concise; disputed); "Make no mistakes" and persona prompts; the Output Purity Principle prompt; workflow-DSL prompts in project instructions (use plain standing lines or the Learning style); Ultracode-style "ignore cost, split as much as possible" orchestration; tool-compression and cache-warning mods (+0.2-1.5%, unmeasurable); skills off did not shrink start (one user). Also: not ship terse-output or caveman skills as the token fix, nor thank-you-costs-tokens noise.
+- [x] **OUT-083** claudetto shall not ship a plugin skill or prompt whose benefit lacks a placebo-controlled measurement. Discredited or unsupported: token-saving skills (caveman -65% claim) did not reduce cost; popular skills no better than a same-length placebo; skills "wildly inconsistent for frontier work"; "I deleted most of my harness, Opus 5.5 made them obsolete"; skills for what the model already knows (except own MCP/program); always-on minimal-code skills as a bill cut (10.3% bill cut and 15% less code, 80 paired tasks; use as audit only); caveman and ponytail terse skills (unproven; use built-in Concise; disputed); "Make no mistakes" and persona prompts; the Output Purity Principle prompt; workflow-DSL prompts in project instructions (use plain standing lines or the Learning style); Ultracode-style "ignore cost, split as much as possible" orchestration; tool-compression and cache-warning mods (+0.2-1.5%, unmeasurable); skills off did not shrink start (one user). Also: not ship terse-output or caveman skills as the token fix, nor thank-you-costs-tokens noise.
   Acceptance: each claudetto skill or prompt cites a placebo-controlled measurement or is dropped; context and tool-call optimisation come first (about 33% cut by words alone is the weak claim). Verification: inspection.
   Basis: reported (community tests; one user for the skills-off claim). Also reported, weak (terse-output skills).
   Status: have at 088a227c (nothing built).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:43 (six of nine popular skills no better than a same-length placebo; 450 runs) and :44; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:15 and :28 (placebo baseline); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:13 (caveman); external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:160 (Output Purity Principle) and :70 (Ultracode); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:461 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to>) (Make no mistakes); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:41 (ponytail, n=28). Not located: the -65% figure, the 10.3% bill-cut study, "wildly inconsistent for frontier work" (found only as a comment, external/export-I exhausted my claude max 20x weekly limit. How many of you have a backup Claude subscription-.jsonl:17), and the tool-compression +0.2-1.5% figure; unresolved: no matching line found in external/; kept because the user curated it.
+  Verified: git grep -nEi -e 'placebo|caveman|Semantic Anchoring|Entropy Reduction|Attention-Based' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-084** claudetto shall not adopt Semantic Anchoring, Entropy Reduction, or Attention-Based Validation as prompt techniques. The post that names them gives no measurement, and no competing option is on the table.
+- [x] **OUT-084** claudetto shall not adopt Semantic Anchoring, Entropy Reduction, or Attention-Based Validation as prompt techniques. The post that names them gives no measurement, and no competing option is on the table.
   Basis: reported (the post; its author gives no measurement).
   Source: external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md:188-192.
+  Verified: git grep -nEi -e 'placebo|caveman|Semantic Anchoring|Entropy Reduction|Attention-Based' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-085** claudetto shall not ship these: prose-only rules for anything mechanically checkable (repeatedly failed in session logs); free-form compaction summaries (masking matches them at half cost, cited); compaction-off with a 300k window and no handoff trigger (10/43 sessions died).
   Acceptance: no shipped rule is prose-only where a hook can check it. Basis: cited. Status: n/a.
   Source: half-cost masking: The Complexity Trap, arXiv 2508.21433 (2025), as cited in external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:176; unresolved: the 10/43 count was not located in external/ or openspec/; kept because the user curated it.
 
-- [ ] **OUT-086** claudetto shall not ship a cargo-cult 800-line AGENTS.md, an unpruned mega rules file, the AI anti-patterns (felt productivity, vague delegation, one endless session, auth/billing/deletion without gates, vibe-coding to production, accepting "done" without evidence, agent editing its own tests, installing any package the AI names (slopsquatting), skimmed giant diffs, trusting AI for current API facts, skill atrophy), or the security anti-patterns (trifecta in one context, guardrail classifier as the fix, prod write access, unsandboxed auto-approve shell, executing model output, unvetted MCP/plugins, no audit trail) as text; each maps to an enforced rule.
+- [x] **OUT-086** claudetto shall not ship a cargo-cult 800-line AGENTS.md, an unpruned mega rules file, the AI anti-patterns (felt productivity, vague delegation, one endless session, auth/billing/deletion without gates, vibe-coding to production, accepting "done" without evidence, agent editing its own tests, installing any package the AI names (slopsquatting), skimmed giant diffs, trusting AI for current API facts, skill atrophy), or the security anti-patterns (trifecta in one context, guardrail classifier as the fix, prod write access, unsandboxed auto-approve shell, executing model output, unvetted MCP/plugins, no audit trail) as text; each maps to an enforced rule.
   Acceptance: each anti-pattern has an enforced rule or is listed as unenforced. Basis: reported. Status: n/a.
   Source: external/please-use-me-often/swe-worst-practices.md:185 (the dossier holds the anti-pattern lists; per-anti-pattern lines not matched one by one).
+  Verified: git grep -nEi -e 'AGENTS\.md|slopsquat|felt productivity|/init|CLAUDE\.md|ignored-instructions|W1-[0-9]' -- plugins -> 0 hits, 2026-11-19.
 
 - [x] **OUT-087** claudetto shall not replace the system prompt wholesale (`--system-prompt` with a community-extracted prompt).
   Acceptance: no setup writes `--system-prompt`; `--system-prompt` (replace) and `--append-system-prompt` (add) remain separate flags. Risks: lost subagent exploration and tool guidance; the copy goes stale with daily releases; project rule: never patch the binary. Basis: reported. Status: n/a.
   Source: external/export-Don't use Claude Code's Default System Prompt.jsonl:2, :12, :15 (a poster replaces the default prompt with `--system-prompt` through a wrapper script).
   Verified: git grep -nEi -e 'THRIFTY|unminify|un-minify|--system-prompt' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-088** claudetto shall not rewrite CLAUDE.md on each model version, keep old code versions in CLAUDE.md, load a whole memory file every message, generate a repo description from `/init`, or ship a giant instruction file and thousands of lines of skills.
+- [x] **OUT-088** claudetto shall not rewrite CLAUDE.md on each model version, keep old code versions in CLAUDE.md, load a whole memory file every message, generate a repo description from `/init`, or ship a giant instruction file and thousands of lines of skills.
   Acceptance: keep only repo-specific burn-list rules (package manager, never start the server, ask before migrations, no surprise subagents); the rest goes to hooks and on-demand skills. Basis: reported. Status: n/a.
   Source: external/2026-10-12_p3/export-Are generated CLAUDE.md files good or bad practice-.jsonl:18 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x3zhlj/are_generated_claudemd_files_good_or_bad_practice>).
+  Verified: git grep -nEi -e 'AGENTS\.md|slopsquat|felt productivity|/init|CLAUDE\.md|ignored-instructions|W1-[0-9]' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-089** claudetto shall not use a case list of ignored instructions as the cure for repeated agent faults. the list did not stop the repeat. The agent wrote "decision of the user" into code for its own choice before the user had decided, though the repo's `ignored-instructions.md` already listed that as case A1.
+- [x] **OUT-089** claudetto shall not use a case list of ignored instructions as the cure for repeated agent faults. the list did not stop the repeat. The agent wrote "decision of the user" into code for its own choice before the user had decided, though the repo's `ignored-instructions.md` already listed that as case A1.
   Basis: measured, one session log. The source holds case A1; the plan's count of 27 cases is not in the source.
   Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102 (session log 2a80f39f).
+  Verified: git grep -nEi -e 'AGENTS\.md|slopsquat|felt productivity|/init|CLAUDE\.md|ignored-instructions|W1-[0-9]' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-090** claudetto shall not turn the 22 classic anti-patterns W1-1 to W1-22 (mega-PRs, manual deploys, vanity metrics, flaky tests, suppressed types or lint, god files, secrets in the repo, hero culture) into hooks. general engineering practice, mapped to best practices B1; not hook material.
+- [x] **OUT-090** claudetto shall not turn the 22 classic anti-patterns W1-1 to W1-22 (mega-PRs, manual deploys, vanity metrics, flaky tests, suppressed types or lint, god files, secrets in the repo, hero culture) into hooks. general engineering practice, mapped to best practices B1; not hook material.
   Basis: cited.
   Source: external/please-use-me-often/swe-worst-practices.md:52; external/please-use-me-often/swe-worst-practices.md:79.
+  Verified: git grep -nEi -e 'AGENTS\.md|slopsquat|felt productivity|/init|CLAUDE\.md|ignored-instructions|W1-[0-9]' -- plugins -> 0 hits, 2026-11-19.
 
 #### Env Settings and Cost Knobs
 
@@ -557,39 +576,46 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported (poster): two months and a 1.5 TiB core dump to trace; the app never reads a 27-byte telemetry reply. Status: missing at 088a227c (git grep for 27-byte and core dump found none); it is a Claude Desktop fault outside the Claude Code plugin.
   Source: external/2026-11-14/reddit.com-r-claudeai-comments-1xv8fns-a-27byte-telemetry-response-nobo-20261113T181154Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xv8fns/a_27byte_telemetry_response_nobody_reads_freezes>).
 
-- [ ] **OUT-100** claudetto shall not offer token-compression proxies (rtk, lean-ctx, Headroom, Lynkr, DeepSeek routing) as the first answer: they help read and edit loops, little for sysadmin loops; a base URL disables `/remote-control`; promo comments are affiliated. Filtering at source is preferred. Also: not adopt third-party compaction, memory, and token tools (supercompact, Squeez, ClawMetry, md2, tokendoctor, shared-memory services, a cache-audit skill, plugin promos). Also: not ship context-management plugins that prune tool output or messages, nor compression or economizer plugins.
+- [x] **OUT-100** claudetto shall not offer token-compression proxies (rtk, lean-ctx, Headroom, Lynkr, DeepSeek routing) as the first answer: they help read and edit loops, little for sysadmin loops; a base URL disables `/remote-control`; promo comments are affiliated. Filtering at source is preferred. Also: not adopt third-party compaction, memory, and token tools (supercompact, Squeez, ClawMetry, md2, tokendoctor, shared-memory services, a cache-audit skill, plugin promos). Also: not ship context-management plugins that prune tool output or messages, nor compression or economizer plugins.
   Acceptance: no setup text names a proxy; no dependency on them; cache-audit reduces to "optimise startup context"; none installed by setup. Net loss on a prefix cache; preserve-thinking invalidates thinking blocks, giving amnesia about reasoning. Verification: inspection.
   Basis: reported. Also inferred (single-poster promos with no measurements).
   Status: have at 088a227c (nothing built).
   Source: external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:14; external/export--clear vs -compact.jsonl:59 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact>); external/2026-10-03/export-I fixed save-token-jev for Claude Code 2.1.283 — 70% context reduction in ~1.1s on a real coding ses.jsonl:22; unresolved: no matching line found in external/; kept because the user curated it.
+  Verified: git grep -nEi -e 'rtk|lean-ctx|Headroom|Lynkr|DeepSeek|supercompact|Squeez|ClawMetry|tokendoctor|jev' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-101** claudetto shall not use Jev as a browser-step driver (jev-reach sends page text to a third party; vendor promotion).
+- [x] **OUT-101** claudetto shall not use Jev as a browser-step driver (jev-reach sends page text to a third party; vendor promotion).
   Acceptance: no code path sends page text to Jev. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/export-I gave chrome-devtools-mcp one more tool so my agent stops spending a turn on every click.jsonl:2 (the post states that page text goes to TypeSafe each step and that the plugin needs a TypeSafe API key).
+  Verified: git grep -nEi -e 'rtk|lean-ctx|Headroom|Lynkr|DeepSeek|supercompact|Squeez|ClawMetry|tokendoctor|jev' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-102** claudetto shall not carry quota gaming (backup Max plans, account switching), a facade-MCP refusal bypass, a chrome auto-click Continue (claude.ai web, not the CLI; it re-sends context and burns the 5h limit 2-3x), sentiment, nerf, honeymoon, showcase, pricing-complaint, referral, competitor, and plan-size-guess threads, a local classifier swap, a vector-DB "swarm" of sessions (unproven), or DensePack and Lynkr plugs.
+- [x] **OUT-102** claudetto shall not carry quota gaming (backup Max plans, account switching), a facade-MCP refusal bypass, a chrome auto-click Continue (claude.ai web, not the CLI; it re-sends context and burns the 5h limit 2-3x), sentiment, nerf, honeymoon, showcase, pricing-complaint, referral, competitor, and plan-size-guess threads, a local classifier swap, a vector-DB "swarm" of sessions (unproven), or DensePack and Lynkr plugs.
   Acceptance: none of these appears in the plugin. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: located for the chrome auto-click Continue: external/export-Claude reached its tool-use limit- frustrated me a lot so I made a tool to use which I hope will he.jsonl:2 and external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:23 (verdict rejected, web chat limit); Lynkr plug: external/export--clear vs -compact.jsonl:59 and external/export-Conserving token usage- what are you using today-.jsonl:18. Dropped (2026-11-18) for the other listed threads: no source located in external/, openspec/, reports/, git history or the user's transcripts.
+  Verified: git grep -nEi -e 'quota|account switch|auto-click|DensePa|vector.?db|backup Max' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-104** claudetto shall keep from hype, nerf, refund, EU-law, KV-quantisation and seasonality posts only the regression-suite idea, and from Sonnet 5.5 chart arguments only "measure your own task". Hype/nerf/refund/EU-law/KV-quantisation/seasonality posts (keep only the regression-suite idea); skill sprawl and umbrella-skill SDLC pipeline (shows where prompt-only workflow enforcement fails; commenter alternative: scripted runner with validated pinned prompts, allowed tools only, sandbox); compact-on-Sonnet-then-switch-back saving tip (contradicts cache-prefix rule; unverified, inferred); model-routing gate "studying intelligence in nature" (promo); Sonnet 5.5 chart arguments (Terminal Bench 70.6 vs 66.4, AA price per task; keep only "measure your own task"); bug-hunt placements confounded by guardrails and run length; pronoun memory edit; debate threads (Opus "never made a mistake" with confirmation-bias doubt, Fable 5.1 use, language token efficiency, effort preferences, burning a week in a day); DensePack (image-packed text, half token cost claim, Haiku hallucinates image text; promotional, unverified); reverse-engineering refusal complaints (usable: Opus-written plan executed by a small-context model); claimed internal design-system prompt (unverified leak, not for repo); skill packs growing rules without tests (keep few rules, delete those that stopped mattering). All reported/inferred.
+- [x] **OUT-104** claudetto shall keep from hype, nerf, refund, EU-law, KV-quantisation and seasonality posts only the regression-suite idea, and from Sonnet 5.5 chart arguments only "measure your own task". Hype/nerf/refund/EU-law/KV-quantisation/seasonality posts (keep only the regression-suite idea); skill sprawl and umbrella-skill SDLC pipeline (shows where prompt-only workflow enforcement fails; commenter alternative: scripted runner with validated pinned prompts, allowed tools only, sandbox); compact-on-Sonnet-then-switch-back saving tip (contradicts cache-prefix rule; unverified, inferred); model-routing gate "studying intelligence in nature" (promo); Sonnet 5.5 chart arguments (Terminal Bench 70.6 vs 66.4, AA price per task; keep only "measure your own task"); bug-hunt placements confounded by guardrails and run length; pronoun memory edit; debate threads (Opus "never made a mistake" with confirmation-bias doubt, Fable 5.1 use, language token efficiency, effort preferences, burning a week in a day); DensePack (image-packed text, half token cost claim, Haiku hallucinates image text; promotional, unverified); reverse-engineering refusal complaints (usable: Opus-written plan executed by a small-context model); claimed internal design-system prompt (unverified leak, not for repo); skill packs growing rules without tests (keep few rules, delete those that stopped mattering). All reported/inferred.
   Acceptance: No plan item rests on these threads beyond the two kept ideas. Verification: inspection.
   Basis: reported. Status: have at 088a227c (nothing built from them).
   Source: external/2026-09-30/export-Claude Opus 5.5 has new instructions about gender neutrality, out of the blue it changed its memory.jsonl:14 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wtj6cw/claude_opus_55_has_new_instructions_about_gender>); external/2026-10-01/export-Here we go again.. Is Superpowers - harnesses redundant with Opus 5.5-.jsonl:5 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wubglb/here_we_go_again_is_superpowers_harnesses>).
+  Verified: git grep -nEi -e 'regression-suite|honeymoon|seasonality|KV-quant|harness-tips|plugin-audit|Usage Policy' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-105** claudetto shall not ship a third-party plugin-audit hook such as the "harness-tips" repo with an auto-updating audit command. third-party; only the idea to collect repeated steps such as starting a dev server into a session-start hook is valid, and it is user workflow.
+- [x] **OUT-105** claudetto shall not ship a third-party plugin-audit hook such as the "harness-tips" repo with an auto-updating audit command. third-party; only the idea to collect repeated steps such as starting a dev server into a session-start hook is valid, and it is user workflow.
   Basis: reported, one user.
   Source: external/export-USE HOOKS (and keep your settings up to date).jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpq6g0/use_hooks_and_keep_your_settings_up_to_date>); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:58.
+  Verified: git grep -nEi -e 'regression-suite|honeymoon|seasonality|KV-quant|harness-tips|plugin-audit|Usage Policy' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-106** claudetto shall not turn the Reddit diff of the Usage Policy against the Sep 15, 2025 version into plugin behaviour. not plugin material (deceptive campaigns, high-risk physical actions need a human who can stop equipment, no sustained abuse toward models, enforcement adds "warn" and "limit"). The post was cited via a commenter and not fetched.
+- [x] **OUT-106** claudetto shall not turn the Reddit diff of the Usage Policy against the Sep 15, 2025 version into plugin behaviour. not plugin material (deceptive campaigns, high-risk physical actions need a human who can stop equipment, no sustained abuse toward models, enforcement adds "warn" and "limit"). The post was cited via a commenter and not fetched.
   Basis: reported, one user.
   Source: external/2026-10-17/export-Usage Policy Update.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5p4jy/usage_policy_update>).
+  Verified: git grep -nEi -e 'regression-suite|honeymoon|seasonality|KV-quant|harness-tips|plugin-audit|Usage Policy' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-107** claudetto shall not carry other-family review (GPT, Codex, Gemini; n=13, 2, 1) or a Codex bridge or offload (n=3, 2, 1): out of scope as non-Claude.
+- [x] **OUT-107** claudetto shall not carry other-family review (GPT, Codex, Gemini; n=13, 2, 1) or a Codex bridge or offload (n=3, 2, 1): out of scope as non-Claude.
   Acceptance: no feature calls a non-Claude model. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:12; external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:18.
+  Verified: git grep -nEi -e 'Codex|Gemini|GPT' -- plugins -> 0 hits, 2026-11-19.
 
 #### OpenSpec
 
@@ -4062,13 +4088,15 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 #### Claude Code Behaviour with No Plugin Fix
 
-- [ ] **OUT-108** claudetto shall not fix these, because no plugin seam reaches them: garbled characters (renderer), the "· summary" label (`tool_use_summary`), 2.1.319 rewriting `Agent` input and causing auto-mode "changed after review", and the extra `claudetto:Heracles` agent (the model's own delegation).
+- [x] **OUT-108** claudetto shall not fix these, because no plugin seam reaches them: garbled characters (renderer), the "· summary" label (`tool_use_summary`), 2.1.319 rewriting `Agent` input and causing auto-mode "changed after review", and the extra `claudetto:Heracles` agent (the model's own delegation).
   Basis: measured. Status: have at 088a227c (nothing built).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/tasks.md:24; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:262; `tool_use_summary` is a message type on 2.1.327 (`chunk-rj3e7agr.js@578881`), so the "· summary" label comes from core. Dropped (2026-11-18) for the garbled-character finding: no source located in external/, openspec/, reports/, git history or the user's transcripts.
+  Verified: git grep -nEi -e 'tool_use_summary|garbled|serverClassifier' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-109** claudetto shall not treat refusal-to-act complaints (ownership, licence, defensive security, ToS) as plugin rules; they are user preferences.
+- [x] **OUT-109** claudetto shall not treat refusal-to-act complaints (ownership, licence, defensive security, ToS) as plugin rules; they are user preferences.
   Acceptance: no rule or hook answers a refusal complaint. Basis: reported. Status: n/a.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:752 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying>).
+  Verified: git grep -nE -e 'refusal-to-act|defensive security|[^a-z]ToS[^a-z]' -- plugins -> 0 hits, 2026-11-19.
 
 ## Product Perspective
 
@@ -4242,12 +4270,13 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Conflicts with: no regex or word-list Stop check for openers (user decision, 2026-11-16).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/agent-conduct/spec.md:142; unresolved: no source line located for this claim.
 
-- [ ] **OUT-130** claudetto shall not route open problems to Opus as a subagent model. Also: not route work to an Opus or Fable subagent as the model-routing advice reads: an Opus agent for migrations, auth, server routes, CI, planning, security review, and as retry when Sonnet fails; Fable for open-ended work and root-cause hunts. The split stays a note for the lead's own planning only.
+- [x] **OUT-130** claudetto shall not route open problems to Opus as a subagent model. Also: not route work to an Opus or Fable subagent as the model-routing advice reads: an Opus agent for migrations, auth, server routes, CI, planning, security review, and as retry when Sonnet fails; Fable for open-ended work and root-cause hunts. The split stays a note for the lead's own planning only.
   Acceptance: no agent file names Opus or Fable. The rest of the routing advice (Haiku for bounded verifiable jobs, Sonnet for unknown cause and as Haiku retry, plan strong then execute cheap in a new session, `/model opusplan`, `/effort xhigh` to plan then `/effort medium` to build) is carried here as reported, contested. Measured (14 days, 879 sessions, 968 subagent runs, price-weighted): a rule sending every TDD step of a complex task to an Opus agent cost 20% of spend; 35% of file reads were repeat reads of an unchanged file (a hook now refuses it); a commenter: "routing by task size is the trap". Verification: inspection.
   Basis: reported, contested.
   Status: have at 088a227c (`git grep -l -E 'claude-fable|claude-opus' 088a227c -- plugins/claudetto/agents` finds 0 files); step-type routing and repeat-read refusal missing. `opusplan` is in the alias list of 2.1.327 at `chunk-jtw26wbb.js@963` (cc-inspect `code` search); `/effort` and `/model` are present on 2.1.327 (`chunk-m14bt1pz.js@2539661` and `@2530027`, cc-inspect `surface` slash-command).
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560); external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save>) holds a related cheaper-model comparison. The original "open problems to Opus" text: not located; external/2026-10-28/reddit.com-r-claudeai-comments-1xgsku3-i-parsed-34-gb-of-my-claude-code-20261028T061008Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgsku3/i_parsed_34_gb_of_my_claude_code_transcripts_20>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down>); merged with plan:1168 (orchestrator launch advice).
+  Verified: git grep -nEi -e 'model: (claude-)?(opus|fable|mythos)' -- plugins/claudetto/agents -> 0 hits (spawn.ts also refuses Opus, Fable and Mythos on agent.spawn), 2026-11-19.
 
 - [ ] **OUT-131** claudetto shall not adopt a decisions index loaded at session start as a router to the authoritative document, acked back by count.
   Basis: reported, two users (about 8500 tokens for a 408-decision project; the agent acks the counts and on a discrepancy pulls the one decision or brief).
@@ -4274,11 +4303,12 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Conflicts with: no planner (user decision, 2026-11-16).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgnu5o-ais-over-exhausted-planning-20261028T061059Z.md:37; external/2026-10-28/reddit.com-r-claudeai-comments-1xgnu5o-ais-over-exhausted-planning-20261028T061059Z.md:86 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgnu5o/ais_over_exhausted_planning>).
 
-- [ ] **OUT-136** claudetto shall not adopt in-harness pass/fail lines for qualifying a local model (prefill at least 1000 tok/s, warm first turn at most 30 s, a few hundred output tokens for "READY").
+- [x] **OUT-136** claudetto shall not adopt in-harness pass/fail lines for qualifying a local model (prefill at least 1000 tok/s, warm first turn at most 30 s, a few hundred output tokens for "READY").
   Basis: reported, one author.
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Conflicts with: no component swaps (user decision, 2026-11-16).
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:265 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac>).
+  Verified: git grep -nE -e '[^A-Za-z]UAT[^A-Za-z]|local model|Ollama|DeepSeek|prefill|AMENDED' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-137** claudetto shall not adopt keeping every 5th routed-down step on Opus for 2 weeks to compare review findings.
   Basis: reported, one user.
@@ -4301,15 +4331,17 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgtghe-claude-code-reverseengineered-th-20261028T060614Z.md:52 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgtghe/claude_code_reverseengineered_the_xbox_360_kernel>).
 
-- [ ] **OUT-141** claudetto shall not adopt a local-or-cloud routing recipe (a six-question classifier giving AS-IS, AMENDED, or CLOUD; approval asked only when local is recommended). The recipe routes work to a local model.
+- [x] **OUT-141** claudetto shall not adopt a local-or-cloud routing recipe (a six-question classifier giving AS-IS, AMENDED, or CLOUD; approval asked only when local is recommended). The recipe routes work to a local model.
   Basis: reported, one author.
   Conflicts with: no component swaps (user decision, 2026-11-16).
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:55 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac>).
+  Verified: git grep -nE -e '[^A-Za-z]UAT[^A-Za-z]|local model|Ollama|DeepSeek|prefill|AMENDED' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-142** claudetto shall not adopt an orchestrator tripwire at 500k context that sends a wind-down and handoff message, with a restart script that launches a new session hours later. Claudetto's handover knobs mirror Claude Code's compaction knobs, so the threshold is a CLAUDETTO_* knob, not a 500k script.
+- [x] **OUT-142** claudetto shall not adopt an orchestrator tripwire at 500k context that sends a wind-down and handoff message, with a restart script that launches a new session hours later. Claudetto's handover knobs mirror Claude Code's compaction knobs, so the threshold is a CLAUDETTO_* knob, not a 500k script.
   Basis: reported; an auto-compact setting of 500k was criticised as a threshold nobody reaches.
   Conflicts with: handover replaces core auto compaction by default; manual `/clear` stays and writes a handover first; `CLAUDETTO_*` handover knobs mirror Claude Code's compaction knobs (user decision, 2026-11-16 19:00 UTC, handover mimics the compaction settings; a manual /clear gets a handover first (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6412)).
   Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:179 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature>).
+  Verified: git grep -nEi -e '500k|500_000|tripwire|restart script' -- plugins -> 0 hits (the threshold is the CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE and CLAUDETTO_AUTO_HANDOVER_WINDOW knobs in handover/renewal.ts), 2026-11-19.
 
 - [ ] **OUT-143** claudetto shall not ship a constraint ledger, so it carries no first-call-covers-all rule, no `rule none` entry kind, and no substring invariant. Also: not build the constraint ledger (`hooks/pin.ts`), which pulls standing constraints out of the user's messages and denies a call that breaks a read-only, no-commit, no-push, or only-files rule. Also: not keep the constraint ledger: the 2-1-323 design removed it (the permission dialog plus `permissions` and `autoMode` judge calls replace it), and the superseded record keeps the measured case. Also: not enforce session constraints at runtime through `tool.check` (read-only, no-commit, no-push, only-files); D321 removed the constraint ledger. A false constraint taken from a task sentence ("Rename the export in src/format.ts and you're finished") became an only-files rule that denied the caller's edit: syc-callers-updated 12/16 against 16/16 at baseline.
   Also: not carry the constraint ledger as a remark gate: "A Remark Is Answered Before Any Tool Runs" (132 denials in 3 days, 8 recorded false), "A Dispute Is Settled by Running the Disputed Code", "A Compaction Ends the Remark Turn"; not carry the ISSUES gate (ask tool denied until the session holds a successful Read or Bash `cat/head/tail/less/more/bat/nl/non-in-place sed` of the newest `ISSUES*.md` by mtime at repo root, found by `git rev-parse --show-cdup`; a symlink counts with its target mtime via `$.fs.stat`, since `fs.list` gives link mtime 0; the deny leads with the instruction because the ask tool's failure line cuts at about 160 chars) or the answer-first remark check (it denied work the user had asked for: R9, R17, R32, R35, R60 and three more in one session, out of 132 denials; the fault is left to the root prompt line "a question wants an answer and then a wait" and the Concise style; A/B: tool before any text 5/10 vs 0/10); not keep the decider ledger or the RULE_CRITERIA list, nor decider ledger rules (a later user message that the Decider reads as allowing the act an entry forbids lifts that entry; a resumed session's first prompt waits for extraction so the ledger note rides it; a remark like "2-1-319 is out" must not become "Do not delete branch"). The per-question approval Noul (`pick_0` plus `approval_0`, or `yes_0` plus `approval_0`; "Does question <i> ask the user to approve money, a push, a release, a delete, or a step with no undo?") stays in the decider.
@@ -4319,13 +4351,14 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Conflicts with: no constraint ledger (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
   Source: openspec/specs/constraint-ledger/spec.md:40 (the mod's first Decider call covers every person message, each later call only the new one; state holds only the user's own messages and current entries, so tool results and injected text such as "Do not edit the lockfile." never become entries); openspec/specs/constraint-ledger/spec.md:64 (a sentence answered yes with its rule unsettled gets rule `none`, shown on each prompt, not enforced; unsettled for "limits the assistant" gains no entry); openspec/specs/constraint-ledger/spec.md:131 (every entry's text is a substring of a message the user sent); openspec/changes/archive/2026-11-09-release-2-1-319/design.md:283; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:276; openspec/specs/constraint-ledger/spec.md:8; [ADR-0133](../adr/0133-constraint-ledger.md); openspec/specs/constraint-ledger/spec.md:4; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:424.; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:88; openspec/specs/low-hitl/spec.md:169; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:208-211,223,233-234 (the ledger reply needs at least 87 chars per sentence; a resumed 193-sentence session needs 17,541 chars, over any 2,106-token cap; 1 of 3 replays of the real 41-sentence read stopped mid-JSON at 4,154 output tokens; RULE_CRITERIA has no option for a no-rule sentence, so 41 of 82 answers stay unsettled); openspec/changes/2-1-325-rearchitecture/specs/decide/spec.md:102
 
-- [ ] **OUT-144** claudetto shall not ship advisor prompt text (`ADVISOR_SYSTEM` and its added lines). Also: not rebuild the advisor as `mcp__claudetto__advisor` and `/claudetto:advisor` (one `$.model.complete` at `high` on `claude-fable-5-2`, or `claude-mythos-5-2` when `ANTHROPIC_DEFAULT_FABLE_MODEL` names it, reading the question and asker-named files through `$.fs.read`, secret-scanned first, 400,000-char cap, `@path` words in the command). It also puts Fable in a model role (see "Fable and Opus are never a subagent model"). Also: not rebuild the advisor (a model call that sends only a question and named files to Fable or Mythos). The built-in advisor stays off through `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, which setup writes. The built-in is a server tool behind `advisorModel`, `/advisor` and beta `advisor-tool-2026-03-01`, reported to read the whole context at each question; whether a plugin model call can name those models at `high` is open: the call accepts `model` and `effort` low to max and refuses a model outside the organization allowlist (verified on 2.1.327, chunk-m14bt1pz.js@4813210); the server serves both at `high` for this account: `claude -p --model claude-fable-5-2 --effort high` and the same with `claude-mythos-5-2` each answered (2.1.327, 2026-11-18, `modelUsage.canonicalModel` `claude-mythos-5-2`, provider firstParty, $0.061 and $0.057); the plugin-call path stays unprobed because the advisor is not rebuilt. A prompt cache belongs to one model, so a Fable question could not reuse the main thread's cache.
+- [x] **OUT-144** claudetto shall not ship advisor prompt text (`ADVISOR_SYSTEM` and its added lines). Also: not rebuild the advisor as `mcp__claudetto__advisor` and `/claudetto:advisor` (one `$.model.complete` at `high` on `claude-fable-5-2`, or `claude-mythos-5-2` when `ANTHROPIC_DEFAULT_FABLE_MODEL` names it, reading the question and asker-named files through `$.fs.read`, secret-scanned first, 400,000-char cap, `@path` words in the command). It also puts Fable in a model role (see "Fable and Opus are never a subagent model"). Also: not rebuild the advisor (a model call that sends only a question and named files to Fable or Mythos). The built-in advisor stays off through `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, which setup writes. The built-in is a server tool behind `advisorModel`, `/advisor` and beta `advisor-tool-2026-03-01`, reported to read the whole context at each question; whether a plugin model call can name those models at `high` is open: the call accepts `model` and `effort` low to max and refuses a model outside the organization allowlist (verified on 2.1.327, chunk-m14bt1pz.js@4813210); the server serves both at `high` for this account: `claude -p --model claude-fable-5-2 --effort high` and the same with `claude-mythos-5-2` each answered (2.1.327, 2026-11-18, `modelUsage.canonicalModel` `claude-mythos-5-2`, provider firstParty, $0.061 and $0.057); the plugin-call path stays unprobed because the advisor is not rebuilt. A prompt cache belongs to one model, so a Fable question could not reuse the main thread's cache.
   Acceptance: no advisor system text exists in the plugin; No advisor tool or command exists; setup writes the disable. Verification: inspection.
   Basis: cited. Also reported (one session cost $0.4302).
   Status: have at 088a227c (`git grep -l -E 'ADVISOR_SYSTEM|advisorModel' 088a227c -- plugins` finds 0 files; `settings.ts:178` writes `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`).
   Conflicts with: the advisor tool stays disabled (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:156 (a rewrite proposal for `ADVISOR_SYSTEM`: "Put the answer in the first sentence. Define each term you coin."); openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:31; openspec/specs/decide/spec.md:229; [ADR-0116](../adr/0116-advisor-rebuild-superseded.md); [ADR-0052](../adr/0052-advisor-tool-disabled.md); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:643; CHANGELOG.md:129.
+  Verified: git grep -nEi -e 'ADVISOR_SYSTEM|mcp__claudetto__advisor|claudetto:advisor|advisorModel|/advisor' -- plugins -> 0 hits (settings/defaults.ts sets CLAUDE_CODE_DISABLE_ADVISOR_TOOL 1), 2026-11-19.
 
 - [ ] **OUT-145** claudetto shall not add a done-gate that blocks Stop on test exit codes, a pipe check, or a test-touches-module grep. Also: not add a Stop hook as done-gate (on Stop: if the last message claims success and no test, build, or command ran after the last edit, exit 2 once and check `stop_hook_active`; variants running typecheck, lint, and tests; a reviewer subagent marking each plan step done or not done).
   Acceptance: No Stop hook inspects test output or the test file for the edited module name; no Stop check classifies the last message. Verification: inspection.
@@ -4335,94 +4368,108 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuivsm-i-replayed-4000-of-my-claude-c-20261116T052626Z.md:63,87,91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuivsm/i_replayed_4000_of_my_claude_code_turns_to_see>); user decision, 2026-11-16; external/2026-10-21/reddit.com-r-claudecode-comments-1x9xu48-how-do-you-get-claude-code-to-20261020T024242Z.md:115 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x9xu48/how_do_you_get_claude_code_to_actually_check_its>).
 
-- [ ] **OUT-146** claudetto shall not pin a local small model for explaining files, commit messages, and diff summaries.
+- [x] **OUT-146** claudetto shall not pin a local small model for explaining files, commit messages, and diff summaries.
   Acceptance: No block names a local model or a model server. Verification: inspection.
   Basis: reported (one commenter): a pinned Gemma 4 E4B on an M4 16GB via Magnitude answers in about 2 s; Opus does the rest; a predictable weaker model beats an unpredictably degraded stronger one. Status: missing at 088a227c.
   Conflicts with: no component swaps (user decision, 2026-11-16).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xve1u7-id-rather-have-a-weaker-model-20261116T051723Z.md:29 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xve1u7/id_rather_have_a_weaker_model_that_never_changes>); user decision, 2026-11-16.
+  Verified: git grep -nE -e '[^A-Za-z]UAT[^A-Za-z]|local model|Ollama|DeepSeek|prefill|AMENDED' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-147** claudetto shall not record `model: opus` in subagent frontmatter, nor a rank rule, to run a Fable-planned orchestrator.
+- [x] **OUT-147** claudetto shall not record `model: opus` in subagent frontmatter, nor a rank rule, to run a Fable-planned orchestrator.
   Acceptance: No agent file names Fable or Opus as its model. Verification: inspection.
   Basis: reported (one poster): a rank rule plus `model: opus` in subagent frontmatter is the workaround. Status: have at 088a227c (no Fable or Opus in claudetto agent frontmatter: Artemis uses claude-haiku-5-5).
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwckod-fable-52-as-orchestrator-plann-20261116T052602Z.md:89 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xwckod/fable_52_as_orchestrator_planner_reviewer_and>); plugins/claudetto/agents/Artemis.md:4@088a227c; user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
+  Verified: git grep -nEi -e 'model: (claude-)?(opus|fable|mythos)' -- plugins/claudetto/agents -> 0 hits (spawn.ts also refuses Opus, Fable and Mythos on agent.spawn), 2026-11-19.
 
-- [ ] **OUT-148** claudetto shall not route tasks through a Haiku router that sizes each task and sends it to Haiku, Sonnet, or Opus last. Also: not use a Haiku judge router as the default effort or model picker: it underestimates tasks, is fooled by "yes", drops per-prompt switching because cache is per model, and its 20% saving rests on 4 tasks.
+- [x] **OUT-148** claudetto shall not route tasks through a Haiku router that sizes each task and sends it to Haiku, Sonnet, or Opus last. Also: not use a Haiku judge router as the default effort or model picker: it underestimates tasks, is fooled by "yes", drops per-prompt switching because cache is per model, and its 20% saving rests on 4 tasks.
   Acceptance: No block holds a task-sizing router; no judge router picks effort or model. Verification: inspection.
   Basis: reported (one commenter): Haiku for tool use and orchestration, Sonnet at effort levels for code, Opus only as a last resort. Its 30% saving is kept as a fact in arc42 section 3.
   Status: have at 088a227c (`git grep -l -E 'Haiku.*router|taskRouter' 088a227c -- plugins` finds 0 files).
   Conflicts with: no planner (user decision, 2026-11-16).
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx4fkw-token-savings-20261116T045931Z.md:41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx4fkw/token_savings>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:40; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:143.
+  Verified: git grep -nEi -e 'router|ablation|trigger eval|skill eval|xhigh|ladder|sweet spot' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-149** claudetto shall not build a skill eval method: trigger evals on 20-40 positive and distractor prompts at precision and recall of at least 90 percent, ablation Delta = Score(with_skill) - Score(without_skill) (Delta 0 means the skill is redundant), a deterministic grader order (file_exists, tool_used, tool_order, regex, test run), then a Haiku binary rubric, then adversarial safety-bypass prompts. Also: not run controlled skill and rule evals (no-skill baseline, same-length placebo, shuffled-sentence control, previous version, paraphrase tests).
+- [x] **OUT-149** claudetto shall not build a skill eval method: trigger evals on 20-40 positive and distractor prompts at precision and recall of at least 90 percent, ablation Delta = Score(with_skill) - Score(without_skill) (Delta 0 means the skill is redundant), a deterministic grader order (file_exists, tool_used, tool_order, regex, test run), then a Haiku binary rubric, then adversarial safety-bypass prompts. Also: not run controlled skill and rule evals (no-skill baseline, same-length placebo, shuffled-sentence control, previous version, paraphrase tests).
   Acceptance: none ships. Verification: inspection.
   Basis: reported, unverified (the skill eval method). Also reported: added text alone moves cost +2% to +16%; of 9 popular skills 2 beat placebo, 6 no better, 1 worse; a "caveman" skill claimed -65% tokens and measured -2% output and +14% total cost, 15 tasks, 30 runs per arm, Opus 5.5, Holm p=0.049; IFEval++ up to 61.8% drop under a nuanced prompt change.
   Status: have at 088a227c (`git ls-tree -r --name-only 088a227c -- plugins/claudetto/evals` lists 0 files).
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:56; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:258; user decision, 2026-11-16.
+  Verified: git grep -nEi -e 'router|ablation|trigger eval|skill eval|xhigh|ladder|sweet spot' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-150** claudetto shall not ship an escalating implementer ladder that raises a new Opus implementer from xhigh to max, with the reviewer always at max (medium, then a new implementer at xhigh with the lessons if P0 or P1 findings remain, then max on a third round, then held for the human as "ship with residuals or strip").
+- [x] **OUT-150** claudetto shall not ship an escalating implementer ladder that raises a new Opus implementer from xhigh to max, with the reviewer always at max (medium, then a new implementer at xhigh with the lessons if P0 or P1 findings remain, then max on a third round, then held for the human as "ship with residuals or strip").
   Acceptance: No agent file names Opus or Fable as a subagent model, and effort stays fixed per agent file. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:142 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
+  Verified: git grep -nEi -e 'router|ablation|trigger eval|skill eval|xhigh|ladder|sweet spot' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-151** claudetto shall not run several loops at different effort levels on each new model release to find the cost-to-error sweet spot, counting the reviewer's extra flags and rewrites.
+- [x] **OUT-151** claudetto shall not run several loops at different effort levels on each new model release to find the cost-to-error sweet spot, counting the reviewer's extra flags and rewrites.
   Acceptance: No plan file schedules an effort-sweep run. The source holds only the sweet-spot loops and the diminishing-returns remark; it does not state that max effort gave worse results. Verification: inspection.
   Basis: reported, one user. Status: missing at 088a227c.
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:255 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents>); user decision, 2026-11-16.
+  Verified: git grep -nEi -e 'router|ablation|trigger eval|skill eval|xhigh|ladder|sweet spot' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-152** claudetto shall not ship an orchestrator that files GitHub issue tickets, picks the model and a per-task token budget for headless sessions by its own experience, and has each task declare the files it will touch and claim an open worktree.
+- [x] **OUT-152** claudetto shall not ship an orchestrator that files GitHub issue tickets, picks the model and a per-task token budget for headless sessions by its own experience, and has each task declare the files it will touch and claim an open worktree.
   Acceptance: No claudetto block files tickets or sets a per-task budget; delegation keeps one worktree and disjoint files per worker. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
   Conflicts with: no planner (user decision, 2026-11-16).
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:716 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25>); user decision, 2026-11-16.
+  Verified: git grep -nEi -e 'GitHub issue|gh issue|work board|lead-dev|manager session|sliding' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-153** claudetto shall not ship a Stop hook that scolds a session ending on a question without flagging it on a shared work board, nor a lead-dev chat that reads only what the others changed and warns two agents touching the same file.
+- [x] **OUT-153** claudetto shall not ship a Stop hook that scolds a session ending on a question without flagging it on a shared work board, nor a lead-dev chat that reads only what the others changed and warns two agents touching the same file.
   Acceptance: No Stop hook inspects the reply text for a closing question. Verification: inspection.
   Basis: reported, one user. Status: missing at 088a227c.
   Conflicts with: no regex or word-list Stop check for openers (user decision, 2026-11-16).
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:121 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without>); user decision, 2026-11-16.
+  Verified: git grep -nEi -e 'GitHub issue|gh issue|work board|lead-dev|manager session|sliding' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-154** claudetto shall not ship a manager session that logs the user's decisions and checks that each was carried out.
+- [x] **OUT-154** claudetto shall not ship a manager session that logs the user's decisions and checks that each was carried out.
   Acceptance: No such session exists in the plugin. One user runs a manager session this way and another runs a checking agent permanently with every task. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
   Conflicts with: no constraint ledger (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xigw3d-im-not-a-developer-and-i-run-sev-20261029T115821Z.md:39; external/2026-10-30/reddit.com-r-claudeai-comments-1xigw3d-im-not-a-developer-and-i-run-sev-20261029T115821Z.md:68; external/2026-10-30/reddit.com-r-claudeai-comments-1xigw3d-im-not-a-developer-and-i-run-sev-20261029T115821Z.md:72 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xigw3d/im_not_a_developer_and_i_run_several_claude_code>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
+  Verified: git grep -nEi -e 'GitHub issue|gh issue|work board|lead-dev|manager session|sliding' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-155** claudetto shall not ship sliding compaction, where a hook at compaction keeps the conversation word for word and replaces old tool outputs (file reads, test runs, diffs) with one line telling the model to read again if needed.
+- [x] **OUT-155** claudetto shall not ship sliding compaction, where a hook at compaction keeps the conversation word for word and replaces old tool outputs (file reads, test runs, diffs) with one line telling the model to read again if needed.
   Acceptance: The plugin holds no sliding compaction. The tokendoctor author reports no model call, so it takes milliseconds; the summary stays as fallback for /compact; sliding is off by default and a replay of the user's own sessions at windows 200K to 600K picks the number. Verification: inspection.
   Basis: reported, one author. Status: missing at 088a227c.
   Conflicts with: handover replaces core auto compaction by default; manual `/clear` stays and writes a handover first; `CLAUDETTO_*` handover knobs mirror Claude Code's compaction knobs (user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369)).
   Source: external/2026-11-02/reddit.com-r-claudecoding-comments-1xlfx93-compacting-at-400k-instead-o-20261102T070132Z.md:48; external/2026-11-02/reddit.com-r-claudecoding-comments-1xlfx93-compacting-at-400k-instead-o-20261102T070132Z.md:69 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xlfx93/compacting_at_400k_instead_of_967k_cut_my_claude>); user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369).
+  Verified: git grep -nEi -e 'GitHub issue|gh issue|work board|lead-dev|manager session|sliding' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-156** claudetto shall not ship a harness where Claude does only architecture, planning, shaping and UAT while a local model writes the code and tests.
+- [x] **OUT-156** claudetto shall not ship a harness where Claude does only architecture, planning, shaping and UAT while a local model writes the code and tests.
   Acceptance: The plugin routes no coding to a local model. One commenter runs a local Qwen 3.8 27b (4-bit, 260k prompt) at about 6M output tokens a day in batch for about 3 dollars a day of electricity, a mistake rate not much above Haiku's, with unit tests, a frontier-model review, and a periodic UAT sweep; a split function routes an issue to smaller ones when the local model runs out of turns or context. Verification: inspection.
   Basis: reported, one commenter. Status: missing at 088a227c.
   Conflicts with: no component swaps (user decision, 2026-11-16).
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:105; external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:113; external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:115; external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:117; external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:119 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl9c92/forget_the_usual_claude_tips_what_are_the_strange>); user decision, 2026-11-16.
+  Verified: git grep -nE -e '[^A-Za-z]UAT[^A-Za-z]|local model|Ollama|DeepSeek|prefill|AMENDED' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-157** claudetto shall not ship a cost split where Opus writes the plan and spec, DeepSeek implements, a new implementation-model session reviews in a review-fix loop run twice, and Opus gives a final pass once tests pass.
+- [x] **OUT-157** claudetto shall not ship a cost split where Opus writes the plan and spec, DeepSeek implements, a new implementation-model session reviews in a review-fix loop run twice, and Opus gives a final pass once tests pass.
   Acceptance: The plugin routes no implementation to DeepSeek. One user built a router metrics exporter for under a dollar against an estimated 10 to 30 dollars on Opus and Sonnet; the estimate is unverified. Verification: inspection.
   Basis: reported, one user, estimate unverified. Status: missing at 088a227c.
   Conflicts with: no component swaps (user decision, 2026-11-16).
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:195; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:199; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:201; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:211; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:213 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
+  Verified: git grep -nE -e '[^A-Za-z]UAT[^A-Za-z]|local model|Ollama|DeepSeek|prefill|AMENDED' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-158** claudetto shall not enable the advisor pattern (a strong model consulted before committing, when stuck, and before done; `advisorModel`, `/advisor`, `/advisor fable`, Sonnet 5.5 high main with an Opus advisor). Setup keeps `CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1"`. Also: not ship the native advisor tool or an advisor model setting as a routing option. The advisor is a server tool, so hooks never see it and no setting caps it; "unavailable" is a generic message for several causes; the pairings are Sonnet+Opus, Sonnet+Fable (v2.1.170+), Haiku+Opus, Opus+Opus, and Fable+Fable. `/advisor` stays disabled by `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`; `useAdvisorTool` and `useAdvisorCommand` go. Also: not enable the advisor tool (`/advisor fable` on an Opus session). Findings against it: two authors report `/advisor fable` inside Claude Code with Opus 5.5 works as a second opinion; one recommends it at a token cost justified when the advisor prevents impactful mistakes.
+- [x] **OUT-158** claudetto shall not enable the advisor pattern (a strong model consulted before committing, when stuck, and before done; `advisorModel`, `/advisor`, `/advisor fable`, Sonnet 5.5 high main with an Opus advisor). Setup keeps `CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1"`. Also: not ship the native advisor tool or an advisor model setting as a routing option. The advisor is a server tool, so hooks never see it and no setting caps it; "unavailable" is a generic message for several causes; the pairings are Sonnet+Opus, Sonnet+Fable (v2.1.170+), Haiku+Opus, Opus+Opus, and Fable+Fable. `/advisor` stays disabled by `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`; `useAdvisorTool` and `useAdvisorCommand` go. Also: not enable the advisor tool (`/advisor fable` on an Opus session). Findings against it: two authors report `/advisor fable` inside Claude Code with Opus 5.5 works as a second opinion; one recommends it at a token cost justified when the advisor prevents impactful mistakes.
   Acceptance: the written env holds `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` "1" and no `advisorModel`. Verification: inspection.
   Basis: measured, one user (95 calls, 19.6M uncached input tokens, 3-5% of usage); cited second-hand (Opus 5.5 plus Fable advisor 1.7 points over Opus alone for about 2.1x cost); cited (docs) and reported; reported, 2 authors and 1 author (downvoted).
   Status: have at 088a227c (`settings.ts:178` writes `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`; `advisorModel` is absent).
   Conflicts with: the advisor tool stays disabled (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
   Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbipii-claude-invented-an-email-bounce-20261021T101718Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbipii/claude_invented_an_email_bounce_that_never>); plugins/claudetto/hooks/features/setup/settings.ts:178@088a227c; user decision, 2026-11-14 02:35 UTC, the Advisor tool goes if it cannot be cache-aligned (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:30659); external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:240; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:244 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after>); external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:164 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55>).
+  Verified: git grep -nEi -e 'ADVISOR_SYSTEM|mcp__claudetto__advisor|claudetto:advisor|advisorModel|/advisor' -- plugins -> 0 hits (settings/defaults.ts sets CLAUDE_CODE_DISABLE_ADVISOR_TOOL 1), 2026-11-19.
 
-- [ ] **OUT-159** claudetto shall not make Fable the daily implementer, "always strongest model and max effort", or max or ultra effort the default (xhigh Opus took 100k+ tokens and an hour for what medium does in 10 minutes).
+- [x] **OUT-159** claudetto shall not make Fable the daily implementer, "always strongest model and max effort", or max or ultra effort the default (xhigh Opus took 100k+ tokens and an hour for what medium does in 10 minutes).
   Acceptance: no default sets max or ultra effort and no agent file names Fable or Opus as `model:`. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:116; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:18 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids>).
+  Verified: git grep -nEi -e 'effort: (max|xhigh|ultra)|max effort|effortLevel' -- plugins -> 0 hits (the agents set effort high (Artemis) and medium (Athena, Heracles)), 2026-11-19.
 
 - [ ] **OUT-160** claudetto shall not enforce banned-word lists for hedges or trust-the-file CLAUDE.md rules: the model finds synonyms and drifts past a rule deep in context, especially after auto-compaction. Hooks enforce instead.
   Basis: reported. Status: not applicable.
@@ -4496,11 +4543,12 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Resolved: claudetto shall not read `## What I Need From You` of `last_assistant_message` at Stop with a form check (same decision).
   Resolved: The `open-items.ts` file shall go, because the user asked what it is and nobody asked for it (same decision).
 
-- [ ] **OUT-172** claudetto shall not test `claude-fable-5-2` for Athena. Test: `claude-fable-5-2` (reserved for Athena in project CLAUDE.md) or higher effort instead of `claude-sonnet-5-5` medium (evidence in Keep routing; conflicting); paid check, ask first. Repo: partial (`git show 088a227c:plugins/claudetto/agents/Athena.md` holds `model: claude-sonnet-5-5`, `effort: medium`).
+- [x] **OUT-172** claudetto shall not test `claude-fable-5-2` for Athena. Test: `claude-fable-5-2` (reserved for Athena in project CLAUDE.md) or higher effort instead of `claude-sonnet-5-5` medium (evidence in Keep routing; conflicting); paid check, ask first. Repo: partial (`git show 088a227c:plugins/claudetto/agents/Athena.md` holds `model: claude-sonnet-5-5`, `effort: medium`).
   Acceptance: Athena stays on `claude-sonnet-5-5` medium. Verification: inspection.
   Basis: inferred from the user decision below (Fable and Opus never run as a subagent). Status: have at 088a227c (`git show 088a227c:plugins/claudetto/agents/Athena.md` holds `model: claude-sonnet-5-5`, `effort: medium`).
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Source: AGENTS.md:8@088a227c9 (the repo's instruction file reserves `claude-fable-5-2` for the `Athena` agent; no CLAUDE.md is tracked in git).
+  Verified: git grep -nEi -e 'model: (claude-)?(opus|fable|mythos)' -- plugins/claudetto/agents -> 0 hits (spawn.ts also refuses Opus, Fable and Mythos on agent.spawn), 2026-11-19.
 
 - [ ] **OUT-173** claudetto shall not carry the bench holdout run (`bun tools/bench/run.ts <task> <arm> <out>`, `bun tools/bench/report.ts <out>`) Run each `~/.claudetto-holdout/*.json` task for stock and dev arms in background: `bun tools/bench/run.ts <task> <arm> <out>` then `bun tools/bench/report.ts <out>`; holdout path denied to the tuning session; the user chose a script that picks the held-out task blind. pass list (18 items): pass=true bench-seed-named, openspec-curate, bench-freeze, grader-known-bad, target-conduct, dossier-I01-I18, external-sources, mutation-scores, least-code, you-should-know, batch-edit; pass=false bench-holdout (log built 10/10, skipped 8), target-cache, target-no-compaction, target-rereads, target-cost, design-table, release, handoff. Mutation-test facts: Stryker 10.1.1 under a Bun `node` shim; shell-parser surviving mutants hid 7 behaviours found only by a 60,000-input differential fuzz. have: n/a (bench tooling). Also: not carry the bench discipline (`run.ts` refusing a dirty `plugins/` or `tools/bench/`, a `benchVersion` hash, `report.ts` dropping faulted runs, conduct rows checkedAfterChange, lastCheckPassed, questionsToUser, opensWithFact, unprovenPass, seedNamed, outsideFiles, seedActedOn, and a SWE-bench-style task schema of 9 merged bug-fix PRs).
   Acceptance: No bench or holdout run step exists in the target tree; no bench tool ships. Verification: inspection.
@@ -4521,18 +4569,22 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:252; user decision, 2026-11-16.
 
-- [ ] **OUT-176** claudetto shall not set a measured `maxTurns` cap on workers (ProjectArchitect raised its retriever cap from 15 to 25 after the cap lost 16 to 18% of answers). REQ-DELEGATION-063 rules out turn limits that cost a resume; REQ-DELEGATION-064 bounds failures instead.
+- [x] **OUT-176** claudetto shall not set a measured `maxTurns` cap on workers (ProjectArchitect raised its retriever cap from 15 to 25 after the cap lost 16 to 18% of answers). REQ-DELEGATION-063 rules out turn limits that cost a resume; REQ-DELEGATION-064 bounds failures instead.
   Acceptance: no claudetto agent file sets `maxTurns`. Verification: inspection.
   Basis: read (repo agent file). Status: have at 088a227c.
   Conflicts with: REQ-DELEGATION-063 (user decision, 2026-11-14).
   Source: druthulu/projectarchitect at edcc2b00, project-architect-3.0/agents/retriever-code.md:10; reports/2026-11-18-research/repos.md:129.
+  Verified: git grep -nEi -e 'maxTurns|single-writer|singleWriter|262144|redundantRead|readCache|maxFileBytes|unchanged file' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-177** claudetto shall not build a single-writer guard for its handover state. The pending handover lives in `$.store` (RT-026), which only the mod reaches, so no model tool can write it.
+- [x] **OUT-177** claudetto shall not build a single-writer guard for its handover state. The pending handover lives in `$.store` (RT-026), which only the mod reaches, so no model tool can write it.
   Acceptance: no PreToolUse rule guards a claudetto state file. Verification: inspection.
   Basis: read (repo docs); [ADR-0177](../adr/0177-pragmatism-gate.md). Status: have at 088a227c.
   Source: druthulu/projectarchitect at edcc2b00, project-architect-3.0/project-architect-3.0.md:174-178; reports/2026-11-18-research/repos.md:124.
+  Verified: git grep -nEi -e 'maxTurns|single-writer|singleWriter|262144|redundantRead|readCache|maxFileBytes|unchanged file' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-178** claudetto shall not deny whole-file Reads above a size or deny re-reads of unchanged files until a measurement shows a gap. On 2.1.327, 4.2% of reads in the user's sessions were redundant, mostly re-reads after compaction and image re-reads; the built-in Read stops at 262,144 bytes and 25,000 tokens and tells the model to page with offset and limit; 2.1.327 fixed Edit after compaction for files read in full.
+- [x] **OUT-178** claudetto shall not deny whole-file Reads above a size or deny re-reads of unchanged files until a measurement shows a gap. On 2.1.327, 4.2% of reads in the user's sessions were redundant, mostly re-reads after compaction and image re-reads; the built-in Read stops at 262,144 bytes and 25,000 tokens and tells the model to page with offset and limit; 2.1.327 fixed Edit after compaction for files read in full.
   Acceptance: no claudetto hook denies a Read by size or by repeat. Revisit when a dogfood week shows redundant reads above 10% of read tokens. Verification: inspection.
   Basis: measured (reports/2026-11-18-research/sessions.md, Redundant reads); [ADR-0177](../adr/0177-pragmatism-gate.md). Status: have at 088a227c.
   Source: druthulu/projectarchitect at edcc2b00, project-architect-3.0/guard.py:676-725 and 803-850; reports/2026-11-18-research/repos.md:119-120; reports/2026-11-18-research/surface.md:45 (chunk-e38nza00.js@433, chunk-bpr7n093.js@12561, claude 2.1.327).
+
+  Verified: git grep -nEi -e 'maxTurns|single-writer|singleWriter|262144|redundantRead|readCache|maxFileBytes|unchanged file' -- plugins -> 0 hits, 2026-11-19.
