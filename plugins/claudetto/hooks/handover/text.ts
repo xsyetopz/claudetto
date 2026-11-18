@@ -12,6 +12,8 @@ export const FORK_PROMPT = [
 	"- Files: the paths that matter and why.",
 	"- Commands: the exact check commands that pass or fail now.",
 	"- Constraints: every user correction, refusal, and consent, word for word.",
+	// REQ-REPLY-139: vanilla's summary lists all user messages, which carries opinions forward as standing preferences.
+	"Record rules the user set and facts with a source; leave out the user's opinions.",
 	"Name facts, not intentions. Do not call tools.",
 ].join("\n");
 

@@ -371,7 +371,8 @@
   Basis: user decision; cited (arXiv:2610.29162). Status: missing at 088a227c.
   Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P9.
 
-- [ ] **REQ-REPLY-139** claudetto shall write no user opinion or stance into memory files, CLAUDE.md or handover text; only rules the user set and facts with a source enter them, each in one named file under a size cap.
+- [x] **REQ-REPLY-139** claudetto shall write no user opinion or stance into memory files, CLAUDE.md or handover text; only rules the user set and facts with a source enter them, each in one named file under a size cap.
+  Verified 2026-11-18 on Claude Code 2.1.327 (cc-inspect code search "All user messages:", chunk-m14bt1pz.js@2583892): vanilla compaction asks for every user message; the handover fork prompt in hooks/handover/text.ts asks for user rules and sourced facts and excludes opinions. claudetto writes no memory file or CLAUDE.md (code search of plugins/claudetto/hooks). A behavioural count of opinion lines is left to dogfood.
   Acceptance: a session in which the user states an opinion leaves no memory or handover line that records it as a preference; the memory file stays under its cap. Verification: test.
   Basis: cited (arXiv:2602.23971: a stance stated as a statement rather than a question raised forced-choice agreement by 4.7 points; a conservative persona raised it by 6.9); reported (agents hoarded 89 self-written memories, misattributed them to the user, and followed them rigidly). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P10 implication 4; external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xywg7f/memories_and_rules/>); reports/2026-11-18-research/dossier.md:174.
