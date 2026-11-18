@@ -51,7 +51,7 @@ Verification:
 You should know:
 - The check runs first at step 3, then every 6th step (REQ-YOU-SHOULD-KNOW-061), because notes reported as late need an earlier first look.
 - REQ-YOU-SHOULD-KNOW-062 returns to scope In: the user's 2026-11-19 ruling lifts the byte-parity reason that moved it Out.
-- Licence: rewritten texts are claudetto's own; any text still copied from the builtin keeps the licence question open as a user-held dependency.
+- Licence: every model-facing text and the description are claudetto's own since commit 8086a35e4. The user-facing strings (four toasts, the About card in `copy.ts`, button labels) keep the builtin's wording because the port recreates its UI/UX, so the licence question stays open for those short strings as a user-held dependency.
 
 Prompt text:
 - Every model-facing text claudetto writes (prompts, tool and skill descriptions, hook reasons, notes the model reads) states what to do, with the reason, because Anthropic's prompting guide (platform.claude.com, "Prompting best practices", "Tell Claude what to do instead of what not to do" and "Add context to improve performance", read 2026-11-19) reports that positive instructions with a reason steer better than prohibitions. A named failure to avoid stays only when the guide for that model calls for naming it.
