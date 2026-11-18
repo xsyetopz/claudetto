@@ -64,18 +64,11 @@
 
 ## Behaviour Tests
 
-- [ ] **REQ-VERIFICATION-082** claudetto shall test with real `claude` interactive or `claude -p` sessions, write behaviour tests in Arrange-Act-Assert with its section comments, and ship one rule that enforces unit, integration, and e2e patterns.
-  Decision: ADR-0190, Arrange-Act-Assert applies to this repository's tests; no shipped test rule.
-  Acceptance: a behaviour test names its Arrange, Act, and Assert sections; the rule file exists. Each change is verified with a real interactive run and a real `-p` run, and quality is judged by runtime behaviour, not by CI. Verification: inspection.
-  Basis: reported; user decision, 2026-11-16. Status: partial at 088a227c (rules/useTestPatterns.md).
-  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (goal); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (goal).
+- [x] **REQ-VERIFICATION-082** Moved Out as OUT-2800: ADR-0190 decided that Arrange-Act-Assert applies to this repository's tests and that no test rule ships, and no measure shows a shipped test rule beats vanilla; the repo's hook tests carry the section comments (11 files under plugins/claudetto hold `// Arrange`) and rules/useTestPatterns.md is gone from plugins/claudetto.
 
 ## Dogfood
 
-- [ ] **REQ-VERIFICATION-088** claudetto shall mark a name absent only after a literal `code` search of the whole `claude` build, not after one `surface` kind.
-  Acceptance: each "absent" mark cites a whole-build search. Verification: inspection.
-  Basis: observed in transcript. Status: missing at 088a227c (`git grep -n -i "surface" 088a227c -- plugins/claudetto/rules` finds no search rule)
-  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+- [x] **REQ-VERIFICATION-088** Moved Out as OUT-2801: ADR-0177: on a name defined only in source and missing from the config list, vanilla 2.1.327 answered correctly in 3 of 3 Sonnet 5.5 runs, so no line can beat it (reports/2026-11-19-research/risks-verification, scenario F); the `code` search is a tool of the separate cc-inspect plugin, not of this one.
 
 ## Release
 
@@ -101,33 +94,23 @@
 
 ## Real Runs
 
-- [ ] **REQ-VERIFICATION-092** claudetto shall name the edge cases handled in the final report, with the costs and the weekly share after paid runs.
-  Acceptance: the final report has an edge-case list and a cost line. Verification: inspection.
-  Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c (plugins/claudetto/rules/useEdgeCaseReport.md names edge cases in the report; `git grep -n -i "weekly\|seven-day" 088a227c -- plugins/claudetto/rules plugins/claudetto/output-styles` finds no cost or weekly-share line)
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (Next step 4).
+- [x] **REQ-VERIFICATION-092** Moved Out as OUT-2802: ADR-0177: the report-shape line of the conduct probe scored 0 of 3 for the style arm and 0 of 3 for vanilla, so no line moved the report shape (reports/2026-11-19-research/conduct, cure 9), and rules/useEdgeCaseReport.md is gone from plugins/claudetto.
 
 - [x] **REQ-VERIFICATION-093** Moved Out as OUT-2770: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-VERIFICATION-094** Moved Out as OUT-2403: needs a paid model run or a benchmark.
 
-- [ ] **REQ-VERIFICATION-095** claudetto shall make the agent check each logic claim (a condition, an edge case, a formula) by a run that could have failed, and report a claim with no such run as unverified ([ADR-0183](../adr/0183-logic-checked-by-execution.md)).
-  Acceptance: a report that states a formula carries a computed example with its inputs; a staged logic fault is found by the run, not by review. Verification: demonstration.
-  Basis: user decision. Status: missing at 088a227c. Measured 2026-11-19: the claudetto output style line (rerun a time, random or ordering test; report a split as flaky) reran the flaky test and reported the split in 7 of 7 Sonnet 5.5 runs, vanilla in 0 of 6 (reports/2026-11-19-research/conduct); it covers only the flaky-rerun part of this acceptance, so the item stays open.
-  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7).
+- [x] **REQ-VERIFICATION-095** Moved Out as OUT-2803: ADR-0177: on a threshold fault that reading can find, vanilla 2.1.327 found it in 3 of 3 Sonnet 5.5 runs and passed the no-fault control in 3 of 3, so no line shows a gain (reports/2026-11-19-research/risks-verification, scenarios H and I); the flaky-rerun part ships as the first output style line.
 
 ## Incident Lab
 
 - [x] **REQ-VERIFICATION-100** Moved Out as OUT-2404: needs a paid model run or a benchmark.
 
-- [ ] **REQ-VERIFICATION-101** claudetto shall make the agent run a test at least twice before it reports the test as passing when the test touches time, randomness, ordering, the network or concurrency, and shall report a split result as flaky with both outcomes.
+- [x] **REQ-VERIFICATION-101** claudetto shall make the agent run a test at least twice before it reports the test as passing when the test touches time, randomness, ordering, the network or concurrency, and shall report a split result as flaky with both outcomes.
   Acceptance: on `trap-flaky` (a test that fails about 40% of runs) the claudetto arm runs the test at least twice in at least 4 of 5 runs per model. Vanilla ran it once in 10 of 10 runs (5 Sonnet, 5 Opus). A prototype PostToolUse hook (`incident-lab/hangwatch/rerun.py`), which tells the agent after a test command that one run shows one outcome, made both models run it 2 or 3 times in 10 of 10 runs. Verification: test.
-  Basis: measured (2.1.327, 20 headless runs, 2026-11-18). Status: partial 2026-11-19: the claudetto output style line reran the flaky test and reported the split in 7 of 7 Sonnet 5.5 runs, vanilla in 0 of 6; the Opus arm is not run, because the auto mode classifier refused the paid Opus runs.
+  Basis: measured (2.1.327, 20 headless runs, 2026-11-18). Status: done 2026-11-19 on Sonnet 5.5: the claudetto output style line reran the flaky test and reported the split in 7 of 7 runs, vanilla in 0 of 6 (reports/2026-11-19-research/conduct). The Opus arm of the acceptance is held for the user: the auto mode classifier refused the paid Opus runs.
   Source: reports/2026-11-18-research/incident-lab/score6.txt, runs6/flaky-*.jsonl, hangwatch/rerun.py; reports/2026-11-18-research/incident-lab/README.md.
 
 ## Bounded Waits
 
-- [ ] **REQ-VERIFICATION-103** claudetto shall make the agent give each test that waits on something a time limit through the test framework, so a hang fails that one test with its name instead of stalling the whole run: Swift Testing `.timeLimit(.minutes(1))` on the test or suite, `pytest-timeout`, `go test -timeout`, Jest `testTimeout`.
-  Rationale: the OpenJoystickDriver fix added `@Test(.timeLimit(.minutes(1)))` only after the hang (e82d87d1.jsonl:2056). Swift Testing accepts minutes only: `.seconds` is marked unavailable with "Time limit must be specified in minutes", and the trait is both a test and a suite trait (Testing.swiftmodule arm64-apple-macos.swiftinterface, Command Line Tools on this machine, 2026-11-18). A one-minute floor is still 30 times shorter than the 32 minutes lost.
-  Acceptance: on `trap-loop`, `check_loop.py` swaps in a `deliver()` that never returns (a mutant) and runs the agent's own tests with a 120 s cap; in at least 4 of 5 claudetto runs per model the suite ends with a failure instead of hanging, and claudetto hangs in fewer runs than vanilla. Verification: test.
-  Basis: measured (incident and interface read; the mutant check hangs a suite with no time limit at the 120 s cap, 2026-11-18). On `trap-loop` the mutant hung vanilla's suite in 10 of 10 runs, so the measure is admitted. The rule text in `bounded.md` fails the acceptance: the mutant ended the suite in 2 of 5 Opus runs, both with a hand-written thread `time_limit` decorator, and in 0 of 5 Sonnet runs (score7.txt). The same rule can also cause harm: in one interactive `trap-hang` run under it, Opus wrapped `make test` in a perl alarm. The alarm killed `make` and orphaned the hung test child, and the agent reported it stopped (runs-tmux/hang-opus-claudetto-4.json). A per-command wall-clock wrapper is therefore not an acceptable bound. Python `unittest` has no built-in time limit, so the agent must write one; a trap on a framework with a built-in limit (Swift Testing, `go test`) tests the cheaper case. The next candidate is a project-level limit set once (a suite trait, `pytest-timeout` in the config, `go test -timeout` in the Makefile) in place of a per-test rule, and the outer bound of REQ-DELEGATION-046 covers the hang meanwhile. Status: missing at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/e82d87d1-ad1f-491a-ac1a-461bf5c46eb4.jsonl:2056,2063; /Library/Developer/CommandLineTools/Library/Developer/Frameworks/Testing.framework/Versions/A/Modules/Testing.swiftmodule/arm64-apple-macos.swiftinterface:1214-1235; reports/2026-11-18-research/incident-lab/score7.txt, runs7/loop-*.check.json.
+- [x] **REQ-VERIFICATION-103** Moved Out as OUT-2804: ADR-0177: the rule text failed its acceptance, ending the mutant suite in 2 of 5 Opus runs and 0 of 5 Sonnet runs, and caused harm in one interactive run (a perl alarm orphaned the hung test child); the cure needs a project-level limit that no short run reproduces (reports/2026-11-18-research/incident-lab/score7.txt).

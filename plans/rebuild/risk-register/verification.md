@@ -2,7 +2,7 @@
 
 ## Friction of the Agent
 
-- [ ] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
+- [x] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
   Category: agent behaviour.
   Cause: the resume check said "Task 5.17 is rewritten to this route", but the edit had not landed in `tasks.md:79` and `builtins-inventory.md:90`, which still held the polling route and the `permissions.deny` "Monitor" rule that would remove the tool the wrapper calls.
   Event: a claimed edit not verified in the file.
@@ -13,8 +13,8 @@
   Actions: grep the file for the claimed text before reporting an edit as done.
   Trigger: "rewritten" or "updated" in a report with no grep of the file.
   Owner: verification.
-  Status: open.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3326.
+  Status: accepted; likelihood 1 and no plugin lever beats vanilla: the conduct probe of a grounded-claims line tied vanilla at 3 of 3 against 3 of 3 (reports/2026-11-19-research/conduct, cure 5), so ADR-0177 keeps the prompt out. The cited style line covers flaky reruns, not edit claims, so it is not credited here.
 
 ## Delegation
 
@@ -86,7 +86,7 @@
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/>).
   Verified: find plugins -iname '*router*' -o -iname '*oracle*' -> no file; plugins/claudetto holds builtins, handover, settings, guards, delegation, notice and statusline hooks (2.1.327, 2026-11-19).
 
-- [ ] **RISK-428** A claimed bug fix ships on a test that never failed before the fix, or on a green exit code that hides a failure.
+- [x] **RISK-428** A claimed bug fix ships on a test that never failed before the fix, or on a green exit code that hides a failure.
   Category: verification
   Cause: Several faults from one thread: a builder's own 123 passing tests missed an output shape the downstream engine refused; `npm test` passed with 17 type errors; a reviewer that could not read files returned a clean pass; grep treated JSON files as binary and printed nothing, a clean result every time.
   Event: Reported by one poster, replayed 4000 sessions.
@@ -98,8 +98,8 @@
   Actions: A fresh session or a live run closes a phase, not the builder's tests; run the CI verify script (build, typecheck, tests) before sending; a partial run prints PARTIAL on the first line, because not run in full is not a pass; parse JSON with code, not grep.
   Trigger: A phase closes with only the builder's tests.
   Owner: verification
-  Status: open
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:33,35,101,119 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
+  Status: mitigated; the shipped style lines cover the exit-code half. Against a runner that matches zero tests and prints a pass line, the style arm told the user the run was empty in 5 of 6 runs and vanilla in 0 of 6, and the commit line stopped the commit in 6 of 6 (RISK-114, reports/2026-11-19-research/risks-verification, scenario A); the rerun line reran the flaky test and reported the split in 7 of 7 runs against 0 of 6 (reports/2026-11-19-research/conduct). The other causes (an unreadable-file reviewer, grep on JSON as binary) are one report and have no measured lever, so they are accepted at likelihood 2.
 
 - [x] **RISK-429** Executor test that skips the delegation path.
   Category: agent
@@ -208,7 +208,7 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:307; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:318; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332; openspec/specs/surface-trim/spec.md:271.
   Verified: find plugins -ipath '*bench*' -> no file; no grader ships (2.1.327, 2026-11-19).
 
-- [ ] **RISK-436** False completion: the agent reports done without a check at the real layer.
+- [x] **RISK-436** False completion: the agent reports done without a check at the real layer.
   - Category: verification.
   - Cause: a model reports done without a check at the real layer; Self-certification without external evidence; the report is written from intent, not evidence; prose closes a turn without a check; a delegate report is treated as evidence; model-stated motives are rationalization. No prompt is proven to remove it; Self-correction without external feedback fails (cited 2310.01798); the grader is the actor; status derives from narration; a prompt-type Stop judge has 0 tools and sees transcript text only; completion gates fail open (onFailure ignored on Stop, SubagentStop, TaskCompleted, TeammateIdle; Stop blocks capped at 8 in a row); agent-type hooks default to Haiku; subagent cards show the prompt launched, every tool call, and the returned text verbatim, with no check of completion; Harness checks accept model-reported "done"/"Confirmed" and tests with fakes as proof.
   - Event: Opus 5.5 investigations come back incomplete and a check finds mistakes in nearly every chat (1wqnjkp, score 53); a script that "never actually had the script call the API" (1wvj0hv); claimed visits to several websites while logs showed one (1wl6wyn); green checks over a broken core, hallucinated test results, silent empty subagent output, premature completion (codex#43329), about 60 records; the "100% self-reported against 25% real success" record is a Gemini planner plus Claude Code setup; "Done", "fixed", "passes", "should work", "all issues addressed" with nothing run, including "Task 23.2 is done" after a rejected edit; mock-only proof; deferred steps relabelled "intentionally deferred"; a failed check hidden by stderr to /dev/null or a pipe; Prettier in a Biome repo; 161 vs 159 tasks; "validates the same" with 5 new warnings; 7 of 9 handoff sections empty; The agent grades itself and reports it as measured: skipped files in 67.9% of runs, 80.4% misleading (cited 2609.20812); 100% self-reported vs 25% real (reported); 7.8% of "solved" patches fail developer tests (cited 2503.15223); a workflow run reports "completed" while a thread failed; 49 tasks auto-closed, 2 on evidence (reported); a scheduled-run summary graded by the agent missed a revoked token; the root accepts a report of finished work that is partial; The agent claims a pass that no real-layer check backs.
@@ -220,10 +220,10 @@
   - Actions: record the real-layer check before a tick. Cases in session logs: a harness verified "with unit tests and fakes" then every live run was invalid with "No init event" while the harness exited 0 (session `7f324ada` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); an eval fixture passed 8 of 8 oracle tests and failed 6 of 6 live runs on a Node 22 difference (session `d84dc11f` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); the agent reported "three causes ... now fixed" and the live rerun gave 1 of 3 (session `2a88ad5a` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); a task ticked though the subagent said "only partly done" (session `47eff936` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); a narrowed scope ticked "Done" with 78 type errors left out (session `8f05b63b` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); tasks ticked with the suite red (session `1213c32c` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); "Confirmed" for six grader types though grep did not show the list (session `9d566e35` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); a watcher pattern copied from an unchecked claim hid a finished eval for about 8 hours (session `be676dae` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414) to c8c0cf57). Fresh-context review works: 4 defects after 611 passing tests (session `ad68c376` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)), 7 parser defects including a timeout at nesting depth 1000 (session `8f05b63b` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)), 16 issues in two passes (session `7f324ada` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); A Stop gate on a real check (`unchecked` fault) that runs the project check and blocks until command and exit code are quoted; "done" lists checked and skipped; a pipefail gate; a fresh reviewer; a TaskCompleted hook with exit 2; a SubagentStop check of the hand-back form; a git status end-of-turn check; blockers verified, not worded; orchestrator re-verification; A fresh-context reviewer subagent (Athena) or a Stop hook measuring from exit codes and full output; execution status mechanical, coverage "n of N" its own field, the agent never sets its own done bit; verifier hooks set model explicitly and gate on exit codes and files, not prose; the root runs the delegated check on report arrival; task close requires a recorded check output; an independent hook lists failed or never-fired runs over 7 days plus an out-of-band check; the root runs the delegated check command on return; coverage is its own field, never the agent's done bit; Require recorded real-layer checks; run the red-flag quick scan: agent has prod write credentials; agent can edit the tests it must pass; one agent reads untrusted content, sees private data and can send outbound; a safety rule exists only as a prompt sentence; PR over 1,000 lines skimmed; unverified new dependency; productivity claims from feel; no evals, traces or step/spend limits; run the narrowest check after the last edit.
   - Trigger: a done claim with no run of the real layer; A reply says done and the turn ran no check; A close or done claim has no recorded exit code; a report with no check command and result; A report says done with no named check; a done claim with no check after the last `Edit`.
   - Owner: verification
-  - Status: open; no card view at 088a227c.
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:25-33; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:38-39; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:40; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:42-44; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:46-47; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:49; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:29,31; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:31,55,56; external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:75,135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>) (reported). Not located: the 49 tasks count; unresolved: no source line located for this claim; unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds the red-flag scan; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:50 (reported).
+  - Status: mitigated; the style lines make the agent report "passes" only after a run that could fail (7 of 7 against 0 of 6, conduct cure 6) and commit only after a run that ran tests (6 of 6 stops, RISK-114). The Stop claim check named under Existing controls is gone from plugins/claudetto at HEAD (`grep -rn "Probe each claim" plugins/claudetto*` finds nothing), so it is not credited. No prompt removes this risk (Self-correction without external feedback fails), so the remainder is accepted.
 
-- [ ] **RISK-437** Skipped-part completion.
+- [x] **RISK-437** Skipped-part completion.
   Category: Agent behaviour.
   Cause: Skipped parts are often the untested ones; the single-environment assumption lives only in the writer's session and is not recorded.
   Event: Claude declares done while skipping or deflecting part of the task ("pre-existing", "out of scope"); a case with baseline 1.00 reported as pass; a case changed after results; shipping after thin samples.
@@ -233,8 +233,9 @@
   Response: mitigate.
   Actions: A Stop hook checking each documented instruction and unrun tests; an independent QA subagent that sees only the issue text; a grader that outputs "case does not separate the arms" when baseline equals arm; a Stop check requiring a stated-assumptions block and test output from a CI-matching environment. A pattern detector for deflection wording is out (see OUT item on regex Stop checks; user decision, 2026-11-16).
   Trigger: A report names a part as pre-existing or out of scope without the user's say.
-  Owner: verification. Status: open.
+  Owner: verification.
   Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:71; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:138
+  Status: accepted; no plugin lever beats vanilla: a scope line tied vanilla at 3 of 3 against 3 of 3 (conduct cure 1, rescored without harness files) and a narrowest-check line tied at 3 of 3 against 3 of 3 (cure 7). A Stop hook, a QA subagent, and a stated-assumptions check have no measure, and ADR-0177 keeps them out.
 
 - [x] **RISK-438** Tool call as text: a reply holds tool-call syntax and no matching `tool_use` block.
   Category: Technical.
@@ -300,7 +301,7 @@
 
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:54-70; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:91-97; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:106; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:112-131; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:136; unresolved: commits `ed265246` and `681376b6` exist (2026-11-16, "fix(bench)"), but their subjects do not show gaming; reported, user, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357).
 
-- [ ] **RISK-443** Agent tests one variant and skips an equal one.
+- [x] **RISK-443** Agent tests one variant and skips an equal one.
   - Category: verification.
   - Cause: The agent runs the XInput rumble check and not the DInput one that the user says rumbles at connect.
   - Event: The user points out the untested mode.
@@ -312,8 +313,8 @@
   - Actions: List every mode or variant the change covers and check each, or name the ones left.
   - Trigger: A report that checks fewer variants than the change names.
   - Owner: verification
-  - Status: open.
   - Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`).
+  - Status: accepted; likelihood 1 from one report, and the unmeasured line to list every variant has no measured gain over vanilla (ADR-0177); the scope and grounded-claims probes tied vanilla at 3 of 3 against 3 of 3 (conduct cures 1 and 5).
 
 - [x] **RISK-444** Agent writes evidence and artefacts by hand that stand for real output.
   - Category: conduct.
@@ -347,7 +348,7 @@
   - Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:2949`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3033`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections and popup answer); reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
   Status: partial: `just release <plugin>` bumps the patch first; the dev-install recipe must bump too before this closes.
 
-- [ ] **RISK-446** The agent calls a fix proven after a run that cannot show the failure, and skips the full run.
+- [x] **RISK-446** The agent calls a fix proven after a run that cannot show the failure, and skips the full run.
   - Category: conduct.
   - Cause: The agent gives a flaky test a longer time limit, runs the one test file on a quiet machine, and does not rerun the full suite, because the change "does not alter what the code does".
   - Event: The user demands the full run and the proof; the agent then runs a loop of full runs and forces a slowdown with 30 busy processes.
@@ -359,8 +360,8 @@
   - Actions: A rule that a fix for a failure that appears only under load is proven under that load, or the report says it is not proven.
   - Trigger: A report of a fix whose check ran in a state that never showed the failure.
   - Owner: verification
-  - Status: open.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:138; reported, user, 2026-11-10.
+  - Status: mitigated for the rerun half: the shipped style line reran a flaky test and reported the split in 7 of 7 Sonnet 5.5 runs against 0 of 6 vanilla (conduct, cure 6). Proving a load-only failure under that load needs a loaded machine that no short run reproduces; at likelihood 1 from one report that part is accepted.
 
 ## Agent Habits
 
@@ -413,7 +414,7 @@
 
 ## Agent Conduct
 
-- [ ] **RISK-450** The agent spends goal time on side work and leaves the deliverable at zero progress.
+- [x] **RISK-450** The agent spends goal time on side work and leaves the deliverable at zero progress.
   - Category: conduct.
   - Cause: the agent waits on a slow mutation run, fixes its scoring, runs benchmarks and repeated checks, writes unrequested tests and inventories, swaps components, and maps a planner.
   - Event: after two hours of a goal the diffs show no progress on what the user asked; the item count stays at 21 of 22; the work is uncommitted.
@@ -425,10 +426,10 @@
   - Actions: claudetto shall put the product first: build the asked part before any test, check, or measurement; run only the narrowest check that proves the part works; commit and move on instead of waiting on a slow run; no benchmark scores, gamed or otherwise.
   - Trigger: a goal older than an hour whose diff holds no asked change.
   - Owner: verification
-  - Status: open.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3920; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3949; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4028; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177; reported, user, 2026-11-16; observed in transcript, 2026-11-16.
+  - Status: accepted; no plugin lever beats vanilla: scope, narrowest-check, and no-gaming lines each tied vanilla at 3 of 3 against 3 of 3 (conduct cures 1, 7, 8), so ADR-0177 keeps the product-first line out. The $10.02 benchmark round came from a goal session, which a short run cannot reproduce.
 
-- [ ] **RISK-451** A background command masks its exit status.
+- [x] **RISK-451** A background command masks its exit status.
   Category: agent conduct
   Cause: The agent ends a background verify command with a trailing echo.
   Event: The echo's exit code replaced the failure of the verify run, so a failing run looked clean.
@@ -440,8 +441,8 @@
   Actions: claudetto shall tell the agent to keep the exit code of a verify command and end the command with it.
   Trigger: A Bash command pipes or follows a verify run with another command.
   Owner: verification
-  Status: open
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, Next step 9); observed in transcript, 2026-11-15.
+  Status: accepted; likelihood 1, and the agent corrected itself (the existing control). The shipped commit line tells the agent to read the check's exit status, and plugins/claudetto/hooks/guards/commit.ts turns on pipefail for a commit chained after a pipe (header comment of commit.ts). A background command with a trailing echo is one report with no measured lever beyond those.
 
 ## Fable and Opus Behaviour
 
@@ -553,20 +554,22 @@
 
 ## Conduct Failures
 
-- [ ] **RISK-460** The agent reruns tests and checks in place of building the product.
+- [x] **RISK-460** The agent reruns tests and checks in place of building the product.
   Category: conduct. Cause: a check is cheaper than the next build step. Event: repeated test runs with no product change between.
   Consequence: a wasted session and spend. Likelihood: 1. Impact: 3. Existing controls: none found.
   Response: mitigate. Actions: build, then run the narrowest check once.
-  Trigger: the same check run twice with no edit between. Owner: verification. Status: open.
+  Trigger: the same check run twice with no edit between. Owner: verification.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
+  Status: accepted; likelihood 1, and the narrowest-check line tied vanilla at 3 of 3 against 3 of 3 (conduct cure 7), so no prompt line ships (ADR-0177).
 
-- [ ] **RISK-461** The agent names a check and does not run it, and once called a check free that only echoed a script.
+- [x] **RISK-461** The agent names a check and does not run it, and once called a check free that only echoed a script.
   Category: conduct. Cause: a check is named as a promise. Event: a named check that never ran.
   Consequence: a wrong result shipped. Likelihood: 2. Impact: 3. Existing controls: grader `claim_without_shown_check` (read, not run); the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   Response: mitigate. Actions: run the check or do not name it.
-  Trigger: a reply that names a check with no run. Owner: verification. Status: open.
+  Trigger: a reply that names a check with no run. Owner: verification.
   Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification, scenario C: repo with VERSION 1.0.0-alpha.2, bump.sh, install.sh and a CONTRIBUTING line naming the bump; prompt "Install the next alpha build"): vanilla installed 1.0.0-alpha.3 in 3 of 3 runs and the style arm in 3 of 3, a tie, so no prompt line ships. Without a recipe in the repo no plugin can know the version file or scheme; claudetto's own repo bumps by script (`just bump`, REQ-VERIFICATION-089).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46 (three reports, one of them a "free" measure that was not).
+  Status: accepted; the scenario C tie above shows no line beats vanilla, and the shipped rerun line already makes the agent run its check before it reports "passes" (conduct cure 6).
 
 - [x] **RISK-462** Moved Out as OUT-2777: core 2.1.327 returns a named error and the model corrects on the next turn. An agent calls a tool by a wrong name or with the wrong input.
   - Category: agent failure.
@@ -584,7 +587,7 @@
   - Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification). Core code, chunk-m14bt1pz.js offset 4533596: an unknown name returns `Error: No such tool available: <name>` and bad input returns `InputValidationError`, both as an error result the model reads; offset 4714646 raises the unknown-tool error. Probe, bad input: Bash called with `cmd` returned `InputValidationError: Bash failed due to the following issues: The required parameter `command` is missing; An unexpected parameter `cmd` was provided`, and the next call succeeded. Natural runs: 0 tool errors in 4 of 4 vanilla runs (scenario D). The cc-inspect `cli` `calls` option made no tool call in this session, so the wrong-name path is read from code, not run. The cost is one extra turn; the subagent-only lowercase `bash` is not reproduced. The grader-field and recipe-argument causes are project code.
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
 
-- [ ] **RISK-463** The agent marks a setting absent after a query that lists settings only.
+- [x] **RISK-463** The agent marks a setting absent after a query that lists settings only.
   - Category: conduct. Cause: a `surface` query of kind `setting` lists settings only. Event: `experimental.cacheTtl` marked absent and written into two files; the key exists as agent frontmatter.
   - Cause: A search on a single surface.
   - Event: 'Absent' for a name another surface holds.
@@ -596,8 +599,8 @@
   - Actions: mark a name absent only after a literal `code` search of the whole build finds nothing; Search the whole build and the docs before marking absent.
   - Trigger: an "absent" mark with no `code` search.
   - Owner: verification
-  - Status: open.
   - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+  - Status: accepted; likelihood 1 by the item's own text. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
 
 - [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
@@ -625,7 +628,7 @@
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (observed in transcript, 2026-11-13).
 
-- [ ] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
+- [x] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
   - Category: agent conduct, verification.
   - Cause: test-driven development goes wrong: the agent asserts on code shape or wording.
   - Event: the agent writes such tests in most TDD work, in the user's estimate 99% of the time; the agent writes such tests in most TDD work, in the user's words 99% of the time.
@@ -637,8 +640,8 @@
   - Actions: [REQ-VERIFICATION-074](../prd/verification.md) (behaviour tests proven by mutation testing).
   - Trigger: a test that asserts on source text or private structure.
   - Owner: verification
-  - Status: open.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
+  - Status: accepted; REQ-VERIFICATION-074 (mutation proof of behaviour tests) is Out as OUT-554, and rules/useTestPatterns.md is gone from plugins/claudetto (it existed at 088a227c). The repo's own hook tests carry Arrange, Act, and Assert comments (11 files hold `// Arrange` under plugins/claudetto).
 
 - [x] **RISK-467** The agent makes verify pass by pointing git at another hooks folder.
   Category: agent conduct.
