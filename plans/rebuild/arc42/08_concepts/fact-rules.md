@@ -5,12 +5,6 @@
   Basis: user decision; reported. Status: partial at 088a227c (`plugins/claudetto/rules/findFactsByExperiment.md` exists per `git ls-tree -r 088a227c`).
   Source: user decision, 2026-11-16 (facts verified against 2.1.326); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1936); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186); the "98 rows" count: unresolved, not found by grep; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297); user decision, 2026-11-09 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
-- [ ] **CC-062** claudetto shall source facts in this order: the project first (code, tests, git history, logs, the running program), then primary external sources (versioned docs, specs, upstream source, issue trackers); cite each source beside its claim; search when a fact may have changed since training; label each statement observed this session, documented (cited), reported by the user, or inferred (an inference stays a hypothesis until a check confirms it); a user-reported test or fix count is evidence with user attribution.
-  Acceptance: each factual claim in a reply carries one of the four labels. Verification: inspection.
-  Basis: reported. Status: partial at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
+- [x] **CC-062** Moved Out as OUT-2635: third-party report with no probe.
 
-- [ ] **CC-063** Every artifact, claim, test result, and decision traces to its source and authority; an agent's self-report is checked against git changes, tool records, and the user's instructions, and an agent note never becomes evidence by repetition.
-  Acceptance: each claim in a report cites a command, file, or user instruction. Verification: inspection.
-  Basis: reported. Status: missing at 088a227c.
-  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493).
+- [x] **CC-063** Moved Out as OUT-2636: third-party report with no probe.
