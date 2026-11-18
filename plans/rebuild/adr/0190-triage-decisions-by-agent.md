@@ -49,13 +49,13 @@ Verification:
 - The 12 plan-authoring risks close with the plan, because no plugin part carries them.
 
 You should know:
-- The check runs first at step 3, then every 6th step (REQ-YOU-SHOULD-KNOW-061), because notes reported as late need an earlier first look; the prompt and note texts stay verbatim.
-- REQ-YOU-SHOULD-KNOW-062 moves Out: its clause would break byte parity with the builtin prompt.
-- Licence: the texts stay verbatim, as the full recreation requires. Clearance to ship Anthropic's text under this repository's licence is a user-held dependency, not settled here.
+- The check runs first at step 3, then every 6th step (REQ-YOU-SHOULD-KNOW-061), because notes reported as late need an earlier first look.
+- REQ-YOU-SHOULD-KNOW-062 returns to scope In: the user's 2026-11-19 ruling lifts the byte-parity reason that moved it Out.
+- Licence: rewritten texts are claudetto's own; any text still copied from the builtin keeps the licence question open as a user-held dependency.
 
 Prompt text:
 - Every model-facing text claudetto writes (prompts, tool and skill descriptions, hook reasons, notes the model reads) states what to do, with the reason, because Anthropic's prompting guide (platform.claude.com, "Prompting best practices", "Tell Claude what to do instead of what not to do" and "Add context to improve performance", read 2026-11-19) reports that positive instructions with a reason steer better than prohibitions. A named failure to avoid stays only when the guide for that model calls for naming it.
-- Texts copied verbatim from a 2.1.327 builtin keep their wording, because the recreation needs byte parity.
+- Texts ported from a 2.1.327 builtin follow the same rule. The user ruled on 2026-11-19 that the you-should-know prompt and note texts may be rewritten, because owning the full source is what lets claudetto optimise and fix them; byte parity with the builtin is not a goal.
 
 ## Consequences
 
