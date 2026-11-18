@@ -12,9 +12,11 @@ export const FORK_PROMPT = [
 	"- Files: the paths that matter and why.",
 	"- Commands: the exact check commands that pass or fail now.",
 	"- Constraints: every user correction, refusal, and consent, word for word.",
-	// REQ-REPLY-139: vanilla's summary lists all user messages, which carries opinions forward as standing preferences.
-	"Record rules the user set and facts with a source; leave out the user's opinions.",
-	"Name facts, not intentions. Do not call tools.",
+	// Positive instructions with a reason, per Anthropic's prompting guide. REQ-REPLY-139: vanilla's
+	// summary lists all user messages, which carries passing opinions forward as standing preferences.
+	"Record only the rules the user set and facts that name their source, so the next session follows standing instructions and can recheck each fact.",
+	"State what is true now, so the next session starts from checked state.",
+	"Write it from this conversation alone, as one reply.",
 ].join("\n");
 
 export type Row = { role: "user" | "assistant"; text: string };

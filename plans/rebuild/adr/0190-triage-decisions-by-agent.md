@@ -53,6 +53,10 @@ You should know:
 - REQ-YOU-SHOULD-KNOW-062 moves Out: its clause would break byte parity with the builtin prompt.
 - Licence: the texts stay verbatim, as the full recreation requires. Clearance to ship Anthropic's text under this repository's licence is a user-held dependency, not settled here.
 
+Prompt text:
+- Every model-facing text claudetto writes (prompts, tool and skill descriptions, hook reasons, notes the model reads) states what to do, with the reason, because Anthropic's prompting guide (platform.claude.com, "Prompting best practices", "Tell Claude what to do instead of what not to do" and "Add context to improve performance", read 2026-11-19) reports that positive instructions with a reason steer better than prohibitions. A named failure to avoid stays only when the guide for that model calls for naming it.
+- Texts copied verbatim from a 2.1.327 builtin keep their wording, because the recreation needs byte parity.
+
 ## Consequences
 
 - Items moved Out by this record go to `prd/README.md` scope Out citing ADR-0190.
