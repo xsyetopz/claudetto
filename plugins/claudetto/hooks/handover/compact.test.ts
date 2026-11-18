@@ -8,7 +8,7 @@ function world(
 	env: Record<string, string> = {},
 	fork: ModelForkResult | Error = { isAnswered: true, text: "HANDOVER", usage: USAGE },
 	settings: Record<string, unknown> = {},
-	messages: () => readonly { role: "user" | "assistant"; text: string; toolUses: [] }[] = () => [{ role: "user", text: "fix the parser", toolUses: [] }],
+	messages: () => { role: "user" | "assistant"; text: string; toolUses: never[] }[] = () => [{ role: "user", text: "fix the parser", toolUses: [] }],
 ) {
 	const seen: unknown[] = [];
 	const status: (string | undefined)[] = [];

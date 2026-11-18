@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { describe, expect, test } from "claude-code/testing";
+import { describe, expect, test, type TestBody } from "claude-code/testing";
 
 import { RESUME_TEXT } from "./stop";
 
@@ -16,7 +16,7 @@ const watch = (on: On, surfaces: readonly ("terminal")[] = ["terminal"]) => {
 		return { value: { isSent: true, channel: "terminal_bell" } };
 	});
 	on("turn.complete", (_$, e) => ({ text: e.answer }));
-	on("ui.log", () => ({}));
+	on("ui.log", () => ({ value: undefined }));
 	on("prompt.submit", (_$, e) => {
 		submitted.push(e.text);
 		return { text: e.text };
@@ -26,12 +26,13 @@ const watch = (on: On, surfaces: readonly ("terminal")[] = ["terminal"]) => {
 
 const ERROR_END = { answer: "", durationMs: 1, isAborted: false, turnId: "t1", reason: "error" } as const;
 
-const cutTurn = async ($: { classic: { StopFailure: (e: object) => Promise<unknown> }; turn: { complete: (e: typeof ERROR_END) => Promise<unknown> } }) => {
+// The plugin lib has no timer types; the macrotask lets the unawaited continuation land.
+const settle = () => new Promise<void>((resolve) => (globalThis as unknown as { setTimeout: (f: () => void, ms: number) => void }).setTimeout(resolve, 0));
+
+const cutTurn = async ($: Parameters<TestBody>[0]) => {
 	await $.classic.StopFailure({ error: "server_error", last_assistant_message: CUT });
 	await $.turn.complete(ERROR_END);
 };
-
-const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe("stop notice", () => {
 	test("an API-error stop notifies once with the error", async ($, on) => {
