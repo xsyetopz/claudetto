@@ -18,9 +18,25 @@ export async function isOff($: EngineInterface): Promise<boolean> {
 	return isSet($.env.get("CLAUDETTO_DISABLE_HANDOVER"));
 }
 
-/** True when `CLAUDETTO_DISABLE_AUTO_HANDOVER` (or the full switch) turns the automatic paths off. */
+/**
+ * Reads one settings knob of the handover, the mirror of a compaction key
+ * (`autoHandoverEnabled` for `autoCompactEnabled`); undefined when unset.
+ */
+export async function knob($: EngineInterface, key: "autoHandoverEnabled" | "autoHandoverWindow" | "precomputeHandoverEnabled"): Promise<unknown> {
+	try {
+		return await $.settings.read({ key });
+	} catch (err) {
+		fault($, "handover setting", err);
+		return undefined;
+	}
+}
+
+/**
+ * True when `CLAUDETTO_DISABLE_AUTO_HANDOVER`, `autoHandoverEnabled: false` or
+ * the full switch turns the automatic paths off.
+ */
 export async function isAutoOff($: EngineInterface): Promise<boolean> {
-	return (await isOff($)) || (await isSet($.env.get("CLAUDETTO_DISABLE_AUTO_HANDOVER")));
+	return (await isOff($)) || (await isSet($.env.get("CLAUDETTO_DISABLE_AUTO_HANDOVER"))) || (await knob($, "autoHandoverEnabled")) === false;
 }
 
 async function git($: EngineInterface, argv: string[]): Promise<string> {
@@ -40,6 +56,8 @@ async function git($: EngineInterface, argv: string[]): Promise<string> {
 export async function writeHandover($: EngineInterface): Promise<Handover> {
 	let body = "";
 	let usage: ModelUsage | undefined;
+	// The clear and the compaction wait on the fork, so the person sees why.
+	$.ui.status("Writing handover…");
 	try {
 		const r = await $.model.fork({ prompt: FORK_PROMPT, effort: "low" });
 		if (r.isAnswered && r.text.trim() !== "") {
@@ -49,6 +67,8 @@ export async function writeHandover($: EngineInterface): Promise<Handover> {
 	} catch (err) {
 		// An API error takes the fallback like nothing-to-fork does.
 		fault($, "handover fork", err);
+	} finally {
+		$.ui.status(undefined);
 	}
 	if (body === "") body = extract(await $.session.messages());
 	const head = await git($, ["rev-parse", "--short", "HEAD"]);

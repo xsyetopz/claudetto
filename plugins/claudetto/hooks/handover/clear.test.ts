@@ -5,6 +5,7 @@ function world(on: On, env: Record<string, string> = {}) {
 	const store = new Map<string, unknown>();
 	const ran: string[] = [];
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
+	on("ui.status", () => ({ value: undefined }));
 	on("store.get", (_$, e) => ({ value: store.get(e.key) }));
 	on("store.set", (_$, e) => {
 		store.set(e.key, e.value);

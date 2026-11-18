@@ -3,8 +3,19 @@ import { describe, expect, test } from "claude-code/testing";
 
 const USAGE = { input_tokens: 1, output_tokens: 2, cache_read_input_tokens: 3, cache_creation_input_tokens: 4 };
 
-function world(on: On, env: Record<string, string> = {}, fork: ModelForkResult | Error = { isAnswered: true, text: "HANDOVER", usage: USAGE }) {
+function world(
+	on: On,
+	env: Record<string, string> = {},
+	fork: ModelForkResult | Error = { isAnswered: true, text: "HANDOVER", usage: USAGE },
+	settings: Record<string, unknown> = {},
+) {
 	const seen: unknown[] = [];
+	const status: (string | undefined)[] = [];
+	on("ui.status", (_$, e) => {
+		status.push(e.text);
+		return { value: undefined };
+	});
+	on("settings.read", () => ({ value: settings }));
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	on("model.fork", () => {
 		if (fork instanceof Error) throw fork;
@@ -17,7 +28,7 @@ function world(on: On, env: Record<string, string> = {}, fork: ModelForkResult |
 		seen.push(e);
 		return { messages: [{ role: "user", text: "CORE", toolUses: [] }] };
 	});
-	return seen;
+	return Object.assign(seen, { status });
 }
 
 describe("session.compact", () => {
@@ -72,6 +83,38 @@ describe("session.compact", () => {
 		const seen = world(on);
 		await $.session.compact({ trigger: "auto", agentId: "a1", messages: [] });
 		expect(seen.length).toBe(1);
+	});
+	test("a status line shows while the fork writes and clears after", async ($, on) => {
+		// Arrange
+		const { status } = world(on);
+
+		// Act
+		await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(status).toEqual(["Writing handover…", undefined]);
+	});
+	test("autoHandoverEnabled false leaves auto compaction to core", async ($, on) => {
+		// Arrange
+		const seen = world(on, {}, undefined, { autoHandoverEnabled: false });
+
+		// Act
+		await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(seen.length).toBe(1);
+	});
+	test("precomputeHandoverEnabled false leaves only the precompute to core", async ($, on) => {
+		// Arrange
+		const seen = world(on, {}, undefined, { precomputeHandoverEnabled: false });
+
+		// Act
+		await $.session.compact({ trigger: "precompute", messages: [] });
+		const auto = await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(seen.length).toBe(1);
+		expect(auto.messages?.[0]?.text).toContain("HANDOVER");
 	});
 	test("auto handover off leaves auto compaction to core", async ($, on) => {
 		const seen = world(on, { CLAUDETTO_DISABLE_AUTO_HANDOVER: "1" });

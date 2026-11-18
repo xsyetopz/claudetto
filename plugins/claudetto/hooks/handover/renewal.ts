@@ -1,7 +1,11 @@
 import type { On } from "claude-code";
 import { isCommit, threshold } from "./text";
-import { isAutoOff } from "./writer";
+import { isAutoOff, knob } from "./writer";
 import { fault } from "../fault";
+
+/** A settings value as threshold() reads it: numbers and strings pass, the rest is unset. */
+const stringOf = (value: unknown): string | undefined =>
+	typeof value === "number" || typeof value === "string" ? String(value) : undefined;
 
 // Per-process session state; `session.end` with reason `clear` resets it,
 // because `session.start` does not fire after a clear.
@@ -53,7 +57,7 @@ export function registerRenewal(on: On): void {
 		const limit = threshold(
 			context.window,
 			await $.env.get("CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE"),
-			await $.env.get("CLAUDETTO_AUTO_HANDOVER_WINDOW"),
+			(await $.env.get("CLAUDETTO_AUTO_HANDOVER_WINDOW")) ?? stringOf(await knob($, "autoHandoverWindow")),
 		);
 		if ((context.tokens ?? 0) < limit) return result;
 		try {

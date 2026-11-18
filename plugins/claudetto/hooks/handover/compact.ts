@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { KEEP_LINE } from "./text";
-import { isAutoOff, isOff, writeHandover } from "./writer";
+import { isAutoOff, isOff, knob, writeHandover } from "./writer";
 import { fault } from "../fault";
 
 const AUTOMATIC = new Set(["auto", "precompute", "plugin"]);
@@ -12,7 +12,9 @@ const AUTOMATIC = new Set(["auto", "precompute", "plugin"]);
 export function registerCompact(on: On): void {
 	on("session.compact", async ($, e, next) => {
 		if (e.agentId !== undefined || (await isOff($))) return next(e);
-		if (!AUTOMATIC.has(e.trigger) || (await isAutoOff($))) {
+		// `precomputeHandoverEnabled: false` mirrors `precomputeCompactionEnabled`: core's own summary answers.
+		const declined = e.trigger === "precompute" && (await knob($, "precomputeHandoverEnabled")) === false;
+		if (!AUTOMATIC.has(e.trigger) || declined || (await isAutoOff($))) {
 			const instructions = e.instructions ? `${e.instructions}\n${KEEP_LINE}` : KEEP_LINE;
 			return next({ ...e, instructions });
 		}

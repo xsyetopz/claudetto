@@ -2,9 +2,11 @@ import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 import { resetRenewal } from "./renewal";
 
-function world(on: On, tokens: number) {
+function world(on: On, tokens: number, settings: Record<string, unknown> = {}) {
+	on("settings.read", () => ({ value: settings }));
 	const calls = { fork: 0, compact: 0 };
 	on("ui.log", () => ({ value: undefined }));
+	on("ui.status", () => ({ value: undefined }));
 	on("session.compact", () => {
 		calls.compact += 1;
 		return { messages: [{ role: "user", text: "H", toolUses: [] }] };
@@ -59,6 +61,18 @@ describe("renewal", () => {
 		await $.classic.PostToolUse({ tool_name: "Bash", tool_input: { command: "git commit -m s" }, tool_response: {}, tool_use_id: "u1" });
 		await $.turn.complete(TURN);
 		expect(calls.compact).toBe(1);
+	});
+	test("the autoHandoverWindow setting moves the threshold", async ($, on) => {
+		// Arrange
+		resetRenewal();
+		const calls = world(on, 90000, { autoHandoverWindow: 120000 });
+
+		// Act
+		await $.classic.Stop({ stop_hook_active: false });
+		await $.turn.complete(TURN);
+
+		// Assert
+		expect(calls.compact).toBe(0);
 	});
 	test("a subagent turn never renews", async ($, on) => {
 		resetRenewal();
