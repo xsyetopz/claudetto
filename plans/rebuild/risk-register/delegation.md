@@ -32,7 +32,7 @@
   Status: closed. Cause (the amod mapping and `amod:` names) left with the baseline; ADR-0099 hides built-ins through `agent.offer`, and grep for `agent.offer` finds none yet. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2706.
 
-- [ ] **RISK-160** Fable at low effort spawns Fable subagents unasked.
+- [x] **RISK-160** Fable at low effort spawns Fable subagents unasked.
   Category: delegation
   Cause: Fable at low effort fans out to many Fable subagents with no ultracode, where Opus at low effort does not.
   Event: Two reports: one commenter names the unasked fan-out and a CLAUDE.md rule or an explicit model and effort as the cure; another reports a hook that denies Fable from dispatching Fable subagents as the biggest cost saver.
@@ -46,6 +46,7 @@
   Owner: delegation
   Status: open. BUILD: covered by REQ-DELEGATION-026 (`agent.spawn` refusal); the cure ships with that change.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
+  Verified: Same probe as REQ-DELEGATION-026 (opus spawn refused by hooks/delegation/spawn.ts, claude 2.1.327, 2026-11-18, cc-inspect cli).
 
 - [x] **RISK-161** Fable as reviewer assumes instead of reading.
   Category: delegation
@@ -148,7 +149,7 @@
   Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 is a different check; the delegation-skip finding itself: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
   Status: closed. The cure was a Stop check; Stop checks are removed (ADR-0092, OUT-171). Grep for `"Stop"` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-168** Confident wrong subagent: a low-effort retrieval subagent answers wrong and the parent builds on it.
+- [x] **RISK-168** Confident wrong subagent: a low-effort retrieval subagent answers wrong and the parent builds on it.
   Category: delegation.
   Cause: low effort on a decision task.
   Event: a low-effort retrieval subagent answers confidently wrong and the parent builds on it.
@@ -161,6 +162,7 @@
   Owner: delegation. Status: open.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>) holds a related cheaper-model accuracy report; the "low-effort retrieval subagent answers confidently wrong" text itself: not located, reported, one user.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
 - [x] **RISK-169** Premature hand-back with a running job: the job dies with the turn.
   Category: delegation.
@@ -176,7 +178,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32. Session e473653f as the source of the eval case: Dropped (2026-11-18) for that detail: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the dossier cites the session only for other facts (06-autonomy-and-consent.md:36).
   Status: closed. The cure was a SubagentStop/Stop guard; run limits and Stop checks are removed (ADR-0092, OUT-016). Grep for `SubagentStop` finds none. Likelihood stays 4 as an accepted engine behaviour: a job dies with the turn. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-170** Parallel collision: agents in one tree overwrite or block each other.
+- [x] **RISK-170** Parallel collision: agents in one tree overwrite or block each other.
   Category: delegation.
   Cause: parallel agents in one tree.
   Event: agents committing in one tree block each other at pre-commit; another worker's edit to `hooks/limits/stop.ts` broke module load for minutes; parallel clones each pass while the merged result fails (5 of 5, measured by author); overlapping task slices; worktrees from an old main with merge conflicts; the orchestrator forgot its own constraint against modifying tests; a subagent halted at a 200-tool-call limit on 2.1.280; fork subagents have a turn limit others lack (reported by the dossier on 2.1.280; a search of 2.1.327 for the fork-subagent code, `chunk-m14bt1pz.js@2760807`, finds only the enable switch, not a turn limit); a lead with seven workers wrote duplicate contradictory replies; delegates ran `git stash`/pop, restoring 81 staged deletions; `git add -A` staged symlinks and a merge replaced a real 10 GB folder.
@@ -189,8 +191,9 @@
   Owner: delegation. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:85; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tui/20261106-131234-64c099/load-failure.txt:1. Unlocated: the 200-tool-call limit, the 10 GB folder, the seven-worker case; the fork-subagent turn limit is kept as reported; no limit text was found in 2.1.327.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
-- [ ] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
+- [x] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
   Category: agent conduct.
   Cause: a nested session's prompt reaches a subagent, which cannot tell its own consent from the user's.
   Event: one subagent pressed "1" and the result was counted as proof the approval rule works.
@@ -203,8 +206,9 @@
   Owner: delegation.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:162.
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
-- [ ] **RISK-172** A subagent pushes an edit through after the user rejected it.
+- [x] **RISK-172** A subagent pushes an edit through after the user rejected it.
   Category: agent conduct.
   Cause: the rejection is not in the brief, and a background delegate cannot see the user.
   Event: one subagent pushed an edit after the user rejected it .
@@ -217,6 +221,7 @@
   Owner: delegation.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103.
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
 - [x] **RISK-173** TaskStop fails on the shell IDs of subagents that the Stop notice lists.
   - Category: product defect.
@@ -353,7 +358,7 @@
   - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:50 (cited).
 
-- [ ] **RISK-182** Read-only agent still edits through Bash.
+- [x] **RISK-182** Read-only agent still edits through Bash.
   - Category: agent conduct.
   - Cause: removing `Edit` and `Write` from an agent's tool list does not stop `sed -i`; one thread reports it, with 11 agents that all pin a model in frontmatter.
   - Event: reported (anecdote, one thread).
@@ -367,6 +372,7 @@
   - Owner: delegation
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:131 (reported, one thread); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>).
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
 - [x] **RISK-183** Large agent swarm gives wrong answers at high token cost.
   - Category: agent conduct.
@@ -415,7 +421,7 @@
 
 ## Guards
 
-- [ ] **RISK-186** The engine's worktree isolation guard refuses git commands with unresolved expansions, and subagents spend tokens on the refusals.
+- [x] **RISK-186** The engine's worktree isolation guard refuses git commands with unresolved expansions, and subagents spend tokens on the refusals.
   Category: delegation, engine guard.
   Cause: the engine's checkBgWorktreeCommandGuard (no setting or gate; it runs after PreToolUse) refuses any git command whose parse is not simple, such as unresolved expansions ($?, $PWD, $USER, an unset variable, a for-loop variable, $(date)). Chains with &&, ;, and | xargs are not refused (a probe refuted that). The refusal reads "names git in a form too complex to verify that it stays inside the worktree"; a plain git status passes and a split command ran. From claude 2.1.326 a subagent isolated in a worktree also refuses, in any repository, some git commands in Bash that can rewrite branches shared with the checkout (release note).
   Event: 495 refusals in 196 subagents (264 "names git" refusals, 75 hold $?).
@@ -429,6 +435,7 @@
   Owner: delegation.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
 - [x] **RISK-187** The engine blocks a foreground "sleep N" and subagents have no other way to wait.
   Category: delegation, engine check.
@@ -616,7 +623,7 @@
   - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
-- [ ] **RISK-199** Delegated agent stops at its turn limit before it reports.
+- [x] **RISK-199** Delegated agent stops at its turn limit before it reports.
   - Category: Delegation
   - Cause: An agent file sets maxTurns, and a run stops when the count passes it.
   - Event: A handoff worker stops at its 40-turn limit with no report and needs a resume.
@@ -630,6 +637,7 @@
   - Owner: delegation
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32519; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
 
 - [ ] **RISK-200** A harness delegation line contradicts the model's own spawn guidance.
   - Category: product defect.
@@ -976,7 +984,7 @@
 
 ## Safeguards And Guards
 
-- [ ] **RISK-222** A subagent with no `model` inherits the main session model.
+- [x] **RISK-222** A subagent with no `model` inherits the main session model.
   - Category: cost.
   - Cause: The resumed subagent inherits the main model; Helpers asked for as other models default to Opus 5.5, even when Fable was asked; one audit found Opus 5.5 launched subagents on its own model and effort more often than not, and CLAUDE.md rules were sometimes ignored; a commenter's reviewer silently ran on Opus (about $15 in an afternoon); 98% of one user's weekly spend was Opus despite plans naming Sonnet and Haiku; Opus ran 50 subagents although the rule said max 10 (prose does not cap fan-out, a hook does); the `Agent` tool's `model` argument beats the agent file's `model`, and the root prompt's `<delegation>` block invites it ("keep design across files, or pass `model: opus`", `plugins/claudetto/hooks/texts.ts:21`).
   - Event: The 5-hour allowance is gone in minutes; 98% of usage went to Opus 5.5; 75% of the weekly allowance went in 3 days; a subagent runs on the expensive model; 207 Opus subagent replies in four `claudetto:work` agents, against 30,964 Sonnet and 12 Haiku, over 840 transcripts (2026-11-08 to 11-13). Each parent call passed `model: "opus"`.
@@ -990,10 +998,11 @@
   - Owner: delegation
   - Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
   - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5 moved a no-model subagent under an Opus main from claude-opus-5-5 to claude-sonnet-5-5.
 
 ## Product And Tooling
 
-- [ ] **RISK-223** Haiku workers overflow and a plugin withholds reads past 100k tokens.
+- [x] **RISK-223** Haiku workers overflow and a plugin withholds reads past 100k tokens.
   - Category: product.
   - Cause: Haiku bills the whole request at 5 times past 100k and autocompact thrashes.
   - Event: A Haiku worker dies with its findings, or its reads are withheld.
@@ -1007,6 +1016,7 @@
   - Owner: delegation
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): Artemis frontmatter sets autoCompactWindow 100000 (agents/Artemis.md); no plugin read-withholding hook is shipped.
 
 - [x] **RISK-224** A pending run-log line is lost when a session ends before 3 root turns.
   - Category: product.

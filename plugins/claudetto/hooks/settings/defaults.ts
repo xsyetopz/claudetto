@@ -30,8 +30,15 @@ export const KEYS: Readonly<Json> = {
 	attribution: { commit: "Assisted-by: Claude Code", pr: "Assisted-by: Claude Code" },
 };
 
-/** Env values written only when unset; the advisor stays off by product rule. */
+/**
+ * Env values written only when unset; the advisor stays off by product rule.
+ * `CLAUDE_CODE_SUBAGENT_MODEL` moves a subagent with no model of its own from
+ * the main model to Sonnet (an Opus main sends its general-purpose subagent to
+ * `claude-opus-5-5` otherwise); an agent file's `model:` still wins, and the
+ * `_FORCE` variant is left unset so it does.
+ */
 export const ENV: Readonly<Record<string, string>> = {
+	CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-5-5",
 	CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
 	CLAUDE_CODE_DISABLE_CRON: "1",
 	CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",

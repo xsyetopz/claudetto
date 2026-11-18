@@ -16,7 +16,7 @@
   Status: closed 2026-11-18. The budget line that read total_cost_usd is out (REQ-COST-002, REQ-COST-011), so the cause left with the removed part; the status line shows plan percentages, not dollars, under a subscription (REQ-COST-046).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1958; plugins/claudetto/statusline/segments.ts@088a227c.
 
-- [ ] **RISK-374** Fan-out runaway: the model picks its own fan-out and model and spends the quota.
+- [x] **RISK-374** Fan-out runaway: the model picks its own fan-out and model and spends the quota.
   Category: cost.
   Cause: the model picks its own fan-out and model; prose caps are not enforced; no `model` in frontmatter means inheritance; no shared budget across parallel workers; uncapped fan-out.
   Event: about 20 agents for trivial facts; 50 subagents against a rule of 10 (99% of a weekly limit); Opus 5.5 spawning 50 subagents on medium; a dozen left running for days; Sonnet spawning eight Fable 5.1 subagents on credit ($100 in under five minutes); subagents spawning subagents (394 calls); 166 and 510 agents spawned for an 8-page review; half of file reads repeats; orchestrators picking their own model about 95% of the time (wrong >70%, poster claim); a "push itself" prompt burned a 5h window in 80 min and $26; an "ignore cost" prompt; delegating to Fable by default burned quota; subagents run on Opus (98% of spend); past 6-8 parallel agents, agents burn context on retries; a parallel run spent $5.65 vs a $5 cap.
@@ -29,6 +29,7 @@
   Owner: cost. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:56; external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:84; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:80; external/2026-11-16/reddit.com-r-claudeai-comments-1xw205g-the-problem-with-fable-52-20261114T143353Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xw205g/the_problem_with_fable_52/>). Unlocated: the 394-call, 99%-of-weekly-limit, $100, and 95%/70% figures.
   Status: partial at abed830ed: the fill writes CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3; the caps in effect and the subagent model deny are unprobed.
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3 in hooks/settings/defaults.ts take effect in the probe; Opus and Fable spawns refused by agent.spawn; no defaults.ts change needed.
 
 - [ ] **RISK-375** Subagent sprawl: many tiny subagents cost more than inline work.
   Category: cost.
@@ -290,7 +291,7 @@
 
 ## Conduct
 
-- [ ] **RISK-391** The agent spends paid runs without asking.
+- [x] **RISK-391** The agent spends paid runs without asking.
   - Category: conduct.
   - Cause: Paid runs started under a standing goal.
   - Event: A paid arm or a dedupe pass runs unasked.
@@ -304,6 +305,7 @@
   - Owner: cost
   - Status: open (Existing controls: partial at 088a227c).
   - Source: user goal set through `/goal`, 2026-11-16 06:24 UTC, past 25 percent of the seven-day limit, free work only (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
 
 ## Ungrouped
 
@@ -324,7 +326,7 @@
 
 ## Agent Conduct Defects Reported by the User
 
-- [ ] **RISK-393** The agent runs paid evals without asking, after each criteria change.
+- [x] **RISK-393** The agent runs paid evals without asking, after each criteria change.
   Category: agent conduct, cost.
   Cause: the agent starts a paid run on its own after each wording or grader change; the repo CLAUDE.md says to ask first.
   Event: about $19 of eval runs (ev1 to ev10) in about 15 minutes, none asked.
@@ -338,3 +340,4 @@
   Owner: cost.
   Status: open.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit relayed in the handoff, not re-checked by the handoff writer).
+  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
