@@ -1,6 +1,6 @@
 # Scope And Simplicity
 
-- [ ] **CC-075** claudetto shall hunt defects and hold scope: run existing tests before and after a change (a regression shows as its own); look for siblings in the same code and the same pattern elsewhere; investigate surprising state (empty data, a failing baseline) before repairing it; report a defect in work another live session owns via `SendMessage` (present in 2.1.326, chunk-85qjfjsd.js@776); change only the files the task names plus each caller and test the named change breaks; repo habits (an `off` switch beside each paid option, a CHANGELOG line per change) are not a reason to widen scope.
+- [ ] **CC-075** claudetto shall hunt defects and hold scope: run existing tests before and after a change (a regression shows as its own); look for siblings in the same code and the same pattern elsewhere; investigate surprising state (empty data, a failing baseline) before repairing it; report a defect in work another live session owns via `SendMessage` (present in 2.1.327, chunk-77827yq1.js@822); change only the files the task names plus each caller and test the named change breaks; repo habits (an `off` switch beside each paid option, a CHANGELOG line per change) are not a reason to widen scope.
   Acceptance: a change touches only named files plus broken callers and tests. Verification: inspection.
   Basis: reported. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:36; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:23.

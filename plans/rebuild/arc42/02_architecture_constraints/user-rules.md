@@ -15,10 +15,10 @@
   Basis: reported. Status: have.
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words); the same words repeat at :8215; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (code size 13,373 lines, base 13,389, peak 13,740).
 
-- [ ] **CON-014** claudetto rebuilds from a clean slate for Claude Code 2.1.326 (the 2026-11-14 decision named 2.1.325; the target moved by the 2026-11-16 decision): no engineering around the current code or its architecture; the agent fixes the code or architecture itself.
+- [ ] **CON-014** claudetto rebuilds from a clean slate for Claude Code 2.1.327 (the 2026-11-14 decision named 2.1.325; the target moved to 2.1.326 on 2026-11-16 and to 2.1.327 on 2026-11-18): no engineering around the current code or its architecture; the agent fixes the code or architecture itself.
   Acceptance: no replaced path survives with its tests, settings, or docs; a fix touches the faulty code and the diff holds no wrapper or bypass of it. Verification: inspection.
   Basis: reported. Status: have.
-  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); user decision, 2026-11-16 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words).
+  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); user decision, 2026-11-16 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words); user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7).
 
 - [ ] **CON-015** The root agent stays opus-5-5[medium].
   Acceptance: root model reads opus-5-5[medium]. Verification: inspection.
@@ -34,7 +34,7 @@
   Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/05884638-c1a2-4b41-83af-50464f374189.jsonl:17`).
 
 - [ ] **CON-018** claudetto shall not hard-bake Bun rules into its hooks.
-  Basis: reported, user rule, 2026-11-13. Status: unchecked, reason: the baseline hooks were not scanned for Bun rules (hold.ts and key.ts mention bunx).
+  Basis: reported, user rule, 2026-11-13. Status: missing at 088a227c: `git grep` of the baseline hooks finds Bun hard-coded in `plugins/claudetto/hooks/features/setup/settings.ts:27-45` (the statusline command runs `bun --no-env-file`), `key.ts:24` (the Context7 use text is `bunx ctx7`) and `starter-families.ts:49` (`bun test --bail --dots`); `hold.ts` holds `bunx` only in its tests.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; user decision, 2026-11-13.
 
 - [ ] **CON-019** No plan or repo file shall quote the user verbatim.
@@ -42,11 +42,11 @@
   Basis: user decision. Status: missing at 088a227c (`git grep -n -i verbatim 088a227c -- AGENTS.md CLAUDE.md docs` finds no such rule).
   Source: user decision, 2026-11-16 17:42 UTC, no verbatim user quotes (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177).
 
-- [ ] **CON-020** Each fact in the plan shall be verified against `claude` 2.1.325.
+- [ ] **CON-020** Each fact in the plan shall be verified against `claude` 2.1.327.
   Acceptance: each fact names its probe or build search. Verification: inspection.
   Basis: user decision. Status: unchecked: the plan files are not in the 088a227c tree.
-  Source: user decision, 2026-11-16 22:33 UTC, 2.1.326 replaces 2.1.325 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743).
-  Conflicts with: Facts are verified against `claude` 2.1.326, which replaces the earlier 2.1.325 target (user decision, 2026-11-16).
+  Source: user decision, 2026-11-16 22:33 UTC, 2.1.326 replaces 2.1.325 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743); user decision, 2026-11-18, 2.1.327 replaces 2.1.326 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7).
+  Conflicts with: none; 2.1.327 replaces the earlier 2.1.325 and 2.1.326 targets (user decisions, 2026-11-16 and 2026-11-18).
 
 - [ ] **CON-021** The plan shall attribute every external and internal source and hold no ambiguity.
   Acceptance: each item has a Source line. Verification: inspection.

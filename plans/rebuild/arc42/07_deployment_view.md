@@ -10,5 +10,5 @@
 
 - [ ] **DEP-002** claudetto shall export HEAD to `~/.claudetto-dev` and run `claude plugin update` in `just dogfood`, because Claude Code copies a directory marketplace into `~/.claude/plugins/cache/<marketplace>/<plugin>/unknown` and a plain re-export leaves stale code; `just dogfood-dir` uses `--plugin-dir`, whose options come from `pluginConfigs["claudetto"]` or `["claudetto@inline"]`.
   Acceptance: after `just dogfood` the cached copy equals HEAD. Verification: demonstration.
-  Basis: inferred. Status: have at 088a227c (justfile, inferred).
+  Basis: cited (`project.just:51-60@088a227c`: `dogfood` rebuilds `~/.claudetto-dev` from `git archive HEAD` and runs `claude plugin update`; the comment at line 51 gives the cache reason; `dogfood-dir` at :64 uses `--plugin-dir`). Status: have at 088a227c (`project.just`).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:101.

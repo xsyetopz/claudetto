@@ -59,16 +59,16 @@
 ## Cache
 
 - [ ] **QS-010** After turn 1, 98 to 99 percent of requests, root and subagents, hit the cache.
-  Acceptance: at least 98% of requests hit, where a hit is prefix reuse, `read_n / (read + creation)_(n-1)` at least 0.98 per request from a transcript, and a probe session reads 98.6% on turn 2; measured 98.6% root and 98.9% subagents over three days. Verification: probe.
+  Acceptance: at least 98% of requests hit, where a hit is prefix reuse, `read_n / (read + creation)_(n-1)` at least 0.98 per request from a transcript, and a probe session reads 98.6% on turn 2; measured 98.6% root and 98.9% subagents over three days. Re-measured on 2.1.327 transcripts (2026-11-16 to 18, `reports/2026-11-18-research/paid-labs/cache/hitrate.py`): root 5,581 requests, 98.49% hit, 97.72% token reuse; subagents 34,622 requests, 98.75% hit, 98.02% reuse. Of 434 subagent misses, 126 followed a gap of more than 5 minutes (the `subagentPromptCacheTtl` default) and 308 were partial reuse. The share of tokens read over all input (65% root) is not this metric: it counts each request's new content as a miss. Verification: probe.
   Basis: user decision, 2026-11-16 05:57 UTC, keep the cache hit rate consistent (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408). Status: have.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (measure); user decision, 2026-11-16 05:57 UTC, keep the cache hit rate consistent (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408). The benchmark runner that scored it is out of scope; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Next 7); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (Decisions: cache hit means prefix reuse); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, State: cache probe).
 
 ## Session Length
 
-- [ ] **QS-011** No session auto-compacts or runs 59 minutes or longer; handover through the Mod API replaces compaction, and a subagent hands off within the cache window.
-  Acceptance: zero compactions per run; no main-loop session runs past 59 minutes of context age without a handoff (`handoff.ts:68` and `handoff.test.ts:246` hold the trigger at 088a227c); no subagent past 300 s without a handoff. Verification: probe.
-  Basis: user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369). Status: partial at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff: "the goal fixes 59 minutes"); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:3402.
+- [ ] **QS-011** Sessions renew at task boundaries, never on a clock ([ADR-0178](../adr/0178-renewal-at-task-boundaries.md)); the share of main-loop cache writes that re-create content already written falls below the 2026-11-18 baseline of 20.7%.
+  Acceptance: no renewal fires on idle time or session age; re-created main-loop writes under 20.7% and main-loop cache-hit p10 at or above 0.952 over a dogfood week, measured by reports/2026-11-18-research/sessions-scripts/. Verification: probe.
+  Basis: measured baseline, claude 2.1.327, 11 main sessions (main-loop hit p50 0.987, p10 0.952; 99 of 104 breaks after auto compaction; 460 compactions at a median of 140.6k tokens). The earlier targets (zero compactions, no session of 59 minutes or more, subagent handoff within 300 s) are dropped: the 1h TTL refreshes on each request, a clock clear discards live context, and a renewal at a task boundary pays back within the median task (35 requests) above about 70k tokens (sessions-scripts/renewal.py), so sessions run as short bursts, one task or a few, not as long sessions cut by a clock. Status: partial at 088a227c.
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:272); reports/2026-11-18-research/sessions.md; reports/2026-11-18-research/handover.md:34-54; earlier target ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets).
 
 ## Rereads
 
@@ -79,10 +79,10 @@
 
 ## Tests And Code
 
-- [ ] **QS-013** Tests are proven by mutation (Stryker for TypeScript, mutmut for Python), and the code is the least that does the job, measured by jscpd.
-  Acceptance: mutation scores are recorded (Stryker 68.00%, mutmut 91% at 74 killed and 7 survived, measured in the old tree); jscpd finds 0 clones in 277 files. Verification: probe.
-  Basis: user goal set through `/goal`, 2026-11-16 06:24 UTC, tests proven by mutation, least code by jscpd (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11). Status: partial at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (scores and jscpd figures).
+- [ ] **QS-013** Tests are checked by mutation as a kill check, never as a score ([ADR-0180](../adr/0180-behavioural-and-mutation-tests.md)): every surviving mutant of the hook code (Stryker for TypeScript, mutmut for Python) leads to a test or to deleting dead code, every behaviour rule has a mutant its behavioural test kills, and the code is the least that does the job, measured by jscpd.
+  Acceptance: zero surviving mutants that the tests should kill, each equivalent mutant listed with a reason; each behaviour rule's mutant fails its trace test in at least 10 runs; jscpd finds 0 clones. No mutation score is reported or targeted. Verification: probe.
+  Basis: user goal set through `/goal`, 2026-11-16 06:24 UTC (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11) and 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); old-tree scores (Stryker 68.00%, mutmut 74 killed, 7 survived) are history, not targets. Status: partial at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (scores and jscpd figures); reports/2026-11-18-research/papers.md P8.
 
 ## Prompt Size
 

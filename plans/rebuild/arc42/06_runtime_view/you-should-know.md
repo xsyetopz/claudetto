@@ -2,9 +2,9 @@
 
 ## Constants and State
 
-- [ ] **RT-005** The recreation holds these constants: `CHECK_EVERY=6`, `CLEAR_AFTER_PROMPTS=2`, `CHECKS_KEPT=3`, `SEEN_MAX=50`, `SESSIONS_MAX=32`, `SHOWN_KEEP_MS=259200000` (3 days), `ASKED_MS=20000`, `NOTE_READ_MS=2000`, `TYPED_PAST_FREE=2`, `LOOKS_TO_SKIP_MAX=16`, `MAX_LINE_WIDTH=240`, `MAX_CAPTION_LENGTH=4000`, `MAX_CARDS=4`, `MAX_SKETCH_LINES=12`, `MAX_SKETCH_WIDTH=120`, `MAX_TITLE_WIDTH=120`, `SLUG_MAX=48`, `CLOCK_LENGTH=8`, `CARD_WIDTH=60`, `CARD_INSET=2`, `CHOICE_GAP=3`, `STAR_CELLS=2`, `FALLBACK_COLUMNS=80`, `WIDE_FROM=4352`, `WRAP_RESERVE_CELLS=1`, `OFFER_MARGIN_ROWS=1`. The names `CHECK_EVERY`, `CHECKS_KEPT`, `ASKED_MS`, `CLEAR_AFTER_PROMPTS`, `CLOCK_LENGTH`, `CARD_WIDTH`, `CARD_INSET`, and `CHOICE_GAP` are in the module export list of 2.1.326 (chunk-na8s6d5h.js@6805); the other values were read in 2.1.325 and are checked at the Source offsets only.
+- [ ] **RT-005** The recreation holds these constants: `CHECK_EVERY=6`, `CLEAR_AFTER_PROMPTS=2`, `CHECKS_KEPT=3`, `SEEN_MAX=50`, `SESSIONS_MAX=32`, `SHOWN_KEEP_MS=259200000` (3 days), `ASKED_MS=20000`, `NOTE_READ_MS=2000`, `TYPED_PAST_FREE=2`, `LOOKS_TO_SKIP_MAX=16`, `MAX_LINE_WIDTH=240`, `MAX_CAPTION_LENGTH=4000`, `MAX_CARDS=4`, `MAX_SKETCH_LINES=12`, `MAX_SKETCH_WIDTH=120`, `MAX_TITLE_WIDTH=120`, `SLUG_MAX=48`, `CLOCK_LENGTH=8`, `CARD_WIDTH=60`, `CARD_INSET=2`, `CHOICE_GAP=3`, `STAR_CELLS=2`, `FALLBACK_COLUMNS=80`, `WIDE_FROM=4352`, `WRAP_RESERVE_CELLS=1`, `OFFER_MARGIN_ROWS=1`. The names `CHECK_EVERY`, `CHECKS_KEPT`, `ASKED_MS`, `CLEAR_AFTER_PROMPTS`, `CLOCK_LENGTH`, `CARD_WIDTH`, `CARD_INSET`, and `CHOICE_GAP` are in the module export list of 2.1.326 (chunk-nvx1z6pc.js@6883 (2.1.327)); the other values were read in 2.1.325 and are checked at the Source offsets only.
   Basis: cited. Status: partial at 088a227c (baseline `LIMITS` holds `clearAfterPrompts: 2`, `freeIgnores: 2`, `maxSkips: 16`, `askedMs: 20_000`, `listMax: 50`, `sessionsMax: 32`, `lineChars: 240`, `cards: 4`, `titleChars: 120`, `sketchLines: 12`, `sketchChars: 120`, `proseChars: 4000`; it has no `CHECK_EVERY`, it uses `changesPerCheck: 3`).
-  Source: chunk-na8s6d5h.js@26172 (claude 2.1.326 binary); chunk-na8s6d5h.js@26192 (claude 2.1.326 binary); chunk-na8s6d5h.js@6805 (claude 2.1.326 binary); chunk-na8s6d5h.js@25582 (claude 2.1.326 binary); chunk-na8s6d5h.js@31182 (claude 2.1.326 binary); chunk-na8s6d5h.js@31212 (claude 2.1.326 binary); chunk-na8s6d5h.js@27682 (claude 2.1.326 binary); chunk-na8s6d5h.js@30182 (claude 2.1.326 binary); chunk-na8s6d5h.js@78182 (claude 2.1.326 binary); chunk-na8s6d5h.js@29082 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/note.ts:8-22@088a227c.
+  Source: chunk-nvx1z6pc.js@26250 (claude 2.1.327 binary); chunk-nvx1z6pc.js@26270 (claude 2.1.327 binary); chunk-nvx1z6pc.js@6883 (claude 2.1.327 binary); chunk-nvx1z6pc.js@25660 (claude 2.1.327 binary); chunk-nvx1z6pc.js@31260 (claude 2.1.327 binary); chunk-nvx1z6pc.js@31290 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27760 (claude 2.1.327 binary); chunk-nvx1z6pc.js@30260 (claude 2.1.327 binary); chunk-nvx1z6pc.js@78260 (claude 2.1.327 binary); chunk-nvx1z6pc.js@29160 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/note.ts:8-22@088a227c.
 
 - [ ] **RT-006** State of the recreation.
   `store` (per plugin, persistent): `sessions` = list of rows `{id, view?, tag?, offeredTurn?, askedTurn?, checked?, checks?}` (max 32; newest first); `seen` = last 50 offered lines; `known` = last 50 lines the user said they knew; `typedPastInARow` (int); `looksToSkip` (int). All read through `storedCount` (safe int >= 0 else 0) and `stringLines` (array filtered to strings), rows through `rowsOf` (`isRow`: `id` string and `view` undefined or a valid view kind).
@@ -13,7 +13,7 @@
   View kinds (`viewOf`): `offer{line, explanation?, shownAt, isOffArmed?, promptsSurvived?}`, `explaining{line,iteration}`, `explained{line,text,iteration,shownAt,promptsSurvived?}`, `asked{line,shownAt,iteration?}`, `making`, `ready{url}`, `failed{reason}`, `off{line,shownAt}`. "Open view" = `offer` or `explained`.
   `withRow(rows,row)`: put row first; if over 32, drop oldest rows, preferring rows that are not an open view shown less than 3 days ago; each dropped open view is reported as telemetry `left_open` with `left_by:"pushed_out"`.
   Basis: cited. Status: partial at 088a227c (baseline `store.ts` keeps `rowsOf`, `linesOf`, `countOf`, and `withRow` in `note.ts`; its view kinds are `offer`, `asked`, `explained`).
-  Source: chunk-na8s6d5h.js@25582 (claude 2.1.326 binary); chunk-na8s6d5h.js@32782 (claude 2.1.326 binary); chunk-na8s6d5h.js@28182 (claude 2.1.326 binary); chunk-na8s6d5h.js@31182 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/store.ts:1-50@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:43-52@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:287-293@088a227c.
+  Source: chunk-nvx1z6pc.js@25660 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32860 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28260 (claude 2.1.327 binary); chunk-nvx1z6pc.js@31260 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/store.ts:1-50@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:43-52@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:287-293@088a227c.
 
 ## Turn Step Check
 
@@ -59,7 +59,7 @@
 
   Notes: `proposed` telemetry for outcome `none` with `usage===null` sends no mark; `aborted` sends no mark. The fork is a side request on the session's own conversation (`model.fork` takes only `{prompt}`; the SIDE_REQUEST_FRAME says "You share the conversation context"). No digest is built and no model or effort option is passed.
   Basis: cited. Status: partial at 088a227c (baseline starts a check after 3 changing tool calls, builds a digest, and calls `model.complete` with a settings model and effort).
-  Source: chunk-na8s6d5h.js@80333 (claude 2.1.326 binary); chunk-na8s6d5h.js@77682 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:167@088a227c; plugins/claudetto-you-should-know/hooks/settings.ts:1-29@088a227c.
+  Source: chunk-nvx1z6pc.js@80411 (claude 2.1.327 binary); chunk-nvx1z6pc.js@77760 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/register.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:167@088a227c; plugins/claudetto-you-should-know/hooks/settings.ts:1-29@088a227c.
 
 - [ ] **RT-008** The `accept(text, seen, known)` step decides whether a reply becomes an offer.
 
@@ -76,11 +76,11 @@
   ```
 
   Basis: cited. Status: partial at 088a227c (`showReply` in `register.ts` checks ended, `askedTurn`, repeat; it also requires `row.view === null`).
-  Source: chunk-na8s6d5h.js@80333 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:63-96@088a227c.
+  Source: chunk-nvx1z6pc.js@80411 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/register.ts:63-96@088a227c.
 
 - [ ] **RT-009** The skip backoff: `typedPastInARow` counts offers the user typed past; `looksToSkipAfter(n) = n<=2 ? 0 : min(16, 2**(n-3))` (n=3:1, 4:2, 5:4, 6:8, 7+:16 further checks skipped, each skip consumes one eligible check). Any answer except `ignored_timeout` resets both counters to 0.
   Basis: cited. Status: partial at 088a227c.
-  Source: chunk-na8s6d5h.js@78182 (claude 2.1.326 binary); chunk-na8s6d5h.js@84233 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/note.ts:253-256@088a227c.
+  Source: chunk-nvx1z6pc.js@78260 (claude 2.1.327 binary); chunk-nvx1z6pc.js@84311 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/note.ts:253-256@088a227c.
 
 ## Reply Parsing
 
@@ -93,11 +93,11 @@
   6. Otherwise `{kind:"unparsable"}` (telemetry `parse_failed`).
   `unquoted(s)`: trim, drop trailing periods, and if wrapped in one matching pair from `"" '' “” ‘’ ``` ` ``` ` with no inner closer, unwrap and drop trailing periods again.
   Basis: cited. Status: partial at 088a227c (baseline `parseReply` in `note.ts:67` holds the 240-character limit; its reply format and rules differ).
-  Source: chunk-na8s6d5h.js@25970 (claude 2.1.326 binary; read: the `learn:`,`explain:`, and`tag:` matchers and the "Heads up" rule are there, relocated from chunk-jc1ynf6x.js@24500 of 2.1.325); plugins/claudetto-you-should-know/hooks/note.ts:67-74@088a227c.
+  Source: chunk-nvx1z6pc.js@26048 (2.1.327; first read in claude 2.1.326 binary; read: the `learn:`,`explain:`, and`tag:` matchers and the "Heads up" rule are there, relocated from chunk-jc1ynf6x.js@24500 of 2.1.325); plugins/claudetto-you-should-know/hooks/note.ts:67-74@088a227c.
 
 - [ ] **RT-011** `parseExplanation` turns the explanation into cards. For each line: `d = stripControlSequences(line).trimEnd()`. A line starting with a triple backtick toggles a code fence (the first fence of a card that already holds content flushes it when not already fenced); lines inside a fence go to `sketch` (max 12 lines, each cut to 120 code units, unwrapped). A title line (`/^(?:\*\*([^*]+)\*\*|#+\s*(.+))$/` on the trimmed line) flushes the current card and starts a new one with `title = cleanOneLine(match)` cut to 120. Other lines append (`"\n"+line`) to `lead` if the card has no sketch and no fence has been seen, else to `caption`. Flush: `lead` and `caption` = `truncateAtWordBoundary(proseOf(x), 4000)` where `proseOf` = each line `cleanOneLine`d, empty lines dropped, joined `\n`; truncation cuts to `n-1` code units at a word boundary (used if past half the width) and appends `…`. A card is kept if any of title, lead, sketch, or caption is non-empty. At most 4 cards.
   Basis: cited. Status: partial at 088a227c (baseline `parseCards` in `note.ts:126-175` has the same limits).
-  Source: chunk-na8s6d5h.js@24982 (claude 2.1.326 binary; read: fence toggle, sketch cap, title regex, lead and caption split, 4 cards); plugins/claudetto-you-should-know/hooks/note.ts:126-175@088a227c.
+  Source: chunk-nvx1z6pc.js@25060 (claude 2.1.327 binary; read: fence toggle, sketch cap, title regex, lead and caption split, 4 cards); plugins/claudetto-you-should-know/hooks/note.ts:126-175@088a227c.
 
 ## Render of the Note
 
@@ -127,11 +127,11 @@
 
   `isNoteRead(clock, view, now)` = view is an offer, not armed, clock has same `shownAt` and `line`, and idle time `>= 2000` ms (idle = `now - since` or stored `ms`).
   Basis: cited. Status: missing at 088a227c (baseline `ui.render` at `register.ts:217` draws the view and has no idle clock).
-  Source: chunk-na8s6d5h.js@81333-90000 (claude 2.1.326 binary); chunk-na8s6d5h.js@30182 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c.
+  Source: chunk-nvx1z6pc.js@81411-90078 (claude 2.1.327 binary); chunk-nvx1z6pc.js@30260 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c.
 
 - [ ] **RT-013** The Learn more fork `explainFlow(line, prev, iteration)`: add sid to `explaining`; set the `explaining` view; `K = model.fork({prompt: explainPrompt(line, prev)})` (errors -> undefined); `V = K.isAnswered ? K.text.trim() : ""`; outcome = answered ? (`parseExplanation(V).length===0` ? `"empty"` : `"shown"`) : `"fork"`; telemetry `you_should_know_explained{outcome, direction: prev?.direction ?? "first", latency_ms, usage}` + mark (`ok` iff shown). On shown: view `explained{text:V, iteration}`; on failure with a `prev`: fall back to the previous text; with no `prev`: view `failed{reason:"explain"}`. Always remove sid from `explaining`. In this version only `direction "first"` is reachable; the other directions (`simpler_words`, `less_detail`, `more_detail`) and their prompts exist in the module but no button calls them.
   Basis: cited. Status: missing at 088a227c (baseline has no fork; the `explained` view comes from the check reply).
-  Source: chunk-na8s6d5h.js@81333-90000 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/view.ts:65@088a227c.
+  Source: chunk-nvx1z6pc.js@81411-90078 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/view.ts:65@088a227c.
 
 ## Prompt Submit
 
@@ -167,17 +167,17 @@
 
   Meaning: with `CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND` on (the name is present in claude 2.1.326: `grep -c -a CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND ~/.local/share/claude/versions/2.1.326` printed 4), when the user typed their own message after reading the offer (offer fully visible and idle >= 2 s, twice) the offered topic is attached to that message as background `context` and the offer is dismissed as known.
   Basis: cited. Status: missing at 088a227c (baseline `prompt.submit` at `register.ts:187` counts typed-past prompts only).
-  Source: chunk-na8s6d5h.js@77682 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c.
+  Source: chunk-nvx1z6pc.js@77760 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c.
 
 - [ ] **RT-015** Off cleanup `clearOffLine(isConfirmed)`: sid; if not confirmed remove sid from `confirmed`; if a clear for this sid is already running, await it; else `takeDown`: reread row; if its view is `off`: clear view, invalidate; if confirmed add sid to `confirmed`; telemetry `answered{answer: off_confirmed|off_abandoned, cleared_by:"prompt", offers_shown, tag}`. `isOffCommand(text)`: split trimmed on whitespace to `[t,o,r]`; true iff `t==="/plugin" && o==="disable"` and (`"/plugin disable cc-plugin-you-should-know@builtin"` equals `t o r` or `r` is `cc-plugin-you-should-know`, `suggest-learning`, `you-should-know`, each also with `@builtin`).
   `command.run /plugin` -> `ranOffCommand`: `clearOffLine(confirmed:true)`; if sid not yet in `confirmed`: add and telemetry `answered{answer:"off_confirmed", off_via:"typed", version marks, offers_shown}` (no line/tag).
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@77682 (claude 2.1.326 binary); chunk-na8s6d5h.js@79933 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@77760 (claude 2.1.327 binary); chunk-nvx1z6pc.js@80011 (claude 2.1.327 binary).
 
 - [ ] **RT-016** Detach and end: `detach`: `renderedSurfaces` keeps only surfaces still reported by `session.surfaces()`. `end(sessionId)`: add to `ended`; remove from bridge set and idle map; reread row: if view is open -> clear view and telemetry `left_open{left_by:"session_end"}`; if view is `off` -> clear and telemetry `answered{answer:"off_abandoned", cleared_by:"session_end"}`. All errors swallowed; always `next`.
   Basis: cited. Status: partial at 088a227c.
-  Source: chunk-na8s6d5h.js@90033 (claude 2.1.326 binary); chunk-na8s6d5h.js@90133 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/register.ts:202@088a227c.
+  Source: chunk-nvx1z6pc.js@90111 (claude 2.1.327 binary); chunk-nvx1z6pc.js@90211 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/register.ts:202@088a227c.
 
 - [ ] **RT-017** Dedup and known: `markKnown(line)` appends to `known` (case-insensitive exact dedupe, keep last 50). `thenAlways(a,b)` runs `b` (clear view) even when `a` throws. `lineKey` compares lowercase with one trailing `.` removed.
   Basis: cited. Status: have at 088a227c.
-  Source: chunk-na8s6d5h.js@25582 (claude 2.1.326 binary); plugins/claudetto-you-should-know/hooks/note.ts:237-250@088a227c.
+  Source: chunk-nvx1z6pc.js@25660 (claude 2.1.327 binary); plugins/claudetto-you-should-know/hooks/note.ts:237-250@088a227c.

@@ -2,7 +2,7 @@
 
 - [ ] **CC-025** claudetto shall treat autonomy and consent as one dial.
   Acceptance: the user's values and actions are written down (bounds, budgets, tests, hooks, settings, user-authored rules, user-named things); the agent owns the rest and tries once before deferring. Over-deferral ("ask first" rules spread into asking before anything costly) and overreach ("be autonomous" spreads into changing user-owned values) share one cause. Verification: inspection.
-  Basis: inferred (by the dossier: harness prompts guarding over-deferral or overreach generalise; capability is underestimated and "can't" is never probed; the agent swung between both within one session, session 1213c32c). No research measures deferral of executable work. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts`).
+  Basis: cited (the dossier's inference: harness prompts guarding over-deferral or overreach generalise; capability is underestimated and "can't" is never probed; the agent swung between both within one session, session 1213c32c). No research measures deferral of executable work. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts`).
   Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:56; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:72.
 
 - [ ] **CC-026** claudetto shall treat bounds and person-authored things as the user's.
