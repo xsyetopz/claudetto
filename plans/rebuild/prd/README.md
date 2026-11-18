@@ -8464,3 +8464,321 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Source: druthulu/projectarchitect at edcc2b00, project-architect-3.0/guard.py:676-725 and 803-850; reports/2026-11-18-research/repos.md:119-120; reports/2026-11-18-research/surface.md:45 (chunk-e38nza00.js@433, chunk-bpr7n093.js@12561, claude 2.1.327).
 
   Verified: git grep -nEi -e 'maxTurns|single-writer|singleWriter|262144|redundantRead|readCache|maxFileBytes|unchanged file' -- plugins -> 0 hits, 2026-11-19.
+
+#### Reply Triage
+
+- [x] **OUT-2100** Out (part not shipped; moved from REQ-REPLY-029 in plans/rebuild/prd/reply.md): claudetto shall gate the first call on a `question` turn through a Decider call and a Stop grader for `options` and `deferred` faults.
+  Basis: read (repo requirement and plugins/ tree); the Decider and the Stop grader are not shipped, ADR-0104 settles no Stop claim grader, and ADR-0190 merges the answer-first line into REQ-REPLY-024.
+  Source: openspec/specs/decide/spec.md:8; openspec/specs/claim-check/spec.md:8; openspec/changes/2-1-325-rearchitecture/design.md:171; plugins/claudetto/hooks/features/reply/reply.ts@088a227c.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2101** Out (part not shipped; moved from REQ-REPLY-033 in plans/rebuild/prd/reply.md): claudetto shall list in a `What I Need From You` section one `- ! <command>` bullet, with a Stop check that drops a `- [ ]` question item.
+  Basis: read (repo requirement and plugins/ tree); it names a Stop check and a held-out form that plugins/ does not ship, ADR-0104 rules out the Stop check, and REQ-REPLY-087 keeps the heading line.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-20/README.md:176; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:320; openspec/specs/run-limits/spec.md:71; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:300.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2102** Out (part not shipped; moved from REQ-REPLY-134 in plans/rebuild/prd/reply.md): claudetto shall prompt the agent as a senior software engineer, not a junior, in the role text of each model prompt.
+  Basis: read (repo requirement and plugins/ tree); ADR-0190 moves the per-model root prompt Out, and plugins/ ships no root prompt role text.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user's words on senior and junior, relayed in the handoff).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2103** Out (needs a paid model run or a benchmark; moved from REQ-REPLY-138 in plans/rebuild/prd/reply.md): claudetto shall carry one plain-English reply rule, kept only if an A/B of at least 10 runs per arm scored by a spaCy parse shows a gain.
+  Basis: read (repo requirement and plugins/ tree); the acceptance is a paid A/B with a parser benchmark, and the rebuild builds no benchmarks.
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P9.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2104** Out (needs a paid model run or a benchmark; moved from REQ-REPLY-144 in plans/rebuild/prd/reply.md): claudetto shall carry no expertise persona or helpful-assistant line in any shipped text, and A/B test the senior-engineer line against no role line.
+  Basis: read (repo requirement and plugins/ tree); the acceptance holds a paid A/B of REQ-REPLY-134's line, and that line itself moved Out.
+  Source: external/2026-11-18/reddit.com-r-promptengineering-comments-1xwnfr7-i-always-started-prompt-20261117T182552Z.md:31-38,96-102 (url: <https://www.reddit.com/r/PromptEngineering/comments/1xwnfr7/i_always_started_prompts_with_you_are_an_expert_i/>); reports/2026-11-18-research/dossier.md:114; prd/reply.md REQ-REPLY-134.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2105** Out (needs a paid model run or a benchmark; moved from RISK-230 in plans/rebuild/risk-register/reply.md): Claude uses habit over the repo, or a workaround in place of a fix.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2106** Out (needs a paid model run or a benchmark; moved from RISK-231 in plans/rebuild/risk-register/reply.md): Claude writes jargon names and low-value tests.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2107** Out (needs a paid model run or a benchmark; moved from RISK-232 in plans/rebuild/risk-register/reply.md): Claude blamed "the sandbox" for a pty failure without checking what enforced it, and misread the local time zone (F9).
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2413.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2108** Out (needs a paid model run or a benchmark; moved from RISK-238 in plans/rebuild/risk-register/reply.md): The agent names a fix for a failure from a guess and ignores that the step worked before.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/d9e65e3e-7eda-4061-b888-f957adb96dd2.jsonl:2693; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/d9e65e3e-7eda-4061-b888-f957adb96dd2.jsonl:2713, reported, user, 2026-11-09.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2109** Out (needs a paid model run or a benchmark; moved from RISK-242 in plans/rebuild/risk-register/reply.md): Named forbidden words reappear in output.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:439 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2110** Out (needs a paid model run or a benchmark; moved from RISK-253 in plans/rebuild/risk-register/reply.md): Unfounded pushback and pedantry.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33 (url: <https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/>) (reported); external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>) (reported)
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2111** Out (needs a paid model run or a benchmark; moved from RISK-255 in plans/rebuild/risk-register/reply.md): Credit misassignment.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/specs/claim-check/spec.md:15,97,102
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2112** Out (needs a paid model run or a benchmark; moved from RISK-257 in plans/rebuild/risk-register/reply.md): Style leak and verbosity.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:19 (reported); external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:418 (url: <https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/>) (reported)
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2113** Out (needs a paid model run or a benchmark; moved from RISK-258 in plans/rebuild/risk-register/reply.md): Comment inflation.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xa7704-suggestion-to-anthropic-please-20261020T100903Z.md:29,75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xa7704/suggestion_to_anthropic_please_do_something_to/>) (reported). Not located: the quoted system-prompt line itself.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2114** Out (needs a paid model run or a benchmark; moved from RISK-260 in plans/rebuild/risk-register/reply.md): Agent repeats a stale status and asks again for a step the user already did.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2115** Out (needs a paid model run or a benchmark; moved from RISK-261 in plans/rebuild/risk-register/reply.md): Agent treats a denied or cancelled prompt as the user's decision.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2116** Out (needs a paid model run or a benchmark; moved from RISK-263 in plans/rebuild/risk-register/reply.md): Over-deferral: doable work is handed back to the user.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:25,37; openspec/changes/archive/2026-11-16-2-1-323/design.md:19; openspec/changes/archive/2026-11-16-2-1-323/proposal.md:8; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:283; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2034`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2129`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3260`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3430`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6389`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:259`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25664`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:26099`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:26102`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:36218`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:36574`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:1395`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:3068, observed in transcript, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f5645ffc-f2a4-4514-aa8c-329a8175b38b.jsonl:506, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; observed in transcript, 2026-11-13; observed in transcript, 2026-11-14; reported, user, 2026-11-13; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36278; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36369; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37351; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14604; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6321; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:48 (three reports); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:794 (measured); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:11313 (reported, user, 2026-11-11); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2567 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1257 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7915 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9489 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9668 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:8 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:7696 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:11313; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2567, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1257, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7834, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7915, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9489, reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9668, reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:8, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:7696, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); reported, user, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (reported, user, 2026-11-11).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2117** Out (needs a paid model run or a benchmark; moved from RISK-265 in plans/rebuild/risk-register/reply.md): Asking leave to fix its own bug.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:36,50; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2118** Out (needs a paid model run or a benchmark; moved from RISK-266 in plans/rebuild/risk-register/reply.md): An agent asks the user for a choice that is the agent's own, or leaves a question open that it can research.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:981, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:11422, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:7257, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:2442, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2119** Out (needs a paid model run or a benchmark; moved from RISK-268 in plans/rebuild/risk-register/reply.md): The agent ships a change and names a remaining risk it introduced.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:443, reported, user, 2026-11-11.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2120** Out (needs a paid model run or a benchmark; moved from RISK-272 in plans/rebuild/risk-register/reply.md): The agent invents a website URL and a home-made format.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2121** Out (needs a paid model run or a benchmark; moved from RISK-273 in plans/rebuild/risk-register/reply.md): The agent installs a needed library into a temp folder and leaves it there.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2122** Out (needs a paid model run or a benchmark; moved from RISK-274 in plans/rebuild/risk-register/reply.md): Agent keeps writing after the user says stop.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37375; unresolved: the old plan item names no source; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:44 records a hook that blocked a subagent after a mid-turn message, a different fault; observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2123** Out (needs a paid model run or a benchmark; moved from RISK-275 in plans/rebuild/risk-register/reply.md): The agent pins an older dependency to make a branch pass.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2124** Out (needs a paid model run or a benchmark; moved from RISK-276 in plans/rebuild/risk-register/reply.md): The agent ends a reply with a note on what it has not done.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6502; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2125** Out (needs a paid model run or a benchmark; moved from RISK-277 in plans/rebuild/risk-register/reply.md): The agent states what a source says without reading the dossier first.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5669; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2126** Out (needs a paid model run or a benchmark; moved from RISK-280 in plans/rebuild/risk-register/reply.md): The agent leaves the user's scope to work in other repos.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:2234 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536 (observed in transcript, 2026-11-14).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2127** Out (needs a paid model run or a benchmark; moved from RISK-281 in plans/rebuild/risk-register/reply.md): The agent ends its turn with startable steps undone while a worker runs.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435 (reported, user, 2026-11-14).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2128** Out (needs a paid model run or a benchmark; moved from RISK-282 in plans/rebuild/risk-register/reply.md): The agent installs a dependency into a temp folder and leaves it there.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2129** Out (needs a paid model run or a benchmark; moved from RISK-283 in plans/rebuild/risk-register/reply.md): The agent invents an identifier or a format where a standard exists.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2130** Out (needs a paid model run or a benchmark; moved from RISK-284 in plans/rebuild/risk-register/reply.md): The agent reads Claude documentation through WebFetch.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2131** Out (needs a paid model run or a benchmark; moved from RISK-285 in plans/rebuild/risk-register/reply.md): The agent picks a method for ease where the user gave none.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2132** Out (needs a paid model run or a benchmark; moved from RISK-286 in plans/rebuild/risk-register/reply.md): Agent invents unrequested files and treats its own notes as evidence.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615) (observed in transcript, 2026-11-16).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2133** Out (needs a paid model run or a benchmark; moved from RISK-287 in plans/rebuild/risk-register/reply.md): Agent invents wording, order, or priority and attributes it to the user.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008) (reported, user, 2026-11-16).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2134** Out (needs a paid model run or a benchmark; moved from RISK-288 in plans/rebuild/risk-register/reply.md): Agent removes or disables a feature on its own judgment.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186; reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186) (observed in transcript, 2026-11-10).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2135** Out (needs a paid model run or a benchmark; moved from RISK-290 in plans/rebuild/risk-register/reply.md): The agent states a guess, a cause, or an advice as fact, with no check behind it.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 4), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:51; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:432 (the push is inferred from the reflog entry); plugins/claudetto/hooks/hygiene/branches.ts:175@088a227c (cited by the source as the only push); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2136** Out (needs a paid model run or a benchmark; moved from RISK-291 in plans/rebuild/risk-register/reply.md): Agent skips files the user points at.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446) (reported, user, 2026-11-10; observed in transcript, 2026-11-10).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2137** Out (needs a paid model run or a benchmark; moved from RISK-292 in plans/rebuild/risk-register/reply.md): Agent shows sycophancy, laziness, flow stops, and model inference in place of objective checks.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2138** Out (needs a paid model run or a benchmark; moved from RISK-294 in plans/rebuild/risk-register/reply.md): The agent lists decisions for the user without the context to decide.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:927; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:927, reported, user, 2026-11-09 (reported, user, 2026-11-09).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2139** Out (needs a paid model run or a benchmark; moved from RISK-295 in plans/rebuild/risk-register/reply.md): The agent installs a needed dependency into a temp folder and leaves it there.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2140** Out (needs a paid model run or a benchmark; moved from RISK-296 in plans/rebuild/risk-register/reply.md): The agent invents a website URL for a schema $id.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2141** Out (needs a paid model run or a benchmark; moved from RISK-299 in plans/rebuild/risk-register/reply.md): An agent stops and reports while the user's open issues remain.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, latest instructions); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10452 (handoff of 2026-11-15, goal); reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2142** Out (needs a paid model run or a benchmark; moved from RISK-304 in plans/rebuild/risk-register/reply.md): The model pads a correct answer with an objection it invented.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:153; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:159; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:171; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:305 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2143** Out (needs a paid model run or a benchmark; moved from RISK-305 in plans/rebuild/risk-register/reply.md): The model opens with "One small pushback...." or closes with "All your issues were addressed ... except these 3 things".
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:59; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:67 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2144** Out (needs a paid model run or a benchmark; moved from RISK-306 in plans/rebuild/risk-register/reply.md): A rule "when you agree, add the strongest opposing view" turns into a template.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/>).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2145** Out (needs a paid model run or a benchmark; moved from RISK-310 in plans/rebuild/risk-register/reply.md): Verbal tics fill replies: "load-bearing", a favourite emoji as sign-off at the end of every message, "Don't overthink this" on greetings, and the Opus 5 style ("The reframe that changes everything", counts such as 79/79 and 139/139 gates with "CLOSED", "I won't let this go unsaid", "thats on me", ending "For now, get some rest").
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:121; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:37; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:49 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:108; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:116 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:278; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:282 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2146** Out (needs a paid model run or a benchmark; moved from RISK-333 in plans/rebuild/risk-register/reply.md): A corrective instruction against a conduct fault swings the agent to the opposite fault.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:136; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:158 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2147** Out (needs a paid model run or a benchmark; moved from RISK-335 in plans/rebuild/risk-register/reply.md): A question or casual remark is taken as an instruction to act.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:123 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:465 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>)
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2148** Out (needs a paid model run or a benchmark; moved from RISK-337 in plans/rebuild/risk-register/reply.md): The agent takes a handoff or goal file as orders.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 4), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: the user transcript lines cited above (user orders, 2026-11-16); those logs are absent from this machine and were not re-read.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2149** Out (needs a paid model run or a benchmark; moved from RISK-338 in plans/rebuild/risk-register/reply.md): The agent narrates between tool calls and comments on its own replies.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:57; reported, user, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); reported, user, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); reported, user, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (reported, one user: "meta-commentary and needless narration").
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2150** Out (needs a paid model run or a benchmark; moved from RISK-339 in plans/rebuild/risk-register/reply.md): The agent opens by agreeing or apologising, and confesses and promises, even in the reply meant to list that fault.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:16 (read; three reports); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:53; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10917); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401); reported, user, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); reported, user, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); reported, user, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (the user: "that is yet another fault" after the handoff lists the opener) (reported, two instances).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2151** Out (needs a paid model run or a benchmark; moved from RISK-340 in plans/rebuild/risk-register/reply.md): The agent ends a reply by asking the user to direct the work.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2152** Out (needs a paid model run or a benchmark; moved from RISK-341 in plans/rebuild/risk-register/reply.md): The agent quotes the user verbatim in files.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported: Reddit text pasted by the user, one report); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:102.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2153** Out (needs a paid model run or a benchmark; moved from RISK-342 in plans/rebuild/risk-register/reply.md): The agent ends on work it says it will do next, though it could do it now.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:54 (reported).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2154** Out (needs a paid model run or a benchmark; moved from RISK-354 in plans/rebuild/risk-register/reply.md): Agent removes a rule the user asked for when a hook rejects it.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30577`).
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2155** Out (needs a paid model run or a benchmark; moved from RISK-355 in plans/rebuild/risk-register/reply.md): An agent reports a defect it found and leaves it unfixed.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:2009, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:8110, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/1aab3c4c-5aef-4ee2-9d3e-3723fd904152.jsonl:1824, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2156** Out (needs a paid model run or a benchmark; moved from RISK-356 in plans/rebuild/risk-register/reply.md): An agent stalls on environment friction or leaves doable tasks unticked.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:3068, observed in transcript, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f5645ffc-f2a4-4514-aa8c-329a8175b38b.jsonl:506, reported, user, 2026-11-12.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2157** Out (needs a paid model run or a benchmark; moved from RISK-357 in plans/rebuild/risk-register/reply.md): An agent invents a project-specific format or identifier where an industry standard exists.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:3349, reported, user, 2026-11-11.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2158** Out (needs a paid model run or a benchmark; moved from RISK-358 in plans/rebuild/risk-register/reply.md): An agent proves a setup in a temporary folder and leaves the project without it.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/39e93978-aee6-46bb-be40-431b82dc06d7.jsonl:587, reported, user, 2026-11-11.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2159** Out (needs a paid model run or a benchmark; moved from RISK-361 in plans/rebuild/risk-register/reply.md): The agent reports a defect, leftover, or open part instead of fixing it.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2160** Out (needs a paid model run or a benchmark; moved from RISK-363 in plans/rebuild/risk-register/reply.md): The agent tells the user to run a command in a way that cannot take effect.
+  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:378; reported, user, 2026-11-10.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2161** Out (needs a paid model run or a benchmark; moved from RISK-371 in plans/rebuild/risk-register/reply.md): The agent leaves a defect unfixed and stops to report.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
+- [x] **OUT-2162** Out (needs a paid model run or a benchmark; moved from RISK-372 in plans/rebuild/risk-register/reply.md): A cleanup removes features or adds bloat, or works around the code and its architecture.
+  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 4), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
+  Source: reported, user, 2026-11-14 23:21 UTC, clean up the architecture without removing features (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
+  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+
