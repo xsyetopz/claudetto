@@ -1,6 +1,6 @@
 # claudetto Rebuild Plan
 
-The plan for claudetto on Claude Code 2.1.326. Four standards split it; each file answers one question, and each item lives in one file only.
+The plan for claudetto on Claude Code 2.1.327. Four standards split it; each file answers one question, and each item lives in one file only.
 
 ## Layout
 
@@ -10,7 +10,7 @@ The plan for claudetto on Claude Code 2.1.326. Four standards split it; each fil
 | `prd/<block>.md` | ISO/IEC/IEEE 29148:2018 clauses 9.6.10-9.6.12 | What counts as success? One requirement per item, with its acceptance check |
 | `arc42/01_introduction_and_goals.md` | arc42 9.1 section 1 | Requirements overview (links to `prd/`), top quality goals, stakeholders |
 | `arc42/02_architecture_constraints/` | arc42 section 2 | What constraints must be preserved? |
-| `arc42/03_context_and_scope/` | arc42 section 3 | Claude Code 2.1.326 seams and measured facts about them, one file per topic |
+| `arc42/03_context_and_scope/` | arc42 section 3 | Claude Code 2.1.327 seams and measured facts about them, one file per topic |
 | `arc42/04_solution_strategy.md` | arc42 section 4 | The few ideas the whole design rests on |
 | `arc42/05_building_block_view.md` | arc42 section 5 | What components exist, at baseline `088a227c` and in the target? |
 | `arc42/06_runtime_view/` | arc42 section 6 | How does the system behave at runtime? Algorithms and pseudocode |
@@ -52,7 +52,7 @@ Each item goes to the first rule it matches.
 2. A choice among named options, a settled conflict, a user answer, or a superseded rule: `adr/`.
 3. A part, behaviour, or file that goes, with no competing option: `prd/README.md`, scope "Out".
 4. A behaviour that a user or Claude Code can observe: `prd/<block>.md`.
-5. A fixed outside limit (Claude Code 2.1.326, macOS sandbox, licence, a user rule): arc42 section 2.
+5. A fixed outside limit (Claude Code 2.1.327, macOS sandbox, licence, a user rule): arc42 section 2.
 6. A measured or documented fact about Claude Code or the machine: arc42 section 3.
 7. How one block does its job (algorithm, pseudocode, sequence): arc42 section 6.
 8. A rule across two or more blocks: arc42 section 8.
@@ -92,6 +92,8 @@ Each item names every source it rests on, in one of these forms:
 
 No letter keys such as `Src: C:86`.
 
+Session logs dated 2026-11-09 to 2026-11-16 (for example `17435f50`, `b8e1aaed`, `cd2e74f0`) are no longer on disk: on 2026-11-18, `~/.claude/projects/` holds 58 main transcripts, all modified on 2026-11-17 or later, and no copy exists elsewhere under `~/.claude`. A citation to one of them points at text first recorded in this plan by commit 6e6edcd19 (2026-11-13) or the curation commits after it, while the log existed. The git history of the citing line is its surviving evidence. A user decision cited this way remains in force, because the user restated it when giving later directions (for example, Fable and Opus are never a subagent model).
+
 ## Attributions
 
 - arc42 template 9.1-EN, created by Dr. Peter Hruschka, Dr. Gernot Starke and contributors, <https://arc42.org>, CC BY-SA 4.0. The `arc42/` section titles and order come from it.
@@ -112,6 +114,8 @@ No letter keys such as `Src: C:86`.
 | Rare tokens (identifiers, env vars, paper ids) in `external/` and `openspec/` absent from the plan text | 183 tokens | 124 found in the built plan; 59 checked by hand: 20 already covered, 30 new as 21 items, 9 dropped with a reason. A rerun against the old curation plan found 3 tokens lost in rewriting (arXiv 2508.21433, `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`, the four parallel `$.fs.list` calls); all 3 were restored. |
 
 Items whose source line was not found (the item stays, with the source the old plan named), by old-plan chunk: 01: 11, 02: 5, 03: 3, 04: 37, 05: 17, 06: 12, 07: 17, 08: 20, 09: 22, 10: 1, 11: 0. Total 145.
+
+Items removed on 2026-11-18 because no source for them was located in `external/`, `openspec/` at `088a227c9^`, `reports/`, git history, or the user's transcripts (13): `CTX-334`, `OUT-033`, `OUT-078`, `OUT-103`, `REQ-COST-036`, `REQ-DELEGATION-022`, `REQ-GUARDS-007`, `REQ-GUARDS-017`, `REQ-GUARDS-054`, `REQ-HANDOVER-044`, `REQ-HANDOVER-066`, `REQ-KERNEL-010`, `REQ-VERIFICATION-077`. Their text stays readable in git history before the removal commit. Two items in the same state were kept with a located source instead: REQ-DELEGATION-026 (user decision on subagent models) and REQ-VERIFICATION-075 (the user's global test rule).
 
 Known limits of the audit:
 
