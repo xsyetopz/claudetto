@@ -2,7 +2,8 @@
 
 ## Setup
 
-- [ ] **RISK-394** A name-keyed `skillOverrides` Mod takes a user's own skill out of the listing.
+- [x] **RISK-394** A name-keyed `skillOverrides` Mod takes a user's own skill out of the listing.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "skillOverrides|settings.read|OFF_SKILLS" plugins/claudetto --exclude-dir=types`: 0 hits; the `skillOverrides` hook went out with REQ-SETUP-002.
   Category: product.
   Cause: the Mod writes `skillOverrides` `off` for each of the 18 skill names, including `simplify`.
   Event: the user's own `simplify` leaves the listing and the Mod refuses "/simplify x".
@@ -13,10 +14,11 @@
   Actions: skip names a user or project skill or command holds (the fix, task 5.24 amended).
   Trigger: a user or project skill or command named like a bundled skill.
   Owner: setup.
-  Status: mitigated at 088a227c.
+  Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3162; plugins/claudetto/hooks/features/surface/surface.ts:26@088a227c.
 
-- [ ] **RISK-395** A `settings.read` Mod hook that settles slowly lets a skill into the first request.
+- [x] **RISK-395** A `settings.read` Mod hook that settles slowly lets a skill into the first request.
+  Verified: grep, claude 2.1.327, 2026-11-18, same grep as RISK-394: 0 hits; the slow `settings.read` hook is gone (REQ-SETUP-002 out), so the race cannot occur.
   Category: product.
   Cause: `session.start` is raised before the hook settles in every run, and the Mod worker has no `process` global ("ReferenceError: process is not defined", `ovc9.debug:107-108`; `$.env.get` stands in). The cause of 66-90 ms for the sequential and parallel arms was not isolated; probe date9 refutes `Date.now()` as the cost (9 equal stamps in one synchronous stretch).
   Event: hooks that settled in 38.7 ms or less kept `simplify` out of the first request in 47 of 47 runs; 10 of 11 at 66.7-90.6 ms let it in.
@@ -27,10 +29,11 @@
   Actions: keep the hook under 38.7 ms and list the skills and commands dirs with four parallel `$.fs.list` calls and nothing else (`plugins/claudetto/hooks/features/surface/surface.ts:61` at 088a227c; `$.fs.list` is in the 2.1.326 mod API).
   Trigger: a `settings.read` hook with file reads that take 66 ms or more.
   Owner: setup.
-  Status: open.
+  Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3340.
 
-- [ ] **RISK-396** Setup writes `CLAUDE_CODE_SCRIPT_CAPS`.
+- [x] **RISK-396** Setup writes `CLAUDE_CODE_SCRIPT_CAPS`.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "SCRIPT_CAPS" plugins/claudetto --exclude-dir=types`: 0 hits. REQ-SETUP-043 keeps it out of the FILL table.
   Category: Technical.
   Cause: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of Bash commands and acts only while `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set, which forces default permission mode.
   Event: Setup writes `CLAUDE_CODE_SCRIPT_CAPS`.
@@ -43,7 +46,8 @@
   Owner: setup. Status: Open.
   Source: plugins/claudetto/hooks/features/setup/settings.ts@088a227c; claude 2.1.326: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of the command and acts only when the scrub check `cp()` passes, chunk-57bg7pbc.js@8656 (2.1.327); `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` forcing default permission mode: verified on 2.1.327: when the variable is set, the mode becomes `default` and a notice reads `Permission mode forced to default`, chunk-rthqjjhy.js@3900. Dropped (2026-11-18) for the old plan's P223 source: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
-- [ ] **RISK-397** Setup leaves retired rules installed.
+- [x] **RISK-397** Setup leaves retired rules installed.
+  Verified: grep, claude 2.1.327, 2026-11-18, `ls plugins/claudetto` holds no rules folder and no code offers rules (REQ-SETUP-048 and -049 out), so no retired rule can be left behind.
   - Category: product defect.
   - Cause: `rulesPart` (`plugins/claudetto/hooks/command.run/useSetup/rules.ts:82-90`) offers only names in `RULES`; commit 378782f3 (2026-11-13) deleted `rules/noNarratingComments.md` and `rules/useEdgeCaseReport.md` and dropped `paths: "**/*"` from the rest, but nothing removes a rule the plugin stopped shipping.
   - Event: both files still sit in `~/.claude/rules/claudetto/` with `paths:` frontmatter and load as `nested_memory` after the first file read and after each compaction (44 rows in one session, about 85 tokens per context).
@@ -55,7 +59,7 @@
   - Actions: setup removes a rule the plugin stopped shipping (old task 7.15).
   - Trigger: `/claudetto:setup` on a machine with an older install.
   - Owner: setup
-  - Status: open
+  - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:689; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:692 (read, measured).
 
 - [ ] **RISK-398** Sandbox blocks `git worktree add`.
@@ -73,7 +77,8 @@
   - Status: open
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:21 (unknown cause).
 
-- [ ] **RISK-399** setup wrote ask rules that override auto mode.
+- [x] **RISK-399** setup wrote ask rules that override auto mode.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn permissions plugins/claudetto --exclude-dir=types`: 0 hits; no code writes an ask list. Stale ask entries in a user's own file are the user's to remove.
   - Category: product fault (setup).
   - Cause: an earlier `/claudetto:setup` wrote an "ask" list into `~/.claude/settings.json` (lines 74-92, then line 93 for `git reflog`), starting with `Bash(git checkout *)`.
   - Event: a prompt on each git checkout, since an ask rule overrides auto mode.
@@ -85,10 +90,11 @@
   - Actions: test with a settings copy that setup removes only entries it wrote.
   - Trigger: a prompt for a command setup once listed.
   - Owner: setup
-  - Status: mitigated.
+  - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (observed in transcript, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1008 (observed in transcript, 2026-11-14).
 
-- [ ] **RISK-400** Sandbox denies writes under the repo loaded as a plugin with --plugin-dir.
+- [x] **RISK-400** Sandbox denies writes under the repo loaded as a plugin with --plugin-dir.
+  Verified: code read by an earlier session (chunk-kr4nf9qg.js@3888 default write-deny list); no live probe today, accepted at Likelihood 1.
   - Category: Claude Code limit.
   - Cause: per the agent, the plugin root is on the sandbox deny list, so the agent cannot edit claudetto while running it; the auto-mode classifier also refused an edit twice.
   - Event: task 2.12 stays blocked; the workaround is a session without --plugin-dir.
@@ -100,7 +106,7 @@
   - Actions: start the session without --plugin-dir; checked on 2.1.327 by code reading, no live probe: the explanation that the plugin root is on the sandbox deny list is not supported. The default write-deny names `.vscode`, `.idea`, `.claude/commands`, `.claude/agents` (chunk-kr4nf9qg.js@3888). Only `plugin eval` adds plugin directories to `denyWrite` (chunk-6zk0h247.js@158180). The refused edit more likely came from the auto-mode classifier, which the Cause line also names.
   - Trigger: a write refused under plugins/claudetto.
   - Owner: setup
-  - Status: open.
+  - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1266 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1434; reported, user, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1266); reported, user, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/926cb706-4310-4588-9399-b906abd34b32.jsonl:1434) (reported, user, 2026-11-09).
 
 ## Boundaries And Safety
@@ -120,7 +126,8 @@
 
 ## Context Loss And Handover
 
-- [ ] **RISK-402** An earlier plugin default of `cleanupPeriodDays: 14` deleted transcripts.
+- [x] **RISK-402** An earlier plugin default of `cleanupPeriodDays: 14` deleted transcripts.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn cleanupPeriodDays plugins/claudetto --exclude-dir=types`: 0 hits; nothing writes a retention value, so the Claude Code default (30) stands.
   Category: handover.
   Cause: the plugin wrote a short retention default.
   Event: a session transcript is deleted after 14 days.
@@ -150,7 +157,8 @@
   - Status: open.
   - Source: observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14535.
 
-- [ ] **RISK-404** A claudetto MCP tool disconnects in a session.
+- [x] **RISK-404** A claudetto MCP tool disconnects in a session.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn "mcp__claudetto" plugins/claudetto --exclude-dir=types`: 0 hits and plugins/claudetto holds no MCP server, so the tool cannot disconnect.
   Category: product
   Cause: The claudetto ask-user-question tool is not connected in the session; the handoff also notes that the jscpd tools were not available.
   Event: The agent cannot use the tool its rules name and falls back to the AskUserQuestion popup, loaded with ToolSearch.
@@ -162,7 +170,7 @@
   Actions: claudetto rules shall name the native AskUserQuestion popup as the fallback when its own ask tool is absent.
   Trigger: A tool named in a rule is missing from the session.
   Owner: setup
-  Status: open
+  Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, jscpd tools not available); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, 'claudetto ask tool disconnected'); observed in transcript, 2026-11-12 and 2026-11-14.
 
 ## Environment, Accounts, And Marketplace
@@ -181,7 +189,8 @@
   Status: Open.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:129; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:103 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
-- [ ] **RISK-406** A plugin whose hook modifies tool output is held in Anthropic directory review.
+- [x] **RISK-406** A plugin whose hook modifies tool output is held in Anthropic directory review.
+  Verified: none possible locally; directory review is server-side. Accepted at Likelihood 1 (weak).
   Category: release.
   Cause: the directory review may block hooks that modify tool output (one commenter's belief; one poster's plugin stuck two weeks).
   Event: a listing that does not clear review.
@@ -192,10 +201,11 @@
   Actions: none in the source; field report, no local probe possible.
   Trigger: a submission with a hook that edits tool output.
   Owner: setup.
-  Status: Open.
+  Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xfqg0c-how-do-you-keep-a-skill-active-a-20261028T060802Z.md:74; external/2026-10-28/reddit.com-r-claudeai-comments-1xfqg0c-how-do-you-keep-a-skill-active-a-20261028T060802Z.md:82 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfqg0c/how_do_you_keep_a_skill_active_after_context/>).
 
-- [ ] **RISK-407** Silent Skill Abort.
+- [x] **RISK-407** Silent Skill Abort.
+  Verified: ls, claude 2.1.327, 2026-11-18, `ls plugins/claudetto` holds no skills or commands folder, so no injected `!` command exists to abort.
   Category: Claude Code.
   Cause: An injected `!` command is not pre-approved; injected commands never prompt.
   Event: Outside auto mode the whole skill invocation aborts, and `|| true` does not help.
@@ -206,13 +216,14 @@
   Actions: Add the commands to the skill's allowed-tools or the permission settings.
   Trigger: A skill with `!` commands that are not allowed.
   Owner: setup.
-  Status: open.
+  Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Basis: reported.
   Source: external/2026-11-04/reddit.com-r-claudecode-comments-1wpcirc-ccs-most-underrated-feature-dy-20261104T085040Z.md:107 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wpcirc/ccs_most_underrated_feature_dynamic_context/>).
 
 ## Product And Tooling
 
-- [ ] **RISK-408** The version floor key is wrong.
+- [x] **RISK-408** The version floor key is wrong.
+  Verified: code search, claude 2.1.327, 2026-11-18, cc-inspect `code search requiredMinimumVersion`: enforced from policySettings only (chunk-4dxjsc3b.js@2149). The floor is `engines` ">=2.1.327" in plugin.json (`claude plugin validate` passes), so no user-settings key is written.
   - Category: product.
   - Cause: settings.ts:146 writes minimumVersion, which blocks downgrades only.
   - Event: An old Claude Code starts with claudetto.
@@ -224,10 +235,11 @@
   - Actions: Write requiredMinimumVersion, which exits at startup.
   - Trigger: Setup writes the floor.
   - Owner: setup
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
 
-- [ ] **RISK-409** A builtin plugin stays loaded after its disable.
+- [x] **RISK-409** A builtin plugin stays loaded after its disable.
+  Verified: probe, claude 2.1.327, 2026-11-18, `CLAUDE_CONFIG_DIR=<empty dir> claude -p hi --plugin-dir plugins/claudetto --debug-file d.log` twice: run 1 logged "turned off" once and wrote all 13 ids false; run 2 logged no "turned off". The notice names /reload-plugins. Likelihood stays 5 because a running session keeps the builtin until reload.
   - Category: product.
   - Cause: Builtin hooks modules persist until /reload-plugins or a restart.
   - Event: agents-md, plugin-authoring, privacy and diff hooks keep running after a settings write.
@@ -239,7 +251,7 @@
   - Actions: Tell the user to run /reload-plugins or restart; do not rely on plugin.register or a plugin-shipped settings.json.
   - Trigger: A builtin is enabled again or a disable was just written.
   - Owner: setup
-  - Status: open (Existing controls: partial at 088a227c).
+  - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: measured, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290).
 
 - [ ] **RISK-410** A running session holds a stale plugin until restart.
@@ -321,7 +333,8 @@
   Status: open.
   Source: reported, user, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); reported, user, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
-- [ ] **RISK-415** A plugin secret or settings placeholder leaks into the user settings.
+- [x] **RISK-415** A plugin secret or settings placeholder leaks into the user settings.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rln "CONTEXT7" plugins/claudetto`: 0 hits; no plugin code writes the key, so the placeholder cannot come from it.
   Category: Claude Code fault.
   Cause: a `[REDACTED]` placeholder for `CONTEXT7_API_KEY` sat in `~/.claude/settings.json`; its source is unproven.
   Event: Context7 failed until the line was removed and the user logged in again.
@@ -333,5 +346,5 @@
   Actions: none; the source stays unproven.
   Trigger: a `[REDACTED]` value in a settings key.
   Owner: setup.
-  Status: open.
+  Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.

@@ -2,7 +2,7 @@
 
 ## You Should Know
 
-- [ ] **RISK-420** One verdict of the you-should-know side check stops every later call of the turn.
+- [x] **RISK-420** One verdict of the you-should-know side check stops every later call of the turn.
   Category: you-should-know, keying.
   Cause: startCheck returns the shown note for every call while row.view is an offer from the same turn, and checkBefore hands later concurrent calls the same result.
   Event: 7 calls stopped in one turn: a deletion note stopped an ls or sed, a Write, and a bun run that deleted nothing; a premise-false note stopped three Edits.
@@ -14,12 +14,13 @@
   Actions: key the offer by tool_use_id; test two concurrent calls with different verdicts.
   Trigger: two calls of one turn stopped by one note.
   Owner: you-should-know.
-  Status: open.
+  Status: closed. Obsolete: the plugin has no tool.call hook (ADR-0174) and no digest (ADR-0114).
+  Verified: grep -rnE "tool\.call|toolUseId|digest" plugins/claudetto-you-should-know/hooks finds no code match, claude 2.1.327, 2026-11-18.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:554-556 (measured).
 
 ## Ungrouped
 
-- [ ] **RISK-421** The you-should-know digest reports a denied call as one that ran.
+- [x] **RISK-421** The you-should-know digest reports a denied call as one that ran.
   Category: you-should-know
   Cause: The digest logged `called {...}` before the call and never logged its outcome (`register.ts:275` at the time).
   Event: The side-agent note said the sandbox-off `ls` ran and counted files, but permission had denied it.
@@ -31,5 +32,6 @@
   Actions: Keep the two tests in `register-check.test.ts`.
   Trigger: A denied or failed call.
   Owner: you-should-know
-  Status: mitigated
+  Status: closed. Obsolete: the digest and its log are gone (ADR-0114), so a denied call cannot be logged as one that ran.
+  Verified: grep -rnE "called \{|logOutcome|digest" plugins/claudetto-you-should-know/hooks finds no code match, claude 2.1.327, 2026-11-18.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:2433; observed in transcript, 2026-11-16

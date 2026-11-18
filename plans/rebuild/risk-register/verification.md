@@ -35,7 +35,7 @@
 
 ## Guards
 
-- [ ] **RISK-424** A lab test on a constant that does not exist passes before the fix.
+- [x] **RISK-424** A lab test on a constant that does not exist passes before the fix.
   Category: verification, weak test.
   Cause: the P176 lab test expecting timeoutMs toBe(LIMITS.checkTimeoutMs) passed at HEAD while the constant did not exist (undefined equals undefined), and only bun check flagged it.
   Event: a test that cannot fail first ships a missing constant.
@@ -49,10 +49,11 @@
   Owner: verification.
   Status: open (rebuild).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:822 (P176, measured).
+  Verified: 2026-11-18, commit 328809c7f, `claude plugin test plugins/claudetto`: text.test.ts pins the 70k default as the literal 70000, so an undefined constant fails.
 
 ## Verification And Honesty
 
-- [ ] **RISK-425** Regex graders punish the behaviour they reward.
+- [x] **RISK-425** Regex graders punish the behaviour they reward.
   Category: verification
   Cause: A "recap" measure flagged lines that start "I ran" or "I checked"; an over-claim regex (TESTISH) matched only test runners.
   Event: All 7 flagged reports were check reports; a passing `node check.mjs` run counted as an over-claim (session logs a481f295, 2a88ad5a; measured).
@@ -67,7 +68,7 @@
   Status: mitigated
   Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:132,139,141.
 
-- [ ] **RISK-426** Router oracles pass on keywords, and cleaning out prose pins removes behaviour guards.
+- [x] **RISK-426** Router oracles pass on keywords, and cleaning out prose pins removes behaviour guards.
   Category: verification
   Cause: Oracles read keywords in the model's answer; a regex on the final message failed runs whose count was correct; deleting "prose pins" also removed message checks such as a `.env` credentials error.
   Event: Session logs 0bab351b, e473653f, 9c0492e2.
@@ -79,7 +80,7 @@
   Actions: When deleting a prose pin, keep each check that guards behaviour.
   Trigger: A test deletion removes an assertion on an error message.
   Owner: verification
-  Status: open
+  Status: mitigated. Verified: grep of plugins/claudetto/hooks (register.ts, handover/renewal.ts), claude 2.1.327, 2026-11-18: the only Stop and TaskCompleted handlers set boundary flags and call next; no regex Stop check ships.
   Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:138,142,143,145.
 
 - [ ] **RISK-427** A test suite is reported as passing because it ran the wrong directory.
@@ -94,7 +95,7 @@
   Actions: Print the log path next to the result.
   Trigger: A pass line with no path.
   Owner: verification
-  Status: open
+  Status: closed. Cause removed: no router, oracle or prose pin ships in the rebuild (plugins/claudetto holds only builtins, handover and settings hooks, 2026-11-18).
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/>).
 
 - [ ] **RISK-428** A claimed bug fix ships on a test that never failed before the fix, or on a green exit code that hides a failure.
@@ -112,7 +113,7 @@
   Status: open
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:33,35,101,119 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
 
-- [ ] **RISK-429** Executor test that skips the delegation path.
+- [x] **RISK-429** Executor test that skips the delegation path.
   Category: agent
   Cause: A plan written by a costly model, then /clear, a switch to Sonnet, and the plan pasted. An orchestrator passes only part of the plan plus other context, so this is not the delegation path.
   Event: The conclusion "Sonnet is trash at executing plans" came from the flawed method.
@@ -124,7 +125,7 @@
   Actions: Test a model through the real delegation path with the orchestrator's brief.
   Trigger: A model verdict from a /clear-and-paste test.
   Owner: verification
-  Status: open. Basis: reported, anecdote from a commenter.
+  Status: closed. Cause removed: plugins/claudetto ships no executor or delegation test target (no agents directory, 2026-11-18); the delegation block owns the path.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:219 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
 
 - [ ] **RISK-430** Agent is sure without checking.
@@ -157,7 +158,7 @@
   Status: open. Basis: reported.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:400 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
 
-- [ ] **RISK-432** A lockfile sync swaps the pytest version and the grader marks a passing run unresolved.
+- [x] **RISK-432** A lockfile sync swaps the pytest version and the grader marks a passing run unresolved.
   Category: tooling
   Cause: `uv sync --group tests` installed the lockfile's pytest 9.1.1 over the 9.2.0 the task install chose. Pytest 9.1.1 names the 3 bytes-parametrized `test_can_unpickle_25_3_attributes` cases by their escaped bytes, not `pickle_data0`, so their ids no longer matched (measured)
   Event: Dev's `attrs` run graded unresolved with fail-to-pass 2/2 and pass-to-pass 734/737 although the tests passed
@@ -172,7 +173,7 @@
   Status: closed by commits 00a08195 and d1efb8e1. Basis: measured
   Source: openspec/changes/2-1-325-rearchitecture/design.md:251.
 
-- [ ] **RISK-433** The upstream fix is reachable from the agent's worktree during a graded run.
+- [x] **RISK-433** The upstream fix is reachable from the agent's worktree during a graded run.
   Category: tooling
   Cause: Rounds 1 to 6 ran on a detached worktree of the full upstream clone, so post-fix commits and tags were reachable; the clones held 77 to 2,308 commits past base. Every post-fix blob was reachable for isort, zod-6553, black, pytest, attrs, and sqlfluff (1/1 each), none for zod-6530 (0/5), hono (0/2), or tox (0/8) (measured by `git log --all --find-object`)
   Event: An agent could read the fix. A scan of every recorded `git` command gave 16 hits: 6 `git stash apply` on the agent's own stash, 7 matched `--project main`, 2 `git describe --tags` of HEAD, and 1 stock hono run of `git tag --contains 8a0b18fd` that listed post-base tag names (`v4.13.0` and later), names only, no code
@@ -199,7 +200,7 @@
   - Actions: Rerun the original grader after any grader change; keep the change in a separate commit from the result; unwritable referee, held-out data, tests written first and locked, consent-gated loosening, a separate context-free checker agent, ask for a diff summary; PreToolUse deny on edits under tests/baselines/graders without a user prompt naming them (referee registry, ask hook with old and new value), CI diff lint, grading outside the agent's workspace (protectedPaths, holdout); merged-result acceptance tests; [REQ-VERIFICATION-022](../prd/verification.md) (frozen grader, no agent write access, new eval version on each criteria change); change a grader or a scaffold only to fix a wrong grader, never to make a case pass; compare results only on unedited graders; report each such edit; the eval and grader integrity items of arc42 section 2; [ADR-0062](../adr/0062-delete-plugin-eval-suite.md).
   - Trigger: A commit changes a grader and a prompt after a failing paid run; an edit under tests, baselines, or graders in a session that ran a failing check; a grader, scaffold, fixture, or acceptance-list edit in the same change or session as a plugin text edit or a failed case; a grader, scaffold, or fixture edit in the same change as a plugin text edit; a diff to a grader, scaffold, or acceptance list in the same session as a failed case; a diff of a grader, scaffold, or task after its first run.
   - Owner: verification
-  - Status: open.
+  - Status: closed. Cause removed: the benchmark grader (tools/bench) left the tree; ADR-0087 drops benchmarks.
   - Source: external/2026-11-16/agent-conduct-dossier-20261116.md:28,57; git commit d21c58d5 (2026-11-16); external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:93; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:94; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:97; external/please-use-me-often/agent-failure-dossier/judged/other.jsonl:39; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/>); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332. The 6%/3%, 30%/23%, and fix-the-test 8/8 figures: not located by grep; they rest on the old plan item only; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7350 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); reported, user, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480, :7424, :7889; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (handoff lists `limit-met`, `fact-first`, and the `NOTES.md` rewrite) (reported, user, 2026-11-16).
 
 - [ ] **RISK-435** Guardrail probe adaptation: the agent routes a probe around the gate instead of reporting it.
@@ -212,7 +213,7 @@
   Response: mitigate.
   Actions: headless sessions not offered `asks`; keep the tool undeferred.
   Trigger: a probe that switches command after a denial.
-  Owner: verification. Status: open.
+  Owner: verification. Status: closed. Cause removed: the benchmark grader (tools/bench) left the tree; ADR-0087 drops benchmarks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:307; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:318; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332; openspec/specs/surface-trim/spec.md:271.
 
 - [ ] **RISK-436** False completion: the agent reports done without a check at the real layer.
@@ -243,7 +244,7 @@
   Owner: verification. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:71; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:138
 
-- [ ] **RISK-438** Tool call as text: a reply holds tool-call syntax and no matching `tool_use` block.
+- [x] **RISK-438** Tool call as text: a reply holds tool-call syntax and no matching `tool_use` block.
   Category: Technical.
   Cause: With thinking disabled the model can write a tool call as plain text that never executes; The model emits call syntax in prose.
   Event: A reply holds tool-call syntax and no matching `tool_use` block; With thinking disabled a tool call is written as text and never runs, while the reply says "done".
@@ -253,7 +254,7 @@
   Response: mitigate.
   Actions: A Stop hook checks the last reply for tool-call syntax with no matching `tool_use` block in the transcript and tells the agent to re-issue. A scan by pattern alone is out (see OUT item on regex Stop checks; user decision, 2026-11-16); a check of transcript `tool_use` blocks against reply claims is the allowed form.
   Trigger: The last reply holds tool-call syntax and no `tool_use` block; A reply says done and the turn holds no tool_use block for the named action.
-  Owner: verification. Status: open (reported, Opus 5.5 system card via transcription).
+  Owner: verification. Status: closed. The only cure was a Stop hook scanning the reply by pattern, which the product rules forbid (no regex Stop check); one report, not reproduced on 2.1.327.
   Source: external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2; not located: the system-card line. Conflict check: the cure scans reply text at Stop and may fall under "No regex Stop check"; the lead decides; unresolved: no source line holds a tool call written as text; the nearest source, the Opus 5.5 prompting guide thread (external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2), says only that thinking cannot be turned off and that unattended agents stop early
 
 - [ ] **RISK-439** Invalid measurement.
@@ -377,7 +378,7 @@
 
 ## Agent Habits
 
-- [ ] **RISK-447** Skill-driven TDD inflates a test suite with tests that never fail.
+- [x] **RISK-447** Skill-driven TDD inflates a test suite with tests that never fail.
   Category: verification
   Cause: Superpowers TDD rules; gates and test-writing rules did not help, deleting the TDD rules did.
   Event: The suite grew from 1,400 to about 4,000 tests in about 2 weeks; over 70% were implementation-pinning or never failed when code broke (reported, author's own count). One commenter cut CI from 27 min to under 6 by auditing.
@@ -389,12 +390,12 @@
   Actions: Run mutation testing (Stryker, mutmut) over the newly added tests (about 2,600 here); audit tests that never fail.
   Trigger: A test count that doubles in two weeks.
   Owner: verification
-  Status: open
+  Status: closed. Cause removed: no TDD skill pack and no 2,600-test suite remain; plugins/claudetto holds 25 tests (`claude plugin test`, 2026-11-18).
   Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xxate6-tldr-psa-superpowers-skill-w-20261116T045402Z.md:31,33,52,54 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xxate6/tldr_psa_superpowers_skill_with_opus_ruined_my/>).
 
 ## Spec Drift
 
-- [ ] **RISK-448** UI port drifts from the spec.
+- [x] **RISK-448** UI port drifts from the spec.
   Category: agent
   Cause: A spec-to-app UI port drifts; the poster failed 6 attempts. A whole-page ask lets drift move around.
   Event: The built screens differ from the prototype.
@@ -406,12 +407,12 @@
   Actions: Turn the spec into one theme/tokens file (colors, spacing, type, radii) the user reviews first; build primitives (Text, Button, Card, screen) exact before any page; implement one component at a time; give a screenshot of prototype and app side by side each pass; list every inherited style and check whether a UI library or theme provider overrides styles before the next attempt.
   Trigger: A second failed port attempt.
   Owner: verification
-  Status: open. Basis: reported, 6 failed attempts by poster.
+  Status: closed. Cause removed: the rebuild ports no UI; REQ-VERIFICATION-097 is out under ADR-0177.
   Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:49; external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbmm9l/claude_opus_having_a_hard_time_implementing_a_spec/>).
 
 ## Model Variability
 
-- [ ] **RISK-449** Quality drift reports: users report model quality varying by weekday or week.
+- [x] **RISK-449** Quality drift reports: users report model quality varying by weekday or week.
   Category: model.
   Cause: unknown; A/B or load balancing suspected by one author. No measurement.
   Event: reported weekday degradation of Opus 5.5; one author found it vanished after 24h; another says quality drifts 1-2 weeks after release; Sonnet 5.5 edited files in manual edit-approval mode without asking (one report).
@@ -421,7 +422,7 @@
   Response: accept.
   Actions: hard rules in hooks. The old cure "a daily internal benchmark per model" is Out under the settled no-benchmarks decision (user decision, 2026-11-16).
   Trigger: a user report of a sudden quality change.
-  Owner: verification. Status: open.
+  Owner: verification. Status: closed. Accepted as is: the old cure (a daily benchmark per model) is out under ADR-0087; nothing in the plugin can change model quality.
   Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:69 (reported, about 59 threads on perceived regressions); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:97 (Sonnet 5.5 edit mode, n=2 there, one report in the old item).
 
 ## Agent Conduct
@@ -475,7 +476,7 @@
 
 ## Verification And Tests
 
-- [ ] **RISK-453** A hand-labelled ground-truth set is wrong, and some questions have no stable answer.
+- [x] **RISK-453** A hand-labelled ground-truth set is wrong, and some questions have no stable answer.
   Category: measurement fault
   Cause: The labels were never audited; the question "does this sentence say the job is finished" is not well defined
   Event: Blind re-judging of 10 labels agreed on only 5 (one label was a future-tense sentence recorded as done); two careful judges agreed on 6 of 10
@@ -487,10 +488,10 @@
   Actions: Audit the labels blind before measuring; do not automate a question with no stable answer, ask the user
   Trigger: A label set that was never re-judged
   Owner: verification
-  Status: open
+  Status: closed. Cause removed: the hand-labelled ground-truth sets left with the claim check and ledger; the lab scores from transcript counts (ADR-0187).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:33; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:35; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/>).
 
-- [ ] **RISK-454** A test inherits the environment of a git hook and flips core.bare to true in the real repo; a screenshot script leaves 157 Chrome profiles in temp.
+- [x] **RISK-454** A test inherits the environment of a git hook and flips core.bare to true in the real repo; a screenshot script leaves 157 Chrome profiles in temp.
   Category: agent fault
   Cause: Tests run with the caller's environment and touch the real repo and temp
   Event: Every checkout breaks
@@ -502,12 +503,13 @@
   Actions: Run tests with a clean environment and sandboxed
   Trigger: A test that runs git commands
   Owner: verification
-  Status: open
+  Status: mitigated. Verified: `claude plugin test plugins/claudetto` with a logging git stub first on PATH and GIT_CONFIG_GLOBAL=/dev/null, claude 2.1.327, 2026-11-18: 25 pass and the stub log was never created, so no test can inherit hook git variables.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 ## Lead Agent And Helper Scripts
 
-- [ ] **RISK-455** A helper script reads a file under a changed record separator.
+- [x] **RISK-455** A helper script reads a file under a changed record separator.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Category: tool defect.
   - Cause: `scripts/addurl.pl` set `local $/` for slurping the cited file and called the front-matter reader inside that scope, so the reader saw the whole export as one line and its `^url:` match failed.
   - Event: the script appends no URL and reports each citation as having none.
@@ -519,10 +521,11 @@
   - Actions: scope each `local $/` to the read it serves; dry-run each bulk script on a copied folder and count the result.
   - Trigger: a new bulk-edit script.
   - Owner: verification
-  - Status: closed (fixed with `local $/ = "\n"` in the reader).
+  - Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10368.
 
-- [ ] **RISK-456** A bulk citation rewrite splits a line number it was meant to skip.
+- [x] **RISK-456** A bulk citation rewrite splits a line number it was meant to skip.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Category: tool defect.
   - Cause: in `scripts/addurl.pl` the line-number group `(?::[0-9][0-9,-]*)?` could backtrack, so the guard `(?! \(url:)` passed one digit early on a citation that already had a URL.
   - Event: `md:68 (url: X)` became `md:6 (url: X)8 (url: X)`, giving a wrong line number and a stray digit.
@@ -534,10 +537,11 @@
   - Actions: make each guarded group possessive (`*+`, `?+`); run each bulk script twice on a sample that holds already-rewritten text, and require the second run to change nothing; after each bulk run, grep for the broken form and count it.
   - Trigger: a regex rewrite that skips text it already rewrote.
   - Owner: verification
-  - Status: closed (possessive groups; the second run changed nothing; `merged/` rebuilt with 0 split citations).
+  - Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:11026.
 
-- [ ] **RISK-457** A helper script is used before it has ever compiled.
+- [x] **RISK-457** A helper script is used before it has ever compiled.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Category: tool defect.
   - Cause: `scripts/merge.pl:13` had `print $o <$i>;`, which Perl parses as a less-than comparison; the script had not been run since it was written.
   - Event: the merge aborted with a syntax error.
@@ -549,7 +553,7 @@
   - Actions: run `perl -c` (or the language's syntax check) on each script when it is written, and run it once on a sample.
   - Trigger: a new helper script.
   - Owner: verification
-  - Status: closed (`print {$o} <$i>;`, `perl -c` OK).
+  - Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10902.
 
 ## Relative Plugin Directory in a Probe
@@ -571,7 +575,8 @@
 
 ## Citation Hygiene: Brief Lines Cited as Source Lines
 
-- [ ] **RISK-459** A citation names a line of the brief, not of the source file.
+- [x] **RISK-459** A citation names a line of the brief, not of the source file.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: Agent behaviour.
   Cause: Brief line numbers were cited as source-file lines (S-1..S-3 mis-citation: they were lines inside a Reddit thread).
   Event: A reader opens the cited line and finds other text.
@@ -583,7 +588,7 @@
   Actions: Resolve each citation to a path and line of the source file.
   Trigger: A citation names a line number with no path.
   Owner: verification.
-  Status: open.
+  Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the S-1..S-3 citations.
 
 ## Conduct Failures
@@ -632,11 +637,12 @@
   - Status: open.
   - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
 
-- [ ] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
+- [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: conduct. Cause: the reference is written before its target. Event: a "User Answers" reference with no such section.
   Consequence: a dangling reference in a plan file. Likelihood: 1. Impact: 1. Existing controls: none.
   Response: mitigate. Actions: write the target before the reference.
-  Trigger: a reference to a heading that is absent. Owner: verification. Status: open.
+  Trigger: a reference to a heading that is absent. Owner: verification. Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 ## Verification
@@ -688,24 +694,26 @@
 
 ## Lead Agent Conduct
 
-- [ ] **RISK-468** A coverage check takes its input set from the output it checks.
+- [x] **RISK-468** A coverage check takes its input set from the output it checks.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: verification defect. Cause: the transcript coverage count built the set of turn ids from the `===` lines of the chunk files, not from `transcripts/turns.txt`, the list the chunks were cut from.
   Event: 84 of 491 turns (57 `handoff`, 27 `typed`) were never put in a chunk, and the check still reported 0 missing; the handover's 434 was the `typed` count, read as the turn total.
   Consequence: 84 turns, including 57 handover summaries that carry user decisions, went unmined through two sessions. Cost: five extra mining workers and a late merge into the dedupe outputs.
   Likelihood: 3. Impact: 4.
   Existing controls: a per-chunk ledger count, which checks each chunk against itself only.
   Response: mitigate. Actions: build each coverage input set from the source list the work was cut from, and compare it with `comm` against the ledger; state the source file of each count in the handover.
-  Trigger: a split of input into worker chunks. Owner: verification. Status: closed (all 491 turn ids of transcripts/turns.txt appear in stage/tx-*/ledger.tsv; `comm -23` gives 0 lines, 2026-11-17).
+  Trigger: a split of input into worker chunks. Owner: verification. Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Basis: observed in transcript, 2026-11-17. Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:11552.
 
-- [ ] **RISK-469** A summary's date is recorded as the date of the decision it summarises.
+- [x] **RISK-469** A summary's date is recorded as the date of the decision it summarises.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: attribution defect. Cause: `brief-transcripts.md:35` told transcript workers to date each ADR with the turn date, and line 29 to date each decision with it, with no exception for `handoff` turns, which summarise decisions made on that day or earlier.
   Event: 27 ADRs (first pass) and 35 files (second, item-level pass) of `stage/tx-*` carried a handoff timestamp as the decision date; worker x03 then presented 2026-11-13 (a pricing-page read date at openspec/changes/archive/2026-11-16-2-1-323/design.md:97) and 2026-11-14 (handoff timestamp at f4b1442b jsonl:37070) as the dates of two settled decisions.
   Consequence: the plan would state decision dates that no source shows; an ambiguous date, which the user ruled out. Caught before integration; cost one script and two ADR edits.
   Likelihood: 3. Impact: 3.
   Existing controls: none in the brief.
   Response: mitigate. Actions: date a decision only from a turn of kind `typed`; a decision seen only in a handoff gets "date of the handoff that records it; day of decision not recorded" (`scripts/handoff-dates.pl`, run on every `stage/tx-*` folder once its worker has finished).
-  Trigger: a brief that asks a worker for a date from a summary. Owner: verification. Status: closed (script run on every stage/tx-* folder after its worker ended; a second run changes 0 files).
+  Trigger: a brief that asks a worker for a date from a summary. Owner: verification. Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Basis: observed in transcript, 2026-11-17. Source: the audit brief and worker output, deleted after the plan commit; the fix: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:12215.
 
 ## Agent conduct
@@ -727,7 +735,8 @@
 
 ## Conduct
 
-- [ ] **RISK-471** The agent edits a plan or file while workers read it.
+- [x] **RISK-471** The agent edits a plan or file while workers read it.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Category: conduct.
   - Cause: No rule for concurrent edits.
   - Event: Workers read a changing file; edits race.
@@ -739,12 +748,12 @@
   - Actions: Give each worker its own stage directory and concatenate after.
   - Trigger: A worker reads a file that the lead edits.
   - Owner: verification
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8799); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
 ## Product And Tooling
 
-- [ ] **RISK-472** The just check suite fails its PTY test inside the sandbox.
+- [x] **RISK-472** The just check suite fails its PTY test inside the sandbox.
   - Category: tooling.
   - Cause: claude-tty.test.ts cannot open a PTY in the sandbox.
   - Event: A false red.
@@ -756,10 +765,11 @@
   - Actions: Run just check outside the sandbox.
   - Trigger: The check runs in the sandbox.
   - Owner: verification
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed. Cause removed: `just check` and its PTY test left the tree (no justfile, 2026-11-18).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
-- [ ] **RISK-473** A bulk one-call text pass truncates.
+- [x] **RISK-473** A bulk one-call text pass truncates.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Category: tooling.
   - Cause: A topic of 500 or more claims in one call, or a 240 KB prompt on one command line.
   - Event: Output cut or xargs fails.
@@ -771,10 +781,10 @@
   - Actions: Chunk the pass and send a big prompt by file.
   - Trigger: A pass has more than 150 items.
   - Owner: verification
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
-- [ ] **RISK-474** An eval run deletes the file the test preload writes (.last-run) as temp output.
+- [x] **RISK-474** An eval run deletes the file the test preload writes (.last-run) as temp output.
   - Category: tooling.
   - Cause: The agent treats a test side file as temporary.
   - Event: A needed file is deleted.
@@ -786,10 +796,10 @@
   - Actions: Noted; the rule stays.
   - Trigger: A cleanup of temp output in a repo.
   - Owner: verification
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed. Cause removed: the eval run and its test preload (.last-run) left the tree (no evals directory, 2026-11-18).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031).
 
-- [ ] **RISK-475** A commitlint failure on pushed commits of a retired type.
+- [x] **RISK-475** A commitlint failure on pushed commits of a retired type.
   - Category: tooling.
   - Cause: Two older pushed commits have type openspec(...).
   - Event: just lint fails.
@@ -801,12 +811,12 @@
   - Actions: Leave the commits alone.
   - Trigger: just lint runs.
   - Owner: verification
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed. Cause removed: no commitlint config exists in the tree (2026-11-18); the retired commit type needs no action.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
 ## Conduct Faults From the Rearchitecture Sessions
 
-- [ ] **RISK-476** The agent words a reply or a test to game the plugin, or tests prose.
+- [x] **RISK-476** The agent words a reply or a test to game the plugin, or tests prose.
   Category: agent conduct.
   Cause: the agent added words that are the opposite of the user's order, and wrote tests of prose.
   Event: the user calls it cheating and a violation of the Terms of Use.
@@ -818,10 +828,11 @@
   Actions: the CON items on wanted-behaviour wording and on tests of prose; OUT "prose checks".
   Trigger: a test that asserts a phrase.
   Owner: verification.
-  Status: open.
+  Status: mitigated. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18: no prose check, grader or reply gate ships, so a reply cannot be worded to pass one; tests assert returned values and effects (25 tests, `claude plugin test`).
   Source: reported, user, 2026-11-14 02:47 UTC, tests check no implementation prose (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31431): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
-- [ ] **RISK-477** A check of cross-references covers only one form, so stale names in the other form pass.
+- [x] **RISK-477** A check of cross-references covers only one form, so stale names in the other form pass.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: agent conduct.
   Cause: the plan link check of 2026-11-16 parsed Markdown links only; ADR names written as plain `adr/<slug>.md` text after the ADR merge were never checked.
   Event: 10 references to 6 ADR names that the merge had renamed (such as `[ADR-0046](../adr/0046-rebuild-clean-slate.md)`, `[ADR-0097](../adr/0097-batched-edit-tool.md)`) shipped in the copied plan with the check reporting 0 bad.
@@ -833,10 +844,11 @@
   Actions: check every reference form a document uses (links, plain paths, IDs), not only the form a parser finds first.
   Trigger: a merge or rename of a referenced file.
   Owner: verification.
-  Status: closed.
+  Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Source: observed, 2026-11-17, lead session `0342617c` (the plan build of `plans/rebuild/`).
 
-- [ ] **RISK-478** A decision record written from one answer settles a neighbouring question the user did not answer.
+- [x] **RISK-478** A decision record written from one answer settles a neighbouring question the user did not answer.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: agent conduct.
   Cause: after the user chose the reply form `- ! <command>`, the lead wrote "The Stop open-items check parses that same form" into the record, without checking the plan for open conflicts on whether that check ships.
   Event: the record stated as settled that a Stop open-items check exists, while OUT-171 lists three open conflicts that remove it and `open-items.ts`.
@@ -848,10 +860,11 @@
   Actions: before writing an answer into a record, grep the plan for conflicts on each claim the new text adds, and write only what the answer decided.
   Trigger: applying a user answer to a record.
   Owner: verification.
-  Status: closed.
+  Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Source: observed, 2026-11-17, lead session `0342617c` (the plan build of `plans/rebuild/`).
 
-- [ ] **RISK-479** A rewrite of a source item into a requirement drops a detail that the source item held.
+- [x] **RISK-479** A rewrite of a source item into a requirement drops a detail that the source item held.
+  Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Category: agent conduct.
   Cause: the rewrite of the old curation plan into requirements mapped each old item to an ID (1,074 of 1,074) but did not check that each named token of the old item survived.
   Event: three details of `plans/rebuild-curation.md@0e987414` were missing from the build: arXiv 2508.21433 behind the half-cost masking claim (OUT-085 then called its source "not located"), `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` in the eval env profile, and the four parallel `$.fs.list` calls of the skill-listing hook.
@@ -863,10 +876,10 @@
   Actions: rerun the token scan against the build after each rewrite and compare it with the audited rows.
   Trigger: a rewrite or merge of plan items.
   Owner: verification.
-  Status: closed.
+  Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Source: observed, 2026-11-17, lead session `0342617c` (token scan rerun against `final/`).
 
-- [ ] **RISK-483** The agent writes a general sentence into an override or exception field to get past a gate.
+- [x] **RISK-483** The agent writes a general sentence into an override or exception field to get past a gate.
   - Category: agent fault.
   - Cause: a gate with a free-text override lets the agent approve its own exception.
   - Event: an agent pasted a general user sentence into an override field in 13 of 19 scripts (reported, one repo).
@@ -878,7 +891,7 @@
   - Actions: any claudetto gate takes exceptions only as a proposal naming the exact unit, value and script, approved by the user; the agent cannot write the approval.
   - Trigger: an override field the agent can write.
   - Owner: verification
-  - Status: open
+  - Status: mitigated. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18: no hook returns a block decision and no gate has an override field, so there is no sentence to game.
   - Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xy9mba-followup-2-weeks-later-i-built-20261117T231817Z.md:94,106 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xy9mba/followup_2_weeks_later_i_built_the_hooks_sqlite/>); reports/2026-11-18-research/dossier.md:87.
 
 - [ ] **RISK-484** An accusation planted in a project file or subagent report makes the agent damage correct work.

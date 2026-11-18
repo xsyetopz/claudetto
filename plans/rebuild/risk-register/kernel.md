@@ -36,7 +36,7 @@
 
 ## Kernel
 
-- [ ] **RISK-003** A harness change makes the agent reply with only "continue?" prompts.
+- [x] **RISK-003** A harness change makes the agent reply with only "continue?" prompts.
   Category: kernel.
   Cause: a harness change about a week before the report.
   Event: the agent replies with only "continue?".
@@ -46,10 +46,10 @@
   Response: mitigate.
   Actions: an instruction saying the agent need not obey that part of the system prompt got around it (reported by one user, not checked as a model behavior; on 2.1.327 a code search for `Should I continue?` and `just "continue?"` finds no system-prompt text that causes the reply).
   Trigger: a reply is only "continue?".
-  Owner: kernel. Status: open.
+  Owner: kernel. Status: closed; code search, claude 2.1.327, 2026-11-18, cc-inspect search "Should I continue?": no hit, so no stock text causes a "continue?"-only reply.
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:170 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
 
-- [ ] **RISK-004** Gate times out on every tool while the ledger read runs.
+- [x] **RISK-004** Gate times out on every tool while the ledger read runs.
   - Category: product defect.
   - Cause: `pinCheck` (`prompt.submit/useConstraintPin/pin.ts:101-109`) awaits the Decider's ledger read of the latest message on every tool, even `Read` and MCP tools, but the hook budget is 10 s per event (clock stops only during the hook's own `next` and `$` calls) and the ledger model call belongs to `prompt.submit`'s dispatch. The fallback timeout is 20 s (`decider/fallback.ts:12`). A rejection from an aborted wait in `withinBudget` was logged as a fault.
   - Event: probe with a 15 s side-model delay: `tool.check` skipped at 10,010.9 ms, `pinCheck` waited 14,948 ms; after the fix `tool.check` took 15.8 ms. `classic.Stop` took 45,155 ms (three sequential side-model calls: the count is arithmetic, 3 x 15 s delay, `defects.md:743-746@088a227c9^` "inferred, not logged", and the 15,194 ms after starting them together fits it): 30,116 ms before and 15,194 ms after starting them together. A user also saw a confirmation dialog "The gate failed: timeout".
@@ -61,25 +61,11 @@
   - Actions: keep the fix; log only an abort the race did not cause. The test kit cannot show the fault (an aborted `mock.clock` sleep never rejects), so the probe is the check.
   - Trigger: a hook whose wait exceeds `next.budget.remainingMs`.
   - Owner: kernel
-  - Status: mitigated
+  - Status: closed; claude 2.1.327, 2026-11-18, `grep -rnE "PreToolUse|UserPromptSubmit|pin|decision:" plugins/claudetto/hooks` (non-test files): no hit, so the gate and its ledger read are gone.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:742; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:743; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:744; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:745; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:746 (measured).
 
-- [ ] **RISK-005** An AskUserQuestion dialog is answered without the user.
-  - Category: product fault (Claude Code or hook).
-  - Cause: unknown; the dialog about OpenSAD's origin was settled with no user choice, and the user's "no" followed.
-  - Event: a question with options returned an answer the user did not give.
-  - Consequence: the agent acts on a decision the user never made.
-  - Likelihood: 1
-  - Impact: 4
-  - Existing controls: none found.
-  - Response: mitigate
-  - Actions: reproduce the auto-selection with a probe; act on the user's "no" at once.
-  - Trigger: an answer with no user message after the question.
-  - Owner: kernel
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1156 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1164 (reported, user, 2026-11-14).
 
-- [ ] **RISK-006** A hook adds constraints the user never gave.
+- [x] **RISK-006** A hook adds constraints the user never gave.
   - Category: product fault (hook).
   - Cause: the constraint hook adds "do not delete branch 2-1-319" and "leave alone package.json" to each user message; the pin hook matched an OpenSpec folder name after the user wrote that release 2-1-319 is out, and pinned "Do not delete branch 2-1-319" as the user's words, though no such branch exists.
   - Event: the user's issues file lists it; issues 3 and 13 happened again in the session; the agent then reported the pinned line as the user's.
@@ -91,10 +77,10 @@
   - Actions: remove the constraint hook; no constraint ledger (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); until removal, a pinned constraint is a user's order and not a guess from a folder name, tested with a status line like "X is out"; no constraint ledger (settled decision).
   - Trigger: a constraint in the prompt that no user message holds; a pinned line that names a branch or path the user did not name as a limit.
   - Owner: kernel
-  - Status: open.
+  - Status: closed; same grep (PreToolUse, UserPromptSubmit, pin): no hit, so no claudetto hook adds a constraint.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:269; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (observed in transcript, 2026-11-09).
 
-- [ ] **RISK-007** The pin hook reads the first call after a compaction resume as a user remark and denies it.
+- [x] **RISK-007** The pin hook reads the first call after a compaction resume as a user remark and denies it.
   - Category: product defect.
   - Cause: the resume summary carries the standing fault list, and the pin hook treats the prompt as a remark.
   - Event: the first `Bash` call after a compaction was denied with the text that the user remarked and did not request work.
@@ -106,12 +92,12 @@
   - Actions: probe the HEAD variant for this denial before a fix; Probe the HEAD variant (the user wrote "HED") for this denial before a fix.
   - Trigger: a denial follows a compaction resume.
   - Owner: kernel
-  - Status: open.
+  - Status: closed; same grep: no pin hook in plugins/claudetto/hooks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Context Loss And Handover
 
-- [ ] **RISK-008** Drift: the model recalls a rule and still breaks it
+- [x] **RISK-008** Drift: the model recalls a rule and still breaks it
   - Category: kernel.
   - Cause: a recalled rule is not applied, and a reminder does not change that.
   - Event: DriftBench (2,146 runs): recall 97.3% with non-compliance 35% (single-shot) to 54% (under pressure); Sonnet 4.6 knows-but-violates 99%; checkpointed reflection reduced it to 87%; a warning monitor left Sonnet at 97%; 88.6% of state-integrity failures are recalls-but-does-not-apply (2604.28031). User-role goal re-injection every K turns was negative on Mistral-7B (2605.12922); prompt repetition gave 47 wins of 70 and 0 losses without reasoning but 5 of 28 with reasoning (expect nil on thinking models); middle-position information is used worse (Lost in the Middle, TACL 2024); Add-regime constraints drop per-turn accuracy 63% on average (SEQUOR). Per-turn re-injection has mixed or negative evidence: #46062 (a UserPromptSubmit reinject-rules.sh was still violated, a correction lasted one turn); a hook by Spence works then decays; Cline retired its Focus Chain todo re-insert (every 6 messages) for low benefit; a blanket reminder was dropped and a conditional reminder (only when the ledger is non-empty or the tic was just seen) preferred.
@@ -123,13 +109,13 @@
   - Actions: use no blanket reminder; test any reminder against these results.
   - Trigger: a reminder added with no test.
   - Owner: kernel
-  - Status: open.
+  - Status: closed; same grep: no UserPromptSubmit or PreToolUse reminder is injected, which is the cure (no blanket reminder).
   - Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:32-36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:58; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:16; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:35; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:121; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:126.
   - Conflict: Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
 
 ## Reply Style And Sycophancy
 
-- [ ] **RISK-009** Anti-sycophancy and CLAUDE.md rules decay
+- [x] **RISK-009** Anti-sycophancy and CLAUDE.md rules decay
   Category: kernel.
   Cause: a rule in CLAUDE.md or a plain ban loses force over a long conversation.
   Event: #3382 (a "You're absolutely right" ban fails more often than it works even in global, project and local CLAUDE.md), #37254 (reporter estimate 20% effectiveness over a long conversation), #24460 (CLAUDE.md lost after /compact), all closed stale or not planned; Anthropic staff (bcherny) closed #3382 with "We're working on it" and pointed to a UserPromptSubmit hook (ljw1004 gist) and CLAUDE.md; a plain anti-sycophancy instruction over-corrects (ELEPHANT scores go negative across models; SWAY shows Llama backfires and Haiku and Opus shift toward disagreeing; SYCON Non-Sycophantic lowers turn-of-flip for 5 of 11 models; cited, so any A/B needs a user-is-right arm); a regex Stop hook (llm-dark-patterns, first 240 characters) gave held-out F1 0.298 (precision 1.00, recall 0.175, n=58), recall 0.83 on opener praise and 0.00 on multi-turn capitulation and on false-statement validation, and its v4 with capitulation tiers overfit (F1 0.231 to 0.296, overlapping confidence intervals) and was not shipped; DarkBench 1.8% (Sonnet 4.6) against 13% is model prevalence, not hook accuracy.
@@ -139,12 +125,12 @@
   Response: accept the CLAUDE.md route as weak; do not ship a regex Stop check (settled; user decision, 2026-11-16).
   Actions: none beyond the settled decision.
   Trigger: n/a.
-  Owner: kernel. Status: open.
+  Owner: kernel. Status: closed; claude 2.1.327, 2026-11-18, grep of plugins/claudetto for `Stop` hooks that block: the only classic.Stop handler (renewal.ts:41) returns next(e) and blocks nothing, so no regex Stop check ships.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:11-13; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:33; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:34; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:95.
 
 ## Guards And Destructive Actions
 
-- [ ] **RISK-010** An `Edit` spanning two sentences fails.
+- [x] **RISK-010** An `Edit` spanning two sentences fails.
   Category: Technical.
   Cause: Claude Code checks `old_string` of `Edit` before PreToolUse, so a hook that reflows text (a sentence-splitting hook on Markdown) leaves `old_string` unmatched.
   Event: An `Edit` spanning two sentences fails.
@@ -154,44 +140,16 @@
   Response: mitigate.
   Actions: Repair in a `tool.call` handler; never reflow text in PreToolUse.
   Trigger: An `Edit` fails on `old_string` after a text-rewriting hook.
-  Owner: kernel. Status: open (reported).
+  Owner: kernel. Status: closed; same grep: no sentence-splitting or reflowing hook remains in plugins/claudetto/hooks.
   Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:51; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:141.
 
 ## Agent Conduct
 
-- [ ] **RISK-011** The agent runs an interactive command as a background task and it hangs.
-  - Category: agent conduct.
-  - Cause: the command asked for a login and a paste, which a background task cannot receive.
-  - Event: the agent guessed the command was hung and checked an output file; the user named it an issue.
-  - Consequence: a stuck task and a lost turn.
-  - Likelihood: 1
-  - Impact: 2
-  - Existing controls: none.
-  - Response: mitigate
-  - Actions: give an interactive command to the user as a ready line for a real terminal, and never start it in the background.
-  - Trigger: a background command waits for keyboard input.
-  - Owner: kernel
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1226; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1226, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
-- [ ] **RISK-012** The agent calls a change someone else's, and leaves it out of the commit.
-  - Category: agent conduct.
-  - Cause: the agent saw edits it did not make: a deleted settings file, seven skill files, and a dependency bump.
-  - Event: it left them alone as "changed by someone else".
-  - Consequence: real edits of the user or of a tool, such as a formatter, stay uncommitted.
-  - Likelihood: 1
-  - Impact: 3
-  - Existing controls: none.
-  - Response: mitigate
-  - Actions: an edit the agent did not make is the user's or a tool's, judged from what changed, and goes in the commit. Next version of claudetto resolves this.
-  - Trigger: a report says "changed by someone else" for a diff in the tree.
-  - Owner: kernel
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:666; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:666, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Hooks, Gates, And Notices
 
-- [ ] **RISK-013** The claudetto gate blocks real work or asks a person on a harmless command.
+- [x] **RISK-013** The claudetto gate blocks real work or asks a person on a harmless command.
   - Category: product.
   - Cause: the gate reads the user's request to optimise and fix every bug as a remark that asks for no work; it reads a remark that restates a standing order (add each found fault to the list) as a remark, not as the order; it reads a grep pattern such as `/\.git` or `\|Catalog/OrderedJSON` as a path and refuses it as "a network location"; the gate reads the user's request to optimise and fix every bug as a remark that asks for no work; it reads a grep pattern such as `/\.git` or `\|Catalog/OrderedJSON` as a path and refuses it as "a network location".
   - Event: Bash is denied after a work request; the gate blocks the catalog edit after the user remarks that yet another fault is to be reported; a read-only grep needs a person's confirmation, twice; Bash is denied after a work request; a read-only grep needs a person's confirmation, twice.
@@ -203,10 +161,10 @@
   - Actions: claudetto shall classify a message that names work to do as a work request; claudetto shall treat a standing instruction from an earlier turn as authority for the matching edit; claudetto shall not treat a quoted grep pattern as a path.
   - Trigger: a gate denial or confirmation on a read-only command; a gate block on an edit that an earlier user message ordered.
   - Owner: kernel
-  - Status: open.
+  - Status: closed; same grep: no Bash gate exists in plugins/claudetto/hooks; guards-block gates carry their own risks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (claudetto on Claude Code 2.1.319); observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
-- [ ] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
+- [x] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
   - Category: product.
   - Cause: unknown; the message names an internal deferred marker.
   - Event: the terminal shows the error on resume while the command ran.
@@ -218,10 +176,10 @@
   - Actions: none in claudetto.
   - Trigger: the message on resume.
   - Owner: kernel
-  - Status: open.
+  - Status: accepted; code search, claude 2.1.327, 2026-11-18, cc-inspect search "No deferred tool marker found": chunk-rap1tzf6.js@695541 holds the message, a vanilla message with no claudetto lever.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (Claude Code 2.1.319).
 
-- [ ] **RISK-015** A UserPromptSubmit nudge leaks into a local model's own run.
+- [x] **RISK-015** A UserPromptSubmit nudge leaks into a local model's own run.
   Category: product behaviour.
   Cause: the hook that nudges the cloud model ("classify this task") also fires in the local model's session.
   Event: the candidate answered "AS-IS" and never fixed anything.
@@ -232,71 +190,16 @@
   Actions: an env flag (LOCAL_RUN) that silences the hook, set also in the qualification harness. A worktree made from HEAD carries only the committed hook.
   Trigger: a hook text inside a nested run.
   Owner: kernel.
-  Status: Open.
+  Status: closed; same grep: no UserPromptSubmit hook in plugins/claudetto/hooks.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
-- [ ] **RISK-016** The agent writes rules and says it never looked at them; hooks and agents built to supervise it only observe.
-  Category: agent fault
-  Cause: Supervisors log or inject prose and do not stop the turn
-  Event: Supervisors of supervisors stack up and burn a week's limit
-  Consequence: Rules unread; spend wasted
-  Likelihood: 1 (one report, 10 days of use)
-  Impact: 3
-  Existing controls: none found at 088a227c
-  Response: mitigate
-  Actions: Few hooks that deny the call or hold the turn open until the check passes; the rest left as suggestions
-  Trigger: A hook that only logs or injects prose
-  Owner: kernel
-  Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:181; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:183; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:177 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>).
 
 ## Environment, Accounts, And Marketplace
 
-- [ ] **RISK-017** An orchestrator runs a task in a temp directory outside the log's reach.
-  Category: product behaviour.
-  Cause: the temp directory lies outside the logging reach.
-  Event: no agent shows in the monitor while one works (a "dark run"); the user noticed it only through a sound played on each hook fire.
-  Consequence: work that no log or monitor records.
-  Likelihood: 1. Impact: 2.
-  Existing controls: none at 088a227c (grep of `plugins/` for "temp dir" and "tmpdir" outside the hygiene sweep, which cleans folders rather than logs agents finds no rule or hook).
-  Response: accept.
-  Actions: none; the source names no fix yet.
-  Trigger: a hook sound or work with no agent in the monitor.
-  Owner: kernel.
-  Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:98 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/>).
 
-- [ ] **RISK-018** Quiet Scheduled Failure.
-  Category: Agent behaviour.
-  Cause: A scheduled job's only signal is a log file.
-  Event: A job failed 86 runs over four days before anyone looked.
-  Consequence: Four days of lost runs.
-  Likelihood: 1. Impact: 3.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Each job writes a one-line status (ran, failed, item count) to a page checked each morning; failures go to the phone. Ask for a source beside each claim so the few decisive claims are quick to check.
-  Trigger: A scheduled job with no status line.
-  Owner: kernel.
-  Status: open.
-  Basis: reported.
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:79,107,111 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 ## Long Run Stops On Error
 
-- [ ] **RISK-019** An 8-hour run stops on a network error and does nothing after.
-  Category: product failure.
-  Cause: An 8-hour Opus 5.5 xhigh run stopped on an API error. One commenter says some failures (API Unavailable) retry up to 10 times, but this one (network loss mid-turn) does not.
-  Event: A network loss mid-turn ends the turn with no retry.
-  Consequence: A wasted run: nothing happens after the stop.
-  Likelihood: 1 (one report).
-  Impact: 3 (a wasted session).
-  Existing controls: Baseline raises a notice when an API error ends a turn (plugins/claudetto/.claude-plugin/plugin.json:19@088a227c, plugins/claudetto/hooks/features/stop-notice/stop-notice.test.ts:18@088a227c); git grep finds no retry or heartbeat wake-up for it (`kernel/heartbeat.ts:1-12@088a227c` is the status-line heartbeat file and line file, `heartbeatPath` and `lineFilePath`, not a wake-up).
-  Response: mitigate.
-  Actions: The agent arms its own heartbeat wake-up about every 30 minutes and disarms it on completion, or the harness runs retries with backoff.
-  Trigger: A session idle after an API error with work still open.
-  Owner: kernel.
-  Status: open.
-  Source: external/2026-10-30/reddit.com-r-anthropic-comments-1xihom1-i-am-so-angry-against-anthropic-20261029T115803Z.md:49 (url: <https://www.reddit.com/r/Anthropic/comments/1xihom1/i_am_so_angry_against_anthropic_right_now_how/>)
 
 ## Safeguards And Guards
 
@@ -317,7 +220,7 @@
 
 ## Guards And Sandbox
 
-- [ ] **RISK-021** A hook blocks the agent because it reads the user's work request as a remark or question.
+- [x] **RISK-021** A hook blocks the agent because it reads the user's work request as a remark or question.
   - Category: product defect.
   - Cause: A claudetto hook classifies a user message after a context change as a remark and denies tool calls; the request check, the intent check, classifies the latest user message as "asks or remarks, requests no work"; the request check judged the latest user message as a remark or question with no work request; The work gate reads the user's remark as a remark, not as the standing order to add each found fault to the list.
   - Event: The agent cannot read git state, says it will not work around the block, and asks the user for the original task. The user replies that finding it is the agent's job; "The user remarked or asked; they did not request work" blocked every agent and a read-only command after a message that asked for work (a plan to continue, a list of bugs to fix, a question that expects an action); every agent is blocked after a message that asked for work (a plan to continue, a list of bugs to fix, a question that expects an action); a read-only command is denied with "they did not request work"; The gate blocks the catalog edit after the user says 'yet another fault to report'.
@@ -329,7 +232,7 @@
   - Actions: Let read-only commands pass in every prompt state, and make the block text name the way to proceed; keep ordered work and read-only calls unblocked after a user question; treat a message that holds an instruction, a bug list, or a continuation as a work request; block only a write or a spawn after a pure question; probe a structural check, not a word pattern; add a case for each reported message; Treat a standing instruction from an earlier turn as authority for the matching edit.
   - Trigger: A denial of `git log` or `git status` after a message with no task; a denial with that reason while a work order stands; a user message that mixes a question with an instruction; A gate block on an edit that an earlier user message ordered.
   - Owner: kernel
-  - Status: open; `git grep -F 'did not request work' 088a227c -- plugins` finds no match, so the text is not in baseline code).
+  - Status: closed; same grep: no hook classifies a user message as remark or work.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51; reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048 (reported, user, 2026-11-13).
 
 ## Conduct and Product Risks from Chunk c05
@@ -349,7 +252,7 @@
   - Status: open.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
-- [ ] **RISK-023** The pin hook writes a constraint the user never stated.
+- [x] **RISK-023** The pin hook writes a constraint the user never stated.
   Category: Product
   Cause: The user wrote that release 2-1-319 is out; the hook matched an OpenSpec folder name.
   Event: The hook pinned "Do not delete branch 2-1-319" as the user's words, though no such branch exists.
@@ -361,7 +264,7 @@
   Actions: A pinned constraint is a user's order and not a guess from a folder name; test with a status line like "X is out".
   Trigger: A pinned line names a branch or path that the user did not name as a limit.
   Owner: kernel
-  Status: open
+  Status: closed; same grep: no pin hook.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:269, observed in transcript, 2026-11-09.
 
 ## Conduct
@@ -428,7 +331,7 @@
 
 ## Ungrouped
 
-- [ ] **RISK-028** The tree holds hyphenated file families.
+- [x] **RISK-028** The tree holds hyphenated file families.
   Category: kernel
   Cause: Files stand in for directories: `spec-audit.ts` beside `spec/`, `validate-*.ts`, `register-*.test.ts`, and 91 hyphenated source files in all.
   Event: The user called the layout unacceptable and the architecture disgusting.
@@ -440,12 +343,12 @@
   Actions: Rebuild top down with real directories; see OUT item and [ADR-0076](../adr/0076-no-file-families.md).
   Trigger: A file name shares a hyphen prefix with another.
   Owner: kernel
-  Status: open
+  Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` restricted to source files: no hyphenated file family in plugins/claudetto/hooks (files: builtins/, handover/, settings/).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (state: 91 files; reported, user: unacceptable); measured, 2026-11-16
 
 ## Product And Tooling
 
-- [ ] **RISK-029** The prompt holds two rules that conflict.
+- [x] **RISK-029** The prompt holds two rules that conflict.
   - Category: product.
   - Cause: Concise.md says to ask the popup before assuming, and texts.ts:16 says otherwise; a manifest test pins the line.
   - Event: The agent follows one rule and breaks the other.
@@ -457,10 +360,10 @@
   - Actions: Say each instruction once.
   - Trigger: Two prompt lines cover one case.
   - Owner: kernel
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto`: no output style or prompt text file exists, so no two prompt rules conflict.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
-- [ ] **RISK-481** A mod model call fails at a usage limit and the hook throws.
+- [x] **RISK-481** A mod model call fails at a usage limit and the hook throws.
   - Category: host change.
   - Cause: on 2.1.327 `$.model.complete` and `$.model.classify` return the API error at once on a usage limit instead of waiting.
   - Event: a handover or classify call at a usage limit rejects inside a hook.
@@ -472,7 +375,7 @@
   - Actions: every mod model call catches the error, skips its work and logs once per window; a test stubs the error.
   - Trigger: a hook error that names a usage limit.
   - Owner: kernel
-  - Status: open
+  - Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: 25 pass, including "session.compact > a failed fork falls back to the transcript extract". The test does not log once per window.
   - Source: reports/2026-11-18-research/surface.md:59 (release notes, claude 2.1.327, 2026-11-18).
 
 - [ ] **RISK-488** A Bash call hangs for 120 seconds on stdin.

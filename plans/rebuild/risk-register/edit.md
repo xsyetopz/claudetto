@@ -19,41 +19,13 @@
 
 ## Code And Prose Edits
 
-- [ ] **RISK-417** On Windows an agent edits shell scripts through a Python one-liner that rewrites CRLF line endings; the Linux deploy fails with an error that points nowhere near line endings.
-  Category: agent fault
-  Cause: Whole-file rewrite by a script on Windows
-  Event: The deploy fails
-  Consequence: A failed deploy that is slow to diagnose
-  Likelihood: 1 (one report)
-  Impact: 3
-  Existing controls: none found at 088a227c
-  Response: mitigate
-  Actions: Edit with a tool that keeps line endings; check line endings when a shell script fails on deploy
-  Trigger: A script rewritten on Windows
-  Owner: edit
-  Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:85 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
 
 ## Self-Written Helper Scripts
 
-- [ ] **RISK-418** Self-written helper scripts are tuned for "works", not for speed.
-  Category: agent failure.
-  Cause: Scripts the agent writes for itself weigh "working" over "works well or fast": a two-step fix tool grows a check, then replan, then refix path that it runs 100,000 times.
-  Event: The agent runs a slow self-written tool repeatedly without asking whether step 1 could be fixed.
-  Consequence: Extra runtime and tokens on repeated work.
-  Likelihood: 1 (one report; a second commenter in the same thread gives the cure).
-  Impact: 2 (an extra turn per run).
-  Existing controls: None at 088a227c: a grep of `plugins/` for benchmark, faster, and speed found no rule outside tests.
-  Response: mitigate.
-  Actions: Have the agent review its own tooling critically; move repeated work into prebuilt scripts (no run-to-run hallucination, faster, no tokens spent writing it). A periodic prompt: "look back at the last two weeks of work, what kind of work was done over and over that we could just turn into a script". A Go tool measured about 50x faster than the Python original (reported, one user). A second commenter has the model build local tools for repetitive batch work instead of spending tokens on it .
-  Trigger: The same helper script is rewritten across sessions, or a tool runs past a few seconds per call.
-  Owner: edit.
-  Status: open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:85; external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:97 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xl9c92-forget-the-usual-claude-tips-wha-20261101T191418Z.md:141 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl9c92/forget_the_usual_claude_tips_what_are_the_strange/>)
 
 ## Edit
 
-- [ ] **RISK-419** Edit "String to replace not found" from one tab too deep.
+- [x] **RISK-419** Edit "String to replace not found" from one tab too deep.
   - Category: Claude Code limit.
   - Cause: `Read` writes each line as `N` then a tab then the text, and the model counts that tab as indentation. Claude Code 2.1.323 holds a fix behind the server flag `tengu_tab_read_sep` (off). `CLAUDE_INTERNAL_FC_OVERRIDES` does nothing in the public build.
   - Event: 132 of 14,683 `Edit` calls (0.9%); of 98 classified misses, 49 are indentation only, 39 exactly one tab too deep in tab-indented files. `Edit` input is validated before `PreToolUse` (code=8, the hook never runs) and `PostToolUseFailure` does not fire for `Edit` validation errors (control: it fires for Bash exit 1). Parallel `Edit` calls in one response run in turn, so there is no race.
@@ -65,7 +37,7 @@
   - Actions: recorded only.
   - Trigger: an `Edit` in a tab-indented file.
   - Owner: edit
-  - Status: accepted
+  - Status: accepted; code search, claude 2.1.327, 2026-11-18, cc-inspect search `tengu_tab_read_sep`: chunk-e38nza00.js@1555 still reads `Qt("tengu_tab_read_sep",!1)`, default off, so the limit stays and no plugin lever exists.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:615 (measured).
 
 - [ ] **RISK-480** A multi-line perl edit spans past its target item and changes another item's line.

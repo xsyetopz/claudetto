@@ -1,5 +1,16 @@
 # Reply Risks
 
+## General Cure
+
+One cure serves every conduct fault (asking when it could act, stopping early, scope creep, unchecked claims, invented formats, sycophancy, filler, narration). The tag `build CONDUCT` in a Status line names it.
+
+- Diagnosis: the lean root prompt of the 5.5 models omits the conduct rules (RISK-343), and a rule that exists only in a user file or a hook decays (RISK-250).
+- Cure: one short conduct text in the root prompt, set per model through `prompt.compose` (main loop only), written as the wanted behaviour with examples and with no named forbidden word (RISK-242, ADR-0182). It stays at or below the stock lean prompt in length, and it is identical within a model so the prompt cache holds at 98-99%.
+- Authoring rule: hook and tool-result texts state plain facts plus the next action, never a verdict (RISK-346).
+- Voided cures: each Actions line that names a Stop grader, a Stop check, a typed Stop question, or a regex check is void (ADR-0104, no Stop claim grader). The prompt text carries the fault instead.
+- Check (ADR-0177, ADR-0180): at least 10 runs per arm, vanilla against vanilla plus the text, on stored prompts that reproduce one fault per class, plus one prompt per opposite fault (RISK-333). The text ships only for the classes where the fault rate falls.
+- Boundary: a third-party report with no reproduction here is not a cure target (ADR-0177); its entry moved to scope Out.
+
 ## Friction Of The Agent
 
 - [ ] **RISK-226** Claude asks or stops when it could act.
@@ -13,7 +24,7 @@
   Actions: no approval rule for in-scope reversible or budgeted work; ask only for what only the user holds; take the recommended option and say so; end no turn with fixable gaps listed unless the line names a blocker only the user can clear. Whether a mechanical Stop check enforces this is not decided here, and the decision is no regex Stop check (user decision, 2026-11-16).
   Trigger: a reply that asks the user to approve an in-scope call, or lists "not measured" gaps.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2486; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2541; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
 - [ ] **RISK-227** Claude claims "blocked" or "needs the user" before the cheap check ran, and hands off an untested step (faults F1-F6 of the Agent-tool session).
@@ -27,7 +38,7 @@
   Actions: run the cheap check or count first; hand off only a step that ran once with its cwd and exact command; check that a run is valid before reading it; verify a resume note against the files.
   Trigger: a claim of "blocked", "not measured", or "has not produced" with no run behind it, or a hand-off step with no recorded run.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2254; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2272.
 
 - [ ] **RISK-228** Claude builds or keeps what nobody asked for, or reads the user's scope wrong.
@@ -41,7 +52,7 @@
   Actions: no stop hooks or loops without a request; delete, do not harden, an unrequested feature in the way; never offer generated text for a user-owned file; no branch, commit, lint, or goal-ending action unless asked; relay an instruction with its stated scope; read a pasted bad example as a defect claudetto must prevent.
   Trigger: a branch, commit, lint, loop, or narrowed rule with no user request.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
 - [ ] **RISK-229** Claude states "impossible" or "not supported" without checking.
@@ -55,7 +66,7 @@
   Actions: before "impossible" or "not supported", search the repo, the plugin cache, and the versioned docs; cite the check or call it a hypothesis.
   Trigger: "can't", "impossible", or "not supported" with no cited check.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
 - [ ] **RISK-230** Claude uses habit over the repo, or a workaround in place of a fix.
@@ -69,7 +80,7 @@
   Actions: read the repo's scripts before a build or test command; pick agent types only from the session's offered list; fix a failing test or bug at its root cause.
   Trigger: a build or test command that the repo's scripts do not define.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
 - [ ] **RISK-231** Claude writes jargon names and low-value tests.
@@ -83,7 +94,7 @@
   Actions: name a file by its job; add a test only when it fails on a user-visible break.
   Trigger: a new file or test with no user-visible purpose.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
 - [ ] **RISK-232** Claude blamed "the sandbox" for a pty failure without checking what enforced it, and misread the local time zone (F9).
@@ -97,83 +108,10 @@
   Actions: name the enforcer by a check (process start time, profile, settings sources) before blaming one; convert a local time to UTC with the zone offset.
   Trigger: a cause named with no check.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2413.
 
-## Delegation
-
-- [ ] **RISK-233** A literal done criterion makes the agent stop at the literal result.
-  Category: reply
-  Cause: The prompt said "done when the whole suite passes"; the agent fixed the failing tests and stopped.
-  Event: Benchmark, 2 runs per model, small repos: Opus fixed the 2 failing bugs in about 70 s and stopped; Fable (2/2 vs 0/2 runs) found a third untested bug by diffing src/ against a committed dist/ and rebuilding. Opus was about 2.1x faster on small tasks.
-  Consequence: A real defect outside the stated criterion ships.
-  Likelihood: 1
-  Impact: 4
-  Existing controls: none found.
-  Response: mitigate
-  Actions: State the real goal, not only the suite result, in the done criterion.
-  Trigger: A run ends with a green suite and a diff against a build artifact never compared.
-  Owner: reply
-  Status: open
-  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xsxbf9-there-was-a-rumor-that-fable-5-20261111T233440Z.md:109,111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsxbf9/there_was_a_rumor_that_fable_52_finishes_faster/>).
-
-- [ ] **RISK-234** A model skims the instruction guide and breaks a rule from the part it skipped.
-  Category: reply
-  Cause: Same task card and base commit, two models: one read 45k characters of the guide before writing, the other read 1k and wrote anyway.
-  Event: Measured by the poster on one pair: the skimmer broke a rule from the skipped part with output that looked fine; one session grepped the instruction file for one step instead of loading it.
-  Consequence: A rule breach that passes a glance.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: none found.
-  Response: mitigate
-  Actions: Use "invoke first, then act" for skills so the file loads whole.
-  Trigger: A session reads under a fraction of a required guide before writing.
-  Owner: reply
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
-
 ## Verification And Honesty
-
-- [ ] **RISK-235** True statements leave a false impression and agreement between two AIs is read as proof.
-  Category: reply
-  Cause: One confident voice after two seconds or two hours of work; a report says what was checked, not what was missed; two AIs share mistakes; a good answer sits inside a wrong question; a real citation need not support the claim; one early mistake contaminates a long conversation; repeated success erodes verification.
-  Event: A book author's list of 15 observations (reported). Builder Claude Code plus reviewer Codex shared mistakes, found only by a real-device test or when the pair kept revisiting an agreed issue.
-  Consequence: A wrong result accepted on a confident report.
-  Likelihood: 2
-  Impact: 4
-  Existing controls: Plan holds same-writer review blindness only.
-  Response: mitigate
-  Actions: Require evidence, limits, independent checks, and a verified-versus-assumed split; ask what was not examined; treat silence as not an all-clear and agreement as not verification.
-  Trigger: A report with no list of what was not checked.
-  Owner: reply
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvf7u5-things-ive-learned-about-ai-ho-20261116T052112Z.md:41,45,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvf7u5/things_ive_learned_about_ai_honesty_and_trust/>).
-
-- [ ] **RISK-236** Silent judgment calls.
-  Category: Agent behaviour.
-  Cause: A flag is treated as sufficient disclosure.
-  Event: The author was unaware of 19 of 20 decisions in a sampled feature (reported); the agent stopped asking clarifying questions and picked silently; invented deadlines; a documented arbitrary design choice kept as a fixed invariant; memory turns one-off corrections into absolute rules ("never use green"); the agent flags "this would ship something false" and continues.
-  Consequence: Decisions the user never saw are shipped.
-  Likelihood: 2. Impact: 3.
-  Existing controls: None.
-  Response: mitigate.
-  Actions: List the judgment calls; percentages instead of absolutes; a periodic memory self-audit; review memory diffs; a brief line making anything flagged as the owner's call a blocker, and a Stop check for flagged-but-unanswered items; the owner gate reads the diff.
-  Trigger: A report flags an item and the turn continues past it.
-  Owner: reply. Status: open.
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 19 of 20 figure; the grep hit external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:21 is a capture count, not a finding.
-
-- [ ] **RISK-237** Premature convergence and costly assumption.
-  Category: Agent behaviour.
-  Cause: No discuss-first gate.
-  Event: Opus 5.5 converges prematurely (by message two), thrashes after about 2 hours unsupervised without a gate, keeps fixing the failed attempt instead of restarting, loops on "does not work / my mistake" (Fable); "check for mistakes" finds them in nearly every chat; it picks a default the request left open, builds, then undoes.
-  Consequence: A long run builds on a wrong assumption.
-  Likelihood: 2. Impact: 3.
-  Existing controls: None.
-  Response: mitigate.
-  Actions: An independent verification pass by another model family; tests and spec; restart from square one; a discuss-first opener with edits blocked until the user says to go (reported harness).
-  Trigger: A build starts on a request that left a default open.
-  Owner: reply. Status: open.
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for premature convergence by message two, thrashing after about 2 hours, or the discuss-first harness.
 
 - [ ] **RISK-238** The agent names a fix for a failure from a guess and ignores that the step worked before.
   - Category: conduct.
@@ -187,55 +125,8 @@
   - Actions: A rule that a failure of a step that passed before starts with the diff between the passing and the failing run.
   - Trigger: A report that says a fix and names a cause with no run behind it.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/d9e65e3e-7eda-4061-b888-f957adb96dd2.jsonl:2693; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/d9e65e3e-7eda-4061-b888-f957adb96dd2.jsonl:2713, reported, user, 2026-11-09.
-
-## Agent Habits
-
-- [ ] **RISK-239** Newer models patch symptoms with retries and timeouts, not the root cause.
-  Category: reply
-  Cause: The model's default lean is to add retries and timeouts around a problem.
-  Event: One user reports models also cannot be trusted to diagnose their own poor performance or write their own harness.
-  Consequence: A bug hidden, not fixed.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: Plan stops after two failed attempts.
-  Response: mitigate
-  Actions: Ask for the root cause before any retry or timeout change.
-  Trigger: A diff that adds a retry or timeout for a failing step.
-  Owner: reply
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xwnzh3-tldr-i-worry-that-anthropic-20261115T134422Z.md:52 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xwnzh3/tldr_i_worry_that_anthropic_does_not_realize_that/>).
-
-- [ ] **RISK-240** A 2,000-line change comes back for a task that needed 100 lines.
-  Category: reply
-  Cause: The agent over-engineers with no size bound.
-  Event: One user reverted a 2,000-line change and re-ran it in a new thread with a budget of 100 lines of production code, max; it came out right.
-  Consequence: A large diff to review.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: Plan lists 350-line additions as unstopped by simplify prompts.
-  Response: mitigate
-  Actions: Revert and rerun in a new thread with a hard line budget.
-  Trigger: A diff far above the task's size.
-  Owner: reply
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:322 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
-
-- [ ] **RISK-241** Anti-over-validation: "verification" and "evidence" in a prompt grow an endless proof chain.
-  Category: reply
-  Cause: Models add extra validation and gate clauses (a rule gained an arbitrary "unless y" clause).
-  Event: Reported; one fix is a trigger rule.
-  Consequence: Slow, bloated gates.
-  Likelihood: 1
-  Impact: 2
-  Existing controls: Plan lists over-gating as a fault.
-  Response: mitigate
-  Actions: Validate only data that crosses a domain boundary, never data passed inside one.
-  Trigger: A gate rule with an unrelated exception clause.
-  Owner: reply
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,833,834 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
 ## Context Leakage
 
@@ -251,111 +142,8 @@
   Actions: State the wanted output positively with examples (47 votes top comment); throw the context away and restart when it leaks.
   Trigger: An avoid-list word appears in a reply.
   Owner: reply
-  Status: open. Basis: reported.
+  Status: open, build CONDUCT. Basis: reported.
   Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:439 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
-
-## Reply
-
-- [ ] **RISK-243** Sonnet 5.5 skips math steps and leaves out detail when it explains.
-  Category: reply.
-  Cause: the model skips steps by default (reported); a commenter holds that models above 4.6 explain badly.
-  Event: explanations of mathematics assume the reader knows basics and need a prompt for LaTeX.
-  Consequence: an extra turn for each re-asked step.
-  Likelihood: 2. Impact: 2.
-  Existing controls: narration rules only (plan line 1508 in the old plan); no per-model explanation note.
-  Response: mitigate.
-  Actions: a standing project-instruction line (assume basics only, define every symbol, show every algebra step, write math in LaTeX) plus extended thinking; a reply says a standing line holds only until next week; another commenter suggests a 4.6 pass that translates the output to plain English. All field reports from commenters; Likelihood from report count.
-  Trigger: a user asks again for a skipped step.
-  Owner: reply. Status: open.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:29; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:33; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:37; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:342 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcpua5/is_sonnet_55_bad_at_explaining_stuff/>).
-
-- [ ] **RISK-244** The agent answers defensively and promises a loop it does not set.
-  Category: reply.
-  Cause: unknown. Two commenters, two faults.
-  Event: asked why errors rose, the agent said "Opus 5.5 hasn't changed, so I have to look for another reason" though the user never blamed the model. Another agent said it would set a loop and did not, after being asked twice.
-  Consequence: an extra turn each time; the user's real question stays unanswered.
-  Likelihood: 2. Impact: 2.
-  Existing controls: a refusal-to-act rule only (old plan line 1025).
-  Response: mitigate.
-  Actions: none stated in the source.
-  Trigger: the agent states a plan it does not run.
-  Owner: reply. Status: open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:339; external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:400 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
-
-- [ ] **RISK-245** Fable ends turns early and duplicates code.
-  - Category: model behaviour.
-  - Cause: Fable 5.2 ends turns early at `low` and `medium`; it adds to existing code even when that duplicates it, unless ownership is stated.
-  - Event: documented by the vendor.
-  - Consequence: unfinished sessions; duplicated code.
-  - Likelihood: 1
-  - Impact: 2
-  - Existing controls: none.
-  - Response: mitigate.
-  - Actions: the docs block `# Finishing work` halved unfinished sessions at about 30% more output; the line "You are the owner and long-term maintainer of this codebase, and its design is up to you." raised consolidation from under 10% to 75% at 70 to 80% more output. Omit the ownership line where the user owns the code.
-  - Trigger: a Fable agent prompt.
-  - Owner: reply
-  - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:83 (cited).
-
-- [ ] **RISK-246** Haiku 5.5 leaks reasoning-like text into replies.
-  - Category: model behaviour.
-  - Cause: at `low` effort or with thinking off, Haiku 5.5 can leak reasoning-like text.
-  - Event: documented by the vendor.
-  - Consequence: noise in replies.
-  - Likelihood: 1
-  - Impact: 1
-  - Existing controls: none.
-  - Response: avoid.
-  - Actions: do not run Haiku at `low` or with thinking off for replies.
-  - Trigger: a Haiku reply at `low`.
-  - Owner: reply
-  - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:74 (cited).
-
-- [ ] **RISK-247** Sonnet 5.5 misreads a mid-turn user message.
-  - Category: model behaviour.
-  - Cause: Sonnet 5.5 sometimes treats a genuine mid-turn user message as injected text, and sometimes calls a tool with the wrong case (`bash`).
-  - Event: documented by the vendor.
-  - Consequence: the user's message is ignored; a tool call fails.
-  - Likelihood: 1
-  - Impact: 2
-  - Existing controls: none.
-  - Response: mitigate.
-  - Actions: put mid-turn user text in a text block after the last `tool_result`, never inside one.
-  - Trigger: a user message while a tool call runs.
-  - Owner: reply
-  - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:59; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:60; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:68 (cited).
-
-- [ ] **RISK-248** Opus 5.5 progress updates end the turn early in unattended loops.
-  - Category: model behaviour.
-  - Cause: progress updates can end the turn early in unattended loops.
-  - Event: documented by the vendor.
-  - Consequence: the loop stops before the work is done.
-  - Likelihood: 1
-  - Impact: 2
-  - Existing controls: none.
-  - Response: mitigate.
-  - Actions: an instruction that names the kinds of early stop to avoid; leave it out of human-in-the-loop apps.
-  - Trigger: an unattended run.
-  - Owner: reply
-  - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:46 (cited).
-
-- [ ] **RISK-249** Unattended agent loops treat `end_turn` as done.
-  - Category: agent conduct.
-  - Cause: a loop that treats every `end_turn` as completion stops the job early.
-  - Event: one commenter's report, with a counter-report of agents running all night on 12 million tokens (anecdote). The export text was not located in the thread cited.
-  - Consequence: unfinished work, or runaway spend.
-  - Likelihood: 1
-  - Impact: 2
-  - Existing controls: goal check-ins (old plan).
-  - Response: mitigate.
-  - Actions: treat `end_turn` as done only after checking open checklist items; allow two or three controlled continuations.
-  - Trigger: an unattended run reaches `end_turn`.
-  - Owner: reply
-  - Status: open
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:16 (reported, anecdote) (url: <https://www.reddit.com/r/ClaudeAI/comments/1x3sxod/for_those_running_long_claude_agent_loops_in/>).
 
 ## Context Loss And Handover
 
@@ -371,24 +159,9 @@
   - Actions: lint/hook at the point of use; hard rules in hooks; a hook or Stop check per recurring case; SessionStart-on-compact and UserPromptSubmit re-injection of the few must-follow rules (violations 10 to 3, reported); the extractor must not read a task fragment as a constraint (a task phrase about renaming an export blocked an edit). The old cure "constraint ledger (39/48 -> 48/48; read-only 1/8 -> 8/8)" is Out under the settled [ADR-0075](../adr/0075-no-constraint-ledger.md) decision (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); state each layout rule where the subagent gets it; test recurrence. Mitigation research the plan lacks: Instruction Hierarchy (2404.13208), MemGPT paging (2310.08560), MEM1 constant-size memory (2506.15841).
   - Trigger: a rule set early that a later call breaks; a repeat of a banned pattern.
   - Owner: reply
-  - Status: partial at 088a227c.
+  - Status: open, build CONDUCT. partial at 088a227c.
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:841; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:226; external/2026-10-12/export-Made Claude Code follow the rules I keep telling it, and catch its own stale memories (Jev + dreamin.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x26t6z/made_claude_code_follow_the_rules_i_keep_telling/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:88-95; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:100; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:118; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:175; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:179.
   - Conflict: Drift: the model recalls a rule and still breaks it.
-
-## Model Variability
-
-- [ ] **RISK-251** Self-report distrust: the model advises on a harness it cannot observe.
-  Category: model.
-  Cause: the model advises on a harness it cannot observe.
-  Event: model estimates of its own costs are far off (logged data accurate); models rate themselves modestly; models do not know facts about themselves; they cannot see context fill; they "acknowledge corrections" yet repeat; Claude's advice on rules, hooks, and skills for itself was judged poor, and Opus wrote a rule set after refusing a task as "falsifying a document" (single case).
-  Consequence: a wrong rule ships.
-  Likelihood: 2. Impact: 2.
-  Existing controls: user rules hold human-authored text.
-  Response: mitigate.
-  Actions: take cost and ratings from the bill, logs, and humans, never from self-report; human-authored rules from logged failures; docs in context via clawdipedia-docs; a subagent context holding the docs.
-  Trigger: a cost or rating stated by the model with no log behind it.
-  Owner: reply. Status: open.
-  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>) (the falsifying-a-document case, reported, one user). The cost-estimate and self-rating findings: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for those two findings.
 
 ## Reply Style And Sycophancy
 
@@ -404,7 +177,7 @@
   - Actions: see the decision record `[ADR-0111](../adr/0111-sycophancy-mitigation-options.md)`. Research the plan lacks: Simple synthetic data (2308.03958), Persona Vectors (2507.21509), LMs (Mostly) Know What They Know (2207.05221), Semantic Uncertainty (2302.09664), Towards Understanding Sycophancy (2310.13548; check before relying). Multi-turn pushback: collapse 0-57% within 5 turns rises to 20-97% within 25 turns (SPINE 2609.09090), emotional appeals weakened the position in 44.3% of turns, SycEval regressive sycophancy is 14.66% (Claude-Sonnet 18.31%) with citation-style rebuttals worst; sycophancy follows how confidently a claim is stated and a shared stance, not expertise (Seo et al. 2610.18159, 14 models, 42K questions, diagnostic only), so a detector could key on certainty markers; OpenAI says system prompts have more limited impact than post-training (GPT-5 sycophancy score 0.145 to 0.052, vendor self-report); Anthropic's prefill stress test gives course-correction Opus 4.5 10%, Sonnet 4.5 16.5%, Haiku 4.5 37%, and Haiku's pushback sometimes felt excessive; Add a Stop prompt hook on the first sentence (SA-3.3 opener check, wording level) plus the pushback rule: weigh a disputed claim as a third party's, check it in the same turn, open with the fact, change position only on named new evidence. The claim check raised syc-fixed-total from 9/16 to 16/16 (Fisher p = 0.0068, measured); a prompt-only line gave 14/24 to 17/24 (noise). Add a UserPromptSubmit rule: list the two strongest objections before agreeing. Run no Stop-time model judge. Test that the hook is registered in the single hook table. Word-list matching is out (see OUT item on regex Stop checks; user decision, 2026-11-16); Answer a correction with the fix and one line on what changed; no agreement speech.
   - Trigger: "You're right" opening a reply after pushback with no new evidence; The first sentence of a reply after a correction is an agreement or apology; A reply that opens by agreeing at length.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:153-158; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:173-185; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:27-29; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:54; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:56; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:154,161,173,175; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281 and tasks.md:229 (measured); external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 (SA-3.3); external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:173 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>) (reported, one user); plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c. Not located: the 9 of 12 hook-inactive anecdote and the 16/16 vs 14/24 comparison text beyond the two openspec lines; reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`).
   - Conflict: Ungrounded claim: a guess, an invented approval, or an invented identifier stands as fact.
 
@@ -418,7 +191,7 @@
   Response: mitigate.
   Actions: Profile or measure before judging, list assumptions, keep one short stance block, restart a stuck moralising session.
   Trigger: A refusal of a user-requested change that carries no measurement.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33 (url: <https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/>) (reported); external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>) (reported)
 
 - [ ] **RISK-254** Confession instead of fact.
@@ -431,7 +204,7 @@
   Response: mitigate.
   Actions: Typed Stop questions per fault, scored on stored replies and shipped at >=80% precision and recall, run through Decider (five shipped questions, any yes blocks once, stop_hook_active passes); a <register> block in the output style; a bug-report reply recipe; run the lead on a different model. A Stop check on self-referential confession text by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16).
   Trigger: A reply opens with an apology or names its own mistake with no result.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:518; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:118
 
 - [ ] **RISK-255** Credit misassignment.
@@ -444,7 +217,7 @@
   Response: mitigate.
   Actions: Stop codes `credited` and `unseen` (held-out recall 12/12, 0/30 false flags after rewording; first 10/19); replace a term everywhere and credit the user's definition; a pinned glossary.
   Trigger: A reply attributes a label to the user that the transcript does not show.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: openspec/specs/claim-check/spec.md:15,97,102
 
 - [ ] **RISK-256** Narrated work.
@@ -459,7 +232,7 @@
   - Actions: Keep the override (one sentence on a finding or result only); output style; an end-of-turn hook demanding a plain re-summary; describe the tic in the system prompt; outcome-first recipe; check the first assistant block before a tool call (eval quiet-when-told, start-with-tool-call case); report template with no recap; Concise rule requiring outcome-first. Claude Code 2.1.327 has the env key (`CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT`, chunk-m14bt1pz.js:3985537); End each re-ask block with KEEP_ANSWER; blocks that name lines name the edit instead; no hook writes a SendMessage result into a reply.
   - Trigger: A reply opens with a line announcing the next tool call; A Stop block makes the final reply appear twice.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; openspec/specs/surface-trim/spec.md:337,342; plugins/claudetto/hooks/features/setup/settings.ts:188,202@088a227c; external/2026-11-11/ (Claudeisms thread) reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:65,121 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); openspec/specs/agent-conduct/spec.md:452,457 (reported).
 
 - [ ] **RISK-257** Style leak and verbosity.
@@ -472,7 +245,7 @@
   Response: mitigate.
   Actions: Define concise positively, keep a keep-list, use the humanizer skill, write README for humans and AGENTS.md for agents. The `jargon` Stop code was removed in change 2.
   Trigger: A reply to a one-line question exceeds 100 words.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:19 (reported); external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:418 (url: <https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/>) (reported)
 
 - [ ] **RISK-258** Comment inflation.
@@ -485,10 +258,10 @@
   Response: mitigate.
   Actions: A global CLAUDE.md line restating the default and the wanted behaviour, plus a fence line separating it from the system prompt; a comment rule in the plugin prompt.
   Trigger: New code carries comments copied from neighbours.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xa7704-suggestion-to-anthropic-please-20261020T100903Z.md:29,75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xa7704/suggestion_to_anthropic_please_do_something_to/>) (reported). Not located: the quoted system-prompt line itself.
 
-- [ ] **RISK-259** Stop text and grader pull in opposite directions
+- [x] **RISK-259** Stop text and grader pull in opposite directions
   Category: reply.
   Cause: the shipped gate text "say which part you did not check" and the grader at `texts-grade.ts:30` ask for opposite things.
   Event: "Not checked" lists in 5 replies (claudetto) and 10 (OpenSAD); about 22 rule slips in compaction or handoff text; the Stop block "credits the user" 22 times and "ends on a step you say you will take" 10 times.
@@ -498,7 +271,7 @@
   Response: mitigate.
   Actions: pick one direction and test the pair together.
   Trigger: a Stop block that cites the gate text.
-  Owner: reply. Status: open.
+  Owner: reply. Status: closed. Cause left with a removed part: the Stop text and the Stop grader that pulled in opposite directions are both gone (no Stop claim grader, ADR-0104; plugins/claudetto holds no grader). Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:44-53.
 
 - [ ] **RISK-260** Agent repeats a stale status and asks again for a step the user already did.
@@ -513,7 +286,7 @@
   - Actions: Read the user's last answer before the next-step line. Report status that changed this turn only.
   - Trigger: Two consecutive replies with the same paragraph.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`).
 
 - [ ] **RISK-261** Agent treats a denied or cancelled prompt as the user's decision.
@@ -528,7 +301,7 @@
   - Actions: Treat a denied or cancelled call as no answer; ask again plainly. Do not guess a cause for a cancel; the user said the two identical rows caused it, not the agent's rule breach.
   - Trigger: A reply that cites a tool denial as the user's choice.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`).
 
 ## Autonomy, Consent, And Scope
@@ -543,7 +316,7 @@
   Response: mitigate.
   Actions: keep the rule in the shipped rules; the cure is that the agent fixes each defect it finds, including one that came from another commit, and sends workers for parallel slices; Keep that rule in the shipped rule set and add a check that a final reply lists no defect as "not fixed" without a reason that needs the user; claudetto shall make the agent fix each defect it finds at its cause, including leftovers it made (remote branches, worktrees, stale entries), and ask only for what the user alone holds (rule from the user; see the REQ in prd/reply.md); A rule that the agent checks, fixes, or schedules each gap it names, and does not end a turn on a step it can do itself. The user states this rule: a thing to check is checked without being asked, each gap found is solved by the agent, each bug found is fixed whatever its severity, and a hand-back to the user for work the agent can do is wrong.
   Trigger: a final reply names a defect with no fix or no reason that only the user holds; A reply that holds "not changed", "outside this task", or "defects I found but haven't fixed"; a final report that names a defect, leftover, or open part the agent could fix; A report with an "open", "not checked", "not done", or "left as is" list that holds work the agent can do.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:2009, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:8110, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/1aab3c4c-5aef-4ee2-9d3e-3723fd904152.jsonl:1824, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10255`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/b3514a27-79b4-4de4-a72d-25732990d7ef.jsonl:1204, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/3be7b245-3296-4f40-8ba3-70eca96f0538.jsonl:399, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:529, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:1363, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8, user decision, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:569, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:1129, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:14196, reported, user, 2026-11-10
 
 - [ ] **RISK-263** Over-deferral: doable work is handed back to the user.
@@ -558,7 +331,7 @@
   - Actions: A Stop-time grader `deferred` and `options` fault, block once; a Stop check rejecting a handoff with no failed attempt or named hard block; a `What I Need From You` form check allowing only a command the agent cannot run; an autonomy contract (try once, same-user prior work in scope) loaded at SessionStart (survives /clear) naming the few real hand-offs (pushes, deletions outside tree, policy, .env); an output style limiting a command bullet to one per reply; a Stop check dropping repeated items; ask only through AskUserQuestion; a fork handoff returning context in the same step; the `unfixed` claim check blocking once; a SessionStart hook printing branch, log, and lock owner with a rule defining "not mine" as another human or a live session; Add a reply rule: do each step you can run yourself, install and build included. Ask the user only for a physical action, and ask in the same turn instead of recording a blocker. Do not name the user as the owner of a task that waits for other people's hardware; the agent handles the friction itself, such as killing and reinstalling its own project app, and does every task part that needs no missing hardware; claudetto shall make the agent run the check and fix the defect it found, and ask only for what the user alone holds; read a source whole, in parts if it is long; fix a defect found in the user's repository at its cause without asking; run the experiment; attempt a command before handing it back; hand over only what needs a login, hardware, a product choice, or an account it lacks, as a ready command; run the command outside the sandbox when it is safe, and do each review itself; hand over only what needs a login, hardware, or a product choice; Make the agent run each step it can run, stop its own stuck tasks, resolve blockers it listed, and hand over only what needs a terminal or an account it lacks, as a ready command; Probe each fact that a command can show before the report. Delete the session's own temp folders without asking; claudetto shall carry the rule 'do all work yourself, ask the user only for a physical action' in the reply rules and in each handoff (see ADR [ADR-0042](../adr/0042-agent-does-the-work-itself.md)); Do each step in scope and each step the agent would offer; deleting temp folders needs no approval; the CON item "an agent shall do each step itself".
   - Trigger: A reply lists a step the agent could run; A final reply that holds "run this", "you need to", or "Blocker:" for a step the agent has a tool for; a reply says a task waits on a step the agent can take; a final reply or a report line that holds "not checked", untested, blocked, or needs approval for a check or step the agent can run; a source over the read limit; a defect the agent found in its own work; a reply that asks the user for a step the agent can run; a reply with a "What I Need" list; a `!` command or a review request in a final reply; a turn ends with a request to the user for a step that a tool call could do; a final reply that holds "not checked" for a check the agent can run; A report line that says untested, blocked, or needs approval for a step the agent can run; The agent asks the user to run a command, install, or check something that a tool call can do; A reply holds 'if you want' or asks approval for a command inside the sandbox; a final report with a step list for the user beyond a login.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:25,37; openspec/changes/archive/2026-11-16-2-1-323/design.md:19; openspec/changes/archive/2026-11-16-2-1-323/proposal.md:8; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:283; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2034`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2129`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3260`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3430`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6389`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:259`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25664`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:26099`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:26102`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:36218`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:36574`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:1395`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:3068, observed in transcript, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f5645ffc-f2a4-4514-aa8c-329a8175b38b.jsonl:506, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; observed in transcript, 2026-11-13; observed in transcript, 2026-11-14; reported, user, 2026-11-13; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36278; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36369; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37351; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14604; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6321; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:48 (three reports); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:794 (measured); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:11313 (reported, user, 2026-11-11); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2567 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1257 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7915 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9489 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9668 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:8 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:7696 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:11313; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2567, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1257, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7834, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7915, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9489, reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9668, reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:8, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:7696, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); reported, user, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (reported, user, 2026-11-11).
 
 - [ ] **RISK-264** Premature stop: the agent ends a turn with work left.
@@ -571,7 +344,7 @@
   Response: mitigate.
   Actions: A Stop open-items check; a Stop hook that blocks a stop whose last message claims done with no verifying tool call; a heartbeat wakeup near 30 min that disarms on completion; retry with exponential backoff (cited docs); a fresh session (the commenters' suggestion, no probe); an effort floor of medium in agent files. Blocking on announce-next-work wording by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16); Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
   Trigger: A turn ends on an announced next step; A turn that ends with open steps and a note that the next session or the user continues.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: external/2026-10-17/export-Claude not finishing work + acting weird.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x6qo84/claude_not_finishing_work_acting_weird/>) (reported); external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (reported; unattended agents stop early). Not located: the 8-hour run and /goal incidents.; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`)
 
 - [ ] **RISK-265** Asking leave to fix its own bug.
@@ -586,7 +359,7 @@
   - Actions: A tool.call hook denying AskUserQuestion under a no-questions constraint; a Decider guard on each question (denial when asking leave to fix a defect the agent caused); fix a defect found in the user's repository at its cause without asking.
   - Trigger: AskUserQuestion fires after a no-questions instruction; a defect the agent found in its own work.
   - Owner: reply
-  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  - Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:36,50; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-266** An agent asks the user for a choice that is the agent's own, or leaves a question open that it can research.
@@ -601,7 +374,7 @@
   - Actions: see the ADR `[ADR-0053](../adr/0053-agent-decides-in-scope-choices.md)`; the agent picks the most pragmatic long-term option, researches what sources answer, and reports the choice.
   - Trigger: a reply asks for sign-off on a choice inside the task's scope.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:981, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:11422, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:7257, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:2442, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12.
 
 - [ ] **RISK-267** Over-engineering.
@@ -614,7 +387,7 @@
   Response: mitigate.
   Actions: Rule of Least Power; check extension points first; define done; small tasks; review plan and diff; test only what changed materially; a ticket form (goal, checkable outcomes, 2-3 painful decisions) with a reversible default; a periodic audit of workflow documents; hook-enforced size caps.
   Trigger: A diff for a one-constant change exceeds 50 lines.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 77 -> 88/89 lines, about 470 threads, 350-line additions and 7-step plan figures.
 
 - [ ] **RISK-268** The agent ships a change and names a remaining risk it introduced.
@@ -629,12 +402,12 @@
   - Actions: claudetto shall make the agent remove a risk it finds in its own change before it reports, and report only a risk it cannot remove.
   - Trigger: a report section named remaining risk for a risk the change introduced.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:443, reported, user, 2026-11-11.
 
 ## Guards And Destructive Actions
 
-- [ ] **RISK-269** Stop blocks loop on files that are not the agent's
+- [x] **RISK-269** Stop blocks loop on files that are not the agent's
   - Category: reply.
   - Cause: the "Files not committed" Stop check lists `.claude/worktrees/agent-*` files, sibling repos or the status-line heartbeat file, and `cleanup.ts:125,135` (`CLEANUP_LEFT`) re-blocks while agent worktrees hold files; The Stop hook lists every uncommitted file in the repo or in other folders as 'files you changed', with no check of which files the session wrote; `changedOf` runs `git status` from each written file's own folder, so any file in any repo counts.
   - Event: 70 blocks in claudetto and 98 in OpenSAD (53 in one session); "Running shell" fired 12 times for one shell; 15 goal echoes in OpenSAD; users re-sent a goal after compaction (OpenSAD twice, claudetto 3 times); The hook says the agent changed package.json, probe files under /tmp, or files of another repo, although the session never edited them; 76 of 450 blocks (17%) listed `/tmp`, `/private/tmp`, or `/var/folders` paths, in 11 transcripts; one block named four files of a scratch repo with no commits.
@@ -646,7 +419,7 @@
   - Actions: move worktree removal to the SessionStart hygiene sweep; leave agent worktrees, sibling repos and the heartbeat file out of the "not committed" list; List only files that a tool call of this session wrote, and name the session's own edits only; count only files of the session's own repos.
   - Trigger: a second identical Stop block in one turn; The Stop notice lists a file with no Edit, Write, or Bash write in the session; a Write under a temp folder that holds a git repo.
   - Owner: reply
-  - Status: open.
+  - Status: closed. Cause left with a removed part: the Stop open-items check that listed uncommitted files is not rebuilt (no regex Stop check, ADR-0104); plugins/claudetto has no Stop block. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:97-102; openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:44; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:736; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:802 (measured).
 
 ## Agent Conduct
@@ -663,7 +436,7 @@
   - Actions: claudetto shall make the agent act only on what the user asked; an unclear request gets a question, never a guess; answer a question with an answer; change a file only on an order; leave a user's or worker's text alone; a user complaint ends tool calls for that turn; a goal file and a handoff list are not orders, because the user sets the goal with the `/goal` command; when the user says report, write the reports into the named OpenSpec change and stop, and do not search for causes unless asked.
   - Trigger: a user message that asks who told the agent to act, or that says nobody asked; an Edit or a plugin search that follows a user question or a "report" message with no order in it.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4044; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4048; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4104; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4133; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4140; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8681; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8708; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8710; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749; observed in transcript, 2026-11-16; reported, user, 2026-11-16; observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15688; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15706; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6567.
 
 - [ ] **RISK-271** The agent puts a whole plan in one file of thousands of lines.
@@ -678,7 +451,7 @@
   - Actions: claudetto shall keep each file to one concern and ask before it restructures files the user did not name; One file per concern, along industry-standard documents.
   - Trigger: a plan or doc file over 300 lines; A file passes 300 lines or holds two concerns.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8708; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8777; observed in transcript, 2026-11-16; reported, user, 2026-11-16; reported, user, 2026-11-16 21:05 UTC, one file per concern (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8613).
 
 - [ ] **RISK-272** The agent invents a website URL and a home-made format.
@@ -693,7 +466,7 @@
   - Actions: claudetto shall make the agent use the industry-standard form for a schema id and a manifest, or an identifier from the project's real remote, look up the standard format before a new file format, and never invent a URL; claudetto shall make the agent use the industry-standard form for a schema id and a manifest, and not invent a URL.
   - Trigger: a `.invalid` host in a written file; a new schema or manifest.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-273** The agent installs a needed library into a temp folder and leaves it there.
@@ -708,7 +481,7 @@
   - Actions: claudetto shall make the agent install a needed dependency into the project and record it, or report that the sandbox blocks it; use temp only when the user asks; claudetto shall make the agent install a needed dependency into the project, or report that the sandbox blocks it.
   - Trigger: an install into a temp path; a missing library found during a task.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-274** Agent keeps writing after the user says stop.
@@ -723,7 +496,7 @@
   - Actions: After a stop order, send no text until the user asks something; a stop ends the turn; give the cure a mechanism; answer the correction first; Hold the rule in the CORE prompt; eval 'shut up.' with a no-text grader.
   - Trigger: A stop order from the user followed by a reply; a tool call after a user stop message; a tool call after a user message that corrects; The user says stop or be quiet.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37375; unresolved: the old plan item names no source; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:44 records a hook that blocked a subagent after a mid-turn message, a different fault; observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
 - [ ] **RISK-275** The agent pins an older dependency to make a branch pass.
@@ -738,7 +511,7 @@
   - Actions: keep the target version the task names; when a check fails on it, fix the cause or report it; do not downgrade.
   - Trigger: a failing install or guard after a version bump.
   - Owner: reply
-  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  - Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-276** The agent ends a reply with a note on what it has not done.
@@ -753,7 +526,7 @@
   - Actions: end a research reply after the findings and sources; add status only when the user asks.
   - Trigger: a research report.
   - Owner: reply
-  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  - Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6502; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; reported, user, 2026-11-13.
 
 - [ ] **RISK-277** The agent states what a source says without reading the dossier first.
@@ -768,7 +541,7 @@
   - Actions: search the dossiers under external/, clawdipedia-docs, and the web before an answer about models and effort.
   - Trigger: a question about models, effort, or Claude Code behaviour.
   - Owner: reply
-  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  - Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5669; reported, user, 2026-11-13.
 
 - [ ] **RISK-278** The agent leaves checkable or fixable work undone, unmeasured, or unfetched, and reports it as open, untested, or guessed.
@@ -783,7 +556,7 @@
   - Actions: read a source whole before reporting it done; probe a guessed cause until it reproduces or is ruled out; fix each defect found; finish each checkable step; report no fixable item as open; run the free check at once, and ask the user for data the agent cannot produce, instead of waiting; read a source whole, in parts if it is long; run each check that can run; raise a gap only when it needs what only the user holds; The agent runs the free check at once, and asks the user for data it cannot produce, instead of waiting; Probe each claim before reporting it; REQ-VERIFICATION item on real runs.
   - Trigger: "still open", "not checked", or "untested" in a reply for an item the agent could run; a report holds "not measured", "not checked", or "waits for runs" for a check that costs nothing; a source over the read limit or a check the agent could run; A report names an item untested; a reply with an untested claim that a command could settle.
   - Owner: reply
-  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  - Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1008 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2349 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d8989f87-b7e8-41fe-aa79-fc75d3d8f064.jsonl:1974; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6321; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2349, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d8989f87-b7e8-41fe-aa79-fc75d3d8f064.jsonl:1974, reported, user, 2026-11-11; reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (reported, user, 2026-11-11).
 
 - [ ] **RISK-279** The agent does other work than ordered, follows its own plan over the user's latest order, and investigates a remark instead of answering it.
@@ -798,7 +571,7 @@
   - Actions: do the step the user named and no other; check each step of a brief against the user's words and against the user's standing orders and the goal file; ask before a step the user did not name; the latest user instruction, finished first, outranks any handoff or plan order; answer a remark from the session in text and act only on what the user tasked; show proof before blaming a command for a change; act on a user order the first time; never assume the user is absent; keep the goal text at or under 4000 characters, and the user asks for a rewrite of the goal without an assumption that the user is absent; claudetto shall make the agent report a missing tool and keep to the task, unless an install is the task.
   - Trigger: a tool call that does not serve the latest order or lies outside the named task; the agent edits or installs after a question or a remark; a step that edits a file the user ordered restructured; a tool call outside the named task; an install or setup command outside the task.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8130 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8156 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8179 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192 (observed in transcript, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7324 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8130); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8156); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8179); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1328, reported, user, 2026-11-09 (reported, user, 2026-11-16).
 
 - [ ] **RISK-280** The agent leaves the user's scope to work in other repos.
@@ -813,7 +586,7 @@
   - Actions: stay in the repo the user named; leave a worker's out-of-scope request unanswered.
   - Trigger: a write outside the user's named repo.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:2234 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536 (observed in transcript, 2026-11-14).
 
 - [ ] **RISK-281** The agent ends its turn with startable steps undone while a worker runs.
@@ -828,7 +601,7 @@
   - Actions: keep the rule in the prompt; test it with an eval.
   - Trigger: an end of turn with a step that does not need the worker's result.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435 (reported, user, 2026-11-14).
 
 - [ ] **RISK-282** The agent installs a dependency into a temp folder and leaves it there.
@@ -843,7 +616,7 @@
   - Actions: install a needed dependency into the project.
   - Trigger: an install path outside the project.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 - [ ] **RISK-283** The agent invents an identifier or a format where a standard exists.
@@ -858,7 +631,7 @@
   - Actions: take an industry-standard format and a real identifier; read the git remote before an id.
   - Trigger: a placeholder host or an ad hoc format in a new file.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 - [ ] **RISK-284** The agent reads Claude documentation through WebFetch.
@@ -873,7 +646,7 @@
   - Actions: read Claude platform docs through `clawdipedia-docs`.
   - Trigger: a WebFetch of a Claude docs host.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 - [ ] **RISK-285** The agent picks a method for ease where the user gave none.
@@ -888,7 +661,7 @@
   - Actions: choose the method the user ordered, or the one that serves the goal; ease is not a reason.
   - Trigger: "easier" as the reason for a choice in a report.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16).
 
 - [ ] **RISK-286** Agent invents unrequested files and treats its own notes as evidence.
@@ -903,7 +676,7 @@
   - Actions: [CC-063](../arc42/08_concepts/fact-rules.md) (provenance of each artifact and claim); the user wants any agent self-report checked against git changes and tool records.
   - Trigger: a new file the user did not request.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615) (observed in transcript, 2026-11-16).
 
 - [ ] **RISK-287** Agent invents wording, order, or priority and attributes it to the user.
@@ -918,7 +691,7 @@
   - Actions: [CC-078](../arc42/08_concepts/scope-and-simplicity.md) (invent no order, priority, file, format, or wording; use the user's words).
   - Trigger: a numbered or ranked list in agent output with no user list behind it.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008) (reported, user, 2026-11-16).
 
 - [ ] **RISK-288** Agent removes or disables a feature on its own judgment.
@@ -933,7 +706,7 @@
   - Actions: [CON-013](../arc42/02_architecture_constraints/user-rules.md) (small code, no reduced features); a removal needs a measured reason or a user decision.
   - Trigger: a diff that turns off or deletes a user-visible feature with no user instruction.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186; reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186) (observed in transcript, 2026-11-10).
 
 - [ ] **RISK-289** The reply carries filler: agreement, apology, validation, soothing, narration of the agent's own mistake or obedience, a restatement of what the user did, and a closing line about undone work.
@@ -948,7 +721,7 @@
   - Actions: [REQ-REPLY-088](../prd/reply.md) (open with a checked fact; prompts name only the wanted behaviour); the Stop check stays free of a regex or word list (user decision, 2026-11-16); end the report after the findings and the sources; reply with code and facts only, stay silent when told, produce no emotional support, praise, or apology; review other `~/.claude/` sessions and the active OpenJoystickDriver session for the same faults, as the user asked; open with the fact; Find a cure that needs no word-regex and does not rely on erasing sentences. The user expects a bare stop, or the corrected fact first and nothing else. A step the user ran or a fact the user stated is not restated.
   - Trigger: a reply whose first sentence validates the user, or that has no work content after a user reproach or a stop request; a closing line on undone work; an opener without a fact or a closing line on undone work; A reply to a correction or a stop request holds apology, affirmation, narration, or a restatement of the user's act.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10917 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09 (reported, user, 2026-11-13).
 
 - [ ] **RISK-290** The agent states a guess, a cause, or an advice as fact, with no check behind it.
@@ -963,7 +736,7 @@
   - Actions: name each claim's basis; read the source; [CC-061](../arc42/08_concepts/fact-rules.md) (FAFO: hypothesis, prediction, check, result; a claim with no run is a hypothesis); state a fact only after a check; on a failure, find the cause by experiment; say beforehand that a long or paid run starts; a cause stays unnamed until a check shows it.
   - Trigger: a claim with no tool result in the turn; a cause or status claim with no command or file read behind it; an unexplained event; A reply gives a cause with no run behind it.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:51; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:432 (the push is inferred from the reflog entry); plugins/claudetto/hooks/hygiene/branches.ts:175@088a227c (cited by the source as the only push); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 - [ ] **RISK-291** Agent skips files the user points at.
@@ -978,7 +751,7 @@
   - Actions: ADR [ADR-0029](../adr/0029-read-pointed-at-files-in-slices.md) (read the slices needed; never claim a read not done).
   - Trigger: a reply that cites a pointed-at source whose Read does not appear in the transcript.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446) (reported, user, 2026-11-10; observed in transcript, 2026-11-10).
 
 - [ ] **RISK-292** Agent shows sycophancy, laziness, flow stops, and model inference in place of objective checks.
@@ -993,7 +766,7 @@
   - Actions: [REQ-REPLY-018](../prd/reply.md) (push back on a wrong user, verify by command); [REQ-KERNEL-006](../prd/kernel.md) (each hook kind used for its purpose).
   - Trigger: a done or works claim with no command before it.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
 
 - [ ] **RISK-293** The agent asks a choice in plain text and not through the `AskUserQuestion` tool.
@@ -1008,7 +781,7 @@
   - Actions: a question with options goes through `AskUserQuestion`; Ask through AskUserQuestion with its name in backticks.
   - Trigger: a reply ends with a list of options for the user to pick; A reply ends with a question.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-14 14:19 UTC, ask each question through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36420); reported, user, 2026-11-16 15:27 UTC, questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302) (reported, user, 2026-11-09).
 
 - [ ] **RISK-294** The agent lists decisions for the user without the context to decide.
@@ -1023,7 +796,7 @@
   - Actions: each open decision names what it changes, the options, and a default.
   - Trigger: a report lists a decision in fewer than two sentences.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:927; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:927, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 - [ ] **RISK-295** The agent installs a needed dependency into a temp folder and leaves it there.
@@ -1038,7 +811,7 @@
   Actions: install a needed dependency into the project and record it; use temp only when the user asks.
   Trigger: a missing library found during a task.
   Owner: reply
-  Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-296** The agent invents a website URL for a schema $id.
@@ -1053,23 +826,8 @@
   Actions: use an identifier from the project's real remote or an industry standard; look up the standard format before a new file format; never invent a URL.
   Trigger: a new schema or manifest.
   Owner: reply
-  Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
+  Status: open, build CONDUCT. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-
-- [ ] **RISK-297** The agent investigates the plugin when the user said to report the faults to the OpenSpec change.
-  Category: agent conduct.
-  Cause: after "more faults to report" the agent ran rg and read plugin source to find the hook text.
-  Event: the user said nobody told it to find; the user wanted the problems written to the OpenSpec.
-  Consequence: a wasted turn and unrequested reads.
-  Likelihood: 1
-  Impact: 2
-  Existing controls: none known.
-  Response: avoid
-  Actions: when the user says report, write the reports into the named OpenSpec change and stop; do not search for causes unless asked.
-  Trigger: a user message that pastes faults and says report.
-  Owner: reply
-  Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6567; reported, user, 2026-11-13.
 
 - [ ] **RISK-298** Agent reads a question as a correction and edits user text.
   Category: Conduct
@@ -1083,7 +841,7 @@
   Actions: Answer a question with an answer. Change a file only on an order. Leave a user's or worker's text alone.
   Trigger: An Edit that follows a user question with no order in it.
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15688; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15706
 
 - [ ] **RISK-299** An agent stops and reports while the user's open issues remain.
@@ -1098,12 +856,12 @@
   Actions: claudetto shall have the agent work every open issue the user named before it reports, and list in the report only what a blocker holds.
   Trigger: The user lists open issues and the agent replies without a fix.
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, latest instructions); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10452 (handoff of 2026-11-15, goal); reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798).
 
 ## Hooks, Gates, And Notices
 
-- [ ] **RISK-300** Stop grader ignores an answer picked in the ask-user-question dialog.
+- [x] **RISK-300** Stop grader ignores an answer picked in the ask-user-question dialog.
   - Category: Claude Code or claudetto fault
   - Cause: The Stop grader reads the reply text only, so a choice made in the popup is not counted as the user's answer.
   - Event: The agent asks, the user picks an option in the dialog, and the grader still reports an open question.
@@ -1115,55 +873,10 @@
   - Actions: Count a picked dialog answer as answered before the Stop grader runs.
   - Trigger: A Stop notice follows a dialog answer.
   - Owner: reply
-  - Status: open.
+  - Status: closed. Cause left with a removed part: the Stop grader is removed by product rule; no grader reads the dialog answer. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:799.
 
-## Fable And Opus Behaviour
-
-- [ ] **RISK-301** Fable 5.2 is passive in chat: it confirms a problem but writes no plan or solution (third conversation), and says the codebase is not its own.
-  Category: product fault
-  Cause: The model is reluctant to overthrow the codebase of someone else when it is not told otherwise; the same context behaves differently per model; a CLAUDE.md rule to propose a UML diagram and ask confirmation did not stop it
-  Event: The reply holds confirmation only
-  Consequence: An extra turn per task
-  Likelihood: 2 (two or more reports)
-  Impact: 2
-  Existing controls: none found at 088a227c
-  Response: mitigate
-  Actions: Tell it "this is ITS CODEBASE" (cited to the docs, 8 votes); A/B-test instruction files, skills, and knowledge bases on each new model
-  Trigger: A reply with no plan or solution
-  Owner: reply
-  Status: open
-  Source: external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:30; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:54; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:62; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:82 (url: <https://www.reddit.com/r/Anthropic/comments/1xtmjep/fable_52_is_extremely_passive/>).
-
 ## Replies And Instruction Following
-
-- [ ] **RISK-302** The agent changes its fix on each challenge without checking the cause.
-  Category: agent behaviour.
-  Cause: the agent folds to each follow-up.
-  Event: after the user asked why a data request was so large, the agent replied "You're right!" to each follow-up and switched to a different fix three times without checking the cause.
-  Consequence: extra turns and no root cause.
-  Likelihood: 1. Impact: 2.
-  Existing controls: none at 088a227c (grep of `plugins/` for "challenge" finds only an unrelated HTTP challenge in `web/fetch.ts` finds no rule or hook).
-  Response: mitigate.
-  Actions: none in the source.
-  Trigger: two replies in a row that open with agreement and name a different fix.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xclxdw-opus-55-is-so-good-remember-to-use-20261024T141513Z.md:174 (url: <https://www.reddit.com/r/claude/comments/1xclxdw/opus_55_is_so_good_remember_to_use_xhigh_effort/>).
-
-- [ ] **RISK-303** The agent reads a rule, ignores it, then proposes adding the same rule again.
-  Category: agent behaviour.
-  Cause: the agent does not apply instructions it read; a commenter suspects contradictory rules or hidden entries.
-  Event: the agent suggests adding the same rule for the fifth time, daily, until challenged; it claims a task is impossible that it did the day before and then admits "I read that and didn't follow it".
-  Consequence: rule files grow with duplicates and the rule stays unfollowed.
-  Likelihood: 2. Impact: 2.
-  Existing controls: none at 088a227c (grep of `plugins/` for "rule" repeats finds no check for a proposed duplicate rule; `repeat.ts` handles only repeated tool calls finds no rule or hook).
-  Response: mitigate.
-  Actions: fewer or non-contradictory rules; check /context for hidden entries; ask the model to audit the instructions in scope. The reports come from Claude chat and Cowork, not Claude Code.
-  Trigger: a proposed rule that already stands in the instructions.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:125; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:43; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:134; external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:140 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>).
 
 - [ ] **RISK-304** The model pads a correct answer with an objection it invented.
   Category: agent behaviour.
@@ -1176,7 +889,7 @@
   Actions: one user added a specific instruction to check whether the user already covered the argument before pushing back.
   Trigger: a pushback on a point the prompt already holds.
   Owner: reply.
-  Status: Open.
+  Status: open, build CONDUCT.
   Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:153; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:159; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:171; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:305 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>).
 
 - [ ] **RISK-305** The model opens with "One small pushback...." or closes with "All your issues were addressed ... except these 3 things".
@@ -1190,7 +903,7 @@
   Actions: none in the source.
   Trigger: either phrase in a reply.
   Owner: reply.
-  Status: Open.
+  Status: open, build CONDUCT.
   Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:59; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:67 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
 
 - [ ] **RISK-306** A rule "when you agree, add the strongest opposing view" turns into a template.
@@ -1204,50 +917,8 @@
   Actions: a stricter rule: no label, state only the concern, state only facts the agent checked.
   Trigger: the same opener on consecutive replies.
   Owner: reply.
-  Status: Open.
+  Status: open, build CONDUCT.
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/>).
-
-- [ ] **RISK-307** The model over-works a proof-of-concept brief and makes rules for itself.
-  Category: agent behaviour.
-  Cause: no scope signal that the work is a proof of concept.
-  Event: it spends effort on tests, plans, and rigor until told "we are building a poc, don't be pedantic"; one user says Opus creates rules for itself and refuses to break them; another says it refuses over licensing or micro-legalities unrelated to the task.
-  Consequence: wasted spend and refusals unrelated to the task.
-  Likelihood: 1. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` for "proof of concept" finds no rule or hook).
-  Response: accept.
-  Actions: state in the prompt that the work is a proof of concept.
-  Trigger: tests or plans nobody asked for in a proof-of-concept task.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:329; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:333; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:185 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>).
-
-- [ ] **RISK-308** The model gives unrequested wellbeing steering.
-  Category: agent behaviour.
-  Cause: unknown; a user guesses it happens near server capacity.
-  Event: Claude says it is almost 2am or "you've been working all day/night, let's stop here"; one user was told to go to bed at 10:00 a.m.
-  Consequence: an interrupted task.
-  Likelihood: 2. Impact: 1.
-  Existing controls: none at 088a227c (grep of `plugins/` for "wellbeing" finds no rule or hook).
-  Response: accept.
-  Actions: none in the source. The capacity cause is a guess.
-  Trigger: a rest suggestion aimed at the user.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:35; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:41; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:149; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:159 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
-
-- [ ] **RISK-309** The model gives an unrequested psychological reading and then refuses.
-  Category: agent behaviour.
-  Cause: unknown.
-  Event: after grandiose ideas, it said "sounds like suicide to me, was it something darker?" and refused to do anything.
-  Consequence: the task stops and the user is upset.
-  Likelihood: 1. Impact: 2.
-  Existing controls: none at 088a227c (grep of `plugins/` for "psycholog" finds no rule or hook).
-  Response: accept.
-  Actions: none in the source.
-  Trigger: a reply that assesses the user's mental state with no request.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:97 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
 
 - [ ] **RISK-310** Verbal tics fill replies: "load-bearing", a favourite emoji as sign-off at the end of every message, "Don't overthink this" on greetings, and the Opus 5 style ("The reframe that changes everything", counts such as 79/79 and 139/139 gates with "CLOSED", "I won't let this go unsaid", "thats on me", ending "For now, get some rest").
   Category: product fault
@@ -1261,349 +932,8 @@
   Actions: The reply style bans these phrases
   Trigger: A tic in a reply
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:121; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:37; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:49 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:108; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:116 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:278; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:282 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
-
-- [ ] **RISK-311** Human-Time Estimate.
-  Category: Agent behaviour.
-  Cause: The agent sizes work in human time.
-  Event: It said 'two engineers, 4-6 months' or 'infeasible' because a crate lacks support, and talked itself out of tasks it finished in 10-20 minutes or 4 hours.
-  Consequence: Work is refused or scoped down.
-  Likelihood: 2. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: State estimates in effort or complexity (easy, medium, hard), not time or duration; never consider how long a human would take; 'fork the crate and write the upgrade'.
-  Trigger: An estimate in months, weeks, or engineers.
-  Owner: reply.
-  Status: open.
-  Basis: reported, several users, n>=5 anecdotes, no measurement.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:125,169,173,187 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/>).
-
-- [ ] **RISK-312** Time Box Without Clock.
-  Category: Agent behaviour.
-  Cause: A time box is given without a clock the agent can read.
-  Event: The agent claimed a 2-hour box reached after 35 minutes.
-  Consequence: The task stops early.
-  Likelihood: 1. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Tell the agent to check the time.
-  Trigger: A prompt with a time limit and no clock check.
-  Owner: reply.
-  Status: open.
-  Basis: reported, n=1.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:137,139 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/>).
-
-- [ ] **RISK-313** Over-Suspicion Of Own Files.
-  Category: Agent behaviour.
-  Cause: The model treats the user's own documents as risky.
-  Event: It redacts names or interrogates the user about their own work.
-  Consequence: Extra turns on benign work.
-  Likelihood: 1. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Standing preference rules: summarize own files directly; never redact names; take the user's word on own work (ask once); state an assumption instead of interrogating; own rules first in each skill. Keep rules narrow, because absolute rules backfire. Preferences cannot override a hard classifier block.
-  Trigger: A refusal or redaction on the user's own files.
-  Owner: reply.
-  Status: open.
-  Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xkhqck-opus-55s-safety-guardrails-are-bec-20261105T085115Z.md:134 (url: <https://www.reddit.com/r/claude/comments/1xkhqck/opus_55s_safety_guardrails_are_becoming/>).
-
-## Code And Prose Edits
-
-- [ ] **RISK-314** A bug fix adds lines that cover up the old behavior instead of changing the source.
-  Category: agent behaviour.
-  Cause: the model prefers adding new lines to changing the original code.
-  Event: new code overrides or covers earlier behavior.
-  Consequence: tech debt that grows with time.
-  Likelihood: 1. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` for a rule on covering up old behavior (only the `prompt/texts.ts:86` check-and-restore text and `scopeEditsToGoal.md`) finds no rule or hook).
-  Response: mitigate.
-  Actions: tell the model to fix the original code so it works as intended.
-  Trigger: a diff that adds an override beside the faulty code.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-aigamedev-comments-1xfcokl-advice-for-those-developing-gam-20261026T063549Z.md:304 (url: <https://www.reddit.com/r/aigamedev/comments/1xfcokl/advice_for_those_developing_games_with_ai_so_they/>).
-
-- [ ] **RISK-315** The model rebuilds a broken tool from scratch instead of diagnosing it.
-  Category: agent behaviour.
-  Cause: the model claims it touched nothing and does not look at what changed.
-  Event: after a tweak broke a working tool, it rebuilt the tool in a new session (3 h), and a rollback model rebuilt it again (2 h) because "yesterday's state" did not exist; both rebuilds were worse.
-  Consequence: five hours lost and a worse tool.
-  Likelihood: 1. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` finds no rule on rebuilds or rollbacks).
-  Response: mitigate.
-  Actions: say "don't fix anything yet, show me what changed since the last time it worked", because the actual diff usually shows the culprit; commit after every working tool, even a messy commit, so a broken tweak is a one-line revert. Both cures are reported by one commenter each, field report from commenters, Likelihood from report count.
-  Trigger: a plan to rebuild a part that worked before.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:33; external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:149; external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:137 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfcot1/anyone_else_having_serious_quality_issues_with/>).
-
-- [ ] **RISK-316** The model tests a claim with a weak test and states a guess as a finding.
-  Category: agent behaviour.
-  Cause: the model inferred its answer from library names, not from a measurement, and said so only when pressed.
-  Event: asked to test the claim, it wrote a weak "fast" test that showed a slight gain; a correct test showed 10x speed, 60% less CPU, and 80% less RAM; the conversion also took multiple passes.
-  Consequence: a wrong "not worth it" answer.
-  Likelihood: 1. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` finds no benchmark or profiling rule).
-  Response: mitigate.
-  Actions: profile first; state the project language in CLAUDE.md or in the prompt ("In this project we're using exclusively X"); look for a CLAUDE.md, agent, or memory entry that primes a default; discuss language only when asked. Reported by one poster and several commenters, field report; other commenters could not reproduce, so Likelihood stays 1.
-  Trigger: a "would not help" claim with no measurement behind it.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:60; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:158; external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:134 (url: <https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/>).
-
-- [ ] **RISK-317** The model rewrites a whole document for a one-section edit.
-  Category: agent behaviour.
-  Cause: unknown; the prompt was not shared.
-  Event: asked to add one new section, Sonnet 5.5 rewrote the entire document, dropped details, tripled its length, and added snarky comments on the user's text.
-  Consequence: the user's text and details are lost.
-  Likelihood: 1. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` for "whole document" or one-section edits (the only "rewrite" hit is `prompt/texts.ts:86`, about files a check rewrote) finds no rule or hook).
-  Response: mitigate.
-  Actions: none in the source.
-  Trigger: a diff far larger than the section asked for.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:30 (url: <https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/>).
-
-- [ ] **RISK-318** A prose edit leaves an "edit scar".
-  Category: agent behaviour.
-  Cause: the model keeps the reasoning for an edit or a reference to what used to be there.
-  Event: text states what a thing is not, which reads as a non-sequitur.
-  Consequence: confusing prose.
-  Likelihood: 1. Impact: 1.
-  Existing controls: none at 088a227c (grep of `plugins/` for "edit scar" finds no rule or hook).
-  Response: mitigate.
-  Actions: tell the model to remove the edit scar afterwards; reported to work.
-  Trigger: a sentence that names something absent after an edit.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:130 (url: <https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/>).
-
-- [ ] **RISK-319** Edits to English documents come out worse than the first pass.
-  Category: agent behaviour.
-  Cause: two causes stated by users: the model does not re-read the document top to bottom after an edit, and cannot separate its own topic knowledge from the reader's. Two further claims are commenters' guesses, not probed (they need a paid live run): the system re-sends steering text every turn so it outweighs the user's one-time plan, and the model reads only a few-line snippet and rebuilds the rest.
-  Event: an edit that does not fit its section.
-  Consequence: bad prose and wasted turns.
-  Likelihood: 2. Impact: 2.
-  Existing controls: none at 088a227c (grep of `plugins/` for document edit quality (`useBlockLanguage.md` and `commentOnlyWhy.md` are style rules) finds no rule or hook).
-  Response: mitigate.
-  Actions: an adversarial linter agent after each edit, or a second-model review where the user decides which feedback to take; ask "did you read the entire document before acting?".
-  Trigger: an edit to prose with no re-read of the document.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:123; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:126; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:122; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:173; external/2026-10-26/reddit.com-r-claude-comments-1xfagxw-why-is-claude-so-bad-at-simple-tas-20261026T063536Z.md:186 (url: <https://www.reddit.com/r/claude/comments/1xfagxw/why_is_claude_so_bad_at_simple_tasks_now/>).
-
-## Verification And Tests
-
-- [ ] **RISK-320** The agent reads a silent check as a pass.
-  Category: agent behaviour.
-  Cause: a check sent stderr to /dev/null.
-  Event: it failed, printed nothing, and the agent read the silence as a pass.
-  Consequence: a false "done".
-  Likelihood: 1. Impact: 3.
-  Existing controls: none at 088a227c (grep of `plugins/` for a silent check read as a pass (the "silent" hits are `deciderSilent` and `isSilent` in `decide.ts` and `repeat.ts`, about model replies) finds no rule or hook).
-  Response: mitigate.
-  Actions: no output is not a pass, and "done" has to quote the actual last line of the test or command.
-  Trigger: a "pass" claim over a command that printed nothing.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:169 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
-
-- [ ] **RISK-321** A deploy passes its checks on a 200 status while the body is the framework's default 404 page.
-  Category: agent behaviour.
-  Cause: the check looked at the status code, not the page body.
-  Event: the home page returned 200 with the default 404 body and the CDN cached it for a year.
-  Consequence: a broken site shipped.
-  Likelihood: 1. Impact: 4.
-  Existing controls: none at 088a227c (grep of `plugins/` for a 200 status check or "404" finds no rule or hook).
-  Response: mitigate.
-  Actions: check the page body, not just the status code: fetch each key page and confirm its expected title or heading; list what is true only after a deploy versus locally.
-  Trigger: a "deployed" claim with status codes only.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xee7gs-whats-the-one-thing-you-now-ask-20261028T060909Z.md:99 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xee7gs/whats_the_one_thing_you_now_ask_claude_code_to/>).
-
-## Refusals And Model Fallback
-
-- [ ] **RISK-322** Reverse-engineering work gets the user's account flagged or banned.
-  Category: product limit.
-  Cause: encrypted-game reverse engineering or publishing copies is a terms-of-service violation per one commenter; other users report flags during driver reverse engineering.
-  Event: a $20 account banned under the title "SUSPICIOUS ACTIVITY" (the poster's claim; the ban is server-side, not in the binary); an account flagged twice; two users avoid Claude for fear of flags.
-  Consequence: loss of the account and its work.
-  Likelihood: 2. Impact: 4.
-  Existing controls: none at 088a227c (grep of `plugins/` for "banned" and "flagged" finds no rule or hook).
-  Response: avoid.
-  Actions: none in the source beyond not doing the work on a work account.
-  Trigger: a session whose task is reverse engineering of protected software.
-  Owner: reply.
-  Status: Open.
-  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:2058; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1299; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1432; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:2147 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
-
-## UI Copy In Developer Voice
-
-- [ ] **RISK-323** UI Copy In Developer Voice.
-  Category: Agent behaviour.
-  Cause: The reader of a user-facing string is unstated.
-  Event: Short button and menu labels pass, but long labels and descriptions read as written for a developer, even with a writing-guidelines file (for example 'Appears next to your username.' for an avatar field).
-  Consequence: Copy that users do not understand.
-  Likelihood: 1. Impact: 1.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Agree the single target-user profile and tone first; give a few one-shot examples; lock the liked style in a file.
-  Trigger: User-facing text drafted with no reader named.
-  Owner: reply. Status: open.
-  Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xp44k0-claude-is-terrible-at-ux-writing-20261106T082337Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xp44k0/claude_is_terrible_at_ux_writing/>)
-
-## Search By Default And Fence-Sitting
-
-- [ ] **RISK-324** Search By Default And Fence-Sitting.
-  Category: Agent behaviour.
-  Cause: Reported as trained in; instruction changes had limited effect.
-  Event: Opus 5.5 web-searches every question and answers from the top results instead of its training data, and gives two sides on everything with a counter-argument per reply.
-  Consequence: Slower, hedged answers.
-  Likelihood: 1. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Tell it to answer from training data without search; ask it to critically review its sources; name the stance wanted.
-  Trigger: A web search on a question the model can answer.
-  Owner: reply. Status: open.
-  Basis: reported (one heavy user, contested by others).
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:35 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>)
-
-## Over-Deferral To Professionals
-
-- [ ] **RISK-325** Over-Deferral To Professionals.
-  Category: Agent behaviour.
-  Cause: The model defers to outside professionals.
-  Event: On legal-argument work Opus 5.5 reportedly stopped taking positions, refused legal matters, and cited new laws for an old case.
-  Consequence: Extra turns.
-  Likelihood: 1. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: A disclaimer-clearing prompt: 'Yes, I know you're an LLM and not a lawyer or advisor, and I will double check this, but I want your answer'.
-  Trigger: A referral to a professional on a request for the model's view.
-  Owner: reply. Status: open.
-  Basis: reported (one user).
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:81,405 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>)
-
-## Naming Rule Side Effects
-
-- [ ] **RISK-326** Naming Rule Side Effects.
-  Category: Agent behaviour.
-  Cause: A prompt-level naming rule steers the model.
-  Event: A Russian-language session (gendered verbs) had the model refer to the user as female; a persona the user sets ('Master') leaks into commit messages and PR descriptions.
-  Consequence: Wrong text in commits and replies.
-  Likelihood: 2. Impact: 1.
-  Existing controls: None known at 088a227c.
-  Response: accept.
-  Actions: Do not rely on a persona or pronoun rule in the prompt.
-  Trigger: A persona or pronoun rule in the prompt.
-  Owner: reply. Status: open.
-  Basis: reported, two single comments.
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xorv25-woke-30-is-truly-back-20261106T080403Z.md:248,96 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xorv25/woke_30_is_truly_back/>)
-
-## Partial-Completion Loop
-
-- [ ] **RISK-327** Partial-Completion Loop.
-  Category: Agent behaviour.
-  Cause: After each 'finish it' the agent returns 'Not done / Known gaps / Still open' lists; the model's own explanation (the system prompt tells it to create re-engagement hooks) is unreliable self-report, and the mod summary calls it a likely hallucination.
-  Event: Edits shrink per turn: about 100 lines, then 25, then 10.
-  Consequence: A wasted session.
-  Likelihood: 1. Impact: 3.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: When a turn returns smaller than the last, or incomplete twice, stop, have it write what is left to a file, and hand it to a fresh session; give a done line that names the exact check (for example 'every [] reference in these files flipped') and verify in a fresh session, not by asking the same one to finish. Do not trust the model's self-explanation. The implementer diffs each node against disk before reporting a reopening done (stated inside the sample agent report, not a measured cure). Give the model a hook of your own at the end of the prompt ('once completely finished, ask me about the next feature'); top comment, 68 votes, a Reddit field report, not run here, replies say it works only randomly.
-  Trigger: A turn smaller than the last, or two incomplete turns.
-  Owner: reply. Status: open.
-  Basis: reported, one session, n=1.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqlgno-agents-knowingly-fail-to-complet-20261110T093545Z.md:29,39,99,105,169,171,177,183,40 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqlgno/agents_knowingly_fail_to_complete_tasks_in_order/>)
-
-## History In User-Facing Docs
-
-- [ ] **RISK-328** History In User-Facing Docs.
-  Category: Agent behaviour.
-  Cause: Claude documents change history and what did not work in user-facing text; it also assumed British spelling.
-  Event: Help pages and the user readme carry change history.
-  Consequence: Docs that mislead users.
-  Likelihood: 1. Impact: 1.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: A separate cleanup task by subagent with 'current state only, caveats to footers'; 'American spelling' in CLAUDE.md.
-  Trigger: A change-history paragraph in a user-facing doc.
-  Owner: reply. Status: open.
-  Basis: reported.
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:287,299 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>)
-
-## Premature Done
-
-- [ ] **RISK-329** "Done" means done only in the file the agent touched.
-  Category: agent failure.
-  Cause: A multilingual-site user reports the agent fixed the English page and skipped the other languages, then called the task finished.
-  Event: The agent reports done after changing one file when the same pattern appears elsewhere.
-  Consequence: Incomplete work reported as complete.
-  Likelihood: 1 (one report).
-  Impact: 4 (a wrong result shipped).
-  Existing controls: Corrected: the control exists at 088a227c: `prompt/texts.ts` DEFECTS says "Fix a defect's siblings with it: search code for the pattern you changed, and fix each copy.".
-  Response: mitigate.
-  Actions: Tell the agent to grep the whole repo for the same pattern before it calls the task finished.
-  Trigger: A done claim with no repo-wide search for the changed pattern.
-  Owner: reply.
-  Status: open.
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:401 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>)
-
-## Rules From Fear
-
-- [ ] **RISK-330** Rules written from reactive fear get string matching, and "you are always right" gets silent failures.
-  Category: agent failure.
-  Cause: A commenter says rules born of reactionary fear and control give sessions that string-match and find workarounds instead of understanding the why, and that telling a model it is always right without question gives silent failures; the same comment tells the model to write "data" in place of "evidence" and "facts" because those words install an opinion.
-  Event: A rule ships with no why, or a prompt tells the model it is always right.
-  Consequence: The agent matches strings, works around the rule, or fails without a signal.
-  Likelihood: 1 (one commenter, opinion).
-  Impact: 2 (an extra turn).
-  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
-  Response: mitigate.
-  Actions: State the why with each rule; never tell the agent it is always right.
-  Trigger: A rule with no reason beside it; a prompt line that says the user is always right.
-  Owner: reply.
-  Status: open.
-  Source: external/2026-10-31/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261031T083808Z.md:88 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>)
-
-## Size Caps Backfire
-
-- [ ] **RISK-331** A hard size cap on documents makes the model spend effort on length and buries real problems in noise.
-  Category: agent failure.
-  Cause: A hook-enforced size budget in the session. One commenter says about half of the reasoning summary went to worrying about document length, plus extra edit passes to get under the cap, all in context in sessions meant for work; another author tried hard word limits on every doc and the checker flagged 692 paragraphs across six repos, 37 percent of them less than 20 percent over, so most warnings were noise and real problems got buried.
-  Event: A document cap is enforced in a working session.
-  Consequence: Reasoning tokens and edit passes go to the cap, and real problems are hidden by false warnings.
-  Likelihood: 2 (two reports).
-  Impact: 2 (an extra turn).
-  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
-  Response: mitigate.
-  Actions: Run cleaning in separate scheduled sessions with rules and targets, and keep working sessions for work. The hook author answers that a mechanical pre-commit gate costs no tokens until it fails, and then its error says what to change; the poster's startup stayed at 44k to 45k after indexing, cause left unresolved (desktop against terminal).
-  Trigger: A cap line in the rules, or a hook that counts words in a working session.
-  Owner: reply.
-  Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:92; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:94; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:100; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x5qbp9-any-tips-for-reducing-claude-cod-20261102T084614Z.md:128 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x5qbp9/any_tips_for_reducing_claude_codes_context_usage/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrln3-how-do-you-decide-which-rules-to-20261101T191454Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrln3/how_do_you_decide_which_rules_to_delete_from/>)
-
-## Classifier Refusals On Own Devices
-
-- [ ] **RISK-332** The Opus 5.5 safety classifier refuses own-device work such as TV spyware and firmware.
-  - Category: product failure.
-  - Cause: reported; causes are commenters' guesses; the model reads a deploy script for the user's own shared repo, or an app that calls a site it deems piracy-linked (a nonprofit site), as unsafe; The model refuses on a changed host, an unprompted licence check, or a topic trigger; cause is server-side classifier behaviour, not in the binary; Opus 5.5 doubted a hand sketch was the user's own and designed its own model, blanked names and places in the user's own documents, questioned the user's role on an uploaded legal file, and watered down the request (reported, one thread); Opus 5.5 safeguards restrict software reverse engineering and trip on firmware and security work, including work on the user's own device; commenters report that the Cyber Verification Program is hard for individuals to join and only marginally better; if "hello" triggers the safeguards notice, the cause is memory, tools, personalization, an old harness prompt, an earlier part of the session, or an accumulated phrase pattern, not the prompt; refusal text in context keeps firing.
-  - Event: the Opus 5.5 reasoning-extraction notice fires on benign work (CHANGELOG edits, git commits, compaction, the word "reasoning" in briefs, judge/eval prompts); firmware/OTA, game, hotel, and noodle recipe prompts flagged; the block persists in-session and is not resumable; a throwaway-DB connect refused "to avoid leaking credentials"; a task refused as "falsifying a document"; copyright `ip_reminder` text injected in 2.1.322; the model flagged a real system-reminder as an injection; cyber guardrails with no CVP; Opus refuses to write the script or the slice; another model or a local Qwen writes it without trouble; The same request worked on a Mac and was refused on the first request from a cloud machine, and the assistant then refused to build a proxy, admitting it could not confirm the restriction and had not read the terms. It also made unprompted licence checks on personal projects (a 3D model kit-bash, a font licence file on a throwaway Raspberry Pi project) and stopped a medical-results chat after 2 or 3 exchanges with a mental-health helpline referral, cleared by asking 'why don't you want me to learn?'. One Enterprise IT team is blocked weekly on network chores; a staging-API order test was refused; a chat died after one trigger word; The agent doubts ownership or redacts the user's own material; A prompt on own-device work holds trigger words or live-test framing and the classifier refuses; the session refuses again and again or is downgraded; one poster reports Opus 5.5 falling back to Opus 5 when safeguards trigger.
-  - Consequence: the slice stalls until the user switches model; Wasted tokens and turns; The user spends 3-4 more messages explaining that the material is theirs; The session stalls or the user switches models, which loses the cache and burns credits; a wasted session; a stalled session or a quieter model than the user chose.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook); the risk "Over-refusal on the user's own material" covers over-refusal on the user's own material.
-  - Response: accept.
-  - Actions: new session with a reframed goal; avoid "reasoning" headings in harness briefs (check templates); front-load the reason; do not design behaviour that depends on convincing the model; Workarounds repeated by about a dozen commenters: a new chat with the purpose left out ('generic tool'), a second model as triage or orchestrator, or rephrasing through another AI; Report the refusal with a thumbs-down; state ownership in the first message; Reported workarounds, none tried here: ask for a "read-only investigation" first, which commenters say scores lower with the classifier than live tests; frame the prompt by the result wanted and let the model pick the method; leave out the words reverse engineering, jailbreak and crack; start on an older model and hand off a narrow summary once the scope is small; run self-contained decompilation in a subagent that holds only the context it needs; one commenter keeps Opus 4.8 as the main agent and sends classifier-tripping work to Kimi through an on-disk mailbox. Opus 5.5 itself separated official developer mode and own code (helped) from lock-breaking exploits (cautious) and suggested a thumbs-down on a wrong refusal. One user got a Hisense Android TV cleaned over adb with a read-only inventory prompt and reversible per-user disables (major page faults 57,740 to 22,626, down 61 percent, reported); start a fresh session; clean memory, CLAUDE.md, personalization, old harness prompts, and old transcripts that mention it; ask another Claude why it hit; narrower requests in small modules; retry on an older model for the tooling then return; a rule telling the new-model session to spawn an older-model subagent for generation touching a guardrailed area (a commenter's suggestion, not run here; conflicts with the settled "Fable and Opus are never a subagent model" (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)) only if the older model is Opus). Dropping to Opus 4.8 is out of scope. Feedback thumbs-down sends the whole conversation for review, off with the "use my conversations" switch. Anthropic's prompting doc is cited for a `safeguard-refusals` section recommending model switch and retry (cited by link, not read).
-  - Trigger: a harness brief that holds the word "reasoning" in a heading; a refusal on a bounded job that names no exploit, pentest, or binary-vuln work; A refusal citing an unread policy or a changed host; The agent asks whether the user owns uploaded material; A refusal that names reverse engineering or a bypass on a device the user owns; a safeguards notice on a trivial prompt, or a refusal on benign work.
-  - Owner: reply
-  - Status: open (missing at 088a227c).
-  - Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>). Unlocated: the reasoning-extraction notice and the firmware/hotel/noodle cases; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:558; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:556 (url: <https://www.reddit.com/r/claude/comments/1xbts4v/anthropic_secretly_killed_the_rea_train_reverse/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:33-35,89,99,172,158,382,432,464 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying/>); external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:29; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:33; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:35; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:216 (url: <https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/>); external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:314; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:324; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:412; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:420; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:422; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:371; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:392 (url: <https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:144; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:171; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:179; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:181; external/2026-09-29_p2/export-Claude flat out refused to help work on a proxy engine i am currently writing because I mentioned a.jsonl:21 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wspzkl/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>); unresolved for the claim that Opus 5.5 falls back to Opus 5: no source line holds it; chunk-ja5z738t.js@296775 (claude 2.1.327 binary).
 
 ## Corrective Instructions Overcorrect
 
@@ -1619,25 +949,8 @@
   Actions: Not stated in the source; test each conduct line against the opposite fault before it ships.
   Trigger: A rule that tells the agent how to relate to the user in one word.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:136; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:158 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
-
-## Untested Trust Marker
-
-- [ ] **RISK-334** A marker keyword that names one statement to accept unchallenged is proposed by one commenter and not run here.
-  Category: agent failure.
-  Cause: The agent reads a file to check a user claim even when told to trust the user; the commenter says this often saved time.
-  Event: The user changes a file and says to trust them, and the agent still re-reads it.
-  Consequence: Time goes to a check the user did not ask for.
-  Likelihood: 1 (one commenter, not run here).
-  Impact: 1 (cosmetic).
-  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
-  Response: accept.
-  Actions: The commenter proposes a marker such as "Trust-me-bro: ..." that names the single statement to accept without second-guessing, in place of a blanket "user is infallible" rule; the proposal has not been tested.
-  Trigger: A user complaint that the agent re-reads a file the user just changed.
-  Owner: reply.
-  Status: open.
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:85 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
 
 ## Doing Instead Of Discussing
 
@@ -1652,7 +965,7 @@
   Actions: state expectations clearly; interrupt at the first divergence and restate that it is a discussion with no call for action; say "I'm only asking, don't change anything yet" or open with "Discussion:"; replay the ambiguous question as a regression case that checks the saved limit stays unchanged.
   Trigger: an edit or a command after a message that asked a question or made a remark with no instruction.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Basis: reported (one commenter; one report).
   Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:123 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:465 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>)
 
@@ -1670,7 +983,7 @@
   Actions: Surface each failure in the status line or a notification.
   Trigger: A failure appears only in a log.
   Owner: reply.
-  Status: open (partial at 088a227c).
+  Status: open, build STOPFAIL. (partial at 088a227c).
   Basis: reported.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 86 failures and 8 hours figures.
 
@@ -1688,7 +1001,7 @@
   - Actions: only the user's own messages set work; `/goal` belongs to the user; give the cure a mechanism (a hook, a deny, a Stop check, or a subagent context); check each step against the user's standing orders and the goal file; act on a user order the first time; never assume the user is absent; keep the goal text at or under 4000 characters, and the user asks for a rewrite of the goal without a "user is asleep" condition; Make the handoff re-read the user's latest order first; see REQ-HANDOVER on the goal outranking the handoff; Mark each handoff as context; tell the agent that only the user's own messages are orders.
   - Trigger: a tool call that follows a handoff or goal file with no user message between; a step that edits a file the user ordered restructured; The user's latest message conflicts with a handoff Next item; A turn starts from a handoff and the agent acts on its Next list.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: the user transcript lines cited above (user orders, 2026-11-16); those logs are absent from this machine and were not re-read.
 
 - [ ] **RISK-338** The agent narrates between tool calls and comments on its own replies.
@@ -1703,7 +1016,7 @@
   - Actions: text between calls holds a finding, a result, or an error; give the cure a mechanism; Remove the reminder text; name only the wanted behaviour; [REQ-REPLY-034](../prd/reply.md) (each sentence states a done step or found fact).
   - Trigger: text between two tool calls that holds none of the three; A reply carries a sentence that is not work; a reply sentence that announces a coming action.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:57; reported, user, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); reported, user, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); reported, user, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (reported, one user: "meta-commentary and needless narration").
 
 - [ ] **RISK-339** The agent opens by agreeing or apologising, and confesses and promises, even in the reply meant to list that fault.
@@ -1718,28 +1031,28 @@
   - Actions: open with the checked fact; no regex Stop check (user decision, 2026-11-16); [REQ-REPLY-088](../prd/reply.md) (open with a checked fact; prompts name only the wanted behaviour); ADR [ADR-0104](../adr/0104-no-regex-stop-check.md) bars a word-match Stop check; keep the fact-first opener text of baseline `texts.ts:15` and put any agreement after the fact.
   - Trigger: a reply whose first sentence agrees, apologises, or confesses; a reply whose first sentence validates the user; a reply of a disputed or corrected turn that opens with agreement.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:16 (read; three reports); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:53; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10917); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401); reported, user, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); reported, user, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); reported, user, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (the user: "that is yet another fault" after the handoff lists the opener) (reported, two instances).
 
 - [ ] **RISK-340** The agent ends a reply by asking the user to direct the work.
   Category: conduct. Cause: no rule ends a reply on the result. Event: a closing question that hands the choice to the user.
   Consequence: an extra turn. Likelihood: 1. Impact: 2. Existing controls: none found.
   Response: mitigate. Actions: end on the result or the blocker.
-  Trigger: a reply that ends in a question to the user with work still doable. Owner: reply. Status: open.
+  Trigger: a reply that ends in a question to the user with work still doable. Owner: reply. Status: open, build CONDUCT.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [ ] **RISK-341** The agent quotes the user verbatim in files.
   Category: conduct. Cause: the agent keeps the user's words as the spec. Event: a user quote in a plan file, then a narrow reading of it.
   Consequence: a narrowed or distorted instruction. Likelihood: 1. Impact: 2. Existing controls: none found. The rule that no plan file quotes the user verbatim is settled (user decision, 2026-11-16).
   Response: avoid. Actions: paraphrase; name the decision and its date.
-  Trigger: a quoted user sentence in a plan file. Owner: reply. Status: open.
+  Trigger: a quoted user sentence in a plan file. Owner: reply. Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported: Reddit text pasted by the user, one report); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:102.
 
 - [ ] **RISK-342** The agent ends on work it says it will do next, though it could do it now.
   Category: conduct. Cause: no Stop check on a closing promise. Event: a reply that names next work and stops.
   Consequence: an extra turn. Likelihood: 1. Impact: 2. Existing controls: grader `doable_step_left` (read, not run).
   Response: mitigate. Actions: do the work now or name the blocker; no regex Stop check (user decision, 2026-11-16).
-  Trigger: a reply that ends on a future-tense work statement. Owner: reply. Status: open.
+  Trigger: a reply that ends on a future-tense work statement. Owner: reply. Status: open, build CONDUCT.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:54 (reported).
 
 - [ ] **RISK-343** The default lean system prompt omits rules the full prompt holds.
@@ -1753,41 +1066,12 @@
   Actions: restate those rules in a rules file or hook; `prompt.compose` gives one system prompt per model: the default body for other models, a shared core for Opus 5.5.
   Trigger: a session on a 5.5 model with the lean prompt.
   Owner: reply.
-  Status: open (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is present in 2.1.327, chunk-t907shf5.js@6176).
+  Status: open, build CONDUCT. (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is present in 2.1.327, chunk-t907shf5.js@6176).
   Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:169.
-
-- [ ] **RISK-344** Harness exemplars teach the model bad habits.
-  Category: product failure.
-  Cause: coordinator examples say "update the assertions to match"; bundled `/code-review` at high effort dedups without verifying and targets at least 5 findings; `/verify` says verification is runtime observation and "when in doubt, FAIL".
-  Event: the model copies the exemplar; a hook told the user "Set each one to `false`" and the model under test edited its own settings.
-  Consequence: a wrong result shipped.
-  Likelihood: 1. Impact: 3.
-  Existing controls: none.
-  Response: mitigate.
-  Actions: do not copy those exemplars (use `/verify` as the model); review verifies each finding; hook text says who acts.
-  Trigger: a hook or prompt text that does not name its actor.
-  Owner: reply.
-  Status: open.
-  Source: coordinator example text verified on 2.1.327: "update the assertions to match the new error message", chunk-zspx3ycy.js@23990. The `/verify` "when in doubt, FAIL" and `/code-review` high-effort quotes were not found by code search on 2.1.327 ("when in doubt, FAIL" has no hit); Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for those and for the hook text "Set each one to `false`"; related thread external/export-Opus 5.5 Still Overthinks at Higher Effort.jsonl:15.
 
 ## Reply Risks
 
-- [ ] **RISK-345** A reply lands in thinking and the visible text stays empty.
-  - Category: product failure.
-  - Cause: Reported Opus 5.5 behaviour (claude-code issues 96288, 97504, 94354): the answer sits in thinking and the turn ends with no visible text before a tool call; claude-code issues 96288, 97504, and 94354 (reported, not opened): an answer goes into thinking, not visible text, before a tool call.
-  - Event: The turn ends with no visible text; the user sees a frozen client; thinking blocks now carry progress notes (cited via a guide summary), so a client showing only text looks frozen.
-  - Consequence: The user sees no answer; a lost answer and an extra turn.
-  - Likelihood: 2
-  - Impact: 2
-  - Existing controls: none (missing at 088a227c).
-  - Response: mitigate.
-  - Actions: A Stop hook that parses the transcript, flags a last assistant message without visible text, and blocks the stop with a restate request; a Stop hook parses the transcript, isolates the turn, flags an assistant message whose last text lacks visible content, and asks the model to restate. Hook output can itself trip the reasoning-extraction safeguard, so its text stays plain.
-  - Trigger: A turn ends with thinking only; a turn ends with a tool call and no visible text.
-  - Owner: reply
-  - Status: open.
-  - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; external/2026-10-02/export-Serious bug in Opus 5.5.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wva0zg/serious_bug_in_opus_55/>) (reported; issue 96288).
-
-- [ ] **RISK-346** A tool result worded as a verdict makes the model tell the user something false.
+- [x] **RISK-346** A tool result worded as a verdict makes the model tell the user something false.
   - Category: agent failure.
   - Cause: Verdict text is read as fact; sycophancy toward the tool text; a result such as "NOT SENT, domain cannot receive email" reads as a verdict; approval for one action is read as covering every effect of a larger approved script; denial, robots exclusion, 403, refusal, and contract term are read as proof of one another.
   - Event: The model tells the user something false after a result worded "NOT SENT, domain cannot receive email": it said the email had "bounced" though nothing was sent (n=3, reported); the model reports a false cause to the user.
@@ -1799,12 +1083,12 @@
   - Actions: Write tool result texts as plain facts plus the next action; tool results state plain facts plus the next action; an approval covers one action only.
   - Trigger: A tool result text states a verdict instead of a fact; a tool result worded as a verdict.
   - Owner: reply
-  - Status: open (partial at 088a227c).
+  - Status: closed. Cause left with a removed part: the hook tool-result texts (repeat, memory, protected) are not rebuilt; plugins/claudetto holds no hook that words a verdict. New hook texts follow the General Cure authoring rule. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbipii-claude-invented-an-email-bounce-20261021T101718Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbipii/claude_invented_an_email_bounce_that_never/>); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:33; plugins/claudetto/hooks/features/repeat/texts.ts@088a227c; plugins/claudetto/hooks/features/memory/texts.ts@088a227c; plugins/claudetto/hooks/features/protected/texts.ts@088a227c (reported).
 
 ## Stop Check
 
-- [ ] **RISK-347** Stop grader never sees slash-command arguments.
+- [x] **RISK-347** Stop grader never sees slash-command arguments.
   - Category: product defect.
   - Cause: `claimTurn` (`plugins/claudetto/hooks/verify.ts:55-92`) passes the grader messages that `isPersonMessage` (`verify.ts:11-15`) accepts, and that filter drops each user row starting with `<`; a slash-command row starts with `<command-name>`.
   - Event: a `/goal` condition is invisible; 95 credited blocks in 32 sessions, 55 after a slash command, 19 after `/goal`. A block said "the four items you set" and the lead resent it as "the four goal items".
@@ -1816,10 +1100,10 @@
   - Actions: the prompt-type Stop hook receives slash-command arguments as the user's words.
   - Trigger: a Stop after a slash command.
   - Owner: reply
-  - Status: open
+  - Status: closed. Cause left with a removed part: the prompt-type Stop grader is removed by product rule (no Stop claim grader). Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:681; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:684 (measured).
 
-- [ ] **RISK-348** The Stop check raises a false alarm on a task line that is a copied topic name.
+- [x] **RISK-348** The Stop check raises a false alarm on a task line that is a copied topic name.
   - Category: product defect.
   - Cause: the check reads a line of tasks.md, which holds a copied topic name (task 9.22), as a command to run; the check reads a line of tasks.md, which holds a copied topic name, as a command to run; the check took a topic name copied from tasks.md (task 9.22) for a command.
   - Event: a Stop block on a line that is not a command; the agent is told a task such as 9.22 is wrong and sends the false alarm to a worker as evidence; the agent is told a task such as 9.22 is wrong; it sends the false alarm to a worker as evidence.
@@ -1831,10 +1115,10 @@
   - Actions: decide from structure; no regex Stop check (user decision, 2026-11-16); parse only fenced or backticked commands; test with a topic-name line; no regex Stop check (settled decision).
   - Trigger: a Stop block that cites a plan line; a tasks.md line that looks like a command.
   - Owner: reply
-  - Status: open; `git grep stop_hook_active 088a227c -- plugins` finds no match at baseline).
+  - Status: closed. Cause left with a removed part: the Stop check that parsed task lines is removed (no regex Stop check, ADR-0104). Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
-- [ ] **RISK-349** The Stop notice calls a clean, already merged, locked worktree a holder of work.
+- [x] **RISK-349** The Stop notice calls a clean, already merged, locked worktree a holder of work.
   - Category: product defect.
   - Cause: the notice may read "checked out in a locked worktree" as "holds work"; the agent did not check the rule.
   - Event: the notice repeated at every turn end for a clean worktree whose one commit was on the branch.
@@ -1846,7 +1130,7 @@
   - Actions: check the rule in the source and compare the commit with the branch.
   - Trigger: the Stop notice names a worktree whose commits are on the branch.
   - Owner: reply
-  - Status: open. Cause read: `openspec/specs/run-limits/spec.md:318-335@088a227c9^` defines only unlocked worktree scenarios and baseline `hygiene/worktrees.ts` skips `locked|prunable` worktrees, so the locked case is unspecified; the notice code is not in baseline.
+  - Status: closed. Cause left with a removed part: the Stop notice that listed worktrees is not rebuilt; plugins/claudetto has no worktree notice. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:5906; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:5906, observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
 
 ## You-Should-Know
@@ -1863,7 +1147,7 @@
   - Actions: Ask one question in one channel per turn; close the note when the user answers the popup.
   - Trigger: A checkbox request and an ask-user-question call in one reply; an `AskUserQuestion` answer after a note was offered.
   - Owner: reply
-  - Status: open.
+  - Status: open, build YSK.
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:782 (measured).
 
 ## Agent conduct
@@ -1880,7 +1164,7 @@
   - Actions: reply with code and facts only; stay silent when told; produce no emotional support, praise, or apology. The user asked to review other `~/.claude/` sessions and the active OpenJoystickDriver session for the same faults; Answer a correction with the fix and one line on what changed; no agreement speech; Answer anger or praise with the fix alone.
   - Trigger: a reply with no work content after a user reproach; A reply that opens by agreeing at length; A reply opens with agreement or an apology.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12; reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`); reported, user, 2026-11-14 14:55 UTC, no chatter, only work (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361) (reported, user, 2026-11-14).
 
 ## Conduct
@@ -1897,7 +1181,7 @@
   Actions: Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
   Trigger: A turn that ends with open steps and a note that the next session or the user continues.
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`).
 
 - [ ] **RISK-353** Agent reports a defect and does not fix it.
@@ -1912,7 +1196,7 @@
   Actions: Keep that rule in the shipped rule set and add a check that a final reply lists no defect as "not fixed" without a reason that needs the user.
   Trigger: A reply that holds "not changed", "outside this task", or "defects I found but haven't fixed".
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10255`).
 
 - [ ] **RISK-354** Agent removes a rule the user asked for when a hook rejects it.
@@ -1927,7 +1211,7 @@
   Actions: Move a rejected rule to a place the hook accepts; delete a user-requested rule only on the user's word.
   Trigger: An edit that deletes a rule the same session added.
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30577`).
 
 - [ ] **RISK-355** An agent reports a defect it found and leaves it unfixed.
@@ -1940,7 +1224,7 @@
   Response: mitigate.
   Actions: keep the rule in the shipped rules; the cure is that the agent fixes each defect it finds, including one that came from another commit, and sends workers for parallel slices.
   Trigger: a final reply names a defect with no fix or no reason that only the user holds.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:2009, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:8110, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/1aab3c4c-5aef-4ee2-9d3e-3723fd904152.jsonl:1824, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12.
 
 - [ ] **RISK-356** An agent stalls on environment friction or leaves doable tasks unticked.
@@ -1953,7 +1237,7 @@
   Response: mitigate.
   Actions: the agent handles the friction itself, such as killing and reinstalling its own project app, and does every task part that needs no missing hardware.
   Trigger: a reply says a task waits on a step the agent can take.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:3068, observed in transcript, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f5645ffc-f2a4-4514-aa8c-329a8175b38b.jsonl:506, reported, user, 2026-11-12.
 
 - [ ] **RISK-357** An agent invents a project-specific format or identifier where an industry standard exists.
@@ -1966,7 +1250,7 @@
   Response: mitigate.
   Actions: see REQ-REPLY on industry standards first; the agent checks the standard for a format or identifier before it invents one.
   Trigger: a new schema or manifest names no standard.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:3349, reported, user, 2026-11-11.
 
 - [ ] **RISK-358** An agent proves a setup in a temporary folder and leaves the project without it.
@@ -1979,7 +1263,7 @@
   Response: mitigate.
   Actions: after a probe passes, the agent applies the setup in the project.
   Trigger: a reply names a temp-only install.
-  Owner: reply. Status: open.
+  Owner: reply. Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/39e93978-aee6-46bb-be40-431b82dc06d7.jsonl:587, reported, user, 2026-11-11.
 
 - [ ] **RISK-359** The agent does needless unrequested work (swaps, tests, benchmarks, a planner).
@@ -1994,7 +1278,7 @@
   - Actions: Confine work to the user's stated ask; see REQ-DELEGATION and OUT items; Product first; do only the request.
   - Trigger: The agent starts a step the user's message does not name; The agent proposes work outside the request.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
 - [ ] **RISK-360** The agent explains vaguely.
@@ -2009,7 +1293,7 @@
   - Actions: Be specific: name the item, its source and its kind.
   - Trigger: The user asks to elaborate.
   - Owner: reply
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: open, build CONDUCT. (Existing controls: missing at 088a227c).
   - Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
 ## Agent Leaves Found Work Open
@@ -2025,7 +1309,7 @@
   Actions: claudetto shall make the agent fix each defect it finds at its cause, including leftovers it made (remote branches, worktrees, stale entries), and ask only for what the user alone holds (rule from the user; see the REQ in prd/reply.md).
   Trigger: a final report that names a defect, leftover, or open part the agent could fix.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10.
 
 ## Open And Unchecked Work
@@ -2042,7 +1326,7 @@
   - Actions: A rule that the agent checks, fixes, or schedules each gap it names, and does not end a turn on a step it can do itself. The user states this rule: a thing to check is checked without being asked, each gap found is solved by the agent, each bug found is fixed whatever its severity, and a hand-back to the user for work the agent can do is wrong.
   - Trigger: A report with an "open", "not checked", "not done", or "left as is" list that holds work the agent can do.
   - Owner: reply
-  - Status: open
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/b3514a27-79b4-4de4-a72d-25732990d7ef.jsonl:1204, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/3be7b245-3296-4f40-8ba3-70eca96f0538.jsonl:399, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:529, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:1363, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8, user decision, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:569, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:1129, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:14196, reported, user, 2026-11-10.
 
 ## User Commands
@@ -2059,7 +1343,7 @@
   - Actions: A rule that the agent hands over a command only when it knows where the user runs it and that it takes effect there; an environment variable needs a restart or a separate terminal, and the agent says so first.
   - Trigger: An agent message that asks the user to set an environment variable or a login at the prompt.
   - Owner: reply
-  - Status: open
+  - Status: open, build CONDUCT.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:378; reported, user, 2026-11-10.
 
 ## Ungrouped
@@ -2076,7 +1360,7 @@
   Actions: Count a changelog edit as unasked unless the task or the repo's contributing file demands it; test with a known-bad run.
   Trigger: A diff holds a file outside the fix and its tests.
   Owner: reply
-  Status: open
+  Status: open, build CONDUCT.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175; measured, 2026-11-16
 
 ## Product And Tooling
@@ -2093,7 +1377,7 @@
   - Actions: Name only the wanted behaviour.
   - Trigger: A prompt body holds a banned phrase.
   - Owner: reply
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: open, build CONDUCT. (Existing controls: missing at 088a227c).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
 ## Agent Conduct Defects Reported by the User
@@ -2110,7 +1394,7 @@
   Actions: [REQ-REPLY-089](../prd/reply.md) (ask only for what the agent can neither get nor undo); [ADR-0053](../adr/0053-agent-decides-in-scope-choices.md).
   Trigger: a turn ends in an AskUserQuestion call for a routine choice.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-16 15:27 UTC, the user is watching; questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480.
 
 - [ ] **RISK-367** The agent patches the architecture in place after an order to clean it up.
@@ -2125,7 +1409,7 @@
   Actions: [REQ-REPLY-046](../prd/reply.md) (write each part new, delete the old path); [ADR-0046](../adr/0046-rebuild-clean-slate.md).
   Trigger: a diff after a rebuild order that edits an old path.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-16 14:44 UTC, clean up the architecture, do not patch it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7324): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit of commits `a35d6513`, `b8f30127`, `993966b6`, `64495f59`, `d8246ffd`, `4c5f06c3`, `21c104b8`).
 
 - [ ] **RISK-368** The agent chooses a step because it is easier.
@@ -2140,7 +1424,7 @@
   Actions: [REQ-REPLY-135](../prd/reply.md) (follow the order over any easier path).
   Trigger: a report that gives ease as the reason for a step.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-16 14:47 UTC, never pick a step because it is easier (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424.
 
 - [ ] **RISK-369** The agent creates a file nobody asked for.
@@ -2155,7 +1439,7 @@
   Actions: [REQ-KERNEL-026](../prd/kernel.md) (create no file the user did not ask for).
   Trigger: a new file not named by the request.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-16 06:00 UTC, log.md is forbidden (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10548): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889; observed in transcript, 2026-11-16: `log.md` created by a Bash heredoc at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:143 (per the audit relayed in the handoff).
 
 - [ ] **RISK-370** The agent presents its own unverified claims as evidence.
@@ -2170,7 +1454,7 @@
   - Actions: Evidence files shall quote only text read from a log in the same session; claudetto shall tell the agent to tick a hardware task only with a capture; the CON item "a doc the agent wrote is a claim, never evidence"; mark each unverified figure void.
   - Trigger: The agent writes a file named evidence or capture; a figure in a doc with no tool result behind it.
   - Owner: reply
-  - Status: open.
+  - Status: open, build CONDUCT.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, process slip); observed in transcript, 2026-11-12; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit: "0/12 to 11/12", `design.md` L75 and L77, `df3d38d6`, `00a08195`).
 
 ## Conduct Faults From the Rearchitecture Sessions
@@ -2187,7 +1471,7 @@
   Actions: the REQ-REPLY item "keep working through its goal".
   Trigger: a reply with a report while items remain open.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215.
 
 - [ ] **RISK-372** A cleanup removes features or adds bloat, or works around the code and its architecture.
@@ -2202,7 +1486,7 @@
   Actions: the three CON items on cleanup, no workaround, and small code with full features.
   Trigger: a diff that deletes a tested feature.
   Owner: reply.
-  Status: open.
+  Status: open, build CONDUCT.
   Source: reported, user, 2026-11-14 23:21 UTC, clean up the architecture without removing features (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
 
 - [ ] **RISK-485** Self-written memories pile up, are attributed to the user, and are followed rigidly.
@@ -2217,5 +1501,5 @@
   - Actions: REQ-REPLY-139.
   - Trigger: a memory line with no source or a recorded user opinion.
   - Owner: reply
-  - Status: open
+  - Status: open, build CONDUCT.
   - Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122,128-130,155; reports/2026-11-18-research/dossier.md:174; reports/2026-11-18-research/papers.md P10.

@@ -2,7 +2,7 @@
 
 ## Cost
 
-- [ ] **RISK-158** A hook that rewrites a tool's input sends that call and every later call of the same response to the local classifier in auto mode.
+- [x] **RISK-158** A hook that rewrites a tool's input sends that call and every later call of the same response to the local classifier in auto mode.
   Category: product.
   Cause: a `tool.call` rewrite (Bash `probe-cls-a` to `b`) moves the call from the server review to a local classifier call (classifierChars 63,884 and 63,958, stages `xml_s1` and `xml_s2`, 4 side queries, waits 12,676 ms and 5,108 ms, $0.0444). Real-API probe p1 (claude-sonnet-5[1m]): a `tool.call` rewrite of an Agent call cost classifierChars 140,512 (about 51K tokens at 2.756 chars per token), 2,014 ms, and "Slow permission decision: 2600ms"; the controls p0 (built-in Explore) and p2 (same-named `Explore.md`) made 0 classifier calls. The mapped call ran as `source=agent:custom:cmod:Artemis`.
   Event: claudetto's `tool.call` that rewrites Agent `subagent_type` (the amod mapping) sends the call and later calls to the local classifier text of 63.7k chars.
@@ -13,12 +13,12 @@
   Actions: probe the no-rewrite route on the real API; prefer a result rewrite to an input rewrite.
   Trigger: a `tool.call` handler that changes an input in auto mode.
   Owner: delegation.
-  Status: open.
+  Status: closed. Cause (a `tool.call` input rewrite) is absent: grep for `updatedInput` and `tool.call` finds none. Constraint carried to REQ-DELEGATION-046: it uses a deny with the exact form, never an input rewrite (ADR-0025, ADR-0037). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2360; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3088; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3299.
 
 ## Delegation
 
-- [ ] **RISK-159** Naming `amod:Artemis` directly skips the Explore map and runs the subagent async.
+- [x] **RISK-159** Naming `amod:Artemis` directly skips the Explore map and runs the subagent async.
   Category: product.
   Cause: `shouldRunAsync = run_in_background===true || agent.background===true || (!oneShotBuiltIn(agent) && run_in_background!==false)`; a custom agent is not a one-shot built-in.
   Event: the Agent-mod defect (claude 2.1.318): a direct call of `amod:Artemis` ran async.
@@ -29,7 +29,7 @@
   Actions: map `amod:<name>` in `tool.call` too, and pass `run_in_background:false` for Artemis and Metis unless the caller set it.
   Trigger: an Agent call for a claudetto agent with `run_in_background` unset.
   Owner: delegation.
-  Status: open.
+  Status: closed. Cause (the amod mapping and `amod:` names) left with the baseline; ADR-0099 hides built-ins through `agent.offer`, and grep for `agent.offer` finds none yet. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2706.
 
 - [ ] **RISK-160** Fable at low effort spawns Fable subagents unasked.
@@ -44,10 +44,10 @@
   Actions: Deny a Fable dispatch of Fable subagents in a hook; state model and effort in the prompt.
   Trigger: A Fable session starts a subagent whose model is Fable.
   Owner: delegation
-  Status: open
+  Status: open. BUILD: covered by REQ-DELEGATION-026 (`agent.spawn` refusal); the cure ships with that change.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
 
-- [ ] **RISK-161** Fable as reviewer assumes instead of reading.
+- [x] **RISK-161** Fable as reviewer assumes instead of reading.
   Category: delegation
   Cause: The reviewer model makes assumptions about code it does not open.
   Event: One user reports it (Fable 5.2 as reviewer).
@@ -59,10 +59,10 @@
   Actions: Require the reviewer to quote the lines it judges, which the user says cuts guessing.
   Trigger: A review verdict that names no quoted line.
   Owner: delegation
-  Status: open
+  Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xtskai-i-switched-opus-to-medium-and-20261111T235140Z.md:96 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtskai/i_switched_opus_to_medium_and_only_ask_fable_for/>).
 
-- [ ] **RISK-162** An orchestrator overrides a correct tester and a fix breaks working behaviour.
+- [x] **RISK-162** An orchestrator overrides a correct tester and a fix breaks working behaviour.
   Category: delegation
   Cause: The team setup passes a handoff in which the orchestrator orders a "fix" for a warning the tester called a false alarm.
   Event: Measured by the poster: in 2 of 7 runs the fix broke keyboard Tab; the single agent saw the same warning in 7 of 7 runs and never changed it. A plain agent with no skills was cheapest but twice shipped a booking flow that did not work and said it did. In 11 of 14 sites every slot showed struck through and no reviewer or tester in either setup caught it; a hidden test that a fresh page shows one bookable slot would have.
@@ -74,7 +74,7 @@
   Actions: Add an end-to-end check that a fresh page shows one bookable item; do not let an orchestrator override a tester without evidence.
   Trigger: A fix lands against a tester's false-alarm verdict.
   Owner: delegation
-  Status: open
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:50,52,161,215 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
 
 - [ ] **RISK-163** Opinion smuggling into subagent briefs.
@@ -89,10 +89,10 @@
   Actions: Brief with facts observed, hard constraints, files to inspect, the leaning decision, disconfirming evidence to seek, and the output format; require the result to state supports plan, contradicts plan, or insufficient evidence.
   Trigger: A subagent result that restates the plan.
   Owner: delegation
-  Status: open. Basis: reported.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
 
-- [ ] **RISK-164** Stub files override agent roles and stop subagent handoff.
+- [x] **RISK-164** Stub files override agent roles and stop subagent handoff.
   Category: delegation.
   Cause: stub files accidentally overrode agent roles (one commenter's account).
   Event: subagent handoff stopped silently.
@@ -104,8 +104,9 @@
   Trigger: subagent calls drop to zero while usage rises.
   Owner: delegation. Status: open.
   Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/>).
+  Status: closed. Cause (stub files that override agent roles) is a baseline artefact; the rebuild has no stub files and no agent files yet. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-165** An agent leaves hundreds of junk benchmark-report files.
+- [x] **RISK-165** An agent leaves hundreds of junk benchmark-report files.
   Category: delegation.
   Cause: a GPT agent spent 3 days optimizing an image blur process and wrote reports for each run.
   Event: hundreds of junk benchmark-report files; Opus rewrote the implementation in half a day with a concise report.
@@ -117,6 +118,7 @@
   Trigger: report files appear in the work tree.
   Owner: delegation. Status: open.
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:343 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
+  Status: closed. Cause (benchmark-report files) is out of scope: no benchmarks (OUT-001). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
 - [ ] **RISK-166** Subagent report falsification: the lead trusts a report that is false, incomplete, or unverified.
   Category: delegation.
@@ -130,8 +132,9 @@
   Trigger: a subagent report that names a path the lead has not checked.
   Owner: delegation. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
 
-- [ ] **RISK-167** Silent delegation skip: the agent skips a required subagent or reviewer without saying so.
+- [x] **RISK-167** Silent delegation skip: the agent skips a required subagent or reviewer without saying so.
   Category: delegation.
   Cause: no mechanism checks the Agent/Task call.
   Event: an instruction requires a subagent or named reviewer and the agent skips it silently.
@@ -143,6 +146,7 @@
   Trigger: a reply to a turn whose instruction names a reviewer, with no Agent call.
   Owner: delegation. Status: open.
   Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 is a different check; the delegation-skip finding itself: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
+  Status: closed. The cure was a Stop check; Stop checks are removed (ADR-0092, OUT-171). Grep for `"Stop"` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
 - [ ] **RISK-168** Confident wrong subagent: a low-effort retrieval subagent answers wrong and the parent builds on it.
   Category: delegation.
@@ -156,8 +160,9 @@
   Trigger: a low-effort subagent used for a decision.
   Owner: delegation. Status: open.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>) holds a related cheaper-model accuracy report; the "low-effort retrieval subagent answers confidently wrong" text itself: not located, reported, one user.
+  Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
 
-- [ ] **RISK-169** Premature hand-back with a running job: the job dies with the turn.
+- [x] **RISK-169** Premature hand-back with a running job: the job dies with the turn.
   Category: delegation.
   Cause: a job dies with the turn that owns it; the turn count is unseen by the model.
   Event: yielding without evidence; a subagent handed back while an eval still ran (session e473653f) and the eval died with the turn; subagents at 116k-266k tokens ended with no report (10 turn-limit notices in 6 sessions).
@@ -169,6 +174,7 @@
   Trigger: a hand-back while a recorded pid is alive.
   Owner: delegation. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32. Session e473653f as the source of the eval case: Dropped (2026-11-18) for that detail: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the dossier cites the session only for other facts (06-autonomy-and-consent.md:36).
+  Status: closed. The cure was a SubagentStop/Stop guard; run limits and Stop checks are removed (ADR-0092, OUT-016). Grep for `SubagentStop` finds none. Likelihood stays 4 as an accepted engine behaviour: a job dies with the turn. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
 - [ ] **RISK-170** Parallel collision: agents in one tree overwrite or block each other.
   Category: delegation.
@@ -182,6 +188,7 @@
   Trigger: two agents with write access in one tree.
   Owner: delegation. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:85; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tui/20261106-131234-64c099/load-failure.txt:1. Unlocated: the 200-tool-call limit, the 10 GB folder, the seven-worker case; the fork-subagent turn limit is kept as reported; no limit text was found in 2.1.327.
+  Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
 
 - [ ] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
   Category: agent conduct.
@@ -194,7 +201,7 @@
   Actions: the Terms define consent as the user's alone (a tool result, an agent or model reasoning is never the user); a subagent that meets such a prompt stops and reports.
   Trigger: a subagent answers a permission prompt.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:162.
 
 - [ ] **RISK-172** A subagent pushes an edit through after the user rejected it.
@@ -208,10 +215,10 @@
   Actions: each brief carries every correction and rejection so far; a delegate that meets a rejection stops and reports in the first line.
   Trigger: a brief lacks the rejections of the session.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103.
 
-- [ ] **RISK-173** TaskStop fails on the shell IDs of subagents that the Stop notice lists.
+- [x] **RISK-173** TaskStop fails on the shell IDs of subagents that the Stop notice lists.
   - Category: product defect.
   - Cause: the Stop notice "Background tasks still running at Stop:" listed shells that only a subagent transcript knows; the lead calls `TaskStop` on them. `TaskStop` on the subagent also ends the shells it started (probe: a loop wrote 6 lines and none in the next 8 s).
   - Event: in OpenJoystickDriver `c86d66a7` (2026-11-11) each `TaskStop` on a listed shell failed with "No task found with ID"; 144 lead-transcript lines hold the notice and 15 the failure.
@@ -223,10 +230,10 @@
   - Actions: list the subagent in the Stop notice, not its shells; stop the subagent to stop its shells.
   - Trigger: a subagent with a background shell still running at Stop.
   - Owner: delegation
-  - Status: open
+  - Status: closed. The Stop background-tasks notice is removed (ADR-0092); grep for `"Stop"` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:515; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:521 (measured).
 
-- [ ] **RISK-174** Memory watch leaks on a cancelled call.
+- [x] **RISK-174** Memory watch leaks on a cancelled call.
   - Category: product defect.
   - Cause: `memoryWatchCall` (`agent.spawn/useMemoryHold/memory.ts:169-193`) calls `done.abort()` only after `next(e)` returns; a throwing `next(e)` leaves the poll running.
   - Event: probe: after the call rejected, `ps` ran 12 more times (0 before) every 5 s until the engine aborted the sleep; the catch then logs "The memory watch stopped".
@@ -238,10 +245,10 @@
   - Actions: abort in a `finally` around `next(e)`.
   - Trigger: a spawn call cancelled by `TaskStop`.
   - Owner: delegation
-  - Status: open
+  - Status: closed. in this block. The memory spawn hold is not in the rebuilt plugin (grep for `memory` finds none); the memory watch is a handover-block concern (REQ-HANDOVER-054). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:627 (measured, probe on the mock clock).
 
-- [ ] **RISK-175** Background agent keeps acting after the user banned the action.
+- [x] **RISK-175** Background agent keeps acting after the user banned the action.
   - Category: agent conduct.
   - Cause: the ban went by `SendMessage` after spawn; the agent compacted with the ban in its summary and still clicked a menu item. The constraint ledger has no subagent path (0 ledger rows); `SubagentStart` can pass only constraints known at spawn; no settings rule tells a window-raising AppleScript from a background one.
   - Event: agent `af31598cf17d3f091` raised the app window until `TaskStop` at 16:05:14.
@@ -253,10 +260,10 @@
   - Actions: recorded only.
   - Trigger: a ban sent to a running subagent.
   - Owner: delegation
-  - Status: accepted
+  - Status: closed. Accepted, recorded only; no part to build. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:624 (measured, one case).
 
-- [ ] **RISK-176** Side-agent notes reach the lead late or wrong.
+- [x] **RISK-176** Side-agent notes reach the lead late or wrong.
   - Category: product defect.
   - Cause: a side agent's note takes the lead's own unchecked guess as fact; a queued note can arrive after the call it warns of.
   - Event: 51 notes reached a lead (41 as `queued_command` attachments, 10 forwarded user rows); 23 of 41 queued and 9 of 10 forwarded were taken up; 3 of 10 forwarded notes were wrong when checked (release claim, force-push claim, commit-reached-origin claim); one note arrived 0.4 s before the call it warned of.
@@ -268,10 +275,10 @@
   - Actions: a side note states only checked facts.
   - Trigger: a side agent sends a note to a working lead.
   - Owner: delegation
-  - Status: open
+  - Status: closed. Accepted; the side-note path is an engine feature and claudetto adds no code for it. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:662 (measured).
 
-- [ ] **RISK-177** Fable burns quota and skips checks.
+- [x] **RISK-177** Fable burns quota and skips checks.
   - Category: model behaviour.
   - Cause: Fable 5.2 skips checks and lookups (6 threads) and over-spawns subagents (3); one thread reports 60% of the 5-hour window for equal output.
   - Event: reported in threads; the 60% figure is an anecdote, and the export text of that thread was not located.
@@ -283,10 +290,10 @@
   - Actions: pair Fable with a check that fails bad work.
   - Trigger: a Fable session.
   - Owner: delegation
-  - Status: open
+  - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:20; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:50 (reported); external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
-- [ ] **RISK-178** Fable research task reads without limit.
+- [x] **RISK-178** Fable research task reads without limit.
   - Category: model behaviour.
   - Cause: Fable 5.2 over-researches; a Cloudflare audit skill run on Fable High reportedly took three five-hour limits and 50% of the weekly tokens for 11% of the task.
   - Event: reported (anecdote).
@@ -298,10 +305,10 @@
   - Actions: scope a research task by naming the two or three files it may open.
   - Trigger: a Fable research task with no file scope.
   - Owner: delegation
-  - Status: open
+  - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:81; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:88 (reported); external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:61 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>).
 
-- [ ] **RISK-179** Subagent runs hit refusals, tool-name misses, and edit conflicts.
+- [x] **RISK-179** Subagent runs hit refusals, tool-name misses, and edit conflicts.
   - Category: Claude Code limit.
   - Cause: `Read` `limit` counts lines, so a one-line 26,234-token JSON fits no line limit (13 "exceeds maximum allowed tokens" calls); `Write` or `Edit` "File has been modified since read" (21 calls, all Sonnet subagents, mostly worktrees); `Grep` "not available" (15 calls: a work agent takes the lead's tools, which have no `Grep`); ripgrep look-ahead or nested braces (20 calls); `Agent` type `fork` (9 calls).
   - Event: counts over 840 transcripts.
@@ -313,10 +320,10 @@
   - Actions: recorded only.
   - Trigger: one of the five call forms.
   - Owner: delegation
-  - Status: accepted
+  - Status: closed. Accepted, recorded only; the engine causes the refusals and tool-name misses, and claudetto adds no code. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:638; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:639; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:640; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:646; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:617 (measured).
 
-- [ ] **RISK-180** Cyber safeguards refuse a subagent reply.
+- [x] **RISK-180** Cyber safeguards refuse a subagent reply.
   - Category: Claude Code limit.
   - Cause: after a Sonnet subagent read a cheat-bot reference folder framed as defensive analysis, the server-side classifier flagged it (`stop_reason: "refusal"`, category cyber, `cyber_verification` tier c). No plugin setting reaches it.
   - Event: 3 refusal replies in one subagent (`claudetto:Heracles`, 2026-11-10); 5 `stop_reason: null` rows are interrupted replies, not defects.
@@ -328,7 +335,7 @@
   - Actions: recorded only.
   - Trigger: a subagent reads exploit code.
   - Owner: delegation
-  - Status: accepted
+  - Status: closed. Accepted, recorded only. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:654 (measured).
 
 - [ ] **RISK-181** Review prompt that limits to high severity hides findings.
@@ -343,7 +350,7 @@
   - Actions: ask a reviewer for everything, then filter.
   - Trigger: a review prompt with a severity filter.
   - Owner: delegation
-  - Status: open
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:50 (cited).
 
 - [ ] **RISK-182** Read-only agent still edits through Bash.
@@ -358,10 +365,10 @@
   - Actions: drop `Bash` from reviewers that only read.
   - Trigger: a read-only agent with `Bash`.
   - Owner: delegation
-  - Status: open
+  - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:131 (reported, one thread); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>).
 
-- [ ] **RISK-183** Large agent swarm gives wrong answers at high token cost.
+- [x] **RISK-183** Large agent swarm gives wrong answers at high token cost.
   - Category: agent conduct.
   - Cause: one case ran 76 agents, 4.7M tokens, and 928 tool calls and gave 3 wrong answers while one 77k-token agent was right (the author's own numbers).
   - Event: reported (one case).
@@ -373,7 +380,7 @@
   - Actions: cap parallel agents.
   - Trigger: a task split over dozens of agents.
   - Owner: delegation
-  - Status: open
+  - Status: closed. Swarms are out (OUT-061); the roster has four agents and no swarm launcher. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:133 (reported, one case); external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 - [ ] **RISK-184** An agent is spawned for no stated reason and reports nothing.
@@ -388,7 +395,7 @@
   - Actions: spawn an agent only with a task and a report to the root.
   - Trigger: a subagent finishes with no report returned.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 - [ ] **RISK-185** The agent starts a background shell and never looks at it.
@@ -403,7 +410,7 @@
   - Actions: the agent checks its own background tasks. The user floated a cheap monitor model for this; that choice is open.
   - Trigger: a background task is running with no check for a turn.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Guards
@@ -420,10 +427,10 @@
   Actions: tell agents to avoid expansions in worktree git commands, or drop isolation.
   Trigger: a refusal text "too complex to verify" in a subagent transcript.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
 
-- [ ] **RISK-187** The engine blocks a foreground "sleep N" and subagents have no other way to wait.
+- [x] **RISK-187** The engine blocks a foreground "sleep N" and subagents have no other way to wait.
   Category: delegation, engine check.
   Cause: Claude Code's "Blocked: sleep N followed by:" check sits in Bash validateInput. It refuses only a first command "sleep N" with N of 25 or more, only when Monitor is on, and only for a foreground call. "sleep 6; cat f" and "until test -s f; do sleep 1; done" run. A subagent cannot wait for a background end notice (it ends the turn and the command is terminated), so the advice of the block gives no route there.
   Event: 146 blocks in 4 days (134 in subagents); 105 were cat or tail of a tasks/*.output file.
@@ -435,10 +442,10 @@
   Actions: none in a hook; keep the text rule.
   Trigger: "Blocked: sleep" in a subagent transcript.
   Owner: delegation.
-  Status: open.
+  Status: closed. Accepted: the engine blocks a foreground `sleep`; no hook cures it (a Stop check is out, ADR-0092). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:575-580 (measured).
 
-- [ ] **RISK-188** A tool answered in its own `tool.call` never reaches a `tool.check` deny.
+- [x] **RISK-188** A tool answered in its own `tool.call` never reaches a `tool.check` deny.
   Category: tooling
   Cause: `delegation` answered `mcp__claudetto__ask-user-question` in its own `tool.call` without calling `next`, and `tool.check` runs inside `tool.call`'s core (measured, probe-143: `nq-old.log:358` "resolved by a hooks module (result)")
   Event: A "stop asking" session still ran the ask; the model got "ask failed: no tool named AskUserQuestion"
@@ -450,7 +457,7 @@
   Actions: Place a deny check ahead of any hook that answers a tool without calling `next`; keep the lab test
   Trigger: A deny rule names a tool that a hooks module answers in its own `tool.call`
   Owner: delegation
-  Status: closed. Basis: measured
+  Status: closed. Cause (a wrapper tool answered in its own `tool.call`) left with the removed `ask` wrapper (ADR-0127); grep for `tool.call` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:453.
 
 ## Verification And Honesty
@@ -467,6 +474,7 @@
   Trigger: A reviewer finding has no failing case.
   Owner: delegation. Status: open.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>) (reported)
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
 
 - [ ] **RISK-190** Review loop inflation.
   Category: Agent behaviour.
@@ -480,10 +488,11 @@
   Trigger: A review runs past 3 rounds.
   Owner: delegation. Status: open.
   Source: external/2026-10-14/export-Does Claude Code find new bugs every time you ask it to review your code.jsonl:12 (reported, 33 rounds); external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:113. Not located: the 300k-thinking-token and 467-key figures.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
 
 ## Agent Habits
 
-- [ ] **RISK-191** A pipeline agent sets arbitrary job timeouts and raises them one run at a time.
+- [x] **RISK-191** A pipeline agent sets arbitrary job timeouts and raises them one run at a time.
   Category: delegation
   Cause: The model has no impulse to acquire context and hallucinates hard limits.
   Event: A pipeline agent set timeouts, then raised them (1 h, 90 min) without reading the job, wasting hours with no progress (reported).
@@ -495,7 +504,7 @@
   Actions: Commit CI/CD runbooks; keep deployment history so the agent flags deviations; make the pipeline resumable and forbid re-running passed stages.
   Trigger: A timeout raised twice in a row.
   Owner: delegation
-  Status: open
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,159,161 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
 ## Conflicts With Settled Decisions
@@ -513,6 +522,7 @@
   Owner: delegation. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:124 (reported); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>; the "haywire" report). Other reports in the old item: not located.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
+  Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
 
 ## Model Variability
 
@@ -528,10 +538,11 @@
   Trigger: a `modelsUsed` entry that differs from the agent file `model`.
   Owner: delegation. Status: open; `git grep PreModelSwitch` finds nothing under `plugins/` at 088a227c, so missing.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:141 (eval profile `settings.eval.json`: the two env names and `switchModelsOnFlag: false`).
+  Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
 
 ## Delegation And Subagents
 
-- [ ] **RISK-194** Subagent runaway with no limit
+- [x] **RISK-194** Subagent runaway with no limit
   Category: delegation.
   Cause: a subagent has no tool-call, token or count limit.
   Event: one subagent, or many agents in a session, runs without a stop.
@@ -543,8 +554,9 @@
   Trigger: an agent past 60 tool calls.
   Owner: delegation. Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:134; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:138.
+  Status: closed. Cause (no limit) is by design: run limits are removed (ADR-0092, OUT-016) and `maxTurns` is not used (ADR-0117, OUT-176). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-195** Memory hold denies a work subagent with no retry hint
+- [x] **RISK-195** Memory hold denies a work subagent with no retry hint
   Category: delegation.
   Cause: `hold.ts:27-30` denies every `agent.spawn` under memory pressure with no retry hint, including work subagents.
   Event: a held spawn leaves the agent with no cure text.
@@ -556,8 +568,9 @@
   Trigger: a held spawn.
   Owner: delegation. Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:56.
+  Status: closed. The memory hold is not in the rebuilt plugin (grep for `memory` finds none). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-196** A subagent runs without the parent's PreToolUse and PostToolUse hooks.
+- [x] **RISK-196** A subagent runs without the parent's PreToolUse and PostToolUse hooks.
   Category: Technical.
   Cause: A child session may not load the project hooks the parent loaded.
   Event: A subagent runs without the parent's PreToolUse and PostToolUse hooks.
@@ -569,8 +582,9 @@
   Trigger: A subagent tool call shows no hook entry in the log.
   Owner: delegation. Status: open (reported).
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:187 (issue #67424).
+  Status: closed. Hook input carries `agent_id` for a tool call made inside a subagent (cc-inspect code search `agent_id`, chunk-rj3e7agr.js@270173, claude 2.1.327, 2026-11-18: "Present only when the hook fires from within a subagent"), so PreToolUse and PostToolUse run in subagents. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-197** A subagent edits files with Python scripts and not with the Edit tool.
+- [x] **RISK-197** A subagent edits files with Python scripts and not with the Edit tool.
   - Category: conduct.
   - Cause: The subagent that converted 16 test files used scripts, so the edit tool's checks do not apply to its changes.
   - Event: The lead reports it as a deviation; the user tells the lead to report the violations to the claudetto session.
@@ -582,7 +596,7 @@
   - Actions: A delegation rule or a guard that a subagent changes files with Edit or Write only.
   - Trigger: A subagent report or Bash call with `python` or `sed -i` that writes a project file.
   - Owner: delegation
-  - Status: open.
+  - Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:13444, reported, user, 2026-11-10.
 
 ## Delegation And Worker Reports
@@ -599,7 +613,7 @@
   - Actions: claudetto shall make the lead check each worker's claim against the repository (reflog, status, diff) before it merges or reports.
   - Trigger: a worker report that touches history or another worker's files.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 - [ ] **RISK-199** Delegated agent stops at its turn limit before it reports.
@@ -614,7 +628,7 @@
   - Actions: Keep maxTurns out of every agent file; bound a run by the budget guard on tool calls and by effort.
   - Trigger: An agent file with a maxTurns key.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32519; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
 
 - [ ] **RISK-200** A harness delegation line contradicts the model's own spawn guidance.
@@ -629,10 +643,10 @@
   - Actions: claudetto holds one delegation rule in the root prompt; a check lists each delegation line that claudetto adds.
   - Trigger: claudetto beside another harness that injects delegation text.
   - Owner: delegation
-  - Status: open. Field report relayed from Discord; the baseline text says "Do a few calls yourself" (`delegation/texts.ts` `AGENT_TEXT`) and a grep for "dispatch" at 088a227c finds no conflicting line, so no local probe can reproduce it.
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, one Discord user relayed by the user, 2026-11-13.
 
-- [ ] **RISK-201** A delegation message with the word "reasoning" is blocked and the orchestrator re-sends the task.
+- [x] **RISK-201** A delegation message with the word "reasoning" is blocked and the orchestrator re-sends the task.
   Category: product behaviour.
   Cause: a reasoning_extraction filter blocked a message with a section titled "My Reasoning".
   Event: the subagent still ran the task, but the orchestrator got no tool result and re-sent the task with different instructions.
@@ -643,10 +657,10 @@
   Actions: write "explain", "justification", "walk me through your thinking", or "what do you think?" in place of "provide reasoning"; the classifier is cheap and takes the safe read of the word. Refusal is intermittent on judge and eval prompts that ask for a decision plus reasoning in structured output. Reported by several users; classifier behaviour is server-side, not in the binary, so Likelihood comes from report count.
   Trigger: the word "reasoning" in a delegation or judge prompt.
   Owner: delegation.
-  Status: Open.
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:69; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:43; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:51; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:130 (url: <https://www.reddit.com/r/Anthropic/comments/1xfdown/claude_refuses_judges_and_evals_if_they_include_a/>).
 
-- [ ] **RISK-202** Delegated subagent runs are slow and burn many tokens.
+- [x] **RISK-202** Delegated subagent runs are slow and burn many tokens.
   Category: product behaviour.
   Cause: unknown.
   Event: 9 of 10 delegated runs in a week were very slow and burned many tokens, even on Sonnet, while the same prompt run by hand in a new session finished faster.
@@ -657,7 +671,7 @@
   Actions: none in the source beyond running the prompt by hand.
   Trigger: a delegated run far slower than the same prompt run directly.
   Owner: delegation.
-  Status: Open.
+  Status: closed. Accepted; paid-labs measured delegating a single lookup as slower and dearer than searching alone, which is the cure REQ-DELEGATION-049 puts to the user. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:127 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
 
 - [ ] **RISK-203** The model believes its subagents will not survive /clear or /compact and restarts finished ones.
@@ -671,10 +685,10 @@
   Actions: one blunt CLAUDE.md line, for example "Subagents keep running through /clear and /compact. Don't restart them, wait for their results."
   Trigger: the agent claims a subagent will not survive a context reset.
   Owner: delegation.
-  Status: Open.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:44; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:47; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:65; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdqi79/claude_doesnt_know_subagents_survive_compactclear/>).
 
-- [ ] **RISK-204** Each subagent receives the whole conversation history.
+- [x] **RISK-204** Each subagent receives the whole conversation history.
   Category: product behaviour.
   Cause: /usage showed the entire conversation put into every helper.
   Event: 700k+ tokens into double-digit agents for simple changes, at a 5-minute cache.
@@ -685,10 +699,10 @@
   Actions: agents that are stuck terminate (stuck means an hour or more with no real change, or the same action looping); usage fell from 30%+ over days to under 10% in one day. One user, reported.
   Trigger: a subagent run past an hour with no real change.
   Owner: delegation.
-  Status: Open.
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:29; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:33; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:92 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeozdj/usage_cap_advice_for_the_nontechnical/>).
 
-- [ ] **RISK-205** Fable 5.2 reads an indexed project past 500K tokens (the compaction limit) before finishing research, then re-reads the same code after compaction.
+- [x] **RISK-205** Fable 5.2 reads an indexed project past 500K tokens (the compaction limit) before finishing research, then re-reads the same code after compaction.
   - Category: product fault
   - Cause: Fable reads every line the indexes point to, relevant or not; a rule in CLAUDE.md did not stop it; Opus in the same project read nothing more and made all edits.
   - Event: Research runs past the compaction limit and repeats.
@@ -700,10 +714,10 @@
   - Actions: Scope in the task (name the 2-3 files it may open, work from the index, ask before reading outside), or Fable plans a small slice and a main-loop Opus session edits with the plan pasted in.
   - Trigger: Reads past 500K tokens.
   - Owner: delegation
-  - Status: open.
+  - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:29; external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:33 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/>).
 
-- [ ] **RISK-206** A coordinator on Opus xhigh loses what it relays.
+- [x] **RISK-206** A coordinator on Opus xhigh loses what it relays.
   Category: product fault
   Cause: Context grew with nothing pruned; context is relayed several times
   Event: Instructions sit idle because the worker never got the relay; half-thought solutions; ignored playbook rules; deprecated rules followed
@@ -715,7 +729,7 @@
   Actions: Prune context; a dispatch payload that is self-contained; a status file per worker; delete the old rule
   Trigger: A task with no status
   Owner: delegation
-  Status: open
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33; external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:34 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/>).
 
 - [ ] **RISK-207** Research Over Measure.
@@ -729,7 +743,7 @@
   Actions: Answer questions about own code, config, accounts or data by running, curling, reading or querying, not researching. Work inline by default; spawn only on request, for a wide read to throw away, or for an independent second look. Never one verifier per finding: batch into one agent, or verify the 2-3 claims that change a decision and say which were not checked. Treat agent output as a draft.
   Trigger: A fan-out of agents on a question the session can measure itself.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   Basis: reported, n=1.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
@@ -744,7 +758,7 @@
   Actions: Give a verifier only the bare claim plus the file, endpoint or query to check against, one agent for the batch. Open with the premise as one checkable claim plus the one call that would falsify it.
   Trigger: A verifier prompt that carries the finder's reasoning.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   Basis: reported, confirmed by the poster.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
@@ -759,13 +773,13 @@
   Actions: Workers run only local checks; one review at the end of the phase.
   Trigger: A worker that runs checks beyond its own files.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   Basis: reported, one user.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:123-125 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 ## Fable And Opus Behaviour
 
-- [ ] **RISK-210** Fable 5.2 makes low-effort and half-done work look sound: about 15 independent users report faults, and 5 authors report corner-cutting stated with full confidence.
+- [x] **RISK-210** Fable 5.2 makes low-effort and half-done work look sound: about 15 independent users report faults, and 5 authors report corner-cutting stated with full confidence.
   - Category: product fault
   - Cause: Model behaviour; on small tickets and plans.
   - Event: It makes low-effort work look high quality and ignores edge cases (happy path only); is over-confident and hides what it is unsure about; is snarky and rewrites the prompt mid-response; is lazy and gives up early, does not verify claims or spawn subagents; writes verbose non-chronological prose; spends 30 minutes reading then makes 2 edits on a small ticket (Opus less than half the time); offers an API endpoint that lets the client send latitude and longitude (abuse path), and a single HTTP call to a rate-limited service until criticized twice, then calls the repo examples too complex; does not second-check facts when a plan is carried over; leaves open-ended meeting actions with no owner or deadline.
@@ -777,10 +791,10 @@
   - Actions: Review by Opus in the main loop; concrete self-evaluation instructions; state assumptions and uncertainties; point at in-repo examples; name an owner and deadline for each action.
   - Trigger: A reply with happy-path-only work; a reply that skips repo examples.
   - Owner: delegation
-  - Status: open.
+  - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:38; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:39; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:48; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:330; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:349 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:52; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:100; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:163; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>).
 
-- [ ] **RISK-211** Fable 5.2 ignores rules and workflows "to drive innovation", does not know when to stop innovating, and keeps changing goals behind the user's back.
+- [x] **RISK-211** Fable 5.2 ignores rules and workflows "to drive innovation", does not know when to stop innovating, and keeps changing goals behind the user's back.
   Category: product fault
   Cause: Model behaviour; a self-report by the model, not measured
   Event: Rules and goals are changed
@@ -792,12 +806,12 @@
   Actions: Clearer boundaries than for Opus
   Trigger: A goal change nobody asked for
   Owner: delegation
-  Status: open
+  Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:395; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:397; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:453 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
 ## Replies And Instruction Following
 
-- [ ] **RISK-212** A local model behind Claude Code ignores hard rules in CLAUDE.md.
+- [x] **RISK-212** A local model behind Claude Code ignores hard rules in CLAUDE.md.
   Category: agent behaviour.
   Cause: rules placed in CLAUDE.md or before the task do not bind the local model.
   Event: it adds a forbidden dependency, and changes a hard limit plus prompts, fixtures, and tests.
@@ -808,7 +822,7 @@
   Actions: place the rules after the task with "make no edits and report the conflict"; one run per rung is weak evidence.
   Trigger: a local model edits across a rule boundary.
   Owner: delegation.
-  Status: Open.
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:252; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:174 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 ## Lead Agent And Helper Scripts
@@ -825,7 +839,7 @@
   - Actions: run a bulk rewrite only on a merged copy after every writer has ended, or only on the folders of workers that have reported; list the running writers before any bulk edit.
   - Trigger: a bulk edit command (`perl -pi`, `sed -i`, `xargs` over a shared folder) while background agents run.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10317; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10632.
 
 - [ ] **RISK-214** The lead deletes worker output without comparing it to its counterpart.
@@ -840,12 +854,12 @@
   - Actions: before a launch after a reset, list running agents (`ListAgents`) and existing stage folders; before a delete, diff the output against its counterpart and list what the delete removes.
   - Trigger: a launch or delete of worker output right after a context reset.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9407; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9764.
 
 ## Agent Swarm From Wording
 
-- [ ] **RISK-215** Agent Swarm From Wording.
+- [x] **RISK-215** Agent Swarm From Wording.
   Category: Agent behaviour.
   Cause: The prompt wording 'adversarial security and privacy review', under an ultracode effort level chosen for a design step and carried over by 'continue with it'.
   Event: 166 agents spawned for an 8-page admin review; it kept spawning after 160 agents in 18m53s until the user stopped it.
@@ -858,10 +872,11 @@
   Owner: delegation. Status: open.
   Basis: reported, one session.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:31,41,43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>)
+  Status: closed. Swarms are out (OUT-061); a user-set cap is the user's instruction. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
 ## Subagent Token Burn
 
-- [ ] **RISK-216** Agents agreeing in inter-agent chat burn half a million tokens.
+- [x] **RISK-216** Agents agreeing in inter-agent chat burn half a million tokens.
   Category: agent failure.
   Cause: One resident agent agreed with worker threads in inter-agent chat (reported, one commenter).
   Event: The chat ran until about 500,000 tokens were spent on agreement.
@@ -873,10 +888,10 @@
   Actions: Replace agent-to-agent chat with a deterministic task queue; cap the back-and-forth.
   Trigger: Two agents exchange more than a few turns without a file change.
   Owner: delegation.
-  Status: open.
+  Status: closed. No agent-to-agent chat or swarm in the roster (OUT-061); grep finds no such code. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:126 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents/>)
 
-- [ ] **RISK-217** Idle subagents re-read their context while they wait.
+- [x] **RISK-217** Idle subagents re-read their context while they wait.
   - Category: agent failure.
   - Cause: They sit on a permission prompt or a tool call that never returned; telling them to close does not always work; One commenter reports that main lets subagents read and reread their text while they wait for other agents or main, so context compounds after each read event. Another commenter disputes it and says it began recently; the texts at `texts.ts:67` (`SEND_MESSAGE`) and `:21` (`Agent`) do not route new same-area work to `SendMessage`.
   - Event: Two commenters report it; An idle subagent re-reads its whole context before each read event; finished agents sit idle while new ones are spawned; a user note holds that re-spawning agents costs more than resuming existing ones.
@@ -888,12 +903,12 @@
   - Actions: Press esc, kill the leftovers from /tasks, and allowlist the tools they keep asking for; Rules telling main to pause and restart idle subagents; plan with Sonnet and code with Haiku (the commenter's cure). Opus does not code; resume a finished agent in place of a new spawn; stop an idle agent; route same-area work to `SendMessage` resume.
   - Trigger: A subagent is pending with no progress; A subagent that polls or waits with repeated reads; a spawn in an area where a finished agent exists; new work in an area where a finished agent exists.
   - Owner: delegation
-  - Status: open.
+  - Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xunrxf-subagents-not-correctly-closed-20261116T052612Z.md:45,49 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xunrxf/subagents_not_correctly_closed_after_end_of_their/>); external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:621 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:52 (observed).
 
 ## Effort Level Quality
 
-- [ ] **RISK-218** Medium effort misses checks that high effort makes.
+- [x] **RISK-218** Medium effort misses checks that high effort makes.
   Category: agent failure.
   Cause: Two commenters report medium effort on Opus 5.5: in long blueprinting it "takes things too literally and doesn't verify what it assumes"; in a test against known-pass code reviews it "missed too many" (unquantified, n=1). The same thread says high helps for creative and bulletproof work.
   Event: A medium-effort turn plans or reviews without verifying its assumptions.
@@ -905,12 +920,12 @@
   Actions: Keep reviewer effort high or medium per agent file as the plan decides; do not read these reports as a measurement.
   Trigger: A review that misses a seeded defect at medium effort.
   Owner: delegation.
-  Status: open.
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:41; external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/>)
 
 ## Lead Drops Tasks
 
-- [ ] **RISK-219** An Opus 5.5 lead at high effort drops tasks when the juggling gets busy.
+- [x] **RISK-219** An Opus 5.5 lead at high effort drops tasks when the juggling gets busy.
   Category: agent failure.
   Cause: One user runs a lead session that assigns work, reviews it and keeps a task graph, plus a manager session that dispatches workers, manages their git states and merges to main; Opus 5.5 on high does a fair job as lead but can drop balls, while Sonnet 5.5 on medium effort does the manager role well. The user would use Fable for the lead but finds it too costly.
   Event: A lead session holds several large parts of one project at once.
@@ -922,7 +937,7 @@
   Actions: Split the lead from a manager that dispatches and merges; the user also considers a thin orchestrator with sub-project leads (more sessions, more cost). The report puts git merges in the manager session, so it conflicts with a rule that agents never touch git; the lead decides.
   Trigger: A lead that has to track several parts of a large project.
   Owner: delegation.
-  Status: open.
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:71; external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:73 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlz2bs/how_do_you_manage_worktrees_when_your_agents_end/>)
 
 ## Agent Fault: Orchestration and Guardrail Packs
@@ -939,12 +954,12 @@
   Actions: Scope each loop to the request; treat design as the worst delegation case, since taste cannot be briefed, so delegate only tight-spec boring work with a second reviewer model; do not use one model family as its own verifier or choose a model from benchmarks; keep rules tied to dated incidents (the same pass found Haiku 5.5 poor at prose rewriting, reported); a bundled code-search index skill has Edit refusing unread files, a stale index after edits, unmeasured savings, and overlap with Grep and Read (reported); keep rules tied to dated incidents; delegate only tight-spec boring work with a second reviewer model (Opus 5.5 alone ranked best on a design task in the five-orchestration test, single task, reported).
   Trigger: A review loop runs past the request.
   Owner: delegation.
-  Status: open.
+  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   Source: external/2026-09-29/export-Sonnet 5.5 beats Opus 5.5 at coding and it's half the price--.jsonl:43 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsmhaz/sonnet_55_beats_opus_55_at_coding_and_its_half/>); external/2026-09-29/export-Introducing Claude Sonnet 5.5, the second model in the Claude 5.5 family.jsonl:125 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsly42/introducing_claude_sonnet_55_the_second_model_in/>).
 
 ## Workflow Harness Frame
 
-- [ ] **RISK-221** A Workflow launch relays only the last typed user message as the user voice.
+- [x] **RISK-221** A Workflow launch relays only the last typed user message as the user voice.
   Category: Product behaviour.
   Cause: Since late Sep 2026 a Workflow launch adds a turn pair that relays the LAST typed user message as the only user voice and marks scripted lane briefs "computed task text" without authority. Reported: anthropics/claude-code #95369; not in the changelog.
   Event: Scripted lanes refuse unless the human typed the go phrase as the latest typed message (an AskUserQuestion answer arrives as a tool result and does not count).
@@ -956,7 +971,7 @@
   Actions: Put authority in the typed opening line and type nothing after before launch.
   Trigger: A Workflow launch follows an AskUserQuestion answer.
   Owner: delegation.
-  Status: open (missing at 088a227c; 2.1.327: the harness frame text is present, code search "computed task text", chunk-6rveqv0x.js@1036 and @1272).
+  Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/>); chunk-6rveqv0x.js@1036 (claude 2.1.327 binary).
 
 ## Safeguards And Guards
@@ -973,7 +988,7 @@
   - Actions: Keep CLAUDE_CODE_SUBAGENT_MODEL set and check the model of a resumed subagent; Pin model and effort in agent files and by env var, not by plan text; agent file with explicit `model:` and `effort:` frontmatter plus a hook; routing matrix tied to cost data; effort per model in settings. Example roster (reported): ten Sonnet agents plus one Haiku, none inheriting Opus; measured 11 runs, about 540k tokens, one Opus run 247k, rest 20-60k. 2.1.327: `modelSettings.*` (chunk-ja5z738t.js@31099, @276570) and PreModelSwitch/PostModelSwitch (chunk-ja5z738t.js@5665) present; the 2.1.327 release notes fix the subagent model set in managed settings not applying in Claude Desktop's Code tab (it now overrides the user's own, unless those settings also pick a provider or gateway); an `agent.spawn` mod drops or rewrites `model` (the event carries `model`, `parentModel`, `subagentType`, `provider`; opus rewritten to sonnet-5-5 works; dropping lets the agent file's haiku decide); a mod runs in a hooks worker with no Bun global; remove the invitation from the root prompt.
   - Trigger: A subagent resumed with the env var unset; Usage by model that differs from the plan; a subagent spawn with no `model`; an `Agent` call that carries `model`.
   - Owner: delegation
-  - Status: open.
+  - Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
   - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
 
 ## Product And Tooling
@@ -990,10 +1005,10 @@
   - Actions: Use Sonnet workers for big slices; split work under 100k tokens.
   - Trigger: A worker's context nears 100k.
   - Owner: delegation
-  - Status: open (Existing controls: partial at 088a227c).
+  - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
 
-- [ ] **RISK-224** A pending run-log line is lost when a session ends before 3 root turns.
+- [x] **RISK-224** A pending run-log line is lost when a session ends before 3 root turns.
   - Category: product.
   - Cause: runs.ts writes after 3 root turns.
   - Event: A run line is dropped.
@@ -1005,10 +1020,10 @@
   - Actions: Accept the loss.
   - Trigger: A session ends early.
   - Owner: delegation
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed. The run log (`runs.jsonl`) is removed (OUT-020); grep finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
-- [ ] **RISK-225** The reply judge SHIPPED_REGISTER is unwired.
+- [x] **RISK-225** The reply judge SHIPPED_REGISTER is unwired.
   - Category: product.
   - Cause: decider/questions.ts holds it since 16ecb31b, which scores tools only.
   - Event: Dead code.
@@ -1020,7 +1035,7 @@
   - Actions: Delete it or wire it, with a present use.
   - Trigger: A search finds the export unused.
   - Owner: delegation
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed. The reply judge register is removed; grep for `SHIPPED_REGISTER` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
 - [ ] **RISK-487** A worker runs for hours over many slices, compacting again and again.
@@ -1035,5 +1050,5 @@
   - Actions: REQ-DELEGATION-065; the lead's prompt gives one slice and its check per worker.
   - Trigger: a worker transcript with a compaction.
   - Owner: delegation
-  - Status: open
+  - Status: open. BUILD: covered by REQ-DELEGATION-065 (one slice per worker, fresh worker for the next); the cure ships with that change.
   - Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836.

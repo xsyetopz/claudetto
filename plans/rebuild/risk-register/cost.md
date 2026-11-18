@@ -2,7 +2,7 @@
 
 ## Cost
 
-- [ ] **RISK-373** A claudetto budget line that reads `total_cost_usd` undercounts auto mode.
+- [x] **RISK-373** A claudetto budget line that reads `total_cost_usd` undercounts auto mode.
   Category: product.
   Cause: classifier cost is in no `-p` result field. `total_cost_usd` equals the `modelUsage` `costUSD` of the main loop (a2: 0.0015538 against a real 0.0020576).
   Event: the budget shows less spend than the account pays.
@@ -13,7 +13,7 @@
   Actions: add the decision-log `costUSD` to the budget when auto mode is on (`AUTOMODE_DECISION_LOG=1`).
   Trigger: auto mode on with a budget line.
   Owner: cost.
-  Status: open.
+  Status: closed 2026-11-18. The budget line that read total_cost_usd is out (REQ-COST-002, REQ-COST-011), so the cause left with the removed part; the status line shows plan percentages, not dollars, under a subscription (REQ-COST-046).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1958; plugins/claudetto/statusline/segments.ts@088a227c.
 
 - [ ] **RISK-374** Fan-out runaway: the model picks its own fan-out and model and spends the quota.
@@ -28,6 +28,7 @@
   Trigger: more than 6 live agents, or an Agent call with no model.
   Owner: cost. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:56; external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:84; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:80; external/2026-11-16/reddit.com-r-claudeai-comments-1xw205g-the-problem-with-fable-52-20261114T143353Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xw205g/the_problem_with_fable_52/>). Unlocated: the 394-call, 99%-of-weekly-limit, $100, and 95%/70% figures.
+  Status: partial at abed830ed: the fill writes CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3; the caps in effect and the subagent model deny are unprobed.
 
 - [ ] **RISK-375** Subagent sprawl: many tiny subagents cost more than inline work.
   Category: cost.
@@ -44,7 +45,7 @@
 
 ## Guards
 
-- [ ] **RISK-376** Price-step logs an abort on the normal path.
+- [x] **RISK-376** Price-step logs an abort on the normal path.
   Category: cost, noise.
   Cause: price-step readingOf races the stop chunk against a sleep; its finally aborts the sleep, and the catch logged $.ui.log "The usage wait ended early (AbortError...)" every time, even when the Haiku stop chunk arrived in time. The test fails only with a 100 ms wait, because the rejection lands after the call answers.
   Event: a log record on each normal run (9 records in one session).
@@ -56,7 +57,7 @@
   Actions: drop the log from the catch; test with a wait over 100 ms.
   Trigger: an "usage wait ended early" line in the hook log on a successful run.
   Owner: cost.
-  Status: open (rebuild). At baseline price-step exists (plugins/claudetto/hooks/features/price-step/); the log line was not read there.
+  Status: closed 2026-11-18. The price-step hook is out (REQ-COST-010, ADR-0131), so the abort log cannot occur; grep of plugins/claudetto/hooks finds no price-step or usage wait.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:71; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:595-597.
 
 ## Verification And Honesty
@@ -76,7 +77,7 @@
 
 ## Cost And Resources
 
-- [ ] **RISK-378** Done work looks busy for 40 minutes (one commenter, about 30 agents).
+- [x] **RISK-378** Done work looks busy for 40 minutes (one commenter, about 30 agents).
   Category: Technical.
   Cause: A failed status check is read as "running".
   Event: Done work looks busy for 40 minutes (one commenter, about 30 agents).
@@ -86,7 +87,7 @@
   Response: mitigate.
   Actions: Map an unknown or failed check to "unknown since <time>"; a Stop hook per session writes a status comment to a task board; a completion ledger tracks running, done-but-not-processed (alert past threshold), and processed.
   Trigger: A status check fails or times out.
-  Owner: cost. Status: open (reported).
+  Owner: cost. Status: closed 2026-11-18. The session-state view and task-board checks are out (REQ-COST-017); the rebuild has no status check to misread.
   Source: not located: the commenter's post in the old plan; unresolved.
 
 ## Agent Conduct
@@ -125,7 +126,8 @@
 
 ## Refusals And Model Fallback
 
-- [ ] **RISK-381** A session falls back to Opus 4.8 and stays there.
+- [x] **RISK-381** A session falls back to Opus 4.8 and stays there.
+  Verified: 2026-11-18, closed by ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
   Category: product behaviour.
   Cause: a safeguard on a reverse-engineering plan drops Opus 5.5 to Opus 4.8.
   Event: one user reports the session stayed on 4.8; other commenters report that swapping back to 5.5 after work started "picks it up most of the time".
@@ -136,12 +138,13 @@
   Actions: swap back to Opus 5.5 once the safeguard has tripped (reported by commenters, no probe).
   Trigger: a notice that the model switched to Opus 4.8.
   Owner: cost.
-  Status: Open.
+  Status: closed (accepted), ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1604; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:219; external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:799 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
 ## Environment, Accounts, And Marketplace
 
-- [ ] **RISK-382** Approval Wait Outlasts Thread Expiry.
+- [x] **RISK-382** Approval Wait Outlasts Thread Expiry.
+  Verified: 2026-11-18, closed by ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
   Category: Claude Code and API.
   Cause: A human-in-the-loop approval takes longer than the 5-minute thread expiry.
   Event: The timer ends before the approval click; the unhandled expiry breaks the run.
@@ -152,7 +155,7 @@
   Actions: A wrapper catches the expiry and resends the full context.
   Trigger: An approval wait over 5 minutes on a thread.
   Owner: cost.
-  Status: open.
+  Status: closed (accepted), ADR-0190 (accepted with no code; Likelihood 1, server-side cause).
   Basis: reported.
   Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmh012-anthropic-added-message-threads-20261104T090648Z.md:68 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmh012/anthropic_added_message_threads_to_the_messages/>).
 
@@ -208,7 +211,7 @@
 
 ## Cost And Statusline
 
-- [ ] **RISK-386** Status-line task counter and panel never turn on.
+- [x] **RISK-386** Status-line task counter and panel never turn on.
   - Category: product defect.
   - Cause: no file under `plugins/` sets `CLAUDE_CODE_ENABLE_TASKS` or `CLAUDE_CODE_ENABLE_TODO_TOOLS` (`statusline/segments.ts:64`, `specText`).
   - Event: a user reported the newest release lacks the OpenSpec task counter and its sync.
@@ -220,7 +223,7 @@
   - Actions: setup turns the tools on; sync `tasks.md` (the log's fix, not built).
   - Trigger: any session.
   - Owner: cost
-  - Status: open
+  - Status: closed 2026-11-18. The OpenSpec task counter left with the openspec block (ADR-0189).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (observed, grep miss).
 
 - [ ] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
@@ -253,7 +256,7 @@
   - Status: open.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:1353 (reported, user, 2026-11-09).
 
-- [ ] **RISK-389** A paid-run tool asks for an API key.
+- [x] **RISK-389** A paid-run tool asks for an API key.
   - Category: product fault (tooling).
   - Cause: `tools/decider-claim-check.ts` stops with "ANTHROPIC_API_KEY is not set" and the agent told the user to export it.
   - Event: the agent asked for an API key; the user calls this hazardous and wants the OAuth token.
@@ -265,7 +268,7 @@
   - Actions: every paid claudetto tool uses the user's OAuth token and never asks for an API key.
   - Trigger: a tool prompt or error that names an API key.
   - Owner: cost
-  - Status: open.
+  - Status: closed 2026-11-18. The cause, tools/decider-claim-check.ts, is gone (`ls tools` finds no directory; claim-check tooling is on OUT-024). The general conduct cure is recorded in RISK-379.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 ## Statusline
@@ -304,7 +307,7 @@
 
 ## Ungrouped
 
-- [ ] **RISK-392** A rule drives dev cost to 2.3 times stock.
+- [x] **RISK-392** A rule drives dev cost to 2.3 times stock.
   Category: cost
   Cause: The mutation rule asked for a mutation run in every project.
   Event: Round 5 dev cost .10 against stock .98 (2.3 times); hono dev cost .14 and 20.8 min against /bin/zsh.74 and 4.3 min.
@@ -316,7 +319,7 @@
   Actions: Keep the trimmed line in `useTestPatterns.md`.
   Trigger: A rule makes the agent install or run a tool the project lacks.
   Owner: cost
-  Status: mitigated
+  Status: closed 2026-11-18. The rule file useTestPatterns.md is not in the tree (`find . -name 'useTestPatterns*'` finds none), so the cause left with the removed rule.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (2.3 times, round 5 dev against stock); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (changelog hono figures); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (round 6); measured, 2026-11-16
 
 ## Agent Conduct Defects Reported by the User
