@@ -15,6 +15,7 @@ describe("defaults fill", () => {
 		expect(next.permissions.allow).toEqual(permissions.allow);
 		expect(next.permissions.deny).not.toContain("ExitPlanMode");
 		expect(next.bashOutputMaxChars).toBe(8000);
+		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER).toBe("0");
 	});
 
@@ -36,6 +37,7 @@ describe("defaults fill", () => {
 		// Arrange
 		const text = JSON.stringify({
 			skillListingMaxDescChars: 500,
+			outputStyle: "Proactive",
 			env: { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "8" },
 			worktree: { baseRef: "fresh", symlinkDirectories: ["node_modules"] },
 			permissions: { deny: ["Workflow", "Bash(rm *)"], allow: ["Read"] },
@@ -47,6 +49,7 @@ describe("defaults fill", () => {
 
 		// Assert
 		expect(next.skillListingMaxDescChars).toBe(500);
+		expect(next.outputStyle).toBe("Proactive");
 		expect(next.env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).toBe("8");
 		expect(next.env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL).toBe("1");
 		expect(next.worktree).toEqual({ baseRef: "fresh", symlinkDirectories: ["node_modules"] });

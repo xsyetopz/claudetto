@@ -16,11 +16,16 @@ import { type Json, indentOf, isRecord, parseSettings } from "./settings";
  *   -913, DISABLE_CRON with DISABLE_ADVISOR_TOOL -384 (the advisor stays off by
  *   product rule);
  * - SILENT_TURN_REMINDER 0 drops the reminder text, -487 bytes per turn.
+ * - `outputStyle` selects the claudetto style when the user picked none: on the
+ *   flaky-test prompt its line reran the test and reported the split in 7 of 7
+ *   Sonnet runs, vanilla in 0 of 6 (paid probe, 2026-11-19). A style the user
+ *   chose stays, so the plugin style is selected here, not forced.
  * The sandbox block and the guard rules come from fillGuards (ADR-0188), the one
  * writer of `sandbox`, so the two never disagree.
  */
 export const DEFAULTS: Json = {
 	skillListingMaxDescChars: 60,
+	outputStyle: "claudetto:Claudetto",
 	showClearContextOnPlanAccept: true,
 	// One trailer in the form the project convention names; vanilla adds a Co-Authored-By line (REQ-GUARDS-063).
 	attribution: { commit: "Assisted-by: Claude Code", pr: "Assisted-by: Claude Code" },
@@ -65,7 +70,7 @@ export const RETIRED_REMINDER_TEXTS: readonly string[] = [
 ];
 
 /** Bumped when the defaults change, so a fill runs once per set and never undoes a user's later edit. */
-export const FILL_VERSION = 5;
+export const FILL_VERSION = 6;
 
 export type Fill = { readonly text: string; readonly added: readonly string[] };
 

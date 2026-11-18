@@ -28,6 +28,10 @@ A manual `/compact` keeps Claude Code's summary and asks it to keep the user's c
 
 Under `claude -p` a plugin cannot start a compaction, so the task-end renewal does not run. Automatic compaction still runs there and still gets the handover. To renew near 70,000 tokens, the script that starts `claude -p` sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=35` on a 200,000-token window: Claude Code then compacts at the lower of that percent and the window minus 13,000 tokens. The renewal then happens mid-task at the threshold, not at a task end. Alternatively, the script sends `/clear` as a prompt between tasks, and claudetto writes the handover first.
 
+## Output Style
+
+claudetto ships one output style, `claudetto:Claudetto`, and selects it when your settings name no `outputStyle`; a style you chose stays. It keeps Claude Code's coding instructions and adds one line: report a test as passing after a run that could have failed, and run a test that touches time, randomness or ordering twice. On a flaky test, Sonnet 5.5 ran it twice and reported the split in 7 of 7 runs with the style and 0 of 6 without it. The other conduct lines tried left vanilla's results unchanged, so they do not ship.
+
 ## Shell Commands
 
 claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin reader ends at once instead of waiting for the 120-second timeout. Each command also runs under a wall-time limit, set by the `bashTimeLimitMinutes` option (30 by default, 0 turns it off). When the limit is reached, claudetto stops the command and its child processes, also when the command runs in the background, and tells the model why. A command that commits or pushes runs with `pipefail`, so `bun test | tail -3 && git commit` stops when the tests fail. These guards apply to a command the permission rules already allow; a command that needs approval runs as the model wrote it, so the approval dialog and saved rules show the model's own command.
