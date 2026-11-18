@@ -1,5 +1,5 @@
 import { describe, expect, test } from "claude-code/testing";
-import { compose, DEFAULT_THRESHOLD, extract, isCommit, parseTokens, threshold } from "./text";
+import { compose, extract, isCommit, parseTokens, threshold } from "./text";
 
 describe("handover text", () => {
 	test("extract keeps user prompts and the last answer", () => {
@@ -25,7 +25,7 @@ describe("handover text", () => {
 		expect(parseTokens("lots")).toBe(undefined);
 	});
 	test("threshold defaults to 70k; percent beats tokens", () => {
-		expect(threshold(200000, undefined, undefined)).toBe(DEFAULT_THRESHOLD);
+		expect(threshold(200000, undefined, undefined)).toBe(70000);
 		expect(threshold(200000, undefined, "100k")).toBe(100000);
 		expect(threshold(200000, "50", "100k")).toBe(100000);
 		expect(threshold(1000000, "10", undefined)).toBe(100000);
